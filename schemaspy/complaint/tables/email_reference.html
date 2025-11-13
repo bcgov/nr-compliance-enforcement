@@ -173,7 +173,7 @@
                                     <td><p>Key representing an agency stored in the agency_code table of the shared schema.  The agency that the email address belongs to.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
+                                    <td><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title='nullable'>√</td>
@@ -185,11 +185,6 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="email_reference.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_emailref__geo_org_unit_code"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_emailref__geo_org_unit_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td><p>The geographic organization code that the email address belongs to.</p></td>
@@ -333,26 +328,13 @@
                                 <h5>Close relationships within degrees of separation</h5>
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
-                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="email_reference.html" target="_top" title="email_reference" alt="" coords="348,5,751,339">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="5,96,304,243">
+<area shape="rect" id="node1" href="email_reference.html" target="_top" title="email_reference" alt="" coords="5,5,408,339">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/email_reference.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="complaint.html" target="_top" title="complaint" alt="" coords="780,5,940,93">
-<area shape="rect" id="node2" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="316,459,615,605">
-<area shape="rect" id="node5" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="5,491,272,579">
-<area shape="rect" id="node3" href="email_reference.html" target="_top" title="email_reference" alt="" coords="659,111,1061,444">
-<area shape="rect" id="node4" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="729,461,991,549">
-<area shape="rect" id="node6" href="office.html" target="_top" title="office" alt="" coords="789,567,931,655">
-</map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/email_reference.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

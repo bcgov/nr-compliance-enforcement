@@ -2,6 +2,7 @@ investigation_status_code
 officer_investigation_xref_code
 investigation
 investigation_party
+continuation_report
 investigation_business
 investigation_person
 officer_investigation_xref

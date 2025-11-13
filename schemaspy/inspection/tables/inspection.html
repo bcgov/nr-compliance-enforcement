@@ -131,6 +131,11 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
+                                                <td title="inspection_party.inspection_guid references inspection.inspection_guid via fk_inspection_guid"><a href='inspection_party.html'>inspection_party</a><span class='relatedKey'>.inspection_guid</span></td>
+                                                <td class="constraint detail">fk_inspection_guid</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="officer_inspection_xref.inspection_guid references inspection.inspection_guid via FK_officer_inspection_xref__inspection_guid"><a href='officer_inspection_xref.html'>officer_inspection_xref</a><span class='relatedKey'>.inspection_guid</span></td>
                                                 <td class="constraint detail">FK_officer_inspection_xref__inspection_guid</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -352,6 +357,23 @@
                                     </td>
                                     <td><p>Description of the inspection location.</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="created_by_app_user_guid_ref">created_by_app_user_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>ID of the user who created this inspection. This is a business field separate from the audit create_user_id column.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -423,18 +445,22 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,32,807,483">
-<area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,123,269,240">
-<area shape="rect" id="node3" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,5,1124,181">
+<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,143,807,623">
+<area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,233,269,351">
+<area shape="rect" id="node3" href="inspection_party.html" target="_top" title="inspection_party" alt="" coords="871,5,1103,181">
+<area shape="rect" id="node4" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,199,1124,375">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/inspection.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,5,807,456">
-<area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,96,269,213">
-<area shape="rect" id="node3" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,196,1124,372">
-<area shape="rect" id="node4" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="408,473,712,561">
+<area shape="rect" id="node1" href="inspection.html" target="_top" title="inspection" alt="" coords="313,111,807,591">
+<area shape="rect" id="node2" href="inspection_status_code.html" target="_top" title="inspection_status_code" alt="" coords="5,201,269,319">
+<area shape="rect" id="node3" href="inspection_business.html" target="_top" title="inspection_business" alt="" coords="1168,5,1407,93">
+<area shape="rect" id="node4" href="inspection_party.html" target="_top" title="inspection_party" alt="" coords="871,55,1103,231">
+<area shape="rect" id="node5" href="inspection_person.html" target="_top" title="inspection_person" alt="" coords="1175,111,1399,199">
+<area shape="rect" id="node6" href="officer_inspection_xref.html" target="_top" title="officer_inspection_xref" alt="" coords="851,397,1124,573">
+<area shape="rect" id="node7" href="officer_inspection_xref_code.html" target="_top" title="officer_inspection_xref_code" alt="" coords="408,608,712,696">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/inspection.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

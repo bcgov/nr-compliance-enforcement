@@ -141,6 +141,11 @@
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
+                                                <td title="app_user_complaint_xref.complaint_identifier references complaint.complaint_identifier via FK_person_complaint_xref__complaint_identifier"><a href='app_user_complaint_xref.html'>app_user_complaint_xref</a><span class='relatedKey'>.complaint_identifier</span></td>
+                                                <td class="constraint detail">FK_person_complaint_xref__complaint_identifier</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="complaint_referral.complaint_identifier references complaint.complaint_identifier via FK_cmplreferral__complaint"><a href='complaint_referral.html'>complaint_referral</a><span class='relatedKey'>.complaint_identifier</span></td>
                                                 <td class="constraint detail">FK_cmplreferral__complaint</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -168,11 +173,6 @@
                                             <tr>
                                                 <td title="linked_complaint_xref.linked_complaint_identifier references complaint.complaint_identifier via FK_lnkcmplxref_linked_complaint"><a href='linked_complaint_xref.html'>linked_complaint_xref</a><span class='relatedKey'>.linked_complaint_identifier</span></td>
                                                 <td class="constraint detail">FK_lnkcmplxref_linked_complaint</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="person_complaint_xref.complaint_identifier references complaint.complaint_identifier via FK_person_complaint_xref__complaint_identifier"><a href='person_complaint_xref.html'>person_complaint_xref</a><span class='relatedKey'>.complaint_identifier</span></td>
-                                                <td class="constraint detail">FK_person_complaint_xref__complaint_identifier</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
@@ -522,7 +522,7 @@
                                     <td><p>A human readable code used to identify a complaint status.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
+                                    <td><span id="geo_organization_unit_code">geo_organization_unit_code</span></td>
                                     <td>varchar</td>
                                     <td>10</td>
                                     <td title='nullable'>√</td>
@@ -534,11 +534,6 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="complaint.geo_organization_unit_code references geo_organization_unit_code.geo_organization_unit_code via FK_complaint_geoorgutnd"><a href='geo_organization_unit_code.html'>geo_organization_unit_code</a><span class='relatedKey'>.geo_organization_unit_code</span></td>
-                                                <td class="constraint detail">FK_complaint_geoorgutnd</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td><p>A human readable code used to identify a geographical organization unit.   The finest known grain geographical organization unit where the complaint occurred.</p></td>
@@ -788,109 +783,93 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="988,955,1245,1131">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="405,477,931,1397">
-<area shape="rect" id="node3" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,1192,361,1368">
-<area shape="rect" id="node4" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="53,893,314,1011">
-<area shape="rect" id="node5" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="60,1385,307,1503">
-<area shape="rect" id="node6" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="34,1028,333,1175">
-<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="67,515,299,632">
-<area shape="rect" id="node8" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="978,1148,1255,1324">
-<area shape="rect" id="node9" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="975,5,1259,181">
-<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1001,1341,1233,1517">
-<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="976,199,1257,404">
-<area shape="rect" id="node12" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="983,421,1250,685">
-<area shape="rect" id="node13" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="979,703,1254,937">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="991,896,1249,1072">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="405,641,931,1561">
+<area shape="rect" id="node4" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,1319,361,1495">
+<area shape="rect" id="node5" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="53,1184,314,1301">
+<area shape="rect" id="node6" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="60,1512,307,1629">
+<area shape="rect" id="node7" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="67,683,299,800">
+<area shape="rect" id="node3" href="app_user_complaint_xref.html" target="_top" title="app_user_complaint_xref" alt="" coords="975,1089,1265,1324">
+<area shape="rect" id="node8" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="981,1341,1259,1517">
+<area shape="rect" id="node9" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="978,5,1262,181">
+<area shape="rect" id="node10" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1004,199,1236,375">
+<area shape="rect" id="node11" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="979,392,1261,597">
+<area shape="rect" id="node12" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="987,615,1253,879">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/complaint.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1379,365,1636,541">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="797,673,1323,1593">
-<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="963,427,1157,515">
-<area shape="rect" id="node6" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="397,1351,753,1527">
-<area shape="rect" id="node8" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="445,1216,706,1333">
-<area shape="rect" id="node9" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="452,1544,699,1661">
-<area shape="rect" id="node10" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="426,213,725,360">
-<area shape="rect" id="node11" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="465,856,685,944">
-<area shape="rect" id="node4" href="attractant_hwcr_xref.html" target="_top" title="attractant_hwcr_xref" alt="" coords="1707,145,1954,233">
-<area shape="rect" id="node5" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1367,143,1648,348">
-<area shape="rect" id="node21" href="hwcr_complaint_nature_code.html" target="_top" title="hwcr_complaint_nature_code" alt="" coords="904,321,1216,409">
-<area shape="rect" id="node22" href="species_code.html" target="_top" title="species_code" alt="" coords="969,5,1151,93">
-<area shape="rect" id="node7" href="complaint_method_received_code.html" target="_top" title="complaint_method_received_code" alt="" coords="5,1412,353,1500">
-<area shape="rect" id="node18" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="46,245,313,333">
-<area shape="rect" id="node12" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1692,1364,1969,1540">
-<area shape="rect" id="node13" href="officer.html" target="_top" title="officer" alt="" coords="1437,1821,1578,1909">
-<area shape="rect" id="node25" href="person.html" target="_top" title="person" alt="" coords="993,1716,1127,1804">
-<area shape="rect" id="node26" href="office.html" target="_top" title="office" alt="" coords="989,1927,1131,2015">
-<area shape="rect" id="node14" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="2013,1367,2323,1455">
-<area shape="rect" id="node15" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1395,752,1619,840">
-<area shape="rect" id="node16" href="email_reference.html" target="_top" title="email_reference" alt="" coords="956,111,1164,199">
-<area shape="rect" id="node17" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="929,216,1191,304">
-<area shape="rect" id="node19" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1391,559,1623,735">
-<area shape="rect" id="node20" href="gir_type_code.html" target="_top" title="gir_type_code" alt="" coords="967,532,1153,620">
-<area shape="rect" id="node23" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1374,1216,1641,1480">
-<area shape="rect" id="node24" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="889,1611,1231,1699">
-<area shape="rect" id="node27" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1370,1569,1645,1804">
-<area shape="rect" id="node28" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="907,1821,1213,1909">
+<area shape="rect" id="node1" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1383,5,1641,181">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="797,375,1323,1295">
+<area shape="rect" id="node3" href="violation_code.html" target="_top" title="violation_code" alt="" coords="963,67,1157,155">
+<area shape="rect" id="node8" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="397,1052,753,1228">
+<area shape="rect" id="node10" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="445,917,706,1035">
+<area shape="rect" id="node11" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="452,1245,699,1363">
+<area shape="rect" id="node12" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="465,505,685,593">
+<area shape="rect" id="node4" href="app_user_complaint_xref.html" target="_top" title="app_user_complaint_xref" alt="" coords="1367,304,1657,539">
+<area shape="rect" id="node5" href="app_user_complaint_xref_code.html" target="_top" title="app_user_complaint_xref_code" alt="" coords="899,269,1221,357">
+<area shape="rect" id="node6" href="attractant_hwcr_xref.html" target="_top" title="attractant_hwcr_xref" alt="" coords="1733,1359,1979,1447">
+<area shape="rect" id="node7" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1371,1356,1653,1561">
+<area shape="rect" id="node18" href="hwcr_complaint_nature_code.html" target="_top" title="hwcr_complaint_nature_code" alt="" coords="904,1523,1216,1611">
+<area shape="rect" id="node19" href="species_code.html" target="_top" title="species_code" alt="" coords="969,1417,1151,1505">
+<area shape="rect" id="node9" href="complaint_method_received_code.html" target="_top" title="complaint_method_received_code" alt="" coords="5,1113,353,1201">
+<area shape="rect" id="node13" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1373,556,1651,732">
+<area shape="rect" id="node14" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1701,559,2011,647">
+<area shape="rect" id="node15" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1400,199,1624,287">
+<area shape="rect" id="node16" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1396,1587,1628,1763">
+<area shape="rect" id="node17" href="gir_type_code.html" target="_top" title="gir_type_code" alt="" coords="967,1628,1153,1716">
+<area shape="rect" id="node20" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1379,749,1645,1013">
+<area shape="rect" id="node21" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="889,1312,1231,1400">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/complaint.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1303,5,1537,181">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="405,617,931,1537">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="975,87,1259,263">
-<area shape="rect" id="node5" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,1332,361,1508">
-<area shape="rect" id="node6" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="53,1033,314,1151">
-<area shape="rect" id="node7" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="60,1525,307,1643">
-<area shape="rect" id="node8" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="34,1168,333,1315">
-<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="67,640,299,757">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="988,1036,1245,1212">
-<area shape="rect" id="node10" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="978,1229,1255,1405">
-<area shape="rect" id="node11" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1001,1423,1233,1599">
-<area shape="rect" id="node12" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="976,1616,1257,1821">
-<area shape="rect" id="node13" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="983,280,1250,544">
-<area shape="rect" id="node14" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="979,561,1254,796">
-<area shape="rect" id="node15" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="999,813,1234,1019">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1309,5,1544,181">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="405,559,931,1479">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="978,87,1262,263">
+<area shape="rect" id="node6" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="5,1236,361,1412">
+<area shape="rect" id="node7" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="53,1101,314,1219">
+<area shape="rect" id="node8" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="60,1429,307,1547">
+<area shape="rect" id="node9" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="67,641,299,759">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="991,1007,1249,1183">
+<area shape="rect" id="node5" href="app_user_complaint_xref.html" target="_top" title="app_user_complaint_xref" alt="" coords="975,1200,1265,1435">
+<area shape="rect" id="node10" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="981,1452,1259,1628">
+<area shape="rect" id="node11" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1004,1645,1236,1821">
+<area shape="rect" id="node12" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="979,280,1261,485">
+<area shape="rect" id="node13" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="987,503,1253,767">
+<area shape="rect" id="node14" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="1003,784,1237,989">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/complaint.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1739,697,1922,785">
-<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="797,707,1323,1627">
-<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1395,644,1619,732">
-<area shape="rect" id="node8" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="397,1384,753,1560">
-<area shape="rect" id="node10" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="445,1249,706,1367">
-<area shape="rect" id="node11" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="452,1577,699,1695">
-<area shape="rect" id="node12" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="426,352,725,499">
-<area shape="rect" id="node13" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="465,889,685,977">
-<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1379,1140,1636,1316">
-<area shape="rect" id="node5" href="violation_code.html" target="_top" title="violation_code" alt="" coords="963,1644,1157,1732">
-<area shape="rect" id="node6" href="attractant_hwcr_xref.html" target="_top" title="attractant_hwcr_xref" alt="" coords="1707,1672,1954,1760">
-<area shape="rect" id="node7" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1367,1669,1648,1875">
-<area shape="rect" id="node22" href="hwcr_complaint_nature_code.html" target="_top" title="hwcr_complaint_nature_code" alt="" coords="904,1855,1216,1943">
-<area shape="rect" id="node23" href="species_code.html" target="_top" title="species_code" alt="" coords="969,1749,1151,1837">
-<area shape="rect" id="node9" href="complaint_method_received_code.html" target="_top" title="complaint_method_received_code" alt="" coords="5,1445,353,1533">
-<area shape="rect" id="node19" href="geo_org_unit_type_code.html" target="_top" title="geo_org_unit_type_code" alt="" coords="46,384,313,472">
-<area shape="rect" id="node14" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1692,224,1969,400">
-<area shape="rect" id="node15" href="officer.html" target="_top" title="officer" alt="" coords="1437,5,1578,93">
-<area shape="rect" id="node26" href="person.html" target="_top" title="person" alt="" coords="993,249,1127,337">
-<area shape="rect" id="node27" href="office.html" target="_top" title="office" alt="" coords="989,23,1131,111">
-<area shape="rect" id="node16" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="2013,227,2323,315">
-<area shape="rect" id="node17" href="email_reference.html" target="_top" title="email_reference" alt="" coords="956,565,1164,653">
-<area shape="rect" id="node18" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="929,355,1191,443">
-<area shape="rect" id="node20" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1391,1892,1623,2068">
-<area shape="rect" id="node21" href="gir_type_code.html" target="_top" title="gir_type_code" alt="" coords="967,1960,1153,2048">
-<area shape="rect" id="node24" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1374,111,1641,375">
-<area shape="rect" id="node25" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="889,144,1231,232">
-<area shape="rect" id="node28" href="person_complaint_xref.html" target="_top" title="person_complaint_xref" alt="" coords="1370,392,1645,627">
-<area shape="rect" id="node29" href="person_complaint_xref_code.html" target="_top" title="person_complaint_xref_code" alt="" coords="907,460,1213,548">
-<area shape="rect" id="node30" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="1390,2085,1625,2291">
-<area shape="rect" id="node31" href="staging_activity_code.html" target="_top" title="staging_activity_code" alt="" coords="936,2188,1184,2276">
-<area shape="rect" id="node32" href="staging_status_code.html" target="_top" title="staging_status_code" alt="" coords="941,2083,1179,2171">
+<area shape="rect" id="node1" href="action_taken.html" target="_top" title="action_taken" alt="" coords="1765,471,1947,559">
+<area shape="rect" id="node2" href="complaint.html" target="_top" title="complaint" alt="" coords="797,513,1323,1433">
+<area shape="rect" id="node3" href="complaint_update.html" target="_top" title="complaint_update" alt="" coords="1400,451,1624,539">
+<area shape="rect" id="node10" href="comp_mthd_recv_cd_agcy_cd_xref.html" target="_top" title="comp_mthd_recv_cd_agcy_cd_xref" alt="" coords="397,1191,753,1367">
+<area shape="rect" id="node12" href="complaint_status_code.html" target="_top" title="complaint_status_code" alt="" coords="445,1056,706,1173">
+<area shape="rect" id="node13" href="complaint_type_code.html" target="_top" title="complaint_type_code" alt="" coords="452,1384,699,1501">
+<area shape="rect" id="node14" href="reported_by_code.html" target="_top" title="reported_by_code" alt="" coords="465,697,685,785">
+<area shape="rect" id="node4" href="allegation_complaint.html" target="_top" title="allegation_complaint" alt="" coords="1383,5,1641,181">
+<area shape="rect" id="node5" href="violation_code.html" target="_top" title="violation_code" alt="" coords="963,67,1157,155">
+<area shape="rect" id="node6" href="app_user_complaint_xref.html" target="_top" title="app_user_complaint_xref" alt="" coords="1367,199,1657,433">
+<area shape="rect" id="node7" href="app_user_complaint_xref_code.html" target="_top" title="app_user_complaint_xref_code" alt="" coords="899,260,1221,348">
+<area shape="rect" id="node8" href="attractant_hwcr_xref.html" target="_top" title="attractant_hwcr_xref" alt="" coords="1733,1479,1979,1567">
+<area shape="rect" id="node9" href="hwcr_complaint.html" target="_top" title="hwcr_complaint" alt="" coords="1371,1476,1653,1681">
+<area shape="rect" id="node19" href="hwcr_complaint_nature_code.html" target="_top" title="hwcr_complaint_nature_code" alt="" coords="904,1661,1216,1749">
+<area shape="rect" id="node20" href="species_code.html" target="_top" title="species_code" alt="" coords="969,1556,1151,1644">
+<area shape="rect" id="node11" href="complaint_method_received_code.html" target="_top" title="complaint_method_received_code" alt="" coords="5,1252,353,1340">
+<area shape="rect" id="node15" href="complaint_referral.html" target="_top" title="complaint_referral" alt="" coords="1373,592,1651,768">
+<area shape="rect" id="node16" href="complaint_referral_email_log.html" target="_top" title="complaint_referral_email_log" alt="" coords="1701,595,2011,683">
+<area shape="rect" id="node17" href="gir_complaint.html" target="_top" title="gir_complaint" alt="" coords="1396,1699,1628,1875">
+<area shape="rect" id="node18" href="gir_type_code.html" target="_top" title="gir_type_code" alt="" coords="967,1767,1153,1855">
+<area shape="rect" id="node21" href="linked_complaint_xref.html" target="_top" title="linked_complaint_xref" alt="" coords="1379,785,1645,1049">
+<area shape="rect" id="node22" href="linked_complaint_xref_type_code.html" target="_top" title="linked_complaint_xref_type_code" alt="" coords="889,1451,1231,1539">
+<area shape="rect" id="node23" href="staging_complaint.html" target="_top" title="staging_complaint" alt="" coords="1395,1892,1629,2097">
+<area shape="rect" id="node24" href="staging_activity_code.html" target="_top" title="staging_activity_code" alt="" coords="936,1995,1184,2083">
+<area shape="rect" id="node25" href="staging_status_code.html" target="_top" title="staging_status_code" alt="" coords="941,1889,1179,1977">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/complaint.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

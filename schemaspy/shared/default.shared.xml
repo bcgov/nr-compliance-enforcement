@@ -5,7 +5,11 @@
    <tables>
       <table name="agency_code" numRows="9" remarks="An agency is an organized and named grouping of people that interacts in some way with the NatSuite application." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="agency_code" nullable="false" remarks="Primary key: Human readable code representing an agency." size="10" type="varchar" typeCode="12">
+            <child column="agency_code_ref" foreignKey="app_user_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
             <child column="lead_agency" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+            <child column="agency_code_ref" foreignKey="geo_org_structure_agency_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
+            <child column="agency_code_ref" foreignKey="office_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="office"/>
+            <child column="agency_code_ref" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="team"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the agency.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the agency.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
@@ -19,6 +23,80 @@
          <primaryKey column="agency_code" sequenceNumberInPK="1"/>
          <index name="agency_code_pkey" unique="true">
             <column ascending="true" name="agency_code"/>
+         </index>
+      </table>
+      <table name="app_user" remarks="A user table for the NatSuite system with user details and other meta" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_guid" nullable="false" remarks="System generated unique key for a user. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="app_user_guid" foreignKey="app_user_team_xref_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_team_xref"/>
+            <child column="created_by_app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="auth_user_guid" nullable="true" remarks="The SiteMinder guid returned to the application from KeyCloak. Used to uniquely identify a user over the course of their lifecycle." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="user_id" nullable="true" remarks="The IDIR ID issued to the user by the Government of British Columbia as part of their employment. Null for non-officers." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="first_name" nullable="true" remarks="The first name of the user." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="last_name" nullable="true" remarks="The last name of the user." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="5" name="coms_enrolled_ind" nullable="true" remarks="A boolean indicator representing if a user is enrolled in COMS. Applicable for officers only." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="deactivate_ind" nullable="true" remarks="A boolean indicator representing if a user has been deactivated." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema. The agency that employs the user." size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="app_user_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="office_guid" nullable="true" remarks="System generated unique key for an office. The primary office a user is assigned to. Applicable for officers only." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="office_guid" foreignKey="app_user_office_fk" implied="false" onDeleteCascade="false" schema="shared" table="office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="park_area_guid" nullable="true" remarks="System generated unique key for a park area associated with the user." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="park_area_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="park_area"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="create_user_id" nullable="false" remarks="The id of the user that created this user record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="create_utc_timestamp" nullable="false" remarks="The timestamp when this user record was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="update_user_id" nullable="false" remarks="The id of the user that updated this user record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="update_utc_timestamp" nullable="false" remarks="The timestamp when this user record was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="app_user_guid" sequenceNumberInPK="1"/>
+         <index name="PK_app_user" unique="true">
+            <column ascending="true" name="app_user_guid"/>
+         </index>
+         <index name="app_user_auth_user_guid_key" unique="true">
+            <column ascending="true" name="auth_user_guid"/>
+         </index>
+      </table>
+      <table name="app_user_h" remarks="History table for app_user table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_guid" nullable="false" remarks="System generated unique key for user history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the user that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the app_user table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the app_user table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_app_user_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_app_user" unique="true">
+            <column ascending="true" name="h_app_user_guid"/>
+         </index>
+      </table>
+      <table name="app_user_team_xref" remarks="Defines the teams a user may be on" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="app_user_team_xref_guid" nullable="false" remarks="System generated unique key for a user team cross-reference. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="app_user_guid" nullable="false" remarks="System generated unique key for a user." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="app_user_guid" foreignKey="app_user_team_xref_user_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="team_guid" nullable="false" remarks="System generated unique key for a team." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="team_guid" foreignKey="app_user_team_xref_team_fk" implied="false" onDeleteCascade="false" schema="shared" table="team"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="active_ind" nullable="false" remarks="Indicates if the user is currently active on the team." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="true" remarks="The id of the user that created this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when this record was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when this record was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="app_user_team_xref_guid" sequenceNumberInPK="1"/>
+         <index name="app_user_team_xref_pk" unique="true">
+            <column ascending="true" name="app_user_team_xref_guid"/>
+         </index>
+      </table>
+      <table name="app_user_team_xref_h" remarks="History table for app_user_team_xref table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_app_user_team_xref_guid" nullable="false" remarks="System generated unique key for user team cross-reference history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the user team cross-reference that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the app_user_team_xref table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the app_user_team_xref table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_app_user_team_xref_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_app_user_team_xref" unique="true">
+            <column ascending="true" name="h_app_user_team_xref_guid"/>
          </index>
       </table>
       <table name="business" remarks="" schema="shared" type="TABLE">
@@ -117,6 +195,9 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the case file was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="description" nullable="true" remarks="Optional text description for the case file providing additional context or notes" size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="''::character varying" digits="0" id="9" name="name" nullable="false" remarks="Business-friendly identifier for the case file." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="created_by_app_user_guid" nullable="true" remarks="Foreign key to app_user. The user who created this case file. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="app_user_guid" foreignKey="case_file_created_by_app_user_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
+         </column>
          <primaryKey column="case_file_guid" sequenceNumberInPK="1"/>
          <index name="case_file_pkey" unique="true">
             <column ascending="true" name="case_file_guid"/>
@@ -202,6 +283,17 @@
             <column ascending="true" name="contact_method_type_code"/>
          </index>
       </table>
+      <table name="cos_geo_org_unit_flat_mvw" numRows="0" remarks="A flattened materialized view of the COS geographical organizational unit hierarchy." schema="shared" type="VIEW" viewSql=" SELECT DISTINCT gou.geo_organization_unit_code AS region_code,&#10;    gou.short_description AS region_name,&#10;    gou2.geo_organization_unit_code AS zone_code,&#10;    gou2.short_description AS zone_name,&#10;    gou3.geo_organization_unit_code AS offloc_code,&#10;    gou3.short_description AS offloc_name,&#10;    (COALESCE(gou4.geo_organization_unit_code, NULL::character varying))::character varying(10) AS area_code,&#10;    (COALESCE(gou4.short_description, NULL::character varying))::character varying(50) AS area_name,&#10;    gou3.administrative_office_ind&#10;   FROM (((((((shared.geo_org_unit_structure gos&#10;     JOIN shared.geo_organization_unit_code gou ON (((gos.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN shared.geo_org_unit_structure gos2 ON (((gos2.parent_geo_org_unit_code)::text = (gou.geo_organization_unit_code)::text)))&#10;     JOIN shared.geo_organization_unit_code gou2 ON (((gos2.child_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN shared.geo_org_unit_structure gos3 ON (((gos3.parent_geo_org_unit_code)::text = (gou2.geo_organization_unit_code)::text)))&#10;     JOIN shared.geo_organization_unit_code gou3 ON (((gos3.child_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN shared.geo_org_unit_structure gos4 ON (((gos4.parent_geo_org_unit_code)::text = (gou3.geo_organization_unit_code)::text)))&#10;     LEFT JOIN shared.geo_organization_unit_code gou4 ON (((gos4.child_geo_org_unit_code)::text = (gou4.geo_organization_unit_code)::text)))&#10;  WHERE (((gou.geo_org_unit_type_code)::text = 'REGION'::text) AND ((gou2.geo_org_unit_type_code)::text = 'ZONE'::text) AND ((gou3.geo_org_unit_type_code)::text = 'OFFLOC'::text) AND (((gou4.geo_org_unit_type_code)::text = 'AREA'::text) OR (gou4.geo_org_unit_type_code IS NULL)) AND ((gos.agency_code_ref)::text = 'COS'::text));">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="region_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="region_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="zone_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="zone_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="offloc_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="offloc_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="area_code" nullable="true" remarks="" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="area_name" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="administrative_office_ind" nullable="true" remarks="" size="1" type="bool" typeCode="-7"/>
+      </table>
       <table name="event" remarks="Stores activity events in the system, recording what action was performed, who performed it, and what entity was affected, with support for optional source and additional content data." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="event_guid" nullable="false" remarks="Primary key: System generated unique identifier for an event." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="event_verb_type_code" nullable="false" remarks="Foreign key: References the verb type that describes the action that occurred in this event." size="16" type="varchar" typeCode="12">
@@ -283,6 +375,111 @@
             <column ascending="true" name="success"/>
          </index>
       </table>
+      <table name="geo_org_unit_structure" remarks="Defines the hierarchical relationships between various geographical organizational unit codes." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="geo_org_unit_structure_guid" nullable="false" remarks="System generated unique key for the geographical organizational unit structure. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="effective_date" nullable="false" remarks="The date and time the geographical organizational unit structure became valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="expiry_date" nullable="true" remarks="The date and time the geographical organizational unit structure is no longer valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organizational unit structure." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organizational unit structure was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organizational unit structure." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organizational unit structure was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="geo_org_structure_agency_fk" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="parent_geo_org_unit_code" nullable="true" remarks="The geographical organization unit code that is the parent in the hierarchy." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="geo_org_structure_parent_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="child_geo_org_unit_code" nullable="true" remarks="The geographical organization unit code that is the child in the hierarchy." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="geo_org_structure_child_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_organization_unit_code"/>
+         </column>
+         <primaryKey column="geo_org_unit_structure_guid" sequenceNumberInPK="1"/>
+         <index name="PK_gorgustrct" unique="true">
+            <column ascending="true" name="geo_org_unit_structure_guid"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_structure_h" remarks="History table for geo_org_unit_structure table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_gorgustrct_guid" nullable="false" remarks="System generated unique key for geographical organizational unit structure history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the geographical organizational unit structure that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the geo_org_unit_structure table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the geo_org_unit_structure table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_gorgustrct_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_gorgustrct" unique="true">
+            <column ascending="true" name="h_gorgustrct_guid"/>
+         </index>
+      </table>
+      <table name="geo_org_unit_type_code" remarks="Contains the code values for the various types of geographical organizational units." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_org_unit_type_code" nullable="false" remarks="A human readable unique key representing the type of geographical organizational unit." size="10" type="varchar" typeCode="12">
+            <child column="geo_org_unit_type_code" foreignKey="geo_org_unit_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The display label for the geographical organization unit type code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="A detailed description for the geographical organization unit type code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The order in which these geographical organization unit types are displayed when presented to users." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator representing if the geographical organization unit type code is currently active for use." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organization unit type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit type code was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit type code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit type code was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="geo_org_unit_type_code" sequenceNumberInPK="1"/>
+         <index name="PK_geoorguttypcd" unique="true">
+            <column ascending="true" name="geo_org_unit_type_code"/>
+         </index>
+      </table>
+      <table name="geo_organization_unit_code" remarks="Contains the code values for the various geographical organizational units." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="geo_organization_unit_code" nullable="false" remarks="A human readable unique key that represents a geo organization unit." size="10" type="varchar" typeCode="12">
+            <child column="child_geo_org_unit_code" foreignKey="geo_org_structure_child_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
+            <child column="parent_geo_org_unit_code" foreignKey="geo_org_structure_parent_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
+            <child column="geo_organization_unit_code" foreignKey="office_geo_org_unit_fk" implied="false" onDeleteCascade="false" schema="shared" table="office"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="true" remarks="The display label for the geographical organization unit code." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="A detailed description for the geographical organization unit code." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="effective_date" nullable="false" remarks="The date and time the geographical organization unit code became valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="expiry_date" nullable="true" remarks="The date and time the geographical organization unit code is no longer valid. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the geographical organization unit code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit code was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the geographical organization unit code." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the geographical organization unit code was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="geo_org_unit_type_code" nullable="true" remarks="A human readable unique key representing the type of geographical organizational unit." size="10" type="varchar" typeCode="12">
+            <parent column="geo_org_unit_type_code" foreignKey="geo_org_unit_type_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="10" name="administrative_office_ind" nullable="false" remarks="A boolean indicator representing if the geographical organizational unit is an administrative office." size="1" type="bool" typeCode="-7"/>
+         <primaryKey column="geo_organization_unit_code" sequenceNumberInPK="1"/>
+         <index name="PK_geoorgutnd" unique="true">
+            <column ascending="true" name="geo_organization_unit_code"/>
+         </index>
+      </table>
+      <table name="office" remarks="An office is a physical location that serves as a central organization point for groups of users of the system." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="office_guid" nullable="false" remarks="System generated unique key for an office. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="office_guid" foreignKey="app_user_office_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="create_user_id" nullable="false" remarks="The id of the user that created the office." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the office was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="update_user_id" nullable="false" remarks="The id of the user that updated the office." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the office was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="geo_organization_unit_code" nullable="true" remarks="A human readable unique key that represents a geo organization unit." size="10" type="varchar" typeCode="12">
+            <parent column="geo_organization_unit_code" foreignKey="office_geo_org_unit_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_organization_unit_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema." size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="office_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <primaryKey column="office_guid" sequenceNumberInPK="1"/>
+         <index name="PK_office" unique="true">
+            <column ascending="true" name="office_guid"/>
+         </index>
+      </table>
+      <table name="office_h" remarks="History table for office table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_office_guid" nullable="false" remarks="System generated unique key for office history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the office that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the office table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the office table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_office_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_office" unique="true">
+            <column ascending="true" name="h_office_guid"/>
+         </index>
+      </table>
       <table name="park" numRows="4" remarks="Stores a set of BC Parks, Conservatories, and Protected Areas. Data is imported from the data.bcparks.ca API." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_guid" nullable="false" remarks="Primary key: System generated unique identifier for a park." size="2147483647" type="uuid" typeCode="1111">
             <child column="park_guid" foreignKey="fk_park_area_xref__park_area" implied="false" onDeleteCascade="false" schema="shared" table="park_area_xref"/>
@@ -304,6 +501,7 @@
       </table>
       <table name="park_area" numRows="50" remarks="Stores areas that may contain parks, including their names and associated region." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="park_area_guid" nullable="false" remarks="Primary key: System generated unique identifier for a park area." size="2147483647" type="uuid" typeCode="1111">
+            <child column="park_area_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="app_user"/>
             <child column="park_area_guid" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="shared" table="park_area_mapping"/>
             <child column="park_area_guid" foreignKey="fk_park_area_xref__park" implied="false" onDeleteCascade="false" schema="shared" table="park_area_xref"/>
          </column>
@@ -442,6 +640,59 @@
             <column ascending="true" name="h_person_guid"/>
          </index>
       </table>
+      <table name="team" remarks="Contains information about teams within the system." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="team_guid" nullable="false" remarks="System generated unique key for a team. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="team_guid" foreignKey="app_user_team_xref_team_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user_team_xref"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="team_code" nullable="false" remarks="A human readable unique key representing a team type." size="15" type="varchar" typeCode="12">
+            <parent column="team_code" foreignKey="team_team_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="team_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="false" remarks="Key representing an agency stored in the agency_code table of the shared schema." size="6" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator representing if a team is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="true" remarks="The id of the user that created the team." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the team was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that updated the team." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the team was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="team_guid" sequenceNumberInPK="1"/>
+         <index name="team_pk" unique="true">
+            <column ascending="true" name="team_guid"/>
+         </index>
+         <index name="team_un" unique="true">
+            <column ascending="true" name="team_code"/>
+            <column ascending="true" name="agency_code_ref"/>
+         </index>
+      </table>
+      <table name="team_code" remarks="Contains code values for team types." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="team_code" nullable="false" remarks="A human readable unique key representing a team type." size="10" type="varchar" typeCode="12">
+            <child column="team_code" foreignKey="team_team_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="team"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The display label for a team type." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="A detailed description for a team type." size="250" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="false" remarks="The default order in which team types are displayed." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator representing if a team type is active." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the team type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the team type was created. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="false" remarks="The id of the user that updated the team type." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="false" remarks="The timestamp when the team type was updated. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="team_code" sequenceNumberInPK="1"/>
+         <index name="PK_teamcode" unique="true">
+            <column ascending="true" name="team_code"/>
+         </index>
+      </table>
+      <table name="team_h" remarks="History table for team table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_team_guid" nullable="false" remarks="System generated unique key for team history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the team that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the team table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the team table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_team_guid" sequenceNumberInPK="1"/>
+         <index name="PK_h_team" unique="true">
+            <column ascending="true" name="h_team_guid"/>
+         </index>
+      </table>
    </tables>
    <routines>
       <routine dataAccess="MODIFIES" deterministic="false" name="audit_history()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
@@ -494,6 +745,16 @@
 
     END IF;
   END;]]></definition>
+         <parameters>
+            <parameter mode="IN"/>
+         </parameters>
+      </routine>
+      <routine dataAccess="MODIFIES" deterministic="false" name="cos_geo_org_unit_flat_mvw_refresh()" returnType="trigger" securityType="INVOKER" type="FUNCTION">
+         <comment/>
+         <definition language="plpgsql"><![CDATA[BEGIN 
+	REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
+	RETURN NULL;
+END;]]></definition>
          <parameters>
             <parameter mode="IN"/>
          </parameters>

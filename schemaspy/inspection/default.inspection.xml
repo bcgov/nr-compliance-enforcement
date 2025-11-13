@@ -21,6 +21,7 @@
       </table>
       <table name="inspection" remarks="The central entity of the inspections system." schema="inspection" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="inspection_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
+            <child column="inspection_guid" foreignKey="fk_inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_party"/>
             <child column="inspection_guid" foreignKey="FK_officer_inspection_xref__inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="officer_inspection_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="inspection_description" nullable="true" remarks="A summary of the inspection as provided by users." size="4000" type="varchar" typeCode="12"/>
@@ -37,6 +38,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="location_geometry_point" nullable="true" remarks="The location of the inspection stored as a geometric point." size="2147483647" type="geometry" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="location_address" nullable="true" remarks="Address of the inspection." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="location_description" nullable="true" remarks="Description of the inspection location." size="4000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_app_user_guid_ref" nullable="true" remarks="ID of the user who created this inspection. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="inspection_guid" sequenceNumberInPK="1"/>
          <index name="PK_inspection_guid" unique="true">
             <column ascending="true" name="inspection_guid"/>
@@ -49,6 +51,39 @@
             <column ascending="true" name="owned_by_agency_ref"/>
          </index>
       </table>
+      <table name="inspection_business" remarks="Stores organizational information on business entities, including names and in the future other attributes." schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="inspection_business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="business_guid_ref" nullable="true" remarks="Cross schema foreign key (unenforced) to shared.business table to indicate the shared business record this party was created from or currently linked to." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="inspection_party_guid" nullable="true" remarks="Foreign key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="inspection_party_guid" foreignKey="fk_inspection_party_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="name" nullable="false" remarks="Name of the business." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the business." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the business was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the business." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the business was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="inspection_business_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_business_pkey" unique="true">
+            <column ascending="true" name="inspection_business_guid"/>
+         </index>
+         <index name="uq_active_inspection_business_per_party" unique="true">
+            <column ascending="true" name="inspection_party_guid"/>
+            <column ascending="true" name="business_guid_ref"/>
+         </index>
+      </table>
+      <table name="inspection_business_h" remarks="History table for business table" schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_inspection_business_guid" nullable="false" remarks="Primary key: System generated unique identifier for a business history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the business that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the business table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the business table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_inspection_business_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_business_h_pkey" unique="true">
+            <column ascending="true" name="h_inspection_business_guid"/>
+         </index>
+      </table>
       <table name="inspection_h" remarks="History table for inspection table" schema="inspection" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_inspection_guid" nullable="false" remarks="System generated unique key for inspection history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the inspection that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
@@ -59,6 +94,78 @@
          <primaryKey column="h_inspection_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_inspection" unique="true">
             <column ascending="true" name="h_inspection_guid"/>
+         </index>
+      </table>
+      <table name="inspection_party" remarks="A table that holds parties of interest for an inspection" schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="inspection_party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
+            <child column="inspection_party_guid" foreignKey="fk_inspection_party_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_business"/>
+            <child column="inspection_party_guid" foreignKey="fk_inspection_party_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_person"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="party_guid_ref" nullable="true" remarks="Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="party_type_code_ref" nullable="false" remarks="Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="inspection_guid" nullable="false" remarks="Foreign key: System generated unique identifier for an inspection" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="inspection_guid" foreignKey="fk_inspection_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="True if the party is currently attached to the inspection, false if it was previously attached and then removed." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the party." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the party." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="inspection_party_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_party_pkey" unique="true">
+            <column ascending="true" name="inspection_party_guid"/>
+         </index>
+         <index name="uq_active_inspection_party_per_inspection" unique="true">
+            <column ascending="true" name="inspection_guid"/>
+            <column ascending="true" name="party_guid_ref"/>
+         </index>
+      </table>
+      <table name="inspection_party_h" remarks="History table for party table" schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_inspection_party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the party that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the party table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the party table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_inspection_party_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_party_h_pkey" unique="true">
+            <column ascending="true" name="h_inspection_party_guid"/>
+         </index>
+      </table>
+      <table name="inspection_person" remarks="Stores personal information for individuals, including names and in the future other attributes." schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="inspection_person_guid" nullable="false" remarks="Primary key: System generated unique identifier for a person." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="person_guid_ref" nullable="true" remarks="Cross schema foreign key (unenforced) to shared.person table to indicate the shared person record this party was created from or currently linked to." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="inspection_party_guid" nullable="true" remarks="Foreign key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="inspection_party_guid" foreignKey="fk_inspection_party_guid" implied="false" onDeleteCascade="false" schema="inspection" table="inspection_party"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="first_name" nullable="false" remarks="First or given name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="middle_name" nullable="true" remarks="Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="middle_name_2" nullable="true" remarks="Additional Second or middle name of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="last_name" nullable="false" remarks="Last name or surname of the person." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="7" name="active_ind" nullable="false" remarks="A value of true indicates this is the latest version of the record.   A value of false indicates that a newer version of the record is available." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="create_user_id" nullable="false" remarks="The id of the user that created the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the person was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="update_user_id" nullable="true" remarks="The id of the user that updated the person." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the person was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="inspection_person_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_person_pkey" unique="true">
+            <column ascending="true" name="inspection_person_guid"/>
+         </index>
+         <index name="uq_active_inspection_person_per_party" unique="true">
+            <column ascending="true" name="inspection_party_guid"/>
+            <column ascending="true" name="person_guid_ref"/>
+         </index>
+      </table>
+      <table name="inspection_person_h" remarks="History table for person table" schema="inspection" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_inspection_person_guid" nullable="false" remarks="Primary key: System generated unique identifier for a person history record." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the person that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
+         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the person table.  Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the person table was created or modified.  The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully.   This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
+         <primaryKey column="h_inspection_person_guid" sequenceNumberInPK="1"/>
+         <index name="inspection_person_h_pkey" unique="true">
+            <column ascending="true" name="h_inspection_person_guid"/>
          </index>
       </table>
       <table name="inspection_status_code" numRows="2" remarks="" schema="inspection" type="TABLE">

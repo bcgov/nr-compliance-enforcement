@@ -3,13 +3,12 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "action_taken":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "action_taken":"elipses":w -> "complaint_update":"elipses":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "allegation_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
+  "app_user_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"comp_mthd_recv_cd_agcy_cd_xref_guid":w -> "comp_mthd_recv_cd_agcy_cd_xref":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"complaint_status_code":w -> "complaint_status_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"complaint_type_code":w -> "complaint_type_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "complaint":"geo_organization_unit_code":w -> "geo_organization_unit_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint":"reported_by_code":w -> "reported_by_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_referral":"complaint_identifier":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
-  "complaint_referral":"officer_guid":w -> "officer":"officer_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_referral_email_log":"complaint_referral_guid":w -> "complaint_referral":"complaint_referral_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_update":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "complaint_update":"elipses":w -> "reported_by_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -17,13 +16,6 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "hwcr_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=teeodot];
   "linked_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
   "linked_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
-  "linked_complaint_xref":"elipses":w -> "person":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "office":"elipses":w -> "geo_organization_unit_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "officer":"office_guid":w -> "office":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "officer":"person_guid":w -> "person":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
-  "officer_team_xref":"elipses":w -> "officer":"officer_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "person_complaint_xref":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot];
-  "person_complaint_xref":"elipses":w -> "person":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "staging_complaint":"elipses":w -> "complaint":"complaint_identifier":e [arrowhead=none dir=back arrowtail=crowodot style=dashed];
   "action_taken" [
    label=<
@@ -47,6 +39,17 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="allegation_complaint"
   ];
+  "app_user_complaint_xref" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="148" HEIGHT="16"><B>app_user_complaint_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="app_user_complaint_xref.html"
+    target="_top"
+    tooltip="app_user_complaint_xref"
+  ];
   "comp_mthd_recv_cd_agcy_cd_xref" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -65,12 +68,11 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="complaint_identifier" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">complaint_identifier</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="reported_by_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">reported_by_code</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="complaint_status_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">complaint_status_code</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="geo_organization_unit_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">geo_organization_unit_code</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="location_geometry_point" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">location_geometry_point</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="comp_mthd_recv_cd_agcy_cd_xref_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">comp_mthd_recv_cd_agcy_cd_xref_guid</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="complaint_type_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="230" HEIGHT="16">complaint_type_code</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">10 &gt;</TD></TR>
     </TABLE>>
     URL="complaint.html"
     target="_top"
@@ -84,7 +86,6 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="complaint_identifier" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">complaint_identifier</TD></TR></TABLE></TD><TD PORT="complaint_identifier.type" ALIGN="LEFT">varchar[20]</TD></TR>
       <TR><TD PORT="referred_by_agency_code_ref" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">referred_by_agency_code_ref</TD></TR></TABLE></TD><TD PORT="referred_by_agency_code_ref.type" ALIGN="LEFT">varchar[10]</TD></TR>
       <TR><TD PORT="referred_to_agency_code_ref" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">referred_to_agency_code_ref</TD></TR></TABLE></TD><TD PORT="referred_to_agency_code_ref.type" ALIGN="LEFT">varchar[10]</TD></TR>
-      <TR><TD PORT="officer_guid" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">officer_guid</TD></TR></TABLE></TD><TD PORT="officer_guid.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
       <TR><TD PORT="referral_date" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">referral_date</TD></TR></TABLE></TD><TD PORT="referral_date.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="referral_reason" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">referral_reason</TD></TR></TABLE></TD><TD PORT="referral_reason.type" ALIGN="LEFT">varchar[500]</TD></TR>
       <TR><TD PORT="create_user_id" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">create_user_id</TD></TR></TABLE></TD><TD PORT="create_user_id.type" ALIGN="LEFT">varchar[32]</TD></TR>
@@ -92,7 +93,8 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="update_user_id" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">update_user_id</TD></TR></TABLE></TD><TD PORT="update_user_id.type" ALIGN="LEFT">varchar[32]</TD></TR>
       <TR><TD PORT="update_utc_timestamp" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">update_utc_timestamp</TD></TR></TABLE></TD><TD PORT="update_utc_timestamp.type" ALIGN="LEFT">timestamp[29,6]</TD></TR>
       <TR><TD PORT="active_ind" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">active_ind</TD></TR></TABLE></TD><TD PORT="active_ind.type" ALIGN="LEFT">bool[1]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD PORT="app_user_guid_ref" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="171" HEIGHT="16">app_user_guid_ref</TD></TR></TABLE></TD><TD PORT="app_user_guid_ref.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="complaint_referral.html"
     target="_top"
@@ -144,17 +146,6 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="complaint_update"
   ];
-  "geo_organization_unit_code" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="164" HEIGHT="16"><B>geo_organization_unit_code</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1,049 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
-    </TABLE>>
-    URL="geo_organization_unit_code.html"
-    target="_top"
-    tooltip="geo_organization_unit_code"
-  ];
   "gir_complaint" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -182,69 +173,11 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="131" HEIGHT="16"><B>linked_complaint_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
     URL="linked_complaint_xref.html"
     target="_top"
     tooltip="linked_complaint_xref"
-  ];
-  "office" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="33" HEIGHT="16"><B>office</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">68 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
-    </TABLE>>
-    URL="office.html"
-    target="_top"
-    tooltip="office"
-  ];
-  "officer" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="39" HEIGHT="16"><B>officer</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="officer_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="137" HEIGHT="16">officer_guid</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="person_guid" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="137" HEIGHT="16">person_guid</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="office_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="137" HEIGHT="16">office_guid</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">81 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
-    </TABLE>>
-    URL="officer.html"
-    target="_top"
-    tooltip="officer"
-  ];
-  "officer_team_xref" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="104" HEIGHT="16"><B>officer_team_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="officer_team_xref.html"
-    target="_top"
-    tooltip="officer_team_xref"
-  ];
-  "person" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="41" HEIGHT="16"><B>person</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">82 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
-    </TABLE>>
-    URL="person.html"
-    target="_top"
-    tooltip="person"
-  ];
-  "person_complaint_xref" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="136" HEIGHT="16"><B>person_complaint_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
-    </TABLE>>
-    URL="person_complaint_xref.html"
-    target="_top"
-    tooltip="person_complaint_xref"
   ];
   "reported_by_code" [
    label=<
