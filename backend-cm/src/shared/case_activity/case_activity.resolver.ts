@@ -5,7 +5,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
-import { CaseActivityCreateInput } from "src/shared/case_activity/dto/case_activity";
+import { CaseActivityCreateInput, CaseActivityRemoveInput } from "src/shared/case_activity/dto/case_activity";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("CaseActivity")
@@ -21,6 +21,19 @@ export class CaseActivityResolver {
     } catch (error) {
       this.logger.error("Create case file error:", error);
       throw new GraphQLError("Error creating case activity", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Mutation("removeCaseActivity")
+  @Roles(coreRoles)
+  async remove(@Args("input") input: CaseActivityRemoveInput) {
+    try {
+      return await this.caseActivityService.remove(input);
+    } catch (error) {
+      this.logger.error("Remove case file error:", error);
+      throw new GraphQLError("Error removing case activity", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }

@@ -3,34 +3,37 @@ import { DocumentController } from "./document.controller";
 import { DocumentService } from "./document.service";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
+import { EventPublisherService } from "../event_publisher/event_publisher.service";
 import { createMapper } from "@automapper/core";
 import { AutomapperModule, getMapperToken } from "@automapper/nestjs";
 import { pojos } from "@automapper/pojos";
 import { REQUEST } from "@nestjs/core";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { dataSourceMockFactory } from "../../../test/mocks/datasource";
+
+jest.mock("../../external_api/shared_data", () => {
+  const { createSharedDataMocks } = require("../../../test/mocks/external_api/mock-shared-data");
+  return createSharedDataMocks();
+});
+
+import { resetSharedDataMocks } from "../../../test/mocks/external_api/mock-shared-data";
 import { MockAllegationComplaintRepository } from "../../../test/mocks/mock-allegation-complaint-repository";
 import { MockGeneralIncidentComplaintRepository } from "../../../test/mocks/mock-general-incident-complaint-repository";
 import {
   MockAttractantCodeTableRepository,
   MockComplaintStatusCodeTableRepository,
   MockNatureOfComplaintCodeTableRepository,
-  MockOrganizationUnitTypeCodeTableRepository,
-  MockOrganizationUnitCodeTableRepository,
   MockPersonComplaintCodeTableRepository,
   MockSpeciesCodeTableRepository,
   MockViolationsCodeTableRepository,
-  MockCosOrganizationUnitCodeTableRepository,
   MockComplaintTypeCodeTableRepository,
   MockReportedByCodeTableRepository,
   MockGirTypeCodeRepository,
-  MockTeamCodeRepository,
   MockCompMthdRecvCdAgcyCdXrefRepository,
 } from "../../../test/mocks/mock-code-table-repositories";
 import {
   MockComplaintsRepositoryV2,
   MockComplaintsAgencyRepository,
-  MockComplaintsOfficerRepository,
   MockComplaintReferralEmailLogRepository,
 } from "../../../test/mocks/mock-complaints-repositories";
 import { MockWildlifeConflictComplaintRepository } from "../../../test/mocks/mock-wildlife-conflict-complaint-repository";
@@ -46,16 +49,11 @@ import { ComplaintStatusCode } from "../complaint_status_code/entities/complaint
 import { ComplaintTypeCode } from "../complaint_type_code/entities/complaint_type_code.entity";
 import { ConfigurationService } from "../configuration/configuration.service";
 import { Configuration } from "../configuration/entities/configuration.entity";
-import { CosGeoOrgUnit } from "../cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { GeoOrgUnitTypeCode } from "../geo_org_unit_type_code/entities/geo_org_unit_type_code.entity";
-import { GeoOrganizationUnitCode } from "../geo_organization_unit_code/entities/geo_organization_unit_code.entity";
 import { HwcrComplaint } from "../hwcr_complaint/entities/hwcr_complaint.entity";
 import { HwcrComplaintNatureCode } from "../hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
-import { Office } from "../office/entities/office.entity";
-import { Officer } from "../officer/entities/officer.entity";
-import { PersonComplaintXref } from "../person_complaint_xref/entities/person_complaint_xref.entity";
-import { PersonComplaintXrefService } from "../person_complaint_xref/person_complaint_xref.service";
-import { PersonComplaintXrefCode } from "../person_complaint_xref_code/entities/person_complaint_xref_code.entity";
+import { AppUserComplaintXref } from "../app_user_complaint_xref/entities/app_user_complaint_xref.entity";
+import { AppUserComplaintXrefService } from "../app_user_complaint_xref/app_user_complaint_xref.service";
+import { AppUserComplaintXrefCode } from "../app_user_complaint_xref_code/entities/app_user_complaint_xref_code.entity";
 import { ReportedByCode } from "../reported_by_code/entities/reported_by_code.entity";
 import { SpeciesCode } from "../species_code/entities/species_code.entity";
 import { GirTypeCode } from "../gir_type_code/entities/gir_type_code.entity";
@@ -63,20 +61,12 @@ import { GirComplaint } from "../gir_complaint/entities/gir_complaint.entity";
 import { ActionTaken } from "../complaint/entities/action_taken.entity";
 import { ComplaintUpdatesService } from "../complaint_updates/complaint_updates.service";
 import { StagingComplaint } from "../staging_complaint/entities/staging_complaint.entity";
-import { TeamCode } from "../team_code/entities/team_code.entity";
 import { CompMthdRecvCdAgcyCdXref } from "../comp_mthd_recv_cd_agcy_cd_xref/entities/comp_mthd_recv_cd_agcy_cd_xref";
 import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xref/comp_mthd_recv_cd_agcy_cd_xref.service";
-import { OfficerService } from "../officer/officer.service";
-import { PersonService } from "../person/person.service";
-import { OfficeService } from "../office/office.service";
+import { AppUserService } from "../app_user/app_user.service";
 import { CssService } from "../../external_api/css/css.service";
-import { Person } from "../person/entities/person.entity";
 import { LinkedComplaintXref } from "../linked_complaint_xref/entities/linked_complaint_xref.entity";
 import { LinkedComplaintXrefService } from "../linked_complaint_xref/linked_complaint_xref.service";
-import { Team } from "../team/entities/team.entity";
-import { OfficerTeamXref } from "../officer_team_xref/entities/officer_team_xref.entity";
-import { TeamService } from "../team/team.service";
-import { OfficerTeamXrefService } from "../officer_team_xref/officer_team_xref.service";
 import { CacheModule } from "@nestjs/cache-manager";
 import { ViolationAgencyXref } from "../violation_agency_xref/entities/violation_agency_entity_xref";
 import { ComplaintReferral } from "../complaint_referral/entities/complaint_referral.entity";
@@ -88,6 +78,8 @@ describe("DocumentController", () => {
   let controller: DocumentController;
 
   beforeEach(async () => {
+    resetSharedDataMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DocumentController],
       imports: [CacheModule.register()],
@@ -112,14 +104,6 @@ describe("DocumentController", () => {
           useFactory: MockWildlifeConflictComplaintRepository,
         },
         {
-          provide: getRepositoryToken(Officer),
-          useFactory: MockComplaintsOfficerRepository,
-        },
-        {
-          provide: getRepositoryToken(Office),
-          useFactory: MockWildlifeConflictComplaintRepository,
-        },
-        {
           provide: getRepositoryToken(AttractantCode),
           useFactory: MockAttractantCodeTableRepository,
         },
@@ -133,15 +117,7 @@ describe("DocumentController", () => {
           useFactory: MockNatureOfComplaintCodeTableRepository,
         },
         {
-          provide: getRepositoryToken(GeoOrgUnitTypeCode),
-          useFactory: MockOrganizationUnitTypeCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(GeoOrganizationUnitCode),
-          useFactory: MockOrganizationUnitCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(PersonComplaintXrefCode),
+          provide: getRepositoryToken(AppUserComplaintXrefCode),
           useFactory: MockPersonComplaintCodeTableRepository,
         },
         {
@@ -151,10 +127,6 @@ describe("DocumentController", () => {
         {
           provide: getRepositoryToken(ViolationAgencyXref),
           useFactory: MockViolationsCodeTableRepository,
-        },
-        {
-          provide: getRepositoryToken(CosGeoOrgUnit),
-          useFactory: MockCosOrganizationUnitCodeTableRepository,
         },
         {
           provide: getRepositoryToken(ComplaintTypeCode),
@@ -169,7 +141,7 @@ describe("DocumentController", () => {
           useFactory: MockGirTypeCodeRepository,
         },
         {
-          provide: getRepositoryToken(PersonComplaintXref),
+          provide: getRepositoryToken(AppUserComplaintXref),
           useValue: {},
         },
         {
@@ -197,16 +169,8 @@ describe("DocumentController", () => {
           useValue: {},
         },
         {
-          provide: getRepositoryToken(TeamCode),
-          useFactory: MockTeamCodeRepository,
-        },
-        {
           provide: getRepositoryToken(CompMthdRecvCdAgcyCdXref),
           useFactory: MockCompMthdRecvCdAgcyCdXrefRepository,
-        },
-        {
-          provide: getRepositoryToken(Person),
-          useValue: {},
         },
         {
           provide: getRepositoryToken(LinkedComplaintXref),
@@ -216,30 +180,27 @@ describe("DocumentController", () => {
           provide: getRepositoryToken(EmailReference),
           useValue: {},
         },
-        {
-          provide: getRepositoryToken(Team),
-          useValue: {},
-        },
-        {
-          provide: getRepositoryToken(OfficerTeamXref),
-          useValue: {},
-        },
         ComplaintUpdatesService,
         ComplaintService,
-        CodeTableService,
         {
-          provide: PersonComplaintXrefService,
+          provide: EventPublisherService,
           useValue: {},
         },
-        OfficerService,
+        CodeTableService,
+        {
+          provide: EventPublisherService,
+          useValue: {},
+        },
+        CodeTableService,
+        {
+          provide: AppUserComplaintXrefService,
+          useValue: {},
+        },
+        AppUserService,
         LinkedComplaintXrefService,
-        OfficeService,
         CssService,
-        PersonService,
         AttractantHwcrXrefService,
         CompMthdRecvCdAgcyCdXrefService,
-        TeamService,
-        OfficerTeamXrefService,
         {
           provide: REQUEST,
           useValue: {

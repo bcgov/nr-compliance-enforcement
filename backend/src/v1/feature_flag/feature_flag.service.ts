@@ -5,7 +5,7 @@ import { FeatureAgencyXref } from "./entities/feature_agency_xref.entity";
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { REQUEST } from "@nestjs/core";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 @Injectable()
 export class FeatureFlagService {
@@ -77,6 +77,22 @@ export class FeatureFlagService {
       .getOne();
 
     const response = data.active_ind ?? false;
+    return response;
+  }
+
+  async checkActiveForAnyAgency(featureCode: string): Promise<any> {
+    const data = await this.featureAgencyXrefRepository
+      .createQueryBuilder("featureAgencyXref")
+      .leftJoinAndSelect(
+        "featureAgencyXref.feature_code",
+        "featureCode",
+        "featureAgencyXref.feature_code = featureCode.feature_code",
+      )
+      .andWhere("featureAgencyXref.feature_code = :feature_code", { feature_code: featureCode })
+      .andWhere("featureAgencyXref.active_ind = :active_ind", { active_ind: true })
+      .getMany();
+
+    const response = data && data.length > 0;
     return response;
   }
 

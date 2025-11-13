@@ -90,6 +90,29 @@ test.describe("COMPENF-37 Display ECR Details", () => {
   test("allows users to add additional notes", async function ({ page }) {
     await navigateToDetailsScreen(COMPLAINT_TYPES.GIR, "23-900001", true, page);
     await waitForSpinner(page);
+
+    // Delete any note records if they exist
+    const $notes = page.locator("#outcome-note");
+    while ((await $notes.locator("#notes-delete-button").count()) > 0) {
+      // Always select the *first* delete button
+      await $notes.locator("#notes-delete-button").first().click();
+
+      await page.locator(".modal-footer .btn-primary").click();
+
+      // Confirm deletion in modal
+      await expect(
+        page.locator(".Toastify__toast-body", {
+          hasText: "Note deleted",
+        }),
+      ).toBeVisible();
+
+      await expect(
+        page.locator(".Toastify__toast-body", {
+          hasText: "Note deleted",
+        }),
+      ).toBeHidden({ timeout: 10000 });
+    }
+
     await page.locator("#outcome-report-add-note").click();
     await page.locator("#supporting-notes-textarea-id").click();
     await page.locator("#supporting-notes-textarea-id").clear();

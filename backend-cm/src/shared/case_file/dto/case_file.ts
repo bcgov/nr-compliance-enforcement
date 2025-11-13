@@ -14,6 +14,7 @@ export class CaseFile {
   caseStatus: CaseStatusCode;
   description?: string;
   name: string;
+  createdByAppUserGuid?: string;
   activities: CaseActivity[];
 }
 
@@ -39,6 +40,9 @@ export class CaseFileCreateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   activityIdentifier?: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()
@@ -149,6 +153,10 @@ export const mapPrismaCaseFileToCaseFile = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.createdByAppUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid),
     ),
     forMember(
       (dest) => dest.activities,

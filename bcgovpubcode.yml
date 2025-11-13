@@ -59,8 +59,6 @@ product_technology_information:
     - name: React
       version: 18.2.0
     - name: Other
-      version: cypress-13.6.1
-    - name: Other
       version: bootstrap-5.2.3
   frontend_languages:
     - name: TypeScript

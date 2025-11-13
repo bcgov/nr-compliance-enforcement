@@ -11,6 +11,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { Role } from "../enum/role.enum";
 import { ROLES_KEY } from "./decorators/roles.decorator";
 import { GqlExecutionContext } from "@nestjs/graphql";
+import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
 @Injectable()
 /**
@@ -26,6 +27,16 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
 
   // returns false if the user does not have the required role indicated by the API's @Roles decorator
   canActivate(context: ExecutionContext): boolean {
+    //-- check to see if the public access decorator is used
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
+      return true;
+    }
+
     const ctx = GqlExecutionContext.create(context);
 
     // get the roles associated with the request

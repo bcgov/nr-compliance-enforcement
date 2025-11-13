@@ -1,9 +1,16 @@
+scalar Point
+
 type Investigation {
   investigationGuid: String
   description: String
   leadAgency: String
   investigationStatus: InvestigationStatusCode
   openedTimestamp: Date
+  caseIdentifier: String
+  createdByAppUserGuid: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
   name: String
   parties: [InvestigationParty]
 }
@@ -13,13 +20,20 @@ input CreateInvestigationInput {
   leadAgency: String!
   description: String
   investigationStatus: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
   name: String!
+  createdByAppUserGuid: String!
 }
 
 input UpdateInvestigationInput {
   leadAgency: String
   description: String
   investigationStatus: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
   name: String
 }
 

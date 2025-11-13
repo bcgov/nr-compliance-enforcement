@@ -7,4 +7,5 @@ export { InvestigationColumn } from "./investigation-column";
 export { InspectionColumn } from "./inspection-column";
 export { CaseRecordsTab } from "./case-records-tab";
 export { CaseHistoryTab } from "./case-history-tab";
+export { CaseHistoryItem } from "./case-history-item";
 export { CaseMapTab } from "./case-map-tab";

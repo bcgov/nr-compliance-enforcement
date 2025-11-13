@@ -361,7 +361,6 @@ button.modal-buttons {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 16px;
   border: none;
 }
 
@@ -407,9 +406,8 @@ button.modal-buttons {
 }
 
 .modal-scroll {
-  min-height: 70px;
   max-height: 264px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -479,7 +477,6 @@ button.modal-buttons {
 
 .assign_officer_modal_profile_card_row_1 {
   width: 220px;
-  font-weight: 700;
   font-size: 16px;
   color: $gray-800;
 }

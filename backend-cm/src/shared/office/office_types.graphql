@@ -1,0 +1,7 @@
+type Office {
+  officeGuid: String
+  geoOrganizationUnitCode: String
+  agencyCode: String
+  cosGeoOrgUnit: CosGeoOrgUnit
+  appUsers: [AppUser]
+}

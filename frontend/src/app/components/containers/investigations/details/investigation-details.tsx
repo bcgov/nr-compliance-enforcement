@@ -6,7 +6,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
-import InvestigationRecords from "@/app/components/containers/investigations/details/investigation-records";
+import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
@@ -20,12 +20,14 @@ const GET_INVESTIGATION = gql`
       name
       description
       openedTimestamp
+      createdByAppUserGuid
       investigationStatus {
         investigationStatusCode
         shortDescription
         longDescription
       }
       parties {
+        partyIdentifier
         person {
           firstName
           lastName
@@ -37,6 +39,9 @@ const GET_INVESTIGATION = gql`
         }
       }
       leadAgency
+      locationAddress
+      locationDescription
+      locationGeometry
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
@@ -77,9 +82,9 @@ export const InvestigationDetails: FC = () => {
             caseName={caseName ?? ""}
           />
         );
-      case "records":
+      case "parties":
         return (
-          <InvestigationRecords
+          <InvestigationParties
             investigationData={investigationData}
             investigationGuid={investigationGuid}
           />
@@ -89,7 +94,7 @@ export const InvestigationDetails: FC = () => {
       case "documents":
         return <InvestigationDocumentation />;
       case "continuation":
-        return <InvestigationContinuation />;
+        return <InvestigationContinuation investigationData={investigationData} />;
       case "admin":
         return <InvestigationAdministration />;
     }

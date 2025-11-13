@@ -31,6 +31,7 @@ import {
   getStatusByStatusCode,
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
+  getIssueDescription,
 } from "@common/methods";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
@@ -651,7 +652,7 @@ export const createComplaintReferral =
     referral_date: Date,
     referred_by_agency_code_ref: string,
     referred_to_agency_code_ref: string,
-    officer_guid: string,
+    app_user_guid_ref: string,
     referral_reason: string,
     complaint_type: string,
     date_logged: Date,
@@ -677,7 +678,7 @@ export const createComplaintReferral =
         referral_date,
         referred_by_agency_code_ref,
         referred_to_agency_code_ref,
-        officer_guid,
+        app_user_guid_ref,
         referral_reason,
         documentExportParams,
         complaint_url,
@@ -744,15 +745,15 @@ export const getComplaintCollaboratorsByComplaintId =
   };
 
 export const addCollaboratorToComplaint =
-  (complaintId: string, personGuid: string, complaintType: string, complaintUrl: string): AppThunk =>
+  (complaintId: string, appUserGuid: string, complaintType: string, complaintUrl: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/${complaintId}/add-collaborator/${personGuid}`,
+        `${config.API_BASE_URL}/v1/complaint/${complaintId}/add-collaborator/${appUserGuid}`,
         {
           complaintType,
           complaintUrl,
-          personGuid,
+          appUserGuid,
         },
       );
       await post(dispatch, parameters);
@@ -763,11 +764,11 @@ export const addCollaboratorToComplaint =
   };
 
 export const removeCollaboratorFromComplaint =
-  (complaintId: string, personComplaintXrefGuid: string): AppThunk =>
+  (complaintId: string, appUserComplaintXrefGuid: string): AppThunk =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(
-        `${config.API_BASE_URL}/v1/complaint/${complaintId}/remove-collaborator/${personComplaintXrefGuid}`,
+        `${config.API_BASE_URL}/v1/complaint/${complaintId}/remove-collaborator/${appUserComplaintXrefGuid}`,
       );
       await patch(dispatch, parameters);
       dispatch(getComplaintCollaboratorsByComplaintId(complaintId));
@@ -1020,7 +1021,9 @@ export const selectComplaintDetails = createSelector(
     (state: RootState) => state.complaints.complaint,
     (state: RootState) => state.codeTables["area-codes"],
     (state: RootState) => state.codeTables.attractant,
+    (state: RootState) => state.codeTables["nature-of-complaint"],
     (state: RootState) => state.codeTables["gir-type"],
+    (state: RootState) => state.codeTables["violation"],
     (state: RootState) => state.codeTables["complaint-method-received-codes"],
     (_, complaintType: string) => complaintType,
   ],
@@ -1028,7 +1031,9 @@ export const selectComplaintDetails = createSelector(
     complaint,
     areaCodes,
     attractantCodeTable,
+    natureOfComplaintCodes,
     girTypeCodes,
+    violationCodes,
     complaintMethodReceivedCodes,
     complaintType,
   ): ComplaintDetails => {
@@ -1080,6 +1085,9 @@ export const selectComplaintDetails = createSelector(
         const { girType: girTypeCode } = complaint as GeneralIncidentComplaint;
         const girType = getGirTypeByGirTypeCode(girTypeCode, girTypeCodes);
         result = { ...result, girType, girTypeCode };
+      } else if (complaintType === "SECTOR") {
+        const issueType = getIssueDescription(complaint, natureOfComplaintCodes, girTypeCodes, violationCodes);
+        result = { ...result, issueType };
       }
 
       const org = areaCodes.find(({ area }) => area === areaCode);
@@ -1122,6 +1130,7 @@ export const selectComplaintHeader =
         "gir-type": girTypeCodes,
       },
       parks: { parkCache },
+      officers: { officers },
     } = state;
 
     const selectSharedHeader = () => {
@@ -1133,13 +1142,14 @@ export const selectComplaintHeader =
         statusCode: "",
         zone: "",
         officerAssigned: "",
-        personGuid: "",
+        appUserGuid: "",
         complaintAgency: "",
         parkAreaGuids: [],
+        type: "",
       };
 
       let officerAssigned = "Not Assigned";
-      let personGuid = "";
+      let appUserGuid = "";
 
       if (complaint) {
         const {
@@ -1151,6 +1161,7 @@ export const selectComplaintHeader =
           ownedBy: complaintAgency,
           organization: { zone },
           parkGuid,
+          type,
         } = complaint as Complaint;
 
         const status = getStatusByStatusCode(statusCode, statusCodes);
@@ -1165,21 +1176,23 @@ export const selectComplaintHeader =
           statusCode,
           zone,
           officerAssigned,
-          personGuid,
+          appUserGuid,
           complaintAgency,
           parkAreaGuids,
+          type,
         };
 
         if (delegates && from(delegates).any(({ isActive, type }) => type === "ASSIGNEE" && isActive)) {
           const assigned = from(delegates).first(({ isActive, type }) => type === "ASSIGNEE" && isActive);
 
-          const {
-            person: { firstName, lastName, id },
-          } = assigned;
-          officerAssigned = `${lastName}, ${firstName}`;
-          personGuid = id as string;
+          const assignedAppUserGuid = assigned.appUserGuid as string;
 
-          result = { ...result, firstName, lastName, officerAssigned, personGuid };
+          const officer = officers.find((o) => o.app_user_guid === assignedAppUserGuid);
+          if (officer) {
+            officerAssigned = `${officer.last_name}, ${officer.first_name}`;
+          }
+
+          result = { ...result, officerAssigned, appUserGuid: assignedAppUserGuid };
         }
       }
 
@@ -1293,12 +1306,10 @@ export const selectComplaintAssignedBy = createSelector([selectComplaint], (comp
     const { delegates } = complaint;
     if (from(delegates).any()) {
       const assigned = delegates.find((item) => item.type === "ASSIGNEE");
-      if (assigned && assigned?.person !== null) {
-        const {
-          person: { id },
-        } = assigned;
+      if (assigned && assigned?.appUserGuid !== null) {
+        const { appUserGuid } = assigned;
 
-        return id;
+        return appUserGuid;
       }
     }
   }
@@ -1319,8 +1330,8 @@ export const assignedOfficerAuthId = (state: RootState): string | null => {
     officers: { officers },
   } = state;
 
-  const assignedOfficerPersonId = selectComplaintAssignedBy(state);
-  const result = officers.find((officer) => officer.person_guid.person_guid === assignedOfficerPersonId);
+  const assignedAppUserGuid = selectComplaintAssignedBy(state);
+  const result = officers.find((officer) => officer.app_user_guid === assignedAppUserGuid);
 
   if (result?.auth_user_guid) return result.auth_user_guid;
   return null;

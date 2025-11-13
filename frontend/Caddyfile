@@ -76,7 +76,22 @@
 }
 
 :3001 {
+  # Set the root directory for this block to where .ready is created after the build completes
+  root * /app/dist
+
   handle /health {
     respond "OK"
+  }
+
+  handle /ready {
+    # If the .ready file exists, serves it
+    # If it does not exist yet, the build has not completed, pass to /not-ready.html
+    try_files .ready /not-ready.html
+    file_server
+  }
+
+  handle /not-ready.html {
+    # Build has not completed, so the app is not ready to be served
+    respond "NOT READY" 503
   }
 }

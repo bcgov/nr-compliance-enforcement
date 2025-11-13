@@ -20,7 +20,6 @@ x-postgres-vars: &postgres-vars
   INV_PASSWORD: *INV_PASSWORD
   SHARED_PASSWORD: *SHARED_PASSWORD
   METABASE_READONLY_PASSWORD: *METABASE_READONLY_PASSWORD
-  
 services:
   database:
     build:
@@ -64,6 +63,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-investigation:
     image: flyway/flyway:10-alpine
     container_name: migration-investigation
@@ -86,6 +87,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-inspection:
     image: flyway/flyway:10-alpine
     container_name: migration-inspection
@@ -108,6 +111,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   migration-shared:
     image: flyway/flyway:10-alpine
     container_name: migration-shared
@@ -131,12 +136,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      migration-complaint-outcome:
-        condition: service_completed_successfully
-      migration-inspection:
-        condition: service_completed_successfully
-      migration-investigation:
-        condition: service_completed_successfully
   migration-complaint-outcome:
     image: flyway/flyway:10-alpine
     container_name: migration-complaint-outcome
@@ -159,6 +158,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      migration-shared:
+        condition: service_completed_successfully
   backend:
     container_name: backend
     entrypoint:
@@ -233,6 +234,8 @@ services:
       - ./webeoc/logs:/mnt/data # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
+    environment:
+      WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
     entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
@@ -247,6 +250,7 @@ services:
       KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
       JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
+      NATS_HOST: nats://nats:4222
     image: node:20-bullseye
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "/app/node_modules"]
@@ -262,3 +266,27 @@ services:
         condition: service_completed_successfully
       migration-shared:
         condition: service_completed_successfully
+      nats:
+        condition: service_started
+  event-worker:
+    container_name: event-worker
+    entrypoint:
+      - "sh"
+      - "-c"
+      - "npm i && npm run start"
+    hostname: event-worker
+    image: node:22-bookworm-slim
+    links:
+      - nats
+    ports:
+      - "3006:3000"
+    volumes:
+      - ./event-worker:/app:z
+      - /app/node_modules
+    user: root
+    working_dir: "/app"
+    environment:
+      EVENT_STREAM_NAME: nats_durable_events
+      NATS_HOST: nats://nats:4222
+      CASE_MANAGEMENT_API_URL: http://host.docker.internal:3003/graphql
+      CASE_API_KEY: "somekey"

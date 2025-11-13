@@ -40,10 +40,10 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
   useEffect(() => {
-    let complaintMapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint);
-    const complaintLocation = complaintMapElement?.location;
-    if (complaintLocation && areCoordinatesValid(complaintLocation)) {
-      setMapCenterPosition(complaintLocation);
+    let mapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint || item.objectType === MapObjectType.Investigation || item.objectType === MapObjectType.Inspection);
+    const mapElementLocation = mapElement?.location;
+    if (mapElementLocation && areCoordinatesValid(mapElementLocation)) {
+      setMapCenterPosition(mapElementLocation);
     } else if (geocodedLocation && areCoordinatesValid(geocodedLocation)) {
       setMapCenterPosition(geocodedLocation);
     }
@@ -129,6 +129,8 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   const getEquipmentStatus = (locationItem: MapElement): string => {
     if (
       locationItem.objectType === MapObjectType.Complaint ||
+      locationItem.objectType === MapObjectType.Investigation ||
+      locationItem.objectType === MapObjectType.Inspection ||
       (locationItem.objectType === MapObjectType.Equipment && ["Less lethal", "K9 unit"].includes(locationItem.name))
     ) {
       return "";
@@ -144,6 +146,20 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
     return countUnmapped;
   }, [mapElements]);
 
+  const unmappedInvestigation = useMemo(() => {
+    const countUnmapped = mapElements.filter((item) => {
+      return item.objectType === MapObjectType.Investigation && item.location.lat === 0 && item.location.lng === 0;
+    }).length;
+    return countUnmapped;
+  }, [mapElements]);
+
+  const unmappedInspection = useMemo(() => {
+    const countUnmapped = mapElements.filter((item) => {
+      return item.objectType === MapObjectType.Inspection && item.location.lat === 0 && item.location.lng === 0;
+    }).length;
+    return countUnmapped;
+  }, [mapElements]);
+
   return (
     <Card className="comp-map-container">
       {geocodedLocation && areCoordinatesValid(geocodedLocation) && <NonDismissibleAlert />}
@@ -155,6 +171,26 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
         >
           <i className="bi bi-info-circle-fill"></i>
           <span>{unmappedEquipment} equipment could not be mapped.</span>
+        </Alert>
+      )}
+      {unmappedInvestigation > 0 && (
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
+          id={`investigation-map-notification`}
+        >
+          <i className="bi bi-info-circle-fill"></i>
+          <span>{unmappedInvestigation} related investigation could not be mapped.</span>
+        </Alert>
+      )}
+      {unmappedInspection > 0 && (
+        <Alert
+          variant="warning"
+          className="comp-complaint-details-alert"
+          id={`inspection-map-notification`}
+        >
+          <i className="bi bi-info-circle-fill"></i>
+          <span>{unmappedInspection} related inspection could not be mapped.</span>
         </Alert>
       )}
 

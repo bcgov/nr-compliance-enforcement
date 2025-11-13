@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.106",
+  "version": "2.0.131",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -25,6 +25,11 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.1.1",
+    "@tiptap/extension-placeholder": "^3.10.2",
+    "@tiptap/html": "^3.10.2",
+    "@tiptap/pm": "^3.10.1",
+    "@tiptap/react": "^3.10.1",
+    "@tiptap/starter-kit": "^3.10.1",
     "@types/faker": "^5.5.9",
     "@types/leaflet": "^1.9.3",
     "@types/lodash": "^4.14.195",
@@ -147,7 +152,6 @@
     "preview": "vite preview",
     "test": "jest",
     "test:cov": "jest --coverage",
-    "cypress:open": "cypress open",
     "codegen": "graphql-codegen --config codegen.ts",
     "test:e2e": "playwright test",
     "test:e2e-ui": "playwright test --ui"
@@ -179,8 +183,6 @@
     "@types/react-test-renderer": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "cy-verify-downloads": "^0.2.4",
-    "cypress": "^13.6.1",
-    "cypress-delete-downloads-folder": "^0.0.5",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",

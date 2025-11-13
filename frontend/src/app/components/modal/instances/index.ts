@@ -23,3 +23,5 @@ export {
   ManageCollaboratorsModal,
   LinkComplaintModal,
 };
+
+export { RemovePartyModal } from "./remove-party";

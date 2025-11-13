@@ -42,7 +42,7 @@ const ZOOM_LEVELS = {
 };
 
 type MapClickHandlerProps = {
-  mode: "complaint" | "equipment";
+  mode: "complaint" | "equipment" | "investigation";
   complaintCoords: [number, number] | null;
   tempCoordinates: [number, number] | null;
   equipmentType: string;
@@ -56,11 +56,24 @@ const MapClickHandler: FC<MapClickHandlerProps> = ({
   equipmentType,
   setTempCoordinates,
 }) => {
+  const getPinTitle = () => {
+    switch (mode) {
+      case "complaint":
+        return "Complaint coordinates";
+      case "equipment":
+        return `${equipmentType} coordinates`;
+      case "investigation":
+        return "Investigation coordinates";
+      default:
+        return "Coordinates";
+    }
+  }
   useMapEvents({
     click(e) {
       setTempCoordinates([e.latlng.lat, e.latlng.lng]);
     },
   });
+
   return (
     <>
       {/* Complaint marker (red) */}
@@ -82,7 +95,7 @@ const MapClickHandler: FC<MapClickHandlerProps> = ({
             opacity={1}
             permanent
           >
-            <div>{mode === "equipment" ? equipmentType : "Complaint"} coordinates</div>
+            <div>{getPinTitle()}</div>
             <div>
               {tempCoordinates[0]} , {tempCoordinates[1]}
             </div>

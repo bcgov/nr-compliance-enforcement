@@ -18,6 +18,10 @@ const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   }
 `;
 
+export interface AddComplaintToCaseOption extends Option {
+  complaintType: string;
+}
+
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
     <div className="comp-overlay-content d-flex align-items-center justify-content-center">
@@ -45,7 +49,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   const { title, caseId, addedComplaints } = modalData;
 
   // State
-  const [selectedComplaint, setSelectedComplaint] = useState<Option | null>();
+  const [selectedComplaint, setSelectedComplaint] = useState<AddComplaintToCaseOption | null>();
   const [addComplaintErrorMessage, setAddComplaintErrorMessage] = useState<string>("");
 
   // Effects
@@ -59,7 +63,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     }
   }, [selectedComplaint, addedComplaints]);
 
-  const handleAddComplaintChange = (selected: Option | null) => {
+  const handleAddComplaintChange = (selected: AddComplaintToCaseOption | null) => {
     if (selected) {
       setSelectedComplaint(selected);
     } else {
@@ -89,6 +93,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
         caseFileGuid: caseId,
         activityType: "COMP",
         activityIdentifier: selectedComplaint.value,
+        eventContent: { complaintType: selectedComplaint.complaintType },
       };
       addComplaintToCaseMutation.mutate({
         input: createInput,
@@ -127,8 +132,9 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
             >
               <ComplaintListSearch
                 id="addComplaintToCase"
-                onChange={(e: Option | null) => handleAddComplaintChange(e)}
+                onChange={(e) => handleAddComplaintChange(e as AddComplaintToCaseOption | null)}
                 errorMessage={addComplaintErrorMessage}
+                includeComplaintType={true}
               />
             </div>
           </div>

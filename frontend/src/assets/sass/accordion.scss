@@ -1,12 +1,12 @@
-/* Records Accordion styles */
+/* partys Accordion styles */
 
 /* No borders */
-.record-accordion .accordion-item {
+.party-accordion .accordion-item {
   border: none !important;
 }
 
 /* Header styles */
-.record-accordion .accordion-button {
+.party-accordion .accordion-button {
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
@@ -15,14 +15,14 @@
 }
 
 /* Expanded state styling */
-.record-accordion .accordion-button:not(.collapsed) {
+.party-accordion .accordion-button:not(.collapsed) {
   color: inherit !important;
   background-color: transparent !important;
   box-shadow: none !important;
 }
 
 /* tighter spacing between sections */
-.record-accordion .accordion-body {
+.party-accordion .accordion-body {
   padding-left: 0;
   padding-right: 0;
   padding-top: 0.25rem;
@@ -30,11 +30,11 @@
 }
 
 /* tighter spacing below the header */
-.record-accordion .accordion-header {
+.party-accordion .accordion-header {
   margin-bottom: 0px;
 }
 
 /* Add extra line on the bottom element */
-.record-accordion .list-group-item:last-child {
+.party-accordion .list-group-item:last-child {
   border-bottom: 1px solid #dee2e6 !important;
 }

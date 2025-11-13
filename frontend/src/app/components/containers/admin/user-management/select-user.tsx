@@ -4,7 +4,7 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
-import { Officer } from "@apptypes/person/person";
+import { AppUser } from "@apptypes/app/app_user/app_user";
 import "@assets/sass/user-management.scss";
 
 interface SelectUserProps {
@@ -25,9 +25,9 @@ export const SelectUser: FC<SelectUserProps> = ({
   handleEdit,
 }) => {
   const officers = useAppSelector(selectOfficers);
-  const officerList = officers?.map((officer: Officer) => {
+  const officerList = officers?.map((officer: AppUser) => {
     const {
-      person_guid: { person_guid: id, first_name, last_name },
+      app_user_guid: id, first_name, last_name,
       deactivate_ind,
     } = officer;
     return {

@@ -1,3 +1,4 @@
 type Mutation {
   createCaseActivity(input: CaseActivityCreateInput!): CaseActivity!
+  removeCaseActivity(input: CaseActivityRemoveInput!): CaseActivity!
 }

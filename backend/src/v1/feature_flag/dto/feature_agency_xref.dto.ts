@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { FeatureCode } from "../../feature_code/entities/feature_code.entity";
 
 export class FeatureAgencyXrefDto {

@@ -1,8 +1,7 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 
 //-- entities
-import { CosGeoOrgUnit } from "../../v1/cos_geo_org_unit/entities/cos_geo_org_unit.entity";
-import { PersonComplaintXref } from "../../v1/person_complaint_xref/entities/person_complaint_xref.entity";
+import { AppUserComplaintXref } from "../../v1/app_user_complaint_xref/entities/app_user_complaint_xref.entity";
 import { Complaint } from "../../v1/complaint/entities/complaint.entity";
 import { SpeciesCode } from "../../v1/species_code/entities/species_code.entity";
 import { HwcrComplaintNatureCode } from "../../v1/hwcr_complaint_nature_code/entities/hwcr_complaint_nature_code.entity";
@@ -20,12 +19,11 @@ import {
   Attractant,
   GirType,
   NatureOfComplaint,
-  OrganizationCodeTable,
   ReportedBy,
   Species,
   Violation,
 } from "../../types/models/code-tables";
-import { DelegateDto } from "../../types/models/people/delegate";
+import { DelegateDto } from "../../types/models/app_user/delegate";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlife-complaint";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
@@ -41,42 +39,14 @@ import { GeneralIncidentReportData } from "src/types/models/reports/complaints/g
 // @SONAR_STOP@
 
 //-- define entity -> model mapping
-const cosGeoOrgUnitToOrganizationDtoMap = (mapper: Mapper) => {
-  createMap<CosGeoOrgUnit, OrganizationCodeTable>(
+const appUserComplaintToDelegateDtoMap = (mapper: Mapper) => {
+  createMap<AppUserComplaintXref, DelegateDto>(
     mapper,
-    "CosGeoOrgUnit", //-- source
-    "OrganizationCodeTable", //-- destination
-    forMember(
-      (destination) => destination.area,
-      mapFrom((source) => source.area_code),
-    ),
-    forMember(
-      (destination) => destination.areaName,
-      mapFrom((source) => source.area_name),
-    ),
-    forMember(
-      (destination) => destination.officeLocation,
-      mapFrom((source) => source.office_location_code),
-    ),
-    forMember(
-      (destination) => destination.region,
-      mapFrom((source) => source.region_code),
-    ),
-    forMember(
-      (destination) => destination.zone,
-      mapFrom((source) => source.zone_code),
-    ),
-  );
-};
-
-const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
-  createMap<PersonComplaintXref, DelegateDto>(
-    mapper,
-    "PersonComplaintXref",
+    "AppUserComplaintXref",
     "Delegate",
     forMember(
       (destination) => destination.xrefId,
-      mapFrom((source) => source.personComplaintXrefGuid),
+      mapFrom((source) => source.appUserComplaintXrefGuid),
     ),
     forMember(
       (destination) => destination.isActive,
@@ -84,19 +54,11 @@ const personComplaintToDelegateDtoMap = (mapper: Mapper) => {
     ),
     forMember(
       (destination) => destination.type,
-      mapFrom((source) => source.person_complaint_xref_code.person_complaint_xref_code),
+      mapFrom((source) => source.app_user_complaint_xref_code.app_user_complaint_xref_code),
     ),
     forMember(
-      (destination) => destination.person,
-      mapFrom((source) => {
-        return {
-          id: source.person_guid.person_guid,
-          firstName: source.person_guid.first_name,
-          middleName1: source.person_guid.middle_name_1,
-          middleName2: source.person_guid.middle_name_2,
-          lastName: source.person_guid.last_name,
-        };
-      }),
+      (destination) => destination.appUserGuid,
+      mapFrom((source) => source.app_user_guid),
     ),
   );
 };
@@ -208,25 +170,27 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        if (source.cos_geo_org_unit !== null) {
-          const {
-            cos_geo_org_unit: {
-              area_code: area,
-              region_code: region,
-              zone_code: zone,
-              office_location_code: officeLocation,
-            },
-          } = source;
-
-          return { region, zone, area, officeLocation };
-        }
+        return {
+          area: source.geo_organization_unit_code || "",
+          areaName: "",
+          zone: "",
+          region: "",
+          officeLocation: "",
+        };
       }),
     ),
     forMember(
       (destination) => destination.delegates,
       mapFrom((source) => {
-        const { person_complaint_xref: people } = source;
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        const { app_user_complaint_xref: appUsers } = source;
+        if (!appUsers || !Array.isArray(appUsers) || appUsers.length === 0) {
+          return [];
+        }
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         return delegates;
       }),
@@ -453,8 +417,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
   createMap<HwcrComplaint, WildlifeComplaintDto>(
@@ -589,24 +552,31 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-        return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
-          sourceOrganization,
-          "CosGeoOrgUnit",
-          "OrganizationCodeTable",
-        );
+        return {
+          area: source.complaint_identifier.geo_organization_unit_code || "",
+          areaName: "",
+          zone: "",
+          region: "",
+          officeLocation: "",
+        };
       }),
     ),
     forMember(
       (destination) => destination.delegates,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        if (!appUsers || !Array.isArray(appUsers) || appUsers.length === 0) {
+          return [];
+        }
+
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         return delegates;
       }),
@@ -722,8 +692,7 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
 
 export const applyAllegationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
   createMap<AllegationComplaint, AllegationComplaintDto>(
@@ -858,24 +827,31 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-        return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
-          sourceOrganization,
-          "CosGeoOrgUnit",
-          "OrganizationCodeTable",
-        );
+        return {
+          area: source.complaint_identifier.geo_organization_unit_code || "",
+          areaName: "",
+          zone: "",
+          region: "",
+          officeLocation: "",
+        };
       }),
     ),
     forMember(
       (destination) => destination.delegates,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        if (!appUsers || !Array.isArray(appUsers) || appUsers.length === 0) {
+          return [];
+        }
+
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         return delegates;
       }),
@@ -960,8 +936,7 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
 
 export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
   girTypeCodeToGirTypeCodeDto(mapper);
 
@@ -1097,24 +1072,31 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-        return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
-          sourceOrganization,
-          "CosGeoOrgUnit",
-          "OrganizationCodeTable",
-        );
+        return {
+          area: source.complaint_identifier.geo_organization_unit_code || "",
+          areaName: "",
+          zone: "",
+          region: "",
+          officeLocation: "",
+        };
       }),
     ),
     forMember(
       (destination) => destination.delegates,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        if (!appUsers || !Array.isArray(appUsers) || appUsers.length === 0) {
+          return [];
+        }
+
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         return delegates;
       }),
@@ -1175,8 +1157,7 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
 
 export const applySectorComplaintMap = (mapper: Mapper) => {
   violationCodeToViolationDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
   createMap<Complaint, SectorComplaintDto>(
@@ -1298,20 +1279,29 @@ export const applySectorComplaintMap = (mapper: Mapper) => {
     forMember(
       (destination) => destination.organization,
       mapFrom((source) => {
-        const { cos_geo_org_unit: sourceOrganization } = source;
-        return mapper.map<CosGeoOrgUnit, OrganizationCodeTable>(
-          sourceOrganization,
-          "CosGeoOrgUnit",
-          "OrganizationCodeTable",
-        );
+        return {
+          area: source.geo_organization_unit_code || "",
+          areaName: "",
+          zone: "",
+          region: "",
+          officeLocation: "",
+        };
       }),
     ),
     forMember(
       (destination) => destination.delegates,
       mapFrom((source) => {
-        const { person_complaint_xref: people } = source;
+        const { app_user_complaint_xref: appUsers } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        if (!appUsers || !Array.isArray(appUsers) || appUsers.length === 0) {
+          return [];
+        }
+
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         return delegates;
       }),
@@ -1381,8 +1371,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
   natureOfComplaintCodeToNatureOfComplaintDtoMap(mapper);
   attractantCodeToAttractantDtoMap(mapper);
   attractantXrefToAttractantXrefDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
   createMap<HwcrComplaint, WildlifeReportData>(
@@ -1419,10 +1408,14 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       (destination) => destination.officerAssigned,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         if (delegates.length === 0) {
           return "Not Assigned";
@@ -1431,10 +1424,7 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
           if (!assignee) {
             return "Not Assigned";
           } else {
-            const {
-              person: { firstName, lastName },
-            } = assignee;
-            return `${firstName} ${lastName}`;
+            return assignee.appUserGuid || "Not Assigned";
           }
         }
       }),
@@ -1480,41 +1470,25 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
     forMember(
       (destination) => destination.community,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.area_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.office,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.office_location_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.zone,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.zone_name;
+        return source.complaint_identifier.geo_organization_unit_code || "";
       }),
     ),
     forMember(
       (destination) => destination.region,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.region_name;
+        return "";
       }),
     ),
     forMember(
@@ -1709,8 +1683,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
   const reportGeneratedOn: Date = new Date();
 
   violationCodeToViolationDto(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-  personComplaintToDelegateDtoMap(mapper);
+  appUserComplaintToDelegateDtoMap(mapper);
   reportedByCodeToReportedByDto(mapper);
 
   createMap<AllegationComplaint, AllegationReportData>(
@@ -1747,10 +1720,14 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       (destination) => destination.officerAssigned,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         if (delegates.length === 0) {
           return "Not Assigned";
@@ -1759,10 +1736,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
           if (!assignee) {
             return "Not Assigned";
           } else {
-            const {
-              person: { firstName, lastName },
-            } = assignee;
-            return `${firstName} ${lastName}`;
+            return assignee.appUserGuid || "Not Assigned";
           }
         }
       }),
@@ -1808,41 +1782,25 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
     forMember(
       (destination) => destination.community,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.area_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.office,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.office_location_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.zone,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.zone_name;
+        return source.complaint_identifier.geo_organization_unit_code || "";
       }),
     ),
     forMember(
       (destination) => destination.region,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.region_name;
+        return "";
       }),
     ),
     forMember(
@@ -2023,9 +1981,7 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
 export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/Vancouver") => {
   reportedByCodeToReportedByDto(mapper);
   violationCodeToViolationDto(mapper);
-  personComplaintToDelegateDtoMap(mapper);
-  cosGeoOrgUnitToOrganizationDtoMap(mapper);
-
+  appUserComplaintToDelegateDtoMap(mapper);
   createMap<GirComplaint, GeneralIncidentReportData>(
     mapper,
     "GirComplaint",
@@ -2174,41 +2130,25 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
     forMember(
       (destination) => destination.region,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.region_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.zone,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.zone_name;
+        return source.complaint_identifier.geo_organization_unit_code || "";
       }),
     ),
     forMember(
       (destination) => destination.office,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.office_location_name;
+        return "";
       }),
     ),
     forMember(
       (destination) => destination.community,
       mapFrom((source) => {
-        const {
-          complaint_identifier: { cos_geo_org_unit: sourceOrganization },
-        } = source;
-
-        return sourceOrganization.area_name;
+        return "";
       }),
     ),
     forMember(
@@ -2251,10 +2191,14 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
       (destination) => destination.officerAssigned,
       mapFrom((source) => {
         const {
-          complaint_identifier: { person_complaint_xref: people },
+          complaint_identifier: { app_user_complaint_xref: appUsers },
         } = source;
 
-        const delegates = mapper.mapArray<PersonComplaintXref, DelegateDto>(people, "PersonComplaintXref", "Delegate");
+        const delegates = mapper.mapArray<AppUserComplaintXref, DelegateDto>(
+          appUsers,
+          "AppUserComplaintXref",
+          "Delegate",
+        );
 
         if (delegates.length === 0) {
           return "Not Assigned";
@@ -2263,10 +2207,7 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
           if (!assignee) {
             return "Not Assigned";
           } else {
-            const {
-              person: { firstName, lastName },
-            } = assignee;
-            return `${firstName} ${lastName}`;
+            return assignee.appUserGuid || "Not Assigned";
           }
         }
       }),

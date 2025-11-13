@@ -15,6 +15,8 @@ import {
   ADD_COMPLAINT_TO_CASE,
   CREATE_ADD_CASE,
   ADD_PARTY,
+  REMOVE_ACTIVITY_FROM_CASE,
+  REMOVE_PARTY,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -28,12 +30,14 @@ import {
   ToggleDeactivateModal,
   ReferComplaintModal,
   ManageCollaboratorsModal,
+  RemovePartyModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
 import { LinkComplaintModal } from "./instances/link-complaint-modal";
 import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-case";
+import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/remove-activity-from-case";
 import { AddPartyModal } from "@/app/components/modal/instances/add-party";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
@@ -52,5 +56,7 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [LINK_COMPLAINT]: LinkComplaintModal,
   [ADD_COMPLAINT_TO_CASE]: AddComplaintToCaseModal,
   [CREATE_ADD_CASE]: CreateAddCaseModal,
+  [REMOVE_ACTIVITY_FROM_CASE]: RemoveActivityFromCaseModal,
   [ADD_PARTY]: AddPartyModal,
+  [REMOVE_PARTY]: RemovePartyModal,
 };

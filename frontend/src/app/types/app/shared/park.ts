@@ -1,4 +1,4 @@
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { ParkArea } from "@apptypes/app/shared/parkArea";
 
 export interface Park {

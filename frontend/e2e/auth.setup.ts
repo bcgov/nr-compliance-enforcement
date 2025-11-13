@@ -7,7 +7,7 @@ setup("authenticate as COS", async ({ page }) => {
   await loginToKeycloak(page, "COS");
   await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
   // Expand the sidebar to reveal the agency name
-  await page.locator("button").first().click();
+  await page.locator("button.comp-sidebar-toggle").click();
   await expect(page.getByText("Conservation Officer Service")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.COS });
 });
@@ -16,7 +16,7 @@ setup("authenticate as CEEB", async ({ page }) => {
   await loginToKeycloak(page, "CEEB");
   await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
   // Expand the sidebar to reveal the agency name
-  await page.locator("button").first().click();
+  await page.locator("button.comp-sidebar-toggle").click();
   await expect(page.getByText("Compliance and Environmental Enforcement Branch")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.CEEB });
 });
@@ -25,7 +25,7 @@ setup("authenticate as Parks", async ({ page }) => {
   await loginToKeycloak(page, "PARKS");
   await slowExpect(await page.locator("h1", { hasText: "Complaints" })).toBeVisible();
   // Expand the sidebar to reveal the agency name
-  await page.locator("button").first().click();
+  await page.locator("button.comp-sidebar-toggle").click();
   await expect(page.getByText("BC Parks")).toBeVisible();
   await page.context().storageState({ path: STORAGE_STATE_BY_ROLE.PARKS });
 });

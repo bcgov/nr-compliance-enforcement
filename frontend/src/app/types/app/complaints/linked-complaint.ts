@@ -10,5 +10,5 @@ export interface LinkedComplaint {
   parent: boolean;
   link_type?: string;
   agency?: string;
-  complaintType?: string;
+  type?: string;
 }

@@ -1,11 +1,13 @@
 import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 
-import { inspection } from "../../../../prisma/inspection/generated/inspection";
+import { inspection } from "../../../../prisma/inspection/inspection.unsupported_types";
 import { InspectionStatusCode } from "../../../inspection/inspection_status_code/dto/inspection_status_code";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { PaginatedResult } from "src/common/pagination.utility";
 import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
+import { Point, PointScalar } from "src/common/custom_scalars";
+import { InspectionParty } from "src/inspection/inspection_party/dto/inspection_party";
 
 export class Inspection {
   inspectionGuid: string;
@@ -14,6 +16,11 @@ export class Inspection {
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
   name: string;
+  createdByAppUserGuid?: string;
+  locationGeometry?: Point;
+  locationAddress?: string;
+  locationDescription?: string;
+  parties: [InspectionParty];
 }
 
 @InputType()
@@ -63,6 +70,21 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   name: string;
+
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
+
+  @Field(() => String)
+  createdByAppUserGuid: string;
 }
 
 @InputType()
@@ -79,6 +101,18 @@ export class UpdateInspectionInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   name?: string;
+
+  @Field(() => PointScalar, { nullable: true })
+  @IsOptional()
+  locationGeometry?: Point;
+
+  @Field(() => String)
+  @IsOptional()
+  locationDescription: string;
+
+  @Field(() => String)
+  @IsOptional()
+  locationAddress: string;
 }
 
 export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
@@ -109,6 +143,26 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
+    ),
+    forMember(
+      (dest) => dest.createdByAppUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.locationDescription,
+      mapFrom((src) => src.location_description),
+    ),
+    forMember(
+      (dest) => dest.locationAddress,
+      mapFrom((src) => src.location_address),
+    ),
+    forMember(
+      (dest) => dest.locationGeometry,
+      mapFrom((src) => src.location_geometry_point),
+    ),
+    forMember(
+      (dest) => dest.parties,
+      mapFrom((src) => mapper.mapArray(src.inspection_party ?? [], "inspection_party", "InspectionParty")),
     ),
   );
 };

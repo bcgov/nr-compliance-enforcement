@@ -17,4 +17,12 @@ export class UserService {
       return "system";
     }
   }
+
+  getUserGuid(): string {
+    try {
+      return this.getUser()?.idir_user_guid || "system";
+    } catch {
+      return "system";
+    }
+  }
 }

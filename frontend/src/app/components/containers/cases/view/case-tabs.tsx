@@ -38,7 +38,7 @@ export const CaseTabs: FC = () => {
   };
 
   return (
-    <Nav className="nav nav-tabs case-nav-tabs">
+    <Nav className="nav nav-tabs case-nav-tabs px-4">
       {Object.entries(CASE_TAB_ITEMS).map(([key, label]) => {
         return (
           <Nav.Item

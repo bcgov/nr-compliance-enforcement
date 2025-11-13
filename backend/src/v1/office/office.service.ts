@@ -1,88 +1,84 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
-import { UUID } from "crypto";
-
+import { UUID } from "node:crypto";
 import { CreateOfficeDto } from "./dto/create-office.dto";
 import { UpdateOfficeDto } from "./dto/update-office.dto";
-import { Office } from "./entities/office.entity";
 import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
+import {
+  getOffices,
+  getCosGeoOrgUnits,
+  createOffice,
+  updateOffice,
+  getOfficesByZone,
+} from "../../external_api/shared_data";
 
 @Injectable()
 export class OfficeService {
   private readonly logger = new Logger(OfficeService.name);
 
-  constructor(private dataSource: DataSource) {}
-  @InjectRepository(Office)
-  private officeRepository: Repository<Office>;
+  async create(office: CreateOfficeDto, token: string): Promise<any> {
+    const input = {
+      geoOrganizationUnitCode: office.geo_organization_unit_code,
+      agencyCode: office.agency_code_ref,
+    };
 
-  async create(office: any): Promise<Office> {
-    const queryRunner = this.dataSource.createQueryRunner();
+    const newOffice = await createOffice(token, input);
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    let newOfficeString;
-    try {
-      newOfficeString = await this.officeRepository.create(<CreateOfficeDto>office);
-      await queryRunner.manager.save(newOfficeString);
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(err);
-      await queryRunner.rollbackTransaction();
-      newOfficeString = "Error Occured";
-    } finally {
-      await queryRunner.release();
-    }
-    return newOfficeString;
+    return {
+      office_guid: newOffice.officeGuid,
+      geo_organization_unit_code: newOffice.geoOrganizationUnitCode,
+      agency_code_ref: newOffice.agencyCode,
+    };
   }
 
-  findByGeoOrgCode = (geo_org_code: any) => {
-    return this.officeRepository.find({
-      where: { cos_geo_org_unit: geo_org_code },
-      relations: {},
-    });
+  findByGeoOrgCode = async (geo_org_code: any, token: string) => {
+    const offices = await getOffices(token);
+    return offices.filter((office) => office.geoOrganizationUnitCode === geo_org_code);
   };
 
-  findOne = async (id: UUID): Promise<Office> => {
-    return this.officeRepository.findOneByOrFail({ office_guid: id });
+  findOne = async (id: UUID, token: string): Promise<any> => {
+    const offices = await getOffices(token);
+    const office = offices.find((o) => o.officeGuid === id);
+
+    if (!office) {
+      throw new Error("Office not found");
+    }
+
+    return office;
   };
 
-  findOfficesByZone = (zone_code: string) => {
-    const queryBuilder = this.officeRepository
-      .createQueryBuilder("office")
-      .leftJoinAndSelect("office.cos_geo_org_unit", "cos_geo_org_unit")
-      .leftJoinAndSelect("office.officers", "officer")
-      .leftJoinAndSelect("officer.person_guid", "person")
-      .where("cos_geo_org_unit.zone_code = :Zone", { Zone: zone_code })
-      .distinctOn(["cos_geo_org_unit.offloc_code"]);
-
-    return queryBuilder.getMany();
+  findOfficesByZone = async (zone_code: string, token: string) => {
+    return await getOfficesByZone(token, zone_code);
   };
 
-  update(id: number, updateOfficeDto: UpdateOfficeDto) {
-    return `This action updates a #${id} office`;
+  async update(id: UUID, updateOfficeDto: UpdateOfficeDto, token: string) {
+    const input: any = {};
+    if (updateOfficeDto.geo_organization_unit_code)
+      input.geoOrganizationUnitCode = updateOfficeDto.geo_organization_unit_code;
+    if (updateOfficeDto.agency_code_ref) input.agencyCode = updateOfficeDto.agency_code_ref;
+
+    const updatedOffice = await updateOffice(token, id, input);
+
+    return {
+      office_guid: updatedOffice.officeGuid,
+      geo_organization_unit_code: updatedOffice.geoOrganizationUnitCode,
+      agency_code_ref: updatedOffice.agencyCode,
+    };
   }
 
   remove(id: number) {
     return `This action removes a #${id} office`;
   }
 
-  findOffices = async (): Promise<Array<OfficeAssignmentDto>> => {
-    const queryBuilder = this.officeRepository
-      .createQueryBuilder("office")
-      .select(["office.office_guid", "office.agency_code_ref"])
-      .leftJoin("office.cos_geo_org_unit", "organization")
-      .addSelect("organization.office_location_name");
+  findOffices = async (token: string): Promise<Array<OfficeAssignmentDto>> => {
+    const [offices, cosGeoOrgUnits] = await Promise.all([getOffices(token), getCosGeoOrgUnits(token)]);
 
-    const data = await queryBuilder.getMany();
-
-    const results = data.map((item) => {
-      const {
-        office_guid: id,
-        cos_geo_org_unit: { office_location_name: name },
-        agency_code_ref: agency,
-      } = item;
-      const record: OfficeAssignmentDto = { id, name, agency };
+    const results = offices.map((office) => {
+      const geoUnit = cosGeoOrgUnits.find((unit) => unit.officeLocationCode === office.geoOrganizationUnitCode);
+      const record: OfficeAssignmentDto = {
+        id: office.officeGuid,
+        name: geoUnit?.officeLocationName || "",
+        agency: office.agencyCode,
+      };
       return record;
     });
 

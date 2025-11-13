@@ -1,6 +1,5 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
-import { UUID } from "crypto";
-import { Officer } from "../../officer/entities/officer.entity";
+import { UUID } from "node:crypto";
 import { Complaint } from "../../complaint/entities/complaint.entity";
 
 @Index("PK_cmplreferral", ["complaint_referral_guid"], {
@@ -41,9 +40,8 @@ export class ComplaintReferral {
   @Column("character varying", { name: "referred_to_agency_code_ref" })
   referred_to_agency_code_ref: string;
 
-  @ManyToOne(() => Officer, (officer) => officer.officer_guid)
-  @JoinColumn({ name: "officer_guid" })
-  officer_guid: Officer;
+  @Column("uuid", { name: "app_user_guid_ref", nullable: true })
+  app_user_guid_ref: UUID;
 
   @Column("timestamp without time zone", { name: "referral_date" })
   referral_date: Date;

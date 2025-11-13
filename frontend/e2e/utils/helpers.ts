@@ -1,19 +1,19 @@
 import { expect, Locator, Page } from "@playwright/test";
 
-export const slowExpect = expect.configure({ timeout: 30000 });
+export const slowExpect = expect.configure({ timeout: 60000 }); // 1 Minute for the spinner.
 
 export async function waitForSpinner(page: Page, timeBeforeContinuing: number = 6000) {
-  const foundSpinner = await Promise.race([
-    page
-      .locator(".comp-loader-overlay")
-      .waitFor()
-      .then(() => true),
-    page.waitForTimeout(timeBeforeContinuing).then(() => false),
-  ]).catch((error) => {
-    throw new Error(`An error occurred while executing timedWaitForSpinner`, error);
-  });
-  if (foundSpinner) {
-    await slowExpect(page.locator(".comp-loader-overlay")).not.toBeVisible();
+  // make sure the page is totally loaded first
+  await page.locator(".comp-app-container").waitFor();
+
+  const spinner = page.locator(".comp-loader-overlay");
+
+  // Check if spinner becomes visible within timeout
+  const appeared = await spinner.isVisible({ timeout: timeBeforeContinuing }).catch(() => false);
+
+  if (appeared) {
+    // Now wait for it to disappear — this will automatically retry
+    await slowExpect(spinner).not.toBeVisible();
   }
 }
 
@@ -89,18 +89,20 @@ export async function assignSelfToComplaint(page: Page) {
 
 export async function hasErrorMessage(page: Page, inputs: Array<string>, toastText?: string) {
   //validate all the inputs
-  inputs.forEach(async (input) => {
-    await expect(page.locator(input).locator(".error-message")).toBeVisible();
-  });
+  for (const input of inputs) {
+    const errorLocator = page.locator(input).locator(".error-message");
+    await expect(errorLocator).toContainText(/.+/); // look for any error - we don't care what it is
+  }
 
   //validate the toast
   if (toastText) {
-    const $toast = page.locator(".Toastify__toast-body");
-    expect($toast).toHaveText(toastText);
+    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
+    const found = toasts.some((text) => text.includes(toastText));
+    expect(found).toBe(true);
   }
 }
 
-export async function typeAndTriggerChange(locatorValue, value, page: Page) {
+export async function typeAndTriggerChange(locatorValue: string, value: string, page: Page) {
   const foundItems = await page.locator(locatorValue).count();
   if (foundItems) {
     await page.locator(locatorValue).fill(value);
@@ -108,10 +110,13 @@ export async function typeAndTriggerChange(locatorValue, value, page: Page) {
 }
 
 export async function selectItemById(selectId: string, optionText: string, page: Page) {
-  await expect(page.locator(`#${selectId}`).first()).toBeVisible();
-  await page.locator(`#${selectId}`).first().click();
-  await expect(page.locator(".comp-select__menu-list")).toBeVisible(); //Wait for the options to show
-  await page.locator(`.comp-select__option`, { hasText: optionText }).first().click({ force: true });
+  const input = page.locator(`#${selectId}`).first();
+  await expect(input).toBeVisible();
+  await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
+  await input.click({ force: true });
+  await page.waitForSelector('[class*="__option"]', { state: "visible", timeout: 5000 });
+  await page.keyboard.type(optionText);
+  await page.keyboard.press("Enter");
 }
 
 export async function enterDateTimeInDatePicker(
@@ -136,8 +141,8 @@ export async function enterDateTimeInDatePicker(
 export async function verifyMapMarkerExists(existIndicator: boolean, page: Page) {
   await expect(page.locator(".leaflet-container")).toBeVisible();
   if (existIndicator) {
-    const icon = await page.locator(".leaflet-marker-icon");
-    expect(icon).toBeVisible();
+    const icon = page.locator(".leaflet-marker-icon svg").first();
+    await expect(icon).toBeVisible();
   } else {
     expect(page.locator(".leaflet-marker-icon")).not.toBeVisible();
   }
@@ -195,10 +200,13 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
 
   //click Save Button
   const saveButton = await page.locator(saveButtonId).first();
-  saveButton.click();
+  await saveButton.click();
 }
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
+  //use the locator if provided
+  const testSection = loc ?? page;
+
   const { section, actionRequired, checkboxes, justification, equipmentType, officer, date, toastText } = sectionParams;
   let checkboxDiv = "#prev-educ-checkbox-div";
   let officerDiv = "#prev-educ-outcome-officer-div";
@@ -214,36 +222,36 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   }
 
   if (section === "ASSESSMENT" && actionRequired) {
-    await expect(await page.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
+    await expect(await testSection.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
 
     if (actionRequired === "Yes") {
       //Verify Fields exist
       for (let checkbox of checkboxes) {
-        await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
+        await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
       }
     }
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
-      await expect(await page.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
+      await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
     }
   }
 
   if (justification) {
-    await expect(await page.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
+    await expect(await testSection.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
   }
 
   if (equipmentType) {
     await expect(async () => {
-      const $div = page.locator("#equipment-type-title");
+      const $div = testSection.locator("#equipment-type-title");
       expect($div).toHaveText(equipmentType);
     }).toPass();
   }
   await expect(async () => {
-    const $div = page.locator(officerDiv);
-    expect($div).toHaveText(officer);
+    const $div = testSection.locator(officerDiv);
+    expect($div).toContainText(officer);
   }).toPass();
   await expect(async () => {
-    const dateText = await page.locator(dateDiv).textContent();
+    const dateText = await testSection.locator(dateDiv).textContent();
     expect(dateText).toContain(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
   }).toPass();
 
@@ -270,8 +278,8 @@ export async function verifyAttachmentsCarousel(page: Page, uploadable: boolean,
     await expect(scope.locator(".comp-attachment-upload-btn")).not.toBeVisible();
     // scope.locator(".comp-attachment-slide-actions").first().("attr", "style", "display: block");
 
-    // cypress can't verify things that happen in other tabs, so don't open attachments in another tab
-    await expect(scope.locator(".comp-slide-download-btn")).toBeVisible();
+    // playwright can't verify things that happen in other tabs, so don't open attachments in another tab
+    await expect(scope.locator(".comp-slide-download-btn").first()).toBeVisible();
   }
 }
 
@@ -287,4 +295,28 @@ export async function selectTypeAheadItemByText(selectId: string, optionText: st
   await typeaheadInput.pressSequentially(optionText);
   await expect(await page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
   await page.locator(".dropdown-item").getByText(optionText).first().click();
+}
+
+export async function isHeaderinViewPort(page: Page) {
+  // Assuming 'subject' is a Playwright element handle
+  const elementHandle = page.locator(".comp-details-header");
+
+  const rect = await elementHandle.boundingBox();
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
+
+  // Assertions:
+  if (rect?.top >= viewportHeight) {
+    throw new Error(`Expected element not to be below the visible scrolled area`);
+  }
+
+  if (rect?.top < 0) {
+    throw new Error(`Expected element not to be above the visible scrolled area`);
+  }
+
+  return elementHandle;
+}
+
+export async function validateComplaint(page: Page, expectedComplaintId: string, expectedSpecies: string) {
+  await expect(await page.locator(".comp-box-complaint-id")).toContainText(expectedComplaintId);
+  await expect(await page.locator(".comp-box-species-type")).toContainText(expectedSpecies);
 }

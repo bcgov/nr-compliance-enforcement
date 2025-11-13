@@ -6,7 +6,7 @@ import { from } from "linq-to-typescript";
 import { Violation } from "@apptypes/app/code-tables/violation";
 import { Species } from "@apptypes/app/code-tables/species";
 import { NatureOfComplaint } from "@apptypes/app/code-tables/nature-of-complaint";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { Complaint } from "@apptypes/app/complaints/complaint";
 import { GifReader } from "omggif";
 import { fromImage } from "imtool";
@@ -93,10 +93,8 @@ export const getSelectedOfficer = (
     const selected = officers.find(({ value }) => {
       const first = from(assignees).firstOrDefault();
       if (first) {
-        const {
-          person: { id },
-        } = first;
-        return value === id;
+        const { appUserGuid } = first;
+        return value === appUserGuid;
       }
 
       return false;
@@ -404,6 +402,23 @@ export const getGirTypeByGirTypeCode = (code: string, codes: Array<GirType>): st
 
   return "";
 };
+
+export const getIssueDescription = (
+  complaint: any,
+  natureCodes: Array<NatureOfComplaint>,
+  girCodes: Array<GirType>,
+  violationCodes: Array<Violation>,
+): string => {
+  const { type, issueType } = complaint;
+
+  const codeMap = {
+    HWCR: () => natureCodes.find((item) => item.natureOfComplaint === issueType)?.longDescription,
+    GIR: () => girCodes.find((item) => item.girType === issueType)?.longDescription,
+    ERS: () => violationCodes.find((item) => item.violation === issueType)?.longDescription,
+  };
+  return codeMap[type as keyof typeof codeMap]?.() || "";
+};
+
 export const pad = (num: string, size: number): string => {
   num = num.toString();
   while (num.length < size) num = "0" + num;

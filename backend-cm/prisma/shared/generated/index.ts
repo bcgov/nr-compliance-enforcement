@@ -20,6 +20,22 @@ import { party as _party } from "./party";
 import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
 import { flyway_schema_history as _flyway_schema_history } from "./flyway_schema_history";
+import { event as _event } from "./event";
+import { event_entity_type_code as _event_entity_type_code } from "./event_entity_type_code";
+import { event_verb_type_code as _event_verb_type_code } from "./event_verb_type_code";
+import { app_user as _app_user } from "./app_user";
+import { app_user_h as _app_user_h } from "./app_user_h";
+import { app_user_team_xref as _app_user_team_xref } from "./app_user_team_xref";
+import { app_user_team_xref_h as _app_user_team_xref_h } from "./app_user_team_xref_h";
+import { geo_org_unit_structure as _geo_org_unit_structure } from "./geo_org_unit_structure";
+import { geo_org_unit_structure_h as _geo_org_unit_structure_h } from "./geo_org_unit_structure_h";
+import { geo_org_unit_type_code as _geo_org_unit_type_code } from "./geo_org_unit_type_code";
+import { geo_organization_unit_code as _geo_organization_unit_code } from "./geo_organization_unit_code";
+import { office as _office } from "./office";
+import { office_h as _office_h } from "./office_h";
+import { team as _team } from "./team";
+import { team_code as _team_code } from "./team_code";
+import { team_h as _team_h } from "./team_h";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -44,6 +60,22 @@ export namespace PrismaModel {
   export class party_h extends _party_h {}
   export class party_type_code extends _party_type_code {}
   export class flyway_schema_history extends _flyway_schema_history {}
+  export class event extends _event {}
+  export class event_entity_type_code extends _event_entity_type_code {}
+  export class event_verb_type_code extends _event_verb_type_code {}
+  export class app_user extends _app_user {}
+  export class app_user_h extends _app_user_h {}
+  export class app_user_team_xref extends _app_user_team_xref {}
+  export class app_user_team_xref_h extends _app_user_team_xref_h {}
+  export class geo_org_unit_structure extends _geo_org_unit_structure {}
+  export class geo_org_unit_structure_h extends _geo_org_unit_structure_h {}
+  export class geo_org_unit_type_code extends _geo_org_unit_type_code {}
+  export class geo_organization_unit_code extends _geo_organization_unit_code {}
+  export class office extends _office {}
+  export class office_h extends _office_h {}
+  export class team extends _team {}
+  export class team_code extends _team_code {}
+  export class team_h extends _team_h {}
 
   export const extraModels = [
     contact_method,
@@ -68,5 +100,21 @@ export namespace PrismaModel {
     party_h,
     party_type_code,
     flyway_schema_history,
+    event,
+    event_entity_type_code,
+    event_verb_type_code,
+    app_user,
+    app_user_h,
+    app_user_team_xref,
+    app_user_team_xref_h,
+    geo_org_unit_structure,
+    geo_org_unit_structure_h,
+    geo_org_unit_type_code,
+    geo_organization_unit_code,
+    office,
+    office_h,
+    team,
+    team_code,
+    team_h,
   ];
 }

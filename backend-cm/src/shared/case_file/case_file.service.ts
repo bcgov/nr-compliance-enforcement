@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, Inject, forwardRef } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
@@ -13,7 +13,9 @@ import {
 } from "./dto/case_file";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
-import { CaseActivityTypeCode } from "src/shared/case_activity_type_code/dto/case_activity_type_code";
+import { EventCreateInput } from "../../shared/event/dto/event";
+import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../../common/nats_constants";
+import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 
 @Injectable()
 export class CaseFileService {
@@ -22,6 +24,8 @@ export class CaseFileService {
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
+    @Inject(forwardRef(() => EventPublisherService))
+    private readonly eventPublisher: EventPublisherService,
   ) {}
 
   private readonly logger = new Logger(CaseFileService.name);
@@ -37,6 +41,9 @@ export class CaseFileService {
         case_activity: {
           include: {
             case_activity_type_code: true,
+          },
+          where: {
+            expiry_utc_timestamp: null,
           },
         },
       },
@@ -67,6 +74,9 @@ export class CaseFileService {
           include: {
             case_activity_type_code: true,
           },
+          where: {
+            expiry_utc_timestamp: null,
+          },
         },
       },
     });
@@ -89,8 +99,13 @@ export class CaseFileService {
         activity_identifier_ref: {
           in: activityIdentifiers,
         },
+        expiry_utc_timestamp: null,
       },
     });
+
+    if (!caseActivityXrefRecords || caseActivityXrefRecords.length === 0) {
+      return [];
+    }
 
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
@@ -107,6 +122,7 @@ export class CaseFileService {
         name: input.name,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
+        created_by_app_user_guid: input.createdByAppUserGuid,
       },
       include: {
         agency_code: true,
@@ -118,7 +134,16 @@ export class CaseFileService {
         },
       },
     });
-
+    const event: EventCreateInput = {
+      eventVerbTypeCode: "OPENED",
+      sourceId: caseFile.case_file_guid,
+      sourceEntityTypeCode: "CASE",
+      actorId: this.user.getUserGuid(),
+      actorEntityTypeCode: "USER",
+      targetId: caseFile.case_file_guid,
+      targetEntityTypeCode: "CASE",
+    };
+    this.eventPublisher.publishEvent(event, STREAM_TOPICS.CASE_OPENED);
     // If activityType and activityIdentifier are provided, create the case activity
     if (input.activityType && input.activityIdentifier) {
       await this.prisma.case_activity.create({
@@ -130,6 +155,18 @@ export class CaseFileService {
           create_utc_timestamp: new Date(),
         },
       });
+      const sourceEntityType = ActivityTypeToEventEntity[input.activityType];
+      const event: EventCreateInput = {
+        eventVerbTypeCode: "ADDED",
+        sourceId: input.activityIdentifier,
+        sourceEntityTypeCode: sourceEntityType,
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: caseFile.case_file_guid,
+        targetEntityTypeCode: "CASE",
+      };
+      const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType}.ADDED_TO_CASE`;
+      this.eventPublisher.publishEvent(event, eventTopic);
     }
 
     try {
@@ -177,6 +214,21 @@ export class CaseFileService {
         },
       },
     });
+
+    if (input.caseStatus !== undefined) {
+      let eventStatus = input.caseStatus === "OPEN" ? "OPENED" : input.caseStatus;
+      const eventTopic = `${EVENT_STREAM_NAME}.case.${eventStatus.toLowerCase()}`;
+      const event: EventCreateInput = {
+        eventVerbTypeCode: eventStatus,
+        sourceId: caseFile.case_file_guid,
+        sourceEntityTypeCode: "CASE",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: caseFile.case_file_guid,
+        targetEntityTypeCode: "CASE",
+      };
+      this.eventPublisher.publishEvent(event, eventTopic);
+    }
 
     try {
       return this.mapper.map<case_file, CaseFile>(caseFile as case_file, "case_file", "CaseFile");

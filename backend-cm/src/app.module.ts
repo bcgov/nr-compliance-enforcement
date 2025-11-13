@@ -23,7 +23,7 @@ import { HwcrOutcomeActionedByCodeModule } from "./complaint_outcome/hwcr_outcom
 import { ConfigurationModule } from "./complaint_outcome/configuration/configuration.module";
 import { ComplaintOutcomeModule } from "./complaint_outcome/complaint_outcome/complaint_outcome.module";
 import { InactionJustificationTypeModule } from "./complaint_outcome/inaction_justification_type/inaction_justification_type.module";
-import { DateScalar } from "./common/custom_scalars";
+import { DateScalar, JSONObjectScalar, PointScalar } from "./common/custom_scalars";
 import { HWCRPreventionActionModule } from "./complaint_outcome/hwcr_prevention_action/hwcr_prevention_action.module";
 import { HWCRAssessmentActionModule } from "./complaint_outcome/hwcr_assessment_action/hwcr_assessment_action.module";
 import { ScheduleCodeModule } from "./complaint_outcome/code-tables/schedule_code/schedule_code.module";
@@ -53,7 +53,19 @@ import { InspectionModule } from "./inspection/inspection/inspection.module";
 import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.module";
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
+import { EventModule } from "./shared/event/event.module";
+import { EventPublisherModule } from "./event_publisher/event_publisher.module";
 import { InvestigationPartyModule } from "./investigation/investigation_party/investigation_party.module";
+import { OfficeModule } from "./shared/office/office.module";
+import { TeamCodeModule } from "./shared/team_code/team_code.module";
+import { TeamModule } from "./shared/team/team.module";
+import { GeoOrgUnitTypeCodeModule } from "./shared/geo_org_unit_type_code/geo_org_unit_type_code.module";
+import { GeoOrganizationUnitCodeModule } from "./shared/geo_organization_unit_code/geo_organization_unit_code.module";
+import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.module";
+import { AppUserModule } from "./shared/app_user/app_user.module";
+import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
+import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
+import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
 
 @Module({
   imports: [
@@ -107,10 +119,22 @@ import { InvestigationPartyModule } from "./investigation/investigation_party/in
     InspectionModule,
     PartyTypeCodeModule,
     CaseActivityModule,
+    EventModule,
+    EventPublisherModule,
     InvestigationPartyModule,
+    OfficeModule,
+    TeamCodeModule,
+    TeamModule,
+    GeoOrgUnitTypeCodeModule,
+    GeoOrganizationUnitCodeModule,
+    CosGeoOrgUnitModule,
+    AppUserModule,
+    AppUserTeamXrefModule,
+    InspectionPartyModule,
+    ContinuationReportModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ImportCommand, DateScalar],
+  providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
 })
 export class AppModule {
   constructor(@InjectMapper() private readonly mapper: Mapper) {}

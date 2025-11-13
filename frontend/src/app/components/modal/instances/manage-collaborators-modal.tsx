@@ -8,7 +8,7 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { filterOfficerByAgency, selectOfficers } from "@store/reducers/officer";
 import Option from "@apptypes/app/option";
-import { Officer } from "@/app/types/person/person";
+import { AppUser } from "@/app/types/app/app_user/app_user";
 import { Roles } from "@/app/types/app/roles";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import {
@@ -55,12 +55,12 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
       const filteredOfficers = filterOfficerByAgency(selectedAgency.value as string, allOfficers);
       const officerDropdown = filteredOfficers
         .filter(
-          (officer: Officer) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
+          (officer: AppUser) => complaintType === COMPLAINT_TYPES.HWCR || !officer.user_roles.includes(Roles.HWCR_ONLY),
         )
-        .filter((officer) => !collaborators.some((c) => c.personGuid === officer.person_guid.person_guid)) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
-        .map((officer: Officer) => ({
-          value: officer.person_guid.person_guid,
-          label: `${officer.person_guid.last_name}, ${officer.person_guid.first_name}`,
+        .filter((officer) => !collaborators.some((c) => c.appUserGuid === officer.app_user_guid)) // Keep the officer if the complaint type is HWCR or if they don't have the HWCR_ONLY role for non-HWCR.
+        .map((officer: AppUser) => ({
+          value: officer.app_user_guid,
+          label: `${officer.last_name}, ${officer.first_name}`,
         }));
       setOfficerDropdownList(officerDropdown);
     }
@@ -110,8 +110,8 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
     }
   };
 
-  const handleRemoveCollaborator = (personComplaintXrefGuid: string) => {
-    dispatch(removeCollaboratorFromComplaint(complaintId, personComplaintXrefGuid));
+  const handleRemoveCollaborator = (appUserComplaintXrefGuid: string) => {
+    dispatch(removeCollaboratorFromComplaint(complaintId, appUserComplaintXrefGuid));
   };
 
   return (
@@ -189,7 +189,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                 <ListGroup className="pb-3">
                   {collaborators.map((collaborator) => (
                     <div
-                      key={collaborator.personGuid}
+                      key={collaborator.appUserGuid}
                       className="collaborator-item d-flex flex-row justify-content-between pb-3"
                     >
                       <div className="collaborator-info">
@@ -197,7 +197,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                           className="collaborator-name comp-avatar comp-avatar-sm comp-avatar-orange"
                           data-initials-sm={getAvatarInitials(`${collaborator.lastName}, ${collaborator.firstName}`)}
                         >
-                          {collaborator.firstName} {collaborator.lastName} |{" "}
+                          {collaborator.lastName}, {collaborator.firstName} |{" "}
                           <span className="fw-bold">
                             {
                               agencies.find((item: any) => item.agency === collaborator.collaboratorAgency)
@@ -209,7 +209,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleRemoveCollaborator(collaborator.personComplaintXrefGuid)}
+                        onClick={() => handleRemoveCollaborator(collaborator.appUserComplaintXrefGuid)}
                       >
                         Remove user
                       </Button>

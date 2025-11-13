@@ -7,15 +7,15 @@ import { WildlifeComplaintDto } from "../../types/models/complaints/dtos/wildlif
 import { SpeciesCodeService } from "../../v1/species_code/species_code.service";
 import { HwcrComplaintNatureCodeService } from "../../v1/hwcr_complaint_nature_code/hwcr_complaint_nature_code.service";
 import { AllegationComplaintDto } from "../../types/models/complaints/dtos/allegation-complaint";
-import { GeoOrganizationUnitCodeService } from "../../v1/geo_organization_unit_code/geo_organization_unit_code.service";
 import { ViolationCodeService } from "../../v1/violation_code/violation_code.service";
 import { GeneralIncidentComplaintDto } from "../../types/models/complaints/dtos/gir-complaint";
 import { GirTypeCodeService } from "../../v1/gir_type_code/gir_type_code.service";
 import { GenerateCollaboratorEmailParams, generateCollaboratorEmailBody } from "../../email_templates/collaborator";
 import { CssService } from "../../external_api/css/css.service";
 import { SendCollaboratorEmalDto } from "../../v1/email/dto/send_collaborator_email.dto";
-import { OfficerService } from "../../v1/officer/officer.service";
+import { AppUserService } from "../../v1/app_user/app_user.service";
 import { CodeTableService } from "../code-table/code-table.service";
+import { getCosGeoOrgUnits } from "../../external_api/shared_data";
 
 @Injectable()
 export class EmailService {
@@ -28,11 +28,10 @@ export class EmailService {
     private readonly _complaintService: ComplaintService,
     private readonly _speciesCodeService: SpeciesCodeService,
     private readonly _natureOfComplaintService: HwcrComplaintNatureCodeService,
-    private readonly _geoOrganizationUnitCodeService: GeoOrganizationUnitCodeService,
     private readonly _violationCodeService: ViolationCodeService,
     private readonly _girTypeCodeService: GirTypeCodeService,
     private readonly _cssService: CssService,
-    private readonly _officerService: OfficerService,
+    private readonly _appUserService: AppUserService,
     private readonly _codeTableService: CodeTableService,
   ) {}
 
@@ -140,9 +139,19 @@ export class EmailService {
         additionalEmailRecipients,
       );
 
-      const { short_description: communityName } = await this._geoOrganizationUnitCodeService.findOne(
-        complaint.organization.area,
-      );
+      let communityName = "";
+      if (complaint.organization?.area) {
+        try {
+          const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+          const orgUnit = cosGeoOrgUnits.find((unit: any) => unit.areaCode === complaint.organization.area);
+          communityName = orgUnit?.areaName || "";
+        } catch (error) {
+          this.logger.error(`Failed to fetch community name from GraphQL: ${error}`);
+          communityName = complaint.organization?.area || "";
+        }
+      } else {
+        communityName = complaint.organization?.area || "";
+      }
 
       const agencyTable = await this._codeTableService.getCodeTableByName("agency", token);
       const referredToAgency = agencyTable?.find(
@@ -200,14 +209,14 @@ export class EmailService {
     token: string,
   ) => {
     try {
-      const { complaintType, personGuid, complaintUrl } = sendCollaboratorEmailDto;
+      const { complaintType, appUserGuid, complaintUrl } = sendCollaboratorEmailDto;
       const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
       const supportEmail = process.env.CEDS_EMAIL;
       const { given_name, family_name } = user;
       const senderName = `${family_name} ${given_name}`;
-      const collaboratorOfficer = await this._officerService.findByPersonGuid(personGuid);
+      const collaboratorAppUser = await this._appUserService.findByAppUserGuid(appUserGuid, token);
       const collaboratorUserRes = await this._cssService.getUserByGuid(
-        collaboratorOfficer.auth_user_guid.replace(/-/g, ""),
+        collaboratorAppUser.auth_user_guid.replaceAll("-", ""),
       );
       const collaborator = collaboratorUserRes[0];
       const { email, lastName, firstName } = collaborator;

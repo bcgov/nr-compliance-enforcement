@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 import { COMPLAINT_TYPE } from "../../../types/models/complaints/complaint-type";
 
 export class SendCollaboratorEmalDto {
@@ -19,5 +19,5 @@ export class SendCollaboratorEmalDto {
     example: "903f87c8-76dd-427c-a1bb-4d179e443252",
     description: "The person guid for the officer",
   })
-  personGuid: UUID;
+  appUserGuid: UUID;
 }

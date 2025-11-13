@@ -1,3 +1,5 @@
+scalar Point
+
 type Inspection {
   inspectionGuid: String
   description: String
@@ -5,6 +7,11 @@ type Inspection {
   inspectionStatus: InspectionStatusCode
   openedTimestamp: Date
   name: String
+  createdByAppUserGuid: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
+  parties: [InspectionParty]
 }
 
 type PageInfo {
@@ -37,6 +44,10 @@ input CreateInspectionInput {
   description: String
   inspectionStatus: String
   name: String!
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
+  createdByAppUserGuid: String!
 }
 
 input UpdateInspectionInput {
@@ -44,4 +55,7 @@ input UpdateInspectionInput {
   description: String
   inspectionStatus: String
   name: String
+  locationGeometry: Point
+  locationAddress: String
+  locationDescription: String
 }

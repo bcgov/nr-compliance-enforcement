@@ -16,9 +16,24 @@ import { mapPrismaInspectionStatusCodeToInspectionStatusCode } from "../inspecti
 import { mapPrismaPartyToParty } from "../shared/party/dto/party";
 import { mapPrismaBusinessToBusiness } from "../shared/business/dto/business";
 import { mapPrismaPartyTypeCodeToPartyTypeCode } from "../shared/party_type_code/dto/party_type_code";
+import { mapPrismaEventToEvent } from "../shared/event/dto/event";
+import { mapPrismaEventVerbTypeCodeToEventVerbTypeCode } from "../shared/event_verb_type_code/dto/event_verb_type_code";
+import { mapPrismaEventEntityTypeCodeToEventEntityTypeCode } from "../shared/event_entity_type_code/dto/event_entity_type_code";
 import { mapPrismaBusinessToInvestigationBusiness } from "../investigation/investigation_business/dto/investigation_business";
 import { mapPrismaPersonToInvestigationPerson } from "../investigation/investigation_person/dto/investigation_person";
 import { mapPrismaPartyToInvestigationParty } from "../investigation/investigation_party/dto/investigation_party";
+import { mapPrismaOfficeToOffice } from "../shared/office/dto/office";
+import { mapPrismaTeamCodeToTeamCode } from "../shared/team_code/dto/team_code";
+import { mapPrismaTeamToTeam } from "../shared/team/dto/team";
+import { mapPrismaGeoOrgUnitTypeCodeToGeoOrgUnitTypeCode } from "../shared/geo_org_unit_type_code/dto/geo_org_unit_type_code";
+import { mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode } from "../shared/geo_organization_unit_code/dto/geo_organization_unit_code";
+import { mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit } from "../shared/cos_geo_org_unit/dto/cos_geo_org_unit";
+import { mapPrismaAppUserToAppUser } from "../shared/app_user/dto/app_user";
+import { mapPrismaAppUserTeamXrefToAppUserTeamXref } from "../shared/app_user_team_xref/dto/app_user_team_xref";
+import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_business/dto/inspection_business";
+import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
+import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
+import { mapPrismaContinuationReportToContinuationReport } from "src/investigation/continuation_report/dto/continuation_report";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -38,7 +53,22 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToBusiness(mapper);
   mapPrismaPartyToParty(mapper);
   mapPrismaPartyTypeCodeToPartyTypeCode(mapper);
+  mapPrismaEventVerbTypeCodeToEventVerbTypeCode(mapper);
+  mapPrismaEventEntityTypeCodeToEventEntityTypeCode(mapper);
+  mapPrismaEventToEvent(mapper);
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPersonToInvestigationPerson(mapper);
   mapPrismaPartyToInvestigationParty(mapper);
+  mapPrismaOfficeToOffice(mapper);
+  mapPrismaTeamCodeToTeamCode(mapper);
+  mapPrismaTeamToTeam(mapper);
+  mapPrismaGeoOrgUnitTypeCodeToGeoOrgUnitTypeCode(mapper);
+  mapPrismaGeoOrganizationUnitCodeToGeoOrganizationUnitCode(mapper);
+  mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
+  mapPrismaAppUserToAppUser(mapper);
+  mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
+  mapPrismaBusinessToInspectionBusiness(mapper);
+  mapPrismaPersonToInspectionPerson(mapper);
+  mapPrismaPartyToInspectionParty(mapper);
+  mapPrismaContinuationReportToContinuationReport(mapper);
 };

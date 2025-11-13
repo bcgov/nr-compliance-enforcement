@@ -29,4 +29,20 @@ export class InvestigationPartyResolver {
       });
     }
   }
+
+  @Mutation("removePartyFromInvestigation")
+  @Roles(coreRoles)
+  async remove(@Args("investigationGuid") investigationGuid: string, @Args("partyIdentifier") partyIdentifier: string) {
+    try {
+      return await this.investigationPartyService.remove(investigationGuid, partyIdentifier);
+    } catch (error) {
+      this.logger.error("Remove investigation party error:", error);
+      throw new GraphQLError("Error removing party from investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
 }
