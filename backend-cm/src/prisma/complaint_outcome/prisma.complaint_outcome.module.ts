@@ -7,6 +7,13 @@ import { PrismaClient } from ".prisma/complaint_outcome";
     {
       provide: ComplaintOutcomePrismaService,
       useValue: new PrismaClient(), // Initialize the Prisma client for case management
+      // To use the pg sessions extension for RLS, replace the useValue with:
+      /**
+      useFactory: () => {
+        const client = new PrismaClient();
+        return client.$extends(createPgSessionExtension(client));
+      },
+       */
     },
   ],
   exports: [ComplaintOutcomePrismaService],
