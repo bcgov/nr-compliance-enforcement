@@ -187,7 +187,6 @@ export class InvestigationService {
         "investigation",
         "Investigation",
       );
-      return null;
     } catch (error) {
       this.logger.error("Error fetching investigations by Party IDs:", error);
       throw error;
