@@ -235,6 +235,7 @@ export class AppUserService {
                 region_name: cosGeoOrgUnit.regionName,
                 zone_code: cosGeoOrgUnit.zoneCode,
                 zone_name: cosGeoOrgUnit.zoneName,
+                administrative_office_ind: cosGeoOrgUnit.administrativeOfficeIndicator,
               },
             };
           } else {
