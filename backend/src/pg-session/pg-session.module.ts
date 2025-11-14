@@ -181,21 +181,15 @@ export class PgSessionModule implements OnModuleInit {
           try {
             // Set JWT claims in the transaction session
             const user = request.user;
-            if (user.idir_username) {
-              logger.debug(`Setting JWT claim: idir_username = ${user.idir_username}`);
-              await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.idir_username = '${user.idir_username.replace(/'/g, "''")}'`,
-              );
-            }
             if (user.idir_user_guid) {
               await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replace(/'/g, "''")}'`,
+                `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll(/'/g, "''")}'`,
               );
             }
             if (user.client_roles) {
               const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
               await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.client_roles = '${rolesString.replace(/'/g, "''")}'`,
+                `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`,
               );
             }
 
