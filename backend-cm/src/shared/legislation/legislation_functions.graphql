@@ -1,0 +1,8 @@
+type Query {
+  legislation(
+    agencyCode: String!
+    legislationTypeCode: String
+    parentGuid: String
+    directDescendantsOnly: Boolean
+  ): [Legislation]!
+}

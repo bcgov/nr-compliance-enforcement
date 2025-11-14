@@ -36,6 +36,9 @@ import { office_h as _office_h } from "./office_h";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { legislation as _legislation } from "./legislation";
+import { legislation_agency_xref as _legislation_agency_xref } from "./legislation_agency_xref";
+import { legislation_type_code as _legislation_type_code } from "./legislation_type_code";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -76,6 +79,9 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class legislation extends _legislation {}
+  export class legislation_agency_xref extends _legislation_agency_xref {}
+  export class legislation_type_code extends _legislation_type_code {}
 
   export const extraModels = [
     contact_method,
@@ -116,5 +122,8 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    legislation,
+    legislation_agency_xref,
+    legislation_type_code,
   ];
 }
