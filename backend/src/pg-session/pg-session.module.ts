@@ -70,11 +70,11 @@ export class PgSessionModule implements OnModuleInit {
           // Set JWT claims in the transaction session
           const user = request.user;
           if (user.idir_user_guid) {
-            await runner.query(`SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replace(/'/g, "''")}'`);
+            await runner.query(`SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll(/'/g, "''")}'`);
           }
           if (user.client_roles) {
             const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-            await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replace(/'/g, "''")}'`);
+            await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`);
           }
           if (user.idir_user_guid) {
             // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
