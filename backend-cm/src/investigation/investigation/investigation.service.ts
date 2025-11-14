@@ -137,11 +137,19 @@ export class InvestigationService {
         where: {
           person_guid_ref: partyId,
           active_ind: true,
+          investigation_party: {
+            is: {
+              active_ind: true,
+            },
+          },
         },
         include: {
           investigation_party: {
             include: {
               investigation: true,
+            },
+            where: {
+              active_ind: true,
             },
           },
         },
@@ -151,6 +159,11 @@ export class InvestigationService {
         where: {
           business_guid_ref: partyId,
           active_ind: true,
+          investigation_party: {
+            is: {
+              active_ind: true,
+            },
+          },
         },
         include: {
           investigation_party: {
@@ -174,6 +187,7 @@ export class InvestigationService {
         "investigation",
         "Investigation",
       );
+      return null;
     } catch (error) {
       this.logger.error("Error fetching investigations by Party IDs:", error);
       throw error;
