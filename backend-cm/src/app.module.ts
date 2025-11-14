@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
+import { RequestInterceptor } from "./pg-session-extension/request-interceptor";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
@@ -134,7 +136,17 @@ import { ContinuationReportModule } from "src/investigation/continuation_report/
     ContinuationReportModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
+  providers: [
+    AppService,
+    ImportCommand,
+    DateScalar,
+    JSONObjectScalar,
+    PointScalar,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestInterceptor,
+    },
+  ],
 })
 export class AppModule {
   constructor(@InjectMapper() private readonly mapper: Mapper) {}
