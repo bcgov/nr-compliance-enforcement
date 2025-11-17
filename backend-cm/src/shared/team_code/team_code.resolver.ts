@@ -12,7 +12,7 @@ export class TeamCodeResolver {
 
   @Query("teamCodes")
   @Roles(coreRoles)
-  findAll() {
-    return this.teamCodeService.findAll();
+  async findAll() {
+    return await this.teamCodeService.findAll();
   }
 }

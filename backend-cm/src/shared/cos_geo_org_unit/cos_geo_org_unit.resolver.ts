@@ -12,24 +12,24 @@ export class CosGeoOrgUnitResolver {
 
   @Query("cosGeoOrgUnits")
   @Roles(coreRoles)
-  findAll(
+  async findAll(
     @Args("zoneCode") zoneCode?: string,
     @Args("regionCode") regionCode?: string,
     @Args("distinctOfficeLocations") distinctOfficeLocations?: boolean,
   ) {
-    return this.cosGeoOrgUnitService.findAll(zoneCode, regionCode, distinctOfficeLocations);
+    return await this.cosGeoOrgUnitService.findAll(zoneCode, regionCode, distinctOfficeLocations);
   }
 
   @Query("searchCosGeoOrgUnitsByNames")
   @Roles(coreRoles)
-  searchByNames(
+  async searchByNames(
     @Args("regionName") regionName?: string,
     @Args("zoneName") zoneName?: string,
     @Args("areaName") areaName?: string,
     @Args("officeLocationName") officeLocationName?: string,
     @Args("distinctOfficeLocations") distinctOfficeLocations?: boolean,
   ) {
-    return this.cosGeoOrgUnitService.searchByNames(
+    return await this.cosGeoOrgUnitService.searchByNames(
       regionName,
       zoneName,
       areaName,

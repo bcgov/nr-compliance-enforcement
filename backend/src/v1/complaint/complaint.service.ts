@@ -2279,8 +2279,8 @@ export class ComplaintService {
     let complaintId = "";
 
     try {
-      queryRunner.connect();
-      queryRunner.startTransaction();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
       complaintId = await generateComplaintId(queryRunner);
       //-- convert the the dto from the client back into an entity
@@ -2329,7 +2329,7 @@ export class ComplaintService {
             create_user_id: idir,
           } as any;
 
-          this._appUserComplaintXrefService.assignNewAppUser(complaintId, assignee);
+          await this._appUserComplaintXrefService.assignNewAppUser(complaintId, assignee);
         }
       }
 
@@ -2396,7 +2396,7 @@ export class ComplaintService {
                 update_user_id: idir,
               } as any;
 
-              this._attractantService.create(queryRunner, record);
+              await this._attractantService.create(queryRunner, record);
             }
           }
 
