@@ -13,31 +13,31 @@ export class AppUserTeamXrefResolver {
 
   @Query("appUserTeamXrefs")
   @Roles(coreRoles)
-  findAll() {
-    return this.appUserTeamXrefService.findAll();
+  async findAll() {
+    return await this.appUserTeamXrefService.findAll();
   }
 
   @Query("appUserTeamXref")
   @Roles(coreRoles)
-  findOne(@Args("appUserGuid") appUserGuid: string) {
-    return this.appUserTeamXrefService.findOne(appUserGuid);
+  async findOne(@Args("appUserGuid") appUserGuid: string) {
+    return await this.appUserTeamXrefService.findOne(appUserGuid);
   }
 
   @Mutation("createAppUserTeamXref")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  create(@Args("input") input: CreateAppUserTeamXrefInput) {
-    return this.appUserTeamXrefService.create(input);
+  async create(@Args("input") input: CreateAppUserTeamXrefInput) {
+    return await this.appUserTeamXrefService.create(input);
   }
 
   @Mutation("updateAppUserTeamXref")
   @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
-  update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserTeamXrefInput) {
-    return this.appUserTeamXrefService.update(appUserGuid, input);
+  async update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserTeamXrefInput) {
+    return await this.appUserTeamXrefService.update(appUserGuid, input);
   }
 
   @Mutation("deleteAppUserTeamXref")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  delete(@Args("appUserTeamXrefGuid") appUserTeamXrefGuid: string) {
-    return this.appUserTeamXrefService.delete(appUserTeamXrefGuid);
+  async delete(@Args("appUserTeamXrefGuid") appUserTeamXrefGuid: string) {
+    return await this.appUserTeamXrefService.delete(appUserTeamXrefGuid);
   }
 }

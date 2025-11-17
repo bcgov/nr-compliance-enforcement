@@ -18,7 +18,7 @@ export class AttractantHwcrXrefService {
 
   async create(queryRunner: QueryRunner, createAttractantHwcrXrefDto: CreateAttractantHwcrXrefDto) {
     const createdValue = await this.attractantHwcrXrefRepository.create(createAttractantHwcrXrefDto);
-    queryRunner.manager.save(createdValue);
+    await queryRunner.manager.save(createdValue);
     return createdValue;
   }
 
@@ -68,7 +68,7 @@ export class AttractantHwcrXrefService {
           };
 
           const createdResult = await this.attractantHwcrXrefRepository.create(attractant);
-          queryRunner.manager.save(createdResult);
+          await queryRunner.manager.save(createdResult);
         } else {
           //-- update the attractant IF its active_ind is false
           const { active_ind: isActive, attractant_hwcr_xref_guid: xrefId } = item;
