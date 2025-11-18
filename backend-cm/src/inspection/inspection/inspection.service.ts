@@ -117,11 +117,19 @@ export class InspectionService {
         where: {
           person_guid_ref: partyId,
           active_ind: true,
+          inspection_party: {
+            is: {
+              active_ind: true,
+            },
+          },
         },
         include: {
           inspection_party: {
             include: {
               inspection: true,
+            },
+            where: {
+              active_ind: true,
             },
           },
         },
@@ -131,6 +139,11 @@ export class InspectionService {
         where: {
           business_guid_ref: partyId,
           active_ind: true,
+          inspection_party: {
+            is: {
+              active_ind: true,
+            },
+          },
         },
         include: {
           inspection_party: {
