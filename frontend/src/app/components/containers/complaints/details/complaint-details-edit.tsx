@@ -140,7 +140,7 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [id, dispatch, allOfficers]);
 
   useEffect(() => {
-    if (!data) {
+    if (!data || data.id !== id) {
       dispatch(getComplaintById(id, complaintType));
     }
   }, [id, complaintType, dispatch, data]);
