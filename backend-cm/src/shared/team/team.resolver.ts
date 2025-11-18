@@ -12,13 +12,13 @@ export class TeamResolver {
 
   @Query("teams")
   @Roles(coreRoles)
-  findAll(@Args("teamCode") teamCode?: string, @Args("agencyCode") agencyCode?: string) {
-    return this.teamService.findAll(teamCode, agencyCode);
+  async findAll(@Args("teamCode") teamCode?: string, @Args("agencyCode") agencyCode?: string) {
+    return await this.teamService.findAll(teamCode, agencyCode);
   }
 
   @Query("team")
   @Roles(coreRoles)
-  findOne(@Args("teamGuid") teamGuid: string) {
-    return this.teamService.findOne(teamGuid);
+  async findOne(@Args("teamGuid") teamGuid: string) {
+    return await this.teamService.findOne(teamGuid);
   }
 }

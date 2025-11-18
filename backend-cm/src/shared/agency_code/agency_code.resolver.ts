@@ -12,7 +12,7 @@ export class AgencyCodeResolver {
 
   @Query("agencyCodes")
   @Roles(coreRoles)
-  findAll() {
-    return this.agencyCodeService.findAll();
+  async findAll() {
+    return await this.agencyCodeService.findAll();
   }
 }

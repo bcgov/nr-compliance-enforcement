@@ -17,35 +17,35 @@ export class AppUserResolver {
 
   @Query("appUsers")
   @Roles(coreRoles)
-  findAll(@Args("officeGuids") officeGuids?: string[], @Args("agencyCode") agencyCode?: string) {
-    return this.appUserService.findAll(officeGuids, agencyCode);
+  async findAll(@Args("officeGuids") officeGuids?: string[], @Args("agencyCode") agencyCode?: string) {
+    return await this.appUserService.findAll(officeGuids, agencyCode);
   }
 
   @Query("appUser")
   @Roles(coreRoles)
-  findOne(
+  async findOne(
     @Args("appUserGuid") appUserGuid?: string,
     @Args("userId") userId?: string,
     @Args("authUserGuid") authUserGuid?: string,
   ) {
-    return this.appUserService.findOne(userId, authUserGuid, appUserGuid);
+    return await this.appUserService.findOne(userId, authUserGuid, appUserGuid);
   }
 
   @Query("searchAppUsers")
   @Roles(coreRoles)
-  search(@Args("searchTerm") searchTerm: string) {
-    return this.appUserService.search(searchTerm);
+  async search(@Args("searchTerm") searchTerm: string) {
+    return await this.appUserService.search(searchTerm);
   }
 
   @Mutation("createAppUser")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  create(@Args("input") input: CreateAppUserInput) {
-    return this.appUserService.create(input);
+  async create(@Args("input") input: CreateAppUserInput) {
+    return await this.appUserService.create(input);
   }
 
   @Mutation("updateAppUser")
   @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
-  update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserInput) {
-    return this.appUserService.update(appUserGuid, input);
+  async update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserInput) {
+    return await this.appUserService.update(appUserGuid, input);
   }
 }
