@@ -90,7 +90,7 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "contraventions":
-        return <InvestigationContraventions />;
+        return <InvestigationContraventions investigationGuid={investigationGuid} />;
       case "documents":
         return <InvestigationDocumentation />;
       case "continuation":

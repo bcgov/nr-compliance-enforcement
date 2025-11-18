@@ -88,3 +88,40 @@ $modal-md: 508px !default;
     padding-bottom: 0.5rem;
   }
 }
+
+// Contraventions modal
+.contravention-modal-subtitle {
+  font-size: 16px !important;
+}
+
+.contravention-alternate-text {
+  background-color: #f8f9fa; /* light grey */
+  border: 1px solid #ced4da; /* soft, classy border */
+  border-radius: 6px; /* slightly rounded corners */
+  padding: 12px 16px; /* some breathing room */
+  margin-top: 8px; /* space above */
+  font-style: italic; /* optional, gives it a distinct style */
+  color: #495057; /* dark grey text for readability */
+}
+
+.contravention-section {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.contravention-section:hover {
+  background-color: #f0f0f0;
+}
+
+.contravention-section.selected {
+  background-color: #e0e0e0;
+}
+
+.contravention-section p {
+  margin: 0;
+}
