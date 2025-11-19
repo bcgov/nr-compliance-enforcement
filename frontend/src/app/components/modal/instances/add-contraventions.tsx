@@ -1,20 +1,12 @@
 import { FC, memo, useMemo, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { selectModalData, isLoading } from "@store/reducers/app";
+import { selectModalData } from "@store/reducers/app";
 import { useForm } from "@tanstack/react-form";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
-import { gql } from "graphql-request";
-
-const GET_ACTS = gql`
-  query GetLegislation($agencyCode: String, $legislationTypeCode: String) {
-    legislation(agencyCode: $agencyCode, legislationTypeCode: $legislationTypeCode) {
-      legislationGuid
-      legislationText
-    }
-  }
-`;
+import { convertLegislationToOption, useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { getUserAgency } from "@/app/service/user-service";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -37,41 +29,38 @@ type AddContraventionModalProps = {
 };
 
 export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activityType, close, submit }) => {
+  // Form Definition
+  const defaultValues = useMemo(
+    () => ({
+      name: "",
+      description: "",
+      act: "",
+      regulation: "",
+      section: "",
+    }),
+    [],
+  );
+
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      submit();
+      close();
+    },
+  });
+
   // Selectors
-  const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
-  const actOptions = [
-    { value: "EMA", label: "Environmental Management Act" },
-    { value: "PA", label: "Park Act" },
-  ];
-  const regOptions = [
-    { value: "HWR", label: "Hazardous Waste Regulation" },
-    { value: "PCRAR", label: "Park, Conservancy and Recreation Area Regulation" },
-  ];
-  const secOptions = [
-    { value: "6", label: "6. Waste record" },
-    { value: "7", label: "7. Hazardous waste - confinement" },
-    { value: "8", label: "8. Hazardous waste management facility" },
-    { value: "9", label: "9. Hazardous waste storage and disposal" },
-    { value: "4", label: "4. Permits for guiding required" },
-    { value: "5", label: "5. Permits for trapping required" },
-    { value: "77", label: "7. Must give information" },
-  ];
+  const userAgency = getUserAgency();
 
-  const actToRegulations: { [key: string]: string[] } = {
-    EMA: ["HWR"],
-    PA: ["PCRAR"],
-  };
+  // GQL driven data
+  const { data, isLoading, error } = useLegislationSearchQuery({
+    agencyCode: userAgency,
+    legislationTypeCode: "ACT",
+    enabled: true,
+  });
 
-  const actToSection: { [key: string]: string[] } = {
-    EMA: ["7", "8", "9", "6"],
-    PA: ["4", "5", "77"],
-  };
-
-  const regToSection: { [key: string]: string[] } = {
-    HWR: ["6"],
-    PCRAR: ["4", "5", "77"],
-  };
+  const actOptions = convertLegislationToOption(data?.legislation ?? []);
 
   const sectionContent: { [key: string]: Array<{ id: string; name: string; content: JSX.Element }> } = {
     "6": [
@@ -291,25 +280,6 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   // State
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const defaultValues = useMemo(
-    () => ({
-      name: "",
-      description: "",
-      act: "",
-      regulation: "",
-      section: "",
-    }),
-    [],
-  );
-
-  const form = useForm({
-    defaultValues,
-    onSubmit: async ({ value }) => {
-      submit();
-      close();
-    },
-  });
-
   function getNameFromId(id: string): string | undefined {
     for (const key in sectionContent) {
       const match = sectionContent[key].find((s) => s.id === id);
@@ -325,11 +295,11 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         </Modal.Header>
       )}
       <Modal.Body className="modal-create-add-case">
-        {loading && <ModalLoading />}
+        {isLoading && <ModalLoading />}
         <div
           className="comp-details-body"
           style={{
-            visibility: loading ? "hidden" : "inherit",
+            visibility: isLoading ? "hidden" : "inherit",
             display: "inherit",
           }}
         >
@@ -367,10 +337,14 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
               selector={(state) => state.values.act}
               children={(actValue) => {
                 // Filter regulation options based on selected act
-                const filteredRegOptions =
-                  actValue && actToRegulations[actValue]
-                    ? regOptions.filter((opt) => actToRegulations[actValue].includes(opt.value))
-                    : regOptions;
+                const { data, isLoading, error } = useLegislationSearchQuery({
+                  agencyCode: userAgency,
+                  legislationTypeCode: "REG",
+                  ancestorGuid: actValue || "", // Provide default value
+                  enabled: !!actValue, // Only query if a value has been selected
+                });
+
+                const regOptions = convertLegislationToOption(data?.legislation ?? []);
 
                 return (
                   actValue && (
@@ -384,8 +358,8 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                             id="regulation-select"
                             classNamePrefix="comp-select"
                             className="comp-details-input"
-                            options={filteredRegOptions}
-                            value={filteredRegOptions.find((opt) => opt.value === field.state.value)}
+                            options={regOptions}
+                            value={regOptions.find((opt) => opt.value === field.state.value)}
                             onChange={(option) => field.handleChange(option?.value || "")}
                             placeholder="Select regulation"
                             isClearable={true}
@@ -400,15 +374,14 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                         selector={(state) => ({ act: state.values.act, regulation: state.values.regulation })}
                         children={({ act, regulation }) => {
                           // Filter sections based on regulation if present, otherwise by act
-                          let filteredSecOptions = secOptions;
+                          const { data, isLoading, error } = useLegislationSearchQuery({
+                            agencyCode: userAgency,
+                            legislationTypeCode: "SEC",
+                            ancestorGuid: regulation || act,
+                            enabled: !!regulation || !!act,
+                          });
 
-                          if (regulation && regToSection[regulation]) {
-                            filteredSecOptions = secOptions.filter((opt) =>
-                              regToSection[regulation].includes(opt.value),
-                            );
-                          } else if (act && actToSection[act]) {
-                            filteredSecOptions = secOptions.filter((opt) => actToSection[act].includes(opt.value));
-                          }
+                          const secOptions = convertLegislationToOption(data?.legislation ?? []);
 
                           return (
                             <FormField
@@ -420,8 +393,8 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                                   id="section-select"
                                   classNamePrefix="comp-select"
                                   className="comp-details-input"
-                                  options={filteredSecOptions}
-                                  value={filteredSecOptions.find((opt) => opt.value === field.state.value)}
+                                  options={secOptions}
+                                  value={secOptions.find((opt) => opt.value === field.state.value)}
                                   onChange={(option) => field.handleChange(option?.value || "")}
                                   placeholder="Select section"
                                   isClearable={true}

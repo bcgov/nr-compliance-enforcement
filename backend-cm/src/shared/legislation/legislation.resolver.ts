@@ -15,9 +15,8 @@ export class LegislationResolver {
   findMany(
     @Args("agencyCode") agencyCode: string,
     @Args("legislationTypeCode") legislationTypeCode?: string,
-    @Args("parentGuid") parentGuid?: string,
-    @Args("directDescendantsOnly") directDescendantsOnly?: boolean,
+    @Args("ancestorGuid") ancestorGuid?: string,
   ) {
-    return this.legislationService.findMany(agencyCode, legislationTypeCode, parentGuid, directDescendantsOnly);
+    return this.legislationService.findMany(agencyCode, legislationTypeCode, ancestorGuid);
   }
 }

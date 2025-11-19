@@ -917,6 +917,19 @@ export type KeyValuePairInput = {
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Legislation = {
+  __typename?: 'Legislation';
+  alternateText?: Maybe<Scalars['String']['output']>;
+  citation?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  fullCitation?: Maybe<Scalars['String']['output']>;
+  legislationGuid?: Maybe<Scalars['String']['output']>;
+  legislationText?: Maybe<Scalars['String']['output']>;
+  legislationTypeCode?: Maybe<Scalars['String']['output']>;
+  parentGuid?: Maybe<Scalars['String']['output']>;
+  sectionTitle?: Maybe<Scalars['String']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
@@ -1475,6 +1488,7 @@ export type Query = {
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
+  legislation: Array<Maybe<Legislation>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;
@@ -1663,6 +1677,14 @@ export type QuerygetParksByAreaArgs = {
 
 export type QueryinactionJustificationCodesArgs = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerylegislationArgs = {
+  agencyCode: Scalars['String']['input'];
+  directDescendantsOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  legislationTypeCode?: InputMaybe<Scalars['String']['input']>;
+  parentGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 
