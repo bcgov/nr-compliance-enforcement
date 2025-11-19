@@ -63,7 +63,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   const actOptions = convertLegislationToOption(data?.legislation ?? []);
 
   const sectionContent: { [key: string]: Array<{ id: string; name: string; content: JSX.Element }> } = {
-    "6": [
+    "8f7e5b45-ac1c-419c-b063-dc319ff55aff": [
       {
         id: "6(1)",
         name: "Hazardous Waste Regulation 64/88 s.6(1) : The owner of a hazardous waste facility must keep for inspection by an officer an operating record at the facility and must record in a written or retrievable electronic form the following information for each hazardous waste received, stored or shipped:",
@@ -104,7 +104,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         content: <p className="ms-4">(b) the quantity in kilograms or litres</p>,
       },
     ],
-    "7": [
+    "be637fda-e5ae-455d-851e-d75922b51c4f": [
       {
         id: "7(1)",
         name: "Environmental Management Act SBC 2003 s.7(1) : A person who produces, stores, transports, handles, treats, recycles, deals with, processes or owns a hazardous waste must keep the hazardous waste confined in accordance with the regulations.",
@@ -128,7 +128,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         ),
       },
     ],
-    "8": [
+    "5b1fb227-fa10-4b5a-bcdf-88faa80c8e91": [
       {
         id: "8",
         name: "Environmental Management Act SBC 2003 s.8 : Unauthorized operation of hazardous waste site",
@@ -142,7 +142,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         ),
       },
     ],
-    "9": [
+    "7f900312-c052-486e-a6d0-70c32e2566f7": [
       {
         id: "9(1)",
         name: "Environmental Management Act SBC 2003 s.9(1) : Unlawful storage of hazardous waste",
@@ -206,7 +206,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         ),
       },
     ],
-    "4": [
+    "33ad4c7d-86df-4f33-8078-17f68a8fa8f6": [
       {
         id: "4",
         name: "Park, Conservancy and Recreation Area Regulation 180/90 s.4 : A person must not act as a guide or offer services as a guide in a park, conservancy or recreation area without",
@@ -230,7 +230,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         content: <p className="ms-4">(b) a licence or permit to guide if required by or under the Wildlife Act</p>,
       },
     ],
-    "5": [
+    "8d281e80-dfe3-49e5-a3ce-68a7b9835151": [
       {
         id: "5",
         name: "Park, Conservancy and Recreation Area Regulation 180/90 s.5 : Trap without permit",
@@ -255,7 +255,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
         content: <p className="ms-4">(b) a licence or permit to trap issued under the Wildlife Act.</p>,
       },
     ],
-    "77": [
+    "19b5f25c-7798-4b1a-8622-199cde0a62e6": [
       {
         id: "7",
         name: "Park, Conservancy and Recreation Area Regulation 180/90 s.7 : Fail to give information",

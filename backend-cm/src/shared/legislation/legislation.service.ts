@@ -55,7 +55,6 @@ export class LegislationService {
           AND lax.agency_code = '${agencyCode}'
       )
   `);
-    console.log(prismaLegislation);
     try {
       return this.mapper.mapArray<legislation, Legislation>(prismaLegislation, "legislation", "Legislation");
     } catch (error) {
