@@ -12,7 +12,7 @@ export class GeoOrganizationUnitCodeResolver {
 
   @Query("geoOrganizationUnitCodes")
   @Roles(coreRoles)
-  findAll() {
-    return this.geoOrganizationUnitCodeService.findAll();
+  async findAll() {
+    return await this.geoOrganizationUnitCodeService.findAll();
   }
 }

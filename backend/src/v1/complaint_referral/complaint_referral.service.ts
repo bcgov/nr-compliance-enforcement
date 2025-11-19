@@ -89,22 +89,20 @@ export class ComplaintReferralService {
       );
 
       // Log the email recipients
-      const createPromises = recipientList.map((emailAddress) => {
-        const emailReferralLog: CreateComplaintReferralEmailLogDto = {
-          complaint_referral_email_log_guid: uuidv4(),
-          email_address: emailAddress,
-          email_sent_utc_timestamp: new Date(),
-          create_user_id: idir,
-          create_utc_timestamp: new Date(),
-          update_user_id: idir,
-          update_utc_timestamp: new Date(),
-          complaint_referral_guid: result.complaint_referral_guid,
-        };
-        return this._complaintReferralEmailLogService.create(emailReferralLog);
-      });
-
       try {
-        await Promise.all(createPromises);
+        for (const emailAddress of recipientList) {
+          const emailReferralLog: CreateComplaintReferralEmailLogDto = {
+            complaint_referral_email_log_guid: uuidv4(),
+            email_address: emailAddress,
+            email_sent_utc_timestamp: new Date(),
+            create_user_id: idir,
+            create_utc_timestamp: new Date(),
+            update_user_id: idir,
+            update_utc_timestamp: new Date(),
+            complaint_referral_guid: result.complaint_referral_guid,
+          };
+          await this._complaintReferralEmailLogService.create(emailReferralLog);
+        }
       } catch (error) {
         console.error("Error creating one or more email logs:", error);
       }

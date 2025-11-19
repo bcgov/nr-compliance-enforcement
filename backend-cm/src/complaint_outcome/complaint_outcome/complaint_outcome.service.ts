@@ -560,58 +560,57 @@ export class ComplaintOutcomeService {
       }
 
       if (queryResult.assessment && queryResult.assessment.length !== 0) {
-        const assessments = await Promise.all(
-          queryResult.assessment.map(async (assessment) => {
-            const {
-              assessment_guid: id,
-              outcome_agency_code: outcomeAgencyCode,
-              inaction_reason_code: actionJustificationCode,
-              inaction_reason_code_assessment_inaction_reason_codeToinaction_reason_code: reason,
-              action_not_required_ind: actionNotRequired,
-              complainant_contacted_ind: contactedComplainant,
-              attended_ind: attended,
-              case_location_code_assessment_case_location_codeTocase_location_code: locationType,
-              conflict_history_code: conflictHistory,
-              threat_level_code: categoryLevel,
-            } = assessment;
+        const assessments = [];
+        for (const assessment of queryResult.assessment) {
+          const {
+            assessment_guid: id,
+            outcome_agency_code: outcomeAgencyCode,
+            inaction_reason_code: actionJustificationCode,
+            inaction_reason_code_assessment_inaction_reason_codeToinaction_reason_code: reason,
+            action_not_required_ind: actionNotRequired,
+            complainant_contacted_ind: contactedComplainant,
+            attended_ind: attended,
+            case_location_code_assessment_case_location_codeTocase_location_code: locationType,
+            conflict_history_code: conflictHistory,
+            threat_level_code: categoryLevel,
+          } = assessment;
 
-            const actions = await this.caseFileActionService.findActionsByAssessmentIdAndType(
-              id,
-              ACTION_TYPE_CODES.COMPASSESS,
-            );
-            const cat1Actions = await this.caseFileActionService.findActionsByAssessmentIdAndType(
-              id,
-              ACTION_TYPE_CODES.CAT1ASSESS,
-            );
+          const actions = await this.caseFileActionService.findActionsByAssessmentIdAndType(
+            id,
+            ACTION_TYPE_CODES.COMPASSESS,
+          );
+          const cat1Actions = await this.caseFileActionService.findActionsByAssessmentIdAndType(
+            id,
+            ACTION_TYPE_CODES.CAT1ASSESS,
+          );
 
-            return {
-              id,
-              complaintOutcomeGuid: complaintOutcomeGuid,
-              outcomeAgencyCode,
-              actionNotRequired,
-              actionJustificationCode,
-              actionJustificationShortDescription: reason?.short_description ?? null,
-              actionJustificationLongDescription: reason?.long_description ?? null,
-              actionJustificationActiveIndicator: reason?.active_ind ?? null,
-              actions,
-              cat1Actions,
-              contactedComplainant,
-              attended,
-              conflictHistory: {
-                key: conflictHistory?.short_description ?? "",
-                value: conflictHistory?.conflict_history_code ?? "",
-              },
-              locationType: {
-                key: locationType?.short_description ?? "",
-                value: locationType?.case_location_code ?? "",
-              },
-              categoryLevel: {
-                key: categoryLevel?.short_description ?? "",
-                value: categoryLevel?.threat_level_code ?? "",
-              },
-            };
-          }),
-        );
+          assessments.push({
+            id,
+            complaintOutcomeGuid: complaintOutcomeGuid,
+            outcomeAgencyCode,
+            actionNotRequired,
+            actionJustificationCode,
+            actionJustificationShortDescription: reason?.short_description ?? null,
+            actionJustificationLongDescription: reason?.long_description ?? null,
+            actionJustificationActiveIndicator: reason?.active_ind ?? null,
+            actions,
+            cat1Actions,
+            contactedComplainant,
+            attended,
+            conflictHistory: {
+              key: conflictHistory?.short_description ?? "",
+              value: conflictHistory?.conflict_history_code ?? "",
+            },
+            locationType: {
+              key: locationType?.short_description ?? "",
+              value: locationType?.case_location_code ?? "",
+            },
+            categoryLevel: {
+              key: categoryLevel?.short_description ?? "",
+              value: categoryLevel?.threat_level_code ?? "",
+            },
+          });
+        }
         caseFile.assessment = assessments;
       }
 

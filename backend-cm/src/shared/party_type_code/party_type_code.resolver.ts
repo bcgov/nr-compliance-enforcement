@@ -12,7 +12,7 @@ export class PartyTypeCodeResolver {
 
   @Query("partyTypeCodes")
   @Roles(coreRoles)
-  findAll() {
-    return this.partyTypeCodeService.findAll();
+  async findAll() {
+    return await this.partyTypeCodeService.findAll();
   }
 }

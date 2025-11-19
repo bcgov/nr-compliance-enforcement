@@ -17,7 +17,7 @@ export class FeatureFlagService {
 
   async create(queryRunner: QueryRunner, createFeatureAgencyXrefDto: CreateFeatureAgencyXrefDto) {
     const createdValue = await this.featureAgencyXrefRepository.create(createFeatureAgencyXrefDto);
-    queryRunner.manager.save(createdValue);
+    await queryRunner.manager.save(createdValue);
     return createdValue;
   }
 
