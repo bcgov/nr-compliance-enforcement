@@ -145,7 +145,7 @@ export class AppModule {
     initializeMappings(this.mapper); // ✅ Ensures mappings are registered after DI is ready
   }
 
-  // let's add a middleware on all routes
+  // let's add a middleware on all routes.
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HTTPLoggerMiddleware).forRoutes("*");
   }

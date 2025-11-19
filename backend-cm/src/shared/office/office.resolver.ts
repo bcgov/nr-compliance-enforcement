@@ -13,38 +13,38 @@ export class OfficeResolver {
 
   @Query("offices")
   @Roles(coreRoles)
-  findAll(
+  async findAll(
     @Args("geoOrganizationUnitCodes") geoOrganizationUnitCodes?: string[],
     @Args("agencyCode") agencyCode?: string,
   ) {
-    return this.officeService.findAll(geoOrganizationUnitCodes, agencyCode);
+    return await this.officeService.findAll(geoOrganizationUnitCodes, agencyCode);
   }
 
   @Query("office")
   @Roles(coreRoles)
-  findOne(
+  async findOne(
     @Args("officeGuid") officeGuid?: string,
     @Args("geoOrganizationUnitCode") geoOrganizationUnitCode?: string,
     @Args("agencyCode") agencyCode?: string,
   ) {
-    return this.officeService.findOne(officeGuid, geoOrganizationUnitCode, agencyCode);
+    return await this.officeService.findOne(officeGuid, geoOrganizationUnitCode, agencyCode);
   }
 
   @Mutation("createOffice")
   @Roles(Role.TEMPORARY_TEST_ADMIN)
-  create(@Args("input") input: CreateOfficeInput) {
-    return this.officeService.create(input);
+  async create(@Args("input") input: CreateOfficeInput) {
+    return await this.officeService.create(input);
   }
 
   @Mutation("updateOffice")
   @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
-  update(@Args("officeGuid") officeGuid: string, @Args("input") input: UpdateOfficeInput) {
-    return this.officeService.update(officeGuid, input);
+  async update(@Args("officeGuid") officeGuid: string, @Args("input") input: UpdateOfficeInput) {
+    return await this.officeService.update(officeGuid, input);
   }
 
   @Query("officesByZone")
   @Roles(coreRoles)
-  findOfficesByZone(@Args("zoneCode") zoneCode: string) {
-    return this.officeService.findOfficesByZone(zoneCode);
+  async findOfficesByZone(@Args("zoneCode") zoneCode: string) {
+    return await this.officeService.findOfficesByZone(zoneCode);
   }
 }

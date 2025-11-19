@@ -70,7 +70,8 @@ export class OfficeService {
   }
 
   findOffices = async (token: string): Promise<Array<OfficeAssignmentDto>> => {
-    const [offices, cosGeoOrgUnits] = await Promise.all([getOffices(token), getCosGeoOrgUnits(token)]);
+    const offices = await getOffices(token);
+    const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
 
     const results = offices.map((office) => {
       const geoUnit = cosGeoOrgUnits.find((unit) => unit.officeLocationCode === office.geoOrganizationUnitCode);

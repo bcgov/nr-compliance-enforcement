@@ -33,24 +33,14 @@ export class AppUserService {
 
     if (roleMapping) {
       let useGuid: string;
-      appUsers = appUsers.map((user) => {
-        useGuid = Object.keys(roleMapping).find((key) => key === user.authUserGuid);
-        const userRoles = roleMapping[useGuid] ?? [];
-
-        return {
-          app_user_guid: user.appUserGuid,
-          auth_user_guid: user.authUserGuid,
-          user_id: user.userId,
-          first_name: user.firstName,
-          last_name: user.lastName,
-          office_guid: user.officeGuid,
-          agency_code_ref: user.agencyCode,
-          coms_enrolled_ind: user.comsEnrolledIndicator,
-          deactivate_ind: user.deactivateIndicator,
-          park_area_guid: user.parkAreaGuid,
-          user_roles: userRoles,
-        };
-      });
+      appUsers = await Promise.all(
+        appUsers.map(async (user) => {
+          useGuid = Object.keys(roleMapping).find((key) => key === user.authUserGuid);
+          const userRoles = roleMapping[useGuid] ?? [];
+          const mappedUserToOffice = await this.mapAppUserToDtoWithOffice(user, token);
+          return { ...mappedUserToOffice, user_roles: userRoles };
+        }),
+      );
     }
 
     return appUsers;
@@ -245,6 +235,7 @@ export class AppUserService {
                 region_name: cosGeoOrgUnit.regionName,
                 zone_code: cosGeoOrgUnit.zoneCode,
                 zone_name: cosGeoOrgUnit.zoneName,
+                administrative_office_ind: cosGeoOrgUnit.administrativeOfficeIndicator,
               },
             };
           } else {
