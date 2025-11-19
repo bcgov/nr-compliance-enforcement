@@ -26,10 +26,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         },
         callback: () => {
           // Add the new contravention to the list
-          setContraventions((prev) => [
-            ...prev,
-            "Environmental Management Act SBC 2003 s.9(1) : Unlawful storage of hazardous waste",
-          ]);
+          const contravention = localStorage.getItem("contraventions");
+          setContraventions((prev) => [...prev, contravention]);
         },
       }),
     );
