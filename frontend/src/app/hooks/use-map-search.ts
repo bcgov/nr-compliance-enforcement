@@ -39,11 +39,10 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
         const model: Record<string, any> = { zoom };
 
         if (
-          bbox &&
-          bbox.west !== undefined &&
-          bbox.south !== undefined &&
-          bbox.east !== undefined &&
-          bbox.north !== undefined
+          bbox?.west !== undefined &&
+          bbox?.south !== undefined &&
+          bbox?.east !== undefined &&
+          bbox?.north !== undefined
         ) {
           model.bbox = `${bbox.west},${bbox.south},${bbox.east},${bbox.north}`;
         }
