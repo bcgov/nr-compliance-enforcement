@@ -1,4 +1,4 @@
-import { FC, memo, useMemo, useState } from "react";
+import { FC, memo, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -8,8 +8,22 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { convertLegislationToOption, useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
 import { indentByType, Legislation } from "@/app/types/app/legislation";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
 type ActivityType = "investigation" | "inspection";
+
+const ADD_CONTRAVENTION = gql`
+  mutation AddContraventionToInvestigation($investigationGuid: String!, $legislationReference: String!) {
+    addContraventionToInvestigation(
+      investigationGuid: $investigationGuid
+      legislationReference: $legislationReference
+    ) {
+      investigationGuid
+    }
+  }
+`;
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -50,6 +64,16 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   const [selectedSection, setSelectedSection] = useState<string>();
 
   // Hooks
+  const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
+    onSuccess: () => {
+      ToggleSuccess("Contravention added successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error adding party:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add party");
+    },
+  });
+
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [Legislation.ACT],
@@ -94,6 +118,18 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   const errorMessages = [actsQuery.error, regulationsQuery.error, sectionsQuery.error, legislationTextQuery.error]
     .filter(Boolean) // remove undefined/null
     .map((err) => (err as Error).message || String(err));
+
+  const handleAddContravention = async () => {
+    if (!selectedSection) {
+      errorMessages.push("Please select a contravention to add.");
+      return;
+    }
+
+    addContraventionMutation.mutate({ investigationGuid: activityGuid, legislationReference: selectedSection });
+
+    submit();
+    close();
+  };
 
   return (
     <>
@@ -260,8 +296,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
             id="add-contravention-save-button"
             title="Save Add Contravention"
             onClick={() => {
-              submit();
-              close();
+              handleAddContravention();
             }}
           >
             <i className="bi bi-check-circle"></i>
