@@ -53,22 +53,55 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   // Selectors
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
+  const { title, activityGuid } = modalData;
 
-  // GQL driven data
-  const { data, isLoading, error } = useLegislationSearchQuery({
+  // State
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [act, setAct] = useState("");
+  const [regulation, setRegulation] = useState("");
+  const [section, setSection] = useState("");
+  const [selectedSection, setSelectedSection] = useState<string>();
+
+  // Hooks
+  const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [Legislation.ACT],
     enabled: true,
   });
 
-  const actOptions = convertLegislationToOption(data?.legislation ?? []);
+  const regulationsQuery = useLegislationSearchQuery({
+    agencyCode: userAgency,
+    legislationTypeCodes: [Legislation.REGULATION],
+    ancestorGuid: act || "",
+    enabled: !!act,
+  });
 
-  // Vars
-  const { title, activityGuid } = modalData;
+  const sectionsQuery = useLegislationSearchQuery({
+    agencyCode: userAgency,
+    legislationTypeCodes: [Legislation.SECTION],
+    ancestorGuid: regulation || act,
+    enabled: !!regulation || !!act,
+  });
 
-  // State
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [selectedSection, setSelectedSection] = useState<string>();
+  const legislationTextQuery = useLegislationSearchQuery({
+    agencyCode: userAgency,
+    legislationTypeCodes: [
+      Legislation.SECTION,
+      Legislation.SUBSECTION,
+      Legislation.PARAGRAPH,
+      Legislation.SUBPARAGRAPH,
+    ],
+    ancestorGuid: section,
+    enabled: !!section,
+  });
+
+  const actOptions = convertLegislationToOption(actsQuery.data?.legislation ?? []);
+  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislation ?? []);
+  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislation ?? []);
+  const legislationText = legislationTextQuery.data?.legislation?.filter((section) => !!section.legislationText) ?? [];
+
+  const isLoading =
+    actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;
 
   return (
     <>
@@ -107,7 +140,14 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                   className="comp-details-input"
                   options={actOptions}
                   value={actOptions.find((opt) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    field.handleChange(value);
+                    setAct(value);
+                    // Reset dependent fields when act changes
+                    setRegulation("");
+                    setSection("");
+                  }}
                   placeholder="Select act"
                   isClearable={true}
                   showInactive={false}
@@ -116,134 +156,88 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                 />
               )}
             />
-            <form.Subscribe selector={(state) => state.values.act}>
-              {(actValue) => {
-                // Filter regulation options based on selected act
-                const { data, isLoading, error } = useLegislationSearchQuery({
-                  agencyCode: userAgency,
-                  legislationTypeCodes: [Legislation.REGULATION],
-                  ancestorGuid: actValue || "", // Provide default value
-                  enabled: !!actValue, // Only query if a value has been selected
-                });
 
-                const regOptions = convertLegislationToOption(data?.legislation ?? []);
+            {act && (
+              <>
+                <FormField
+                  form={form}
+                  name="regulation"
+                  label="Regulation"
+                  render={(field) => (
+                    <CompSelect
+                      id="regulation-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={regOptions}
+                      value={regOptions.find((opt) => opt.value === field.state.value)}
+                      onChange={(option) => {
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                        setRegulation(value);
+                        // Reset section when regulation changes
+                        setSection("");
+                      }}
+                      placeholder="Select regulation"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
 
-                return (
-                  actValue && (
-                    <>
-                      <FormField
-                        form={form}
-                        name="regulation"
-                        label="Regulation"
-                        render={(field) => (
-                          <CompSelect
-                            id="regulation-select"
-                            classNamePrefix="comp-select"
-                            className="comp-details-input"
-                            options={regOptions}
-                            value={regOptions.find((opt) => opt.value === field.state.value)}
-                            onChange={(option) => field.handleChange(option?.value || "")}
-                            placeholder="Select regulation"
-                            isClearable={true}
-                            showInactive={false}
-                            enableValidation={true}
-                            errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                          />
+                <FormField
+                  form={form}
+                  name="section"
+                  label="Section"
+                  render={(field) => (
+                    <CompSelect
+                      id="section-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input mb-4"
+                      options={secOptions}
+                      value={secOptions.find((opt) => opt.value === field.state.value)}
+                      onChange={(option) => {
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                        setSection(value);
+                      }}
+                      placeholder="Select section"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
+              </>
+            )}
+
+            {section && legislationText.length > 0 && (
+              <>
+                {legislationText.map((section) => {
+                  const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+                  return (
+                    <button
+                      key={section.legislationGuid}
+                      type="button"
+                      className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
+                      onClick={() => setSelectedSection(section.legislationGuid as string)}
+                    >
+                      <div>
+                        <p className={`mb-2 ${indentClass}`}>
+                          {section.legislationTypeCode !== Legislation.SECTION && <>{section.citation}</>}{" "}
+                          {section.legislationText}
+                        </p>
+                        {section.alternateText && (
+                          <div className="contravention-alternate-text">{section.alternateText}</div>
                         )}
-                      />
-
-                      <form.Subscribe
-                        selector={(state) => ({ act: state.values.act, regulation: state.values.regulation })}
-                      >
-                        {({ act, regulation }) => {
-                          // Filter sections based on regulation if present, otherwise by act
-                          const { data, isLoading, error } = useLegislationSearchQuery({
-                            agencyCode: userAgency,
-                            legislationTypeCodes: [Legislation.SECTION],
-                            ancestorGuid: regulation || act,
-                            enabled: !!regulation || !!act,
-                          });
-
-                          const secOptions = convertLegislationToOption(data?.legislation ?? []);
-
-                          return (
-                            <FormField
-                              form={form}
-                              name="section"
-                              label="Section"
-                              render={(field) => (
-                                <CompSelect
-                                  id="section-select"
-                                  classNamePrefix="comp-select"
-                                  className="comp-details-input mb-4"
-                                  options={secOptions}
-                                  value={secOptions.find((opt) => opt.value === field.state.value)}
-                                  onChange={(option) => field.handleChange(option?.value || "")}
-                                  placeholder="Select section"
-                                  isClearable={true}
-                                  showInactive={false}
-                                  enableValidation={true}
-                                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                                />
-                              )}
-                            />
-                          );
-                        }}
-                      </form.Subscribe>
-                    </>
-                  )
-                );
-              }}
-            </form.Subscribe>
-            <form.Subscribe selector={(state) => state.values.section}>
-              {(sectionValue) => {
-                const { data, isLoading, error } = useLegislationSearchQuery({
-                  agencyCode: userAgency,
-                  legislationTypeCodes: [
-                    Legislation.SECTION,
-                    Legislation.SUBSECTION,
-                    Legislation.PARAGRAPH,
-                    Legislation.SUBPARAGRAPH,
-                  ],
-                  ancestorGuid: sectionValue, // Provide default value
-                  enabled: !!sectionValue, // Only query if a value has been selected
-                });
-
-                return (
-                  sectionValue &&
-                  data?.legislation && (
-                    <>
-                      {data.legislation
-                        .filter((section) => !!section.legislationText)
-                        .map((section) => {
-                          const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
-                          return (
-                            <button
-                              key={section.legislationGuid}
-                              type="button"
-                              className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
-                              onClick={() => setSelectedSection(section.legislationGuid as string)}
-                            >
-                              <div>
-                                <p className={`mb-2 ${indentClass}`}>
-                                  {/* If we're getting a section here it's a special case where there is nothing else 
-                                      in the legislation this is considered to not have an implied (1) as it is the only one.
-                                    */}
-                                  {section.legislationTypeCode !== Legislation.SECTION && <>{section.citation}</>}{" "}
-                                  {section.legislationText}
-                                </p>
-                                {section.alternateText && (
-                                  <div className="contravention-alternate-text">{section.alternateText}</div>
-                                )}
-                              </div>
-                            </button>
-                          );
-                        })}
-                    </>
-                  )
-                );
-              }}
-            </form.Subscribe>
+                      </div>
+                    </button>
+                  );
+                })}
+              </>
+            )}
           </form>
         </div>
       </Modal.Body>
