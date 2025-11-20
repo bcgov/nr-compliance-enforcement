@@ -103,12 +103,19 @@ export class EmailService {
     return { subjectTypeDescription, bodyTypeDescription, complaintSummaryText, subjectAdditionalDetails };
   }
 
-  sendReferralEmail = async (createComplaintReferralDto, user, exportContentBuffer, token) => {
+  sendReferralEmail = async (
+    createComplaintReferralDto,
+    senderEmailAddress,
+    senderName,
+    exportContentBuffer,
+    token,
+  ) => {
     const {
       complaint_identifier: id,
       referred_to_agency_code_ref,
       referred_by_agency_code_ref,
       referral_reason,
+      app_user_guid_ref,
       complaint_url,
       additionalEmailRecipients,
       externalAgencyInd,
@@ -128,10 +135,15 @@ export class EmailService {
         },
       ];
 
-      const senderEmailAddress = user.email ?? process.env.CEDS_EMAIL;
       const supportEmail = process.env.CEDS_EMAIL;
-      const { given_name, family_name } = user;
-      const senderName = `${given_name} ${family_name}`;
+      const referringAppUser = await this._appUserService.findByAppUserGuid(app_user_guid_ref, token);
+      const referringUserRes = await this._cssService.getUserByGuid(
+        referringAppUser.auth_user_guid.replaceAll("-", ""),
+      );
+      const referringUser = referringUserRes[0];
+      const { email, lastName, firstName } = referringUser;
+      const referringUserEmail = email ?? process.env.CEDS_EMAIL;
+      const referringUserName = `${firstName} ${lastName}`;
 
       const recipientList = await this._buildRecipientList(
         referred_to_agency_code_ref,
@@ -172,8 +184,8 @@ export class EmailService {
       const generateReferralEmailParams = {
         complaintId: id,
         complaintTypeDescription: bodyTypeDescription,
-        senderName,
-        senderEmailAddress,
+        referringUserName,
+        referringUserEmail,
         referredToAgency: referredToAgency,
         referredByAgency: referredByAgency,
         reasonForReferral: referral_reason,
@@ -185,17 +197,19 @@ export class EmailService {
 
       const emailBody = generateReferralEmailBody(generateReferralEmailParams);
 
+      const ccList = Array.from(new Set([senderEmailAddress, referringUserEmail]));
+
       await this._chesService.sendEmail(
         senderEmailAddress,
         senderName,
         emailSubject,
         emailBody,
         recipientList,
-        [senderEmailAddress],
+        ccList,
         emailAttachments,
       );
-
-      return recipientList;
+      const allRecipients = Array.from(new Set([...recipientList, ...ccList]));
+      return allRecipients;
     } catch (error) {
       this.logger.error(`Failed to send referral email: ${error.message}`);
       throw error;
