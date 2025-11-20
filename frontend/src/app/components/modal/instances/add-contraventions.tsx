@@ -31,20 +31,8 @@ type AddContraventionModalProps = {
 
 export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activityType, close, submit }) => {
   // Form Definition
-  const defaultValues = useMemo(
-    () => ({
-      name: "",
-      description: "",
-      act: "",
-      regulation: "",
-      section: "",
-    }),
-    [],
-  );
-
   const form = useForm({
-    defaultValues,
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       submit();
       close();
     },
@@ -94,6 +82,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
     enabled: !!section,
   });
 
+  // Data
   const actOptions = convertLegislationToOption(actsQuery.data?.legislation ?? []);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislation ?? []);
   const secOptions = convertLegislationToOption(sectionsQuery.data?.legislation ?? []);
