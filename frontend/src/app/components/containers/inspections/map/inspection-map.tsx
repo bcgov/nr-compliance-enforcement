@@ -1,10 +1,10 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useCallback } from "react";
 import { gql } from "graphql-request";
 
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import InspectionSummaryPopup from "@components/mapping/inspection-summary-popup";
-import { useRequest } from "@graphql/client";
 import { useInspectionSearch } from "../hooks/use-inspection-search";
+import { useMapSearch } from "@hooks/use-map-search";
 
 type Props = {
   error?: Error | null;
@@ -22,15 +22,6 @@ const SEARCH_INSPECTIONS_MAP = gql`
   }
 `;
 
-const DEFAULT_ZOOM = 5;
-
-type BoundingBox = {
-  west?: number;
-  south?: number;
-  east?: number;
-  north?: number;
-};
-
 type SearchInspectionsMapResponse = {
   searchInspectionsMap?: {
     clusters?: Array<any>;
@@ -41,81 +32,21 @@ type SearchInspectionsMapResponse = {
   };
 };
 
-const sanitizeFilters = (filters: Record<string, any>) => {
-  const sanitized: Record<string, any> = {};
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value === null || value === undefined || value === "") {
-      return;
-    }
-    sanitized[key] = value instanceof Date ? value.toISOString() : value;
-  });
-  return Object.keys(sanitized).length ? sanitized : undefined;
-};
-
 export const InspectionMap: FC<Props> = ({ error = null }) => {
   const { getFilters } = useInspectionSearch();
   const filters = useMemo(() => getFilters(), [getFilters]);
-  const filtersInput = useMemo(() => sanitizeFilters(filters), [filters]);
 
-  const [clusters, setClusters] = useState<Array<any>>([]);
-  const [unmappedCount, setUnmappedCount] = useState<number>(0);
-  const [defaultClusterView, setDefaultClusterView] = useState<{ zoom: number; center: [number, number] }>();
-  const [loadingMapData, setLoadingMapData] = useState<boolean>(false);
-  const [mapError, setMapError] = useState<Error | null>(null);
-
-  const fetchMapData = useCallback(
-    async (zoom: number = DEFAULT_ZOOM, bbox?: BoundingBox) => {
-      setLoadingMapData(true);
-      setMapError(null);
-      try {
-        const model: Record<string, any> = { zoom };
-        if (
-          bbox &&
-          bbox.west !== undefined &&
-          bbox.south !== undefined &&
-          bbox.east !== undefined &&
-          bbox.north !== undefined
-        ) {
-          model.bbox = `${bbox.west},${bbox.south},${bbox.east},${bbox.north}`;
-        }
-        if (filtersInput) {
-          model.filters = filtersInput;
-        }
-
-        const response: SearchInspectionsMapResponse = await useRequest(SEARCH_INSPECTIONS_MAP, {
-          model,
-        });
-        const result = response?.searchInspectionsMap;
-
-        setClusters(result?.clusters ?? []);
-        setUnmappedCount(result?.unmappedCount ?? 0);
-
-        if (!bbox && result?.zoom && Array.isArray(result.center) && result.center.length === 2) {
-          setDefaultClusterView({
-            zoom: result.zoom,
-            center: [result.center[0], result.center[1]] as [number, number],
-          });
-        }
-      } catch (fetchError) {
-        setMapError(fetchError as Error);
-      } finally {
-        setLoadingMapData(false);
-      }
-    },
-    [filtersInput],
+  const selectMapResult = useCallback(
+    (response: SearchInspectionsMapResponse | undefined) => response?.searchInspectionsMap,
+    [],
   );
 
-  useEffect(() => {
-    fetchMapData();
-  }, [fetchMapData]);
-
-  const handleMapMoved = useCallback(
-    (zoom: number, west: number, south: number, east: number, north: number) => {
-      setDefaultClusterView(undefined);
-      fetchMapData(zoom, { west, south, east, north });
-    },
-    [fetchMapData],
-  );
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved } =
+    useMapSearch<SearchInspectionsMapResponse>({
+      query: SEARCH_INSPECTIONS_MAP,
+      filters,
+      resultAccessor: selectMapResult,
+    });
 
   const renderInspectionPopup = (inspectionGuid: string) => <InspectionSummaryPopup inspectionGuid={inspectionGuid} />;
 

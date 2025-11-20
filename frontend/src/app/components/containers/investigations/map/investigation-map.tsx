@@ -1,10 +1,10 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useMemo, useCallback } from "react";
 import { gql } from "graphql-request";
 
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import InvestigationSummaryPopup from "@components/mapping/investigation-summary-popup";
-import { useRequest } from "@graphql/client";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
+import { useMapSearch } from "@hooks/use-map-search";
 
 type Props = {
   error?: Error | null;
@@ -22,15 +22,6 @@ const SEARCH_INVESTIGATIONS_MAP = gql`
   }
 `;
 
-const DEFAULT_ZOOM = 5;
-
-type BoundingBox = {
-  west?: number;
-  south?: number;
-  east?: number;
-  north?: number;
-};
-
 type SearchInvestigationsMapResponse = {
   searchInvestigationsMap?: {
     clusters?: Array<any>;
@@ -41,84 +32,21 @@ type SearchInvestigationsMapResponse = {
   };
 };
 
-const sanitizeFilters = (filters: Record<string, any>) => {
-  const sanitized: Record<string, any> = {};
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value === null || value === undefined || value === "") {
-      return;
-    }
-    sanitized[key] = value instanceof Date ? value.toISOString() : value;
-  });
-  return Object.keys(sanitized).length ? sanitized : undefined;
-};
-
 export const InvestigationMap: FC<Props> = ({ error = null }) => {
   const { getFilters } = useInvestigationSearch();
-
   const filters = useMemo(() => getFilters(), [getFilters]);
-  const filtersInput = useMemo(() => sanitizeFilters(filters), [filters]);
 
-  const [clusters, setClusters] = useState<Array<any>>([]);
-  const [unmappedCount, setUnmappedCount] = useState<number>(0);
-  const [defaultClusterView, setDefaultClusterView] = useState<{ zoom: number; center: [number, number] }>();
-  const [loadingMapData, setLoadingMapData] = useState<boolean>(false);
-  const [mapError, setMapError] = useState<Error | null>(null);
-
-  const fetchMapData = useCallback(
-    async (zoom: number = DEFAULT_ZOOM, bbox?: BoundingBox) => {
-      setLoadingMapData(true);
-      setMapError(null);
-      try {
-        const model: Record<string, any> = {
-          zoom,
-        };
-        if (
-          bbox &&
-          bbox.west !== undefined &&
-          bbox.south !== undefined &&
-          bbox.east !== undefined &&
-          bbox.north !== undefined
-        ) {
-          model.bbox = `${bbox.west},${bbox.south},${bbox.east},${bbox.north}`;
-        }
-        if (filtersInput) {
-          model.filters = filtersInput;
-        }
-
-        const response: SearchInvestigationsMapResponse = await useRequest(SEARCH_INVESTIGATIONS_MAP, {
-          model,
-        });
-        const result = response?.searchInvestigationsMap;
-
-        setClusters(result?.clusters ?? []);
-        setUnmappedCount(result?.unmappedCount ?? 0);
-
-        if (!bbox && result?.zoom && Array.isArray(result.center) && result.center.length === 2) {
-          setDefaultClusterView({
-            zoom: result.zoom,
-            center: [result.center[0], result.center[1]],
-          });
-        }
-      } catch (fetchError) {
-        setMapError(fetchError as Error);
-      } finally {
-        setLoadingMapData(false);
-      }
-    },
-    [filtersInput],
+  const selectMapResult = useCallback(
+    (response: SearchInvestigationsMapResponse | undefined) => response?.searchInvestigationsMap,
+    [],
   );
 
-  useEffect(() => {
-    fetchMapData();
-  }, [fetchMapData]);
-
-  const handleMapMoved = useCallback(
-    (zoom: number, west: number, south: number, east: number, north: number) => {
-      setDefaultClusterView(undefined);
-      fetchMapData(zoom, { west, south, east, north });
-    },
-    [fetchMapData],
-  );
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved } =
+    useMapSearch<SearchInvestigationsMapResponse>({
+      query: SEARCH_INVESTIGATIONS_MAP,
+      filters,
+      resultAccessor: selectMapResult,
+    });
 
   const renderInvestigationPopup = (investigationGuid: string) => (
     <InvestigationSummaryPopup investigationGuid={investigationGuid} />
