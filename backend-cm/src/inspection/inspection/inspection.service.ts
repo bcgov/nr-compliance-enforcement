@@ -18,10 +18,11 @@ import { UserService } from "../../common/user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 import { Point } from "src/common/custom_scalars";
-import Supercluster, { PointFeature } from "supercluster";
+import { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
 import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
+import { MapSearchUtility } from "../../common/map_search.utility";
 
 @Injectable()
 export class InspectionService {
@@ -176,15 +177,6 @@ export class InspectionService {
     name: "name",
   };
 
-  private readonly CLUSTER_CONFIG = {
-    radius: 160,
-    maxZoom: 16,
-    defaultZoom: 18,
-    emptyResultZoom: 5,
-    emptyResultCenter: [55.0, -125.0] as [number, number],
-    expansionZoomOffset: 2,
-  };
-
   private _buildInspectionWhereClause(filters?: InspectionFilters): any {
     const where: any = {};
 
@@ -232,47 +224,6 @@ export class InspectionService {
     return orderBy;
   }
 
-  private _clusterPoints(
-    points: Array<PointFeature<GeoJsonProperties>>,
-    zoom: number,
-    bboxArray: number[],
-    isGlobalSearch: boolean,
-  ): { clusters: any[]; zoom?: number; center?: number[] } {
-    const index = new Supercluster({
-      log: false,
-      radius: this.CLUSTER_CONFIG.radius,
-      maxZoom: this.CLUSTER_CONFIG.maxZoom,
-    });
-    index.load(points);
-
-    const clusters = index.getClusters([bboxArray[0], bboxArray[1], bboxArray[2], bboxArray[3]], zoom);
-
-    let resultZoom: number | undefined;
-    let resultCenter: number[] | undefined;
-
-    if (isGlobalSearch) {
-      if (clusters.length === 1) {
-        const firstCluster = clusters[0];
-        const center: [number, number] = [firstCluster.geometry.coordinates[1], firstCluster.geometry.coordinates[0]];
-        const expansionZoom = index.getClusterExpansionZoom(firstCluster.properties.cluster_id);
-
-        resultZoom = expansionZoom
-          ? expansionZoom + this.CLUSTER_CONFIG.expansionZoomOffset
-          : this.CLUSTER_CONFIG.defaultZoom;
-        resultCenter = center;
-      } else if (clusters.length === 0) {
-        resultZoom = this.CLUSTER_CONFIG.emptyResultZoom;
-        resultCenter = this.CLUSTER_CONFIG.emptyResultCenter;
-      }
-    }
-
-    for (const cluster of clusters) {
-      cluster.properties.zoom = index.getClusterExpansionZoom(cluster.properties.cluster_id);
-    }
-
-    return { clusters, zoom: resultZoom, center: resultCenter };
-  }
-
   async search(page: number = 1, pageSize: number = 25, filters?: InspectionFilters): Promise<InspectionResult> {
     const where = this._buildInspectionWhereClause(filters);
     const orderBy = this._buildInspectionOrderByClause(filters);
@@ -301,9 +252,7 @@ export class InspectionService {
 
   async searchMap(model: InspectionSearchMapParameters): Promise<SearchMapResults> {
     try {
-      const WorldBounds: Array<number> = [-180, -90, 180, 90];
-      const bboxArray = model.bbox ? model.bbox.split(",").map(Number) : WorldBounds;
-      const isGlobalSearch = !model.bbox;
+      const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
 
       const where = this._buildInspectionWhereClause(model.filters);
       const inspections = await this.prisma.inspection.findMany({
@@ -315,11 +264,7 @@ export class InspectionService {
       const inspectionGuids = inspections.map((ins) => ins.inspection_guid);
 
       if (inspectionGuids.length === 0) {
-        return {
-          unmappedCount: 0,
-          mappedCount: 0,
-          clusters: [],
-        };
+        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, isGlobalSearch);
       }
 
       const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
@@ -359,21 +304,13 @@ export class InspectionService {
         geometry: item.location_geometry_point,
       }));
 
-      const results: SearchMapResults = {
-        unmappedCount: unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
-        mappedCount: points.length,
-      };
-
-      if (points.length > 0) {
-        const { clusters, zoom, center } = this._clusterPoints(points, model.zoom, bboxArray, isGlobalSearch);
-        results.clusters = clusters;
-        if (zoom !== undefined) results.zoom = zoom;
-        if (center !== undefined) results.center = center;
-      } else {
-        results.clusters = [];
-      }
-
-      return results;
+      return MapSearchUtility.buildSearchMapResults(
+        points,
+        unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
+        model.zoom,
+        bboxArray as [number, number, number, number],
+        isGlobalSearch,
+      );
     } catch (error) {
       this.logger.error("Error performing inspection map search:", error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
