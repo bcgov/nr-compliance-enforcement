@@ -56,7 +56,6 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   const { title, activityGuid } = modalData;
 
   // State
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
@@ -102,6 +101,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
 
   const isLoading =
     actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;
+
+  const errorMessages = [actsQuery.error, regulationsQuery.error, sectionsQuery.error, legislationTextQuery.error]
+    .filter(Boolean) // remove undefined/null
+    .map((err) => (err as Error).message || String(err));
 
   return (
     <>
@@ -239,6 +242,18 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
               </>
             )}
           </form>
+          {errorMessages.length > 0 && (
+            <div>
+              {errorMessages.map((msg) => (
+                <div
+                  key={msg}
+                  className="error-message"
+                >
+                  {msg}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </Modal.Body>
       <Modal.Footer>
