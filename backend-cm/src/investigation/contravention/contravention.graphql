@@ -1,0 +1,4 @@
+type Mutation {
+  addContraventionToInvestigation(investigationGuid: String!, legislationReference: String!): Investigation!
+  removeContraventionFromInvestigation(investigationGuid: String!, contraventionGuid: String!): Investigation!
+}
