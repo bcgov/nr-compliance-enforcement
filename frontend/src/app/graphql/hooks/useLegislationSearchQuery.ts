@@ -5,33 +5,35 @@ import Option from "@apptypes/app/option";
 
 export interface LegislationSearchParams {
   agencyCode: string;
-  legislationTypeCode: string;
+  legislationTypeCodes: string[];
   ancestorGuid?: string;
   enabled: boolean;
 }
 
-const GET_ACTS = gql`
-  query GetLegislation($agencyCode: String!, $legislationTypeCode: String, $ancestorGuid: String) {
-    legislation(agencyCode: $agencyCode, legislationTypeCode: $legislationTypeCode, ancestorGuid: $ancestorGuid) {
+const GET_LEGISLATION = gql`
+  query GetLegislation($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
+    legislation(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
       legislationGuid
       legislationText
       sectionTitle
       alternateText
+      citation
+      legislationTypeCode
     }
   }
 `;
 
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation[] }>(GET_ACTS, {
+  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation[] }>(GET_LEGISLATION, {
     queryKey: [
       "searchLegislationActs",
       searchParams.agencyCode,
-      searchParams.legislationTypeCode,
+      searchParams.legislationTypeCodes,
       searchParams.ancestorGuid,
     ],
     variables: {
       agencyCode: searchParams.agencyCode,
-      legislationTypeCode: searchParams.legislationTypeCode,
+      legislationTypeCodes: searchParams.legislationTypeCodes,
       ancestorGuid: searchParams.ancestorGuid,
     },
     enabled: searchParams.enabled,

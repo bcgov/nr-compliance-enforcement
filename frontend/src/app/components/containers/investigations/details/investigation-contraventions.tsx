@@ -26,7 +26,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         },
         callback: () => {
           // Add the new contravention to the list
-          const contravention = localStorage.getItem("contraventions");
+          const contravention = "CITATION GOES HERE : CONTRAVENTION NAME GOES HERE";
           setContraventions((prev) => [...prev, contravention]);
         },
       }),

@@ -14,9 +14,9 @@ export class LegislationResolver {
   @Roles(coreRoles)
   findMany(
     @Args("agencyCode") agencyCode: string,
-    @Args("legislationTypeCode") legislationTypeCode?: string,
+    @Args("legislationTypeCodes") legislationTypeCodes?: string[],
     @Args("ancestorGuid") ancestorGuid?: string,
   ) {
-    return this.legislationService.findMany(agencyCode, legislationTypeCode, ancestorGuid);
+    return this.legislationService.findMany(agencyCode, legislationTypeCodes, ancestorGuid);
   }
 }
