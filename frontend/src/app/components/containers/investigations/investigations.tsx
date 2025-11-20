@@ -81,16 +81,19 @@ const Investigations: FC = () => {
     },
   );
 
-  const investigationGuids = useMemo(() => data?.searchInvestigations?.items ? uniq(compact(data.searchInvestigations.items.map(item => item.investigationGuid))) :  [], [data?.searchInvestigations?.items]);
-
-  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
-    GET_CASE_FILES_BY_ACTIVITIES,
-    {
-      queryKey: ["caseFilesByActivityIds", ...investigationGuids],
-      variables: { activityIdentifiers: investigationGuids },
-      enabled: investigationGuids.length > 0,
-    }
+  const investigationGuids = useMemo(
+    () =>
+      data?.searchInvestigations?.items
+        ? uniq(compact(data.searchInvestigations.items.map((item) => item.investigationGuid)))
+        : [],
+    [data?.searchInvestigations?.items],
   );
+
+  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_CASE_FILES_BY_ACTIVITIES, {
+    queryKey: ["caseFilesByActivityIds", ...investigationGuids],
+    variables: { activityIdentifiers: investigationGuids },
+    enabled: investigationGuids.length > 0,
+  });
 
   // Map of activityIdentifier -> related cases
   const cases = useMemo(() => {
@@ -156,19 +159,15 @@ const Investigations: FC = () => {
     const totalInvestigations = data?.searchInvestigations?.pageInfo?.totalCount || 0;
 
     return searchValues.viewType === "list" ? (
-        <InvestigationList
-          investigations={investigations}
-          totalItems={totalInvestigations}
-          isLoading={isLoading}
-          error={error}
-          cases={cases}
-        />
-    ) : (
-      <InvestigationMap
+      <InvestigationList
         investigations={investigations}
+        totalItems={totalInvestigations}
         isLoading={isLoading}
         error={error}
+        cases={cases}
       />
+    ) : (
+      <InvestigationMap error={error} />
     );
   };
 
