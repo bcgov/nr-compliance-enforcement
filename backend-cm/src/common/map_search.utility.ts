@@ -19,7 +19,7 @@ export class MapSearchUtility {
     maxZoom: 16,
     defaultZoom: 18,
     emptyResultZoom: 5,
-    emptyResultCenter: [55.0, -125.0],
+    emptyResultCenter: [55, -125],
     expansionZoomOffset: 2,
   };
 

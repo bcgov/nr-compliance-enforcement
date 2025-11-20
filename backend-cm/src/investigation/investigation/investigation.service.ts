@@ -498,7 +498,7 @@ export class InvestigationService {
         points,
         unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
         model.zoom,
-        bboxArray as [number, number, number, number],
+        bboxArray,
         isGlobalSearch,
       );
     } catch (error) {

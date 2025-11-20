@@ -27,7 +27,6 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
 
   // returns false if the user does not have the required role indicated by the API's @Roles decorator
   canActivate(context: ExecutionContext): boolean {
-    return true; // TODO: Remove this
     //-- check to see if the public access decorator is used
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),

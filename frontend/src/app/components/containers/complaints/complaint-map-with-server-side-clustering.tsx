@@ -7,7 +7,6 @@ import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filter
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
 import { ComplaintSummaryPopup } from "@components/mapping/complaint-summary-popup";
 import { getComplaintById } from "@store/reducers/complaints";
-import { Popup } from "react-leaflet";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
 import {

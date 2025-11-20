@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRequest } from "@graphql/client";
+import { graphqlRequest } from "@graphql/client";
 import { BoundingBox, DEFAULT_MAP_ZOOM, sanitizeFilters } from "@/app/utils/map-search";
 
 type MapQueryResult = {
@@ -52,7 +52,7 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
           model.filters = filtersInput;
         }
 
-        const response = (await useRequest(query, { model })) as TResponse | undefined;
+        const response = (await graphqlRequest(query, { model })) as TResponse | undefined;
         const result = resultAccessor(response);
 
         setClusters(result?.clusters ?? []);
