@@ -1,9 +1,9 @@
 import { Field, InputType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
-import { InvestigationFilters } from "./investigation";
+import { InspectionFilters } from "./inspection";
 
 @InputType()
-export class InvestigationSearchMapParameters {
+export class InspectionSearchMapParameters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   bbox?: string;
@@ -11,7 +11,7 @@ export class InvestigationSearchMapParameters {
   @Field(() => Number)
   zoom: number;
 
-  @Field(() => InvestigationFilters, { nullable: true })
+  @Field(() => InspectionFilters, { nullable: true })
   @IsOptional()
-  filters?: InvestigationFilters;
+  filters?: InspectionFilters;
 }

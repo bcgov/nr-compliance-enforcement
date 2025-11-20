@@ -48,7 +48,7 @@ input InvestigationFilters {
   sortOrder: String
 }
 
-input SearchMapParameters {
+input InvestigationSearchMapParameters {
   bbox: String
   zoom: Int!
   filters: InvestigationFilters

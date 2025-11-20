@@ -11,7 +11,7 @@ type Props = {
 };
 
 const SEARCH_INVESTIGATIONS_MAP = gql`
-  query SearchInvestigationsMap($model: SearchMapParameters!) {
+  query SearchInvestigationsMap($model: InvestigationSearchMapParameters!) {
     searchInvestigationsMap(model: $model) {
       clusters
       mappedCount

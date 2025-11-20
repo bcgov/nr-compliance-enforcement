@@ -3,46 +3,45 @@ import { Popup } from "react-leaflet";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { formatDate, applyStatusClass } from "@common/methods";
-import { Investigation } from "@/generated/graphql";
+import { Inspection } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const GET_INVESTIGATION_POPUP = gql`
-  query GetInvestigationForPopup($investigationGuid: String!) {
-    getInvestigation(investigationGuid: $investigationGuid) {
-      investigationGuid
+const GET_INSPECTION_POPUP = gql`
+  query GetInspectionForPopup($inspectionGuid: String!) {
+    getInspection(inspectionGuid: $inspectionGuid) {
+      inspectionGuid
       name
       openedTimestamp
       leadAgency
       locationAddress
-      locationDescription
-      investigationStatus {
+      inspectionStatus {
         shortDescription
-        investigationStatusCode
+        inspectionStatusCode
       }
     }
   }
 `;
 
 type Props = {
-  investigationGuid: string;
+  inspectionGuid: string;
 };
 
-export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
+export const InspectionSummaryPopup: FC<Props> = ({ inspectionGuid }) => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useGraphQLQuery<{ getInvestigation: Investigation }>(GET_INVESTIGATION_POPUP, {
-    queryKey: ["getInvestigationPopup", investigationGuid],
-    variables: { investigationGuid },
-    enabled: Boolean(investigationGuid),
+  const { data, isLoading, error } = useGraphQLQuery<{ getInspection: Inspection }>(GET_INSPECTION_POPUP, {
+    queryKey: ["getInspectionPopup", inspectionGuid],
+    variables: { inspectionGuid },
+    enabled: Boolean(inspectionGuid),
   });
 
-  const investigation = data?.getInvestigation;
-  const status = investigation?.investigationStatus?.shortDescription ?? "Unknown";
-  const openedDate = investigation?.openedTimestamp ? formatDate(investigation.openedTimestamp, true) : "Unknown";
-  const community = investigation?.locationAddress ?? "Unknown";
-  const leadAgency = investigation?.leadAgency ?? "Unknown agency";
-  const name = investigation?.name ?? investigationGuid;
-  const officerAssigned = "Not Assigned"; // This will be the officer assigned to the investigation once that is implimented
+  const inspection = data?.getInspection;
+  const name = inspection?.name ?? "Inspection";
+  const status = inspection?.inspectionStatus?.shortDescription ?? "Unknown";
+  const openedDate = inspection?.openedTimestamp ? formatDate(inspection.openedTimestamp, true) : "Unknown";
+  const location = inspection?.locationAddress ?? "Unknown";
+  const leadAgency = inspection?.leadAgency ?? "Unknown agency";
+  const officerAssigned = "Not Assigned";
 
   return (
     <Popup
@@ -59,8 +58,8 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
           </div>
         </div>
         <div className="comp-map-popup-details">
-          {isLoading && <div className="text-muted small">Loading investigation...</div>}
-          {error && <div className="text-danger small">Unable to load investigation.</div>}
+          {isLoading && <div className="text-muted small">Loading inspection...</div>}
+          {error && <div className="text-danger small">Unable to load inspection.</div>}
           {!isLoading && !error && (
             <>
               <dl>
@@ -87,7 +86,7 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
                   <dt className="comp-summary-popup-details">
                     <i className="bi bi-geo-alt-fill" /> Location
                   </dt>
-                  <dd>{community}</dd>
+                  <dd>{location}</dd>
                 </div>
               </dl>
               <Button
@@ -95,9 +94,9 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
                 variant="outline-primary"
                 size="sm"
                 className="comp-map-popup-details-btn w-100"
-                onClick={() => navigate(`/investigation/${investigationGuid}`)}
+                onClick={() => navigate(`/inspection/${inspectionGuid}`)}
               >
-                View investigation details
+                View inspection details
               </Button>
             </>
           )}
@@ -107,4 +106,4 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
   );
 };
 
-export default InvestigationSummaryPopup;
+export default InspectionSummaryPopup;

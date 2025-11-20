@@ -20,7 +20,7 @@ import { EventPublisherService } from "src/event_publisher/event_publisher.servi
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
 import Supercluster, { PointFeature } from "supercluster";
 import { GeoJsonProperties } from "geojson";
-import { SearchMapParameters } from "./dto/search-map-parameters";
+import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 
 @Injectable()
@@ -491,7 +491,7 @@ export class InvestigationService {
     };
   }
 
-  async searchMap(model: SearchMapParameters): Promise<SearchMapResults> {
+  async searchMap(model: InvestigationSearchMapParameters): Promise<SearchMapResults> {
     try {
       const WorldBounds: Array<number> = [-180, -90, 180, 90];
       const bboxArray = model.bbox ? model.bbox.split(",").map(Number) : WorldBounds;

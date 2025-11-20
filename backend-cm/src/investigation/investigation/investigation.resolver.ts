@@ -9,7 +9,7 @@ import {
   UpdateInvestigationInput,
   InvestigationFilters,
 } from "src/investigation/investigation/dto/investigation";
-import { SearchMapParameters } from "./dto/search-map-parameters";
+import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 
 @Resolver("Investigation")
 export class InvestigationResolver {
@@ -109,7 +109,7 @@ export class InvestigationResolver {
 
   @Query("searchInvestigationsMap")
   @Roles(coreRoles)
-  async searchMap(@Args("model") model: SearchMapParameters) {
+  async searchMap(@Args("model") model: InvestigationSearchMapParameters) {
     try {
       return await this.investigationService.searchMap(model);
     } catch (error) {
