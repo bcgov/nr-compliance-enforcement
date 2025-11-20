@@ -7,6 +7,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { convertLegislationToOption, useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
+import { indentByType, Legislation } from "@/app/types/app/legislation";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -21,13 +22,6 @@ const ModalLoading: FC = memo(() => (
     </div>
   </div>
 ));
-
-const indentByType: Record<string, string> = {
-  SEC: "ms-0",
-  SUBSEC: "ms-0",
-  PAR: "ms-3",
-  SUBPAR: "ms-5",
-};
 
 type AddContraventionModalProps = {
   activityType: ActivityType;
@@ -63,7 +57,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
   // GQL driven data
   const { data, isLoading, error } = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: ["ACT"],
+    legislationTypeCodes: [Legislation.ACT],
     enabled: true,
   });
 
@@ -127,7 +121,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                 // Filter regulation options based on selected act
                 const { data, isLoading, error } = useLegislationSearchQuery({
                   agencyCode: userAgency,
-                  legislationTypeCodes: ["REG"],
+                  legislationTypeCodes: [Legislation.REGULATION],
                   ancestorGuid: actValue || "", // Provide default value
                   enabled: !!actValue, // Only query if a value has been selected
                 });
@@ -165,7 +159,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                           // Filter sections based on regulation if present, otherwise by act
                           const { data, isLoading, error } = useLegislationSearchQuery({
                             agencyCode: userAgency,
-                            legislationTypeCodes: ["SEC"],
+                            legislationTypeCodes: [Legislation.SECTION],
                             ancestorGuid: regulation || act,
                             enabled: !!regulation || !!act,
                           });
@@ -205,7 +199,12 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
               {(sectionValue) => {
                 const { data, isLoading, error } = useLegislationSearchQuery({
                   agencyCode: userAgency,
-                  legislationTypeCodes: ["SEC", "SUBSEC", "PAR", "SUBPAR"],
+                  legislationTypeCodes: [
+                    Legislation.SECTION,
+                    Legislation.SUBSECTION,
+                    Legislation.PARAGRAPH,
+                    Legislation.SUBPARAGRAPH,
+                  ],
                   ancestorGuid: sectionValue, // Provide default value
                   enabled: !!sectionValue, // Only query if a value has been selected
                 });
@@ -217,7 +216,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                       {data.legislation
                         .filter((section) => !!section.legislationText)
                         .map((section) => {
-                          const indentClass = indentByType[section.legislationTypeCode || "SEC"] ?? "ms-0";
+                          const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
                           return (
                             <button
                               key={section.legislationGuid}
@@ -230,7 +229,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activity
                                   {/* If we're getting a section here it's a special case where there is nothing else 
                                       in the legislation this is considered to not have an implied (1) as it is the only one.
                                     */}
-                                  {section.legislationTypeCode !== "SEC" && <>{section.citation}</>}{" "}
+                                  {section.legislationTypeCode !== Legislation.SECTION && <>{section.citation}</>}{" "}
                                   {section.legislationText}
                                 </p>
                                 {section.alternateText && (
