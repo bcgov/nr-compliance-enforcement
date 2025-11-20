@@ -9,6 +9,7 @@ import {
   UpdateInvestigationInput,
   InvestigationFilters,
 } from "src/investigation/investigation/dto/investigation";
+import { SearchMapParameters } from "./dto/search-map-parameters";
 
 @Resolver("Investigation")
 export class InvestigationResolver {
@@ -102,6 +103,19 @@ export class InvestigationResolver {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },
+      });
+    }
+  }
+
+  @Query("searchInvestigationsMap")
+  @Roles(coreRoles)
+  async searchMap(@Args("model") model: SearchMapParameters) {
+    try {
+      return await this.investigationService.searchMap(model);
+    } catch (error) {
+      this.logger.error("Investigation map search error:", error);
+      throw new GraphQLError("Error performing investigation map search", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }
   }

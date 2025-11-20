@@ -5,6 +5,9 @@ import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
 import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
+import { ComplaintSummaryPopup } from "@components/mapping/complaint-summary-popup";
+import { getComplaintById } from "@store/reducers/complaints";
+import { Popup } from "react-leaflet";
 import { generateApiParameters, get } from "@common/api";
 import config from "@/config";
 import {
@@ -120,6 +123,26 @@ export const generateMapComplaintRequestPayload = (
 
 export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQuery }) => {
   const dispatch = useAppDispatch();
+  const renderComplaintPopup = useCallback(
+    (complaintId: string) => (
+      <ComplaintSummaryPopup
+        complaintType={type}
+        complaint_identifier={complaintId}
+      />
+    ),
+    [type],
+  );
+
+  const handleMarkerPopupOpen = useCallback(
+    (complaintId: string) => {
+      dispatch(getComplaintById(complaintId, type));
+    },
+    [dispatch, type],
+  );
+
+  const handleMarkerPopupClose = useCallback(() => {
+    dispatch(setComplaint(null));
+  }, [dispatch]);
 
   const [loadingMapData, setLoadingMapData] = useState<boolean>(false);
   const [clusters, setClusters] = useState<Array<any>>([]);
@@ -233,12 +256,14 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
 
   return (
     <LeafletMapWithServerSideClustering
-      complaintType={type}
       handleMapMoved={handleMapMoved}
       loadingMapData={loadingMapData}
       clusters={clusters}
       defaultClusterView={defaultClusterView}
       unmappedCount={unmappedCount}
+      renderMarkerPopup={renderComplaintPopup}
+      onMarkerPopupOpen={handleMarkerPopupOpen}
+      onMarkerPopupClose={handleMarkerPopupClose}
     />
   );
 };

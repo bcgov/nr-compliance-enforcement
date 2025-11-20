@@ -3,6 +3,7 @@ type Query {
   getInvestigations(ids: [String]): [Investigation]
   getInvestigationsByParty(partyId: String, partyType: String): [Investigation]
   searchInvestigations(page: Int = 1, pageSize: Int = 25, filters: InvestigationFilters): InvestigationResult!
+  searchInvestigationsMap(model: SearchMapParameters!): SearchMapResults!
   checkInvestigationNameExists(name: String!, leadAgency: String!, excludeInvestigationGuid: String): Boolean!
 }
 
