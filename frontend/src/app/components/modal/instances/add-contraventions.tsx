@@ -101,10 +101,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   });
 
   // Data
-  const actOptions = convertLegislationToOption(actsQuery.data?.legislation ?? []);
-  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislation ?? []);
-  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislation ?? []);
-  const legislationText = legislationTextQuery.data?.legislation?.filter((section) => !!section.legislationText) ?? [];
+  const actOptions = convertLegislationToOption(actsQuery.data?.legislations ?? []);
+  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations ?? []);
+  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations ?? []);
+  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText) ?? [];
 
   const isLoading =
     actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;

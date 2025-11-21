@@ -1,4 +1,4 @@
 type Mutation {
   createContravention(investigationGuid: String!, legislationReference: String!): Investigation!
-  removeContraventionFromInvestigation(investigationGuid: String!, contraventionGuid: String!): Investigation!
+  removeContravention(investigationGuid: String!, contraventionGuid: String!): Investigation!
 }

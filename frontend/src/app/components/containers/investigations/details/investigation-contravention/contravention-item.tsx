@@ -1,6 +1,6 @@
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { useLegislationGet } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
@@ -17,11 +17,8 @@ interface ContraventionItemProps {
 
 export const ContraventionItem = ({ contravention, investigationGuid, index }: ContraventionItemProps) => {
   const REMOVE_CONTRAVENTION = gql`
-    mutation RemoveContraventionFromInvestigation($investigationGuid: String!, $contraventionGuid: String!) {
-      removeContraventionFromInvestigation(
-        investigationGuid: $investigationGuid
-        contraventionGuid: $contraventionGuid
-      ) {
+    mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
+      removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
         investigationGuid
       }
     }
@@ -37,10 +34,10 @@ export const ContraventionItem = ({ contravention, investigationGuid, index }: C
     },
   });
 
-  const legislation = useLegislationGet(contravention.legislationIdentifierRef);
-  const legislationData = legislation?.data?.getLegislation;
+  const legislation = useLegislation(contravention.legislationIdentifierRef);
+  const legislationData = legislation?.data?.legislation;
 
-  const getLegislationDisplay = () => {
+  const renderLegislation = () => {
     if (!legislationData) return "Loading...";
     const displayText = legislationData.alternateText ?? legislationData.legislationText;
     return `${legislationData.fullCitation} : ${displayText}`;
@@ -85,7 +82,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index }: C
           <span>Delete</span>
         </Button>
       </div>
-      <div className="contravention-item p-3 mb-2">{getLegislationDisplay()}</div>
+      <div className="contravention-item p-3 mb-2">{renderLegislation()}</div>
     </>
   );
 };

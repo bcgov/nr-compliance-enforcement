@@ -974,7 +974,7 @@ export type Mutation = {
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
   removeCaseActivity: CaseActivity;
-  removeContraventionFromInvestigation: Investigation;
+  removeContravention: Investigation;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
   saveContinuationReport: ContinuationReport;
@@ -1167,7 +1167,7 @@ export type MutationremoveCaseActivityArgs = {
 };
 
 
-export type MutationremoveContraventionFromInvestigationArgs = {
+export type MutationremoveContraventionArgs = {
   contraventionGuid: Scalars['String']['input'];
   investigationGuid: Scalars['String']['input'];
 };
@@ -1506,13 +1506,13 @@ export type Query = {
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  getLegislation?: Maybe<Legislation>;
   getParksByArea?: Maybe<Array<Maybe<Park>>>;
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
-  legislation: Array<Maybe<Legislation>>;
+  legislation?: Maybe<Legislation>;
+  legislations: Array<Maybe<Legislation>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   office?: Maybe<Office>;
   offices: Array<Maybe<Office>>;
@@ -1694,11 +1694,6 @@ export type QuerygetLeadsByOutcomeAnimalArgs = {
 };
 
 
-export type QuerygetLegislationArgs = {
-  legislationGuid: Scalars['String']['input'];
-};
-
-
 export type QuerygetParksByAreaArgs = {
   parkAreaGuid: Scalars['String']['input'];
 };
@@ -1710,6 +1705,11 @@ export type QueryinactionJustificationCodesArgs = {
 
 
 export type QuerylegislationArgs = {
+  legislationGuid: Scalars['String']['input'];
+};
+
+
+export type QuerylegislationsArgs = {
   agencyCode: Scalars['String']['input'];
   ancestorGuid?: InputMaybe<Scalars['String']['input']>;
   legislationTypeCodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;

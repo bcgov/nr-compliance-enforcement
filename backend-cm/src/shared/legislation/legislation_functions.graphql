@@ -1,4 +1,4 @@
 type Query {
-  legislation(agencyCode: String!, legislationTypeCodes: [String], ancestorGuid: String): [Legislation]!
-  getLegislation(legislationGuid: String!): Legislation
+  legislations(agencyCode: String!, legislationTypeCodes: [String], ancestorGuid: String): [Legislation]!
+  legislation(legislationGuid: String!): Legislation
 }

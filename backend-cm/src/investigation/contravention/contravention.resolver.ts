@@ -29,7 +29,7 @@ export class ContraventionResolver {
     }
   }
 
-  @Mutation("removeContraventionFromInvestigation")
+  @Mutation("removeContravention")
   @Roles(coreRoles)
   async remove(
     @Args("investigationGuid") investigationGuid: string,

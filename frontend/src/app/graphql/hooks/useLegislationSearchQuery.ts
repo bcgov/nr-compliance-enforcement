@@ -11,8 +11,8 @@ export interface LegislationSearchParams {
 }
 
 const SEARCH_LEGISLATION = gql`
-  query SearchLegislation($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
-    legislation(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
+  query Legislations($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
+    legislations(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
       legislationGuid
       legislationText
       sectionTitle
@@ -24,8 +24,8 @@ const SEARCH_LEGISLATION = gql`
 `;
 
 const GET_LEGISLATION = gql`
-  query GetLegislation($legislationGuid: String!) {
-    getLegislation(legislationGuid: $legislationGuid) {
+  query Legislation($legislationGuid: String!) {
+    legislation(legislationGuid: $legislationGuid) {
       legislationTypeCode
       fullCitation
       alternateText
@@ -34,9 +34,9 @@ const GET_LEGISLATION = gql`
   }
 `;
 
-export const useLegislationGet = (legislationGuid: string) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ getLegislation: Legislation }>(GET_LEGISLATION, {
-    queryKey: ["getLegislation", legislationGuid],
+export const useLegislation = (legislationGuid: string) => {
+  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
+    queryKey: ["legislation", legislationGuid],
     variables: {
       legislationGuid: legislationGuid,
     },
@@ -47,13 +47,8 @@ export const useLegislationGet = (legislationGuid: string) => {
 };
 
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation[] }>(SEARCH_LEGISLATION, {
-    queryKey: [
-      "searchLegislation",
-      searchParams.agencyCode,
-      searchParams.legislationTypeCodes,
-      searchParams.ancestorGuid,
-    ],
+  const { data, isLoading, error } = useGraphQLQuery<{ legislations: Legislation[] }>(SEARCH_LEGISLATION, {
+    queryKey: ["legislations", searchParams.agencyCode, searchParams.legislationTypeCodes, searchParams.ancestorGuid],
     variables: {
       agencyCode: searchParams.agencyCode,
       legislationTypeCodes: searchParams.legislationTypeCodes,

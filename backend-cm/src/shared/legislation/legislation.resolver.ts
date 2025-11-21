@@ -10,7 +10,7 @@ import { LegislationService } from "./legislation.service";
 export class LegislationResolver {
   constructor(private readonly legislationService: LegislationService) {}
 
-  @Query("legislation")
+  @Query("legislations")
   @Roles(coreRoles)
   findMany(
     @Args("agencyCode") agencyCode: string,
@@ -20,7 +20,7 @@ export class LegislationResolver {
     return this.legislationService.findMany(agencyCode, legislationTypeCodes, ancestorGuid);
   }
 
-  @Query("getLegislation")
+  @Query("legislation")
   @Roles(coreRoles)
   async findOne(@Args("legislationGuid") legislationGuid: string) {
     return await this.legislationService.findOne(legislationGuid);
