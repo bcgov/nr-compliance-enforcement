@@ -13,6 +13,7 @@ type Investigation {
   locationDescription: String
   name: String
   parties: [InvestigationParty]
+  contraventions: [Contravention]
 }
 
 input CreateInvestigationInput {

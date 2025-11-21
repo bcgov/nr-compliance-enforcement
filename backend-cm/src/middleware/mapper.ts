@@ -35,6 +35,7 @@ import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_pers
 import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
 import { mapPrismaContinuationReportToContinuationReport } from "src/investigation/continuation_report/dto/continuation_report";
 import { mapPrismaLegislationToLegislation } from "../shared/legislation/dto/legislation";
+import { mapPrismaContreventionToContravention } from "../investigation/contravention/dto/contravention";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -73,4 +74,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyToInspectionParty(mapper);
   mapPrismaContinuationReportToContinuationReport(mapper);
   mapPrismaLegislationToLegislation(mapper);
+  mapPrismaContreventionToContravention(mapper);
 };
