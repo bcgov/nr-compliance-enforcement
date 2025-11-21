@@ -95,13 +95,13 @@ $modal-md: 508px !default;
 }
 
 .contravention-alternate-text {
-  background-color: #f8f9fa; /* light grey */
-  border: 1px solid #ced4da; /* soft, classy border */
-  border-radius: 6px; /* slightly rounded corners */
-  padding: 12px 16px; /* some breathing room */
-  margin-top: 8px; /* space above */
-  font-style: italic; /* optional, gives it a distinct style */
-  color: #495057; /* dark grey text for readability */
+  background-color: $bc-brand-background-light-gray;
+  border: 1px solid $gray-200;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-top: 8px;
+  font-style: italic;
+  color: $gray-700;
 }
 
 .contravention-section {

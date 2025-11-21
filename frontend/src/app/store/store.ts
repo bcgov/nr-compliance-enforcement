@@ -31,7 +31,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, "app/SHOW_MODAL"],
+        ignoredPaths: ["app.modalData.deleteConfirmed", "app.callback", "app.hideCallback"], // modals pass functions as parameters, disable serialization checking to supress errors
       },
     }),
 });

@@ -941,7 +941,6 @@ export type Legislation = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addContraventionToInvestigation: Investigation;
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Investigation;
   createAppUser?: Maybe<AppUser>;
@@ -950,6 +949,7 @@ export type Mutation = {
   createAuthorizationOutcome: ComplaintOutcome;
   createCaseActivity: CaseActivity;
   createCaseFile: CaseFile;
+  createContravention: Investigation;
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
   createEvent: Event;
@@ -999,12 +999,6 @@ export type Mutation = {
 };
 
 
-export type MutationaddContraventionToInvestigationArgs = {
-  investigationGuid: Scalars['String']['input'];
-  legislationReference: Scalars['String']['input'];
-};
-
-
 export type MutationaddPartyToInspectionArgs = {
   input: Array<InputMaybe<CreateInspectionPartyInput>>;
   inspectionGuid: Scalars['String']['input'];
@@ -1044,6 +1038,12 @@ export type MutationcreateCaseActivityArgs = {
 
 export type MutationcreateCaseFileArgs = {
   input: CaseFileCreateInput;
+};
+
+
+export type MutationcreateContraventionArgs = {
+  investigationGuid: Scalars['String']['input'];
+  legislationReference: Scalars['String']['input'];
 };
 
 

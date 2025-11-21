@@ -13,11 +13,8 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
 const ADD_CONTRAVENTION = gql`
-  mutation AddContraventionToInvestigation($investigationGuid: String!, $legislationReference: String!) {
-    addContraventionToInvestigation(
-      investigationGuid: $investigationGuid
-      legislationReference: $legislationReference
-    ) {
+  mutation CreateContravention($investigationGuid: String!, $legislationReference: String!) {
+    createContravention(investigationGuid: $investigationGuid, legislationReference: $legislationReference) {
       investigationGuid
     }
   }

@@ -10,7 +10,7 @@ export class ContraventionResolver {
   constructor(private readonly contraventionService: ContraventionService) {}
   private readonly logger = new Logger(ContraventionResolver.name);
 
-  @Mutation("addContraventionToInvestigation")
+  @Mutation("createContravention")
   @Roles(coreRoles)
   async create(
     @Args("investigationGuid") investigationGuid: string,
