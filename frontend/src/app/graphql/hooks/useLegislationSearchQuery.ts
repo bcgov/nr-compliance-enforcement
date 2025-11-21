@@ -10,8 +10,8 @@ export interface LegislationSearchParams {
   enabled: boolean;
 }
 
-const GET_LEGISLATION = gql`
-  query GetLegislation($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
+const SEARCH_LEGISLATION = gql`
+  query SearchLegislation($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
     legislation(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
       legislationGuid
       legislationText
@@ -23,10 +23,33 @@ const GET_LEGISLATION = gql`
   }
 `;
 
+const GET_LEGISLATION = gql`
+  query GetLegislation($legislationGuid: String!) {
+    getLegislation(legislationGuid: $legislationGuid) {
+      legislationTypeCode
+      fullCitation
+      alternateText
+      legislationText
+    }
+  }
+`;
+
+export const useLegislationGet = (legislationGuid: string) => {
+  const { data, isLoading, error } = useGraphQLQuery<{ getLegislation: Legislation }>(GET_LEGISLATION, {
+    queryKey: ["getLegislation", legislationGuid],
+    variables: {
+      legislationGuid: legislationGuid,
+    },
+    enabled: true,
+    placeholderData: (previousData) => previousData,
+  });
+  return { data, isLoading, error };
+};
+
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation[] }>(GET_LEGISLATION, {
+  const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation[] }>(SEARCH_LEGISLATION, {
     queryKey: [
-      "searchLegislationActs",
+      "searchLegislation",
       searchParams.agencyCode,
       searchParams.legislationTypeCodes,
       searchParams.ancestorGuid,

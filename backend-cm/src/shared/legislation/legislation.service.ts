@@ -93,4 +93,17 @@ export class LegislationService {
       this.logger.error("Error mapping legislation", error);
     }
   }
+
+  async findOne(legislationGuid: string) {
+    const prismaLegislation = await this.prisma.legislation.findUnique({
+      where: {
+        legislation_guid: legislationGuid,
+      },
+    });
+    try {
+      return this.mapper.map<legislation, Legislation>(prismaLegislation as legislation, "legislation", "Legislation");
+    } catch (error) {
+      this.logger.error("Error mapping legislation", error);
+    }
+  }
 }

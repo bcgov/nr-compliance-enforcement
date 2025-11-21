@@ -286,6 +286,14 @@ export type ContinuationReportInput = {
   reportedTimestamp?: InputMaybe<Scalars['Date']['input']>;
 };
 
+export type Contravention = {
+  __typename?: 'Contravention';
+  contraventionIdentifier: Scalars['String']['output'];
+  investigationIdentifier: Scalars['String']['output'];
+  isActive: Scalars['Boolean']['output'];
+  legislationIdentifierRef: Scalars['String']['output'];
+};
+
 export type CosGeoOrgUnit = {
   __typename?: 'CosGeoOrgUnit';
   administrativeOfficeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -839,6 +847,7 @@ export type InspectionStatusCode = {
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
@@ -932,6 +941,7 @@ export type Legislation = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addContraventionToInvestigation: Investigation;
   addPartyToInspection: Inspection;
   addPartyToInvestigation: Investigation;
   createAppUser?: Maybe<AppUser>;
@@ -964,6 +974,7 @@ export type Mutation = {
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
   removeCaseActivity: CaseActivity;
+  removeContraventionFromInvestigation: Investigation;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
   saveContinuationReport: ContinuationReport;
@@ -985,6 +996,12 @@ export type Mutation = {
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
   updateWildlife: ComplaintOutcome;
+};
+
+
+export type MutationaddContraventionToInvestigationArgs = {
+  investigationGuid: Scalars['String']['input'];
+  legislationReference: Scalars['String']['input'];
 };
 
 
@@ -1147,6 +1164,12 @@ export type MutationdeleteWildlifeArgs = {
 
 export type MutationremoveCaseActivityArgs = {
   input: CaseActivityRemoveInput;
+};
+
+
+export type MutationremoveContraventionFromInvestigationArgs = {
+  contraventionGuid: Scalars['String']['input'];
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -1483,6 +1506,7 @@ export type Query = {
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  getLegislation?: Maybe<Legislation>;
   getParksByArea?: Maybe<Array<Maybe<Park>>>;
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
@@ -1670,6 +1694,11 @@ export type QuerygetLeadsByOutcomeAnimalArgs = {
 };
 
 
+export type QuerygetLegislationArgs = {
+  legislationGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetParksByAreaArgs = {
   parkAreaGuid: Scalars['String']['input'];
 };
@@ -1682,9 +1711,8 @@ export type QueryinactionJustificationCodesArgs = {
 
 export type QuerylegislationArgs = {
   agencyCode: Scalars['String']['input'];
-  directDescendantsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  legislationTypeCode?: InputMaybe<Scalars['String']['input']>;
-  parentGuid?: InputMaybe<Scalars['String']['input']>;
+  ancestorGuid?: InputMaybe<Scalars['String']['input']>;
+  legislationTypeCodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 

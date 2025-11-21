@@ -19,4 +19,10 @@ export class LegislationResolver {
   ) {
     return this.legislationService.findMany(agencyCode, legislationTypeCodes, ancestorGuid);
   }
+
+  @Query("getLegislation")
+  @Roles(coreRoles)
+  async findOne(@Args("legislationGuid") legislationGuid: string) {
+    return await this.legislationService.findOne(legislationGuid);
+  }
 }

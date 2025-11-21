@@ -12,8 +12,6 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
-type ActivityType = "investigation" | "inspection";
-
 const ADD_CONTRAVENTION = gql`
   mutation AddContraventionToInvestigation($investigationGuid: String!, $legislationReference: String!) {
     addContraventionToInvestigation(
@@ -38,12 +36,11 @@ const ModalLoading: FC = memo(() => (
 ));
 
 type AddContraventionModalProps = {
-  activityType: ActivityType;
   close: () => void;
   submit: () => void;
 };
 
-export const AddContraventionModal: FC<AddContraventionModalProps> = ({ activityType, close, submit }) => {
+export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, submit }) => {
   // Form Definition
   const form = useForm({
     onSubmit: async () => {
