@@ -1,16 +1,22 @@
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_CONTRAVENTION } from "@/app/types/modal/modal-types";
-import { FC, useState } from "react";
+import { Investigation } from "@/generated/graphql";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
+  investigationData?: Investigation;
 }
 
-export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({ investigationGuid }) => {
+export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
+  investigationGuid,
+  investigationData,
+}) => {
   const dispatch = useAppDispatch();
-  const [contraventions, setContraventions] = useState<any[]>([]);
+
+  const contraventions = investigationData?.contraventions ?? [];
 
   const handleAddContravention = () => {
     document.body.click();
@@ -23,11 +29,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           description: "",
           activityGuid: investigationGuid,
           activityType: "investigation",
-        },
-        callback: () => {
-          // Add the new contravention to the list
-          const contravention = "CITATION GOES HERE : CONTRAVENTION NAME GOES HERE";
-          setContraventions((prev) => [...prev, contravention]);
         },
       }),
     );

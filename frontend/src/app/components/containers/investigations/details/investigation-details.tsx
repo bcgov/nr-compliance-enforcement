@@ -38,6 +38,9 @@ const GET_INVESTIGATION = gql`
           businessGuid
         }
       }
+      contraventions {
+        legislationGuidReference
+      }
       leadAgency
       locationAddress
       locationDescription
@@ -90,7 +93,12 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "contraventions":
-        return <InvestigationContraventions investigationGuid={investigationGuid} />;
+        return (
+          <InvestigationContraventions
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
       case "documents":
         return <InvestigationDocumentation />;
       case "continuation":
