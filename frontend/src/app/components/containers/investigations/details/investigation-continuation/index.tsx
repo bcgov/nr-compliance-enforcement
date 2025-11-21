@@ -11,7 +11,6 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ReportRenderer } from "./report-renderer";
 import { MenuBarEditor } from "./menu-bar-editor";
-import SearchInput from "@/app/components/common/search-input";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
 import DatePicker from "react-datepicker";
@@ -77,15 +76,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const reportedUserGuid = useAppSelector(appUserGuid);
   const reportedUserName = useAppSelector(profileDisplayName);
+  const defaultOfficer: Option = { value: reportedUserGuid, label: reportedUserName };
 
   //States
-  const [search, setSearch] = useState("");
   const [activeKey, setActiveKey] = useState<string>("0");
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date>();
-  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>({
-    value: reportedUserGuid,
-    label: reportedUserName,
-  });
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(defaultOfficer);
   const [plainText, setPlainText] = useState<string>("");
 
   // Tiptap editor setup
@@ -135,7 +131,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const reset = () => {
     editor?.commands.clearContent();
     setSelectedActionedDateTime(undefined);
-    setSelectedOfficer(null);
+    setSelectedOfficer(defaultOfficer);
   };
 
   const handleSave = async () => {
@@ -272,25 +268,13 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         </div>
 
         <div className="space-y-4">
-          <div className="search-bar">
-            <SearchInput
-              viewType="list"
-              searchQuery={search}
-              applySearchQuery={(e: any) => setSearch(e.target.value)}
-              handleSearch={() => {
-                // Implement search functionality here
-                console.log("Search triggered");
-              }}
-            />
-          </div>
-
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {reports?.length === 0 ? (
               <p className="text-gray-500">There are no reports yet.</p>
             ) : (
               <div className="mt-4">
                 <Accordion
-                  activeKey={activeKey}
+                  defaultActiveKey={groups.map((_: any, index: number) => index.toString())}
                   onSelect={(k) => setActiveKey(k as string)}
                   alwaysOpen
                 >
@@ -321,12 +305,13 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                           </Accordion.Header>
 
                           {/* Reports in this group */}
-                          <Accordion.Body className="p-0">
+                          <Accordion.Body className="p-0 overflow-hidden">
                             <div className="row">
                               {group.reports.map((report: ContinuationReport, idx: number) => {
-                                const actionedOfficer = officersInAgencyList.find(
-                                  (officer) => officer.app_user_guid === report.actionedAppUserGuidRef,
-                                );
+                                const actionedOfficer =
+                                  officersInAgencyList.find(
+                                    (officer) => officer.app_user_guid === report.actionedAppUserGuidRef,
+                                  ) ?? null;
                                 const reportedOfficer = officersInAgencyList.find(
                                   (officer) => officer.app_user_guid === report.reportedAppUserGuidRef,
                                 );
@@ -339,10 +324,18 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                     <div className="comp-profile-card-info">
                                       <div
                                         className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                                        data-initials-modal={`${actionedOfficer?.last_name?.substring(0, 1)}${actionedOfficer?.first_name?.substring(0, 1)}`}
+                                        data-initials-modal={
+                                          actionedOfficer
+                                            ? `${actionedOfficer?.last_name?.substring(0, 1)}${actionedOfficer?.first_name?.substring(0, 1)}`
+                                            : "U"
+                                        }
                                       ></div>
                                       <div>
-                                        <strong>{`${actionedOfficer?.last_name}, ${actionedOfficer?.first_name}`}</strong>
+                                        <strong>
+                                          {actionedOfficer
+                                            ? `${actionedOfficer?.last_name}, ${actionedOfficer?.first_name}`
+                                            : "Unknown"}
+                                        </strong>
                                       </div>
                                       <div>
                                         <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
