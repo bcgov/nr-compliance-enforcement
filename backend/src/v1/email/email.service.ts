@@ -36,13 +36,13 @@ export class EmailService {
   ) {}
 
   private async _buildRecipientList(referredToAgencyCode, complaint, additionalRecipients) {
-    const recipientList = [...additionalRecipients];
+    const recipientList = [...(additionalRecipients || [])];
 
     const emailReferences = await this._emailReferenceService.findActiveByAgency(referredToAgencyCode);
     for (const ref of emailReferences) {
       switch (referredToAgencyCode) {
         case "COS":
-          if (ref.geo_organization_unit_code === complaint.organization.zone) {
+          if (complaint.organization?.zone && ref.geo_organization_unit_code === complaint.organization.zone) {
             recipientList.push(ref.email_address);
           }
           break;
@@ -120,11 +120,10 @@ export class EmailService {
       additionalEmailRecipients,
       externalAgencyInd,
     } = createComplaintReferralDto;
+
     const { type, fileName } = createComplaintReferralDto.documentExportParams;
-
     try {
-      const complaint = await this._complaintService.findById(id, type);
-
+      const complaint = await this._complaintService.findById(id, type, undefined, token);
       const base64Content = Buffer.from(exportContentBuffer.data).toString("base64");
       const emailAttachments = [
         {
@@ -199,6 +198,11 @@ export class EmailService {
 
       const ccList = Array.from(new Set([senderEmailAddress, referringUserEmail]));
 
+      // Validate that we have at least one recipient
+      if (!recipientList || recipientList.length === 0) {
+        throw new Error(`No email recipients found for referral to ${referred_to_agency_code_ref}.`);
+      }
+
       await this._chesService.sendEmail(
         senderEmailAddress,
         senderName,
@@ -208,6 +212,8 @@ export class EmailService {
         ccList,
         emailAttachments,
       );
+
+      // Return all of the recipients including the CC list so each individual email can be logged
       const allRecipients = Array.from(new Set([...recipientList, ...ccList]));
       return allRecipients;
     } catch (error) {
