@@ -8,9 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
-import { ComplaintSummaryPopup } from "./complaint-summary-popup";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getComplaintById, setComplaint } from "@store/reducers/complaints";
+import { useAppSelector } from "@hooks/hooks";
 import { from } from "linq-to-typescript";
 import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Spinner } from "react-bootstrap";
@@ -48,21 +46,25 @@ Leaflet.Map.include({
 });
 
 interface MapProps {
-  complaintType: string;
   handleMapMoved: (zoom: number, west: number, south: number, east: number, north: number) => void;
   loadingMapData: boolean;
   clusters: Array<any>;
   defaultClusterView: any;
   unmappedCount: number;
+  renderMarkerPopup?: (id: string) => React.ReactNode;
+  onMarkerPopupOpen?: (id: string) => void;
+  onMarkerPopupClose?: () => void;
 }
 
 const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
-  complaintType,
   loadingMapData,
   handleMapMoved,
   clusters,
   defaultClusterView,
   unmappedCount,
+  renderMarkerPopup,
+  onMarkerPopupOpen,
+  onMarkerPopupClose,
 }) => {
   const loading = useAppSelector(isLoading);
 
@@ -78,16 +80,14 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     iconAnchor: [20, 40], // Adjust icon anchor point
   });
 
-  const dispatch = useAppDispatch();
-
   const handlePopupOpen = (id: string) => {
-    dispatch(getComplaintById(id, complaintType));
+    onMarkerPopupOpen?.(id);
     setPopupOpen(true);
   };
 
   const handlePopupClose = () => {
+    onMarkerPopupClose?.();
     setPopupOpen(false);
-    dispatch(setComplaint(null));
   };
 
   useEffect(() => {
@@ -121,8 +121,8 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     const bannerType = unmappedCount >= 1 ? "unmapped" : "no-results";
     const info =
       unmappedCount >= 1
-        ? `${unmappedCount} complaint${isPluralized} could not be mapped`
-        : "No complaints found using your current filters. Remove or change your filters to see complaints.";
+        ? `${unmappedCount} result${isPluralized} could not be mapped`
+        : "No results found using your current filters. Remove or change your filters to see results.";
 
     return (
       <Alert
@@ -284,14 +284,12 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
                 icon={customMarkerIcon}
                 eventHandlers={{
                   click: (event) => {
-                    event.target.closePopup();
+                    const marker = event.target as Leaflet.Marker;
+                    marker.closePopup();
                   },
                 }}
               >
-                <ComplaintSummaryPopup
-                  complaintType={complaintType}
-                  complaint_identifier={clusterId}
-                />
+                {renderMarkerPopup ? renderMarkerPopup(clusterId) : null}
               </Marker>
             );
           })}

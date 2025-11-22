@@ -3,6 +3,7 @@ type Query {
   getInspections(ids: [String]): [Inspection]
   getInspectionsByParty(partyId: String, partyType: String): [Inspection]
   searchInspections(page: Int = 1, pageSize: Int = 25, filters: InspectionFilters): InspectionResult!
+  searchInspectionsMap(model: InspectionSearchMapParameters!): SearchMapResults!
   checkInspectionNameExists(name: String!, leadAgency: String!, excludeInspectionGuid: String): Boolean!
 }
 

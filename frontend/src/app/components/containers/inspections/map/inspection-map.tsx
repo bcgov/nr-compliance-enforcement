@@ -1,13 +1,56 @@
-import { FC } from "react";
+import { FC, useMemo, useCallback } from "react";
+import { gql } from "graphql-request";
+
+import LeafletMapWithServerSideClustering from "@components/mapping/leaflet-map-with-server-side-clustering";
+import InspectionSummaryPopup from "@components/mapping/inspection-summary-popup";
+import { useInspectionSearch } from "../hooks/use-inspection-search";
+import { useMapSearch } from "@hooks/use-map-search";
 
 type Props = {
-  inspections?: any[];
-  isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InspectionMap: FC<Props> = ({ inspections, isLoading = false, error = null }) => {
-  if (isLoading) {
+const SEARCH_INSPECTIONS_MAP = gql`
+  query SearchInspectionsMap($model: InspectionSearchMapParameters!) {
+    searchInspectionsMap(model: $model) {
+      clusters
+      mappedCount
+      unmappedCount
+      zoom
+      center
+    }
+  }
+`;
+
+type SearchInspectionsMapResponse = {
+  searchInspectionsMap?: {
+    clusters?: Array<any>;
+    mappedCount?: number;
+    unmappedCount?: number;
+    zoom?: number;
+    center?: Array<number>;
+  };
+};
+
+export const InspectionMap: FC<Props> = ({ error = null }) => {
+  const { getFilters } = useInspectionSearch();
+  const filters = useMemo(() => getFilters(), [getFilters]);
+
+  const selectMapResult = useCallback(
+    (response: SearchInspectionsMapResponse | undefined) => response?.searchInspectionsMap,
+    [],
+  );
+
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved } =
+    useMapSearch<SearchInspectionsMapResponse>({
+      query: SEARCH_INSPECTIONS_MAP,
+      filters,
+      resultAccessor: selectMapResult,
+    });
+
+  const renderInspectionPopup = (inspectionGuid: string) => <InspectionSummaryPopup inspectionGuid={inspectionGuid} />;
+
+  if (loadingMapData && clusters.length === 0 && !mapError) {
     return (
       <div className="comp-map-container">
         <div className="d-flex align-items-center justify-content-center h-100">
@@ -23,7 +66,8 @@ export const InspectionMap: FC<Props> = ({ inspections, isLoading = false, error
     );
   }
 
-  if (error) {
+  if (mapError || error) {
+    const displayError = mapError || error;
     return (
       <div className="comp-map-container">
         <div className="d-flex align-items-center justify-content-center h-100">
@@ -35,7 +79,7 @@ export const InspectionMap: FC<Props> = ({ inspections, isLoading = false, error
               ></i>
             </div>
             <h4 className="text-danger">Error Loading Map</h4>
-            <p className="text-muted">Error loading inspection: {error.message}</p>
+            <p className="text-muted">Error loading inspections: {displayError?.message}</p>
           </div>
         </div>
       </div>
@@ -43,24 +87,13 @@ export const InspectionMap: FC<Props> = ({ inspections, isLoading = false, error
   }
 
   return (
-    <div className="comp-map-container">
-      <div className="d-flex align-items-center justify-content-center h-100">
-        <div className="text-center">
-          <div className="mb-3">
-            <i
-              className="bi bi-geo-alt-fill"
-              style={{ fontSize: "3rem", color: "#6c757d" }}
-            ></i>
-          </div>
-          <h4 className="text-muted">Map View</h4>
-          <p className="text-muted mb-2">Placeholder map view for inspections</p>
-          {inspections && inspections.length > 0 && (
-            <p className="text-muted small">
-              {inspections.length} inspection{inspections.length === 1 ? "" : "s"} for mapping
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
+    <LeafletMapWithServerSideClustering
+      handleMapMoved={handleMapMoved}
+      loadingMapData={loadingMapData}
+      clusters={clusters}
+      defaultClusterView={defaultClusterView}
+      unmappedCount={unmappedCount}
+      renderMarkerPopup={renderInspectionPopup}
+    />
   );
 };

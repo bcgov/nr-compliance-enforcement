@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions, UseMutationResult, useQueryClient } from "@tanstack/react-query";
-import { useRequest } from "@graphql/client";
+import { graphqlRequest } from "@graphql/client";
 
 interface QueryInvalidationOptions {
   /** Query keys to invalidate on successful mutation */
@@ -21,7 +21,7 @@ export const useGraphQLMutation = <TData = any, TError = Error, TVariables = any
 
   return useMutation<TData, TError, TVariables>({
     mutationFn: async (variables: TVariables) => {
-      return await useRequest(mutation, variables || {});
+      return await graphqlRequest(mutation, variables || {});
     },
     onSuccess: (data, variables, context) => {
       if (invalidateQueries) {
@@ -30,8 +30,7 @@ export const useGraphQLMutation = <TData = any, TError = Error, TVariables = any
             queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
           });
         });
-      }
-      else {
+      } else {
         queryClient.invalidateQueries();
       }
       if (onSuccess) {

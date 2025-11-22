@@ -5,6 +5,8 @@ import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { InspectionFilters, CreateInspectionInput, UpdateInspectionInput } from "./dto/inspection";
+import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
+import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
 
 @Resolver("Inspection")
 export class InspectionResolver {
@@ -97,6 +99,19 @@ export class InspectionResolver {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },
+      });
+    }
+  }
+
+  @Query("searchInspectionsMap")
+  @Roles(coreRoles)
+  async searchMap(@Args("model") model: InspectionSearchMapParameters): Promise<SearchMapResults> {
+    try {
+      return await this.inspectionService.searchMap(model);
+    } catch (error) {
+      this.logger.error("Inspection map search error:", error);
+      throw new GraphQLError("Error performing inspection map search", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }
   }

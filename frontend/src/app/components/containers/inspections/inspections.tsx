@@ -76,16 +76,19 @@ const Inspections: FC = () => {
     placeholderData: (previousData) => previousData,
   });
 
-  const inspectionGuids = useMemo(() => data?.searchInspections?.items ? uniq(compact(data.searchInspections.items.map(item => item.inspectionGuid))) :  [], [data?.searchInspections?.items]);
-
-  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
-    GET_CASE_FILES_BY_ACTIVITIES,
-    {
-      queryKey: ["caseFilesByActivityIds", ...inspectionGuids],
-      variables: { activityIdentifiers: inspectionGuids },
-      enabled: inspectionGuids.length > 0,
-    }
+  const inspectionGuids = useMemo(
+    () =>
+      data?.searchInspections?.items
+        ? uniq(compact(data.searchInspections.items.map((item) => item.inspectionGuid)))
+        : [],
+    [data?.searchInspections?.items],
   );
+
+  const { data: caseData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_CASE_FILES_BY_ACTIVITIES, {
+    queryKey: ["caseFilesByActivityIds", ...inspectionGuids],
+    variables: { activityIdentifiers: inspectionGuids },
+    enabled: inspectionGuids.length > 0,
+  });
 
   // Map of activityIdentifier -> related cases
   const cases = useMemo(() => {
@@ -100,7 +103,6 @@ const Inspections: FC = () => {
     }
     return map;
   }, [caseData]);
-
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
@@ -152,19 +154,15 @@ const Inspections: FC = () => {
     const totalInspections = data?.searchInspections?.pageInfo?.totalCount || 0;
 
     return searchValues.viewType === "list" ? (
-        <InspectionList
-          inspections={inspections}
-          totalItems={totalInspections}
-          isLoading={isLoading}
-          error={error}
-          cases={cases}
-        />
-    ) : (
-      <InspectionMap
+      <InspectionList
         inspections={inspections}
+        totalItems={totalInspections}
         isLoading={isLoading}
         error={error}
+        cases={cases}
       />
+    ) : (
+      <InspectionMap error={error} />
     );
   };
 
