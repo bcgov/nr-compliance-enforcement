@@ -3,7 +3,6 @@ officer_investigation_xref_code
 investigation
 investigation_party
 continuation_report
-contravention
 investigation_business
 investigation_person
 officer_investigation_xref

@@ -6,14 +6,12 @@ case_status_code
 contact_method_type_code
 event_verb_type_code
 geo_org_unit_type_code
-legislation_type_code
 park
 party_type_code
 team_code
 geo_organization_unit_code
 party
 office
-legislation
 app_user
 person
 team
@@ -23,7 +21,6 @@ park_area_mapping
 app_user_team_xref
 case_activity
 contact_method
-legislation_agency_xref
 park_area_xref
 geo_org_unit_structure
 event
@@ -35,8 +32,6 @@ case_file_h
 contact_method_h
 flyway_schema_history
 geo_org_unit_structure_h
-legislation_agency_xref_h
-legislation_h
 office_h
 party_h
 person_h

@@ -21,22 +21,6 @@
             <column ascending="true" name="continuation_report_guid"/>
          </index>
       </table>
-      <table name="contravention" remarks="A contravention occurs when a party breaks a law or a regulation." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contravention_guid" nullable="false" remarks="Primary key. Unique identifier for the contravention that has been identified as being part of this investigation." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_guid" nullable="true" remarks="Foreign key to investigation. Unique identifier for the investigation." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="investigation_guid" foreignKey="contravention_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="investigation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legislation_guid_ref" nullable="false" remarks="Unenforced Foreign key to shared.legislation. Unique identifier for the legislation that has been contravened." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the contravention is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the contravention." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contravention was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that last updated the contravention." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contravention was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="contravention_guid" sequenceNumberInPK="1"/>
-         <index name="contravention_pkey" unique="true">
-            <column ascending="true" name="contravention_guid"/>
-         </index>
-      </table>
       <table name="flyway_schema_history" remarks="" schema="investigation" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
@@ -59,7 +43,6 @@
       <table name="investigation" remarks="The central entity of the investigations system." schema="investigation" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="investigation_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="investigation_guid" foreignKey="fk_investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="continuation_report"/>
-            <child column="investigation_guid" foreignKey="contravention_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="contravention"/>
             <child column="investigation_guid" foreignKey="fk_investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_party"/>
             <child column="investigation_guid" foreignKey="FK_officer_investigation_xref__investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="officer_investigation_xref"/>
          </column>
