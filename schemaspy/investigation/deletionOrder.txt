@@ -9,6 +9,7 @@ flyway_schema_history
 officer_investigation_xref
 investigation_person
 investigation_business
+contravention
 continuation_report
 investigation_party
 investigation
