@@ -1,0 +1,11 @@
+type Legislation {
+  legislationGuid: String
+  legislationTypeCode: String
+  parentGuid: String
+  citation: String
+  fullCitation: String
+  sectionTitle: String
+  legislationText: String
+  alternateText: String
+  displayOrder: Int
+}
