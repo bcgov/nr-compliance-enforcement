@@ -81,9 +81,13 @@ export class ComplaintReferralService {
     this._personService.clearAssignedAppUser(createComplaintReferralDto.complaint_identifier);
 
     if (sendEmail) {
+      const senderEmail = user.email ?? process.env.CEDS_EMAIL;
+      const { given_name, family_name } = user;
+      const senderName = `${given_name} ${family_name}`;
       const recipientList = await this._emailService.sendReferralEmail(
         createComplaintReferralDto,
-        user,
+        senderEmail,
+        senderName,
         complaintExport,
         token,
       );
