@@ -16,6 +16,7 @@ export const DeleteConfirmModalV2: FC<CancelConfirmProps> = ({ close, submit, de
 
   const deleteAndCancel = () => {
     deleteConfirmed();
+    submit();
     close();
   };
 

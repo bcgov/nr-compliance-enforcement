@@ -55,6 +55,12 @@ export class AppUserController {
     return this.appUserService.findByUserId(userid, token);
   }
 
+  @Get("/find-by-email/:email")
+  @Roles(coreRoles)
+  findByEmail(@Param("email") email: string, @Token() token: string) {
+    return this.appUserService.findByEmail(email, token);
+  }
+
   @Patch(":id")
   @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
   update(@Param("id") id: UUID, @Body() updateAppUserDto: UpdateAppUserDto, @Token() token: string) {
