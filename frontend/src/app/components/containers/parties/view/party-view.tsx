@@ -3,13 +3,15 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { Party, Investigation, Inspection, CaseFile } from "@/generated/graphql";
-import { Button } from "react-bootstrap";
+import { Party, Investigation, Inspection, CaseFile, InspectionParty, InvestigationParty } from "@/generated/graphql";
+import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCodeTable } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -23,6 +25,7 @@ type PartyActivity = {
   name?: string | null;
   activityType?: string | null;
   leadAgency?: string | null;
+  role?: string | null;
 };
 
 const GET_PARTY = gql`
@@ -92,6 +95,26 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
   }
 `;
 
+const GET_INSPECTION_PARTY_ROLES = gql`
+  query GetInspectionPartyByReference($partyRefId: String!) {
+    getInspectionPartiesByRef(partyRefId: $partyRefId) {
+      inspectionGuid
+      partyReference
+      partyAssociationRole
+    }
+  }
+`;
+
+const GET_INVESTIGATION_PARTY_ROLES = gql`
+  query GetInvestigationPartyByReference($partyRefId: String!) {
+    getInvestigationPartiesByRef(partyRefId: $partyRefId) {
+      investigationGuid
+      partyReference
+      partyAssociationRole
+    }
+  }
+`;
+
 export type PartyParams = {
   id: string;
 };
@@ -100,6 +123,7 @@ export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -132,38 +156,28 @@ export const PartyView: FC = () => {
     return result;
   };
 
+  const getPartyRoleText = (roleCode: string, activityType: string) => {
+    const partyRoleText: string = partyRoles.find(
+      (partyRole) => partyRole.partyAssociationRole === roleCode && partyRole.caseActivityTypeCode === activityType,
+    )?.shortDescription;
+    return partyRoleText;
+  };
+
   const GetPartyRelations = (
     partyId: string,
     partyType: string,
   ): {
     partyRelations: PartyRelation[];
-    isInspectionLoading: boolean;
-    isInvestigationLoading: boolean;
-    isCaseLoading: boolean;
+    isPartyRelationLoading: boolean;
   } => {
-    const partyRelations = [];
-    const { data: investigationData, isLoading: isInvestigationLoading } = useGraphQLQuery<{
-      getInvestigationsByParty: Investigation[];
-    }>(GET_INVESTIGATIONS_BY_PARTY, {
-      queryKey: ["InvestigationParty", id],
-      variables: { partyId, partyType },
-      enabled: !!partyId && !!partyType,
-    });
+    const { relatedInvestigations, relatedInspections, isActivityLoading } = GetRelatedActivities(
+      partyId ?? "",
+      partyType ?? "",
+    );
 
-    const relatedInvestigations = investigationData?.getInvestigationsByParty;
+    const partyRelations = [];
 
     const relatedInvestigationsIds = relatedInvestigations?.map((investigation) => investigation.investigationGuid);
-
-    const { data: inspectionData, isLoading: isInspectionLoading } = useGraphQLQuery<{
-      getInspectionsByParty: Inspection[];
-    }>(GET_INSPECTIONS_BY_PARTY, {
-      queryKey: ["InspectionParty", id],
-      variables: { partyId, partyType },
-      enabled: !!partyId && !!partyType,
-    });
-
-    const relatedInspections = inspectionData?.getInspectionsByParty;
-
     const relatedInspectionIds = relatedInspections?.map((inspection) => inspection.inspectionGuid);
 
     const activityIds = [...(relatedInvestigationsIds ?? []), ...(relatedInspectionIds ?? [])];
@@ -179,6 +193,8 @@ export const PartyView: FC = () => {
     const relatedCases = caseData?.caseFilesByActivityIds;
 
     const uniqueCaseIds = [...new Set(relatedCases?.map((item) => item.caseIdentifier))];
+
+    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = GetPartyRoles(id);
 
     for (let uniqueCaseId of uniqueCaseIds) {
       const partyRelation: PartyRelation = {};
@@ -202,6 +218,12 @@ export const PartyView: FC = () => {
             activityType: CaseActivities.INVESTIGATION,
             leadAgency: leadAgencyOptions.find((option: Option) => option.value === currenInvestigation?.leadAgency)
               ?.label,
+            role: getPartyRoleText(
+              rolesInInvestigations.find(
+                (investigation) => investigation.investigationGuid === currenInvestigation.investigationGuid,
+              )?.partyAssociationRole ?? "",
+              CASE_ACTIVITY_TYPES.INVESTIGATION,
+            ),
           });
         }
 
@@ -209,27 +231,95 @@ export const PartyView: FC = () => {
           (relatedInspection) => relatedInspection.inspectionGuid === caseActivity?.activityIdentifier,
         );
         if (currenInspection) {
-          partyRelation.activities.push({
+          let currentRole = partyRelation.activities.push({
             id: currenInspection.inspectionGuid,
             name: currenInspection.name,
             activityType: CaseActivities.INSPECTION,
             leadAgency: leadAgencyOptions.find((option: Option) => option.value === currenInspection?.leadAgency)
               ?.label,
+            role: getPartyRoleText(
+              rolesInInspections.find((inspection) => inspection.inspectionGuid === currenInspection.inspectionGuid)
+                ?.partyAssociationRole ?? "",
+              CASE_ACTIVITY_TYPES.INSPECTION,
+            ),
           });
         }
       }
       partyRelations.push(partyRelation);
     }
+    const isPartyRelationLoading = isActivityLoading || isCaseLoading || isPartyRoleLoading;
 
-    return { partyRelations, isInspectionLoading, isInvestigationLoading, isCaseLoading };
+    return { partyRelations, isPartyRelationLoading };
   };
 
-  const { partyRelations, isInspectionLoading, isInvestigationLoading, isCaseLoading } = GetPartyRelations(
-    partyId ?? "",
-    partyType ?? "",
-  );
+  const GetRelatedActivities = (
+    partyId: string,
+    partyType: string,
+  ): {
+    relatedInvestigations: Investigation[];
+    relatedInspections: Inspection[];
+    isActivityLoading: boolean;
+  } => {
+    const { data: investigationData, isLoading: isInvestigationLoading } = useGraphQLQuery<{
+      getInvestigationsByParty: Investigation[];
+    }>(GET_INVESTIGATIONS_BY_PARTY, {
+      queryKey: ["InvestigationParty", id],
+      variables: { partyId, partyType },
+      enabled: !!partyId && !!partyType,
+    });
 
-  if (isLoading || isInvestigationLoading || isInspectionLoading || isCaseLoading) {
+    const relatedInvestigations = investigationData?.getInvestigationsByParty ?? [];
+
+    const { data: inspectionData, isLoading: isInspectionLoading } = useGraphQLQuery<{
+      getInspectionsByParty: Inspection[];
+    }>(GET_INSPECTIONS_BY_PARTY, {
+      queryKey: ["InspectionParty", id],
+      variables: { partyId, partyType },
+      enabled: !!partyId && !!partyType,
+    });
+
+    const relatedInspections = inspectionData?.getInspectionsByParty ?? [];
+
+    const isActivityLoading = isInspectionLoading || isInvestigationLoading;
+
+    return { relatedInvestigations, relatedInspections, isActivityLoading };
+  };
+
+  const GetPartyRoles = (
+    id: string,
+  ): {
+    rolesInInvestigations: InvestigationParty[];
+    rolesInInspections: InspectionParty[];
+    isPartyRoleLoading: boolean;
+  } => {
+    const { data: rolesInInvestigationsData, isLoading: isInvestigationRoleLoading } = useGraphQLQuery<{
+      getInvestigationPartiesByRef: InvestigationParty[];
+    }>(GET_INVESTIGATION_PARTY_ROLES, {
+      queryKey: ["InvestigationPartyRoles", id],
+      variables: { partyRefId: id },
+      enabled: !!id,
+    });
+
+    const rolesInInvestigations = rolesInInvestigationsData?.getInvestigationPartiesByRef ?? [];
+
+    const { data: rolesInInspectionsData, isLoading: isInspectionRoleLoading } = useGraphQLQuery<{
+      getInspectionPartiesByRef: InspectionParty[];
+    }>(GET_INSPECTION_PARTY_ROLES, {
+      queryKey: ["InspectionPartyRoles", id],
+      variables: { partyRefId: id },
+      enabled: !!id,
+    });
+
+    const rolesInInspections = rolesInInspectionsData?.getInspectionPartiesByRef ?? [];
+
+    const isPartyRoleLoading = isInvestigationRoleLoading || isInspectionRoleLoading;
+
+    return { rolesInInvestigations, rolesInInspections, isPartyRoleLoading };
+  };
+
+  const { partyRelations, isPartyRelationLoading } = GetPartyRelations(partyId ?? "", partyType ?? "");
+
+  if (isLoading || isPartyRelationLoading) {
     return (
       <div className="comp-complaint-details">
         <PartyHeader />
@@ -315,9 +405,20 @@ export const PartyView: FC = () => {
                               >
                                 {activity.name}
                               </Link>
-                              <span style={{ marginLeft: "0.8em" }}></span>
-                              <i className="bi bi-building"></i>
-                              <span style={{ marginLeft: "0.2em" }}>{activity.leadAgency} </span>
+                              <span style={{ marginLeft: "0.4em" }}></span>
+                              <span>|</span>
+                              <i
+                                style={{ marginLeft: "0.3em" }}
+                                className="bi bi-building"
+                              ></i>
+                              <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
+                              <span style={{ marginLeft: "0.1em" }}>|</span>
+                              <Badge
+                                style={{ marginLeft: "0.3em" }}
+                                bg="species-badge comp-species-badge"
+                              >
+                                {activity.role}
+                              </Badge>
                             </p>
                           ))}
                       </>

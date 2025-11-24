@@ -2,3 +2,7 @@ type Mutation {
   addPartyToInspection(inspectionGuid: String!, input: [CreateInspectionPartyInput]!): Inspection!
   removePartyFromInspection(inspectionGuid: String!, partyIdentifier: String!): Inspection!
 }
+
+type Query {
+  getInspectionPartiesByRef(partyRefId: String!): [InspectionParty]!
+}

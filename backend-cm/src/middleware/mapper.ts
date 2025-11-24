@@ -34,6 +34,7 @@ import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_
 import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
 import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
 import { mapPrismaContinuationReportToContinuationReport } from "src/investigation/continuation_report/dto/continuation_report";
+import { mapPrismaPartyAssociationRoleToPartyAssociationRole } from "src/shared/party_association_role/dto/party_association_role";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -71,4 +72,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPersonToInspectionPerson(mapper);
   mapPrismaPartyToInspectionParty(mapper);
   mapPrismaContinuationReportToContinuationReport(mapper);
+  mapPrismaPartyAssociationRoleToPartyAssociationRole(mapper);
 };

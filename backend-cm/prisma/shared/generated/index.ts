@@ -36,6 +36,7 @@ import { office_h as _office_h } from "./office_h";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { party_association_role as _party_association_role } from "./party_association_role";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -76,6 +77,7 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class party_association_role extends _party_association_role {}
 
   export const extraModels = [
     contact_method,
@@ -116,5 +118,6 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    party_association_role,
   ];
 }

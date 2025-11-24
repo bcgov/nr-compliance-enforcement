@@ -13,6 +13,7 @@ export class InspectionParty implements PartyDto {
   isActive: boolean;
   inspectionGuid: string;
   partyReference?: string;
+  partyAssociationRole?: string;
 }
 
 @InputType()
@@ -28,6 +29,9 @@ export class CreateInspectionPartyInput {
 
   @Field(() => CreateInspectionBusinessInput)
   business: CreateInspectionBusinessInput;
+
+  @Field(() => String)
+  partyAssociationRole: string;
 }
 
 export const mapPrismaPartyToInspectionParty = (mapper: Mapper) => {
@@ -76,6 +80,10 @@ export const mapPrismaPartyToInspectionParty = (mapper: Mapper) => {
         }
         return undefined;
       }),
+    ),
+    forMember(
+      (dest) => dest.partyAssociationRole,
+      mapFrom((src) => src.party_association_role),
     ),
   );
 };

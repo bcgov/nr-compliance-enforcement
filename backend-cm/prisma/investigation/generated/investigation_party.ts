@@ -31,6 +31,9 @@ export class investigation_party {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  party_association_role?: string;
+
   @ApiProperty({ isArray: true, type: () => investigation_business })
   investigation_business: investigation_business[];
 

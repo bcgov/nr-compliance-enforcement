@@ -173,6 +173,7 @@ model investigation_party {
   create_utc_timestamp     DateTime                 @db.Timestamp(6)
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
+  party_association_role   String?                  @db.VarChar(16)
   investigation_business   investigation_business[]
   investigation            investigation            @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
   investigation_person     investigation_person[]

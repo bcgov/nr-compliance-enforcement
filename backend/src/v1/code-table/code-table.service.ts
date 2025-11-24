@@ -832,6 +832,15 @@ export class CodeTableService {
         return results;
       }
 
+      case "party-association-role": {
+        const { data } = await get(token, {
+          query:
+            "{ partyAssociationRoles { partyAssociationRole caseActivityTypeCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.partyAssociationRoles;
+        return results;
+      }
+
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },

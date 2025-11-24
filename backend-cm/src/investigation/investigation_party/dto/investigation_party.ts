@@ -19,6 +19,7 @@ export class InvestigationParty implements PartyDto {
   isActive: boolean;
   investigationGuid: string;
   partyReference?: string;
+  partyAssociationRole?: string;
 }
 
 @InputType()
@@ -34,6 +35,9 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => CreateInvestigationBusinessInput)
   business: CreateInvestigationBusinessInput;
+
+  @Field(() => String)
+  partyAssociationRole: string;
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
@@ -82,6 +86,10 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
         }
         return undefined;
       }),
+    ),
+    forMember(
+      (dest) => dest.partyAssociationRole,
+      mapFrom((src) => src.party_association_role),
     ),
   );
 };

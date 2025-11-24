@@ -366,6 +366,7 @@ export type CreateInspectionInput = {
 
 export type CreateInspectionPartyInput = {
   business?: InputMaybe<CreateInspectionBusinessInput>;
+  partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
   partyReference?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<CreateInspectionPersonInput>;
@@ -398,6 +399,7 @@ export type CreateInvestigationInput = {
 
 export type CreateInvestigationPartyInput = {
   business?: InputMaybe<CreateInvestigationBusinessInput>;
+  partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
   partyReference?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<CreateInvestigationPersonInput>;
@@ -804,6 +806,7 @@ export type InspectionParty = {
   __typename?: 'InspectionParty';
   business?: Maybe<InspectionBusiness>;
   inspectionGuid: Scalars['String']['output'];
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
@@ -874,6 +877,7 @@ export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   business?: Maybe<InvestigationBusiness>;
   investigationGuid: Scalars['String']['output'];
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
@@ -1336,6 +1340,16 @@ export type Party = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type PartyAssociationRole = {
+  __typename?: 'PartyAssociationRole';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type PartyCreateInput = {
   business?: InputMaybe<BusinessInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
@@ -1462,9 +1476,11 @@ export type Query = {
   getContinuationReport?: Maybe<ContinuationReport>;
   getContinuationReports?: Maybe<Array<ContinuationReport>>;
   getInspection?: Maybe<Inspection>;
+  getInspectionPartiesByRef: Array<Maybe<InspectionParty>>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
   getInvestigation?: Maybe<Investigation>;
+  getInvestigationPartiesByRef: Array<Maybe<InvestigationParty>>;
   getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   getInvestigationsByParty?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1486,6 +1502,7 @@ export type Query = {
   parks?: Maybe<Array<Maybe<Park>>>;
   parties: Array<Party>;
   party?: Maybe<Party>;
+  partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
@@ -1610,6 +1627,11 @@ export type QuerygetInspectionArgs = {
 };
 
 
+export type QuerygetInspectionPartiesByRefArgs = {
+  partyRefId: Scalars['String']['input'];
+};
+
+
 export type QuerygetInspectionsArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -1623,6 +1645,11 @@ export type QuerygetInspectionsByPartyArgs = {
 
 export type QuerygetInvestigationArgs = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerygetInvestigationPartiesByRefArgs = {
+  partyRefId: Scalars['String']['input'];
 };
 
 
