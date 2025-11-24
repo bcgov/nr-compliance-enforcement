@@ -29,6 +29,7 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
   const [defaultClusterView, setDefaultClusterView] = useState<DefaultClusterView>();
   const [loadingMapData, setLoadingMapData] = useState<boolean>(false);
   const [mapError, setMapError] = useState<Error | null>(null);
+  const [noResults, setNoResults] = useState<boolean>(false);
 
   const fetchMapData = useCallback(
     async (zoom: number = DEFAULT_MAP_ZOOM, bbox?: BoundingBox) => {
@@ -57,6 +58,12 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
         setClusters(result?.clusters ?? []);
         setUnmappedCount(result?.unmappedCount ?? 0);
 
+        if (!bbox) {
+          const hasMapped = (result?.mappedCount ?? 0) > 0;
+          const hasUnmapped = (result?.unmappedCount ?? 0) > 0;
+          setNoResults(!hasMapped && !hasUnmapped);
+        }
+
         if (!bbox && result?.zoom && Array.isArray(result.center) && result.center.length === 2) {
           setDefaultClusterView({
             zoom: result.zoom,
@@ -78,7 +85,6 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
 
   const handleMapMoved = useCallback(
     (zoom: number, west: number, south: number, east: number, north: number) => {
-      setDefaultClusterView(undefined);
       fetchMapData(zoom, { west, south, east, north });
     },
     [fetchMapData],
@@ -91,5 +97,6 @@ export const useMapSearch = <TResponse>({ query, filters, resultAccessor }: UseM
     loadingMapData,
     mapError,
     handleMapMoved,
+    noResults,
   };
 };

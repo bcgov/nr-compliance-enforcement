@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Popup } from "react-leaflet";
-import { Badge, Button } from "react-bootstrap";
+import { Badge, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 type SummaryPopupLayoutProps = {
@@ -11,6 +11,7 @@ type SummaryPopupLayoutProps = {
   loggedValue: string;
   officerValue: string;
   officerAgency: string;
+  officerAgencyName?: string;
   officerUnassigned?: boolean;
   locationValue: string;
   detailsPath: string;
@@ -29,6 +30,7 @@ export const SummaryPopupLayout: FC<SummaryPopupLayoutProps> = ({
   loggedValue,
   officerValue,
   officerAgency,
+  officerAgencyName,
   officerUnassigned = false,
   locationValue,
   detailsPath,
@@ -76,7 +78,24 @@ export const SummaryPopupLayout: FC<SummaryPopupLayoutProps> = ({
                   <dd>
                     {officerUnassigned && <i className="bi bi-exclamation-triangle-fill text-warning"></i>}{" "}
                     <strong>
-                      {officerValue} <span className="comp-tooltip-hint">({officerAgency})</span>
+                      {officerValue}{" "}
+                      {officerAgencyName ? (
+                        <OverlayTrigger
+                          placement="top"
+                          overlay={
+                            <Tooltip
+                              id={`map-overlay-trigger-${identifier}`}
+                              className="comp-tooltip comp-tooltip-top"
+                            >
+                              {officerAgencyName}
+                            </Tooltip>
+                          }
+                        >
+                          <span className="comp-tooltip-hint">({officerAgency})</span>
+                        </OverlayTrigger>
+                      ) : (
+                        <span className="comp-tooltip-hint">({officerAgency})</span>
+                      )}
                     </strong>
                   </dd>
                 </div>

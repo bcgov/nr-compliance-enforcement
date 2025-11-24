@@ -465,7 +465,8 @@ export class InvestigationService {
       const investigationGuids = investigations.map((inv) => inv.investigation_guid);
 
       if (investigationGuids.length === 0) {
-        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, isGlobalSearch);
+        // Pass false when there are no results to prevent unwanted reposition
+        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
       }
 
       // Get unmappable results. Raw SQL is required for PostGIS operations.

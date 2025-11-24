@@ -54,6 +54,7 @@ interface MapProps {
   renderMarkerPopup?: (id: string) => React.ReactNode;
   onMarkerPopupOpen?: (id: string) => void;
   onMarkerPopupClose?: () => void;
+  noResults?: boolean;
 }
 
 const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
@@ -65,6 +66,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   renderMarkerPopup,
   onMarkerPopupOpen,
   onMarkerPopupClose,
+  noResults = false,
 }) => {
   const loading = useAppSelector(isLoading);
 
@@ -91,29 +93,26 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   };
 
   useEffect(() => {
-    if (defaultClusterView) {
-      if (clusters.length > 1) {
-        // Calculate the bounds of all markers
-        const bounds = Leaflet.latLngBounds(
-          clusters.map(
-            (marker) => [marker.geometry.coordinates[1], marker.geometry.coordinates[0]] as LatLngExpression,
-          ),
-        );
+    if (!defaultClusterView || !mapRef.current) {
+      return;
+    }
 
-        // Check if bounds have a non-zero area before fitting
-        if (bounds.isValid() && !bounds.getSouthWest().equals(bounds.getNorthEast())) {
-          // Fit the map to the bounds. Disable animation due to known Leaflet issue if map unmounts while animating: https://github.com/Leaflet/Leaflet/issues/9527
-          mapRef?.current?.fitBounds(bounds, { padding: [35, 35], animate: false });
-        } else {
-          // All coordinates are the same, fallback to setView with a reasonable zoom level
-          const center = bounds.getCenter();
-          mapRef?.current?.setView(center, 12, { animate: false });
-        }
-      } else if (defaultClusterView.center && defaultClusterView.zoom) {
-        mapRef?.current?.setView(defaultClusterView.center, defaultClusterView.zoom);
+    if (clusters.length > 1) {
+      const bounds = Leaflet.latLngBounds(
+        clusters.map((marker) => [marker.geometry.coordinates[1], marker.geometry.coordinates[0]] as LatLngExpression),
+      );
+
+      if (bounds.isValid() && !bounds.getSouthWest().equals(bounds.getNorthEast())) {
+        mapRef.current.fitBounds(bounds, { padding: [35, 35], animate: false });
+        return;
       }
     }
-  }, [clusters, defaultClusterView]);
+
+    if (defaultClusterView.center && defaultClusterView.zoom) {
+      mapRef.current.setView(defaultClusterView.center, defaultClusterView.zoom, { animate: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultClusterView]);
 
   const renderInformationBanner = () => {
     const isPluralized = unmappedCount === 1 ? "" : "s";
@@ -161,7 +160,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     return null;
   };
 
-  const showInfoBar = unmappedCount >= 1 || !from(clusters).any();
+  const showInfoBar = unmappedCount >= 1 || noResults;
   const parkLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
   }, []);

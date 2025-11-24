@@ -41,7 +41,7 @@ export const InvestigationMap: FC<Props> = ({ error = null }) => {
     [],
   );
 
-  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved } =
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved, noResults } =
     useMapSearch<SearchInvestigationsMapResponse>({
       query: SEARCH_INVESTIGATIONS_MAP,
       filters,
@@ -52,42 +52,6 @@ export const InvestigationMap: FC<Props> = ({ error = null }) => {
     <InvestigationSummaryPopup investigationGuid={investigationGuid} />
   );
 
-  if (loadingMapData && clusters.length === 0 && !mapError) {
-    return (
-      <div className="comp-map-container">
-        <div className="d-flex align-items-center justify-content-center h-100">
-          <div className="text-center">
-            <div className="spinner-border mb-3">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <h4 className="text-muted">Loading Map</h4>
-            <p className="text-muted">Loading investigations for mapping...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (mapError || error) {
-    const displayError = mapError || error;
-    return (
-      <div className="comp-map-container">
-        <div className="d-flex align-items-center justify-content-center h-100">
-          <div className="text-center">
-            <div className="mb-3">
-              <i
-                className="bi bi-exclamation-triangle-fill text-danger"
-                style={{ fontSize: "3rem" }}
-              ></i>
-            </div>
-            <h4 className="text-danger">Error Loading Map</h4>
-            <p className="text-muted">Error loading investigations: {displayError?.message}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <LeafletMapWithServerSideClustering
       handleMapMoved={handleMapMoved}
@@ -96,6 +60,7 @@ export const InvestigationMap: FC<Props> = ({ error = null }) => {
       defaultClusterView={defaultClusterView}
       unmappedCount={unmappedCount}
       renderMarkerPopup={renderInvestigationPopup}
+      noResults={noResults}
     />
   );
 };

@@ -4,6 +4,7 @@ import { useGraphQLQuery } from "@graphql/hooks";
 import { formatDate, applyStatusClass } from "@common/methods";
 import { Inspection } from "@/generated/graphql";
 import { SummaryPopupLayout } from "./summary-popup-layout";
+import { useAppSelector } from "@hooks/hooks";
 
 const GET_INSPECTION_POPUP = gql`
   query GetInspectionForPopup($inspectionGuid: String!) {
@@ -32,6 +33,8 @@ export const InspectionSummaryPopup: FC<Props> = ({ inspectionGuid }) => {
     enabled: Boolean(inspectionGuid),
   });
 
+  const agencyCodes = useAppSelector((state) => state.codeTables.agency);
+
   const inspection = data?.getInspection;
   const name = inspection?.name ?? "Inspection";
   const status = inspection?.inspectionStatus?.shortDescription ?? "Unknown";
@@ -39,6 +42,9 @@ export const InspectionSummaryPopup: FC<Props> = ({ inspectionGuid }) => {
   const location = inspection?.locationAddress ?? "Unknown";
   const leadAgency = inspection?.leadAgency ?? "Unknown agency";
   const officerAssigned = "Not Assigned";
+
+  const agencyCode = agencyCodes?.find(({ agency }) => agency === leadAgency)?.shortDescription ?? leadAgency;
+  const agencyName = agencyCodes?.find(({ agency }) => agency === leadAgency)?.longDescription;
 
   return (
     <SummaryPopupLayout
@@ -48,7 +54,8 @@ export const InspectionSummaryPopup: FC<Props> = ({ inspectionGuid }) => {
       statusClassName={applyStatusClass(status)}
       loggedValue={openedDate}
       officerValue={officerAssigned}
-      officerAgency={leadAgency}
+      officerAgency={agencyCode}
+      officerAgencyName={agencyName}
       officerUnassigned={officerAssigned === "Not Assigned"}
       locationValue={location}
       detailsPath={`/inspection/${inspectionGuid}`}

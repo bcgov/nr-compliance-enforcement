@@ -277,7 +277,8 @@ export class InspectionService {
       const inspectionGuids = inspections.map((ins) => ins.inspection_guid);
 
       if (inspectionGuids.length === 0) {
-        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, isGlobalSearch);
+        // Pass false when there are no results to prevent unwanted reposition
+        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
       }
 
       const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
