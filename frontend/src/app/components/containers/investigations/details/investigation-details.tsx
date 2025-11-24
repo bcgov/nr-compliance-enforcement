@@ -7,7 +7,7 @@ import { CaseFile, Investigation } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
-import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contraventions";
+import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
@@ -38,6 +38,10 @@ const GET_INVESTIGATION = gql`
           businessGuid
         }
         partyAssociationRole
+      }
+      contraventions {
+        contraventionIdentifier
+        legislationIdentifierRef
       }
       leadAgency
       locationAddress
@@ -91,7 +95,12 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "contraventions":
-        return <InvestigationContraventions />;
+        return (
+          <InvestigationContraventions
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
       case "documents":
         return <InvestigationDocumentation />;
       case "continuation":

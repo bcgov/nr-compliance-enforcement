@@ -67,6 +67,8 @@ import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team
 import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
 import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
 import { PartyAssociationRoleModule } from "./shared/party_association_role/party_association_role.module";
+import { LegislationModule } from "./shared/legislation/legislation.module";
+import { ContraventionModule } from "./investigation/contravention/contravention.module";
 
 @Module({
   imports: [
@@ -134,6 +136,8 @@ import { PartyAssociationRoleModule } from "./shared/party_association_role/part
     InspectionPartyModule,
     ContinuationReportModule,
     PartyAssociationRoleModule,
+    LegislationModule,
+    ContraventionModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],

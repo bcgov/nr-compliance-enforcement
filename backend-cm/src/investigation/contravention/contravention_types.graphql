@@ -1,0 +1,6 @@
+type Contravention {
+  contraventionIdentifier: String!
+  investigationIdentifier: String!
+  legislationIdentifierRef: String!
+  isActive: Boolean!
+}
