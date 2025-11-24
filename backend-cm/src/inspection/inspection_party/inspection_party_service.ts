@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateInspectionPartyInput } from "../inspection_party/dto/inspection_party";
+import { CreateInspectionPartyInput, InspectionParty } from "../inspection_party/dto/inspection_party";
 import { Inspection } from "../../inspection/inspection/dto/inspection";
-import { InspectionParty } from "../inspection_party/dto/inspection_party";
 import { inspection_party } from "../../../prisma/inspection/generated/inspection_party";
 import { InspectionPrismaService } from "../../prisma/inspection/prisma.inspection.service";
 import { UserService } from "../../common/user.service";

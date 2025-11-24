@@ -1,7 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateInvestigationPartyInput } from "../investigation_party/dto/investigation_party";
+import { CreateInvestigationPartyInput, InvestigationParty } from "../investigation_party/dto/investigation_party";
 import { Investigation } from "../../investigation/investigation/dto/investigation";
-import { InvestigationParty } from "../investigation_party/dto/investigation_party";
 import { investigation_party } from "../../../prisma/investigation/generated/investigation_party";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";

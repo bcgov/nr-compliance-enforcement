@@ -231,7 +231,7 @@ export const PartyView: FC = () => {
           (relatedInspection) => relatedInspection.inspectionGuid === caseActivity?.activityIdentifier,
         );
         if (currenInspection) {
-          let currentRole = partyRelation.activities.push({
+          partyRelation.activities.push({
             id: currenInspection.inspectionGuid,
             name: currenInspection.name,
             activityType: CaseActivities.INSPECTION,
