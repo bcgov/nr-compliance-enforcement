@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
 import {
   CreateInvestigationInput,
@@ -18,9 +18,16 @@ import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
 import { CaseActivityService } from "src/shared/case_activity/case_activity.service";
+import { PointFeature } from "supercluster";
+import { GeoJsonProperties } from "geojson";
+import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
+import { SearchMapResults } from "./dto/search-map-results";
+import { MapSearchUtility } from "../../common/map_search.utility";
 
 @Injectable()
 export class InvestigationService {
+  private readonly logger = new Logger(InvestigationService.name);
+
   constructor(
     private readonly prisma: InvestigationPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
@@ -31,8 +38,6 @@ export class InvestigationService {
     private readonly eventPublisher: EventPublisherService,
     private readonly caseActivityService: CaseActivityService,
   ) {}
-
-  private readonly logger = new Logger(InvestigationService.name);
 
   async findOne(investigationGuid: string) {
     const prismaInvestigation = await this.prisma.investigation.findUnique({
@@ -365,15 +370,23 @@ export class InvestigationService {
     }
   }
 
-  async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
+  // ============================================================================
+  // Search, Filter and Map Search
+  // ============================================================================
+
+  private readonly SORT_FIELD_MAP: Record<string, string> = {
+    investigationGuid: "investigation_guid",
+    openedTimestamp: "investigation_opened_utc_timestamp",
+    leadAgency: "owned_by_agency_ref",
+    investigationStatus: "investigation_status",
+    name: "name",
+  };
+
+  private _buildInvestigationWhereClause(filters?: InvestigationFilters): any {
     const where: any = {};
 
     if (filters?.search) {
-      // Search by name (partial match) or investigation_guid (exact match)
-      where.OR = [
-        { name: { contains: filters.search, mode: "insensitive" } },
-        { investigation_guid: { equals: filters.search } },
-      ];
+      where.name = { contains: filters.search, mode: "insensitive" };
     }
 
     if (filters?.leadAgency) {
@@ -398,19 +411,14 @@ export class InvestigationService {
       }
     }
 
-    // map filters to db columns
-    const sortFieldMap: Record<string, string> = {
-      investigationGuid: "investigation_guid",
-      openedTimestamp: "investigation_opened_utc_timestamp",
-      leadAgency: "owned_by_agency_ref",
-      investigationStatus: "investigation_status",
-      name: "name",
-    };
+    return where;
+  }
 
-    let orderBy: any = { investigation_opened_utc_timestamp: "desc" }; // Default sort
+  private _buildInvestigationOrderByClause(filters?: InvestigationFilters): any {
+    let orderBy: any = { investigation_opened_utc_timestamp: "desc" };
 
     if (filters?.sortBy && filters?.sortOrder) {
-      const dbField = sortFieldMap[filters.sortBy];
+      const dbField = this.SORT_FIELD_MAP[filters.sortBy];
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
       if (dbField) {
@@ -418,7 +426,13 @@ export class InvestigationService {
       }
     }
 
-    // Use the pagination utility to handle pagination logic and return pageInfo meta
+    return orderBy;
+  }
+
+  async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
+    const where = this._buildInvestigationWhereClause(filters);
+    const orderBy = this._buildInvestigationOrderByClause(filters);
+
     const result = await this.paginationUtility.paginate<investigation, Investigation>(
       { page, pageSize },
       {
@@ -435,10 +449,81 @@ export class InvestigationService {
         orderByClause: orderBy,
       },
     );
+
     return {
       items: result.items,
       pageInfo: result.pageInfo as PageInfo,
     };
+  }
+
+  async searchMap(model: InvestigationSearchMapParameters): Promise<SearchMapResults> {
+    try {
+      const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
+
+      const where = this._buildInvestigationWhereClause(model.filters);
+      const investigations = await this.prisma.investigation.findMany({
+        where,
+        select: {
+          investigation_guid: true,
+        },
+      });
+      const investigationGuids = investigations.map((inv) => inv.investigation_guid);
+
+      if (investigationGuids.length === 0) {
+        // Pass false when there are no results to prevent unwanted reposition
+        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
+      }
+
+      // Get unmappable results. Raw SQL is required for PostGIS operations.
+      const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
+        SELECT COUNT(*) as count
+        FROM investigation
+        WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
+          AND (
+            location_geometry_point IS NULL OR
+            public.ST_X(location_geometry_point) = 0 OR
+            public.ST_Y(location_geometry_point) = 0
+          )
+      `;
+
+      // Get mappable results
+      const mappedInvestigations = await this.prisma.$queryRaw<
+        Array<{ investigation_guid: string; location_geometry_point: any }>
+      >`
+        SELECT
+          investigation_guid,
+          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+        FROM investigation
+        WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
+          AND location_geometry_point IS NOT NULL
+          AND public.ST_X(location_geometry_point) <> 0
+          AND public.ST_Y(location_geometry_point) <> 0
+          AND public.ST_Intersects(
+            public.ST_SetSRID(location_geometry_point, 4326),
+            public.ST_MakeEnvelope(${bboxArray[0]}, ${bboxArray[1]}, ${bboxArray[2]}, ${bboxArray[3]}, 4326)
+          )
+      `;
+
+      const points: Array<PointFeature<GeoJsonProperties>> = mappedInvestigations.map((item) => ({
+        type: "Feature",
+        properties: {
+          cluster: false,
+          id: item.investigation_guid,
+        },
+        geometry: item.location_geometry_point,
+      }));
+
+      return MapSearchUtility.buildSearchMapResults(
+        points,
+        unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
+        model.zoom,
+        bboxArray,
+        isGlobalSearch,
+      );
+    } catch (error) {
+      this.logger.error("Error performing map search:", error);
+      throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
+    }
   }
 
   async checkNameExists(name: string, leadAgency: string, excludeInvestigationGuid?: string): Promise<boolean> {

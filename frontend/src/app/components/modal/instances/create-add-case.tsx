@@ -8,7 +8,7 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { useRequest as GraphQLRequest } from "@/app/graphql/client";
+import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { CaseActivityCreateInput, CaseFileCreateInput } from "@/generated/graphql";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import { CompInput } from "@/app/components/common/comp-input";
