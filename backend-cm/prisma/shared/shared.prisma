@@ -561,6 +561,8 @@ model party_association_role {
   case_activity_type_code_party_association_role_case_activity_type_codeTocase_activity_type_code case_activity_type_code @relation("party_association_role_case_activity_type_codeTocase_activity_type_code", fields: [case_activity_type_code], references: [case_activity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "party_association_role__activity_type_code_fk")
 
   @@id([party_association_role, case_activity_type_code])
+}
+
 model legislation {
   legislation_guid                                                               String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   legislation_type_code                                                          String                    @db.VarChar(16)
