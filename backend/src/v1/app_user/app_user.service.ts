@@ -88,7 +88,7 @@ export class AppUserService {
         if (appUser) {
           return this.mapAppUserToDtoWithOffice(appUser, token);
         } else {
-          return null;
+          return cssUsers[0];
         }
       }
     } catch (error) {
