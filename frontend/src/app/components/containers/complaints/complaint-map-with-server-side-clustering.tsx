@@ -147,6 +147,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
   const [clusters, setClusters] = useState<Array<any>>([]);
   const [defaultClusterView, setDefaultClusterView] = useState<any>();
   const [unmappedCount, setUnmappedCount] = useState<number>(0);
+  const [noResults, setNoResults] = useState<boolean>(false);
 
   //-- the state from the context is not the same state as used in the rest of the application
   //-- this is self-contained, rename the state locally to make clear
@@ -225,13 +226,17 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       if (response) {
         response.unmappedCount != null && setUnmappedCount(response.unmappedCount);
         // If there is no bounding box, update totals
-        bbox === undefined &&
+        if (bbox === undefined) {
           dispatch(
             setMappedComplaintsCount({
               ...(response.mappedCount != null && { mapped: response.mappedCount }),
               ...(response.unmappedCount != null && { unmapped: response.unmappedCount }),
             }),
           );
+          const hasMapped = (response.mappedCount ?? 0) > 0;
+          const hasUnmapped = (response.unmappedCount ?? 0) > 0;
+          setNoResults(!hasMapped && !hasUnmapped);
+        }
         response.clusters && setClusters(response.clusters);
         if (response.zoom && response.center) {
           setDefaultClusterView({ zoom: response.zoom, center: response.center });
@@ -263,6 +268,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       renderMarkerPopup={renderComplaintPopup}
       onMarkerPopupOpen={handleMarkerPopupOpen}
       onMarkerPopupClose={handleMarkerPopupClose}
+      noResults={noResults}
     />
   );
 };
