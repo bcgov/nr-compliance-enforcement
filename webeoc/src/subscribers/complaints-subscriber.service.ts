@@ -85,7 +85,7 @@ export class ComplaintsSubscriberService implements OnModuleInit {
     this.logger.debug(`Staging complaint: ${complaintMessage?.incident_number}`);
     await this.service.createNewComplaintInStaging(complaintMessage);
     await message.ackAck(); //Message has been loaded into NatCom no need to retry.  If NATS is unavailable there will be 'PENDING' row to process manually.
-    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage.incident_number);
+    this.complaintsPublisherService.publishStagingComplaintInsertedMessage(complaintMessage);
   }
 
   private async handleUpdatedComplaint(message, complaintMessage: ComplaintUpdate) {
