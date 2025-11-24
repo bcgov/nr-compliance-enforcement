@@ -41,7 +41,7 @@ export const InvestigationMap: FC<Props> = ({ error = null }) => {
     [],
   );
 
-  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved, noResults } =
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, handleMapMoved, noResults } =
     useMapSearch<SearchInvestigationsMapResponse>({
       query: SEARCH_INVESTIGATIONS_MAP,
       filters,

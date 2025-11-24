@@ -41,7 +41,7 @@ export const InspectionMap: FC<Props> = ({ error = null }) => {
     [],
   );
 
-  const { clusters, unmappedCount, defaultClusterView, loadingMapData, mapError, handleMapMoved, noResults } =
+  const { clusters, unmappedCount, defaultClusterView, loadingMapData, handleMapMoved, noResults } =
     useMapSearch<SearchInspectionsMapResponse>({
       query: SEARCH_INSPECTIONS_MAP,
       filters,
