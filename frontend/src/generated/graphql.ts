@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   JSONObject: { input: any; output: any; }
   Point: { input: any; output: any; }
 };
@@ -835,6 +836,12 @@ export type InspectionResult = {
   pageInfo: PageInfo;
 };
 
+export type InspectionSearchMapParameters = {
+  bbox?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<InspectionFilters>;
+  zoom: Scalars['Int']['input'];
+};
+
 export type InspectionStatusCode = {
   __typename?: 'InspectionStatusCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -904,6 +911,12 @@ export type InvestigationResult = {
   __typename?: 'InvestigationResult';
   items: Array<Investigation>;
   pageInfo: PageInfo;
+};
+
+export type InvestigationSearchMapParameters = {
+  bbox?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<InvestigationFilters>;
+  zoom: Scalars['Int']['input'];
 };
 
 export type InvestigationStatusCode = {
@@ -1535,7 +1548,9 @@ export type Query = {
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
+  searchInspectionsMap: SearchMapResults;
   searchInvestigations: InvestigationResult;
+  searchInvestigationsMap: SearchMapResults;
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
@@ -1806,10 +1821,20 @@ export type QuerysearchInspectionsArgs = {
 };
 
 
+export type QuerysearchInspectionsMapArgs = {
+  model: InspectionSearchMapParameters;
+};
+
+
 export type QuerysearchInvestigationsArgs = {
   filters?: InputMaybe<InvestigationFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchInvestigationsMapArgs = {
+  model: InvestigationSearchMapParameters;
 };
 
 
@@ -1864,6 +1889,15 @@ export type ScheduleSectorXref = {
   scheduleCode?: Maybe<Scalars['String']['output']>;
   sectorCode?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type SearchMapResults = {
+  __typename?: 'SearchMapResults';
+  center?: Maybe<Array<Maybe<Scalars['Float']['output']>>>;
+  clusters?: Maybe<Scalars['JSON']['output']>;
+  mappedCount?: Maybe<Scalars['Int']['output']>;
+  unmappedCount?: Maybe<Scalars['Int']['output']>;
+  zoom?: Maybe<Scalars['Int']['output']>;
 };
 
 export type SectorCode = {
