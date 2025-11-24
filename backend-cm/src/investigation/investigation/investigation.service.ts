@@ -63,6 +63,11 @@ export class InvestigationService {
             active_ind: true,
           },
         },
+        contravention: {
+          where: {
+            active_ind: true,
+          },
+        },
       },
     });
     if (!prismaInvestigation) {
