@@ -69,10 +69,8 @@ function createPgSessionExtension(client: any) {
                 );
               }
 
-              if (user.idir_user_guid) {
-                // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-                await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
-              }
+              // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
+              await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
 
               // Execute the original query using the transaction client
               // We need to call the same operation on the transaction client

@@ -22,12 +22,11 @@ export class PgSessionModule implements OnModuleInit {
   constructor(private readonly dataSource: DataSource) {}
 
   onModuleInit() {
-    this.logger.log("Initializing PgSessionModule");
     // Grab the original methods to either wrap or fallback to
     const originalDataSourceQuery = this.dataSource.query.bind(this.dataSource);
     const originalManagerQuery = this.dataSource.manager.query.bind(this.dataSource.manager);
     const originalCreateQueryRunner = this.dataSource.createQueryRunner.bind(this.dataSource);
-    const logger = this.logger; // Capture logger reference for use in the bound function
+    const logger = this.logger;
     const dataSource = this.dataSource; // Capture DataSource reference for use in bound functions
 
     // Helper function to wrap a query in a transaction with JWT claims
@@ -57,9 +56,6 @@ export class PgSessionModule implements OnModuleInit {
         return originalQueryFn(query, parameters);
       }
 
-      // Log that we're wrapping a read query in a transaction
-      logger.debug(`Wrapping read query in transaction for user: ${request.user.idir_username || "unknown"}`);
-
       try {
         // Create a query runner and start a transaction
         const runner = dataSource.createQueryRunner();
@@ -76,10 +72,8 @@ export class PgSessionModule implements OnModuleInit {
             const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
             await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`);
           }
-          if (user.idir_user_guid) {
-            // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-            await runner.query(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
-          }
+          // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
+          await runner.query(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
 
           // Execute the original query with the transaction
           const result = await originalQueryFn(query, parameters, runner);
@@ -140,8 +134,6 @@ export class PgSessionModule implements OnModuleInit {
         parameters?: any[],
         useStructuredResult?: boolean,
       ): Promise<T> {
-        logger.debug(`QueryRunner.query called: ${query.substring(0, 100)}...`);
-
         // Only wrap read operations in transactions if not already in a transaction
         const formattedSql = query.trim().toUpperCase();
         const isReadOperation =
@@ -162,9 +154,6 @@ export class PgSessionModule implements OnModuleInit {
         if (!request?.user) {
           return originalQueryRunnerQuery(query, parameters, useStructuredResult);
         }
-
-        // Log that we're wrapping a read query in a transaction
-        logger.debug(`Wrapping QueryRunner query in transaction for user: ${request.user.idir_username || "unknown"}`);
 
         // Check if we're already in a transaction
         const wasInTransaction = this.isTransactionActive;
@@ -193,8 +182,9 @@ export class PgSessionModule implements OnModuleInit {
               );
             }
 
+            // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
+            await originalQueryRunnerQuery(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
             // Execute the original query
-            logger.debug(`Executing query in transaction: ${query.substring(0, 100)}...`);
             const result = await originalQueryRunnerQuery(query, parameters, useStructuredResult);
 
             // Commit the transaction if we started it
