@@ -1,15 +1,38 @@
+import { useAppSelector } from "@/app/hooks/hooks";
 import { InspectionParty, InvestigationParty } from "@/generated/graphql";
 import React from "react";
 import { Accordion, Badge, Dropdown, ListGroup } from "react-bootstrap";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { CaseActivities } from "@/app/constants/case-activities";
 
 // Can we genercize this in the future?
 interface Props {
   companies: InvestigationParty[] | InspectionParty[];
   people: InvestigationParty[] | InspectionParty[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
+  activityType: string;
 }
 
-const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
+const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activityType }) => {
+  const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+
+  const getPartyRoleText = (selected: InvestigationParty | InspectionParty) => {
+    let currentActivityType = "";
+    if (activityType === CaseActivities.INSPECTION) {
+      currentActivityType = "INSPECTION";
+    }
+    if (activityType === CaseActivities.INVESTIGATION) {
+      currentActivityType = "INVSTGTN";
+    }
+    const partyRoleText: string = partyRoles.find(
+      (partyRole) =>
+        partyRole.partyAssociationRole === selected.partyAssociationRole &&
+        partyRole.caseActivityTypeCode === currentActivityType,
+    )?.shortDescription;
+    return partyRoleText;
+  };
+
   return (
     <>
       {people.length === 0 && companies.length === 0 && <div className="mt-3">No parties to display</div>}
@@ -36,7 +59,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                       <span className="text-muted">{`24, Male`}</span>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <Badge bg="species-badge comp-species-badge">Witness</Badge>
+                      <Badge bg="species-badge comp-species-badge">{getPartyRoleText(party)}</Badge>
                       {onRemoveParty && (
                         <Dropdown>
                           <Dropdown.Toggle
@@ -86,7 +109,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty }) => {
                       <strong>{party.business?.name}</strong>
                     </div>
                     <div className="d-flex align-items-center gap-2">
-                      <Badge bg="species-badge comp-species-badge">Subject of complaint</Badge>
+                      <Badge bg="species-badge comp-species-badge">{getPartyRoleText(party)}</Badge>
                       {onRemoveParty && (
                         <Dropdown>
                           <Dropdown.Toggle

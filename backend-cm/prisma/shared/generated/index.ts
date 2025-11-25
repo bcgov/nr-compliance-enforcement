@@ -39,6 +39,9 @@ import { team_h as _team_h } from "./team_h";
 import { legislation as _legislation } from "./legislation";
 import { legislation_agency_xref as _legislation_agency_xref } from "./legislation_agency_xref";
 import { legislation_type_code as _legislation_type_code } from "./legislation_type_code";
+import { legislation_agency_xref_h as _legislation_agency_xref_h } from "./legislation_agency_xref_h";
+import { legislation_h as _legislation_h } from "./legislation_h";
+import { party_association_role_code as _party_association_role_code } from "./party_association_role_code";
 
 export namespace PrismaModel {
   export class contact_method extends _contact_method {}
@@ -82,6 +85,9 @@ export namespace PrismaModel {
   export class legislation extends _legislation {}
   export class legislation_agency_xref extends _legislation_agency_xref {}
   export class legislation_type_code extends _legislation_type_code {}
+  export class legislation_agency_xref_h extends _legislation_agency_xref_h {}
+  export class legislation_h extends _legislation_h {}
+  export class party_association_role_code extends _party_association_role_code {}
 
   export const extraModels = [
     contact_method,
@@ -125,5 +131,8 @@ export namespace PrismaModel {
     legislation,
     legislation_agency_xref,
     legislation_type_code,
+    legislation_agency_xref_h,
+    legislation_h,
+    party_association_role_code,
   ];
 }
