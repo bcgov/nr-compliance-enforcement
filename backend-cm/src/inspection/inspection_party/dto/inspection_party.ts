@@ -83,7 +83,7 @@ export const mapPrismaPartyToInspectionParty = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.partyAssociationRole,
-      mapFrom((src) => src.party_association_role),
+      mapFrom((src) => src.party_association_role_ref),
     ),
   );
 };

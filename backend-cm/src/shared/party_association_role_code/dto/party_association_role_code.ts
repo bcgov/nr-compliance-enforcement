@@ -1,4 +1,4 @@
-import { party_association_role } from "../../../../prisma/shared/generated/party_association_role";
+import { party_association_role_code } from "prisma/shared/generated/party_association_role_code";
 import { mapFrom, forMember, createMap, Mapper } from "@automapper/core";
 
 export class PartyAssociationRole {
@@ -10,14 +10,14 @@ export class PartyAssociationRole {
   caseActivityTypeCode;
 }
 
-export const mapPrismaPartyAssociationRoleToPartyAssociationRole = (mapper: Mapper) => {
-  createMap<party_association_role, PartyAssociationRole>(
+export const mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode = (mapper: Mapper) => {
+  createMap<party_association_role_code, PartyAssociationRole>(
     mapper,
-    "party_association_role",
+    "party_association_role_code",
     "PartyAssociationRole",
     forMember(
       (dest) => dest.partyAssociationRole,
-      mapFrom((src) => src.party_association_role),
+      mapFrom((src) => src.party_association_role_code),
     ),
     forMember(
       (dest) => dest.activeIndicator,

@@ -97,7 +97,7 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
 
 const GET_INSPECTION_PARTY_ROLES = gql`
   query GetInspectionPartyByReference($partyRefId: String!) {
-    getInspectionPartiesByRef(partyRefId: $partyRefId) {
+    InspectionParties(partyRefId: $partyRefId) {
       inspectionGuid
       partyReference
       partyAssociationRole
@@ -107,7 +107,7 @@ const GET_INSPECTION_PARTY_ROLES = gql`
 
 const GET_INVESTIGATION_PARTY_ROLES = gql`
   query GetInvestigationPartyByReference($partyRefId: String!) {
-    getInvestigationPartiesByRef(partyRefId: $partyRefId) {
+    InvestigationParties(partyRefId: $partyRefId) {
       investigationGuid
       partyReference
       partyAssociationRole
@@ -293,24 +293,24 @@ export const PartyView: FC = () => {
     isPartyRoleLoading: boolean;
   } => {
     const { data: rolesInInvestigationsData, isLoading: isInvestigationRoleLoading } = useGraphQLQuery<{
-      getInvestigationPartiesByRef: InvestigationParty[];
+      InvestigationParties: InvestigationParty[];
     }>(GET_INVESTIGATION_PARTY_ROLES, {
       queryKey: ["InvestigationPartyRoles", id],
       variables: { partyRefId: id },
       enabled: !!id,
     });
 
-    const rolesInInvestigations = rolesInInvestigationsData?.getInvestigationPartiesByRef ?? [];
+    const rolesInInvestigations = rolesInInvestigationsData?.InvestigationParties ?? [];
 
     const { data: rolesInInspectionsData, isLoading: isInspectionRoleLoading } = useGraphQLQuery<{
-      getInspectionPartiesByRef: InspectionParty[];
+      InspectionParties: InspectionParty[];
     }>(GET_INSPECTION_PARTY_ROLES, {
       queryKey: ["InspectionPartyRoles", id],
       variables: { partyRefId: id },
       enabled: !!id,
     });
 
-    const rolesInInspections = rolesInInspectionsData?.getInspectionPartiesByRef ?? [];
+    const rolesInInspections = rolesInInspectionsData?.InspectionParties ?? [];
 
     const isPartyRoleLoading = isInvestigationRoleLoading || isInspectionRoleLoading;
 

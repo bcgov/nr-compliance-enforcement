@@ -32,7 +32,7 @@ export class inspection_party {
   update_utc_timestamp?: Date;
 
   @ApiPropertyOptional({ type: String })
-  party_association_role?: string;
+  party_association_role_ref?: string;
 
   @ApiProperty({ isArray: true, type: () => inspection_business })
   inspection_business: inspection_business[];

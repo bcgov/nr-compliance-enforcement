@@ -1,18 +1,18 @@
 import { Resolver, Query } from "@nestjs/graphql";
-import { PartyAssociationRoleService } from "./party_association_role.service";
+import { PartyAssociationRoleCodeService } from "./party_association_role_code.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 
 @UseGuards(JwtRoleGuard)
-@Resolver("PartyAssociationRole")
-export class PartyAssociationRoleResolver {
-  constructor(private readonly partyAssociationRoleService: PartyAssociationRoleService) {}
+@Resolver("PartyAssociationRoleCode")
+export class PartyAssociationRoleCodeResolver {
+  constructor(private readonly partyAssociationRoleCodeService: PartyAssociationRoleCodeService) {}
 
   @Query("partyAssociationRoles")
   @Roles(coreRoles)
   async findAll() {
-    return await this.partyAssociationRoleService.findAll();
+    return await this.partyAssociationRoleCodeService.findAll();
   }
 }

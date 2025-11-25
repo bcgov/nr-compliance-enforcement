@@ -49,7 +49,7 @@ export class InspectionPartyService {
               inspection_guid: inspectionGuid,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
-              party_association_role: input.partyAssociationRole,
+              party_association_role_ref: input.partyAssociationRole,
             },
           });
 

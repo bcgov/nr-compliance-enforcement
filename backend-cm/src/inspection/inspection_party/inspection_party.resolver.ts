@@ -43,7 +43,7 @@ export class InspectionPartyResolver {
     }
   }
 
-  @Query("getInspectionPartiesByRef")
+  @Query("InspectionParties")
   @Roles(coreRoles)
   async findManyByParty(@Args("partyRefId") partyRefId: string) {
     try {

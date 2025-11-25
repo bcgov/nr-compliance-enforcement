@@ -1480,6 +1480,8 @@ export type Query = {
   HWCRAssessmentActions: Array<Maybe<CaseFileAction>>;
   HWCRAssessmentCat1Actions: Array<Maybe<CaseFileAction>>;
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
+  InspectionParties: Array<Maybe<InspectionParty>>;
+  InvestigationParties: Array<Maybe<InvestigationParty>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
   appUser?: Maybe<AppUser>;
@@ -1512,11 +1514,9 @@ export type Query = {
   getContinuationReport?: Maybe<ContinuationReport>;
   getContinuationReports?: Maybe<Array<ContinuationReport>>;
   getInspection?: Maybe<Inspection>;
-  getInspectionPartiesByRef: Array<Maybe<InspectionParty>>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
   getInvestigation?: Maybe<Investigation>;
-  getInvestigationPartiesByRef: Array<Maybe<InvestigationParty>>;
   getInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   getInvestigationsByParty?: Maybe<Array<Maybe<Investigation>>>;
   getLeadsByActionTaken?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -1560,6 +1560,16 @@ export type Query = {
   teamCodes: Array<Maybe<TeamCode>>;
   teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+};
+
+
+export type QueryInspectionPartiesArgs = {
+  partyRefId: Scalars['String']['input'];
+};
+
+
+export type QueryInvestigationPartiesArgs = {
+  partyRefId: Scalars['String']['input'];
 };
 
 
@@ -1665,11 +1675,6 @@ export type QuerygetInspectionArgs = {
 };
 
 
-export type QuerygetInspectionPartiesByRefArgs = {
-  partyRefId: Scalars['String']['input'];
-};
-
-
 export type QuerygetInspectionsArgs = {
   ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -1683,11 +1688,6 @@ export type QuerygetInspectionsByPartyArgs = {
 
 export type QuerygetInvestigationArgs = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerygetInvestigationPartiesByRefArgs = {
-  partyRefId: Scalars['String']['input'];
 };
 
 

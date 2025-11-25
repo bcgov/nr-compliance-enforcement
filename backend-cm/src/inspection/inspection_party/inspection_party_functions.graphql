@@ -4,5 +4,5 @@ type Mutation {
 }
 
 type Query {
-  getInspectionPartiesByRef(partyRefId: String!): [InspectionParty]!
+  InspectionParties(partyRefId: String!): [InspectionParty]!
 }

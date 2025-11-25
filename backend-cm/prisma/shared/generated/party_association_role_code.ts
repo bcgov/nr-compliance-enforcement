@@ -1,8 +1,10 @@
-import { case_activity } from "./case_activity";
-import { party_association_role_code } from "./party_association_role_code";
+import { case_activity_type_code } from "./case_activity_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class case_activity_type_code {
+export class party_association_role_code {
+  @ApiProperty({ type: String })
+  party_association_role_code: string;
+
   @ApiProperty({ type: String })
   case_activity_type_code: string;
 
@@ -30,9 +32,6 @@ export class case_activity_type_code {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiProperty({ isArray: true, type: () => case_activity })
-  case_activity: case_activity[];
-
-  @ApiProperty({ isArray: true, type: () => party_association_role_code })
-  party_association_role_code_party_association_role_code_case_activity_type_codeTocase_activity_type_code: party_association_role_code[];
+  @ApiProperty({ type: () => case_activity_type_code })
+  case_activity_type_code_party_association_role_code_case_activity_type_codeTocase_activity_type_code: case_activity_type_code;
 }

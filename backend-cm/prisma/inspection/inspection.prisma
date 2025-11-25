@@ -163,19 +163,19 @@ model inspection_business_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_party {
-  inspection_party_guid  String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid_ref         String?               @db.Uuid
-  party_type_code_ref    String                @db.VarChar(16)
-  inspection_guid        String                @db.Uuid
-  active_ind             Boolean               @default(true)
-  create_user_id         String                @db.VarChar(32)
-  create_utc_timestamp   DateTime              @db.Timestamp(6)
-  update_user_id         String?               @db.VarChar(32)
-  update_utc_timestamp   DateTime?             @db.Timestamp(6)
-  party_association_role String?               @db.VarChar(16)
-  inspection_business    inspection_business[]
-  inspection             inspection            @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_guid")
-  inspection_person      inspection_person[]
+  inspection_party_guid      String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid_ref             String?               @db.Uuid
+  party_type_code_ref        String                @db.VarChar(16)
+  inspection_guid            String                @db.Uuid
+  active_ind                 Boolean               @default(true)
+  create_user_id             String                @db.VarChar(32)
+  create_utc_timestamp       DateTime              @db.Timestamp(6)
+  update_user_id             String?               @db.VarChar(32)
+  update_utc_timestamp       DateTime?             @db.Timestamp(6)
+  party_association_role_ref String?               @db.VarChar(16)
+  inspection_business        inspection_business[]
+  inspection                 inspection            @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_guid")
+  inspection_person          inspection_person[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
