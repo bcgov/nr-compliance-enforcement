@@ -8,6 +8,7 @@ import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { CaseActivities } from "@/app/constants/case-activities";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
@@ -117,6 +118,7 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
             companies={businessParties as InvestigationParty[]}
             people={peopleParties as InvestigationParty[]}
             onRemoveParty={handleRemoveParty}
+            activityType={CaseActivities.INVESTIGATION}
           />
         </div>
       </div>

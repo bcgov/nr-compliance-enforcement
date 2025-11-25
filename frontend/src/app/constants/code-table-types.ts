@@ -43,6 +43,7 @@ export const CODE_TABLE_TYPES = {
   PARK_AREA: "park-area",
   EMAIL_REFERENCE: "email-reference",
   PARTY_TYPE: "party-type",
+  PARTY_ASSOCIATION_ROLE: "party-association-role",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

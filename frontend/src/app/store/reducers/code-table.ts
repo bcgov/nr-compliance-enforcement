@@ -45,6 +45,7 @@ import {
   fetchParkAreas,
   fetchEmailReference,
   fetchPartyTypes,
+  fetchPartyAssociationRoles,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -96,6 +97,7 @@ const initialState: CodeTableState = {
   "park-area": [],
   "email-reference": [],
   "party-type": [],
+  "party-association-role": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -156,6 +158,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "decision-type": decisionType,
       "schedule-sector-type": scheduleSectorType,
       team,
+      "party-association-role": partyAssociationRole,
       "complaint-method-received-codes": complaintMethodReceived,
       "lead-agency": leadAgency,
       "assessment-cat1-type": assessmentCat1Type,
@@ -308,6 +311,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(partyType).any()) {
       dispatch(fetchPartyTypes());
     }
+    if (!from(partyAssociationRole).any()) {
+      dispatch(fetchPartyAssociationRoles());
+    }
   } catch (error) {}
 };
 
@@ -363,6 +369,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchEquipmentStatus());
     dispatch(fetchParkAreas());
     dispatch(fetchPartyTypes());
+    dispatch(fetchPartyAssociationRoles());
   } catch (error) {
     console.error(error);
   }

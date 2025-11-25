@@ -58,7 +58,7 @@ export const SideBar: FC = () => {
     },
     {
       id: "parties-link",
-      name: "Parties of interest",
+      name: "Parties",
       icon: "bi bi-file-earmark-image",
       route: "/parties",
       hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.PARTIES_OF_INTEREST)),

@@ -34,6 +34,7 @@ const GET_INSPECTION = gql`
           name
           businessGuid
         }
+        partyAssociationRole
       }
       leadAgency
       locationAddress
