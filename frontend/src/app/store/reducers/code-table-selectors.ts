@@ -60,3 +60,22 @@ export const selectPartyTypeDropdown = createSelector([selectCodeTables], (codeT
     displayOrder,
   }));
 });
+
+export const selectPartyAssociationRoleDropdown = createSelector([selectCodeTables], (codeTables) => {
+  const { "party-association-role": items } = codeTables;
+  return items.map(
+    ({
+      partyAssociationRole: value,
+      caseActivityTypeCode,
+      shortDescription: label,
+      activeIndicator,
+      displayOrder,
+    }) => ({
+      label,
+      value,
+      activeIndicator,
+      displayOrder,
+      caseActivityTypeCode,
+    }),
+  );
+});

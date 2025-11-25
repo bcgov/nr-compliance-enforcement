@@ -37,6 +37,7 @@ const GET_INVESTIGATION = gql`
           name
           businessGuid
         }
+        partyAssociationRole
       }
       contraventions {
         contraventionIdentifier

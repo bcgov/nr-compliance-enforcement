@@ -5,6 +5,7 @@ type InvestigationParty {
   partyReference: String
   person: InvestigationPerson
   business: InvestigationBusiness
+  partyAssociationRole: String
 }
 
 input CreateInvestigationPartyInput {
@@ -12,4 +13,5 @@ input CreateInvestigationPartyInput {
   partyReference: String
   person: CreateInvestigationPersonInput
   business: CreateInvestigationBusinessInput
+  partyAssociationRole: String
 }
