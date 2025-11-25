@@ -13,7 +13,6 @@ import { ReportRenderer } from "./report-renderer";
 import { MenuBarEditor } from "./menu-bar-editor";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
-import DatePicker from "react-datepicker";
 import Option from "@apptypes/app/option";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { useSelector } from "react-redux";
@@ -23,6 +22,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid, profileDisplayName } from "@store/reducers/app";
 import "@assets/sass/investigation-continuation.scss";
+import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 
 const SAVE_REPORT_MUTATION = gql`
   mutation SaveContinuationReport($input: ContinuationReportInput!) {
@@ -204,19 +204,10 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               Date/time actioned<span className="required-ind">*</span>
             </div>
             <div className="comp-details-edit-input">
-              <DatePicker
-                id="complaint-actioned-time"
-                showIcon
-                timeInputLabel="Time:"
+              <CompDateTimePicker
+                value={selectedActionedDateTime}
                 onChange={handleActionedDateTimeChange}
-                selected={selectedActionedDateTime}
-                showTimeInput
-                dateFormat="yyyy-MM-dd HH:mm"
-                timeFormat="HH:mm"
-                wrapperClassName="comp-details-edit-calendar-input"
                 maxDate={new Date()}
-                monthsShown={2}
-                showPreviousMonths
               />
             </div>
           </div>
