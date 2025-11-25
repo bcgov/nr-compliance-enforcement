@@ -150,6 +150,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that updated the party." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="party_association_role_ref" nullable="true" remarks="Unenforced Foreign Key to shared.party_association_role. The party role in this investigation." size="16" type="varchar" typeCode="12"/>
          <primaryKey column="investigation_party_guid" sequenceNumberInPK="1"/>
          <index name="investigation_party_pkey" unique="true">
             <column ascending="true" name="investigation_party_guid"/>

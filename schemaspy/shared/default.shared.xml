@@ -165,6 +165,7 @@
       <table name="case_activity_type_code" numRows="3" remarks="A case file is made up of many case activities.  Examples of case activities include: COMP = &quot;Complaint&quot;, INV = &quot;Investigation" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="case_activity_type_code" nullable="false" remarks="Primary key: Human readable code representing a case activity." size="10" type="varchar" typeCode="12">
             <child column="activity_type" foreignKey="fk_case_activity__case_activity_type_code" implied="false" onDeleteCascade="false" schema="shared" table="case_activity"/>
+            <child column="case_activity_type_code" foreignKey="party_association_role_code__activity_type_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="party_association_role_code"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the case activity.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the case activity.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
@@ -670,6 +671,26 @@
          <primaryKey column="party_guid" sequenceNumberInPK="1"/>
          <index name="party_pkey" unique="true">
             <column ascending="true" name="party_guid"/>
+         </index>
+      </table>
+      <table name="party_association_role_code" remarks="A table that holds party association roles." schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="party_association_role_code" nullable="false" remarks="Primary key. Code representing role of the party. Examples of party types include: PTYOFINTRST = &quot;Party of Interest&quot;, WITNESS = &quot;Witness" size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="case_activity_type_code" nullable="false" remarks="Primary key. The reference to the associated case activity type." size="10" type="varchar" typeCode="12">
+            <parent column="case_activity_type_code" foreignKey="party_association_role_code__activity_type_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="case_activity_type_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="short_description" nullable="false" remarks="The short description of the party association role.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="long_description" nullable="true" remarks="The long description of the party association role.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="true" remarks="The order in which the values of the party association roles should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the party association role is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the party association role." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the party association role was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that updated the party association role." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the party association role was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <primaryKey column="party_association_role_code" sequenceNumberInPK="1"/>
+         <primaryKey column="case_activity_type_code" sequenceNumberInPK="2"/>
+         <index name="party_association_role_code_pkey" unique="true">
+            <column ascending="true" name="party_association_role_code"/>
+            <column ascending="true" name="case_activity_type_code"/>
          </index>
       </table>
       <table name="party_h" remarks="" schema="shared" type="TABLE">

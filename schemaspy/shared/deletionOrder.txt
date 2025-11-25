@@ -19,6 +19,7 @@ legislation_agency_xref
 contact_method
 case_activity
 app_user_team_xref
+party_association_role_code
 park_area_mapping
 business
 case_file

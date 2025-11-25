@@ -135,6 +135,11 @@
                                                 <td class="constraint detail">fk_case_activity__case_activity_type_code</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
+                                            <tr>
+                                                <td title="party_association_role_code.case_activity_type_code references case_activity_type_code.case_activity_type_code via party_association_role_code__activity_type_code_fk"><a href='party_association_role_code.html'>party_association_role_code</a><span class='relatedKey'>.case_activity_type_code</span></td>
+                                                <td class="constraint detail">party_association_role_code__activity_type_code_fk</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -338,16 +343,18 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="413,5,659,181">
-<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,61,369,395">
+<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="441,5,687,181">
+<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,143,369,476">
+<area shape="rect" id="node3" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="413,199,715,345">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/case_activity_type_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="413,15,659,191">
-<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,111,369,444">
-<area shape="rect" id="node3" href="case_file.html" target="_top" title="case_file" alt="" coords="114,5,261,93">
+<area shape="rect" id="node1" href="case_activity.html" target="_top" title="case_activity" alt="" coords="441,5,687,181">
+<area shape="rect" id="node2" href="case_activity_type_code.html" target="_top" title="case_activity_type_code" alt="" coords="5,184,369,517">
+<area shape="rect" id="node3" href="case_file.html" target="_top" title="case_file" alt="" coords="114,37,261,125">
+<area shape="rect" id="node4" href="party_association_role_code.html" target="_top" title="party_association_role_code" alt="" coords="413,199,715,345">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/case_activity_type_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

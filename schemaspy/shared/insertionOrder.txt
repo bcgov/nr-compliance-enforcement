@@ -20,6 +20,7 @@ team
 case_file
 business
 park_area_mapping
+party_association_role_code
 app_user_team_xref
 case_activity
 contact_method
