@@ -8,9 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactDOMServer from "react-dom/server";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 import Leaflet, { LatLngExpression, Map } from "leaflet";
-import { ComplaintSummaryPopup } from "./complaint-summary-popup";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getComplaintById, setComplaint } from "@store/reducers/complaints";
+import { useAppSelector } from "@hooks/hooks";
 import { from } from "linq-to-typescript";
 import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Spinner } from "react-bootstrap";
@@ -48,21 +46,27 @@ Leaflet.Map.include({
 });
 
 interface MapProps {
-  complaintType: string;
   handleMapMoved: (zoom: number, west: number, south: number, east: number, north: number) => void;
   loadingMapData: boolean;
   clusters: Array<any>;
   defaultClusterView: any;
   unmappedCount: number;
+  renderMarkerPopup?: (id: string) => React.ReactNode;
+  onMarkerPopupOpen?: (id: string) => void;
+  onMarkerPopupClose?: () => void;
+  noResults?: boolean;
 }
 
 const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
-  complaintType,
   loadingMapData,
   handleMapMoved,
   clusters,
   defaultClusterView,
   unmappedCount,
+  renderMarkerPopup,
+  onMarkerPopupOpen,
+  onMarkerPopupClose,
+  noResults = false,
 }) => {
   const loading = useAppSelector(isLoading);
 
@@ -78,42 +82,37 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     iconAnchor: [20, 40], // Adjust icon anchor point
   });
 
-  const dispatch = useAppDispatch();
-
   const handlePopupOpen = (id: string) => {
-    dispatch(getComplaintById(id, complaintType));
+    onMarkerPopupOpen?.(id);
     setPopupOpen(true);
   };
 
   const handlePopupClose = () => {
+    onMarkerPopupClose?.();
     setPopupOpen(false);
-    dispatch(setComplaint(null));
   };
 
   useEffect(() => {
-    if (defaultClusterView) {
-      if (clusters.length > 1) {
-        // Calculate the bounds of all markers
-        const bounds = Leaflet.latLngBounds(
-          clusters.map(
-            (marker) => [marker.geometry.coordinates[1], marker.geometry.coordinates[0]] as LatLngExpression,
-          ),
-        );
+    if (!defaultClusterView || !mapRef.current) {
+      return;
+    }
 
-        // Check if bounds have a non-zero area before fitting
-        if (bounds.isValid() && !bounds.getSouthWest().equals(bounds.getNorthEast())) {
-          // Fit the map to the bounds. Disable animation due to known Leaflet issue if map unmounts while animating: https://github.com/Leaflet/Leaflet/issues/9527
-          mapRef?.current?.fitBounds(bounds, { padding: [35, 35], animate: false });
-        } else {
-          // All coordinates are the same, fallback to setView with a reasonable zoom level
-          const center = bounds.getCenter();
-          mapRef?.current?.setView(center, 12, { animate: false });
-        }
-      } else if (defaultClusterView.center && defaultClusterView.zoom) {
-        mapRef?.current?.setView(defaultClusterView.center, defaultClusterView.zoom);
+    if (clusters.length > 1) {
+      const bounds = Leaflet.latLngBounds(
+        clusters.map((marker) => [marker.geometry.coordinates[1], marker.geometry.coordinates[0]] as LatLngExpression),
+      );
+
+      if (bounds.isValid() && !bounds.getSouthWest().equals(bounds.getNorthEast())) {
+        mapRef.current.fitBounds(bounds, { padding: [35, 35], animate: false });
+        return;
       }
     }
-  }, [clusters, defaultClusterView]);
+
+    if (defaultClusterView.center && defaultClusterView.zoom) {
+      mapRef.current.setView(defaultClusterView.center, defaultClusterView.zoom, { animate: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultClusterView]);
 
   const renderInformationBanner = () => {
     const isPluralized = unmappedCount === 1 ? "" : "s";
@@ -121,8 +120,8 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     const bannerType = unmappedCount >= 1 ? "unmapped" : "no-results";
     const info =
       unmappedCount >= 1
-        ? `${unmappedCount} complaint${isPluralized} could not be mapped`
-        : "No complaints found using your current filters. Remove or change your filters to see complaints.";
+        ? `${unmappedCount} result${isPluralized} could not be mapped`
+        : "No results found using your current filters. Remove or change your filters to see results.";
 
     return (
       <Alert
@@ -161,7 +160,7 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     return null;
   };
 
-  const showInfoBar = unmappedCount >= 1 || !from(clusters).any();
+  const showInfoBar = unmappedCount >= 1 || noResults;
   const parkLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW", transparent: true };
   }, []);
@@ -284,14 +283,12 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
                 icon={customMarkerIcon}
                 eventHandlers={{
                   click: (event) => {
-                    event.target.closePopup();
+                    const marker = event.target as Leaflet.Marker;
+                    marker.closePopup();
                   },
                 }}
               >
-                <ComplaintSummaryPopup
-                  complaintType={complaintType}
-                  complaint_identifier={clusterId}
-                />
+                {renderMarkerPopup ? renderMarkerPopup(clusterId) : null}
               </Marker>
             );
           })}

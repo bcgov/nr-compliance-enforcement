@@ -1,4 +1,5 @@
 scalar Point
+scalar JSON
 
 type Investigation {
   investigationGuid: String
@@ -13,6 +14,7 @@ type Investigation {
   locationDescription: String
   name: String
   parties: [InvestigationParty]
+  contraventions: [Contravention]
 }
 
 input CreateInvestigationInput {
@@ -45,6 +47,20 @@ input InvestigationFilters {
   endDate: Date
   sortBy: String
   sortOrder: String
+}
+
+input InvestigationSearchMapParameters {
+  bbox: String
+  zoom: Int!
+  filters: InvestigationFilters
+}
+
+type SearchMapResults {
+  clusters: JSON
+  mappedCount: Int
+  unmappedCount: Int
+  zoom: Int
+  center: [Float]
 }
 
 type PageInfo {
