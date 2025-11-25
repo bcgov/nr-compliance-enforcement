@@ -13,6 +13,8 @@ import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xr
 import { EquipmentStatus } from "@apptypes/app/code-tables/equipment-status";
 import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
+import { PartyType } from "@/app/types/app/shared/party-type";
+import { PartyAssociationRole } from "@/app/types/app/shared/party-association-role";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -107,9 +109,20 @@ export const fetchEmailReference = (): AppThunk => async (dispatch) => {
 export const fetchPartyTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.PARTY_TYPE}`);
 
-  const response = await get<Array<EmailReference>>(dispatch, parameters);
+  const response = await get<Array<PartyType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PARTY_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchPartyAssociationRoles = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE}`,
+  );
+  const response = await get<Array<PartyAssociationRole>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

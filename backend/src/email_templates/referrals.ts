@@ -1,8 +1,8 @@
 export interface GenerateReferralEmailParams {
   complaintId: string;
   complaintTypeDescription?: string;
-  senderName: string;
-  senderEmailAddress: string;
+  referringUserName: string;
+  referringUserEmail: string;
   referredToAgency: string;
   referredByAgency: string;
   reasonForReferral: string;
@@ -16,8 +16,8 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
   const {
     complaintId,
     complaintTypeDescription,
-    senderName,
-    senderEmailAddress,
+    referringUserName,
+    referringUserEmail,
     referredToAgency,
     referredByAgency,
     reasonForReferral,
@@ -34,7 +34,7 @@ export function generateReferralEmailBody(emailReferralParams: GenerateReferralE
       ? `Complaint #${complaintId}`
       : `${complaintTypeDescription} complaint #<a href=${complaintUrl}>${complaintId}</a>`
   }
-  has been referred to ${referredToAgency} by <strong>${senderName} (CC'd)</strong> at ${referredByAgency}.
+  has been referred to ${referredToAgency} by <strong>${referringUserName} (CC'd)</strong> at ${referredByAgency}.
 </p>
 <ul>
   <li>Summary of complaint and location: ${complaintSummaryText}</li>
@@ -54,7 +54,7 @@ ${
     isExternal ? `${referredByAgency}'s complaint management system` : `NatCom`
   } generated on behalf of the person sending the referral. If you need assistance, please contact:</p>
 <ul>
-  <li>${senderEmailAddress} for information about the complaint and referral.</li>
+  <li>${referringUserEmail} for information about the complaint and referral.</li>
   <li>${supportEmail} for technical support.</li>
 </ul>
 `;

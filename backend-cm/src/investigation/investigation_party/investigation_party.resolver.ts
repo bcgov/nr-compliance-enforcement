@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args } from "@nestjs/graphql";
+import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
@@ -41,6 +41,21 @@ export class InvestigationPartyResolver {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
           originalError: error.message,
+        },
+      });
+    }
+  }
+
+  @Query("InvestigationParties")
+  @Roles(coreRoles)
+  async findManyByParty(@Args("partyRefId") partyRefId: string) {
+    try {
+      return await this.investigationPartyService.findManyByRef(partyRefId);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching investigation parties by Party Ref IDs from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
         },
       });
     }

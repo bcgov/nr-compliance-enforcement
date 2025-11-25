@@ -1,6 +1,6 @@
 {
   "name": "nr-compliance-enforcement",
-  "version": "2.0.139",
+  "version": "2.0.142",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
   "scripts": {
