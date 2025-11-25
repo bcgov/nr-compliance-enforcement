@@ -592,7 +592,6 @@ export const ComplaintDetailsEdit: FC = () => {
     const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
-  console.log(selectedIncidentDateTime);
 
   const handleAttractantsChange = async (options: Option[] | null) => {
     const { attractants } = complaintUpdate as WildlifeComplaint;

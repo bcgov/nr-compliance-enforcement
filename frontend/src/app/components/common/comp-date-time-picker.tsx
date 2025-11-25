@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from "react";
-import { format, parse } from "date-fns";
+import { format, isValid } from "date-fns";
 
 type Props = {
   value: Date | undefined | null;
@@ -29,9 +29,13 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
       } else {
         newDateTime = new Date(`${dateStr}T00:00:00`);
       }
-      if (!isNaN(newDateTime.getTime())) {
+      if (isValid(newDateTime)) {
         onChange(newDateTime);
+      } else {
+        onChange(null);
       }
+    } else {
+      onChange(null);
     }
   }, [dateStr, timeStr]);
 
