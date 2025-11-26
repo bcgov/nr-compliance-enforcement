@@ -17,7 +17,7 @@ test.describe("Case History Tab", () => {
 
     if ((await caseLink.count()) === 0) {
       const rows = page.locator("#case-list tbody tr");
-      expect(await rows.count(), "No cases found. Ensure test data is populated.").toBeGreaterThan(0);
+      expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
       await rows.first().locator("a.comp-cell-link").first().click();
     } else {
       await caseLink.first().click();
@@ -59,7 +59,6 @@ test.describe("Case History Tab", () => {
 
   test("it displays history items", async ({ page }) => {
     const historyItems = page.locator("ul li, .case-history-item");
-    const noHistoryMessage = page.locator("text=No history found");
 
     const hasHistory = (await historyItems.count()) > 0;
     expect(hasHistory).toBe(true);
@@ -67,7 +66,6 @@ test.describe("Case History Tab", () => {
 
   test("it groups history by date", async ({ page }) => {
     const dateHeaders = page.locator("h6:has(.bi-calendar)");
-    const noHistoryMessage = page.locator("text=No history found");
 
     const hasDateHeaders = (await dateHeaders.count()) > 0;
     expect(hasDateHeaders).toBe(true);
@@ -84,7 +82,7 @@ test.describe("Case History - Navigation", () => {
     const rows = page.locator("#case-list tbody tr");
     const rowCount = await rows.count();
 
-    expect(rowCount, "No cases found. Ensure test data is populated.").toBeGreaterThan(0);
+    expect(rowCount, "No cases found.").toBeGreaterThan(0);
 
     const caseLink = rows.first().locator("a.comp-cell-link").first();
     const href = await caseLink.getAttribute("href");

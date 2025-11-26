@@ -5,28 +5,27 @@ import { waitForSpinner } from "../../utils/helpers";
 /**
  * Tests for Inspection Creation functionality
  */
+async function navigateToCreateInspection(page: any): Promise<string | null> {
+  await page.goto("/cases");
+  await waitForSpinner(page);
+
+  const caseRows = page.locator("#case-list tbody tr");
+
+  const firstCaseLink = caseRows.first().locator("a.comp-cell-link").first();
+  const caseId = await firstCaseLink.textContent();
+
+  const caseGuidLink = firstCaseLink.getAttribute("href");
+  const caseGuid = (await caseGuidLink)?.replace("/case/", "");
+
+  if (caseGuid) {
+    await page.goto(`/case/${caseGuid}/createInspection`);
+    await waitForSpinner(page);
+  }
+
+  return caseId;
+}
 test.describe("Inspection Creation", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
-
-  async function navigateToCreateInspection(page: any): Promise<string | null> {
-    await page.goto("/cases");
-    await waitForSpinner(page);
-
-    const caseRows = page.locator("#case-list tbody tr");
-
-    const firstCaseLink = caseRows.first().locator("a.comp-cell-link").first();
-    const caseId = await firstCaseLink.textContent();
-
-    const caseGuidLink = firstCaseLink.getAttribute("href");
-    const caseGuid = (await caseGuidLink)?.replace("/case/", "");
-
-    if (caseGuid) {
-      await page.goto(`/case/${caseGuid}/createInspection`);
-      await waitForSpinner(page);
-    }
-
-    return caseId;
-  }
 
   test("it creates inspection from case", async ({ page }) => {
     await navigateToCreateInspection(page);

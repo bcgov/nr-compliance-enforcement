@@ -4,13 +4,11 @@ import { waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Inspection Edit functionality
- * Verifies form pre-population, editing, validation, and save/cancel flows
  */
 test.describe("Inspection Edit", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {
-    // Navigate to inspections list and open first inspection for editing
     await page.goto("/inspections");
     await waitForSpinner(page);
 
@@ -30,7 +28,6 @@ test.describe("Inspection Edit", () => {
   });
 
   test("it loads existing data", async ({ page }) => {
-    // Verify we're on the edit page
     await expect(page).toHaveURL(/\/inspection\/[^/]+\/edit$/);
 
     // Verify form fields are pre-populated
@@ -131,13 +128,8 @@ test.describe("Inspection Edit", () => {
     await waitForSpinner(page);
     await expect(page).toHaveURL(/\/inspection\/[^/]+$/, { timeout: 15000 });
   });
-});
-
-test.describe("Inspection Edit - Data Integrity", () => {
-  test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test("it preserves data after edit and save", async ({ page }) => {
-    // Navigate to inspections list
     await page.goto("/inspections");
     await waitForSpinner(page);
 
@@ -171,7 +163,6 @@ test.describe("Inspection Edit - Data Integrity", () => {
   });
 
   test("it validates ID uniqueness on edit", async ({ page }) => {
-    // Navigate to inspections list
     await page.goto("/inspections");
     await waitForSpinner(page);
 

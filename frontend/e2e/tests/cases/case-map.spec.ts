@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { selectItemById, waitForSpinner } from "../../utils/helpers";
+import { waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case Map View functionality

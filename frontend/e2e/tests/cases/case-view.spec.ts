@@ -48,7 +48,6 @@ test.describe("Case View - Header", () => {
   });
 
   test("it displays date logged", async ({ page }) => {
-    const dateLogged = page.locator("#case-date-logged");
     const dateSection = page.locator("dt", { hasText: "Date logged" });
     await expect(dateSection).toBeVisible();
   });
@@ -88,8 +87,6 @@ test.describe("Case View - Tabs", () => {
     const firstCaseLink = rows.first().locator("a.comp-cell-link").first();
     await firstCaseLink.click();
     await waitForSpinner(page);
-
-    caseUrl = page.url();
   });
 
   test("it displays all case tabs", async ({ page }) => {

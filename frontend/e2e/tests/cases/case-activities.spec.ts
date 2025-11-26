@@ -245,31 +245,31 @@ test.describe("Case Activities - Three Column Layout", () => {
   });
 });
 
+// Use CASE1 as a test case for linked activities, ensuring case history exists for subsequent tests
+async function navigateToCASE1(page: any): Promise<boolean> {
+  await page.goto("/cases");
+  await waitForSpinner(page);
+
+  // Find CASE1 specifically
+  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+
+  if ((await caseLink.count()) === 0) {
+    // Fall back to first case
+    const rows = page.locator("#case-list tbody tr");
+    if ((await rows.count()) === 0) {
+      return false;
+    }
+    await rows.first().locator("a.comp-cell-link").first().click();
+  } else {
+    await caseLink.first().click();
+  }
+
+  await waitForSpinner(page);
+  return true;
+}
+
 test.describe("Case Activities - Add Complaint Modal", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
-
-  // Use CASE1 as a test case for linked activities, ensuring case history exists for subsequent tests
-  async function navigateToCASE1(page: any): Promise<boolean> {
-    await page.goto("/cases");
-    await waitForSpinner(page);
-
-    // Find CASE1 specifically
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
-
-    if ((await caseLink.count()) === 0) {
-      // Fall back to first case
-      const rows = page.locator("#case-list tbody tr");
-      if ((await rows.count()) === 0) {
-        return false;
-      }
-      await rows.first().locator("a.comp-cell-link").first().click();
-    } else {
-      await caseLink.first().click();
-    }
-
-    await waitForSpinner(page);
-    return true;
-  }
 
   test("it opens add complaint modal", async ({ page }) => {
     const success = await navigateToCASE1(page);
