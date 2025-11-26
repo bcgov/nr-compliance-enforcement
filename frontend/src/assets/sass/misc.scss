@@ -43,6 +43,16 @@ input[list]:placeholder-shown {
   color: inherit;
 }
 
+.icon-button {
+  background: none;
+  color: #808080;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
 .comp-form-control:focus-visible {
   border: 1px solid $blue-100 !important;
   outline: none;

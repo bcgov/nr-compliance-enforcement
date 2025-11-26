@@ -54,15 +54,14 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
           className="comp-form-control"
           style={{ display: "flex" }}
         >
-          <i
-            className="bi bi-calendar"
-            style={{ fontSize: "1.1rem", cursor: "pointer" }}
+          <button
+            type="button"
             onClick={openDatePicker}
-            role="button"
-            tabIndex={0}
+            className="icon-button"
             aria-label="Open date picker"
-            onKeyDown={(e) => e.key === "Enter" && openDatePicker()}
-          />
+          >
+            <i className="bi bi-calendar" />
+          </button>
           <input
             id="incident-date"
             ref={dateInputRef}
@@ -86,15 +85,14 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
           className="comp-form-control"
           style={{ display: "flex" }}
         >
-          <i
-            className="bi bi-clock"
-            style={{ fontSize: "1.1rem", cursor: "pointer" }}
-            onClick={openTimePicker}
-            role="button"
-            tabIndex={0}
-            aria-label="Open time picker"
-            onKeyDown={(e) => e.key === "Enter" && openTimePicker()}
-          />
+          <button
+            type="button"
+            onClick={openDatePicker}
+            className="icon-button"
+            aria-label="Open date picker"
+          >
+            <i className="bi bi-clock" />
+          </button>
           <input
             id="incident-time"
             ref={timeInputRef}
