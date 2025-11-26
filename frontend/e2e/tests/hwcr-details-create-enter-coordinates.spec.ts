@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
 import {
-  enterDateTimeInDatePicker,
+  enterDateTimeInCompDateTimePicker,
   navigateToCreateScreen,
   selectItemById,
   typeAndTriggerChange,
@@ -87,7 +87,7 @@ test.describe("Complaint Create Page spec - Enter Coordinates - Create View", ()
     await page.locator("#complaint-description-textarea-id").clear();
     await page.locator("#complaint-description-textarea-id").fill(createCallDetails.description);
     await page.locator("#complaint-description-textarea-id").click();
-    await enterDateTimeInDatePicker(page, "complaint-incident-time", "01", "13", "45");
+    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
     await page.locator("#attractants-select-id").locator("div").first().click();
     await page
       .locator("#attractants-pair-id")
