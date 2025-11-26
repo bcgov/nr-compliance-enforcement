@@ -33,6 +33,10 @@
   left: -4px;
 }
 
+.placeholder-input {
+  color: #808080 !important;
+}
+
 [data-initials]:before {
   background: $bc-gov-info;
   color: $black;

@@ -68,7 +68,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
           }}
           required
           step="60"
-          className="comp-form-control"
+          className="comp-form-control placeholder-input"
         />
       </div>
     </div>
