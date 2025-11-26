@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
-import { useRequest } from "@graphql/client";
+import { graphqlRequest } from "@graphql/client";
 
 /**
  * Generic GraphQL query hook that provides type-safe GraphQL queries with TanStack Query
@@ -32,7 +32,7 @@ export const useGraphQLQuery = <TData = any, TError = Error, TVariables = any>(
   return useQuery<TData, TError>({
     queryKey,
     queryFn: async () => {
-      return await useRequest(query, variables ?? {});
+      return await graphqlRequest(query, variables ?? {});
     },
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes default

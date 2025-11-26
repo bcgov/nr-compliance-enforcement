@@ -5,6 +5,7 @@ type InspectionParty {
   partyReference: String
   person: InspectionPerson
   business: InspectionBusiness
+  partyAssociationRole: String
 }
 
 input CreateInspectionPartyInput {
@@ -12,4 +13,5 @@ input CreateInspectionPartyInput {
   partyReference: String
   person: CreateInspectionPersonInput
   business: CreateInspectionBusinessInput
+  partyAssociationRole: String
 }

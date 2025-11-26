@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  JSON: { input: any; output: any; }
   JSONObject: { input: any; output: any; }
   Point: { input: any; output: any; }
 };
@@ -374,6 +375,7 @@ export type CreateInspectionInput = {
 
 export type CreateInspectionPartyInput = {
   business?: InputMaybe<CreateInspectionBusinessInput>;
+  partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
   partyReference?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<CreateInspectionPersonInput>;
@@ -406,6 +408,7 @@ export type CreateInvestigationInput = {
 
 export type CreateInvestigationPartyInput = {
   business?: InputMaybe<CreateInvestigationBusinessInput>;
+  partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
   partyReference?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<CreateInvestigationPersonInput>;
@@ -812,6 +815,7 @@ export type InspectionParty = {
   __typename?: 'InspectionParty';
   business?: Maybe<InspectionBusiness>;
   inspectionGuid: Scalars['String']['output'];
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
@@ -833,6 +837,12 @@ export type InspectionResult = {
   __typename?: 'InspectionResult';
   items: Array<Inspection>;
   pageInfo: PageInfo;
+};
+
+export type InspectionSearchMapParameters = {
+  bbox?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<InspectionFilters>;
+  zoom: Scalars['Int']['input'];
 };
 
 export type InspectionStatusCode = {
@@ -883,6 +893,7 @@ export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   business?: Maybe<InvestigationBusiness>;
   investigationGuid: Scalars['String']['output'];
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
@@ -904,6 +915,12 @@ export type InvestigationResult = {
   __typename?: 'InvestigationResult';
   items: Array<Investigation>;
   pageInfo: PageInfo;
+};
+
+export type InvestigationSearchMapParameters = {
+  bbox?: InputMaybe<Scalars['String']['input']>;
+  filters?: InputMaybe<InvestigationFilters>;
+  zoom: Scalars['Int']['input'];
 };
 
 export type InvestigationStatusCode = {
@@ -1372,6 +1389,16 @@ export type Party = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type PartyAssociationRole = {
+  __typename?: 'PartyAssociationRole';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  caseActivityTypeCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  partyAssociationRole?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type PartyCreateInput = {
   business?: InputMaybe<BusinessInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
@@ -1466,6 +1493,8 @@ export type Query = {
   HWCRAssessmentActions: Array<Maybe<CaseFileAction>>;
   HWCRAssessmentCat1Actions: Array<Maybe<CaseFileAction>>;
   HWCRPreventionActions: Array<Maybe<CaseFileAction>>;
+  InspectionParties: Array<Maybe<InspectionParty>>;
+  InvestigationParties: Array<Maybe<InvestigationParty>>;
   ageCodes: Array<Maybe<AgeCode>>;
   agencyCodes: Array<Maybe<AgencyCode>>;
   appUser?: Maybe<AppUser>;
@@ -1524,6 +1553,7 @@ export type Query = {
   parks?: Maybe<Array<Maybe<Park>>>;
   parties: Array<Party>;
   party?: Maybe<Party>;
+  partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
@@ -1535,7 +1565,9 @@ export type Query = {
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
+  searchInspectionsMap: SearchMapResults;
   searchInvestigations: InvestigationResult;
+  searchInvestigationsMap: SearchMapResults;
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
@@ -1543,6 +1575,16 @@ export type Query = {
   teamCodes: Array<Maybe<TeamCode>>;
   teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+};
+
+
+export type QueryInspectionPartiesArgs = {
+  partyRefId: Scalars['String']['input'];
+};
+
+
+export type QueryInvestigationPartiesArgs = {
+  partyRefId: Scalars['String']['input'];
 };
 
 
@@ -1806,10 +1848,20 @@ export type QuerysearchInspectionsArgs = {
 };
 
 
+export type QuerysearchInspectionsMapArgs = {
+  model: InspectionSearchMapParameters;
+};
+
+
 export type QuerysearchInvestigationsArgs = {
   filters?: InputMaybe<InvestigationFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchInvestigationsMapArgs = {
+  model: InvestigationSearchMapParameters;
 };
 
 
@@ -1864,6 +1916,15 @@ export type ScheduleSectorXref = {
   scheduleCode?: Maybe<Scalars['String']['output']>;
   sectorCode?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type SearchMapResults = {
+  __typename?: 'SearchMapResults';
+  center?: Maybe<Array<Maybe<Scalars['Float']['output']>>>;
+  clusters?: Maybe<Scalars['JSON']['output']>;
+  mappedCount?: Maybe<Scalars['Int']['output']>;
+  unmappedCount?: Maybe<Scalars['Int']['output']>;
+  zoom?: Maybe<Scalars['Int']['output']>;
 };
 
 export type SectorCode = {
