@@ -228,7 +228,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               showInactive={false}
               classNamePrefix="comp-select"
               onChange={(e) => handleAssignedOfficerChange(e)}
-              className="comp-details-input w-100"
+              className="comp-details-input w-100 max-w-350"
               options={assignableOfficers}
               placeholder="Select"
               enableValidation={false}
