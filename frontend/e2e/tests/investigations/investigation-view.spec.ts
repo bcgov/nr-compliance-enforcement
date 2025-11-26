@@ -5,7 +5,7 @@ import { waitForSpinner } from "../../utils/helpers";
 /**
  * Tests for Investigation Details View (Summary Tab)
  */
-test.describe("Investigation Details - Header", () => {
+test.describe("Investigation Details", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {

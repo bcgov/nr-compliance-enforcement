@@ -6,7 +6,7 @@ import { waitForSpinner } from "../../utils/helpers";
  * Tests for Inspection Details View (Summary Tab)
  * Verifies header, summary information, and navigation
  */
-test.describe("Inspection Details - Header", () => {
+test.describe("Inspection Details", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {

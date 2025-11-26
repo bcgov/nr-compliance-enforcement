@@ -5,7 +5,7 @@ import { waitForSpinner } from "../../utils/helpers";
 /**
  * Tests for Case View functionality
  */
-test.describe("Case View - Header", () => {
+test.describe("Case View", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {
