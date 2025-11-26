@@ -87,7 +87,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
         >
           <button
             type="button"
-            onClick={openDatePicker}
+            onClick={openTimePicker}
             className="icon-button"
             aria-label="Open date picker"
           >
