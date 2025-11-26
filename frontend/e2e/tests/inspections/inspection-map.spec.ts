@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { waitForSpinner, waitForMapToLoad } from "../../utils/helpers";
 
 /**
  * Tests for Inspection Map View functionality
@@ -27,18 +27,17 @@ test.describe("Inspection Map View", () => {
     const mapToggle = page.locator("#map_toggle_id");
     await expect(mapToggle).toBeChecked();
 
-    // Verify map is visible
-    const mapContainer = page.locator(".comp-map-container, .leaflet-container");
-    await expect(mapContainer).toBeVisible();
+    // Wait for map to fully load
+    await waitForMapToLoad(page);
   });
 
   test("it displays inspection markers", async ({ page }) => {
     const mapToggleLabel = page.locator("label[for='map_toggle_id']");
     await mapToggleLabel.click();
     await waitForSpinner(page);
+    await waitForMapToLoad(page);
 
     const leafletContainer = page.locator(".leaflet-container");
-    await expect(leafletContainer).toBeVisible();
 
     // Verify markers are present
     const markers = leafletContainer.locator(".leaflet-marker-icon");
@@ -49,17 +48,39 @@ test.describe("Inspection Map View", () => {
     const mapToggleLabel = page.locator("label[for='map_toggle_id']");
     await mapToggleLabel.click();
     await waitForSpinner(page);
+    await waitForMapToLoad(page);
 
     const leafletContainer = page.locator(".leaflet-container");
-    const markers = leafletContainer.locator(".leaflet-marker-icon");
-    expect(await markers.count()).toBeGreaterThan(0);
 
-    // Click the first marker
-    await markers.first().click();
+    // Keep clicking clusters until individual markers appear
+    let attempts = 0;
+    const maxAttempts = 5;
+    
+    while (attempts < maxAttempts) {
+      const individualMarkers = leafletContainer.locator(".map-marker");
+      const clusters = leafletContainer.locator(".marker-cluster");
+      
+      const individualCount = await individualMarkers.count();
+      const clusterCount = await clusters.count();
+      
+      if (individualCount > 0) {
+        // Found individual markers - click one to open popup
+        await individualMarkers.first().dispatchEvent("click");
+        break;
+      } else if (clusterCount > 0) {
+        // Only clusters visible - click to zoom in
+        await clusters.first().dispatchEvent("click");
+        await page.waitForTimeout(1000); // Wait for zoom animation
+        attempts++;
+      } else {
+        // No markers at all - fail
+        throw new Error("No markers or clusters found on map");
+      }
+    }
 
     // Verify popup appears
     const popup = leafletContainer.locator(".leaflet-popup");
-    await expect(popup).toBeVisible();
+    await expect(popup).toBeVisible({ timeout: 10000 });
   });
 
   test("it switches back to list view", async ({ page }) => {
@@ -97,6 +118,7 @@ test.describe("Inspection Map View", () => {
     const mapToggleLabel = page.locator("label[for='map_toggle_id']");
     await mapToggleLabel.click();
     await waitForSpinner(page);
+    await waitForMapToLoad(page);
 
     // Verify filter pill is still visible
     const filterPill = page.locator("#inspection-status-filter-pill");

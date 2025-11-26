@@ -7,6 +7,7 @@ insert into
     inspection_opened_utc_timestamp,
     create_user_id,
     create_utc_timestamp,
+    location_geometry_point,
     name
   )
 values
@@ -17,6 +18,7 @@ values
     now (),
     'system',
     now (),
+    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
     'INSPECTION1'
   ),
   (
@@ -26,6 +28,7 @@ values
     now (),
     'system',
     now (),
+    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
     'INSPECTION2'
   ),
   (
@@ -35,6 +38,7 @@ values
     now (),
     'system',
     now (),
+    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
     'INSPECTION3'
   ),
   (
@@ -44,6 +48,7 @@ values
     now (),
     'system',
     now (),
+    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
     'INSPECTION4'
   ),
   (
@@ -53,6 +58,7 @@ values
     now () - interval '1 day',
     'system',
     now (),
+    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
     'INSPECTION5'
   ),
   (
@@ -62,6 +68,7 @@ values
     now () - interval '2 days',
     'system',
     now (),
+    NULL,
     'INSPECTION6'
   ),
   (
@@ -71,6 +78,7 @@ values
     now () - interval '3 days',
     'system',
     now (),
+    NULL,
     'INSPECTION7'
   ),
   (
@@ -80,6 +88,7 @@ values
     now () - interval '4 days',
     'system',
     now (),
+    NULL,
     'INSPECTION8'
   ),
   (
@@ -89,6 +98,7 @@ values
     now () - interval '5 days',
     'system',
     now (),
+    NULL,
     'INSPECTION9'
   ),
   (
@@ -98,6 +108,7 @@ values
     now () - interval '6 days',
     'system',
     now (),
+    NULL,
     'INSPECTION10'
   ),
   (
@@ -107,6 +118,7 @@ values
     now () - interval '7 days',
     'system',
     now (),
+    NULL,
     'INSPECTION11'
   ),
   (
@@ -116,6 +128,7 @@ values
     now () - interval '8 days',
     'system',
     now (),
+    NULL,
     'INSPECTION12'
   ),
   (
@@ -125,6 +138,7 @@ values
     now () - interval '9 days',
     'system',
     now (),
+    NULL,
     'INSPECTION13'
   ),
   (
@@ -134,6 +148,7 @@ values
     now () - interval '10 days',
     'system',
     now (),
+    NULL,
     'INSPECTION14'
   ),
   (
@@ -143,6 +158,7 @@ values
     now () - interval '11 days',
     'system',
     now (),
+    NULL,
     'INSPECTION15'
   ),
   (
@@ -152,6 +168,7 @@ values
     now () - interval '12 days',
     'system',
     now (),
+    NULL,
     'INSPECTION16'
   ),
   (
@@ -161,6 +178,7 @@ values
     now () - interval '13 days',
     'system',
     now (),
+    NULL,
     'INSPECTION17'
   ),
   (
@@ -170,6 +188,7 @@ values
     now () - interval '14 days',
     'system',
     now (),
+    NULL,
     'INSPECTION18'
   ),
   (
@@ -179,6 +198,7 @@ values
     now () - interval '15 days',
     'system',
     now (),
+    NULL,
     'INSPECTION19'
   ),
   (
@@ -188,6 +208,7 @@ values
     now () - interval '16 days',
     'system',
     now (),
+    NULL,
     'INSPECTION20'
   ),
   (
@@ -197,6 +218,7 @@ values
     now () - interval '17 days',
     'system',
     now (),
+    NULL,
     'INSPECTION21'
   ),
   (
@@ -206,6 +228,7 @@ values
     now () - interval '18 days',
     'system',
     now (),
+    NULL,
     'INSPECTION22'
   ),
   (
@@ -215,6 +238,7 @@ values
     now () - interval '19 days',
     'system',
     now (),
+    NULL,
     'INSPECTION23'
   ),
   (
@@ -224,6 +248,7 @@ values
     now () - interval '20 days',
     'system',
     now (),
+    NULL,
     'INSPECTION24'
   ),
   (
@@ -233,6 +258,7 @@ values
     now () - interval '21 days',
     'system',
     now (),
+    NULL,
     'INSPECTION25'
   ),
   (
@@ -242,6 +268,7 @@ values
     now () - interval '22 days',
     'system',
     now (),
+    NULL,
     'INSPECTION26'
   ),
   (
@@ -251,6 +278,7 @@ values
     now () - interval '23 days',
     'system',
     now (),
+    NULL,
     'INSPECTION27'
   ),
   (
@@ -260,6 +288,7 @@ values
     now () - interval '24 days',
     'system',
     now (),
+    NULL,
     'INSPECTION28'
   ),
   (
@@ -269,5 +298,6 @@ values
     now () - interval '25 days',
     'system',
     now (),
+    NULL,
     'INSPECTION29'
   ) on conflict do nothing;

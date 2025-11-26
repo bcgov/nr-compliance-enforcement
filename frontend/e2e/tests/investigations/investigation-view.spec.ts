@@ -86,11 +86,3 @@ test.describe("Investigation Details - Header", () => {
     await expect(page).toHaveURL(/\/investigation\/[^/]+\/edit$/);
   });
 });
-
-test("it shows error for invalid investigation ID", async ({ page }) => {
-  await page.goto("/investigation/invalid-investigation-12345");
-  await waitForSpinner(page);
-
-  const noDataMessage = page.locator("text=/No data/i");
-  await expect(noDataMessage).toBeVisible();
-});

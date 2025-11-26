@@ -28,7 +28,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    ST_GeomFromText ('POINT(-119.4960 49.8880)'),
     'INVESTIGATION2'
   ),
   (
@@ -38,7 +38,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    ST_GeomFromText ('POINT(-125.8767 49.2144)'),
     'INVESTIGATION3'
   ),
   (
@@ -48,7 +48,7 @@ values
     now (),
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    ST_GeomFromText ('POINT(-120.8451 56.2465)'),
     'INVESTIGATION4'
   ),
   (
@@ -58,7 +58,7 @@ values
     now () - interval '1 day',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
+    NULL,
     'INVESTIGATION5'
   ),
   (
@@ -68,7 +68,7 @@ values
     now () - interval '2 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    NULL,
     'INVESTIGATION6'
   ),
   (
@@ -78,7 +78,7 @@ values
     now () - interval '3 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
+    NULL,
     'INVESTIGATION7'
   ),
   (
@@ -88,7 +88,7 @@ values
     now () - interval '4 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
+    NULL,
     'INVESTIGATION8'
   ),
   (
@@ -98,7 +98,7 @@ values
     now () - interval '5 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1139 49.2609)'),
+    NULL,
     'INVESTIGATION9'
   ),
   (
@@ -108,7 +108,7 @@ values
     now () - interval '6 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
+    NULL,
     'INVESTIGATION10'
   ),
   (
@@ -118,7 +118,7 @@ values
     now () - interval '7 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    NULL,
     'INVESTIGATION11'
   ),
   (
@@ -128,7 +128,7 @@ values
     now () - interval '8 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
+    NULL,
     'INVESTIGATION12'
   ),
   (
@@ -138,7 +138,7 @@ values
     now () - interval '9 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
+    NULL,
     'INVESTIGATION13'
   ),
   (
@@ -148,7 +148,7 @@ values
     now () - interval '10 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1139 49.2609)'),
+    NULL,
     'INVESTIGATION14'
   ),
   (
@@ -158,7 +158,7 @@ values
     now () - interval '11 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
+    NULL,
     'INVESTIGATION15'
   ),
   (
@@ -168,7 +168,7 @@ values
     now () - interval '12 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    NULL,
     'INVESTIGATION16'
   ),
   (
@@ -178,7 +178,7 @@ values
     now () - interval '13 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
+    NULL,
     'INVESTIGATION17'
   ),
   (
@@ -188,7 +188,7 @@ values
     now () - interval '14 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
+    NULL,
     'INVESTIGATION18'
   ),
   (
@@ -198,7 +198,7 @@ values
     now () - interval '15 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1139 49.2609)'),
+    NULL,
     'INVESTIGATION19'
   ),
   (
@@ -208,7 +208,7 @@ values
     now () - interval '16 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
+    NULL,
     'INVESTIGATION20'
   ),
   (
@@ -218,7 +218,7 @@ values
     now () - interval '17 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    NULL,
     'INVESTIGATION21'
   ),
   (
@@ -228,7 +228,7 @@ values
     now () - interval '18 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
+    NULL,
     'INVESTIGATION22'
   ),
   (
@@ -238,7 +238,7 @@ values
     now () - interval '19 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
+    NULL,
     'INVESTIGATION23'
   ),
   (
@@ -248,7 +248,7 @@ values
     now () - interval '20 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1139 49.2609)'),
+    NULL,
     'INVESTIGATION24'
   ),
   (
@@ -258,7 +258,7 @@ values
     now () - interval '21 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
+    NULL,
     'INVESTIGATION25'
   ),
   (
@@ -268,7 +268,7 @@ values
     now () - interval '22 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.3656 48.4284)'),
+    NULL,
     'INVESTIGATION26'
   ),
   (
@@ -278,7 +278,7 @@ values
     now () - interval '23 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-122.9574 49.1666)'),
+    NULL,
     'INVESTIGATION27'
   ),
   (
@@ -288,7 +288,7 @@ values
     now () - interval '24 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.0848 49.3043)'),
+    NULL,
     'INVESTIGATION28'
   ),
   (
@@ -298,6 +298,6 @@ values
     now () - interval '25 days',
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1139 49.2609)'),
+    NULL,
     'INVESTIGATION29'
   ) on conflict do nothing;
