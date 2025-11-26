@@ -19,7 +19,7 @@ const persistConfig = {
   storage,
   blacklist: ["app"],
   whitelist: ["codeTables", "officers"],
-  version: 38, // This needs to be incremented every time a new migration is added
+  version: 39, // This needs to be incremented every time a new migration is added
   debug: true,
   migrate: createMigrate(migration, { debug: false }),
 };
@@ -31,7 +31,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, "app/SHOW_MODAL"],
+        ignoredPaths: ["app.modalData.deleteConfirmed", "app.callback", "app.hideCallback"], // modals pass functions as parameters, disable serialization checking to supress errors
       },
     }),
 });

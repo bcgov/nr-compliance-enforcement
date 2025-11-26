@@ -16,7 +16,7 @@ const getClient = () => {
   });
 };
 
-export const useRequest = async (QUERY: any, input = {}) => {
+export const graphqlRequest = async (QUERY: any, input = {}) => {
   const client = getClient();
   return client.request<any>(QUERY, input);
 };

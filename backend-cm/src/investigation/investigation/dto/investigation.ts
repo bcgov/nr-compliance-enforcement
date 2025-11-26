@@ -8,6 +8,7 @@ import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { IsOptional } from "class-validator";
 import { Point, PointScalar } from "src/common/custom_scalars";
 import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
+import { Contravention } from "../../../investigation/contravention/dto/contravention";
 
 export class Investigation {
   investigationGuid: string;
@@ -22,6 +23,7 @@ export class Investigation {
   locationDescription?: string;
   name: string;
   parties: [InvestigationParty];
+  contraventions: [Contravention];
 }
 
 @InputType()
@@ -167,6 +169,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parties,
       mapFrom((src) => mapper.mapArray(src.investigation_party ?? [], "investigation_party", "InvestigationParty")),
+    ),
+    forMember(
+      (dest) => dest.contraventions,
+      mapFrom((src) => mapper.mapArray(src.contravention ?? [], "contravention", "Contravention")),
     ),
   );
 };

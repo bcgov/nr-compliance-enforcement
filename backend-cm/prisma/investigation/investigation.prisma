@@ -32,6 +32,7 @@ model investigation {
   location_description               String?                      @db.VarChar(4000)
   created_by_app_user_guid_ref       String?                      @db.Uuid
   continuation_report                continuation_report[]
+  contravention                      contravention[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
@@ -164,18 +165,19 @@ model investigation_business_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_party {
-  investigation_party_guid String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid_ref           String?                  @db.Uuid
-  party_type_code_ref      String                   @db.VarChar(16)
-  investigation_guid       String                   @db.Uuid
-  active_ind               Boolean                  @default(true)
-  create_user_id           String                   @db.VarChar(32)
-  create_utc_timestamp     DateTime                 @db.Timestamp(6)
-  update_user_id           String?                  @db.VarChar(32)
-  update_utc_timestamp     DateTime?                @db.Timestamp(6)
-  investigation_business   investigation_business[]
-  investigation            investigation            @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
-  investigation_person     investigation_person[]
+  investigation_party_guid   String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid_ref             String?                  @db.Uuid
+  party_type_code_ref        String                   @db.VarChar(16)
+  investigation_guid         String                   @db.Uuid
+  active_ind                 Boolean                  @default(true)
+  create_user_id             String                   @db.VarChar(32)
+  create_utc_timestamp       DateTime                 @db.Timestamp(6)
+  update_user_id             String?                  @db.VarChar(32)
+  update_utc_timestamp       DateTime?                @db.Timestamp(6)
+  party_association_role_ref String?                  @db.VarChar(16)
+  investigation_business     investigation_business[]
+  investigation              investigation            @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+  investigation_person       investigation_person[]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -230,4 +232,17 @@ model continuation_report {
   update_user_id             String?       @db.VarChar(32)
   update_utc_timestamp       DateTime?     @db.Timestamp(6)
   investigation              investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contravention {
+  contravention_guid   String         @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid   String?        @db.Uuid
+  legislation_guid_ref String         @db.Uuid
+  active_ind           Boolean        @default(true)
+  create_user_id       String         @db.VarChar(32)
+  create_utc_timestamp DateTime       @default(now()) @db.Timestamp(6)
+  update_user_id       String?        @db.VarChar(32)
+  update_utc_timestamp DateTime?      @db.Timestamp(6)
+  investigation        investigation? @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -81,7 +81,7 @@ export class EventPublisherService {
         targetId,
         targetEntityTypeCode,
       } = event;
-      const header = `[${eventTopic}]: ${sourceEntityTypeCode} ${sourceId} ${eventVerbTypeCode} ${targetEntityTypeCode} ${targetId} by ${actorEntityTypeCode} ${actorId}`;
+      const header = `[${eventTopic}]: ${sourceEntityTypeCode} ${sourceId} ${eventVerbTypeCode} ${targetEntityTypeCode} ${targetId} by ${actorEntityTypeCode} ${actorId} at ${new Date()}`;
 
       const payload = codec.encode(event);
       const natsHeaders = headers();
