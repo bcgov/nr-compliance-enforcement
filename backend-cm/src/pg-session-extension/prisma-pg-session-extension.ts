@@ -57,7 +57,7 @@ function createPgSessionExtension(client: any) {
               // Set JWT claims as session variables
               if (user.idir_user_guid) {
                 await tx.$executeRawUnsafe(
-                  `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll(/'/g, "''")}'`,
+                  `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
                 );
               }
 
@@ -65,7 +65,7 @@ function createPgSessionExtension(client: any) {
                 // Join roles with comma instead of JSON stringify to avoid double encoding
                 const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
                 await tx.$executeRawUnsafe(
-                  `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`,
+                  `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
                 );
               }
 

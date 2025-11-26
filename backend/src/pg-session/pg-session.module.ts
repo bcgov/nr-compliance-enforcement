@@ -66,11 +66,11 @@ export class PgSessionModule implements OnModuleInit {
           // Set JWT claims in the transaction session
           const user = request.user;
           if (user.idir_user_guid) {
-            await runner.query(`SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll(/'/g, "''")}'`);
+            await runner.query(`SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`);
           }
           if (user.client_roles) {
             const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-            await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`);
+            await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`);
           }
           // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
           await runner.query(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
@@ -120,7 +120,7 @@ export class PgSessionModule implements OnModuleInit {
       }
 
       return wrapQueryInTransaction(query, parameters, originalManagerQuery, dataSource);
-    }.bind(this.dataSource.manager);
+    };
 
     // Override createQueryRunner to wrap QueryRunner's query method
     // This is critical because TypeORM QueryBuilder creates its own QueryRunner
@@ -172,13 +172,13 @@ export class PgSessionModule implements OnModuleInit {
             const user = request.user;
             if (user.idir_user_guid) {
               await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll(/'/g, "''")}'`,
+                `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
               );
             }
             if (user.client_roles) {
               const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
               await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll(/'/g, "''")}'`,
+                `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
               );
             }
 
@@ -209,6 +209,6 @@ export class PgSessionModule implements OnModuleInit {
       }.bind(queryRunner);
 
       return queryRunner;
-    }.bind(this.dataSource);
+    };
   }
 }
