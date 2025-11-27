@@ -66,6 +66,7 @@ import { AppUserModule } from "./shared/app_user/app_user.module";
 import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
 import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
 import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
+import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_code/party_association_role_code.module";
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 
@@ -134,6 +135,7 @@ import { ContraventionModule } from "./investigation/contravention/contravention
     AppUserTeamXrefModule,
     InspectionPartyModule,
     ContinuationReportModule,
+    PartyAssociationRoleCodeModule,
     LegislationModule,
     ContraventionModule,
   ],

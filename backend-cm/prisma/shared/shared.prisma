@@ -170,16 +170,17 @@ model case_activity {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_activity_type_code {
-  case_activity_type_code String          @id @db.VarChar(10)
-  short_description       String          @db.VarChar(64)
-  long_description        String?         @db.VarChar(256)
-  display_order           Int?
-  active_ind              Boolean         @default(true)
-  create_user_id          String          @db.VarChar(32)
-  create_utc_timestamp    DateTime        @default(now()) @db.Timestamp(6)
-  update_user_id          String?         @db.VarChar(32)
-  update_utc_timestamp    DateTime?       @db.Timestamp(6)
-  case_activity           case_activity[]
+  case_activity_type_code                                                                                  String                        @id @db.VarChar(10)
+  short_description                                                                                        String                        @db.VarChar(64)
+  long_description                                                                                         String?                       @db.VarChar(256)
+  display_order                                                                                            Int?
+  active_ind                                                                                               Boolean                       @default(true)
+  create_user_id                                                                                           String                        @db.VarChar(32)
+  create_utc_timestamp                                                                                     DateTime                      @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                           String?                       @db.VarChar(32)
+  update_utc_timestamp                                                                                     DateTime?                     @db.Timestamp(6)
+  case_activity                                                                                            case_activity[]
+  party_association_role_code_party_association_role_code_case_activity_type_codeTocase_activity_type_code party_association_role_code[] @relation("party_association_role_code_case_activity_type_codeTocase_activity_type_code")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -545,7 +546,6 @@ model team_h {
   data_after_executed_operation Json?
 }
 
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation {
   legislation_guid                                                               String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   legislation_type_code                                                          String                    @db.VarChar(16)
@@ -597,4 +597,41 @@ model legislation_type_code {
   update_user_id                                                       String?       @db.VarChar(32)
   update_utc_timestamp                                                 DateTime?     @db.Timestamp(6)
   legislation_legislation_legislation_type_codeTolegislation_type_code legislation[] @relation("legislation_legislation_type_codeTolegislation_type_code")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_agency_xref_h {
+  h_legislation_agency_xref_guid String   @id(map: "PK_h_legislation_agency_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                  String   @db.Uuid
+  operation_type                 String   @db.Char(1)
+  operation_user_id              String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at          DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation  Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_h {
+  h_legislation_guid            String   @id(map: "PK_h_legislation") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model party_association_role_code {
+  party_association_role_code                                                                          String                  @db.VarChar(16)
+  case_activity_type_code                                                                              String                  @db.VarChar(10)
+  short_description                                                                                    String                  @db.VarChar(64)
+  long_description                                                                                     String?                 @db.VarChar(256)
+  display_order                                                                                        Int?
+  active_ind                                                                                           Boolean                 @default(true)
+  create_user_id                                                                                       String                  @db.VarChar(32)
+  create_utc_timestamp                                                                                 DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                       String?                 @db.VarChar(32)
+  update_utc_timestamp                                                                                 DateTime?               @db.Timestamp(6)
+  case_activity_type_code_party_association_role_code_case_activity_type_codeTocase_activity_type_code case_activity_type_code @relation("party_association_role_code_case_activity_type_codeTocase_activity_type_code", fields: [case_activity_type_code], references: [case_activity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "party_association_role_code__activity_type_code_fk")
+
+  @@id([party_association_role_code, case_activity_type_code])
 }

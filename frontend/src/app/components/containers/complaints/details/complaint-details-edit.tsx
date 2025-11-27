@@ -17,7 +17,6 @@ import {
   setLinkedComplaints,
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
-import DatePicker from "react-datepicker";
 import Select from "react-select";
 import {
   selectSpeciesCodeDropdown,
@@ -82,6 +81,7 @@ import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -300,6 +300,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const saveButtonClick = async () => {
+    if (selectedIncidentDateTime) handleIncidentDateTimeChange(selectedIncidentDateTime);
     if (!complaintUpdate) {
       return;
     }
@@ -588,8 +589,6 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleIncidentDateTimeChange = (date: Date) => {
-    setSelectedIncidentDateTime(date);
-
     const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -1056,22 +1055,11 @@ export const ComplaintDetailsEdit: FC = () => {
                 id="incident-time-pair-id"
               >
                 <label>Incident date/time</label>
-                <div className="comp-details-edit-input">
-                  <DatePicker
-                    id="complaint-incident-time"
-                    showIcon
-                    timeInputLabel="Time:"
-                    onChange={handleIncidentDateTimeChange}
-                    selected={selectedIncidentDateTime}
-                    showTimeInput
-                    dateFormat="yyyy-MM-dd HH:mm"
-                    timeFormat="HH:mm"
-                    wrapperClassName="comp-details-edit-calendar-input"
-                    maxDate={maxDate}
-                    monthsShown={2}
-                    showPreviousMonths
-                  />
-                </div>
+                <CompDateTimePicker
+                  value={selectedIncidentDateTime}
+                  onChange={handleIncidentDateTimeChange}
+                  maxDate={maxDate}
+                />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (
                 <div

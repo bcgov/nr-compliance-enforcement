@@ -1,14 +1,18 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateInvestigationPartyInput } from "../investigation_party/dto/investigation_party";
+import { CreateInvestigationPartyInput, InvestigationParty } from "../investigation_party/dto/investigation_party";
 import { Investigation } from "../../investigation/investigation/dto/investigation";
+import { investigation_party } from "../../../prisma/investigation/generated/investigation_party";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
 import { InvestigationService } from "../investigation/investigation.service";
+import { InjectMapper } from "@automapper/nestjs";
+import { Mapper } from "@automapper/core";
 
 @Injectable()
 export class InvestigationPartyService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
+    @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
   ) {}
@@ -45,6 +49,7 @@ export class InvestigationPartyService {
               investigation_guid: investigationGuid,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
+              party_association_role_ref: input.partyAssociationRole,
             },
           });
 
@@ -117,5 +122,29 @@ export class InvestigationPartyService {
     });
 
     return await this.investigationService.findOne(investigationGuid);
+  }
+
+  async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
+    if (!partyRefId || partyRefId.length === 0) {
+      return [];
+    }
+
+    const prismaInvestigationParties = await this.prisma.investigation_party.findMany({
+      where: {
+        party_guid_ref: partyRefId,
+        active_ind: true,
+      },
+    });
+
+    try {
+      return this.mapper.mapArray<investigation_party, InvestigationParty>(
+        prismaInvestigationParties as Array<investigation_party>,
+        "investigation_party",
+        "InvestigationParty",
+      );
+    } catch (error) {
+      this.logger.error("Error fetching investigations parties by Ref ID:", error);
+      throw error;
+    }
   }
 }

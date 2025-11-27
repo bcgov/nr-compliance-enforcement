@@ -35,6 +35,7 @@ import { ExternalAgencies } from "@/app/store/migrations/migration-35";
 import { AddEmailReference } from "@/app/store/migrations/migration-36";
 import { AddSectorComplaints } from "@/app/store/migrations/migration-37";
 import { AddPartyType } from "./migrations/migration-38";
+import { AddPartyAssociationRole } from "./migrations/migration-39";
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -83,6 +84,7 @@ migration = {
   ...AddEmailReference,
   ...AddSectorComplaints,
   ...AddPartyType,
+  ...AddPartyAssociationRole,
 };
 
 export default migration;

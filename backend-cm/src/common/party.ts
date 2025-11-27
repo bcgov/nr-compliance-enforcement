@@ -18,4 +18,5 @@ export interface PartyDto {
   partyTypeCode: string;
   person?: PersonDto;
   business?: BusinessDto;
+  partyAssociationRole?: string;
 }

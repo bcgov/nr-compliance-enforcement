@@ -7,6 +7,8 @@ import { CreateInspectionPartyInput, CreateInvestigationPartyInput, Party } from
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { CompSelect } from "../../common/comp-select";
+import { selectPartyAssociationRoleDropdown } from "@/app/store/reducers/code-table-selectors";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -84,13 +86,16 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
+  const partyRoles = useAppSelector(selectPartyAssociationRoleDropdown);
 
   // Vars
   const { title, activityGuid } = modalData;
 
   // State
   const [selectedParty, setSelectedParty] = useState<Party | null>();
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
+  const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
+  const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
   const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
     onSuccess: () => {
@@ -103,17 +108,27 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
   });
 
   const handleSearchPartyChange = (selected: Party) => {
-    setErrorMessage("");
+    setPartyErrorMessage("");
     setSelectedParty(selected);
+  };
+
+  const handlePartyRoleChange = (partyRole: string) => {
+    setPartyRoleErrorMessage("");
+    setSelectedPartyRole(partyRole);
   };
 
   const handleAddParty = async () => {
     if (!selectedParty) {
-      setErrorMessage("Please select a party to add.");
+      setPartyErrorMessage("Please select a party to add.");
       return;
     }
 
-    if (errorMessage) return;
+    if (!selectedPartyRole) {
+      setPartyRoleErrorMessage("Please select a party association role.");
+      return;
+    }
+
+    if (partyErrorMessage || partyRoleErrorMessage) return;
 
     const addPartyInput = {
       partyTypeCode: selectedParty.partyTypeCode || "",
@@ -133,6 +148,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
           businessReference: selectedParty.business.businessGuid,
         },
       }),
+      partyAssociationRole: selectedPartyRole,
     };
     const typeCastedInput =
       activityType === "investigation"
@@ -149,6 +165,21 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
     submit();
     close();
   };
+
+  const partyRoleOptions = partyRoles
+    ?.sort((left: any, right: any) => left.displayOrder - right.displayOrder)
+    .filter((option: any) => {
+      return (
+        (activityType === "investigation" && option.caseActivityTypeCode === "INVSTGTN") ||
+        (activityType === "inspection" && option.caseActivityTypeCode === "INSPECTION")
+      );
+    })
+    .map((option: any) => {
+      return {
+        value: option.value,
+        label: option.label,
+      };
+    });
 
   return (
     <>
@@ -179,7 +210,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
               <PartyListSearch
                 id="createParty"
                 onChange={(e: Party) => handleSearchPartyChange(e)}
-                errorMessage={errorMessage}
+                errorMessage={partyErrorMessage}
               />
             </div>
           </div>
@@ -208,6 +239,32 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
                 </div>
               </div>
             </>
+          )}
+          {(selectedParty?.person || selectedParty?.business) && (
+            <div
+              className="comp-details-form-row"
+              id="add-party-div"
+              style={{ paddingBottom: "16px" }}
+            >
+              <label htmlFor="partyRole">Party association role</label>
+              <div
+                className="comp-details-input full-width"
+                style={{ width: "100%" }}
+              >
+                <CompSelect
+                  id="party-role-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={partyRoleOptions}
+                  onChange={(option) => handlePartyRoleChange(option?.value || "")}
+                  placeholder="Select"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={partyRoleErrorMessage || ""}
+                />
+              </div>
+            </div>
           )}
         </div>
       </Modal.Body>

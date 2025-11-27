@@ -1,14 +1,18 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { CreateInspectionPartyInput } from "../inspection_party/dto/inspection_party";
+import { CreateInspectionPartyInput, InspectionParty } from "../inspection_party/dto/inspection_party";
 import { Inspection } from "../../inspection/inspection/dto/inspection";
+import { inspection_party } from "../../../prisma/inspection/generated/inspection_party";
 import { InspectionPrismaService } from "../../prisma/inspection/prisma.inspection.service";
 import { UserService } from "../../common/user.service";
 import { InspectionService } from "../inspection/inspection.service";
+import { InjectMapper } from "@automapper/nestjs";
+import { Mapper } from "@automapper/core";
 
 @Injectable()
 export class InspectionPartyService {
   constructor(
     private readonly prisma: InspectionPrismaService,
+    @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly inspectionService: InspectionService,
   ) {}
@@ -45,6 +49,7 @@ export class InspectionPartyService {
               inspection_guid: inspectionGuid,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
+              party_association_role_ref: input.partyAssociationRole,
             },
           });
 
@@ -117,5 +122,28 @@ export class InspectionPartyService {
     });
 
     return await this.inspectionService.findOne(inspectionGuid);
+  }
+  async findManyByRef(partyRefId: string): Promise<InspectionParty[]> {
+    if (!partyRefId || partyRefId.length === 0) {
+      return [];
+    }
+
+    const prismaInvestigationParties = await this.prisma.inspection_party.findMany({
+      where: {
+        party_guid_ref: partyRefId,
+        active_ind: true,
+      },
+    });
+
+    try {
+      return this.mapper.mapArray<inspection_party, InspectionParty>(
+        prismaInvestigationParties as Array<inspection_party>,
+        "inspection_party",
+        "InspectionParty",
+      );
+    } catch (error) {
+      this.logger.error("Error fetching inspection parties by Ref ID:", error);
+      throw error;
+    }
   }
 }
