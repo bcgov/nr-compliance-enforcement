@@ -13,6 +13,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import Option from "@apptypes/app/option";
 import { CreateContraventionInput, InspectionParty, InvestigationParty } from "@/generated/graphql";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 
 const ADD_CONTRAVENTION = gql`
   mutation CreateContravention($input: CreateContraventionInput!) {
@@ -58,7 +59,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
-  const [selectedParty, setSelectedParty] = useState<string>();
+  const [selectedParties, setSelectedParties] = useState<Option[]>();
 
   // Hooks
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
@@ -131,7 +132,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
 
     const input: CreateContraventionInput = {
       investigationGuid: activityGuid,
-      investigationPartyGuid: selectedParty,
+      investigationPartyGuid: selectedParties?.map((p) => p.value).filter((v): v is string => v !== undefined) ?? [],
       legislationReference: selectedSection,
     };
 
@@ -139,6 +140,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
 
     submit();
     close();
+  };
+
+  const handlePartyChange = async (options: Option[]) => {
+    setSelectedParties(options);
   };
 
   return (
@@ -279,22 +284,16 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                   name="party"
                   label="Party"
                   render={(field) => (
-                    <CompSelect
+                    <ValidationMultiSelect
                       id="party-select"
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={partyOptions}
-                      value={partyOptions.find((opt) => opt.value === field.state.value)}
-                      onChange={(option) => {
-                        const value = option?.value || "";
-                        field.handleChange(value);
-                        setSelectedParty(value);
-                      }}
+                      values={selectedParties}
+                      onChange={handlePartyChange}
                       placeholder="Select party"
                       isClearable={true}
-                      showInactive={false}
-                      enableValidation={true}
-                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                      errMsg={field.state.meta.errors?.[0]?.message || ""}
                     />
                   )}
                 />

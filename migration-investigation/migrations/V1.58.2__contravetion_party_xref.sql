@@ -1,6 +1,6 @@
 CREATE TABLE contravention_party_xref (
     contravention_party_xref_guid   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    contravention_guid              UUID REFERENCES contravention (contravention_guid),
+    contravention_guid              UUID NOT NULL REFERENCES contravention (contravention_guid),
     investigation_party_guid        UUID REFERENCES investigation_party (investigation_party_guid),
     active_ind                      BOOLEAN NOT NULL DEFAULT TRUE,
     create_user_id                  VARCHAR(32) NOT NULL,

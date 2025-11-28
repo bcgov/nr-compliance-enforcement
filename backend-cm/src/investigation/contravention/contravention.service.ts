@@ -28,14 +28,18 @@ export class ContraventionService {
           },
         });
 
-        await tx.contravention_party_xref.create({
-          data: {
-            contravention_guid: contravention.contravention_guid,
-            investigation_party_guid: contraventionInput.investigationPartyGuid,
-            create_user_id: this.user.getIdirUsername(),
-            create_utc_timestamp: new Date(),
-          },
-        });
+        const parties = contraventionInput.investigationPartyGuid;
+
+        for (const party of parties) {
+          await tx.contravention_party_xref.create({
+            data: {
+              contravention_guid: contravention.contravention_guid,
+              investigation_party_guid: party,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
+        }
       });
     } catch (error) {
       this.logger.error("Error adding contravention:", error);

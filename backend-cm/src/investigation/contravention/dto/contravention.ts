@@ -15,7 +15,7 @@ export class CreateContraventionInput {
   investigationGuid: string;
 
   @Field(() => String)
-  investigationPartyGuid: string;
+  investigationPartyGuid: string[];
 
   @Field(() => String)
   legislationReference: string;
