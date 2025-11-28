@@ -165,18 +165,19 @@ model investigation_business_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_party {
-  investigation_party_guid   String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid_ref             String?                  @db.Uuid
-  party_type_code_ref        String                   @db.VarChar(16)
-  investigation_guid         String                   @db.Uuid
-  active_ind                 Boolean                  @default(true)
-  create_user_id             String                   @db.VarChar(32)
-  create_utc_timestamp       DateTime                 @db.Timestamp(6)
-  update_user_id             String?                  @db.VarChar(32)
-  update_utc_timestamp       DateTime?                @db.Timestamp(6)
-  party_association_role_ref String?                  @db.VarChar(16)
+  investigation_party_guid   String                     @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid_ref             String?                    @db.Uuid
+  party_type_code_ref        String                     @db.VarChar(16)
+  investigation_guid         String                     @db.Uuid
+  active_ind                 Boolean                    @default(true)
+  create_user_id             String                     @db.VarChar(32)
+  create_utc_timestamp       DateTime                   @db.Timestamp(6)
+  update_user_id             String?                    @db.VarChar(32)
+  update_utc_timestamp       DateTime?                  @db.Timestamp(6)
+  party_association_role_ref String?                    @db.VarChar(16)
+  contravention_party_xref   contravention_party_xref[]
   investigation_business     investigation_business[]
-  investigation              investigation            @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+  investigation              investigation              @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
   investigation_person       investigation_person[]
 }
 
@@ -236,13 +237,28 @@ model continuation_report {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contravention {
-  contravention_guid   String         @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid   String?        @db.Uuid
-  legislation_guid_ref String         @db.Uuid
-  active_ind           Boolean        @default(true)
-  create_user_id       String         @db.VarChar(32)
-  create_utc_timestamp DateTime       @default(now()) @db.Timestamp(6)
-  update_user_id       String?        @db.VarChar(32)
-  update_utc_timestamp DateTime?      @db.Timestamp(6)
-  investigation        investigation? @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
+  contravention_guid       String                     @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid       String?                    @db.Uuid
+  legislation_guid_ref     String                     @db.Uuid
+  active_ind               Boolean                    @default(true)
+  create_user_id           String                     @db.VarChar(32)
+  create_utc_timestamp     DateTime                   @default(now()) @db.Timestamp(6)
+  update_user_id           String?                    @db.VarChar(32)
+  update_utc_timestamp     DateTime?                  @db.Timestamp(6)
+  investigation            investigation?             @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
+  contravention_party_xref contravention_party_xref[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contravention_party_xref {
+  contravention_party_xref_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  contravention_guid            String?              @db.Uuid
+  investigation_party_guid      String?              @db.Uuid
+  active_ind                    Boolean              @default(true)
+  create_user_id                String               @db.VarChar(32)
+  create_utc_timestamp          DateTime             @default(now()) @db.Timestamp(6)
+  update_user_id                String?              @db.VarChar(32)
+  update_utc_timestamp          DateTime?            @db.Timestamp(6)
+  contravention                 contravention?       @relation(fields: [contravention_guid], references: [contravention_guid], onDelete: NoAction, onUpdate: NoAction)
+  investigation_party           investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction)
 }

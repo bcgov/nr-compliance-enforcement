@@ -15,6 +15,7 @@ import { investigation_person as _investigation_person } from "./investigation_p
 import { investigation_person_h as _investigation_person_h } from "./investigation_person_h";
 import { continuation_report as _continuation_report } from "./continuation_report";
 import { contravention as _contravention } from "./contravention";
+import { contravention_party_xref as _contravention_party_xref } from "./contravention_party_xref";
 
 export namespace PrismaModel {
   export class investigation extends _investigation {}
@@ -34,6 +35,7 @@ export namespace PrismaModel {
   export class investigation_person_h extends _investigation_person_h {}
   export class continuation_report extends _continuation_report {}
   export class contravention extends _contravention {}
+  export class contravention_party_xref extends _contravention_party_xref {}
 
   export const extraModels = [
     investigation,
@@ -53,5 +55,6 @@ export namespace PrismaModel {
     investigation_person_h,
     continuation_report,
     contravention,
+    contravention_party_xref,
   ];
 }

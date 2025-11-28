@@ -4,6 +4,7 @@ import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { ContraventionService } from "src/investigation/contravention/contravention.service";
+import { CreateContraventionInput } from "src/investigation/contravention/dto/contravention";
 
 @Resolver("Contravention")
 export class ContraventionResolver {
@@ -13,11 +14,11 @@ export class ContraventionResolver {
   @Mutation("createContravention")
   @Roles(coreRoles)
   async create(
-    @Args("investigationGuid") investigationGuid: string,
+    @Args("contravention") contraventionInput: CreateContraventionInput,
     @Args("legislationReference") legsislationGuidRef: string,
   ) {
     try {
-      return await this.contraventionService.create(investigationGuid, legsislationGuidRef);
+      return await this.contraventionService.create(contraventionInput);
     } catch (error) {
       this.logger.error("Update investigation error:", error);
       throw new GraphQLError("Error adding contravention to investigation", {

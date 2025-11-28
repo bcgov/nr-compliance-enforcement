@@ -4,3 +4,9 @@ type Contravention {
   legislationIdentifierRef: String!
   isActive: Boolean!
 }
+
+input CreateContraventionInput {
+  investigationGuid: String!
+  investigationPartyGuid: String!
+  legislationReference: String!
+}

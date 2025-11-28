@@ -1,11 +1,24 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { contravention } from "../../../../prisma/investigation/generated/contravention";
+import { Field, InputType } from "@nestjs/graphql";
 
 export class Contravention {
   contraventionIdentifier: string;
   investigationIdentifier: string;
   legislationIdentifierRef: string;
   isActive: boolean;
+}
+
+@InputType()
+export class CreateContraventionInput {
+  @Field(() => String)
+  investigationGuid: string;
+
+  @Field(() => String)
+  investigationPartyGuid: string;
+
+  @Field(() => String)
+  legislationReference: string;
 }
 
 export const mapPrismaContreventionToContravention = (mapper: Mapper) => {

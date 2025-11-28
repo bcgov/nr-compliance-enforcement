@@ -11,6 +11,8 @@ import { indentByType, Legislation } from "@/app/types/app/legislation";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import Option from "@apptypes/app/option";
+import { InspectionParty, InvestigationParty, Party } from "@/generated/graphql";
 
 const ADD_CONTRAVENTION = gql`
   mutation CreateContravention($investigationGuid: String!, $legislationReference: String!) {
@@ -49,7 +51,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   // Selectors
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
-  const { title, activityGuid } = modalData;
+  const { title, activityGuid, parties } = modalData;
 
   // State
   const [act, setAct] = useState("");
@@ -105,6 +107,13 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations ?? []);
   const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations ?? []);
   const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText) ?? [];
+
+  const partyOptions: Option[] = parties
+    .filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
+    .map((party: InvestigationParty | InspectionParty) => ({
+      value: party.partyIdentifier,
+      label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
+    }));
 
   const isLoading =
     actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;
@@ -258,6 +267,29 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     </button>
                   );
                 })}
+                <FormField
+                  form={form}
+                  name="party"
+                  label="Party"
+                  render={(field) => (
+                    <CompSelect
+                      id="party-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={partyOptions}
+                      value={partyOptions.find((opt) => opt.value === field.state.value)}
+                      onChange={(option) => {
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                      }}
+                      placeholder="Select party"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
               </>
             )}
           </form>

@@ -30,6 +30,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           description: "",
           activityGuid: investigationGuid,
           legislationGuid: legislationGuid,
+          parties: investigationData?.parties,
         },
       }),
     );
