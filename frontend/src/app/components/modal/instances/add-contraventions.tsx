@@ -12,11 +12,11 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import Option from "@apptypes/app/option";
-import { InspectionParty, InvestigationParty, Party } from "@/generated/graphql";
+import { CreateContraventionInput, InspectionParty, InvestigationParty } from "@/generated/graphql";
 
 const ADD_CONTRAVENTION = gql`
-  mutation CreateContravention($investigationGuid: String!, $legislationReference: String!) {
-    createContravention(investigationGuid: $investigationGuid, legislationReference: $legislationReference) {
+  mutation CreateContravention($input: CreateContraventionInput!) {
+    createContravention(input: $input) {
       investigationGuid
     }
   }
@@ -58,6 +58,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
+  const [selectedParty, setSelectedParty] = useState<string>();
 
   // Hooks
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
@@ -128,7 +129,13 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       return;
     }
 
-    addContraventionMutation.mutate({ investigationGuid: activityGuid, legislationReference: selectedSection });
+    const input: CreateContraventionInput = {
+      investigationGuid: activityGuid,
+      investigationPartyGuid: selectedParty,
+      legislationReference: selectedSection,
+    };
+
+    addContraventionMutation.mutate({ input: input });
 
     submit();
     close();
@@ -281,6 +288,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       onChange={(option) => {
                         const value = option?.value || "";
                         field.handleChange(value);
+                        setSelectedParty(value);
                       }}
                       placeholder="Select party"
                       isClearable={true}

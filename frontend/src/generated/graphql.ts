@@ -343,7 +343,7 @@ export type CreateAuthorizationOutcomeInput = {
 
 export type CreateContraventionInput = {
   investigationGuid: Scalars['String']['input'];
-  investigationPartyGuid: Scalars['String']['input'];
+  investigationPartyGuid?: InputMaybe<Scalars['String']['input']>;
   legislationReference: Scalars['String']['input'];
 };
 

@@ -13,10 +13,7 @@ export class ContraventionResolver {
 
   @Mutation("createContravention")
   @Roles(coreRoles)
-  async create(
-    @Args("contravention") contraventionInput: CreateContraventionInput,
-    @Args("legislationReference") legsislationGuidRef: string,
-  ) {
+  async create(@Args("input") contraventionInput: CreateContraventionInput) {
     try {
       return await this.contraventionService.create(contraventionInput);
     } catch (error) {
