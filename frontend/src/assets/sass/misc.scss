@@ -16,6 +16,42 @@
     box-shadow 0.15s ease-in-out;
 }
 
+#incident-date,
+#incident-time,
+#incident-date:focus,
+#incident-time:focus,
+#incident-date:focus-visible,
+#incident-time:focus-visible {
+  border: none;
+  outline: none;
+  margin-left: 8px;
+  padding: 0;
+}
+input[list]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+input[list] {
+  color: #808080;
+}
+input[list] + datalist option[value=""] {
+  color: #808080 !important;
+}
+input[list]:not(:focus):not([value=""]):not(:placeholder-shown) {
+  color: inherit;
+}
+input[list]:placeholder-shown {
+  color: inherit;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
 .comp-form-control:focus-visible {
   border: 1px solid $blue-100 !important;
   outline: none;
@@ -31,6 +67,10 @@
   position: relative;
   top: -15px;
   left: -4px;
+}
+
+.placeholder-input {
+  color: #808080 !important;
 }
 
 [data-initials]:before {

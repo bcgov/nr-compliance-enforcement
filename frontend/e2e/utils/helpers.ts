@@ -138,6 +138,16 @@ export async function enterDateTimeInDatePicker(
     await page.keyboard.press("Escape");
   }
 }
+
+export async function enterDateTimeInCompDateTimePicker(page: Page, day: string, hour?: string, minute?: string) {
+  await page.locator("#incident-date").locator("input:scope").fill(`2025-06-${day}`);
+
+  // Locate the time input field and click it to open the time picker
+  if (hour && minute) {
+    await page.locator("#incident-time").locator("input:scope").fill(`${hour}:${minute}`);
+  }
+}
+
 export async function verifyMapMarkerExists(existIndicator: boolean, page: Page) {
   await expect(page.locator(".leaflet-container")).toBeVisible();
   if (existIndicator) {
