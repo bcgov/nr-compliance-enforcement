@@ -13,19 +13,19 @@ test.describe("Case History Tab", () => {
     await page.goto("/cases");
     await waitForSpinner(page);
 
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+    const rows = page.locator("#case-list tbody tr");
+    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
-    if ((await caseLink.count()) === 0) {
-      const rows = page.locator("#case-list tbody tr");
-      expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
-      await rows.first().locator("a.comp-cell-link").first().click();
-    } else {
-      await caseLink.first().click();
-    }
+    // Use CASE1 which has linked activities ensuring history exists
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" }).first();
+    await expect(caseLink).toBeVisible({ timeout: 10000 });
+    await caseLink.click();
 
     await waitForSpinner(page);
 
-    await page.locator("#history").click();
+    const historyTab = page.locator("#history");
+    await expect(historyTab).toBeVisible({ timeout: 10000 });
+    await historyTab.click();
     await waitForSpinner(page);
   });
 

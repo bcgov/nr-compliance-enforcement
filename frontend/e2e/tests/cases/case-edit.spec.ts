@@ -17,13 +17,15 @@ test.describe("Case Edit Form", () => {
     const rows = page.locator("#case-list tbody tr");
     expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
-    // Use CASE1
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
-    await caseLink.first().click();
+    // Use CASE1 - wait for it to be visible before clicking
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" }).first();
+    await expect(caseLink).toBeVisible({ timeout: 10000 });
+    await caseLink.click();
     await waitForSpinner(page);
 
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");
+    await expect(editButton).toBeVisible({ timeout: 10000 });
     await editButton.click();
     await waitForSpinner(page);
 

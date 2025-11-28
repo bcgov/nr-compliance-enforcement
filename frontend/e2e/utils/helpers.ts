@@ -159,8 +159,10 @@ export async function waitForMapToLoad(page: Page, timeout: number = 10000) {
   await leafletContainer.locator(".leaflet-map-pane").waitFor({ state: "attached", timeout });
 
   // Wait for tiles or markers to indicate the map has rendered content
+  // Use "attached" instead of "visible" because Leaflet markers with leaflet-zoom-animated
+  // class may be reported as hidden during animations due to CSS transforms/opacity
   const tilesOrMarkers = leafletContainer.locator(".leaflet-tile-loaded, .leaflet-marker-icon");
-  await expect(tilesOrMarkers.first()).toBeVisible({ timeout });
+  await tilesOrMarkers.first().waitFor({ state: "attached", timeout });
 
   // Small delay for any remaining rendering. Sadly required.
   await page.waitForTimeout(500);

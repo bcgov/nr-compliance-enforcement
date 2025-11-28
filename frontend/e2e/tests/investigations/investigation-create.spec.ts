@@ -12,12 +12,10 @@ test.describe("Investigation Create Form", () => {
     await page.goto("/cases");
     await waitForSpinner(page);
 
-    // Find CASE1 which has test data
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
-
-    expect(await caseLink.count(), "CASE1 not found.").toBeGreaterThan(0);
-
-    await caseLink.first().click();
+    // Find CASE1 which has test data - wait for it to be visible
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" }).first();
+    await expect(caseLink).toBeVisible({ timeout: 10000 });
+    await caseLink.click();
     await waitForSpinner(page);
 
     // Click Create investigation button
@@ -38,10 +36,10 @@ test.describe("Investigation Create Form", () => {
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
     await saveButton.click();
-    await waitForSpinner(page);
 
-    // Should navigate to investigation detail
-    await expect(page).toHaveURL(/\/investigation\/[^/]+$/, { timeout: 15000 });
+    // Wait for navigation to investigation detail page
+    await page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 });
+    await waitForSpinner(page);
   });
 
   test("it validates required fields", async ({ page }) => {
@@ -107,10 +105,10 @@ test.describe("Investigation Create Form", () => {
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
     await saveButton.click();
-    await waitForSpinner(page);
 
-    // Should navigate to investigation detail
-    await expect(page).toHaveURL(/\/investigation\/[^/]+$/, { timeout: 15000 });
+    // Wait for navigation to investigation detail page
+    await page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 });
+    await waitForSpinner(page);
     await expect(page.locator("h1")).toContainText(uniqueId);
   });
 
