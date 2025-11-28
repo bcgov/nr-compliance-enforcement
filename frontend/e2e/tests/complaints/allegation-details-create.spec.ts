@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
+import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import {
   enterDateTimeInCompDateTimePicker,
   navigateToCreateScreen,
