@@ -21,6 +21,10 @@ test.describe("Inspection Details", () => {
     const firstLink = rows.first().locator("a.comp-cell-link").first();
     await firstLink.click();
     await waitForSpinner(page);
+
+    // Wait for inspection data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
   });
 
   test("it displays inspection header", async ({ page }) => {

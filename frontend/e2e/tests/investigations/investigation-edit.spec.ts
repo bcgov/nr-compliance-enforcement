@@ -21,6 +21,10 @@ test.describe("Investigation Edit Form", () => {
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
 
+    // Wait for investigation data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");
     await editButton.click();
@@ -127,6 +131,10 @@ test.describe("Investigation Edit - Field Constraints", () => {
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
 
+    // Wait for investigation data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     await page.locator("#details-screen-edit-button").click();
     await waitForSpinner(page);
 
@@ -149,6 +157,10 @@ test.describe("Investigation Edit - Field Constraints", () => {
     // Navigate to edit the first investigation
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
+
+    // Wait for investigation data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
 
     await page.locator("#details-screen-edit-button").click();
     await waitForSpinner(page);

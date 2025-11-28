@@ -21,6 +21,10 @@ test.describe("Inspection Edit", () => {
     await firstLink.click();
     await waitForSpinner(page);
 
+    // Wait for inspection data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");
     await editButton.click();
@@ -144,6 +148,10 @@ test.describe("Inspection Edit", () => {
     await firstLink.click();
     await waitForSpinner(page);
 
+    // Wait for inspection data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     // Navigate to edit
     const editButton = page.locator("#details-screen-edit-button");
     await editButton.click();
@@ -170,6 +178,10 @@ test.describe("Inspection Edit", () => {
     const rows = page.locator("#inspection-list tbody tr");
     await rows.nth(1).locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
+
+    // Wait for inspection data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
 
     // Navigate to edit
     await page.locator("#details-screen-edit-button").click();

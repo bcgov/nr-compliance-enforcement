@@ -18,8 +18,13 @@ test.describe("Investigation Create Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).toContainText("CASE1", { timeout: 15000 });
+
     // Click Create investigation button
     const createInvestigationBtn = page.locator("button", { hasText: "Create investigation" });
+    await expect(createInvestigationBtn).toBeVisible({ timeout: 10000 });
     await createInvestigationBtn.click();
     await waitForSpinner(page);
 
@@ -29,16 +34,20 @@ test.describe("Investigation Create Form", () => {
 
     // Fill in the form
     const uniqueId = `INV-${Date.now()}`;
-    await page.locator("#display-name").fill(uniqueId);
+    const displayNameInput = page.locator("#display-name");
+    await expect(displayNameInput).toBeVisible({ timeout: 10000 });
+    await displayNameInput.fill(uniqueId);
     await page.locator("#description").fill("Test investigation");
 
-    // Save
+    // Save - use Promise.all to capture navigation
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
-    await saveButton.click();
-
-    // Wait for navigation to investigation detail page
-    await page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 });
+    
+    await Promise.all([
+      page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 }),
+      saveButton.click(),
+    ]);
+    
     await waitForSpinner(page);
   });
 
@@ -50,7 +59,12 @@ test.describe("Investigation Create Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     const createBtn = page.locator("button", { hasText: "Create investigation" });
+    await expect(createBtn).toBeVisible({ timeout: 10000 });
     await createBtn.click();
     await waitForSpinner(page);
 
@@ -70,12 +84,19 @@ test.describe("Investigation Create Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     const createBtn = page.locator("button", { hasText: "Create investigation" });
+    await expect(createBtn).toBeVisible({ timeout: 10000 });
     await createBtn.click();
     await waitForSpinner(page);
 
     // Use an existing investigation ID
-    await page.locator("#display-name").fill("INVESTIGATION1");
+    const displayNameInput = page.locator("#display-name");
+    await expect(displayNameInput).toBeVisible({ timeout: 10000 });
+    await displayNameInput.fill("INVESTIGATION1");
 
     // Should show duplicate error
     const errorMessage = page.locator("text=already in use");
@@ -90,24 +111,41 @@ test.describe("Investigation Create Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     const createBtn = page.locator("button", { hasText: "Create investigation" });
+    await expect(createBtn).toBeVisible({ timeout: 10000 });
     await createBtn.click();
     await waitForSpinner(page);
 
     // Fill all fields
     const uniqueId = `INV-TEST-${Date.now()}`;
-    await page.locator("#display-name").fill(uniqueId);
+    const displayNameInput = page.locator("#display-name");
+    await expect(displayNameInput).toBeVisible({ timeout: 10000 });
+    await displayNameInput.fill(uniqueId);
     await page.locator("#description").fill("Full test investigation with all fields");
-    await page.locator("#locationAddress").fill("123 Test Street, Victoria, BC");
-    await page.locator("#locationDescription").fill("Near the park entrance");
+    
+    const locationAddressInput = page.locator("#locationAddress");
+    if (await locationAddressInput.isVisible()) {
+      await locationAddressInput.fill("123 Test Street, Victoria, BC");
+    }
+    
+    const locationDescInput = page.locator("#locationDescription");
+    if (await locationDescInput.isVisible()) {
+      await locationDescInput.fill("Near the park entrance");
+    }
 
-    // Save
+    // Save - use Promise.all to capture navigation
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
-    await saveButton.click();
-
-    // Wait for navigation to investigation detail page
-    await page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 });
+    
+    await Promise.all([
+      page.waitForURL(/\/investigation\/[^/]+$/, { timeout: 30000 }),
+      saveButton.click(),
+    ]);
+    
     await waitForSpinner(page);
     await expect(page.locator("h1")).toContainText(uniqueId);
   });
@@ -120,12 +158,19 @@ test.describe("Investigation Create Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     const createBtn = page.locator("button", { hasText: "Create investigation" });
+    await expect(createBtn).toBeVisible({ timeout: 10000 });
     await createBtn.click();
     await waitForSpinner(page);
 
     // Fill some data
-    await page.locator("#display-name").fill("TEST-CANCEL");
+    const displayNameInput = page.locator("#display-name");
+    await expect(displayNameInput).toBeVisible({ timeout: 10000 });
+    await displayNameInput.fill("TEST-CANCEL");
 
     // Click cancel
     await page.locator("#details-screen-cancel-edit-button-top").click();

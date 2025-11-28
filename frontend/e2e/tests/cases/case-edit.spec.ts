@@ -23,6 +23,10 @@ test.describe("Case Edit Form", () => {
     await caseLink.click();
     await waitForSpinner(page);
 
+    // Wait for case data to load - header should show CASE1, not "Unknown"
+    const caseHeader = page.locator("h1.comp-box-complaint-id");
+    await expect(caseHeader).toContainText("CASE1", { timeout: 15000 });
+
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");
     await expect(editButton).toBeVisible({ timeout: 10000 });
@@ -172,6 +176,10 @@ test.describe("Case Edit - Navigation", () => {
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
 
+    // Wait for case data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");
     await editButton.click();
@@ -189,9 +197,11 @@ test.describe("Case Edit - Navigation", () => {
     expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
     const actionsButton = rows.first().locator(".comp-action-dropdown button");
+    await expect(actionsButton).toBeVisible({ timeout: 10000 });
     await actionsButton.click();
 
     const editLink = page.locator(".dropdown-menu.show a", { hasText: "Edit Case" });
+    await expect(editLink).toBeVisible({ timeout: 5000 });
     await editLink.click();
     await waitForSpinner(page);
 
@@ -209,8 +219,13 @@ test.describe("Case Edit - Lead Agency", () => {
     const rows = page.locator("#case-list tbody tr");
     expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
-    await rows.first().locator(".comp-action-dropdown button").click();
-    await page.locator(".dropdown-menu.show a", { hasText: "Edit Case" }).click();
+    const actionsButton = rows.first().locator(".comp-action-dropdown button");
+    await expect(actionsButton).toBeVisible({ timeout: 10000 });
+    await actionsButton.click();
+
+    const editLink = page.locator(".dropdown-menu.show a", { hasText: "Edit Case" });
+    await expect(editLink).toBeVisible({ timeout: 5000 });
+    await editLink.click();
     await waitForSpinner(page);
 
     // Lead agency select should be disabled

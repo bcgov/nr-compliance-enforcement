@@ -17,6 +17,10 @@ test.describe("Case View", () => {
     const firstCaseLink = rows.first().locator("a.comp-cell-link").first();
     await firstCaseLink.click();
     await waitForSpinner(page);
+
+    // Wait for case data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
   });
 
   test("it displays case header with case ID and status badge", async ({ page }) => {
@@ -87,6 +91,10 @@ test.describe("Case View - Tabs", () => {
     const firstCaseLink = rows.first().locator("a.comp-cell-link").first();
     await firstCaseLink.click();
     await waitForSpinner(page);
+
+    // Wait for case data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
   });
 
   test("it displays all case tabs", async ({ page }) => {
@@ -117,6 +125,10 @@ test.describe("Case View - Summary Tab Content", () => {
     const firstCaseLink = rows.first().locator("a.comp-cell-link").first();
     await firstCaseLink.click();
     await waitForSpinner(page);
+
+    // Wait for case data to load - header should not show "Unknown"
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
   });
 
   test("it displays complaints column", async ({ page }) => {
@@ -155,6 +167,10 @@ test.describe("Case View - Navigation", () => {
     const rows = page.locator("#case-list tbody tr");
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
+
+    // Wait for case data to load
+    const header = page.locator("h1.comp-box-complaint-id");
+    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
 
     const breadcrumbLink = page.locator(".breadcrumb a", { hasText: "Cases" });
     await breadcrumbLink.click();
