@@ -252,13 +252,13 @@ model contravention {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contravention_party_xref {
   contravention_party_xref_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  contravention_guid            String?              @db.Uuid
+  contravention_guid            String               @db.Uuid
   investigation_party_guid      String?              @db.Uuid
   active_ind                    Boolean              @default(true)
   create_user_id                String               @db.VarChar(32)
   create_utc_timestamp          DateTime             @default(now()) @db.Timestamp(6)
   update_user_id                String?              @db.VarChar(32)
   update_utc_timestamp          DateTime?            @db.Timestamp(6)
-  contravention                 contravention?       @relation(fields: [contravention_guid], references: [contravention_guid], onDelete: NoAction, onUpdate: NoAction)
+  contravention                 contravention        @relation(fields: [contravention_guid], references: [contravention_guid], onDelete: NoAction, onUpdate: NoAction)
   investigation_party           investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction)
 }
