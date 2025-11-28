@@ -116,7 +116,7 @@
 .accordion-button {
   padding-left: 0 !important;
   gap: 10px !important;
-  height: 40px;
+  height: 42px;
 }
 .accordion-button::after {
   display: none !important;
@@ -139,4 +139,8 @@
     font-size: 18px;
     color: #1a5a96 !important;
   }
+}
+
+.max-w-350 {
+  max-width: 350px;
 }

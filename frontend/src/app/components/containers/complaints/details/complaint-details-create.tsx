@@ -3,7 +3,6 @@ import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
 import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
 import { ValidationTextArea } from "@common/validation-textarea";
-import DatePicker from "react-datepicker";
 import Select from "react-select";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { CompInput } from "@components/common/comp-input";
@@ -54,6 +53,7 @@ import { RootState } from "@/app/store/store";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { isValidEmail } from "@/app/common/validate-email";
 import { AgencyType } from "@/app/types/app/agency-types";
+import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -545,8 +545,6 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleIncidentDateTimeChange = (date: Date) => {
-    setSelectedIncidentDateTime(date);
-
     const complaint = { ...complaintData, incidentDateTime: date } as Complaint;
     applyComplaintData(complaint);
   };
@@ -897,19 +895,10 @@ export const CreateComplaint: FC = () => {
           >
             <label htmlFor="complaint-incident-time">Incident date/time</label>
             <div className="comp-details-edit-input">
-              <DatePicker
-                showTimeInput
-                id="complaint-incident-time"
-                showIcon
-                timeInputLabel="Time:"
+              <CompDateTimePicker
+                value={selectedIncidentDateTime}
                 onChange={handleIncidentDateTimeChange}
-                selected={selectedIncidentDateTime}
-                dateFormat="yyyy-MM-dd HH:mm"
-                timeFormat="HH:mm"
-                wrapperClassName="comp-details-edit-calendar-input"
                 maxDate={currentDate}
-                monthsShown={2}
-                showPreviousMonths
               />
             </div>
           </div>

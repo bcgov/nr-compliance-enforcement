@@ -38,6 +38,12 @@ input InspectionFilters {
   sortOrder: String
 }
 
+input InspectionSearchMapParameters {
+  bbox: String
+  zoom: Int!
+  filters: InspectionFilters
+}
+
 input CreateInspectionInput {
   caseIdentifier: String!
   leadAgency: String!

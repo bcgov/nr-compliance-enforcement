@@ -78,6 +78,24 @@ export class AppUserService {
     return this.mapAppUserToDtoWithOffice(appUser, token);
   }
 
+  async findByEmail(email: string, token: string): Promise<any> {
+    try {
+      const cssUsers = await this.cssService.getUserIdirByEmail(email);
+
+      if (cssUsers && cssUsers.length > 0) {
+        const auth_user = cssUsers[0].attributes.idir_user_guid[0];
+        const appUser = await getAppUserByAuthUserGuid(token, auth_user);
+        if (appUser) {
+          return this.mapAppUserToDtoWithOffice(appUser, token);
+        } else {
+          return cssUsers[0];
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Error fetching user from CSS by email: ${error}`);
+    }
+  }
+
   async findByAppUserGuid(app_user_guid: any, token: string): Promise<any> {
     return this.findOne(app_user_guid, token);
   }
