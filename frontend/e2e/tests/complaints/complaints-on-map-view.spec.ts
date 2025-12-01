@@ -104,7 +104,7 @@ test.describe("Complaints on map tests", () => {
 
       const markerCluster = page.locator(".marker-cluster");
       await expect(markerCluster.first()).toBeVisible();
-      await markerCluster.first().click({ force: true });
+      await page.locator(".marker-cluster").first().click({ force: true });
       await page.locator(".leaflet-marker-icon.map-marker svg").first().click();
 
       // wait for the popup to load

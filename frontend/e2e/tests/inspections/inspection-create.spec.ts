@@ -63,15 +63,26 @@ test.describe("Inspection Creation", () => {
 
     const uniqueId = `INSPECTION-${Date.now()}`;
 
+    // Set up listener for async validation response before filling the input
+    const validationResponsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") &&
+        (response.request().postData()?.includes("checkInspectionNameExists") ?? false),
+      { timeout: 15000 },
+    );
+
     const inspectionIdInput = page.locator("#display-name");
     await inspectionIdInput.fill(uniqueId);
+
+    // Wait for async validation to complete
+    await validationResponsePromise;
 
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Test Description");
 
     const saveButton = page.locator("button", { hasText: /Save|Create/i }).first();
     await expect(saveButton).toBeEnabled({ timeout: 10000 });
-    await saveButton.click();
+    await saveButton.click({ force: true });
     await expect(page).toHaveURL(/\/inspection\/[a-f0-9-]+$/i, { timeout: 30000 });
   });
 
