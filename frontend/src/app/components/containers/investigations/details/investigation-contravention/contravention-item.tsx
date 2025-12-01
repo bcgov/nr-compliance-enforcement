@@ -4,7 +4,7 @@ import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
-import { Contravention, InvestigationParty, Party } from "@/generated/graphql";
+import { Contravention, InvestigationParty } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
