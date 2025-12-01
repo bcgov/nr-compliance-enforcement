@@ -42,6 +42,15 @@ const GET_INVESTIGATION = gql`
       contraventions {
         contraventionIdentifier
         legislationIdentifierRef
+        investigationParty {
+          person {
+            firstName
+            lastName
+          }
+          business {
+            name
+          }
+        }
       }
       leadAgency
       locationAddress

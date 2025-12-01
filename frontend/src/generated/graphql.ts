@@ -291,6 +291,7 @@ export type Contravention = {
   __typename?: 'Contravention';
   contraventionIdentifier: Scalars['String']['output'];
   investigationIdentifier: Scalars['String']['output'];
+  investigationParty?: Maybe<Array<Maybe<InvestigationParty>>>;
   isActive: Scalars['Boolean']['output'];
   legislationIdentifierRef: Scalars['String']['output'];
 };

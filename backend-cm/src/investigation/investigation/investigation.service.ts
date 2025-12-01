@@ -64,6 +64,30 @@ export class InvestigationService {
           },
         },
         contravention: {
+          include: {
+            contravention_party_xref: {
+              include: {
+                investigation_party: {
+                  // Allows the person info to be mapped on the contravention object directly
+                  include: {
+                    investigation_person: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                    investigation_business: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+          },
           where: {
             active_ind: true,
           },

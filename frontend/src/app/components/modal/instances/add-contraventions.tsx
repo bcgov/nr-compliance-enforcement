@@ -279,24 +279,26 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     </button>
                   );
                 })}
-                <FormField
-                  form={form}
-                  name="party"
-                  label="Party"
-                  render={(field) => (
-                    <ValidationMultiSelect
-                      id="party-select"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={partyOptions}
-                      values={selectedParties}
-                      onChange={handlePartyChange}
-                      placeholder="Select party"
-                      isClearable={true}
-                      errMsg={field.state.meta.errors?.[0]?.message || ""}
-                    />
-                  )}
-                />
+                <div className="mt-3">
+                  <FormField
+                    form={form}
+                    name="party"
+                    label="Party"
+                    render={(field) => (
+                      <ValidationMultiSelect
+                        id="party-select"
+                        classNamePrefix="comp-select"
+                        className="comp-details-input mt-3"
+                        options={partyOptions}
+                        values={selectedParties}
+                        onChange={handlePartyChange}
+                        placeholder="Select party"
+                        isClearable={true}
+                        errMsg={field.state.meta.errors?.[0]?.message || ""}
+                      />
+                    )}
+                  />
+                </div>
               </>
             )}
           </form>

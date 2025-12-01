@@ -2,6 +2,7 @@ type Contravention {
   contraventionIdentifier: String!
   investigationIdentifier: String!
   legislationIdentifierRef: String!
+  investigationParty: [InvestigationParty]
   isActive: Boolean!
 }
 
