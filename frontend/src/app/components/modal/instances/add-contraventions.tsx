@@ -60,6 +60,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
   const [selectedParties, setSelectedParties] = useState<Option[]>();
+  const [validationError, setValidationError] = useState<string>("");
 
   // Hooks
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
@@ -120,13 +121,22 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const isLoading =
     actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;
 
-  const errorMessages = [actsQuery.error, regulationsQuery.error, sectionsQuery.error, legislationTextQuery.error]
+  const errorMessages = [
+    actsQuery.error,
+    regulationsQuery.error,
+    sectionsQuery.error,
+    legislationTextQuery.error,
+    validationError,
+  ]
     .filter(Boolean) // remove undefined/null
     .map((err) => (err as Error).message || String(err));
 
   const handleAddContravention = async () => {
+    // Clear previous validation error
+    setValidationError("");
+
     if (!selectedSection) {
-      errorMessages.push("Please select a contravention to add.");
+      setValidationError("Please select a contravention to add.");
       return;
     }
 
@@ -265,7 +275,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       key={section.legislationGuid}
                       type="button"
                       className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
-                      onClick={() => setSelectedSection(section.legislationGuid as string)}
+                      onClick={() => {
+                        setValidationError("");
+                        setSelectedSection(section.legislationGuid as string);
+                      }}
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
