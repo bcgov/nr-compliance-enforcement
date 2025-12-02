@@ -380,7 +380,7 @@ metabase:
   # the below is for renovate to keep pushing PRs, so that it keeps getting updated.
   metabaseImage:
     repository: metabase/metabase
-    tag: v0.51.4
+    tag: v0.57.4
   containerPort: 3000
   environment: production
   service:
