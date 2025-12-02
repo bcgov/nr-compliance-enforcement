@@ -31,11 +31,17 @@ async function createHistoryData(page: Page): Promise<string> {
   await editButton.click();
   await waitForSpinner(page);
 
-  // Update description to generate history entry
-  const descriptionInput = page.locator("#description");
-  await expect(descriptionInput).toBeVisible({ timeout: 10000 });
-  const timestamp = Date.now();
-  await descriptionInput.fill(`Test description updated at ${timestamp}`);
+  // Change status to generate history entry
+  const statusSelect = page.locator("#case-status-select");
+  await expect(statusSelect).toBeVisible({ timeout: 10000 });
+  await statusSelect.click();
+
+  // Get current status and toggle it
+  const currentStatus = await statusSelect.textContent();
+  const newStatus = currentStatus?.includes("Open") ? "Closed" : "Open";
+  const statusOption = page.locator(".comp-select__option", { hasText: newStatus });
+  await expect(statusOption).toBeVisible({ timeout: 5000 });
+  await statusOption.click();
 
   // Save changes
   const saveButton = page.locator("#details-screen-save-button-top");
