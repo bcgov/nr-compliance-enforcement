@@ -1,32 +1,78 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import { waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case History Tab functionality
- * Uses CASE1 which has linked activities ensuring history exists
+ */
+async function createHistoryData(page: Page): Promise<string> {
+  await page.goto("/cases");
+  await waitForSpinner(page);
+
+  const rows = page.locator("#case-list tbody tr");
+  expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+
+  // Get the first case link and its href
+  const caseLink = rows.first().locator("a.comp-cell-link").first();
+  await expect(caseLink).toBeVisible({ timeout: 10000 });
+  const href = await caseLink.getAttribute("href");
+  const caseGuid = href?.replace("/case/", "") || "";
+
+  await caseLink.click();
+  await waitForSpinner(page);
+
+  // Wait for case data to load
+  const header = page.locator("h1.comp-box-complaint-id");
+  await expect(header).not.toContainText("Unknown", { timeout: 15000 });
+
+  // Edit the case to create history
+  const editButton = page.locator("#details-screen-edit-button");
+  await expect(editButton).toBeVisible({ timeout: 10000 });
+  await editButton.click();
+  await waitForSpinner(page);
+
+  // Update description to generate history entry
+  const descriptionInput = page.locator("#description");
+  await expect(descriptionInput).toBeVisible({ timeout: 10000 });
+  const timestamp = Date.now();
+  await descriptionInput.fill(`Test description updated at ${timestamp}`);
+
+  // Save changes
+  const saveButton = page.locator("#details-screen-save-button-top");
+  await expect(saveButton).toBeEnabled({ timeout: 5000 });
+  await saveButton.click();
+  await waitForSpinner(page);
+
+  // Wait for navigation back to case view
+  await expect(page).toHaveURL(/\/case\/[^/]+$/, { timeout: 15000 });
+  return caseGuid;
+}
+
+/**
+ * Tests for Case History Tab functionality
+ * Creates its own history data to ensure tests are self-contained
  */
 test.describe("Case History Tab", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
+  let caseGuid: string;
+
+  test.beforeAll(async ({ browser }) => {
+    // Create history data once before all tests in this describe block
+    const context = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.COS });
+    const page = await context.newPage();
+    caseGuid = await createHistoryData(page);
+    await context.close();
+  });
+
   test.beforeEach(async ({ page }) => {
-    await page.goto("/cases");
+    // Navigate directly to the case's history tab
+    await page.goto(`/case/${caseGuid}/history`);
     await waitForSpinner(page);
 
-    const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
-
-    // Use CASE1 which has linked activities ensuring history exists
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" }).first();
-    await expect(caseLink).toBeVisible({ timeout: 10000 });
-    await caseLink.click();
-
-    await waitForSpinner(page);
-
+    // Wait for history tab to be active
     const historyTab = page.locator("#history");
-    await expect(historyTab).toBeVisible({ timeout: 10000 });
-    await historyTab.click();
-    await waitForSpinner(page);
+    await expect(historyTab).toHaveClass(/active/, { timeout: 10000 });
   });
 
   test("it displays the history tab and is active", async ({ page }) => {
