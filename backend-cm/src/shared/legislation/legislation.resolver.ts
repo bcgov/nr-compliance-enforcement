@@ -25,4 +25,20 @@ export class LegislationResolver {
   async findOne(@Args("legislationGuid") legislationGuid: string) {
     return await this.legislationService.findOne(legislationGuid);
   }
+
+  @Query("legislationChildTypes")
+  @Roles(coreRoles)
+  async getChildTypes(@Args("agencyCode") agencyCode: string, @Args("parentGuid") parentGuid?: string) {
+    return await this.legislationService.getChildTypes(agencyCode, parentGuid);
+  }
+
+  @Query("legislationDirectChildren")
+  @Roles(coreRoles)
+  async findDirectChildren(
+    @Args("agencyCode") agencyCode: string,
+    @Args("parentGuid") parentGuid: string,
+    @Args("legislationTypeCode") legislationTypeCode?: string,
+  ) {
+    return await this.legislationService.findDirectChildren(agencyCode, parentGuid, legislationTypeCode);
+  }
 }

@@ -1,4 +1,6 @@
 type Query {
   legislations(agencyCode: String!, legislationTypeCodes: [String], ancestorGuid: String): [Legislation]!
   legislation(legislationGuid: String!): Legislation
+  legislationChildTypes(agencyCode: String!, parentGuid: String): [String]!
+  legislationDirectChildren(agencyCode: String!, parentGuid: String!, legislationTypeCode: String): [Legislation]!
 }
