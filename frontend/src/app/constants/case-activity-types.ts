@@ -4,4 +4,5 @@ export const CASE_ACTIVITY_TYPES = {
   INSPECTION: "INSPECTION",
 } as const;
 
+
 export type CaseActivityType = (typeof CASE_ACTIVITY_TYPES)[keyof typeof CASE_ACTIVITY_TYPES];
