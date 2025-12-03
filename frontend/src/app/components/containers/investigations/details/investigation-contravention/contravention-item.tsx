@@ -134,7 +134,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, par
             <dd>{renderLegislation()}</dd>
           </Col>
         </Row>
-        {(contravention?.investigationParty ?? []).length > 0 && (
+        {contravention.investigationParty && contravention.investigationParty.length > 0 && (
           <Row
             as="dl"
             className="mb-3"

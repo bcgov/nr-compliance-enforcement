@@ -17,7 +17,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 }) => {
   const dispatch = useAppDispatch();
 
-  const contraventions = investigationData?.contraventions ?? [];
+  const contraventions = investigationData?.contraventions;
 
   const handleAddContravention = () => {
     document.body.click();
@@ -50,7 +50,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         </Button>
       </div>
       <div className="contraventions-list">
-        {contraventions.map((contravention, index) => (
+        {contraventions?.map((contravention, index) => (
           <div key={contravention?.contraventionIdentifier}>
             <ContraventionItem
               contravention={contravention as Contravention}

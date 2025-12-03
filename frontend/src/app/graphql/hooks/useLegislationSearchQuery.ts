@@ -38,14 +38,14 @@ const GET_LEGISLATION = gql`
   }
 `;
 
-export const useLegislation = (legislationGuid: string, includeAncestors: boolean) => {
+export const useLegislation = (legislationGuid: string | undefined, includeAncestors: boolean) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
     queryKey: ["legislation", legislationGuid, includeAncestors],
     variables: {
       legislationGuid: legislationGuid,
       includeAncestors: includeAncestors,
     },
-    enabled: true,
+    enabled: !!legislationGuid, // only run this is we have a guid
     placeholderData: (previousData) => previousData,
   });
   return { data, isLoading, error };
@@ -65,7 +65,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
   return { data, isLoading, error };
 };
 
-export const convertLegislationToOption = (legislation: Legislation[]): Option[] => {
+export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
   return (
     legislation?.map((legislation) => ({
       label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.

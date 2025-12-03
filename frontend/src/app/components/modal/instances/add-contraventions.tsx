@@ -83,17 +83,12 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     existingContravention?: Contravention;
   } = modalData;
 
-  const selectedPartyOptions: Option[] = (existingContravention?.investigationParty ?? []).map((party) => ({
-    value: party!.partyIdentifier,
-    label: party!.business ? party!.business.name : `${party!.person?.lastName}, ${party!.person?.firstName}`,
-  }));
-
   // State
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
-  const [selectedParties, setSelectedParties] = useState<Option[]>(selectedPartyOptions);
+  const [selectedParties, setSelectedParties] = useState<Option[]>([]);
   const [validationError, setValidationError] = useState<string>("");
 
   // Hooks
@@ -149,13 +144,13 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     enabled: !!section,
   });
 
-  const legislationQuery = useLegislation(existingContravention?.legislationIdentifierRef ?? "", true);
+  const legislationQuery = useLegislation(existingContravention?.legislationIdentifierRef, true);
 
   // Data
-  const actOptions = convertLegislationToOption(actsQuery.data?.legislations ?? []);
-  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations ?? []);
-  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations ?? []);
-  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText) ?? [];
+  const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
+  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
+  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations);
+  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText);
 
   const partyOptions: Option[] = parties
     ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
@@ -188,7 +183,11 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
 
     const input: CreateUpdateContraventionInput = {
       investigationGuid: activityGuid,
-      investigationPartyGuids: selectedParties?.map((p) => p.value).filter((v): v is string => v !== undefined) ?? [],
+      // Convert Option[] → string[]
+      // - map each party to its value
+      // - drop any parties that don't have a value
+      // - avoid returning undefined by flattening to an empty array instead
+      investigationPartyGuids: selectedParties?.flatMap((p) => (p.value ? [p.value] : [])),
       legislationReference: selectedSection,
     };
 
@@ -205,24 +204,57 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     close();
   };
 
+  // State Management for Legislation and Selected Legislation
   useEffect(() => {
-    const ancestors = legislationQuery?.data?.legislation?.ancestors;
-    if (!ancestors) return;
+    const legislation = legislationQuery?.data?.legislation;
+    const ancestors = legislation?.ancestors;
+    const contraventionId = existingContravention?.legislationIdentifierRef;
 
-    setAct(ancestors.find((a) => a?.legislationTypeCode === "ACT")?.legislationGuid ?? "");
+    // Exit early until all required data is available
+    if (!legislation || !ancestors || !contraventionId) {
+      return;
+    }
 
-    setRegulation(ancestors.find((a) => a?.legislationTypeCode === "REG")?.legislationGuid ?? "");
+    // Find the ACT and REG ancestors (if present)
+    const actGuid = ancestors.find((a) => a?.legislationTypeCode === "ACT")?.legislationGuid;
 
-    // Sections are weird as there are some that don't have any children
+    const regGuid = ancestors.find((a) => a?.legislationTypeCode === "REG")?.legislationGuid;
+
+    // Section handling:
+    // - If the current legislation *is* a section, use the contravention's reference
+    // - Otherwise, look up the SEC ancestor
     const sectionGuid =
-      legislationQuery.data?.legislation.legislationTypeCode === "SEC"
-        ? (existingContravention?.legislationIdentifierRef ?? "")
-        : (ancestors.find((a) => a?.legislationTypeCode === "SEC")?.legislationGuid ?? "");
+      legislation.legislationTypeCode === "SEC"
+        ? contraventionId
+        : ancestors.find((a) => a?.legislationTypeCode === "SEC")?.legislationGuid;
 
-    setSection(sectionGuid);
+    // Update State
+    if (actGuid) setAct(actGuid);
+    if (regGuid) setRegulation(regGuid);
+    if (sectionGuid) setSection(sectionGuid);
+    setSelectedSection(contraventionId);
+  }, [legislationQuery?.data, existingContravention?.legislationIdentifierRef]);
 
-    setSelectedSection(existingContravention?.legislationIdentifierRef ?? "");
-  }, [legislationQuery?.data]);
+  // State Management for Parties
+  useEffect(() => {
+    const parties = existingContravention?.investigationParty;
+
+    // Exit early until parties are available
+    if (!parties) return;
+
+    const options: Option[] = parties
+      // Remove any null entries coming from the GraphQL response
+      .filter((party): party is NonNullable<typeof party> => party !== null)
+
+      // Map remaining valid parties into <Option> objects for the UI
+      .map((party) => ({
+        value: party.partyIdentifier,
+        label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
+      }));
+
+    // Sync local state once real data is available (no fake defaults)
+    setSelectedParties(options);
+  }, [existingContravention?.investigationParty]);
 
   const handlePartyChange = async (options: Option[]) => {
     setSelectedParties(options);
@@ -338,7 +370,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
               </>
             )}
 
-            {section && legislationText.length > 0 && (
+            {section && legislationText && legislationText.length > 0 && (
               <>
                 {legislationText.map((section) => {
                   const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
