@@ -11,6 +11,7 @@ export class Legislation {
   legislationText: string;
   alternateText: string;
   displayOrder: number;
+  ancestors: Legislation[];
 }
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {

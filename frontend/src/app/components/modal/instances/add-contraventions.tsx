@@ -1,23 +1,40 @@
-import { FC, memo, useState } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import { useForm } from "@tanstack/react-form";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
-import { convertLegislationToOption, useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import {
+  convertLegislationToOption,
+  useLegislation,
+  useLegislationSearchQuery,
+} from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
 import { indentByType, Legislation } from "@/app/types/app/legislation";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import Option from "@apptypes/app/option";
-import { CreateContraventionInput, InspectionParty, InvestigationParty } from "@/generated/graphql";
+import {
+  Contravention,
+  CreateUpdateContraventionInput,
+  InspectionParty,
+  InvestigationParty,
+} from "@/generated/graphql";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 
 const ADD_CONTRAVENTION = gql`
-  mutation CreateContravention($input: CreateContraventionInput!) {
+  mutation CreateContravention($input: CreateUpdateContraventionInput!) {
     createContravention(input: $input) {
+      investigationGuid
+    }
+  }
+`;
+
+const UPDATE_CONTRAVENTION = gql`
+  mutation UpdateContravention($contraventionGuid: String!, $input: CreateUpdateContraventionInput!) {
+    updateContravention(contraventionGuid: $contraventionGuid, input: $input) {
       investigationGuid
     }
   }
@@ -52,14 +69,31 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   // Selectors
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
-  const { title, activityGuid, parties } = modalData;
+  const {
+    title,
+    action,
+    activityGuid,
+    parties,
+    existingContravention,
+  }: {
+    title: string;
+    action: string;
+    activityGuid: string;
+    parties: InvestigationParty[];
+    existingContravention?: Contravention;
+  } = modalData;
+
+  const selectedPartyOptions: Option[] = (existingContravention?.investigationParty ?? []).map((party) => ({
+    value: party!.partyIdentifier,
+    label: party!.business ? party!.business.name : `${party!.person?.lastName}, ${party!.person?.firstName}`,
+  }));
 
   // State
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
-  const [selectedParties, setSelectedParties] = useState<Option[]>();
+  const [selectedParties, setSelectedParties] = useState<Option[]>(selectedPartyOptions);
   const [validationError, setValidationError] = useState<string>("");
 
   // Hooks
@@ -68,8 +102,18 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       ToggleSuccess("Contravention added successfully");
     },
     onError: (error: any) => {
-      console.error("Error adding party:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add party");
+      console.error("Error adding contravention:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add contravention");
+    },
+  });
+
+  const editContraventionMutation = useGraphQLMutation(UPDATE_CONTRAVENTION, {
+    onSuccess: () => {
+      ToggleSuccess("Contravention updated successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error updating contravention:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update contravention");
     },
   });
 
@@ -105,6 +149,8 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     enabled: !!section,
   });
 
+  const legislationQuery = useLegislation(existingContravention?.legislationIdentifierRef ?? "", true);
+
   // Data
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations ?? []);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations ?? []);
@@ -112,7 +158,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText) ?? [];
 
   const partyOptions: Option[] = parties
-    .filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
+    ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
     .map((party: InvestigationParty | InspectionParty) => ({
       value: party.partyIdentifier,
       label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
@@ -131,7 +177,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     .filter(Boolean) // remove undefined/null
     .map((err) => (err as Error).message || String(err));
 
-  const handleAddContravention = async () => {
+  const handleAddEditContravention = async () => {
     // Clear previous validation error
     setValidationError("");
 
@@ -140,17 +186,43 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       return;
     }
 
-    const input: CreateContraventionInput = {
+    const input: CreateUpdateContraventionInput = {
       investigationGuid: activityGuid,
-      investigationPartyGuid: selectedParties?.map((p) => p.value).filter((v): v is string => v !== undefined) ?? [],
+      investigationPartyGuids: selectedParties?.map((p) => p.value).filter((v): v is string => v !== undefined) ?? [],
       legislationReference: selectedSection,
     };
 
-    addContraventionMutation.mutate({ input: input });
+    if (action === "Add") {
+      addContraventionMutation.mutate({ input: input });
+    } else {
+      editContraventionMutation.mutate({
+        contraventionGuid: existingContravention?.contraventionIdentifier,
+        input: input,
+      });
+    }
 
     submit();
     close();
   };
+
+  useEffect(() => {
+    const ancestors = legislationQuery?.data?.legislation?.ancestors;
+    if (!ancestors) return;
+
+    setAct(ancestors.find((a) => a?.legislationTypeCode === "ACT")?.legislationGuid ?? "");
+
+    setRegulation(ancestors.find((a) => a?.legislationTypeCode === "REG")?.legislationGuid ?? "");
+
+    // Sections are weird as there are some that don't have any children
+    const sectionGuid =
+      legislationQuery.data?.legislation.legislationTypeCode === "SEC"
+        ? (existingContravention?.legislationIdentifierRef ?? "")
+        : (ancestors.find((a) => a?.legislationTypeCode === "SEC")?.legislationGuid ?? "");
+
+    setSection(sectionGuid);
+
+    setSelectedSection(existingContravention?.legislationIdentifierRef ?? "");
+  }, [legislationQuery?.data]);
 
   const handlePartyChange = async (options: Option[]) => {
     setSelectedParties(options);
@@ -192,7 +264,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={actOptions}
-                  value={actOptions.find((opt) => opt.value === field.state.value)}
+                  value={actOptions.find((opt) => opt.value === act)}
                   onChange={(option) => {
                     const value = option?.value || "";
                     field.handleChange(value);
@@ -222,7 +294,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={regOptions}
-                      value={regOptions.find((opt) => opt.value === field.state.value)}
+                      value={regOptions.find((opt) => opt.value === regulation)}
                       onChange={(option) => {
                         const value = option?.value || "";
                         field.handleChange(value);
@@ -249,7 +321,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       classNamePrefix="comp-select"
                       className="comp-details-input mb-4"
                       options={secOptions}
-                      value={secOptions.find((opt) => opt.value === field.state.value)}
+                      value={secOptions.find((opt) => opt.value === section)}
                       onChange={(option) => {
                         const value = option?.value || "";
                         field.handleChange(value);
@@ -344,11 +416,11 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
             id="add-contravention-save-button"
             title="Save Add Contravention"
             onClick={() => {
-              handleAddContravention();
+              handleAddEditContravention();
             }}
           >
             <i className="bi bi-check-circle"></i>
-            <span>Add Contravention</span>
+            <span>{action} contravention</span>
           </Button>
         </div>
       </Modal.Footer>

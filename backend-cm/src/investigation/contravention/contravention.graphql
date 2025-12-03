@@ -1,4 +1,5 @@
 type Mutation {
-  createContravention(input: CreateContraventionInput!): Investigation!
+  createContravention(input: CreateUpdateContraventionInput!): Investigation!
   removeContravention(investigationGuid: String!, contraventionGuid: String!): Investigation!
+  updateContravention(contraventionGuid: String!, input: CreateUpdateContraventionInput!): Investigation!
 }

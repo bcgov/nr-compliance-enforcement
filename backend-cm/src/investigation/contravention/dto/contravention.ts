@@ -12,12 +12,12 @@ export class Contravention {
 }
 
 @InputType()
-export class CreateContraventionInput {
+export class CreateUpdateContraventionInput {
   @Field(() => String)
   investigationGuid: string;
 
   @Field(() => String)
-  investigationPartyGuid: string[];
+  investigationPartyGuids: string[];
 
   @Field(() => String)
   legislationReference: string;

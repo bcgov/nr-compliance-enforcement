@@ -43,6 +43,7 @@ const GET_INVESTIGATION = gql`
         contraventionIdentifier
         legislationIdentifierRef
         investigationParty {
+          partyIdentifier
           person {
             firstName
             lastName

@@ -24,21 +24,26 @@ const SEARCH_LEGISLATION = gql`
 `;
 
 const GET_LEGISLATION = gql`
-  query Legislation($legislationGuid: String!) {
-    legislation(legislationGuid: $legislationGuid) {
+  query Legislation($legislationGuid: String!, $includeAncestors: Boolean) {
+    legislation(legislationGuid: $legislationGuid, includeAncestors: $includeAncestors) {
       legislationTypeCode
       fullCitation
       alternateText
       legislationText
+      ancestors {
+        legislationTypeCode
+        legislationGuid
+      }
     }
   }
 `;
 
-export const useLegislation = (legislationGuid: string) => {
+export const useLegislation = (legislationGuid: string, includeAncestors: boolean) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
-    queryKey: ["legislation", legislationGuid],
+    queryKey: ["legislation", legislationGuid, includeAncestors],
     variables: {
       legislationGuid: legislationGuid,
+      includeAncestors: includeAncestors,
     },
     enabled: true,
     placeholderData: (previousData) => previousData,

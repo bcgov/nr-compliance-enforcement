@@ -6,8 +6,8 @@ type Contravention {
   isActive: Boolean!
 }
 
-input CreateContraventionInput {
+input CreateUpdateContraventionInput {
   investigationGuid: String!
-  investigationPartyGuid: [String]
+  investigationPartyGuids: [String]
   legislationReference: String!
 }

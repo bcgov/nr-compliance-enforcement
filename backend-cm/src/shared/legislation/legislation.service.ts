@@ -94,14 +94,88 @@ export class LegislationService {
     }
   }
 
-  async findOne(legislationGuid: string) {
-    const prismaLegislation = await this.prisma.legislation.findUnique({
-      where: {
-        legislation_guid: legislationGuid,
-      },
-    });
+  async findOne(legislationGuid: string, includeAncestors: boolean = false) {
+    if (!includeAncestors) {
+      // Simple case - just return the legislation
+      const prismaLegislation = await this.prisma.legislation.findUnique({
+        where: {
+          legislation_guid: legislationGuid,
+        },
+      });
+
+      if (!prismaLegislation) {
+        return null;
+      }
+
+      try {
+        return this.mapper.map<legislation, Legislation>(
+          prismaLegislation as legislation,
+          "legislation",
+          "Legislation",
+        );
+      } catch (error) {
+        this.logger.error("Error mapping legislation", error);
+      }
+    }
+
+    // Complex case - get legislation with ancestors
+    const result = await this.prisma.$queryRaw<legislation[]>`
+    WITH RECURSIVE ancestors AS (
+      -- Start with the target legislation
+      SELECT 
+        legislation_guid,
+        parent_legislation_guid,
+        legislation_type_code,
+        1 as depth
+      FROM legislation
+      WHERE legislation_guid = ${legislationGuid}::uuid
+      
+      UNION ALL
+      
+      -- Recursively get parent nodes
+      SELECT 
+        l.legislation_guid,
+        l.parent_legislation_guid,
+        l.legislation_type_code,
+        a.depth + 1
+      FROM legislation l
+      INNER JOIN ancestors a ON l.legislation_guid = a.parent_legislation_guid
+    )
+    SELECT 
+      l.legislation_guid,
+      l.legislation_type_code,
+      l.parent_legislation_guid,
+      l.citation,
+      l.full_citation,
+      l.section_title,
+      l.legislation_text,
+      l.alternate_text,
+      l.display_order,
+      COALESCE(a.depth, 1) as depth
+    FROM legislation l
+    INNER JOIN ancestors a ON l.legislation_guid = a.legislation_guid
+    ORDER BY a.depth ASC;
+  `;
+
+    if (!result || result.length === 0) {
+      return null;
+    }
+
     try {
-      return this.mapper.map<legislation, Legislation>(prismaLegislation as legislation, "legislation", "Legislation");
+      // First item (depth = 1) is the target legislation
+      const targetLegislation = result[0];
+      const ancestorRecords = result.slice(1); // Rest are ancestors (depth > 1)
+
+      let legislation = this.mapper.map<legislation, Legislation>(targetLegislation, "legislation", "Legislation");
+
+      const ancestors =
+        ancestorRecords.length > 0
+          ? this.mapper.mapArray<legislation, Legislation>(ancestorRecords, "legislation", "Legislation")
+          : [];
+
+      legislation.ancestors = ancestors;
+
+      return legislation;
     } catch (error) {
       this.logger.error("Error mapping legislation", error);
     }

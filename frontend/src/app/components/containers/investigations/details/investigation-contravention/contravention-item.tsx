@@ -3,7 +3,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
+import { ADD_CONTRAVENTION, DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Contravention, InvestigationParty } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback } from "react";
@@ -13,9 +13,10 @@ interface ContraventionItemProps {
   contravention: Contravention;
   investigationGuid: string;
   index: number;
+  parties: InvestigationParty[];
 }
 
-export const ContraventionItem = ({ contravention, investigationGuid, index }: ContraventionItemProps) => {
+export const ContraventionItem = ({ contravention, investigationGuid, index, parties }: ContraventionItemProps) => {
   const REMOVE_CONTRAVENTION = gql`
     mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
       removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
@@ -34,7 +35,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index }: C
     },
   });
 
-  const legislation = useLegislation(contravention.legislationIdentifierRef);
+  const legislation = useLegislation(contravention.legislationIdentifierRef, false);
   const legislationData = legislation?.data?.legislation;
 
   const renderLegislation = () => {
@@ -77,8 +78,22 @@ export const ContraventionItem = ({ contravention, investigationGuid, index }: C
     [dispatch, investigationGuid, removeContraventionMutation],
   );
 
-  console.log(contravention);
-
+  const handleEditContravention = (contravention: Contravention) => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: ADD_CONTRAVENTION,
+        data: {
+          title: "Edit contravention",
+          action: "Edit",
+          activityGuid: investigationGuid,
+          existingContravention: contravention,
+          parties: parties,
+        },
+      }),
+    );
+  };
   return (
     <Card
       className="mb-3"
@@ -92,7 +107,16 @@ export const ContraventionItem = ({ contravention, investigationGuid, index }: C
           <Button
             variant="outline-primary"
             size="sm"
-            id="details-screen-edit-button"
+            id="contravention-edit-button"
+            onClick={() => handleEditContravention(contravention)}
+          >
+            <i className="bi bi-pencil"></i>
+            <span>Edit</span>
+          </Button>
+          <Button
+            variant="outline-primary"
+            size="sm"
+            id="contravention-remove-button"
             onClick={() => handleRemoveContravention(contravention?.contraventionIdentifier)}
           >
             <i className="bi bi-trash"></i>
