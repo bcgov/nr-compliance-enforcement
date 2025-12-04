@@ -66,6 +66,22 @@ export class ComplaintOutcomeService {
     let complaintOutcomeGuid: string;
 
     try {
+      /**
+       * This is a fail safe to prevent the system from trying to create duplicate complaint outcomes
+       * In the event that a complaint_outcome already exists for this complaint, return that guid
+       */
+      const existingOutcome = await db.complaint_outcome.findFirst({
+        where: {
+          complaint_identifier: input.complaintId,
+        },
+        select: {
+          complaint_outcome_guid: true,
+        },
+      });
+      if (existingOutcome?.complaint_outcome_guid) {
+        this.logger.log(`Complaint outcome already exists for complaint ${input.complaintId}`);
+        return existingOutcome?.complaint_outcome_guid;
+      }
       const caseRecord = {
         owned_by_agency_code: input.outcomeAgencyCode,
         complaint_identifier: input.complaintId,
@@ -100,17 +116,10 @@ export class ComplaintOutcomeService {
         let case_file: any;
 
         if (!model.complaintOutcomeGuid) {
-          case_file = await db.complaint_outcome.create({
-            data: {
-              agency_code: {
-                connect: {
-                  outcome_agency_code: model.outcomeAgencyCode,
-                },
-              },
-              complaint_identifier: model.complaintId,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
+          case_file = await this.createComplaintOutcome(db, {
+            complaintId: model.complaintId,
+            outcomeAgencyCode: model.outcomeAgencyCode,
+            createUserId: model.createUserId,
           });
 
           complaintOutcomeGuid = case_file.complaint_outcome_guid;
@@ -1039,17 +1048,10 @@ export class ComplaintOutcomeService {
       let case_file: any;
 
       if (!model.complaintOutcomeGuid) {
-        case_file = await db.complaint_outcome.create({
-          data: {
-            agency_code: {
-              connect: {
-                outcome_agency_code: model.outcomeAgencyCode,
-              },
-            },
-            complaint_identifier: model.complaintId,
-            create_user_id: model.createUserId,
-            create_utc_timestamp: new Date(),
-          },
+        case_file = await this.createComplaintOutcome(db, {
+          complaintId: model.complaintId,
+          outcomeAgencyCode: model.outcomeAgencyCode,
+          createUserId: model.createUserId,
         });
 
         complaintOutcomeGuid = case_file.complaint_outcome_guid;
@@ -1244,25 +1246,16 @@ export class ComplaintOutcomeService {
       reviewInput: ReviewInput,
     ): Promise<string> => {
       try {
-        let caseFileId: string;
+        let complaintOutcomeId: string;
         await this.prisma.$transaction(async (db) => {
           //create case
-          const caseFile = await db.complaint_outcome.create({
-            data: {
-              agency_code: {
-                connect: {
-                  outcome_agency_code: reviewInput.outcomeAgencyCode,
-                },
-              },
-              complaint_identifier: reviewInput.complaintId,
-              create_user_id: reviewInput.userId,
-              create_utc_timestamp: new Date(),
-              review_required_ind: true,
-            },
+          complaintOutcomeId = await this.createComplaintOutcome(db, {
+            complaintId: reviewInput.complaintId,
+            outcomeAgencyCode: reviewInput.outcomeAgencyCode,
+            createUserId: reviewInput.userId,
           });
-          caseFileId = caseFile.complaint_outcome_guid;
         });
-        return caseFileId;
+        return complaintOutcomeId;
       } catch (err) {
         this.logger.error(err);
         throw new GraphQLError("Error in createReviewCase", {});
