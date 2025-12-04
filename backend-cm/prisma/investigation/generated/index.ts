@@ -53,17 +53,5 @@ export namespace PrismaModel {
     officer_investigation_xref_code,
     officer_investigation_xref_code_h,
     officer_investigation_xref_h,
-<<<<<<< HEAD
-    flyway_schema_history,
-    investigation_business,
-    investigation_business_h,
-    investigation_party,
-    investigation_party_h,
-    investigation_person,
-    investigation_person_h,
-    continuation_report,
-    contravention,
-=======
->>>>>>> 8dc69c3b400eb571003080962fe906319834dacb
   ];
 }
