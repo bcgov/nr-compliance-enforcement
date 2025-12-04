@@ -5,11 +5,13 @@ type Props = {
   value: Date | undefined | null;
   onChange: Function;
   maxDate: Date | undefined;
+  onErrorChange?: (errorMsg: string) => void;
 };
 
-export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
+export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErrorChange }) => {
   const [dateStr, setDateStr] = useState("");
   const [timeStr, setTimeStr] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const dateInputRef = useRef<HTMLInputElement>(null);
   const timeInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,81 +37,88 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
         newDateTime = new Date(`${dateStr}T00:00:00`);
       }
       if (isValid(newDateTime)) {
+        if (maxDate && newDateTime > maxDate) {
+          const error = "Date and time cannot be in the future";
+          setErrorMessage(error);
+          onErrorChange?.(error);
+        } else {
+          setErrorMessage("");
+          onErrorChange?.("");
+        }
         onChange(newDateTime);
       } else {
+        setErrorMessage("");
+        onErrorChange?.("");
         onChange(null);
       }
     } else {
+      setErrorMessage("");
+      onErrorChange?.("");
       onChange(null);
     }
-  }, [dateStr, timeStr]);
+  }, [dateStr, timeStr, maxDate, onErrorChange]);
 
   return (
-    <div
-      className="comp-details-form-row gap-2"
-      style={{ maxWidth: "350px" }}
-    >
-      <div className="comp-details-edit-input">
-        <div
-          className="comp-form-control"
-          style={{ display: "flex" }}
-        >
-          <button
-            type="button"
-            onClick={openDatePicker}
-            className="icon-button"
-            aria-label="Open date picker"
+    <>
+      <div
+        className="comp-details-form-row gap-2"
+        style={{ maxWidth: "350px" }}
+      >
+        <div className="comp-details-edit-input">
+          <div
+            className="comp-form-control"
+            style={{ display: "flex" }}
           >
-            <i className="bi bi-calendar" />
-          </button>
-          <input
-            id="incident-date"
-            ref={dateInputRef}
-            type="date"
-            value={dateStr}
-            onChange={(e) => {
-              setDateStr(e.target.value);
-            }}
-            max={maxDate ? format(maxDate, "yyyy-MM-dd") : undefined}
-            required
-            list="date-placeholders"
-          />
-          <datalist id="date-placeholders">
-            <option value="">yyyy-MM-dd</option>
-          </datalist>
+            <button
+              type="button"
+              onClick={openDatePicker}
+              className="icon-button"
+              aria-label="Open date picker"
+            >
+              <i className="bi bi-calendar" />
+            </button>
+            <input
+              id="incident-date"
+              ref={dateInputRef}
+              type="date"
+              value={dateStr}
+              onChange={(e) => {
+                setDateStr(e.target.value);
+              }}
+              max={maxDate ? format(maxDate, "yyyy-MM-dd") : undefined}
+              required
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="comp-details-edit-input">
-        <div
-          className="comp-form-control"
-          style={{ display: "flex" }}
-        >
-          <button
-            type="button"
-            onClick={openTimePicker}
-            className="icon-button"
-            aria-label="Open date picker"
+        <div className="comp-details-edit-input">
+          <div
+            className="comp-form-control"
+            style={{ display: "flex" }}
           >
-            <i className="bi bi-clock" />
-          </button>
-          <input
-            id="incident-time"
-            ref={timeInputRef}
-            type="time"
-            value={timeStr}
-            onChange={(e) => {
-              setTimeStr(e.target.value);
-            }}
-            required
-            step="60"
-            list="time-placeholders"
-          />
-          <datalist id="time-placeholders">
-            <option value="">hh:mm (24 hours)</option>
-          </datalist>
+            <button
+              type="button"
+              onClick={openTimePicker}
+              className="icon-button"
+              aria-label="Open time picker"
+            >
+              <i className="bi bi-clock" />
+            </button>
+            <input
+              id="incident-time"
+              ref={timeInputRef}
+              type="time"
+              value={timeStr}
+              onChange={(e) => {
+                setTimeStr(e.target.value);
+              }}
+              required
+              step="60"
+            />
+          </div>
         </div>
       </div>
-    </div>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
+    </>
   );
 };

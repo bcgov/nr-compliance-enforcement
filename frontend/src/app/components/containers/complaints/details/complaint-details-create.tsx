@@ -134,6 +134,7 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [incidentDateTimeErrorMsg, setIncidentDateTimeErrorMsg] = useState<string>("");
   const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown);
   const { complaintMethodReceivedCode } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
   const selectedComplaintMethodReceivedCode = complaintMethodReceivedCodes.find(
@@ -626,6 +627,10 @@ export const CreateComplaint: FC = () => {
       result = true;
     }
 
+    if (incidentDateTimeErrorMsg !== "") {
+      result = true;
+    }
+
     return result;
   };
 
@@ -899,6 +904,7 @@ export const CreateComplaint: FC = () => {
                 value={selectedIncidentDateTime}
                 onChange={handleIncidentDateTimeChange}
                 maxDate={currentDate}
+                onErrorChange={setIncidentDateTimeErrorMsg}
               />
             </div>
           </div>
