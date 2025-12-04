@@ -121,7 +121,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-      - name: Roll latest changes out to test
+      - name: Roll latest changes out to prod
         run: |
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
