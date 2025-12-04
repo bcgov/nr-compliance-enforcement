@@ -81,7 +81,7 @@
     "make-fetch-happen": "11.0.3",
     "mapbox-gl-leaflet": "^0.0.16",
     "node": "^21.6.1",
-    "npm": "^10.9.1",
+    "npm": "^11.6.4",
     "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
