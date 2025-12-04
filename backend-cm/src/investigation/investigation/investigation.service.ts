@@ -330,10 +330,10 @@ export class InvestigationService {
           updateData.supervisor_guid_ref = input.supervisorGuid;
         }
 
-        if (input.fileCoordinatorGuid !== "") {
-          updateData.file_coordinator_guid_ref = input.fileCoordinatorGuid;
-        } else {
+        if (input.fileCoordinatorGuid === "") {
           updateData.file_coordinator_guid_ref = null;
+        } else {
+          updateData.file_coordinator_guid_ref = input.fileCoordinatorGuid;
         }
 
         if (input.discoveryDate !== undefined) {
