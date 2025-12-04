@@ -81,7 +81,7 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
           autoLoadEntities: true, // Auto load all entities registered by typeorm forFeature method.
           logging: process.env.POSTGRESQL_ENABLE_LOGGING === "true",
           extra: {
-            options: "-c search_path=complaint,public",
+            preparedThreshold: 0,
           },
         };
       },
