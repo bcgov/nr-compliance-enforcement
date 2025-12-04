@@ -106,6 +106,7 @@ export class ContraventionService {
           await tx.contravention_party_xref.updateMany({
             where: {
               investigation_party_guid: party,
+              contravention_guid: contraventionGuid,
             },
             data: {
               active_ind: false,

@@ -172,12 +172,15 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     .filter(Boolean) // remove undefined/null
     .map((err) => (err as Error).message || String(err));
 
+  // Functions
+
+  // Manages the modal button click
   const handleAddEditContravention = async () => {
     // Clear previous validation error
     setValidationError("");
 
     if (!selectedSection) {
-      setValidationError("Please select a contravention to add.");
+      setValidationError("Please select a contravention.");
       return;
     }
 
@@ -203,6 +206,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     submit();
     close();
   };
+
+  // Helper Function for returning correct value from Options array
+  const findOptionByValue = (options: Option[], value: string) =>
+    value ? options.find((opt) => opt.value === value) : null;
 
   // State Management for Legislation and Selected Legislation
   useEffect(() => {
@@ -296,7 +303,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={actOptions}
-                  value={actOptions.find((opt) => opt.value === act)}
+                  value={findOptionByValue(actOptions, act)}
                   onChange={(option) => {
                     const value = option?.value || "";
                     field.handleChange(value);
@@ -304,6 +311,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     // Reset dependent fields when act changes
                     setRegulation("");
                     setSection("");
+                    setSelectedSection("");
                   }}
                   placeholder="Select act"
                   isClearable={true}
@@ -326,13 +334,14 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={regOptions}
-                      value={regOptions.find((opt) => opt.value === regulation)}
+                      value={findOptionByValue(regOptions, regulation)}
                       onChange={(option) => {
                         const value = option?.value || "";
                         field.handleChange(value);
                         setRegulation(value);
                         // Reset section when regulation changes
                         setSection("");
+                        setSelectedSection("");
                       }}
                       placeholder="Select regulation"
                       isClearable={true}
@@ -353,11 +362,12 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                       classNamePrefix="comp-select"
                       className="comp-details-input mb-4"
                       options={secOptions}
-                      value={secOptions.find((opt) => opt.value === section)}
+                      value={findOptionByValue(secOptions, section)}
                       onChange={(option) => {
                         const value = option?.value || "";
                         field.handleChange(value);
                         setSection(value);
+                        setSelectedSection("");
                       }}
                       placeholder="Select section"
                       isClearable={true}
