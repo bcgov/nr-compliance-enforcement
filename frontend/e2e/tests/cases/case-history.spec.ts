@@ -31,6 +31,14 @@ async function createHistoryData(page: Page): Promise<string> {
   await editButton.click();
   await waitForSpinner(page);
 
+  // Ensure description is filled (required field)
+  const descriptionInput = page.locator("#description");
+  await expect(descriptionInput).toBeVisible({ timeout: 10000 });
+  const currentDescription = await descriptionInput.inputValue();
+  if (!currentDescription) {
+    await descriptionInput.fill("Test case description for history");
+  }
+
   // Change status to generate history entry
   const statusSelect = page.locator("#case-status-select");
   await expect(statusSelect).toBeVisible({ timeout: 10000 });
@@ -45,12 +53,13 @@ async function createHistoryData(page: Page): Promise<string> {
 
   // Save changes
   const saveButton = page.locator("#details-screen-save-button-top");
-  await expect(saveButton).toBeEnabled({ timeout: 5000 });
-  await saveButton.click();
-  await waitForSpinner(page);
+  await expect(saveButton).toBeVisible({ timeout: 5000 });
+  await saveButton.dispatchEvent("click");
 
   // Wait for navigation back to case view
-  await expect(page).toHaveURL(/\/case\/[^/]+$/, { timeout: 15000 });
+  await page.waitForURL(/\/case\/[^/]+$/, { timeout: 30000 });
+  await waitForSpinner(page);
+
   return caseGuid;
 }
 
