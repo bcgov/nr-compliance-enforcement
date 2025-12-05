@@ -85,6 +85,10 @@ model investigation {
   location_address                   String?                      @db.VarChar(120)
   location_description               String?                      @db.VarChar(4000)
   created_by_app_user_guid_ref       String?                      @db.Uuid
+  supervisor_guid_ref                String?                      @db.Uuid
+  primary_investigator_guid_ref      String?                      @db.Uuid
+  file_coordinator_guid_ref          String?                      @db.Uuid
+  discovery_date                     DateTime                     @default(now()) @db.Timestamp(6)
   continuation_report                continuation_report[]
   contravention                      contravention[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
