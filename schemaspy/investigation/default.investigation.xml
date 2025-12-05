@@ -78,6 +78,10 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="location_address" nullable="true" remarks="Address of the investigation." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="location_description" nullable="true" remarks="Description of the investigation location." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_app_user_guid_ref" nullable="true" remarks="ID of the user who created this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="supervisor_guid_ref" nullable="true" remarks="ID of the user who is a team commander/supervisor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="primary_investigator_guid_ref" nullable="true" remarks="ID of the user who is a primary investor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="file_coordinator_guid_ref" nullable="true" remarks="ID of the user who is a file coordinator with this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="17" name="discovery_date" nullable="false" remarks="The timestamp when the investigation was discovered." size="29" type="timestamp" typeCode="93"/>
          <primaryKey column="investigation_guid" sequenceNumberInPK="1"/>
          <index name="PK_investigation_guid" unique="true">
             <column ascending="true" name="investigation_guid"/>
