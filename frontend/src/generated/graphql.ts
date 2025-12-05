@@ -398,12 +398,16 @@ export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
+  discoveryDate?: InputMaybe<Scalars['Date']['input']>;
+  fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
   name: Scalars['String']['input'];
+  primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
+  supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateInvestigationPartyInput = {
@@ -860,6 +864,8 @@ export type Investigation = {
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  discoveryDate?: Maybe<Scalars['Date']['output']>;
+  fileCoordinatorGuid?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
@@ -869,6 +875,8 @@ export type Investigation = {
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['Date']['output']>;
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
+  primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
+  supervisorGuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationBusiness = {
@@ -2030,12 +2038,16 @@ export type UpdateInspectionInput = {
 
 export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
+  discoveryDate?: InputMaybe<Scalars['Date']['input']>;
+  fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
+  primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
+  supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateNoteInput = {

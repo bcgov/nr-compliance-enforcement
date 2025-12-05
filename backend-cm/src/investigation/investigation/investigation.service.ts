@@ -226,6 +226,10 @@ export class InvestigationService {
             owned_by_agency_ref: input.leadAgency,
             name: input.name,
             investigation_opened_utc_timestamp: new Date(),
+            primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
+            supervisor_guid_ref: input.supervisorGuid || null,
+            file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
+            discovery_date: input.discoveryDate,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -318,6 +322,22 @@ export class InvestigationService {
         }
         if (input.locationDescription !== undefined) {
           updateData.location_description = input.locationDescription;
+        }
+        if (input.primaryInvestigatorGuid !== undefined) {
+          updateData.primary_investigator_guid_ref = input.primaryInvestigatorGuid;
+        }
+        if (input.supervisorGuid !== undefined) {
+          updateData.supervisor_guid_ref = input.supervisorGuid;
+        }
+
+        if (input.fileCoordinatorGuid === "") {
+          updateData.file_coordinator_guid_ref = null;
+        } else {
+          updateData.file_coordinator_guid_ref = input.fileCoordinatorGuid;
+        }
+
+        if (input.discoveryDate !== undefined) {
+          updateData.discovery_date = input.discoveryDate;
         }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({
