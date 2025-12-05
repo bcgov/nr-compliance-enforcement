@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Role } from "../enum/role.enum";
-import { UUID } from "crypto";
+import { UUID } from "node:crypto";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
