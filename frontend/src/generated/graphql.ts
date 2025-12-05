@@ -291,6 +291,7 @@ export type Contravention = {
   __typename?: 'Contravention';
   contraventionIdentifier: Scalars['String']['output'];
   investigationIdentifier: Scalars['String']['output'];
+  investigationParty?: Maybe<Array<Maybe<InvestigationParty>>>;
   isActive: Scalars['Boolean']['output'];
   legislationIdentifierRef: Scalars['String']['output'];
 };
@@ -445,6 +446,12 @@ export type CreatePreventionInput = {
   createUserId: Scalars['String']['input'];
   outcomeAgencyCode: Scalars['String']['input'];
   prevention: PreventionInput;
+};
+
+export type CreateUpdateContraventionInput = {
+  investigationGuid: Scalars['String']['input'];
+  investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  legislationReference: Scalars['String']['input'];
 };
 
 export type CreateWildlifeInput = {
@@ -954,6 +961,7 @@ export type KeyValuePairInput = {
 export type Legislation = {
   __typename?: 'Legislation';
   alternateText?: Maybe<Scalars['String']['output']>;
+  ancestors?: Maybe<Array<Maybe<Legislation>>>;
   citation?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   fullCitation?: Maybe<Scalars['String']['output']>;
@@ -1008,6 +1016,7 @@ export type Mutation = {
   updateAssessment: ComplaintOutcome;
   updateAuthorizationOutcome: ComplaintOutcome;
   updateCaseFile: CaseFile;
+  updateContravention: Investigation;
   updateDecision: ComplaintOutcome;
   updateEquipment: ComplaintOutcome;
   updateInspection: Inspection;
@@ -1067,8 +1076,7 @@ export type MutationcreateCaseFileArgs = {
 
 
 export type MutationcreateContraventionArgs = {
-  investigationGuid: Scalars['String']['input'];
-  legislationReference: Scalars['String']['input'];
+  input: CreateUpdateContraventionInput;
 };
 
 
@@ -1240,6 +1248,12 @@ export type MutationupdateAuthorizationOutcomeArgs = {
 export type MutationupdateCaseFileArgs = {
   caseIdentifier: Scalars['String']['input'];
   input: CaseFileUpdateInput;
+};
+
+
+export type MutationupdateContraventionArgs = {
+  contraventionGuid: Scalars['String']['input'];
+  input: CreateUpdateContraventionInput;
 };
 
 
@@ -1755,6 +1769,7 @@ export type QueryinactionJustificationCodesArgs = {
 
 
 export type QuerylegislationArgs = {
+  includeAncestors?: InputMaybe<Scalars['Boolean']['input']>;
   legislationGuid: Scalars['String']['input'];
 };
 

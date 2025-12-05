@@ -8,4 +8,5 @@ type Legislation {
   legislationText: String
   alternateText: String
   displayOrder: Int
+  ancestors: [Legislation]
 }
