@@ -115,6 +115,7 @@
     "react-tooltip": "^5.23.0",
     "react-transition-group": "^4.4.5",
     "redux-persist": "^6.0.0",
+    "rollup": "^3.29.5",
     "stream-browserify": "^3.0.0",
     "typescript": "*",
     "uncontrollable": "^8.0.2",
@@ -198,7 +199,6 @@
     "jest-environment-jsdom": "^30.0.4",
     "playwright-webkit": "^1.27.1",
     "prettier": "^3.0.3",
-    "rollup": "^3.29.5",
     "sass": "1.77.6",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
