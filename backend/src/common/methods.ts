@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Role } from "../enum/role.enum";
+import { UUID } from "crypto";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -113,3 +114,7 @@ export const getAgenciesFromRoles = (roles: string[]): string[] => {
     .filter((role) => roles.includes(role))
     .map((role) => roleToAgencyMap[role]);
 };
+
+export function asUUID(value: string): UUID {
+  return value as UUID;
+}
