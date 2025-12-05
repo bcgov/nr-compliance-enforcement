@@ -47,6 +47,10 @@ const GET_INVESTIGATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      primaryInvestigatorGuid
+      supervisorGuid
+      fileCoordinatorGuid
+      discoveryDate
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier

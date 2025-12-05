@@ -563,6 +563,9 @@
   .comp-details-status {
     grid-template-columns: auto auto auto auto auto;
   }
+  .comp-details-status.investigation-header {
+    grid-template-columns: auto auto auto auto auto auto;
+  }
 }
 
 // BADGE CUSTOMIZATION
@@ -833,10 +836,6 @@
 
   .comp-details-content {
     color: $gray-900;
-
-    i.bi {
-      color: $gray-500;
-    }
   }
 }
 
