@@ -170,6 +170,8 @@
     "*.{js,ts}": "./node_modules/.bin/eslint --cache --fix"
   },
   "overrides": {
-    "minimist@<1.2.6": "1.2.6"
+    "minimist@<1.2.6": "1.2.6",
+    "jws": "3.2.3",
+    "glob": ">=10.5.0"
   }
 }
