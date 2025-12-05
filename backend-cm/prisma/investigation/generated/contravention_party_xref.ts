@@ -1,16 +1,16 @@
-import { investigation } from "./investigation";
-import { contravention_party_xref } from "./contravention_party_xref";
+import { contravention } from "./contravention";
+import { investigation_party } from "./investigation_party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class contravention {
+export class contravention_party_xref {
+  @ApiProperty({ type: String })
+  contravention_party_xref_guid: string;
+
   @ApiProperty({ type: String })
   contravention_guid: string;
 
   @ApiPropertyOptional({ type: String })
-  investigation_guid?: string;
-
-  @ApiProperty({ type: String })
-  legislation_guid_ref: string;
+  investigation_party_guid?: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
@@ -27,9 +27,9 @@ export class contravention {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: () => investigation })
-  investigation?: investigation;
+  @ApiProperty({ type: () => contravention })
+  contravention: contravention;
 
-  @ApiProperty({ isArray: true, type: () => contravention_party_xref })
-  contravention_party_xref: contravention_party_xref[];
+  @ApiPropertyOptional({ type: () => investigation_party })
+  investigation_party?: investigation_party;
 }
