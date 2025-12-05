@@ -229,6 +229,7 @@ const InspectionEdit: FC = () => {
         isEditMode={isEditMode}
         caseIdentifier={caseIdentifier}
         inspectionGuid={id}
+        inspectionName={inspectionData?.getInspection?.name}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
