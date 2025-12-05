@@ -158,6 +158,26 @@ export async function verifyMapMarkerExists(existIndicator: boolean, page: Page)
   }
 }
 
+/**
+ * Wait for Leaflet map to be fully loaded and rendered
+ */
+export async function waitForMapToLoad(page: Page, timeout: number = 10000) {
+  const leafletContainer = page.locator(".leaflet-container");
+  await expect(leafletContainer).toBeVisible({ timeout });
+
+  // Wait for the map pane to be attached
+  await leafletContainer.locator(".leaflet-map-pane").waitFor({ state: "attached", timeout });
+
+  // Wait for tiles or markers to indicate the map has rendered content
+  // Use "attached" instead of "visible" because Leaflet markers with leaflet-zoom-animated
+  // class may be reported as hidden during animations due to CSS transforms/opacity
+  const tilesOrMarkers = leafletContainer.locator(".leaflet-tile-loaded, .leaflet-marker-icon");
+  await tilesOrMarkers.first().waitFor({ state: "attached", timeout });
+
+  // Small delay for any remaining rendering. Sadly required.
+  await page.waitForTimeout(500);
+}
+
 interface HWCSectionParams {
   section;
   checkboxes?;
