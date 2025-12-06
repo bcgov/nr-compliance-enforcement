@@ -384,74 +384,6 @@
                                     </td>
                                     <td><p>ID of the user who created this investigation. This is a business field separate from the audit create_user_id column.</p></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="supervisor_guid_ref">supervisor_guid_ref</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>ID of the user who is a team commander/supervisor of this investigation. This is a business field separate from the audit create_user_id column.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="primary_investigator_guid_ref">primary_investigator_guid_ref</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>ID of the user who is a primary investor of this investigation. This is a business field separate from the audit create_user_id column.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="file_coordinator_guid_ref">file_coordinator_guid_ref</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>ID of the user who is a file coordinator with this investigation. This is a business field separate from the audit create_user_id column.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="discovery_date">discovery_date</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>now()</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the investigation was discovered.</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -524,7 +456,7 @@
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
 <area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="907,5,1175,152">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,293,849,891">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,293,849,773">
 <area shape="rect" id="node4" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,384,291,501">
 <area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="925,169,1157,316">
 <area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="913,333,1169,509">
@@ -535,15 +467,14 @@
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
 <area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="907,5,1175,152">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,196,849,793">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,287,291,404">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,196,849,676">
+<area shape="rect" id="node4" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,287,291,404">
 <area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="925,169,1157,316">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1232,187,1513,275">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="913,333,1169,509">
-<area shape="rect" id="node7" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1243,307,1503,395">
-<area shape="rect" id="node8" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1250,412,1495,500">
-<area shape="rect" id="node9" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="893,637,1188,813">
-<area shape="rect" id="node10" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="429,811,755,899">
+<area shape="rect" id="node5" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1232,284,1492,372">
+<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="913,333,1169,509">
+<area shape="rect" id="node7" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1239,389,1485,477">
+<area shape="rect" id="node8" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="893,579,1188,755">
+<area shape="rect" id="node9" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="429,693,755,781">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

@@ -7,11 +7,10 @@ investigation_h
 investigation_business_h
 flyway_schema_history
 officer_investigation_xref
-contravention_party_xref
 investigation_person
 investigation_business
-continuation_report
 contravention
+continuation_report
 investigation_party
 investigation
 officer_investigation_xref_code

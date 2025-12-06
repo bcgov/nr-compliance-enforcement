@@ -22,39 +22,19 @@
          </index>
       </table>
       <table name="contravention" remarks="A contravention occurs when a party breaks a law or a regulation." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contravention_guid" nullable="false" remarks="Primary key. Unique identifier for the contravention that has been identified as being part of this investigation." size="2147483647" type="uuid" typeCode="1111">
-            <child column="contravention_guid" foreignKey="contravention_party_xref_contravention_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="contravention_party_xref"/>
-         </column>
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contravention_guid" nullable="false" remarks="Primary key. Unique identifier for the contravention that has been identified as being part of this investigation." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_guid" nullable="true" remarks="Foreign key to investigation. Unique identifier for the investigation." size="2147483647" type="uuid" typeCode="1111">
             <parent column="investigation_guid" foreignKey="contravention_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="investigation"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="legislation_guid_ref" nullable="false" remarks="Unenforced Foreign key to shared.legislation. Unique identifier for the legislation that has been contravened." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the cross reference is active.  Inactive values are still retained in the system for legacy data integrity and history." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that associated the party to the contravention." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the cross reference was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that removed the party from the contravention." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the cross reference was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the contravention is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="The id of the user that created the contravention." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the contravention was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="The id of the user that last updated the contravention." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the contravention was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
          <primaryKey column="contravention_guid" sequenceNumberInPK="1"/>
          <index name="contravention_pkey" unique="true">
             <column ascending="true" name="contravention_guid"/>
-         </index>
-      </table>
-      <table name="contravention_party_xref" remarks="Cross reference table linking many contraventions to many parties." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="contravention_party_xref_guid" nullable="false" remarks="Primary key. Unique identifier for contravention/party cross reference." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="contravention_guid" nullable="false" remarks="Foreign key to contravention. Unique identifier for the contravention." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="contravention_guid" foreignKey="contravention_party_xref_contravention_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="contravention"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="investigation_party_guid" nullable="true" remarks="Foreign key to investigation party. Unique identifier for the party." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="investigation_party_guid" foreignKey="contravention_party_xref_investigation_party_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_party"/>
-         </column>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="3" name="active_ind" nullable="false" remarks="" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="create_user_id" nullable="false" remarks="" size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="5" name="create_utc_timestamp" nullable="false" remarks="" size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="update_user_id" nullable="true" remarks="" size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="update_utc_timestamp" nullable="true" remarks="" size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="contravention_party_xref_guid" sequenceNumberInPK="1"/>
-         <index name="contravention_party_xref_pkey" unique="true">
-            <column ascending="true" name="contravention_party_xref_guid"/>
          </index>
       </table>
       <table name="flyway_schema_history" remarks="" schema="investigation" type="TABLE">
@@ -98,10 +78,6 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="location_address" nullable="true" remarks="Address of the investigation." size="120" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="location_description" nullable="true" remarks="Description of the investigation location." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_app_user_guid_ref" nullable="true" remarks="ID of the user who created this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="supervisor_guid_ref" nullable="true" remarks="ID of the user who is a team commander/supervisor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="primary_investigator_guid_ref" nullable="true" remarks="ID of the user who is a primary investor of this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="file_coordinator_guid_ref" nullable="true" remarks="ID of the user who is a file coordinator with this investigation. This is a business field separate from the audit create_user_id column." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="17" name="discovery_date" nullable="false" remarks="The timestamp when the investigation was discovered." size="29" type="timestamp" typeCode="93"/>
          <primaryKey column="investigation_guid" sequenceNumberInPK="1"/>
          <index name="PK_investigation_guid" unique="true">
             <column ascending="true" name="investigation_guid"/>
@@ -161,7 +137,6 @@
       </table>
       <table name="investigation_party" remarks="A table that holds parties of interest for an investigation" schema="investigation" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="investigation_party_guid" nullable="false" remarks="Primary key: System generated unique identifier for a party." size="2147483647" type="uuid" typeCode="1111">
-            <child column="investigation_party_guid" foreignKey="contravention_party_xref_investigation_party_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="contravention_party_xref"/>
             <child column="investigation_party_guid" foreignKey="fk_investigation_party_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_business"/>
             <child column="investigation_party_guid" foreignKey="fk_investigation_party_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_person"/>
          </column>

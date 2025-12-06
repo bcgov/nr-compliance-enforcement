@@ -130,11 +130,6 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="contravention_party_xref.contravention_guid references contravention.contravention_guid via contravention_party_xref_contravention_guid_fkey"><a href='contravention_party_xref.html'>contravention_party_xref</a><span class='relatedKey'>.contravention_guid</span></td>
-                                                <td class="constraint detail">contravention_party_xref_contravention_guid_fkey</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
@@ -197,7 +192,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A boolean indicator to determine if the cross reference is active.  Inactive values are still retained in the system for legacy data integrity and history.</p></td>
+                                    <td><p>A boolean indicator to determine if the contravention is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -214,7 +209,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that associated the party to the contravention.</p></td>
+                                    <td><p>The id of the user that created the contravention.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -231,7 +226,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the cross reference was created. The timestamp is stored in UTC with no offset.</p></td>
+                                    <td><p>The timestamp when the contravention was created. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -248,7 +243,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that removed the party from the contravention.</p></td>
+                                    <td><p>The id of the user that last updated the contravention.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
@@ -265,7 +260,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the cross reference was last updated. The timestamp is stored in UTC with no offset.</p></td>
+                                    <td><p>The timestamp when the contravention was last updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -326,9 +321,8 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="395,32,761,336">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,64,351,299">
-<area shape="rect" id="node3" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="805,5,1097,181">
+<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="395,5,761,309">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,37,351,272">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contravention.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -336,11 +330,10 @@
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
 <area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="787,5,1027,93">
 <area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,287,680,521">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,348,291,436">
+<area shape="rect" id="node4" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,348,291,436">
 <area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="724,111,1091,415">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1135,228,1427,404">
 <area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="791,432,1024,520">
-<area shape="rect" id="node7" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="767,537,1048,625">
+<area shape="rect" id="node6" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="767,537,1048,625">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contravention.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
