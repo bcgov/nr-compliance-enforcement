@@ -1,3 +1,4 @@
+import { legislation_source } from "./legislation_source";
 import { legislation_type_code } from "./legislation_type_code";
 import { legislation_agency_xref } from "./legislation_agency_xref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -47,6 +48,12 @@ export class legislation {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  legislation_source_guid?: string;
+
+  @ApiPropertyOptional({ type: () => legislation_source })
+  legislation_source?: legislation_source;
 
   @ApiProperty({ type: () => legislation_type_code })
   legislation_type_code_legislation_legislation_type_codeTolegislation_type_code: legislation_type_code;

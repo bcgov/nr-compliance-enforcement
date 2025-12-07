@@ -24,6 +24,7 @@ import { geo_org_unit_type_code as _geo_org_unit_type_code } from "./geo_org_uni
 import { geo_organization_unit_code as _geo_organization_unit_code } from "./geo_organization_unit_code";
 import { legislation as _legislation } from "./legislation";
 import { legislation_agency_xref as _legislation_agency_xref } from "./legislation_agency_xref";
+import { legislation_source as _legislation_source } from "./legislation_source";
 import { legislation_agency_xref_h as _legislation_agency_xref_h } from "./legislation_agency_xref_h";
 import { legislation_h as _legislation_h } from "./legislation_h";
 import { legislation_type_code as _legislation_type_code } from "./legislation_type_code";
@@ -70,6 +71,7 @@ export namespace PrismaModel {
   export class geo_organization_unit_code extends _geo_organization_unit_code {}
   export class legislation extends _legislation {}
   export class legislation_agency_xref extends _legislation_agency_xref {}
+  export class legislation_source extends _legislation_source {}
   export class legislation_agency_xref_h extends _legislation_agency_xref_h {}
   export class legislation_h extends _legislation_h {}
   export class legislation_type_code extends _legislation_type_code {}
@@ -116,6 +118,7 @@ export namespace PrismaModel {
     geo_organization_unit_code,
     legislation,
     legislation_agency_xref,
+    legislation_source,
     legislation_agency_xref_h,
     legislation_h,
     legislation_type_code,

@@ -33,6 +33,7 @@ model agency_code {
   case_file                                                                case_file[]
   geo_org_unit_structure                                                   geo_org_unit_structure[]
   legislation_agency_xref_legislation_agency_xref_agency_codeToagency_code legislation_agency_xref[] @relation("legislation_agency_xref_agency_codeToagency_code")
+  legislation_source_legislation_source_agency_codeToagency_code           legislation_source[]      @relation("legislation_source_agency_codeToagency_code")
   office                                                                   office[]
   team                                                                     team[]
 
@@ -41,7 +42,7 @@ model agency_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model app_user {
-  app_user_guid        String               @id(map: "PK_app_user") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  app_user_guid        String               @id(map: "PK_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   auth_user_guid       String?              @unique @db.Uuid
   user_id              String?              @db.VarChar(32)
   first_name           String?              @db.VarChar(32)
@@ -65,7 +66,7 @@ model app_user {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model app_user_h {
-  h_app_user_guid               String   @id(map: "PK_h_app_user") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_app_user_guid               String   @id(map: "PK_h_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -77,7 +78,7 @@ model app_user_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model app_user_team_xref {
-  app_user_team_xref_guid String   @id(map: "app_user_team_xref_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  app_user_team_xref_guid String   @id(map: "app_user_team_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   app_user_guid           String   @db.Uuid
   team_guid               String   @db.Uuid
   active_ind              Boolean
@@ -93,7 +94,7 @@ model app_user_team_xref {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model app_user_team_xref_h {
-  h_app_user_team_xref_guid     String   @id(map: "PK_h_app_user_team_xref") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_app_user_team_xref_guid     String   @id(map: "PK_h_app_user_team_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -105,7 +106,7 @@ model app_user_team_xref_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business {
-  business_guid        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  business_guid        String    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   name                 String    @db.VarChar(128)
   create_user_id       String    @db.VarChar(32)
   create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
@@ -119,7 +120,7 @@ model business {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_h {
-  h_business_guid               String   @id(map: "PK_h_business") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_business_guid               String   @id(map: "PK_h_business") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -131,7 +132,7 @@ model business_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_activity {
-  case_activity_guid      String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  case_activity_guid      String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   case_file_guid          String                  @db.Uuid
   activity_type           String                  @db.VarChar(10)
   activity_identifier_ref String                  @db.VarChar(50)
@@ -149,7 +150,7 @@ model case_activity {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_activity_h {
-  h_case_activity_guid          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_case_activity_guid          String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -178,7 +179,7 @@ model case_activity_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_file {
-  case_file_guid           String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  case_file_guid           String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   lead_agency              String           @db.VarChar(10)
   case_status              String           @db.VarChar(10)
   opened_utc_timestamp     DateTime         @default(now()) @db.Timestamp(6)
@@ -200,7 +201,7 @@ model case_file {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_file_h {
-  h_case_file_guid              String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_case_file_guid              String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -228,7 +229,7 @@ model case_status_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method {
-  contact_method_guid      String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  contact_method_guid      String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   person_guid              String                   @db.Uuid
   contact_method_type      String                   @db.VarChar(10)
   contact_value            String?                  @db.VarChar(512)
@@ -244,7 +245,7 @@ model contact_method {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method_h {
-  h_contact_method_guid         String   @id(map: "PK_h_contact_method") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_contact_method_guid         String   @id(map: "PK_h_contact_method") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -272,7 +273,7 @@ model contact_method_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model event {
-  event_guid                                                                   String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  event_guid                                                                   String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   event_verb_type_code                                                         String                  @db.VarChar(16)
   published_utc_timestamp                                                      DateTime                @default(now()) @db.Timestamp(6)
   source_id                                                                    String?                 @db.VarChar(64)
@@ -346,7 +347,7 @@ model flyway_schema_history {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model geo_org_unit_structure {
-  geo_org_unit_structure_guid                                                                            String                      @id(map: "PK_gorgustrct") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  geo_org_unit_structure_guid                                                                            String                      @id(map: "PK_gorgustrct") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   effective_date                                                                                         DateTime                    @db.Timestamp(6)
   expiry_date                                                                                            DateTime?                   @db.Timestamp(6)
   create_user_id                                                                                         String                      @db.VarChar(32)
@@ -365,7 +366,7 @@ model geo_org_unit_structure {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model geo_org_unit_structure_h {
-  h_gorgustrct_guid             String   @id(map: "PK_h_gorgustrct") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_gorgustrct_guid             String   @id(map: "PK_h_gorgustrct") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -414,7 +415,7 @@ model geo_organization_unit_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation {
-  legislation_guid                                                               String                    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  legislation_guid                                                               String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   legislation_type_code                                                          String                    @db.VarChar(16)
   parent_legislation_guid                                                        String?                   @db.Uuid
   citation                                                                       String?                   @db.VarChar(64)
@@ -429,6 +430,8 @@ model legislation {
   create_utc_timestamp                                                           DateTime                  @default(now()) @db.Timestamp(6)
   update_user_id                                                                 String?                   @db.VarChar(32)
   update_utc_timestamp                                                           DateTime?                 @db.Timestamp(6)
+  legislation_source_guid                                                        String?                   @db.Uuid
+  legislation_source                                                             legislation_source?       @relation("legislationTolegislation_source", fields: [legislation_source_guid], references: [legislation_source_guid], onUpdate: NoAction, map: "fk_legislation_source")
   legislation_type_code_legislation_legislation_type_codeTolegislation_type_code legislation_type_code     @relation("legislation_legislation_type_codeTolegislation_type_code", fields: [legislation_type_code], references: [legislation_type_code], onDelete: NoAction, onUpdate: NoAction)
   legislation                                                                    legislation?              @relation("legislationTolegislation", fields: [parent_legislation_guid], references: [legislation_guid], onDelete: Cascade, onUpdate: NoAction)
   other_legislation                                                              legislation[]             @relation("legislationTolegislation")
@@ -442,7 +445,7 @@ model legislation {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation_agency_xref {
-  legislation_agency_xref_guid                                 String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  legislation_agency_xref_guid                                 String      @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   legislation_guid                                             String      @db.Uuid
   agency_code                                                  String      @db.VarChar(10)
   create_user_id                                               String      @db.VarChar(32)
@@ -455,9 +458,29 @@ model legislation_agency_xref {
   @@schema("shared")
 }
 
+/// Defines BC Laws XML documents to be imported into the legislation table
+model legislation_source {
+  legislation_source_guid                                 String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  short_description                                       String        @db.VarChar(64)
+  long_description                                        String?       @db.VarChar(256)
+  source_url                                              String        @db.VarChar(512)
+  agency_code                                             String        @db.VarChar(10)
+  active_ind                                              Boolean       @default(true)
+  imported_ind                                            Boolean       @default(false)
+  last_import_timestamp                                   DateTime?     @db.Timestamp(6)
+  create_user_id                                          String        @db.VarChar(32)
+  create_utc_timestamp                                    DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id                                          String?       @db.VarChar(32)
+  update_utc_timestamp                                    DateTime?     @db.Timestamp(6)
+  legislation                                             legislation[] @relation("legislationTolegislation_source")
+  agency_code_legislation_source_agency_codeToagency_code agency_code   @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
+
+  @@schema("shared")
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation_agency_xref_h {
-  h_legislation_agency_xref_guid String   @id(map: "PK_h_legislation_agency_xref") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_legislation_agency_xref_guid String   @id(map: "PK_h_legislation_agency_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                  String   @db.Uuid
   operation_type                 String   @db.Char(1)
   operation_user_id              String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -469,7 +492,7 @@ model legislation_agency_xref_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation_h {
-  h_legislation_guid            String   @id(map: "PK_h_legislation") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_legislation_guid            String   @id(map: "PK_h_legislation") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -497,7 +520,7 @@ model legislation_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model office {
-  office_guid                                                                              String                      @id(map: "PK_office") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  office_guid                                                                              String                      @id(map: "PK_office") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   create_user_id                                                                           String                      @db.VarChar(32)
   create_utc_timestamp                                                                     DateTime                    @db.Timestamp(6)
   update_user_id                                                                           String                      @db.VarChar(32)
@@ -513,7 +536,7 @@ model office {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model office_h {
-  h_office_guid                 String   @id(map: "PK_h_office") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_office_guid                 String   @id(map: "PK_h_office") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -525,7 +548,7 @@ model office_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model park {
-  park_guid            String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  park_guid            String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   external_id          String           @unique(map: "UK_park__external_id") @db.VarChar(32)
   name                 String           @db.VarChar(256)
   legal_name           String?          @db.VarChar(256)
@@ -540,7 +563,7 @@ model park {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model park_area {
-  park_area_guid       String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  park_area_guid       String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   name                 String           @unique(map: "uk_park_area__name") @db.VarChar(256)
   region_name          String?          @db.VarChar(256)
   create_user_id       String           @db.VarChar(32)
@@ -554,7 +577,7 @@ model park_area {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model park_area_mapping {
-  park_area_mapping_guid String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  park_area_mapping_guid String    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   park_area_guid         String    @db.Uuid
   external_id            String    @db.VarChar(32)
   create_user_id         String    @db.VarChar(32)
@@ -568,7 +591,7 @@ model park_area_mapping {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model park_area_xref {
-  park_area_guid_xref  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  park_area_guid_xref  String    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   park_area_guid       String    @db.Uuid
   park_guid            String    @db.Uuid
   create_user_id       String    @db.VarChar(32)
@@ -584,7 +607,7 @@ model park_area_xref {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model party {
-  party_guid           String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  party_guid           String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   party_type           String?          @db.VarChar(16)
   create_user_id       String           @db.VarChar(32)
   create_utc_timestamp DateTime         @default(now()) @db.Timestamp(6)
@@ -617,7 +640,7 @@ model party_association_role_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model party_h {
-  h_party_guid                  String   @id(map: "PK_h_party") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_party_guid                  String   @id(map: "PK_h_party") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -645,7 +668,7 @@ model party_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person {
-  person_guid          String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  person_guid          String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   first_name           String           @db.VarChar(128)
   middle_name          String?          @db.VarChar(128)
   middle_name_2        String?          @db.VarChar(128)
@@ -663,7 +686,7 @@ model person {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person_h {
-  h_person_guid                 String   @id(map: "PK_h_person") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_person_guid                 String   @id(map: "PK_h_person") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -675,7 +698,7 @@ model person_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model team {
-  team_guid                           String               @id(map: "team_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  team_guid                           String               @id(map: "team_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   team_code                           String               @db.VarChar(15)
   agency_code_ref                     String               @db.VarChar(6)
   active_ind                          Boolean              @default(true)
@@ -709,7 +732,7 @@ model team_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model team_h {
-  h_team_guid                   String   @id(map: "PK_h_team") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_team_guid                   String   @id(map: "PK_h_team") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)

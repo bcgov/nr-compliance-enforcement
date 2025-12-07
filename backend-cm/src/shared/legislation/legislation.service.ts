@@ -5,13 +5,11 @@ import { Mapper } from "@automapper/core";
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
 
-/**
- * Represents a legislation row without relations (what Prisma actually returns)
- */
 export interface LegislationRow {
   legislation_guid: string;
   legislation_type_code: string;
   parent_legislation_guid: string | null;
+  legislation_source_guid: string | null;
   citation: string | null;
   full_citation: string | null;
   section_title: string | null;
@@ -29,6 +27,7 @@ export interface LegislationRow {
 export interface CreateLegislationInput {
   legislationTypeCode: string;
   parentLegislationGuid?: string | null;
+  legislationSourceGuid?: string | null;
   citation?: string | null;
   fullCitation?: string | null;
   sectionTitle?: string | null;
@@ -38,6 +37,17 @@ export interface CreateLegislationInput {
   effectiveDate?: Date | null;
   expiryDate?: Date | null;
   createUserId: string;
+}
+
+export interface LegislationSource {
+  legislationSourceGuid: string;
+  shortDescription: string;
+  longDescription: string | null;
+  sourceUrl: string;
+  agencyCode: string;
+  activeInd: boolean;
+  importedInd: boolean;
+  lastImportTimestamp: Date | null;
 }
 
 @Injectable()
@@ -224,6 +234,7 @@ export class LegislationService {
       data: {
         legislation_type_code: input.legislationTypeCode,
         parent_legislation_guid: input.parentLegislationGuid ?? null,
+        legislation_source_guid: input.legislationSourceGuid ?? null,
         citation: input.citation ?? null,
         full_citation: input.fullCitation ?? null,
         section_title: input.sectionTitle ?? null,
@@ -271,6 +282,7 @@ export class LegislationService {
           legislation_guid: existing.legislation_guid,
         },
         data: {
+          legislation_source_guid: input.legislationSourceGuid ?? existing.legislation_source_guid,
           full_citation: input.fullCitation ?? existing.full_citation,
           section_title: input.sectionTitle ?? existing.section_title,
           legislation_text: input.legislationText ?? existing.legislation_text,
@@ -398,5 +410,42 @@ export class LegislationService {
         },
       });
     }
+  }
+
+  async getPendingLegislationSources(): Promise<LegislationSource[]> {
+    const sources = await this.prisma.legislation_source.findMany({
+      where: {
+        active_ind: true,
+        imported_ind: false,
+      },
+      orderBy: {
+        short_description: "asc",
+      },
+    });
+
+    return sources.map((source) => ({
+      legislationSourceGuid: source.legislation_source_guid,
+      shortDescription: source.short_description,
+      longDescription: source.long_description,
+      sourceUrl: source.source_url,
+      agencyCode: source.agency_code,
+      activeInd: source.active_ind,
+      importedInd: source.imported_ind,
+      lastImportTimestamp: source.last_import_timestamp,
+    }));
+  }
+
+  async markLegislationSourceImported(legislationSourceGuid: string): Promise<void> {
+    await this.prisma.legislation_source.update({
+      where: {
+        legislation_source_guid: legislationSourceGuid,
+      },
+      data: {
+        imported_ind: true,
+        last_import_timestamp: new Date(),
+        update_user_id: "system",
+        update_utc_timestamp: new Date(),
+      },
+    });
   }
 }
