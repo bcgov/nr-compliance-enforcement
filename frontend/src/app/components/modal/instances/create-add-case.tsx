@@ -141,7 +141,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
     onSuccess: (data: any) => {
-      console.log(data);
       ToggleSuccess(
         <div>
           Complaint #{complaint_identifier} added to case{" "}

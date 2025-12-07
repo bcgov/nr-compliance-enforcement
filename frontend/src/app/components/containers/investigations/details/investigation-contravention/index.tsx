@@ -2,7 +2,7 @@ import { ContraventionItem } from "@/app/components/containers/investigations/de
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_CONTRAVENTION } from "@/app/types/modal/modal-types";
-import { Contravention, Investigation } from "@/generated/graphql";
+import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 
@@ -17,9 +17,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 }) => {
   const dispatch = useAppDispatch();
 
-  const contraventions = investigationData?.contraventions ?? [];
+  const contraventions = investigationData?.contraventions;
 
-  const handleAddEditContravention = (legislationGuid?: string) => {
+  const handleAddContravention = () => {
     document.body.click();
     dispatch(
       openModal({
@@ -27,9 +27,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         modalType: ADD_CONTRAVENTION,
         data: {
           title: "Add contravention to investigation",
-          description: "",
+          action: "Add",
           activityGuid: investigationGuid,
-          legislationGuid: legislationGuid,
+          parties: investigationData?.parties,
         },
       }),
     );
@@ -43,19 +43,20 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           variant="outline-primary"
           size="sm"
           id="details-screen-edit-button"
-          onClick={() => handleAddEditContravention()}
+          onClick={() => handleAddContravention()}
         >
           <i className="bi bi-plus-lg"></i>
           <span>Add Contravention</span>
         </Button>
       </div>
       <div className="contraventions-list">
-        {contraventions.map((contravention, index) => (
+        {contraventions?.map((contravention, index) => (
           <div key={contravention?.contraventionIdentifier}>
             <ContraventionItem
               contravention={contravention as Contravention}
               investigationGuid={investigationGuid}
               index={index}
+              parties={investigationData?.parties as InvestigationParty[]}
             />
           </div>
         ))}

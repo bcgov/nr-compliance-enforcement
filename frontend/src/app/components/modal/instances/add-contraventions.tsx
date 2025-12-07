@@ -1,4 +1,4 @@
-import { FC, memo, useState, useEffect, useMemo } from "react";
+import { FC, memo, useEffect, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -7,19 +7,34 @@ import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import {
   convertLegislationToOption,
+  useLegislation,
   useLegislationSearchQuery,
-  useLegislationDirectChildren,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
-import { indentByType, Legislation, LegislationTypeLabels, RootLegislationTypes } from "@/app/types/app/legislation";
+import { indentByType, Legislation } from "@/app/types/app/legislation";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import Option from "@/app/types/app/option";
+import Option from "@apptypes/app/option";
+import {
+  Contravention,
+  CreateUpdateContraventionInput,
+  InspectionParty,
+  InvestigationParty,
+} from "@/generated/graphql";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 
 const ADD_CONTRAVENTION = gql`
-  mutation CreateContravention($investigationGuid: String!, $legislationReference: String!) {
-    createContravention(investigationGuid: $investigationGuid, legislationReference: $legislationReference) {
+  mutation CreateContravention($input: CreateUpdateContraventionInput!) {
+    createContravention(input: $input) {
+      investigationGuid
+    }
+  }
+`;
+
+const UPDATE_CONTRAVENTION = gql`
+  mutation UpdateContravention($contraventionGuid: String!, $input: CreateUpdateContraventionInput!) {
+    updateContravention(contraventionGuid: $contraventionGuid, input: $input) {
       investigationGuid
     }
   }
@@ -36,13 +51,6 @@ const ModalLoading: FC = memo(() => (
     </div>
   </div>
 ));
-
-// Represents a selection at a level in the hierarchy
-interface HierarchyLevel {
-  typeCode: string;
-  selectedGuid: string;
-  options: Option[]; // Store the options available at this level
-}
 
 type AddContraventionModalProps = {
   close: () => void;
@@ -61,17 +69,27 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   // Selectors
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
-  const { title, activityGuid } = modalData;
+  const {
+    title,
+    action,
+    activityGuid,
+    parties,
+    existingContravention,
+  }: {
+    title: string;
+    action: string;
+    activityGuid: string;
+    parties: InvestigationParty[];
+    existingContravention?: Contravention;
+  } = modalData;
 
-  // State - track the hierarchy of selections with their options
-  const [hierarchyLevels, setHierarchyLevels] = useState<HierarchyLevel[]>([]);
+  // State
+  const [act, setAct] = useState("");
+  const [regulation, setRegulation] = useState("");
+  const [section, setSection] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>();
-
-  // Get the current parent GUID (last selection in hierarchy, or undefined for root)
-  const currentParentGuid = useMemo(() => {
-    if (hierarchyLevels.length === 0) return undefined;
-    return hierarchyLevels[hierarchyLevels.length - 1].selectedGuid;
-  }, [hierarchyLevels]);
+  const [selectedParties, setSelectedParties] = useState<Option[]>([]);
+  const [validationError, setValidationError] = useState<string>("");
 
   // Hooks
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
@@ -80,33 +98,39 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
     },
     onError: (error: any) => {
       console.error("Error adding contravention:", error);
-      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to add contravention");
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add contravention");
     },
   });
 
-  // For root document selection (Act, Regulation, or Bylaw)
-  const rootDocumentsQuery = useLegislationSearchQuery({
+  const editContraventionMutation = useGraphQLMutation(UPDATE_CONTRAVENTION, {
+    onSuccess: () => {
+      ToggleSuccess("Contravention updated successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error updating contravention:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update contravention");
+    },
+  });
+
+  const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: RootLegislationTypes,
+    legislationTypeCodes: [Legislation.ACT],
     enabled: true,
   });
 
-  // Query for direct children of the current selection
-  const childrenQuery = useLegislationDirectChildren({
+  const regulationsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    parentGuid: currentParentGuid ?? "",
-    enabled: !!currentParentGuid,
+    legislationTypeCodes: [Legislation.REGULATION],
+    ancestorGuid: act || "",
+    enabled: !!act,
   });
 
-  // Query for legislation text when we have a section selected
-  const lastSelection = hierarchyLevels[hierarchyLevels.length - 1];
-  const showLegislationText =
-    lastSelection &&
-    (lastSelection.typeCode === "SEC" ||
-      lastSelection.typeCode === "SUBSEC" ||
-      lastSelection.typeCode === "PAR" ||
-      lastSelection.typeCode === "SUBPAR" ||
-      lastSelection.typeCode === "DEF");
+  const sectionsQuery = useLegislationSearchQuery({
+    agencyCode: userAgency,
+    legislationTypeCodes: [Legislation.SECTION],
+    ancestorGuid: regulation || act,
+    enabled: !!regulation || !!act,
+  });
 
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
@@ -115,96 +139,133 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       Legislation.SUBSECTION,
       Legislation.PARAGRAPH,
       Legislation.SUBPARAGRAPH,
-      Legislation.DEFINITION,
     ],
-    ancestorGuid: currentParentGuid,
-    enabled: showLegislationText,
+    ancestorGuid: section,
+    enabled: !!section,
   });
 
-  // Data - root document options with type info
-  const rootDocumentOptions = useMemo(() => {
-    const docs = rootDocumentsQuery.data?.legislations ?? [];
-    return docs.map((doc) => ({
-      label: doc.sectionTitle ?? doc.legislationText ?? "",
-      value: doc.legislationGuid ?? "",
-      typeCode: doc.legislationTypeCode ?? "",
+  const legislationQuery = useLegislation(existingContravention?.legislationIdentifierRef, true);
+
+  // Data
+  const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
+  const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
+  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations);
+  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText);
+
+  const partyOptions: Option[] = parties
+    ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
+    .map((party: InvestigationParty | InspectionParty) => ({
+      value: party.partyIdentifier,
+      label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
     }));
-  }, [rootDocumentsQuery.data?.legislations]);
 
-  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText) ?? [];
+  const isLoading =
+    actsQuery.isLoading || regulationsQuery.isLoading || sectionsQuery.isLoading || legislationTextQuery.isLoading;
 
-  // Group children by type for the next level dropdown
-  const nextLevelOptions = useMemo(() => {
-    const children = childrenQuery.data?.legislationDirectChildren ?? [];
-    if (children.length === 0) return [];
-
-    // Convert to options with type info
-    return children.map((child) => ({
-      label: child.sectionTitle ?? child.citation ?? child.legislationText ?? "",
-      value: child.legislationGuid ?? "",
-      typeCode: child.legislationTypeCode ?? "",
-    }));
-  }, [childrenQuery.data?.legislationDirectChildren]);
-
-  // Get the type label for the next level (if there are options)
-  const nextLevelTypeCode = nextLevelOptions.length > 0 ? nextLevelOptions[0].typeCode : null;
-  const nextLevelLabel = nextLevelTypeCode ? LegislationTypeLabels[nextLevelTypeCode] || nextLevelTypeCode : "";
-
-  const isLoading = rootDocumentsQuery.isLoading || childrenQuery.isLoading || legislationTextQuery.isLoading;
-
-  const errorMessages = [rootDocumentsQuery.error, childrenQuery.error, legislationTextQuery.error]
-    .filter(Boolean)
+  const errorMessages = [
+    actsQuery.error,
+    regulationsQuery.error,
+    sectionsQuery.error,
+    legislationTextQuery.error,
+    validationError,
+  ]
+    .filter(Boolean) // remove undefined/null
     .map((err) => (err as Error).message || String(err));
 
-  // Handle root document selection (Act/Regulation/Bylaw at level 0)
-  const handleRootSelection = (option: (Option & { typeCode?: string }) | null) => {
-    if (option?.value) {
-      setHierarchyLevels([
-        {
-          typeCode: option.typeCode ?? Legislation.ACT,
-          selectedGuid: option.value,
-          options: rootDocumentOptions,
-        },
-      ]);
-    } else {
-      setHierarchyLevels([]);
-    }
-    setSelectedSection(undefined);
-  };
+  // Functions
 
-  // Handle selection at a deeper level
-  const handleLevelSelection = (levelIndex: number, option: Option | null, typeCode: string, options: Option[]) => {
-    setHierarchyLevels((prev) => {
-      // Keep levels up to and including the current level
-      const newLevels = prev.slice(0, levelIndex);
+  // Manages the modal button click
+  const handleAddEditContravention = async () => {
+    // Clear previous validation error
+    setValidationError("");
 
-      if (option?.value) {
-        newLevels.push({
-          typeCode,
-          selectedGuid: option.value,
-          options,
-        });
-      }
-
-      return newLevels;
-    });
-    setSelectedSection(undefined);
-  };
-
-  const handleAddContravention = async () => {
     if (!selectedSection) {
-      ToggleError("Please select a contravention to add.");
+      setValidationError("Please select a contravention.");
       return;
     }
 
-    addContraventionMutation.mutate({ investigationGuid: activityGuid, legislationReference: selectedSection });
+    const input: CreateUpdateContraventionInput = {
+      investigationGuid: activityGuid,
+      // Convert Option[] → string[]
+      // - map each party to its value
+      // - drop any parties that don't have a value
+      // - avoid returning undefined by flattening to an empty array instead
+      investigationPartyGuids: selectedParties?.flatMap((p) => (p.value ? [p.value] : [])),
+      legislationReference: selectedSection,
+    };
+
+    if (action === "Add") {
+      addContraventionMutation.mutate({ input: input });
+    } else {
+      editContraventionMutation.mutate({
+        contraventionGuid: existingContravention?.contraventionIdentifier,
+        input: input,
+      });
+    }
 
     submit();
     close();
   };
 
-  // Get the selected value for root document dropdown
-  const selectedRootDocument = hierarchyLevels.length > 0 ? hierarchyLevels[0].selectedGuid : undefined;
+  // Helper Function for returning correct value from Options array
+  const findOptionByValue = (options: Option[], value: string) =>
+    value ? options.find((opt) => opt.value === value) : null;
+
+  // State Management for Legislation and Selected Legislation
+  useEffect(() => {
+    const legislation = legislationQuery?.data?.legislation;
+    const ancestors = legislation?.ancestors;
+    const contraventionId = existingContravention?.legislationIdentifierRef;
+
+    // Exit early until all required data is available
+    if (!legislation || !ancestors || !contraventionId) {
+      return;
+    }
+
+    // Find the ACT and REG ancestors (if present)
+    const actGuid = ancestors.find((a) => a?.legislationTypeCode === "ACT")?.legislationGuid;
+
+    const regGuid = ancestors.find((a) => a?.legislationTypeCode === "REG")?.legislationGuid;
+
+    // Section handling:
+    // - If the current legislation *is* a section, use the contravention's reference
+    // - Otherwise, look up the SEC ancestor
+    const sectionGuid =
+      legislation.legislationTypeCode === "SEC"
+        ? contraventionId
+        : ancestors.find((a) => a?.legislationTypeCode === "SEC")?.legislationGuid;
+
+    // Update State
+    if (actGuid) setAct(actGuid);
+    if (regGuid) setRegulation(regGuid);
+    if (sectionGuid) setSection(sectionGuid);
+    setSelectedSection(contraventionId);
+  }, [legislationQuery?.data, existingContravention?.legislationIdentifierRef]);
+
+  // State Management for Parties
+  useEffect(() => {
+    const parties = existingContravention?.investigationParty;
+
+    // Exit early until parties are available
+    if (!parties) return;
+
+    const options: Option[] = parties
+      // Remove any null entries coming from the GraphQL response
+      .filter((party): party is NonNullable<typeof party> => party !== null)
+
+      // Map remaining valid parties into <Option> objects for the UI
+      .map((party) => ({
+        value: party.partyIdentifier,
+        label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
+      }));
+
+    // Sync local state once real data is available (no fake defaults)
+    setSelectedParties(options);
+  }, [existingContravention?.investigationParty]);
+
+  const handlePartyChange = async (options: Option[]) => {
+    setSelectedParties(options);
+  };
 
   return (
     <>
@@ -231,24 +292,28 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
               form.handleSubmit();
             }}
           >
-            {/* Level 0: Root document selection (Act/Regulation/Bylaw) */}
             <FormField
               form={form}
-              name="rootDocument"
-              label="Act / Regulation / Bylaw"
+              name="act"
+              label="Act"
               required
               render={(field) => (
                 <CompSelect
-                  id="root-document-select"
+                  id="act-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={rootDocumentOptions}
-                  value={rootDocumentOptions.find((opt) => opt.value === selectedRootDocument) ?? null}
+                  options={actOptions}
+                  value={findOptionByValue(actOptions, act)}
                   onChange={(option) => {
-                    field.handleChange(option?.value || "");
-                    handleRootSelection(option);
+                    const value = option?.value || "";
+                    field.handleChange(value);
+                    setAct(value);
+                    // Reset dependent fields when act changes
+                    setRegulation("");
+                    setSection("");
+                    setSelectedSection("");
                   }}
-                  placeholder="Select act, regulation, or bylaw"
+                  placeholder="Select act"
                   isClearable={true}
                   showInactive={false}
                   enableValidation={true}
@@ -257,29 +322,28 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
               )}
             />
 
-            {/* Render dropdowns for each level in the hierarchy (after Act) */}
-            {hierarchyLevels.slice(1).map((level, idx) => {
-              const levelIndex = idx + 1; // +1 because we sliced off Act
-              const typeLabel = LegislationTypeLabels[level.typeCode] || level.typeCode;
-
-              return (
+            {act && (
+              <>
                 <FormField
-                  key={`level-${levelIndex}-${level.typeCode}`}
                   form={form}
-                  name={`level-${levelIndex}`}
-                  label={typeLabel}
+                  name="regulation"
+                  label="Regulation"
                   render={(field) => (
                     <CompSelect
-                      id={`${level.typeCode}-select-${levelIndex}`}
+                      id="regulation-select"
                       classNamePrefix="comp-select"
                       className="comp-details-input"
-                      options={level.options}
-                      value={level.options.find((opt) => opt.value === level.selectedGuid) ?? null}
+                      options={regOptions}
+                      value={findOptionByValue(regOptions, regulation)}
                       onChange={(option) => {
-                        field.handleChange(option?.value || "");
-                        handleLevelSelection(levelIndex, option, level.typeCode, level.options);
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                        setRegulation(value);
+                        // Reset section when regulation changes
+                        setSection("");
+                        setSelectedSection("");
                       }}
-                      placeholder={`Select ${typeLabel.toLowerCase()}`}
+                      placeholder="Select regulation"
                       isClearable={true}
                       showInactive={false}
                       enableValidation={true}
@@ -287,50 +351,48 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     />
                   )}
                 />
-              );
-            })}
 
-            {/* Render next level dropdown if there are options */}
-            {hierarchyLevels.length > 0 && nextLevelOptions.length > 0 && !showLegislationText && (
-              <FormField
-                form={form}
-                name={`level-${hierarchyLevels.length}`}
-                label={nextLevelLabel}
-                render={(field) => (
-                  <CompSelect
-                    id={`${nextLevelTypeCode}-select-${hierarchyLevels.length}`}
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={nextLevelOptions}
-                    value={null}
-                    onChange={(option) => {
-                      field.handleChange(option?.value || "");
-                      if (option?.value && nextLevelTypeCode) {
-                        handleLevelSelection(hierarchyLevels.length, option, nextLevelTypeCode, nextLevelOptions);
-                      }
-                    }}
-                    placeholder={`Select ${nextLevelLabel.toLowerCase()}`}
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  />
-                )}
-              />
+                <FormField
+                  form={form}
+                  name="section"
+                  label="Section"
+                  render={(field) => (
+                    <CompSelect
+                      id="section-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input mb-4"
+                      options={secOptions}
+                      value={findOptionByValue(secOptions, section)}
+                      onChange={(option) => {
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                        setSection(value);
+                        setSelectedSection("");
+                      }}
+                      placeholder="Select section"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
+              </>
             )}
 
-            {/* Show legislation text for selection when at section level */}
-            {showLegislationText && legislationText.length > 0 && (
-              <div className="mt-4">
-                <label className="form-label">Select Contravention</label>
+            {section && legislationText && legislationText.length > 0 && (
+              <>
                 {legislationText.map((section) => {
-                  const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType] ?? "";
+                  const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
                   return (
                     <button
                       key={section.legislationGuid}
                       type="button"
                       className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
-                      onClick={() => setSelectedSection(section.legislationGuid as string)}
+                      onClick={() => {
+                        setValidationError("");
+                        setSelectedSection(section.legislationGuid as string);
+                      }}
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
@@ -344,7 +406,27 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     </button>
                   );
                 })}
-              </div>
+                <div className="mt-3">
+                  <FormField
+                    form={form}
+                    name="party"
+                    label="Party"
+                    render={(field) => (
+                      <ValidationMultiSelect
+                        id="party-select"
+                        classNamePrefix="comp-select"
+                        className="comp-details-input mt-3"
+                        options={partyOptions}
+                        values={selectedParties}
+                        onChange={handlePartyChange}
+                        placeholder="Select party"
+                        isClearable={true}
+                        errMsg={field.state.meta.errors?.[0]?.message || ""}
+                      />
+                    )}
+                  />
+                </div>
+              </>
             )}
           </form>
           {errorMessages.length > 0 && (
@@ -376,11 +458,11 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
             id="add-contravention-save-button"
             title="Save Add Contravention"
             onClick={() => {
-              handleAddContravention();
+              handleAddEditContravention();
             }}
           >
             <i className="bi bi-check-circle"></i>
-            <span>Add Contravention</span>
+            <span>{action} contravention</span>
           </Button>
         </div>
       </Modal.Footer>

@@ -13,6 +13,10 @@ type Investigation {
   locationAddress: String
   locationDescription: String
   name: String
+  supervisorGuid: String
+  primaryInvestigatorGuid: String
+  fileCoordinatorGuid: String
+  discoveryDate: Date
   parties: [InvestigationParty]
   contraventions: [Contravention]
 }
@@ -27,6 +31,10 @@ input CreateInvestigationInput {
   locationDescription: String
   name: String!
   createdByAppUserGuid: String!
+  supervisorGuid: String
+  primaryInvestigatorGuid: String
+  fileCoordinatorGuid: String
+  discoveryDate: Date
 }
 
 input UpdateInvestigationInput {
@@ -37,6 +45,10 @@ input UpdateInvestigationInput {
   locationAddress: String
   locationDescription: String
   name: String
+  supervisorGuid: String
+  primaryInvestigatorGuid: String
+  fileCoordinatorGuid: String
+  discoveryDate: Date
 }
 
 input InvestigationFilters {

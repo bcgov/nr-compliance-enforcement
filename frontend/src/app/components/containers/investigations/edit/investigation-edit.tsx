@@ -1,5 +1,6 @@
 import { FC, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
@@ -21,6 +22,10 @@ import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/
 import { getUserAgency } from "@/app/service/user-service";
 import { bcUtmZoneNumbers } from "@common/methods";
 import Option from "@apptypes/app/option";
+import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { RootState } from "@/app/store/store";
+import { AppUser } from "@/app/types/app/app_user/app_user";
+import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
@@ -47,6 +52,10 @@ const CREATE_INVESTIGATION_MUTATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      primaryInvestigatorGuid
+      supervisorGuid
+      fileCoordinatorGuid
+      discoveryDate
     }
   }
 `;
@@ -66,6 +75,10 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      primaryInvestigatorGuid
+      supervisorGuid
+      fileCoordinatorGuid
+      discoveryDate
     }
   }
 `;
@@ -87,6 +100,10 @@ const GET_INVESTIGATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      primaryInvestigatorGuid
+      supervisorGuid
+      fileCoordinatorGuid
+      discoveryDate
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
@@ -111,6 +128,19 @@ const InvestigationEdit: FC = () => {
     variables: { investigationGuid: id },
     enabled: isEditMode,
   });
+
+  const selectedDiscoveryDateTime = isEditMode ? new Date(investigationData?.getInvestigation?.discoveryDate) : null;
+
+  const leadAgency = getUserAgency();
+  const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
+
+  const assignableOfficers: Option[] =
+    officersInAgencyList && officersInAgencyList.length > 0
+      ? officersInAgencyList.map((officer: AppUser) => ({
+          value: officer.app_user_guid,
+          label: `${officer.last_name}, ${officer.first_name}`,
+        }))
+      : [];
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
     onSuccess: (data: any) => {
@@ -145,6 +175,10 @@ const InvestigationEdit: FC = () => {
         locationDescription: investigationData.getInvestigation.locationDescription || "",
         locationGeometry: investigationData.getInvestigation.locationGeometry || null,
         name: investigationData.getInvestigation.name || "",
+        supervisor: investigationData.getInvestigation.supervisorGuid || "",
+        primaryInvestigator: investigationData.getInvestigation.primaryInvestigatorGuid || "",
+        fileCoordinator: investigationData.getInvestigation.fileCoordinatorGuid || "",
+        discoveryDate: investigationData.getInvestigation.discoveryDate || null,
       };
     }
     return {
@@ -155,6 +189,10 @@ const InvestigationEdit: FC = () => {
       locationDescription: "",
       locationGeometry: null,
       name: "",
+      supervisor: "",
+      primaryInvestigator: "",
+      fileCoordinator: "",
+      discoveryDate: null,
     };
   }, [isEditMode, investigationData]);
 
@@ -170,6 +208,10 @@ const InvestigationEdit: FC = () => {
           locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
           name: value.name,
+          supervisorGuid: value.supervisor,
+          primaryInvestigatorGuid: value.primaryInvestigator,
+          fileCoordinatorGuid: value.fileCoordinator,
+          discoveryDate: value.discoveryDate,
         };
 
         updateInvestigationMutation.mutate({
@@ -187,6 +229,10 @@ const InvestigationEdit: FC = () => {
           locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
           createdByAppUserGuid: currentAppUserGuid || "",
+          supervisorGuid: value.supervisor ?? undefined,
+          primaryInvestigatorGuid: value.primaryInvestigator ?? "",
+          fileCoordinatorGuid: value.fileCoordinator ?? "",
+          discoveryDate: value.discoveryDate,
         };
 
         createInvestigationMutation.mutate({ input: createInput });
@@ -224,6 +270,14 @@ const InvestigationEdit: FC = () => {
 
   const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
+
+  const handleDiscoveryDateTimeChange = (date: Date | null) => {
+    if (date) {
+      form.setFieldValue("discoveryDate", new Date(date).toISOString());
+    } else {
+      form.setFieldValue("discoveryDate", "");
+    }
+  };
 
   return (
     <div className="comp-investigation-edit-headerdetails">
@@ -332,6 +386,93 @@ const InvestigationEdit: FC = () => {
                   isDisabled={true}
                 />
               )}
+            />
+            <FormField
+              form={form}
+              name="primaryInvestigator"
+              label="Primary investigator"
+              required
+              validators={{ onChange: z.string().min(1, "Primary investigator is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="primary-investigator-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={assignableOfficers}
+                  value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select investigator"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="supervisor"
+              label="Supervisor"
+              required
+              validators={{ onChange: z.string().min(1, "Supervisor is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="supervisor-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={assignableOfficers}
+                  value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select supervisor"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="fileCoordinator"
+              label="File coordinator"
+              render={(field) => (
+                <CompSelect
+                  id="file-coordinator-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={assignableOfficers}
+                  value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select coordinator"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
+            />
+            <FormField
+              form={form}
+              name="discoveryDate"
+              label="Discovery date"
+              required
+              validators={{ onChange: z.string().min(1, "Discovery date is required") }}
+              render={(field) => {
+                return (
+                  <CompDateTimePicker
+                    value={selectedDiscoveryDateTime}
+                    onChange={(date: Date) => {
+                      handleDiscoveryDateTimeChange(date);
+                      field.handleChange(date ? date.toISOString() : "");
+                    }}
+                    maxDate={new Date()}
+                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  />
+                );
+              }}
             />
             <FormField
               form={form}

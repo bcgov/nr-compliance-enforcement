@@ -22,8 +22,8 @@ export class LegislationResolver {
 
   @Query("legislation")
   @Roles(coreRoles)
-  async findOne(@Args("legislationGuid") legislationGuid: string) {
-    return await this.legislationService.findOne(legislationGuid);
+  async findOne(@Args("legislationGuid") legislationGuid: string, @Args("includeAncestors") includeAncestors: boolean) {
+    return await this.legislationService.findOne(legislationGuid, includeAncestors);
   }
 
   @Query("legislationChildTypes")

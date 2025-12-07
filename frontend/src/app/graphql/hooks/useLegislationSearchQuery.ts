@@ -37,12 +37,16 @@ const SEARCH_LEGISLATION = gql`
 `;
 
 const GET_LEGISLATION = gql`
-  query Legislation($legislationGuid: String!) {
-    legislation(legislationGuid: $legislationGuid) {
+  query Legislation($legislationGuid: String!, $includeAncestors: Boolean) {
+    legislation(legislationGuid: $legislationGuid, includeAncestors: $includeAncestors) {
       legislationTypeCode
       fullCitation
       alternateText
       legislationText
+      ancestors {
+        legislationTypeCode
+        legislationGuid
+      }
     }
   }
 `;
@@ -70,13 +74,14 @@ const GET_DIRECT_CHILDREN = gql`
   }
 `;
 
-export const useLegislation = (legislationGuid: string) => {
+export const useLegislation = (legislationGuid: string | undefined, includeAncestors: boolean) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
-    queryKey: ["legislation", legislationGuid],
+    queryKey: ["legislation", legislationGuid, includeAncestors],
     variables: {
       legislationGuid: legislationGuid,
+      includeAncestors: includeAncestors,
     },
-    enabled: true,
+    enabled: !!legislationGuid, // only run this is we have a guid
     placeholderData: (previousData) => previousData,
   });
   return { data, isLoading, error };
@@ -110,20 +115,23 @@ export const useLegislationChildTypes = (params: LegislationChildTypesParams) =>
 };
 
 export const useLegislationDirectChildren = (params: LegislationDirectChildrenParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislationDirectChildren: Legislation[] }>(GET_DIRECT_CHILDREN, {
-    queryKey: ["legislationDirectChildren", params.agencyCode, params.parentGuid, params.legislationTypeCode],
-    variables: {
-      agencyCode: params.agencyCode,
-      parentGuid: params.parentGuid,
-      legislationTypeCode: params.legislationTypeCode,
+  const { data, isLoading, error } = useGraphQLQuery<{ legislationDirectChildren: Legislation[] }>(
+    GET_DIRECT_CHILDREN,
+    {
+      queryKey: ["legislationDirectChildren", params.agencyCode, params.parentGuid, params.legislationTypeCode],
+      variables: {
+        agencyCode: params.agencyCode,
+        parentGuid: params.parentGuid,
+        legislationTypeCode: params.legislationTypeCode,
+      },
+      enabled: params.enabled,
+      placeholderData: (previousData) => previousData,
     },
-    enabled: params.enabled,
-    placeholderData: (previousData) => previousData,
-  });
+  );
   return { data, isLoading, error };
 };
 
-export const convertLegislationToOption = (legislation: Legislation[]): Option[] => {
+export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
   return (
     legislation?.map((legislation) => ({
       label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
