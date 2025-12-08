@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>investigation_party - default.investigation</title>
+        <title>contravention_party_xref - default.investigation</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>investigation_party</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>contravention_party_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>A table that holds parties of interest for an investigation</p>
+                            <p>Cross reference table linking many contraventions to many parties.</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_party_guid">investigation_party_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contravention_party_xref_guid">contravention_party_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -130,31 +130,38 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="contravention_party_xref.investigation_party_guid references investigation_party.investigation_party_guid via contravention_party_xref_investigation_party_guid_fkey"><a href='contravention_party_xref.html'>contravention_party_xref</a><span class='relatedKey'>.investigation_party_guid</span></td>
-                                                <td class="constraint detail">contravention_party_xref_investigation_party_guid_fkey</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="investigation_business.investigation_party_guid references investigation_party.investigation_party_guid via fk_investigation_party_guid"><a href='investigation_business.html'>investigation_business</a><span class='relatedKey'>.investigation_party_guid</span></td>
-                                                <td class="constraint detail">fk_investigation_party_guid</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
-                                                <td title="investigation_person.investigation_party_guid references investigation_party.investigation_party_guid via fk_investigation_party_guid"><a href='investigation_person.html'>investigation_person</a><span class='relatedKey'>.investigation_party_guid</span></td>
-                                                <td class="constraint detail">fk_investigation_party_guid</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Primary key: System generated unique identifier for a party.</p></td>
+                                    <td><p>Primary key. Unique identifier for contravention/party cross reference.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="party_guid_ref">party_guid_ref</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contravention_guid">contravention_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="contravention_party_xref.contravention_guid references contravention.contravention_guid via contravention_party_xref_contravention_guid_fkey"><a href='contravention.html'>contravention</a><span class='relatedKey'>.contravention_guid</span></td>
+                                                <td class="constraint detail">contravention_party_xref_contravention_guid_fkey</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Foreign key to contravention. Unique identifier for the contravention.</p></td>
+                                </tr>
+                                <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_party_guid">investigation_party_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title='nullable'>√</td>
@@ -166,48 +173,14 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Cross schema foreign key (unenforced) to shared.party table to indicate the shared party record this party was created from or currently linked to.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="party_type_code_ref">party_type_code_ref</span></td>
-                                    <td>varchar</td>
-                                    <td>16</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Cross schema foreign key (unenforced) to shared.party table to provide a human readable code representing a party type.</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_guid">investigation_guid</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="investigation_party.investigation_guid references investigation.investigation_guid via fk_investigation_guid"><a href='investigation.html'>investigation</a><span class='relatedKey'>.investigation_guid</span></td>
-                                                <td class="constraint detail">fk_investigation_guid</td>
+                                                <td title="contravention_party_xref.investigation_party_guid references investigation_party.investigation_party_guid via contravention_party_xref_investigation_party_guid_fkey"><a href='investigation_party.html'>investigation_party</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">contravention_party_xref_investigation_party_guid_fkey</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>Foreign key: System generated unique identifier for an inspection</p></td>
+                                    <td><p>Foreign key to investigation party. Unique identifier for the party.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="active_ind">active_ind</span></td>
@@ -224,7 +197,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>True if the party is currently attached to the investigation, false if it was previously attached and then removed.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -241,7 +214,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the party.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -249,7 +222,7 @@
                                     <td>29,6</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>now()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -258,7 +231,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the party was created. The timestamp is stored in UTC with no offset.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
@@ -275,7 +248,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the party.</p></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
@@ -292,24 +265,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the party was updated. The timestamp is stored in UTC with no offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="party_association_role_ref">party_association_role_ref</span></td>
-                                    <td>varchar</td>
-                                    <td>16</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Unenforced Foreign Key to shared.party_association_role. The party role in this investigation.</p></td>
+                                    <td></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -342,16 +298,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> investigation_party_pkey</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> contravention_party_xref_pkey</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>investigation_party_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> uq_active_investigation_party_per_investigation</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
-                                    <td>investigation_guid + party_guid_ref</td>
+                                    <td>contravention_party_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -376,27 +326,22 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="829,5,1121,181">
-<area shape="rect" id="node2" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="395,255,785,617">
-<area shape="rect" id="node4" href="investigation.html" target="_top" title="investigation" alt="" coords="5,345,351,580">
-<area shape="rect" id="node3" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="840,199,1111,375">
-<area shape="rect" id="node5" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="847,392,1103,568">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="305,41,732,345">
+<area shape="rect" id="node2" href="contravention.html" target="_top" title="contravention" alt="" coords="17,5,249,152">
+<area shape="rect" id="node3" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,169,261,345">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/investigation_party.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contravention_party_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="799,5,1039,93">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,208,680,443">
-<area shape="rect" id="node6" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,269,291,357">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="823,111,1016,199">
-<area shape="rect" id="node4" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="1159,23,1451,199">
-<area shape="rect" id="node5" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="724,216,1115,579">
-<area shape="rect" id="node7" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="1169,216,1440,392">
-<area shape="rect" id="node8" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="1177,409,1433,585">
-<area shape="rect" id="node9" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="779,596,1060,684">
+<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="245,68,477,215">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,212,189,300">
+<area shape="rect" id="node3" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="533,5,960,309">
+<area shape="rect" id="node4" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,263,489,439">
+<area shape="rect" id="node5" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="617,327,877,415">
+<area shape="rect" id="node6" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="624,432,869,520">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/investigation_party.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contravention_party_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

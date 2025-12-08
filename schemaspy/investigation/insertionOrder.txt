@@ -2,10 +2,11 @@ investigation_status_code
 officer_investigation_xref_code
 investigation
 investigation_party
-continuation_report
 contravention
+continuation_report
 investigation_business
 investigation_person
+contravention_party_xref
 officer_investigation_xref
 flyway_schema_history
 investigation_business_h
