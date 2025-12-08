@@ -280,8 +280,7 @@ export const LegislationSourceManagement: FC = () => {
             variant="primary"
             onClick={handleOpenCreate}
           >
-            <i className="bi bi-plus-lg me-1" />
-            Add Source
+            <i className="bi bi-plus-lg me-1" /> Add Source
           </Button>
         </div>
 

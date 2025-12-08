@@ -42,42 +42,33 @@ const NS_BCL = "bcl:";
 const NS_IN = "in:";
 
 /**
- * Extracts text content from a node, handling mixed content (text with inline elements)
+ * Extracts text from an object node
+ */
+const extractTextFromObject = (node: Record<string, any>, extractFn: (n: any) => string): string => {
+  // Try to extract text from text-containing elements
+  const textKeys = ["#text", "in:term", "in:doc", "in:desc"];
+  const foundKey = textKeys.find((key) => node[key] !== undefined);
+  if (foundKey) {
+    return extractFn(node[foundKey]);
+  }
+
+  // Collect all text from nested elements skipping attributes
+  return Object.keys(node)
+    .filter((key) => !key.startsWith("@_"))
+    .map((key) => extractFn(node[key]))
+    .join(" ")
+    .trim();
+};
+
+/**
+ * Extracts text content from a node handling various types of content
  */
 const extractText = (node: any): string => {
-  if (node === null || node === undefined) {
-    return "";
-  }
-  if (typeof node === "string") {
-    return node.trim();
-  }
-  if (typeof node === "number") {
-    return String(node);
-  }
-  if (Array.isArray(node)) {
-    return node.map(extractText).join(" ").trim();
-  }
-  if (typeof node === "object") {
-    // Handle text content with inline elements
-    if (node["#text"] !== undefined) {
-      return extractText(node["#text"]);
-    }
-    // Try to extract text from common text-containing elements
-    const textKeys = ["in:term", "in:doc", "in:desc", "#text"];
-    for (const key of textKeys) {
-      if (node[key] !== undefined) {
-        return extractText(node[key]);
-      }
-    }
-    // Collect all text from nested elements
-    let result = "";
-    for (const key of Object.keys(node)) {
-      if (!key.startsWith("@_")) {
-        result += " " + extractText(node[key]);
-      }
-    }
-    return result.trim();
-  }
+  if (node == null) return "";
+  if (typeof node === "string") return node.trim();
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join(" ").trim();
+  if (typeof node === "object") return extractTextFromObject(node, extractText);
   return "";
 };
 

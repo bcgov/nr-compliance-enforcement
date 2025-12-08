@@ -172,7 +172,9 @@ export const convertLegislationToHierarchicalOptions = (
     if (!childrenMap.has(key)) childrenMap.set(key, []);
     childrenMap.get(key)!.push(item);
   }
-  childrenMap.forEach((children) => children.sort(sortByDisplayOrderAndCitation));
+  childrenMap.forEach((children, key) => {
+    childrenMap.set(key, children.toSorted(sortByDisplayOrderAndCitation));
+  });
 
   // Flatten tree recursively
   const flatten = (parentGuid?: string): Legislation[] =>

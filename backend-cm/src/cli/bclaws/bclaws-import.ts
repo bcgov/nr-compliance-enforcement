@@ -10,6 +10,17 @@ import {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
+ * Context for inserting legislation tree
+ */
+interface InsertLegislationContext {
+  actTitle: string;
+  effectiveDate: Date | null;
+  agencyCode: string;
+  legislationService: LegislationService;
+  logger: Logger;
+}
+
+/**
  * Parses the assented date string (e.g., "October 23, 2003") to a Date
  */
 function parseAssentedDate(assentedTo: string | null): Date | null {
@@ -81,15 +92,12 @@ function buildFullCitation(actTitle: string, node: ParsedLegislationNode, parent
  */
 async function insertLegislationTree(
   node: ParsedLegislationNode,
-  parentGuid: string | null,
-  actTitle: string,
-  effectiveDate: Date | null,
-  agencyCode: string,
-  legislationService: LegislationService,
-  logger: Logger,
+  context: InsertLegislationContext,
+  parentGuid: string | null = null,
   parentFullCitation: string | null = null,
   legislationSourceGuid: string | null = null,
 ): Promise<number> {
+  const { actTitle, effectiveDate, agencyCode, legislationService, logger } = context;
   let count = 0;
 
   // Build full citation for this node
@@ -132,12 +140,8 @@ async function insertLegislationTree(
     for (const child of node.children) {
       count += await insertLegislationTree(
         child,
+        context,
         created.legislation_guid,
-        actTitle,
-        effectiveDate,
-        agencyCode,
-        legislationService,
-        logger,
         fullCitation,
         null, // Children don't get the source GUID
       );
@@ -180,14 +184,17 @@ async function importLegislationSource(
     const actTitle = parsedDocument.metadata.title;
 
     // Insert the legislation tree recursively
-    const insertedCount = await insertLegislationTree(
-      parsedDocument.root,
-      null, // No parent for root
+    const context: InsertLegislationContext = {
       actTitle,
       effectiveDate,
-      source.agencyCode,
+      agencyCode: source.agencyCode,
       legislationService,
       logger,
+    };
+    const insertedCount = await insertLegislationTree(
+      parsedDocument.root,
+      context,
+      null, // No parent for root
       null, // parentFullCitation
       source.legislationSourceGuid, // Link root node to source
     );
