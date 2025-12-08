@@ -30,11 +30,11 @@ const CustomOption = (props: any) => {
     return <components.Option {...props}>{data.labelElement}</components.Option>;
   }
 
-  // If it's disabled, render bold
+  // If it's disabled, render muted text
   if (data.isDisabled) {
     return (
       <components.Option {...props}>
-        <strong>{data.label}</strong>
+        <strong className="text-muted">{data.label}</strong>
       </components.Option>
     );
   }
