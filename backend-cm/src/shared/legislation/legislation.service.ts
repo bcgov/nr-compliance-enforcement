@@ -47,7 +47,9 @@ export interface LegislationSource {
   agencyCode: string;
   activeInd: boolean;
   importedInd: boolean;
-  lastImportTimestamp: Date | null;
+  lastImportTimestamp: string | null;
+  createUserId?: string;
+  createUtcTimestamp?: Date;
 }
 
 @Injectable()
@@ -431,7 +433,7 @@ export class LegislationService {
       agencyCode: source.agency_code,
       activeInd: source.active_ind,
       importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp,
+      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
     }));
   }
 
@@ -447,5 +449,130 @@ export class LegislationService {
         update_utc_timestamp: new Date(),
       },
     });
+  }
+
+  async getAllLegislationSources(): Promise<LegislationSource[]> {
+    const sources = await this.prisma.legislation_source.findMany({
+      orderBy: [{ agency_code: "asc" }, { short_description: "asc" }],
+    });
+
+    return sources.map((source) => ({
+      legislationSourceGuid: source.legislation_source_guid,
+      shortDescription: source.short_description,
+      longDescription: source.long_description,
+      sourceUrl: source.source_url,
+      agencyCode: source.agency_code,
+      activeInd: source.active_ind,
+      importedInd: source.imported_ind,
+      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
+      createUserId: source.create_user_id,
+      createUtcTimestamp: source.create_utc_timestamp,
+    }));
+  }
+
+  async getLegislationSourceById(legislationSourceGuid: string): Promise<LegislationSource | null> {
+    const source = await this.prisma.legislation_source.findUnique({
+      where: { legislation_source_guid: legislationSourceGuid },
+    });
+
+    if (!source) {
+      return null;
+    }
+
+    return {
+      legislationSourceGuid: source.legislation_source_guid,
+      shortDescription: source.short_description,
+      longDescription: source.long_description,
+      sourceUrl: source.source_url,
+      agencyCode: source.agency_code,
+      activeInd: source.active_ind,
+      importedInd: source.imported_ind,
+      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
+      createUserId: source.create_user_id,
+      createUtcTimestamp: source.create_utc_timestamp,
+    };
+  }
+
+  async createLegislationSource(input: {
+    shortDescription: string;
+    longDescription?: string | null;
+    sourceUrl: string;
+    agencyCode: string;
+    createUserId: string;
+  }): Promise<LegislationSource> {
+    const source = await this.prisma.legislation_source.create({
+      data: {
+        short_description: input.shortDescription,
+        long_description: input.longDescription ?? null,
+        source_url: input.sourceUrl,
+        agency_code: input.agencyCode,
+        active_ind: true,
+        imported_ind: false,
+        create_user_id: input.createUserId,
+        create_utc_timestamp: new Date(),
+      },
+    });
+
+    return {
+      legislationSourceGuid: source.legislation_source_guid,
+      shortDescription: source.short_description,
+      longDescription: source.long_description,
+      sourceUrl: source.source_url,
+      agencyCode: source.agency_code,
+      activeInd: source.active_ind,
+      importedInd: source.imported_ind,
+      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
+      createUserId: source.create_user_id,
+      createUtcTimestamp: source.create_utc_timestamp,
+    };
+  }
+
+  async updateLegislationSource(input: {
+    legislationSourceGuid: string;
+    shortDescription?: string;
+    longDescription?: string | null;
+    sourceUrl?: string;
+    agencyCode?: string;
+    activeInd?: boolean;
+    importedInd?: boolean;
+    updateUserId: string;
+  }): Promise<LegislationSource> {
+    const source = await this.prisma.legislation_source.update({
+      where: { legislation_source_guid: input.legislationSourceGuid },
+      data: {
+        ...(input.shortDescription !== undefined && { short_description: input.shortDescription }),
+        ...(input.longDescription !== undefined && { long_description: input.longDescription }),
+        ...(input.sourceUrl !== undefined && { source_url: input.sourceUrl }),
+        ...(input.agencyCode !== undefined && { agency_code: input.agencyCode }),
+        ...(input.activeInd !== undefined && { active_ind: input.activeInd }),
+        ...(input.importedInd !== undefined && { imported_ind: input.importedInd }),
+        update_user_id: input.updateUserId,
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    return {
+      legislationSourceGuid: source.legislation_source_guid,
+      shortDescription: source.short_description,
+      longDescription: source.long_description,
+      sourceUrl: source.source_url,
+      agencyCode: source.agency_code,
+      activeInd: source.active_ind,
+      importedInd: source.imported_ind,
+      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
+      createUserId: source.create_user_id,
+      createUtcTimestamp: source.create_utc_timestamp,
+    };
+  }
+
+  async deleteLegislationSource(legislationSourceGuid: string): Promise<boolean> {
+    try {
+      await this.prisma.legislation_source.delete({
+        where: { legislation_source_guid: legislationSourceGuid },
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }

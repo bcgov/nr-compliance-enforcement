@@ -32,6 +32,8 @@ const SEARCH_LEGISLATION = gql`
       alternateText
       citation
       legislationTypeCode
+      parentGuid
+      displayOrder
     }
   }
 `;
@@ -138,4 +140,58 @@ export const convertLegislationToOption = (legislation: Legislation[] | undefine
       value: legislation.legislationGuid ?? "",
     })) ?? []
   );
+};
+
+/**
+ * Converts legislation items to hierarchical options for section dropdowns.
+ * Parts/Divisions are disabled group headers; Sections show "citation title".
+ */
+export const convertLegislationToHierarchicalOptions = (
+  legislation: Legislation[] | undefined,
+  rootGuid: string | undefined,
+): Option[] => {
+  if (!legislation?.length) return [];
+
+  const itemGuids = new Set(legislation.map((i) => i.legislationGuid).filter(Boolean));
+  const getParentKey = (item: Legislation) =>
+    item.parentGuid === rootGuid || (item.parentGuid && itemGuids.has(item.parentGuid))
+      ? item.parentGuid
+      : (rootGuid ?? "root");
+
+  // Group by parent, then sort each group by displayOrder and citation
+  const childrenMap = new Map<string, Legislation[]>();
+  for (const item of legislation) {
+    const key = getParentKey(item);
+    if (!childrenMap.has(key)) childrenMap.set(key, []);
+    childrenMap.get(key)!.push(item);
+  }
+  childrenMap.forEach((children) =>
+    children.sort(
+      (a, b) =>
+        (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
+        (parseInt(a.citation?.replace(/\D/g, "") ?? "", 10) || 9999) -
+          (parseInt(b.citation?.replace(/\D/g, "") ?? "", 10) || 9999),
+    ),
+  );
+
+  // Flatten tree recursively
+  const flatten = (parentGuid?: string): Legislation[] =>
+    (childrenMap.get(parentGuid ?? "root") ?? []).flatMap((child) => [
+      child,
+      ...flatten(child.legislationGuid ?? undefined),
+    ]);
+
+  // Convert to options
+  const formatLabel = (item: Legislation) => {
+    const type = item.legislationTypeCode;
+    if (type === "PART" || type === "DIV") return item.sectionTitle ?? "";
+    if (type === "SEC" && item.citation) return `${item.citation} ${item.sectionTitle ?? item.legislationText ?? ""}`;
+    return item.sectionTitle ?? item.legislationText ?? "";
+  };
+
+  return flatten(rootGuid).map((item) => ({
+    label: formatLabel(item),
+    value: item.legislationGuid ?? "",
+    isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV",
+  }));
 };

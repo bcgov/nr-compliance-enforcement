@@ -1,0 +1,29 @@
+type LegislationSource {
+  legislationSourceGuid: String!
+  shortDescription: String!
+  longDescription: String
+  sourceUrl: String!
+  agencyCode: String!
+  activeInd: Boolean!
+  importedInd: Boolean!
+  lastImportTimestamp: String
+  createUserId: String
+  createUtcTimestamp: String
+}
+
+input CreateLegislationSourceInput {
+  shortDescription: String!
+  longDescription: String
+  sourceUrl: String!
+  agencyCode: String!
+}
+
+input UpdateLegislationSourceInput {
+  legislationSourceGuid: String!
+  shortDescription: String
+  longDescription: String
+  sourceUrl: String
+  agencyCode: String
+  activeInd: Boolean
+  importedInd: Boolean
+}
