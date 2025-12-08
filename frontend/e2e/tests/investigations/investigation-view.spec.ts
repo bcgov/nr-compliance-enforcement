@@ -32,6 +32,9 @@ test.describe("Investigation Details", () => {
     await expect(header).toBeVisible();
     await expect(header).toContainText(/Investigation/i);
 
+    const leadAgency = page.locator("#comp-details-lead-agency-text-id");
+    await expect(leadAgency).toBeVisible();
+
     // Verify breadcrumb is displayed
     const breadcrumb = page.locator(".breadcrumb");
     await expect(breadcrumb).toBeVisible();
@@ -39,20 +42,20 @@ test.describe("Investigation Details", () => {
   });
 
   test("it displays summary information", async ({ page }) => {
-    const leadAgency = page.locator("#comp-details-lead-agency-text-id");
-    await expect(leadAgency).toBeVisible();
-
     const dateLoggedSection = page.locator("dt", { hasText: "Date logged" });
     await expect(dateLoggedSection).toBeVisible();
 
     const lastUpdatedSection = page.locator("dt", { hasText: "Last updated" });
     await expect(lastUpdatedSection).toBeVisible();
 
-    const officerSection = page.locator("dt", { hasText: "Officer assigned" });
-    await expect(officerSection).toBeVisible();
+    const primaryInvestigatorSection = page.locator("dt", { hasText: "Primary investigator" });
+    await expect(primaryInvestigatorSection).toBeVisible();
 
-    const createdBySection = page.locator("dt", { hasText: "Created by" });
-    await expect(createdBySection).toBeVisible();
+    const supervisorSection = page.locator("dt", { hasText: "Supervisor" });
+    await expect(supervisorSection).toBeVisible();
+
+    const coordinatorSection = page.locator("dt", { hasText: "File coordinator" });
+    await expect(coordinatorSection).toBeVisible();
   });
 
   test("it displays investigation details section", async ({ page }) => {
