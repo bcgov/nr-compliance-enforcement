@@ -206,9 +206,8 @@ export class CdogsService implements ExternalApiService {
   _getExternalTemplateCode = (data: any, complaintType: string): string => {
     const prevAgency = data.updates
       .sort((a, b) => b.updateTime.getTime() - a.updateTime.getTime())
-      .filter(
-        (item) => item.updateType === "REFERRAL" && ["COS", "EPO", "PARKS"].includes(item?.referral.previousAgency),
-      )[0]?.referral?.previousAgency;
+      .find((item) => item.updateType === "REFERRAL" && ["COS", "EPO", "PARKS"].includes(item?.referral.previousAgency))
+      ?.referral?.previousAgency;
 
     const extTemplateMap = {
       ERS: {
