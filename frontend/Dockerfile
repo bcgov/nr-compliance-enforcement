@@ -1,7 +1,7 @@
 FROM node:19-bullseye AS build
 WORKDIR /app
 COPY . .
-RUN npm ci && \
+RUN npm ci --omit=dev && \
     npm run build
 
 FROM caddy:2.8.4-alpine AS deploy
