@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useEffect, useRef, useMemo } from "react";
 import { format, isValid } from "date-fns";
 
 type Props = {
@@ -6,17 +6,32 @@ type Props = {
   onChange: Function;
   maxDate: Date | undefined;
   errorMessage?: string;
+  onErrorChange?: (error: string) => void;
 };
 
-export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
+export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErrorChange }) => {
   const [dateStr, setDateStr] = useState("");
   const [timeStr, setTimeStr] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const dateInputRef = useRef<HTMLInputElement>(null);
   const timeInputRef = useRef<HTMLInputElement>(null);
 
   const openDatePicker = () => dateInputRef.current?.showPicker?.() ?? dateInputRef.current?.focus();
   const openTimePicker = () => timeInputRef.current?.showPicker?.() ?? timeInputRef.current?.focus();
+
+  // Memo to prevent re-renders
+  const errorMessage = useMemo(() => {
+    if (dateStr) {
+      const dt = new Date(timeStr ? `${dateStr}T${timeStr}:00` : `${dateStr}T00:00:00`);
+      if (isValid(dt) && maxDate && dt > maxDate) {
+        return "Date and time cannot be in the future";
+      }
+    }
+    return "";
+  }, [dateStr, timeStr, maxDate]);
+
+  useEffect(() => {
+    onErrorChange?.(errorMessage);
+  }, [errorMessage, onErrorChange]);
 
   useEffect(() => {
     if (value) {
@@ -36,23 +51,15 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
       } else {
         newDateTime = new Date(`${dateStr}T00:00:00`);
       }
-      if (isValid(newDateTime)) {
-        if (maxDate && newDateTime > maxDate) {
-          const error = "Date and time cannot be in the future";
-          setErrorMessage(error);
-        } else {
-          setErrorMessage("");
-        }
+      if (isValid(newDateTime) && (!value || newDateTime.getTime() !== value.getTime())) {
         onChange(newDateTime);
-      } else {
-        setErrorMessage("");
+      } else if (value != null) {
         onChange(null);
       }
-    } else {
-      setErrorMessage("");
+    } else if (value != null) {
       onChange(null);
     }
-  }, [dateStr, timeStr, maxDate]);
+  }, [dateStr, timeStr, value]);
 
   return (
     <>
