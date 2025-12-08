@@ -96,7 +96,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
 
         <div
           className="mt-1 max-width-48ch"
-          id="comp-nature-of-complaint"
+          id="comp-details-lead-agency-text-id"
         >
           <span>Lead agency: {leadAgency}</span>
         </div>

@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { enterDateTimeInCompDateTimePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Investigation Creation functionality
@@ -42,8 +42,8 @@ test.describe("Investigation Create Form", () => {
     await saveButton.click();
 
     // Check for validation errors
-    const errorMessages = page.locator(".error-message, .invalid-feedback, .text-danger");
-    await expect(errorMessages.first()).toBeVisible({ timeout: 10000 });
+    const errorMessages = page.locator(".error-message", { hasText: "Discovery date is required" });
+    await expect(errorMessages).toBeVisible({ timeout: 10000 });
   });
 
   test("it validates Investigation ID uniqueness", async ({ page }) => {
@@ -73,6 +73,11 @@ test.describe("Investigation Create Form", () => {
 
     const investigationIdInput = page.locator("#display-name");
     await investigationIdInput.fill(uniqueId);
+
+    await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
+    await selectItemById("supervisor-select", "TestAcct, ENV", page);
+
+    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
 
     // Wait for async validation to complete
     await validationResponsePromise;
