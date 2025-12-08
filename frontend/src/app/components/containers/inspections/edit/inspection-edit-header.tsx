@@ -8,6 +8,7 @@ interface InspectionEditHeaderProps {
   isEditMode?: boolean;
   caseIdentifier?: string;
   inspectionGuid?: string;
+  inspectionName?: string;
 }
 
 export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
@@ -16,6 +17,7 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
   isEditMode = false,
   caseIdentifier,
   inspectionGuid,
+  inspectionName,
 }) => {
   return (
     <div className="comp-details-header">
@@ -46,8 +48,8 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              {isEditMode && inspectionGuid ? (
-                <span>Inspection #{inspectionGuid}</span>
+              {isEditMode && (inspectionName || inspectionGuid) ? (
+                <span>Inspection #{inspectionName || inspectionGuid}</span>
               ) : (
                 <span>{isEditMode ? "Edit inspection" : "Create inspection"} </span>
               )}
