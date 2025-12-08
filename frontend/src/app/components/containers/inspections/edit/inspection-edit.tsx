@@ -229,6 +229,7 @@ const InspectionEdit: FC = () => {
         isEditMode={isEditMode}
         caseIdentifier={caseIdentifier}
         inspectionGuid={id}
+        inspectionName={inspectionData?.getInspection?.name}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
@@ -401,7 +402,6 @@ const InspectionEdit: FC = () => {
                 const coordinates = field.state.value?.coordinates;
                 const longitude = coordinates?.[0]?.toString() || "";
                 const latitude = coordinates?.[1]?.toString() || "";
-                console.log("Rendering CompCoordinateInput with coordinates:", coordinates);
 
                 return (
                   <CompCoordinateInput

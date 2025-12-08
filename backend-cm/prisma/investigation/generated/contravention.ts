@@ -1,4 +1,5 @@
 import { investigation } from "./investigation";
+import { contravention_party_xref } from "./contravention_party_xref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class contravention {
@@ -28,4 +29,7 @@ export class contravention {
 
   @ApiPropertyOptional({ type: () => investigation })
   investigation?: investigation;
+
+  @ApiProperty({ isArray: true, type: () => contravention_party_xref })
+  contravention_party_xref: contravention_party_xref[];
 }

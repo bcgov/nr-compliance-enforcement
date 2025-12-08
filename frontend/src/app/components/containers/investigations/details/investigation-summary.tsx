@@ -26,10 +26,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
-  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
-  const leadAgency = agencyText ? agencyText.label : "Unknown";
-
+  const discoveryDate = investigationData?.discoveryDate
+    ? new Date(investigationData.discoveryDate).toString()
+    : undefined;
   const dateLogged = investigationData?.openedTimestamp
     ? new Date(investigationData.openedTimestamp).toString()
     : undefined;
@@ -38,8 +37,18 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
     : undefined;
   const officerAssigned = "Not Assigned";
 
-  const createdByUser = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
-  const createdBy = createdByUser?.user_id || "Unknown";
+  const primaryInvestigatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));
+  const primaryInvestigator = primaryInvestigatorObj
+    ? `${primaryInvestigatorObj?.last_name}, ${primaryInvestigatorObj?.first_name}`
+    : "Not Assigned";
+
+  const fileCoordinatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.fileCoordinatorGuid));
+  const fileCoordinator = fileCoordinatorObj
+    ? `${fileCoordinatorObj?.last_name}, ${fileCoordinatorObj?.first_name}`
+    : "Not Assigned";
+
+  const supervisorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.supervisorGuid));
+  const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
   const editButtonClick = () => {
     navigate(`/investigation/${investigationGuid}/edit`);
@@ -48,21 +57,26 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   return (
     <>
       <div className="comp-header-status-container">
-        <div className="comp-details-status">
-          <dl>
-            <dt>Lead agency</dt>
-            <dd>
-              <div className="comp-lead-agency">
-                <i className="bi bi-building"></i>
-                <span
-                  id="comp-details-lead-agency-text-id"
-                  className="comp-lead-agency-name"
-                >
-                  {leadAgency}
-                </span>
-              </div>
+        <div className="comp-details-status investigation-header">
+          <dl className="comp-details-date-assigned">
+            <dt>Discovery date</dt>
+            <dd className="comp-date-time-value">
+              {discoveryDate && (
+                <>
+                  <div>
+                    <i className="bi bi-calendar"></i>
+                    {formatDate(discoveryDate)}
+                  </div>
+                  <div>
+                    <i className="bi bi-clock"></i>
+                    {formatTime(discoveryDate)}
+                  </div>
+                </>
+              )}
+              {!discoveryDate && <>N/A</>}
             </dd>
           </dl>
+
           <dl className="comp-details-date-logged">
             <dt>Date logged</dt>
             <dd className="comp-date-time-value">
@@ -102,27 +116,41 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
           </dl>
 
           <dl>
-            <dt>Officer assigned</dt>
+            <dt>Primary investigator</dt>
             <dd>
               <div
-                data-initials-sm={getAvatarInitials(officerAssigned)}
+                data-initials-sm={getAvatarInitials(primaryInvestigator)}
                 className="comp-avatar comp-avatar-sm comp-avatar-orange"
               >
                 <div>
-                  <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                  <span id="comp-details-assigned-officer-name-text-id">{primaryInvestigator}</span>
                 </div>
               </div>
             </dd>
           </dl>
 
           <dl>
-            <dt>Created by</dt>
+            <dt>Supervisor</dt>
             <dd>
               <div
-                data-initials-sm={getAvatarInitials(createdBy)}
-                className="comp-avatar comp-avatar-sm comp-avatar-blue"
+                data-initials-sm={getAvatarInitials(supervisor)}
+                className="comp-avatar comp-avatar-sm comp-avatar-orange"
               >
-                <span>{createdBy}</span>
+                <span>{supervisor}</span>
+              </div>
+            </dd>
+          </dl>
+
+          <dl>
+            <dt>File coordinator</dt>
+            <dd>
+              <div
+                data-initials-sm={getAvatarInitials(fileCoordinator)}
+                className="comp-avatar comp-avatar-sm comp-avatar-orange"
+              >
+                <div>
+                  <span id="comp-details-assigned-officer-name-text-id">{fileCoordinator}</span>
+                </div>
               </div>
             </dd>
           </dl>

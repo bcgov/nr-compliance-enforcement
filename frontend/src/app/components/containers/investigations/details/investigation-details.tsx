@@ -42,11 +42,25 @@ const GET_INVESTIGATION = gql`
       contraventions {
         contraventionIdentifier
         legislationIdentifierRef
+        investigationParty {
+          partyIdentifier
+          person {
+            firstName
+            lastName
+          }
+          business {
+            name
+          }
+        }
       }
       leadAgency
       locationAddress
       locationDescription
       locationGeometry
+      primaryInvestigatorGuid
+      supervisorGuid
+      fileCoordinatorGuid
+      discoveryDate
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier

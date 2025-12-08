@@ -1,7 +1,8 @@
 generator client {
-  provider      = "prisma-client-js"
-  output        = "../../node_modules/.prisma/inspection"
-  binaryTargets = ["native", "debian-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "../../node_modules/.prisma/inspection"
+  previewFeatures = ["multiSchema"]
+  binaryTargets   = ["native", "debian-openssl-1.1.x"]
 }
 
 generator prismaClassGenerator {
@@ -13,11 +14,28 @@ generator prismaClassGenerator {
 datasource db {
   provider = "postgresql"
   url      = env("INSPECTION_POSTGRES_URL")
+  schemas  = ["inspection"]
+}
+
+model flyway_schema_history {
+  installed_rank Int      @id(map: "flyway_schema_history_pk")
+  version        String?  @db.VarChar(50)
+  description    String   @db.VarChar(200)
+  type           String   @db.VarChar(20)
+  script         String   @db.VarChar(1000)
+  checksum       Int?
+  installed_by   String   @db.VarChar(100)
+  installed_on   DateTime @default(now()) @db.Timestamp(6)
+  execution_time Int
+  success        Boolean
+
+  @@index([success], map: "flyway_schema_history_s_idx")
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection {
-  inspection_guid                 String                    @id(map: "PK_inspection_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  inspection_guid                 String                    @id(map: "PK_inspection_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   inspection_description          String?                   @db.VarChar(4000)
   owned_by_agency_ref             String                    @db.VarChar(10)
   inspection_status               String                    @db.VarChar(10)
@@ -37,16 +55,109 @@ model inspection {
 
   @@unique([name, owned_by_agency_ref], map: "uq_inspection_name_agency")
   @@index([location_geometry_point], map: "idx_inspection_location_geometry_point", type: Gist)
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_h {
-  h_inspection_guid             String   @id(map: "PK_h_inspection") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+model inspection_business {
+  inspection_business_guid String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  business_guid_ref        String?           @db.Uuid
+  inspection_party_guid    String?           @db.Uuid
+  name                     String            @db.VarChar(128)
+  active_ind               Boolean           @default(true)
+  create_user_id           String            @db.VarChar(32)
+  create_utc_timestamp     DateTime          @default(now()) @db.Timestamp(6)
+  update_user_id           String?           @db.VarChar(32)
+  update_utc_timestamp     DateTime?         @db.Timestamp(6)
+  inspection_party         inspection_party? @relation(fields: [inspection_party_guid], references: [inspection_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_party_guid")
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_business_h {
+  h_inspection_business_guid    String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_h {
+  h_inspection_guid             String   @id(map: "PK_h_inspection") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_party {
+  inspection_party_guid      String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  party_guid_ref             String?               @db.Uuid
+  party_type_code_ref        String                @db.VarChar(16)
+  inspection_guid            String                @db.Uuid
+  active_ind                 Boolean               @default(true)
+  create_user_id             String                @db.VarChar(32)
+  create_utc_timestamp       DateTime              @db.Timestamp(6)
+  update_user_id             String?               @db.VarChar(32)
+  update_utc_timestamp       DateTime?             @db.Timestamp(6)
+  party_association_role_ref String?               @db.VarChar(16)
+  inspection_business        inspection_business[]
+  inspection                 inspection            @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_guid")
+  inspection_person          inspection_person[]
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_party_h {
+  h_inspection_party_guid       String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_person {
+  inspection_person_guid String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  person_guid_ref        String?           @db.Uuid
+  inspection_party_guid  String?           @db.Uuid
+  first_name             String            @db.VarChar(128)
+  middle_name            String?           @db.VarChar(128)
+  middle_name_2          String?           @db.VarChar(128)
+  last_name              String            @db.VarChar(128)
+  active_ind             Boolean           @default(true)
+  create_user_id         String            @db.VarChar(32)
+  create_utc_timestamp   DateTime          @default(now()) @db.Timestamp(6)
+  update_user_id         String?           @db.VarChar(32)
+  update_utc_timestamp   DateTime?         @db.Timestamp(6)
+  inspection_party       inspection_party? @relation(fields: [inspection_party_guid], references: [inspection_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_party_guid")
+
+  @@schema("inspection")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model inspection_person_h {
+  h_inspection_person_guid      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -61,21 +172,25 @@ model inspection_status_code {
   update_user_id         String       @db.VarChar(32)
   update_utc_timestamp   DateTime     @db.Timestamp(6)
   inspection             inspection[]
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_status_code_h {
-  h_inspection_status_code_guid String   @id(map: "PK_h_inspection_status_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_inspection_status_code_guid String   @id(map: "PK_h_inspection_status_code") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.VarChar(20)
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref {
-  officer_inspection_xref_guid                                                                                    String                       @id(map: "PK_officer_inspection_xref_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  officer_inspection_xref_guid                                                                                    String                       @id(map: "PK_officer_inspection_xref_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   officer_guid_ref                                                                                                String                       @db.Uuid
   inspection_guid                                                                                                 String                       @db.Uuid
   officer_inspection_xref_code                                                                                    String                       @db.VarChar(10)
@@ -86,6 +201,8 @@ model officer_inspection_xref {
   active_ind                                                                                                      Boolean
   inspection                                                                                                      inspection                   @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_inspection_xref__inspection_guid")
   officer_inspection_xref_code_officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code officer_inspection_xref_code @relation("officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code", fields: [officer_inspection_xref_code], references: [officer_inspection_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_officer_inspection_xref__officer_inspection_xref_code")
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -100,117 +217,30 @@ model officer_inspection_xref_code {
   update_user_id                                                                                             String                    @db.VarChar(32)
   update_utc_timestamp                                                                                       DateTime                  @db.Timestamp(6)
   officer_inspection_xref_officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code officer_inspection_xref[] @relation("officer_inspection_xref_officer_inspection_xref_codeToofficer_inspection_xref_code")
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref_code_h {
-  h_officer_inspection_xref_code_guid String   @id(map: "PK_h_officer_inspection_xref_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_officer_inspection_xref_code_guid String   @id(map: "PK_h_officer_inspection_xref_code") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                       String   @db.VarChar(20)
   operation_type                      String   @db.Char(1)
   operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation       Json?
+
+  @@schema("inspection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref_h {
-  h_officer_inspection_xref_guid String   @id(map: "PK_h_officer_inspection_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_officer_inspection_xref_guid String   @id(map: "PK_h_officer_inspection_xref") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                  String   @db.Uuid
   operation_type                 String   @db.Char(1)
   operation_user_id              String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at          DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation  Json?
-}
 
-model flyway_schema_history {
-  installed_rank Int      @id(map: "flyway_schema_history_pk")
-  version        String?  @db.VarChar(50)
-  description    String   @db.VarChar(200)
-  type           String   @db.VarChar(20)
-  script         String   @db.VarChar(1000)
-  checksum       Int?
-  installed_by   String   @db.VarChar(100)
-  installed_on   DateTime @default(now()) @db.Timestamp(6)
-  execution_time Int
-  success        Boolean
-
-  @@index([success], map: "flyway_schema_history_s_idx")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_business {
-  inspection_business_guid String            @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid_ref        String?           @db.Uuid
-  inspection_party_guid    String?           @db.Uuid
-  name                     String            @db.VarChar(128)
-  active_ind               Boolean           @default(true)
-  create_user_id           String            @db.VarChar(32)
-  create_utc_timestamp     DateTime          @default(now()) @db.Timestamp(6)
-  update_user_id           String?           @db.VarChar(32)
-  update_utc_timestamp     DateTime?         @db.Timestamp(6)
-  inspection_party         inspection_party? @relation(fields: [inspection_party_guid], references: [inspection_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_party_guid")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_business_h {
-  h_inspection_business_guid    String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_party {
-  inspection_party_guid      String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid_ref             String?               @db.Uuid
-  party_type_code_ref        String                @db.VarChar(16)
-  inspection_guid            String                @db.Uuid
-  active_ind                 Boolean               @default(true)
-  create_user_id             String                @db.VarChar(32)
-  create_utc_timestamp       DateTime              @db.Timestamp(6)
-  update_user_id             String?               @db.VarChar(32)
-  update_utc_timestamp       DateTime?             @db.Timestamp(6)
-  party_association_role_ref String?               @db.VarChar(16)
-  inspection_business        inspection_business[]
-  inspection                 inspection            @relation(fields: [inspection_guid], references: [inspection_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_guid")
-  inspection_person          inspection_person[]
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_party_h {
-  h_inspection_party_guid       String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_person {
-  inspection_person_guid String            @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  person_guid_ref        String?           @db.Uuid
-  inspection_party_guid  String?           @db.Uuid
-  first_name             String            @db.VarChar(128)
-  middle_name            String?           @db.VarChar(128)
-  middle_name_2          String?           @db.VarChar(128)
-  last_name              String            @db.VarChar(128)
-  active_ind             Boolean           @default(true)
-  create_user_id         String            @db.VarChar(32)
-  create_utc_timestamp   DateTime          @default(now()) @db.Timestamp(6)
-  update_user_id         String?           @db.VarChar(32)
-  update_utc_timestamp   DateTime?         @db.Timestamp(6)
-  inspection_party       inspection_party? @relation(fields: [inspection_party_guid], references: [inspection_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_inspection_party_guid")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model inspection_person_h {
-  h_inspection_person_guid      String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
+  @@schema("inspection")
 }

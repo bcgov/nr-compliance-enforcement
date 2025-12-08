@@ -54,7 +54,7 @@ export class CosGeoOrgUnitService {
         area_code,
         area_name,
         administrative_office_ind
-      FROM cos_geo_org_unit_flat_mvw
+      FROM shared.cos_geo_org_unit_flat_mvw
       ${whereClause}
       ORDER BY offloc_code ASC`,
       ...params,
@@ -108,7 +108,7 @@ export class CosGeoOrgUnitService {
         area_code,
         area_name,
         administrative_office_ind
-      FROM cos_geo_org_unit_flat_mvw
+      FROM shared.cos_geo_org_unit_flat_mvw
       ${whereClause}
       ORDER BY offloc_code ASC`,
       ...params,

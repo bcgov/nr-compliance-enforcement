@@ -24,23 +24,28 @@ const SEARCH_LEGISLATION = gql`
 `;
 
 const GET_LEGISLATION = gql`
-  query Legislation($legislationGuid: String!) {
-    legislation(legislationGuid: $legislationGuid) {
+  query Legislation($legislationGuid: String!, $includeAncestors: Boolean) {
+    legislation(legislationGuid: $legislationGuid, includeAncestors: $includeAncestors) {
       legislationTypeCode
       fullCitation
       alternateText
       legislationText
+      ancestors {
+        legislationTypeCode
+        legislationGuid
+      }
     }
   }
 `;
 
-export const useLegislation = (legislationGuid: string) => {
+export const useLegislation = (legislationGuid: string | undefined, includeAncestors: boolean) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
-    queryKey: ["legislation", legislationGuid],
+    queryKey: ["legislation", legislationGuid, includeAncestors],
     variables: {
       legislationGuid: legislationGuid,
+      includeAncestors: includeAncestors,
     },
-    enabled: true,
+    enabled: !!legislationGuid, // only run this is we have a guid
     placeholderData: (previousData) => previousData,
   });
   return { data, isLoading, error };
@@ -60,7 +65,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
   return { data, isLoading, error };
 };
 
-export const convertLegislationToOption = (legislation: Legislation[]): Option[] => {
+export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
   return (
     legislation?.map((legislation) => ({
       label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
