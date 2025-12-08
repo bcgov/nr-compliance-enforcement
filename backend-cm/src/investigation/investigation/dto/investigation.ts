@@ -22,6 +22,10 @@ export class Investigation {
   locationAddress?: string;
   locationDescription?: string;
   name: string;
+  supervisorGuid: string;
+  primaryInvestigatorGuid: string;
+  fileCoordinatorGuid?: string;
+  discoveryDate: Date;
   parties: [InvestigationParty];
   contraventions: [Contravention];
 }
@@ -89,6 +93,19 @@ export class CreateInvestigationInput {
 
   @Field(() => String)
   createdByAppUserGuid: string;
+
+  @Field(() => String)
+  supervisorGuid: string;
+
+  @Field(() => String)
+  primaryInvestigatorGuid: string;
+
+  @Field(() => String)
+  @IsOptional()
+  fileCoordinatorGuid: string;
+
+  @Field(() => Date)
+  discoveryDate: Date;
 }
 
 @InputType()
@@ -117,6 +134,19 @@ export class UpdateInvestigationInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   name?: string;
+
+  @Field(() => String)
+  supervisorGuid: string;
+
+  @Field(() => String)
+  primaryInvestigatorGuid: string;
+
+  @Field(() => String)
+  @IsOptional()
+  fileCoordinatorGuid?: string;
+
+  @Field(() => Date)
+  discoveryDate: Date;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -165,6 +195,22 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.createdByAppUserGuid,
       mapFrom((src) => src.created_by_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.supervisorGuid,
+      mapFrom((src) => src.supervisor_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.primaryInvestigatorGuid,
+      mapFrom((src) => src.primary_investigator_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.fileCoordinatorGuid,
+      mapFrom((src) => src.file_coordinator_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.discoveryDate,
+      mapFrom((src) => src.discovery_date),
     ),
     forMember(
       (dest) => dest.parties,

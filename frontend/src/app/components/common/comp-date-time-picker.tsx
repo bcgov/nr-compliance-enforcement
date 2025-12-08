@@ -5,10 +5,10 @@ type Props = {
   value: Date | undefined | null;
   onChange: Function;
   maxDate: Date | undefined;
-  onErrorChange?: (errorMsg: string) => void;
+  errorMessage?: string;
 };
 
-export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErrorChange }) => {
+export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate }) => {
   const [dateStr, setDateStr] = useState("");
   const [timeStr, setTimeStr] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,23 +40,19 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
         if (maxDate && newDateTime > maxDate) {
           const error = "Date and time cannot be in the future";
           setErrorMessage(error);
-          onErrorChange?.(error);
         } else {
           setErrorMessage("");
-          onErrorChange?.("");
         }
         onChange(newDateTime);
       } else {
         setErrorMessage("");
-        onErrorChange?.("");
         onChange(null);
       }
     } else {
       setErrorMessage("");
-      onErrorChange?.("");
       onChange(null);
     }
-  }, [dateStr, timeStr, maxDate, onErrorChange]);
+  }, [dateStr, timeStr, maxDate]);
 
   return (
     <>
@@ -66,7 +62,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
       >
         <div className="comp-details-edit-input">
           <div
-            className="comp-form-control"
+            className={errorMessage ? `comp-form-control error-border` : "comp-form-control"}
             style={{ display: "flex" }}
           >
             <button
@@ -100,7 +96,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
               type="button"
               onClick={openTimePicker}
               className="icon-button"
-              aria-label="Open time picker"
+              aria-label="Open date picker"
             >
               <i className="bi bi-clock" />
             </button>
