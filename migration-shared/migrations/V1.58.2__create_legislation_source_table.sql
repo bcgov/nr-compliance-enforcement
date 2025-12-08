@@ -50,3 +50,22 @@ VALUES
     TRUE,
     'FLYWAY'
   );
+
+INSERT INTO
+  legislation_source (
+    short_description,
+    long_description,
+    source_url,
+    agency_code,
+    active_ind,
+    create_user_id
+  )
+VALUES
+  (
+    'Park Act',
+    'British Columbia Park Act - [RSBC 1996] CHAPTER 344',
+    'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96344_01/xml',
+    'PARKS',
+    TRUE,
+    'FLYWAY'
+  );
