@@ -443,7 +443,7 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
 
   // Detect document type and get root element
   let rootElement: any = null;
-  let documentType: "ACT" | "REG" | "BYLAW" = "ACT";
+  let documentType: "ACT" | "REG" | "BYLAW";
   let nsPrefix = NS_ACT;
 
   if (parsed[`${NS_ACT}act`]) {

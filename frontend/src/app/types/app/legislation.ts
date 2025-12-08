@@ -55,5 +55,5 @@ export enum indentByType {
   SUBSEC = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
   PAR = "ms-3",
   SUBPAR = "ms-5",
-  DEF = "ms-0",
+  DEF = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
 }

@@ -153,26 +153,26 @@ export const convertLegislationToHierarchicalOptions = (
   if (!legislation?.length) return [];
 
   const itemGuids = new Set(legislation.map((i) => i.legislationGuid).filter(Boolean));
-  const getParentKey = (item: Legislation) =>
-    item.parentGuid === rootGuid || (item.parentGuid && itemGuids.has(item.parentGuid))
-      ? item.parentGuid
-      : (rootGuid ?? "root");
+  const getParentKey = (item: Legislation): string => {
+    if (item.parentGuid === rootGuid) return rootGuid ?? "root";
+    if (item.parentGuid && itemGuids.has(item.parentGuid)) return item.parentGuid;
+    return rootGuid ?? "root";
+  };
 
-  // Group by parent, then sort each group by displayOrder and citation
+  // Sort comparator: by displayOrder, then by numeric citation
+  const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
+    (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
+    (Number.parseInt(a.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999) -
+      (Number.parseInt(b.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999);
+
+  // Group by parent, then sort each group
   const childrenMap = new Map<string, Legislation[]>();
   for (const item of legislation) {
     const key = getParentKey(item);
     if (!childrenMap.has(key)) childrenMap.set(key, []);
     childrenMap.get(key)!.push(item);
   }
-  childrenMap.forEach((children) =>
-    children.sort(
-      (a, b) =>
-        (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
-        (parseInt(a.citation?.replace(/\D/g, "") ?? "", 10) || 9999) -
-          (parseInt(b.citation?.replace(/\D/g, "") ?? "", 10) || 9999),
-    ),
-  );
+  childrenMap.forEach((children) => children.sort(sortByDisplayOrderAndCitation));
 
   // Flatten tree recursively
   const flatten = (parentGuid?: string): Legislation[] =>

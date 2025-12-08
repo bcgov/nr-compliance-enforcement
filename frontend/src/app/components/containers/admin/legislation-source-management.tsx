@@ -158,6 +158,107 @@ export const LegislationSourceManagement: FC = () => {
     return agency?.label ?? code;
   };
 
+  const getStatusBadge = (source: LegislationSource) => {
+    if (!source.activeInd) return <span className="badge comp-status-badge-closed">Inactive</span>;
+    if (source.importedInd) return <span className="badge comp-status-badge-open">Imported</span>;
+    return <span className="badge comp-status-badge-pending-review">Pending</span>;
+  };
+
+  const getSaveButtonText = () => {
+    if (createMutation.isPending || updateMutation.isPending) return "Saving...";
+    return isEditing ? "Save Changes" : "Add Source";
+  };
+
+  const renderTableBody = () => {
+    if (isLoading) {
+      return (
+        <tr>
+          <td
+            colSpan={7}
+            className="text-center p-4"
+          >
+            <div className="d-flex align-items-center justify-content-center">
+              <div className="spinner-border spinner-border-sm me-2">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <span>Loading legislation sources...</span>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    if (filteredSources.length === 0) {
+      return (
+        <tr>
+          <td
+            colSpan={7}
+            className="text-center p-4"
+          >
+            <div className="d-flex align-items-center justify-content-center">
+              <i className="bi bi-info-circle-fill me-2" />
+              <span>{searchQuery ? "No matching sources found" : "No legislation sources configured"}</span>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    return filteredSources.map((source, i) => (
+      <tr key={source.legislationSourceGuid}>
+        <td style={{ textAlign: "center" }}>{i + 1}</td>
+        <td>
+          {source.shortDescription}
+          {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
+        </td>
+        <td>{getAgencyLabel(source.agencyCode)}</td>
+        <td className="text-truncate">
+          <a
+            href={source.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="comp-cell-link"
+            title={source.sourceUrl}
+          >
+            {source.sourceUrl}
+          </a>
+        </td>
+        <td style={{ textAlign: "center" }}>{getStatusBadge(source)}</td>
+        <td>{formatDateTime(source.lastImportTimestamp ?? undefined)}</td>
+        <td style={{ textAlign: "center" }}>
+          <Dropdown
+            id={`source-action-button-${source.legislationSourceGuid}`}
+            drop="start"
+            className="comp-action-dropdown"
+          >
+            <Dropdown.Toggle
+              id={`source-action-toggle-${source.legislationSourceGuid}`}
+              size="sm"
+              variant="outline-primary"
+            >
+              Actions
+            </Dropdown.Toggle>
+            <Dropdown.Menu
+              popperConfig={{
+                modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
+              }}
+            >
+              <Dropdown.Item onClick={() => handleOpenEdit(source)}>
+                <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
+                className="text-danger"
+              >
+                <i className="bi bi-trash" /> Delete
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </td>
+      </tr>
+    ));
+  };
+
   return (
     <div className="comp-page-container">
       <div className="comp-page-header">
@@ -179,7 +280,7 @@ export const LegislationSourceManagement: FC = () => {
             variant="primary"
             onClick={handleOpenCreate}
           >
-            <i className="bi bi-plus-lg me-1"></i>
+            <i className="bi bi-plus-lg me-1" />
             Add Source
           </Button>
         </div>
@@ -200,105 +301,7 @@ export const LegislationSourceManagement: FC = () => {
                 <th style={{ width: "90px", textAlign: "center" }}>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center p-4"
-                  >
-                    <div className="d-flex align-items-center justify-content-center">
-                      <div className="spinner-border spinner-border-sm me-2">
-                        <span className="visually-hidden">Loading...</span>
-                      </div>
-                      <span>Loading legislation sources...</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredSources.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="text-center p-4"
-                  >
-                    <div className="d-flex align-items-center justify-content-center">
-                      <i className="bi bi-info-circle-fill me-2"></i>
-                      <span>{searchQuery ? "No matching sources found" : "No legislation sources configured"}</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredSources.map((source, i) => (
-                  <tr key={source.legislationSourceGuid}>
-                    <td style={{ textAlign: "center" }}>{i + 1}</td>
-                    <td>
-                      {source.shortDescription}
-                      {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
-                    </td>
-                    <td>{getAgencyLabel(source.agencyCode)}</td>
-                    <td className="text-truncate">
-                      <a
-                        href={source.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="comp-cell-link"
-                        title={source.sourceUrl}
-                      >
-                        {source.sourceUrl}
-                      </a>
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {!source.activeInd ? (
-                        <span className="badge comp-status-badge-closed">Inactive</span>
-                      ) : source.importedInd ? (
-                        <span className="badge comp-status-badge-open">Imported</span>
-                      ) : (
-                        <span className="badge comp-status-badge-pending-review">Pending</span>
-                      )}
-                    </td>
-                    <td>{formatDateTime(source.lastImportTimestamp)}</td>
-                    <td style={{ textAlign: "center" }}>
-                      <Dropdown
-                        id={`source-action-button-${source.legislationSourceGuid}`}
-                        drop="start"
-                        className="comp-action-dropdown"
-                      >
-                        <Dropdown.Toggle
-                          id={`source-action-toggle-${source.legislationSourceGuid}`}
-                          size="sm"
-                          variant="outline-primary"
-                        >
-                          Actions
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu
-                          popperConfig={{
-                            modifiers: [
-                              {
-                                name: "offset",
-                                options: {
-                                  offset: [0, 13],
-                                  placement: "start",
-                                },
-                              },
-                            ],
-                          }}
-                        >
-                          <Dropdown.Item onClick={() => handleOpenEdit(source)}>
-                            <i className="bi bi-pencil" /> Edit
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
-                            className="text-danger"
-                          >
-                            <i className="bi bi-trash" /> Delete
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
+            <tbody>{renderTableBody()}</tbody>
           </Table>
         </div>
       </div>
@@ -422,11 +425,7 @@ export const LegislationSourceManagement: FC = () => {
             onClick={handleSave}
             disabled={createMutation.isPending || updateMutation.isPending}
           >
-            {createMutation.isPending || updateMutation.isPending
-              ? "Saving..."
-              : isEditing
-                ? "Save Changes"
-                : "Add Source"}
+            {getSaveButtonText()}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -18,7 +18,7 @@ function parseAssentedDate(assentedTo: string | null): Date | null {
   }
   try {
     const parsed = new Date(assentedTo);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
   } catch {
     return null;
   }
@@ -242,10 +242,6 @@ export async function runBcLawsImport(legislationService: LegislationService, lo
       }
     }
 
-    logger.log("\n=== BC Laws Import Summary ===");
-    logger.log(`Total sources: ${sources.length}`);
-    logger.log(`Successful: ${successCount}`);
-    logger.log(`Failed: ${failCount}`);
     logger.log(`Total legislation records imported/updated: ${totalCount}`);
     logger.log("BC Laws import complete.");
   } catch (error) {
