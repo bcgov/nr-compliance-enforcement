@@ -147,6 +147,22 @@ export class CdogsService implements ExternalApiService {
       case "PRKGIRTMPT":
         template = "templates/complaint/CDOGS-PARKS-GIR-COMPLAINT-TEMPLATE-v1.docx";
         break;
+
+      case "EXTCEEBT":
+        template = "templates/complaint/CDOGS-EXT-CEEB-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "EXTPRKERST":
+        template = "templates/complaint/CDOGS-EXT-PARKS-ERS-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "EXTERSTMPT":
+        template = "templates/complaint/CDOGS-EXT-ERS-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "EXTPRKGIRT":
+        template = "templates/complaint/CDOGS-EXT-PARKS-GIR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "EXTGIRT":
+        template = "templates/complaint/CDOGS-EXT-GIR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
       default:
         this.logger.error(`exception: unable to find template: ${template}`);
         break;
@@ -187,6 +203,28 @@ export class CdogsService implements ExternalApiService {
     }
   };
 
+  _getExternalTemplateCode = (data: any, complaintType: string): string => {
+    const prevAgency = data.updates
+      .sort((a, b) => b.updateTime.getTime() - a.updateTime.getTime())
+      .filter(
+        (item) => item.updateType === "REFERRAL" && ["COS", "EPO", "PARKS"].includes(item?.referral.previousAgency),
+      )[0]?.referral?.previousAgency;
+
+    const extTemplateMap = {
+      ERS: {
+        EPO: CONFIGURATION_CODES.EXTCEEBT,
+        PARKS: CONFIGURATION_CODES.EXTPRKERST,
+        default: CONFIGURATION_CODES.EXTERSTMPT,
+      },
+      GIR: {
+        PARKS: CONFIGURATION_CODES.EXTPRKGIRT,
+        default: CONFIGURATION_CODES.EXTGIRT,
+      },
+    };
+    const extTemplateCode = extTemplateMap[complaintType]?.[prevAgency] ?? extTemplateMap[complaintType]?.default;
+    return extTemplateCode;
+  };
+
   //--
   //-- render complaint to pdf
   //--
@@ -201,10 +239,22 @@ export class CdogsService implements ExternalApiService {
       ERS: {
         EPO: CONFIGURATION_CODES.CEEBTMPLATE,
         PARKS: CONFIGURATION_CODES.PRKERSTMPT,
+        ECCC: this._getExternalTemplateCode(data, type),
+        DFO: this._getExternalTemplateCode(data, type),
+        NROS: this._getExternalTemplateCode(data, type),
+        NRS: this._getExternalTemplateCode(data, type),
+        OTH: this._getExternalTemplateCode(data, type),
+        POL: this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.ERSTMPLATE,
       },
       GIR: {
         PARKS: CONFIGURATION_CODES.PRKGIRTMPT,
+        ECCC: this._getExternalTemplateCode(data, type),
+        DFO: this._getExternalTemplateCode(data, type),
+        NROS: this._getExternalTemplateCode(data, type),
+        NRS: this._getExternalTemplateCode(data, type),
+        OTH: this._getExternalTemplateCode(data, type),
+        POL: this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.GIRTMPLATE,
       },
     };
