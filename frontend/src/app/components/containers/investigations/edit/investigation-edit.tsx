@@ -460,10 +460,11 @@ const InvestigationEdit: FC = () => {
               label="Discovery date"
               required
               validators={{
-                onChange: ({ value }: { value: string }) => {
-                  if (!value || value.length < 1) {
+                onSubmit: ({ value }: { value: string }) => {
+                  const dateValue = value || investigationData?.getInvestigation?.discoveryDate || "";
+                  if (!dateValue || dateValue.length < 1) {
                     return "Discovery date is required";
-                  } else if (new Date(value) > new Date()) {
+                  } else if (new Date(dateValue) > new Date()) {
                     return "Date and time cannot be in the future";
                   } else {
                     return undefined;
@@ -471,6 +472,10 @@ const InvestigationEdit: FC = () => {
                 },
               }}
               render={(field) => {
+                // Flush state to rendered comp if it's available so no-edit saves work
+                if (!field.state.value && selectedDiscoveryDateTime) {
+                  field.handleChange(selectedDiscoveryDateTime.toISOString());
+                }
                 return (
                   <CompDateTimePicker
                     value={selectedDiscoveryDateTime}
