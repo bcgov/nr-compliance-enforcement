@@ -249,7 +249,9 @@ export async function runBcLawsImport(legislationService: LegislationService, lo
       }
     }
 
-    logger.log(`Total legislation records imported/updated: ${totalCount}`);
+    logger.log(
+      `Total legislation records imported/updated: ${totalCount}, succeeded: ${successCount}, failed: ${failCount}`,
+    );
     logger.log("BC Laws import complete.");
   } catch (error) {
     logger.error("Error during BC Laws import:", error);
