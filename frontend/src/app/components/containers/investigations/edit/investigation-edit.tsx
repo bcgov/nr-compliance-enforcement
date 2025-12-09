@@ -192,7 +192,7 @@ const InvestigationEdit: FC = () => {
       supervisor: "",
       primaryInvestigator: "",
       fileCoordinator: "",
-      discoveryDate: null,
+      discoveryDate: "",
     };
   }, [isEditMode, investigationData]);
 
@@ -459,8 +459,23 @@ const InvestigationEdit: FC = () => {
               name="discoveryDate"
               label="Discovery date"
               required
-              validators={{ onChange: z.string().min(1, "Discovery date is required") }}
+              validators={{
+                onSubmit: ({ value }: { value: string }) => {
+                  const dateValue = value || investigationData?.getInvestigation?.discoveryDate || "";
+                  if (!dateValue || dateValue.length < 1) {
+                    return "Discovery date is required";
+                  } else if (new Date(dateValue) > new Date()) {
+                    return "Date and time cannot be in the future";
+                  } else {
+                    return undefined;
+                  }
+                },
+              }}
               render={(field) => {
+                // Flush state to rendered comp if it's available so no-edit saves work
+                if (!field.state.value && selectedDiscoveryDateTime) {
+                  field.handleChange(selectedDiscoveryDateTime.toISOString());
+                }
                 return (
                   <CompDateTimePicker
                     value={selectedDiscoveryDateTime}
@@ -469,7 +484,7 @@ const InvestigationEdit: FC = () => {
                       field.handleChange(date ? date.toISOString() : "");
                     }}
                     maxDate={new Date()}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    errorMessage={field.state.meta.errors?.[0] || ""}
                   />
                 );
               }}
