@@ -115,7 +115,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
     <>
       {title && (
         <Modal.Header
-          style={{ paddingBottom: 0 }}
+          className="pb-0"
           closeButton={true}
         >
           <Modal.Title as="h3">{title}</Modal.Title>
