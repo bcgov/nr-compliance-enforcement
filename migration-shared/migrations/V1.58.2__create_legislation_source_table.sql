@@ -47,7 +47,7 @@ VALUES
     'British Columbia Environmental Management Act - SBC 2003 Chapter 53',
     'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml',
     'COS',
-    TRUE,
+    FALSE,
     'FLYWAY'
   );
 
@@ -66,6 +66,6 @@ VALUES
     'British Columbia Park Act - [RSBC 1996] CHAPTER 344',
     'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/96344_01/xml',
     'PARKS',
-    TRUE,
+    FALSE,
     'FLYWAY'
   );
