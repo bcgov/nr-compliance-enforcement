@@ -524,7 +524,7 @@ export class InvestigationService {
       // Get unmappable results. Raw SQL is required for PostGIS operations.
       const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
         SELECT COUNT(*) as count
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
           AND (
             location_geometry_point IS NULL OR
@@ -540,7 +540,7 @@ export class InvestigationService {
         SELECT
           investigation_guid,
           public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
           AND location_geometry_point IS NOT NULL
           AND public.ST_X(location_geometry_point) <> 0
@@ -601,7 +601,7 @@ export class InvestigationService {
       const query = `
         SELECT
             public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
       `;
       result = await this.prisma.$queryRawUnsafe(query);
@@ -625,7 +625,7 @@ export class InvestigationService {
     }
     try {
       const query = `
-        UPDATE investigation
+        UPDATE investigation.investigation
         SET location_geometry_point = ${point_data}
         WHERE investigation_guid = '${investigationGuid}'::uuid
       `;
