@@ -34,12 +34,10 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
   const displayError = maxDateError || errorMessage || "";
 
   useEffect(() => {
-    console.log("use");
     onErrorChange?.(maxDateError);
   }, [maxDateError, onErrorChange]);
 
   useEffect(() => {
-    console.log("use");
     if (value && isValid(value)) {
       setDateStr(format(value, "yyyy-MM-dd"));
       setTimeStr(format(value, "HH:mm"));
@@ -50,7 +48,6 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
   }, [value]);
 
   useEffect(() => {
-    console.log("use");
     if (dateStr) {
       let newDateTime: Date;
       if (timeStr) {

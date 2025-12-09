@@ -461,7 +461,7 @@ const InvestigationEdit: FC = () => {
               required
               validators={{
                 onChange: ({ value }: { value: string }) => {
-                  if (!value) {
+                  if (!value || value.length < 1) {
                     return "Discovery date is required";
                   } else if (new Date(value) > new Date()) {
                     return "Date and time cannot be in the future";
@@ -479,7 +479,7 @@ const InvestigationEdit: FC = () => {
                       field.handleChange(date ? date.toISOString() : "");
                     }}
                     maxDate={new Date()}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    errorMessage={field.state.meta.errors?.[0] || ""}
                   />
                 );
               }}
