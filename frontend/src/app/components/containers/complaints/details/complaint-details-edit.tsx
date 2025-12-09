@@ -136,12 +136,10 @@ export const ComplaintDetailsEdit: FC = () => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   useEffect(() => {
-    console.log("use");
     dispatch(getCaseFile(id));
   }, [id, dispatch, allOfficers]);
 
   useEffect(() => {
-    console.log("use");
     if (!data || data.id !== id) {
       dispatch(getComplaintById(id, complaintType));
     }
@@ -266,7 +264,6 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- use effects
   useEffect(() => {
-    console.log("use");
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setComplaint(null));
@@ -276,7 +273,6 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log("use");
     const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
     if (incidentDateTimeObject) {
       setSelectedIncidentDateTime(incidentDateTimeObject);
@@ -284,13 +280,11 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [incidentDateTime]);
 
   useEffect(() => {
-    console.log("use");
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
     setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
   }, [coordinates]);
 
   useEffect(() => {
-    console.log("use");
     dispatch(getLinkedComplaints(id));
   }, [dispatch, id, complaintType, details]);
 
@@ -783,7 +777,6 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   useEffect(() => {
-    console.log("use");
     let mapElements: MapElement[] = [];
     mapElements.push({
       objectType: MapObjectType.Complaint,

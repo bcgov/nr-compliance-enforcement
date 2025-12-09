@@ -587,7 +587,6 @@ export class InvestigationService {
         not: excludeInvestigationGuid,
       };
     }
-
     const existingInvestigation = await this.prisma.investigation.findFirst({
       where,
     });

@@ -192,7 +192,7 @@ const InvestigationEdit: FC = () => {
       supervisor: "",
       primaryInvestigator: "",
       fileCoordinator: "",
-      discoveryDate: null,
+      discoveryDate: "",
     };
   }, [isEditMode, investigationData]);
 
@@ -459,7 +459,17 @@ const InvestigationEdit: FC = () => {
               name="discoveryDate"
               label="Discovery date"
               required
-              validators={{ onChange: z.string().min(1, "Discovery date is required") }}
+              validators={{
+                onChange: ({ value }: { value: string }) => {
+                  if (!value) {
+                    return "Discovery date is required";
+                  } else if (new Date(value) > new Date()) {
+                    return "Date and time cannot be in the future";
+                  } else {
+                    return undefined;
+                  }
+                },
+              }}
               render={(field) => {
                 return (
                   <CompDateTimePicker
