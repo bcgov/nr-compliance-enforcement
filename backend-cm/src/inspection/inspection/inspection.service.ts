@@ -283,7 +283,7 @@ export class InspectionService {
 
       const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
         SELECT COUNT(*) as count
-        FROM inspection
+        FROM inspection.inspection
         WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
           AND (
             location_geometry_point IS NULL OR
@@ -298,7 +298,7 @@ export class InspectionService {
         SELECT
           inspection_guid,
           public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM inspection
+        FROM inspection.inspection
         WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
           AND location_geometry_point IS NOT NULL
           AND public.ST_X(location_geometry_point) <> 0
@@ -499,7 +499,7 @@ export class InspectionService {
       const query = `
         SELECT
             public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM inspection
+        FROM inspection.inspection
         WHERE inspection_guid = '${inspection.inspection_guid}'::uuid
       `;
       result = await this.prisma.$queryRawUnsafe(query);
