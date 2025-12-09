@@ -2,7 +2,6 @@
 -- Reference: http://www.bclaws.ca/standards/act.xsd
 -- Reference: http://www.bclaws.ca/standards/regulation.xsd
 -- Reference: http://www.bclaws.ca/standards/bylaw.xsd
-
 INSERT INTO
   legislation_type_code (
     legislation_type_code,
@@ -14,6 +13,24 @@ INSERT INTO
     create_utc_timestamp
   )
 VALUES
+  (
+    'PART',
+    'Part',
+    'A major division of an Act or Regulation, typically numbered Part 1, Part 2, etc.',
+    25,
+    TRUE,
+    'FLYWAY',
+    NOW ()
+  ),
+  (
+    'DEF',
+    'Definition',
+    'A defined term within an Act or Regulation, typically found in a definitions section.',
+    35,
+    TRUE,
+    'FLYWAY',
+    NOW ()
+  ),
   (
     'BYLAW',
     'Bylaw',
@@ -50,4 +67,3 @@ VALUES
     'FLYWAY',
     NOW ()
   ) ON CONFLICT (legislation_type_code) DO NOTHING;
-
