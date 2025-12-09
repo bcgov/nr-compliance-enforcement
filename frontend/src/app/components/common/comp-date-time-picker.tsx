@@ -9,7 +9,7 @@ type Props = {
   onErrorChange?: (error: string) => void;
 };
 
-export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErrorChange }) => {
+export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErrorChange, errorMessage }) => {
   const [dateStr, setDateStr] = useState("");
   const [timeStr, setTimeStr] = useState("");
   const dateInputRef = useRef<HTMLInputElement>(null);
@@ -18,8 +18,8 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
   const openDatePicker = () => dateInputRef.current?.showPicker?.() ?? dateInputRef.current?.focus();
   const openTimePicker = () => timeInputRef.current?.showPicker?.() ?? timeInputRef.current?.focus();
 
-  // Memo to prevent re-renders
-  const errorMessage = useMemo(() => {
+  // Internal validation for maxDate
+  const maxDateError = useMemo(() => {
     if (dateStr) {
       const dt = new Date(timeStr ? `${dateStr}T${timeStr}:00` : `${dateStr}T00:00:00`);
       if (isValid(dt) && maxDate && dt > maxDate) {
@@ -29,12 +29,18 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
     return "";
   }, [dateStr, timeStr, maxDate]);
 
-  useEffect(() => {
-    onErrorChange?.(errorMessage);
-  }, [errorMessage, onErrorChange]);
+  // Check internal and external errors to stay compatible with both
+  // tanstack and old complaints pattern
+  const displayError = maxDateError || errorMessage || "";
 
   useEffect(() => {
-    if (value) {
+    console.log("use");
+    onErrorChange?.(maxDateError);
+  }, [maxDateError, onErrorChange]);
+
+  useEffect(() => {
+    console.log("use");
+    if (value && isValid(value)) {
       setDateStr(format(value, "yyyy-MM-dd"));
       setTimeStr(format(value, "HH:mm"));
     } else {
@@ -44,6 +50,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
   }, [value]);
 
   useEffect(() => {
+    console.log("use");
     if (dateStr) {
       let newDateTime: Date;
       if (timeStr) {
@@ -51,12 +58,12 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
       } else {
         newDateTime = new Date(`${dateStr}T00:00:00`);
       }
-      if (isValid(newDateTime) && (!value || newDateTime.getTime() !== value.getTime())) {
+      if (isValid(newDateTime) && (!value || !isValid(value) || newDateTime.getTime() !== value.getTime())) {
         onChange(newDateTime);
-      } else if (value != null) {
+      } else if (value != null && isValid(value)) {
         onChange(null);
       }
-    } else if (value != null) {
+    } else if (value != null && isValid(value)) {
       onChange(null);
     }
   }, [dateStr, timeStr, value]);
@@ -69,7 +76,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
       >
         <div className="comp-details-edit-input">
           <div
-            className={errorMessage ? `comp-form-control error-border` : "comp-form-control"}
+            className={displayError ? `comp-form-control error-border` : "comp-form-control"}
             style={{ display: "flex" }}
           >
             <button
@@ -121,7 +128,7 @@ export const CompDateTimePicker: FC<Props> = ({ value, onChange, maxDate, onErro
           </div>
         </div>
       </div>
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
+      {displayError && <div className="error-message">{displayError}</div>}
     </>
   );
 };
