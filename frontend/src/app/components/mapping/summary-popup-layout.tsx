@@ -73,7 +73,7 @@ export const SummaryPopupLayout: FC<SummaryPopupLayoutProps> = ({
                 </div>
                 <div>
                   <dt className="comp-summary-popup-details">
-                    <i className="bi bi-person-fill" /> Officer
+                    <i className="bi bi-person-fill" /> Primary investigator
                   </dt>
                   <dd>
                     {officerUnassigned && <i className="bi bi-exclamation-triangle-fill text-warning"></i>}{" "}
