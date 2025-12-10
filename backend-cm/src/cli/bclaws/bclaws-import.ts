@@ -198,7 +198,8 @@ async function importLegislationSourceDocument(
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorStack = error instanceof Error ? error.stack : undefined;
-    const errorLog = `Import failed: ${errorMessage}${errorStack ? `\n\nStack trace:\n${errorStack}` : ""}`;
+    const stackTrace = errorStack ? "\n\nStack trace:\n" + errorStack : "";
+    const errorLog = "Import failed: " + errorMessage + stackTrace;
 
     // Mark the source as failed with error log
     try {
