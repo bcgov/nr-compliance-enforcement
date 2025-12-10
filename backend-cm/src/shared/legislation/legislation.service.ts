@@ -58,24 +58,16 @@ export class LegislationService {
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          (
-            CASE l.legislation_type_code  
-              WHEN 'SEC' THEN '1'
-              WHEN 'SUBSEC' THEN '2'
-              WHEN 'PAR' THEN '3'
-              WHEN 'SUBPAR' THEN '4'
-              ELSE '9'
-            END || ':' || LPAD(l.display_order::text, 4, '0') -- LPAD so that 1, 2, 10 sorts correctly as 0001, 0002, 0010
-          ) AS sort_path  
+          LPAD(l.display_order::text, 4, '0') AS sort_path -- Sort by display_order (document order)
         FROM legislation l
         -- Join to legislation_source when finding root nodes (no ancestorGuid)
         -- When ancestorGuid is provided, the parent was already filtered by agency at the parent level
         LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
-        WHERE 
+        WHERE
           (
             -- When ancestorGuid is provided, match it directly
             (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
-            OR
+          OR
             -- When no ancestorGuid, find root nodes filtered by agency
             (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
           )
@@ -87,17 +79,7 @@ export class LegislationService {
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          d.sort_path || '.' || -- append child path to parent e.g. 0001.0001, 0001.0002, etc.
-          (
-            CASE l.legislation_type_code
-              WHEN 'SEC' THEN '1'
-              WHEN 'SUBSEC' THEN '2'
-              WHEN 'PAR' THEN '3'
-              WHEN 'SUBPAR' THEN '4'
-              ELSE '9'
-            END
-            || ':' || LPAD(l.display_order::text, 4, '0')
-          ) AS sort_path
+          d.sort_path || '.' || LPAD(l.display_order::text, 4, '0') AS sort_path
         FROM legislation l
         INNER JOIN descendants d ON l.parent_legislation_guid = d.legislation_guid
       )
@@ -240,30 +222,37 @@ export class LegislationService {
   }
 
   /**
-   * Finds legislation by type code, citation, and parent GUID
+   * Finds legislation by type code, citation, parent GUID, and optionally section title
+   * Definitions have null citation, section_title is used as additional key
    */
   private async _findByTypeAndCitation(
     legislationTypeCode: string,
     citation: string | null,
     parentLegislationGuid: string | null,
+    sectionTitle: string | null = null,
   ): Promise<LegislationRow | null> {
-    return this.prisma.legislation.findFirst({
-      where: {
-        legislation_type_code: legislationTypeCode,
-        citation: citation,
-        parent_legislation_guid: parentLegislationGuid,
-      },
-    });
+    const where: any = {
+      legislation_type_code: legislationTypeCode,
+      citation: citation,
+      parent_legislation_guid: parentLegislationGuid,
+    };
+
+    if (citation === null && sectionTitle !== null) {
+      where.section_title = sectionTitle;
+    }
+
+    return this.prisma.legislation.findFirst({ where });
   }
 
   /**
-   * Upserts legislation based on type code, citation, and parent GUID
+   * Upserts legislation based on type code, citation, parent GUID, and section title
    */
   async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
     const existing = await this._findByTypeAndCitation(
       input.legislationTypeCode,
       input.citation ?? null,
       input.parentLegislationGuid ?? null,
+      input.sectionTitle ?? null,
     );
 
     if (existing) {

@@ -21,6 +21,8 @@ export enum Legislation {
   SUBSECTION = "SUBSEC",
   PARAGRAPH = "PAR",
   SUBPARAGRAPH = "SUBPAR",
+  CLAUSE = "CL",
+  SUBCLAUSE = "SUBCL",
   DEFINITION = "DEF",
 }
 
@@ -36,6 +38,8 @@ export enum indentByType {
   SEC = "ms-0",
   SUBSEC = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
   PAR = "ms-3",
-  SUBPAR = "ms-5",
+  SUBPAR = "ms-4",
+  CL = "ms-5", //NOSONAR - same indent as subparagraph
+  SUBCL = "ms-5", //NOSONAR - same indent as subparagraph
   DEF = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
 }

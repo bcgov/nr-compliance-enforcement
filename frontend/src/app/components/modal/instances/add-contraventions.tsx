@@ -140,6 +140,9 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       Legislation.SUBSECTION,
       Legislation.PARAGRAPH,
       Legislation.SUBPARAGRAPH,
+      Legislation.CLAUSE,
+      Legislation.SUBCLAUSE,
+      Legislation.DEFINITION,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -398,7 +401,9 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
-                          {section.legislationTypeCode !== Legislation.SECTION && <>{`(${section.citation})`}</>}{" "}
+                          {section.legislationTypeCode !== Legislation.SECTION && section.citation && (
+                            <>{`(${section.citation})`} </>
+                          )}
                           {section.legislationText}
                         </p>
                         {section.alternateText && (

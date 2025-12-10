@@ -59,6 +59,24 @@ VALUES
     NOW ()
   ),
   (
+    'CL',
+    'Clause',
+    'A clause within a paragraph or subparagraph, typically lettered (A), (B), etc.',
+    36,
+    TRUE,
+    'FLYWAY',
+    NOW ()
+  ),
+  (
+    'SUBCL',
+    'Subclause',
+    'A subclause within a clause, the lowest level of legislative text hierarchy.',
+    37,
+    TRUE,
+    'FLYWAY',
+    NOW ()
+  ),
+  (
     'RULE',
     'Rule',
     'A rule within a Regulation, typically used in procedural or court rules.',
