@@ -17,13 +17,29 @@ CREATE TABLE
 
 COMMENT ON TABLE legislation_source IS 'Defines BC Laws XML documents to be imported into the legislation table';
 
-COMMENT ON COLUMN legislation_source.source_url IS 'Full URL to the BC Laws XML document (e.g., https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml)';
+COMMENT ON COLUMN legislation_source.legislation_source_guid IS 'Primary key. Unique identifier for this legislation source record.';
 
-COMMENT ON COLUMN legislation_source.agency_code IS 'Agency code to associate imported legislation with via legislation_agency_xref';
+COMMENT ON COLUMN legislation_source.short_description IS 'Short name or title for this legislation source (e.g., Environmental Management Act).';
 
-COMMENT ON COLUMN legislation_source.last_import_timestamp IS 'Timestamp of the last successful import';
+COMMENT ON COLUMN legislation_source.long_description IS 'Optional longer description with additional context about this legislation source.';
+
+COMMENT ON COLUMN legislation_source.source_url IS 'Full URL to the BC Laws XML document (e.g., https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml).';
+
+COMMENT ON COLUMN legislation_source.agency_code IS 'Foreign key to agency_code. Defines which agency this legislation source belongs to.';
+
+COMMENT ON COLUMN legislation_source.active_ind IS 'Whether this source is active. Inactive sources will not be imported.';
 
 COMMENT ON COLUMN legislation_source.imported_ind IS 'Whether this source has been imported. If true, the import job will skip it.';
+
+COMMENT ON COLUMN legislation_source.last_import_timestamp IS 'Timestamp of the last successful import. NULL if never imported.';
+
+COMMENT ON COLUMN legislation_source.create_user_id IS 'The id of the user that created this record.';
+
+COMMENT ON COLUMN legislation_source.create_utc_timestamp IS 'The timestamp when this record was created. Stored in UTC with no offset.';
+
+COMMENT ON COLUMN legislation_source.update_user_id IS 'The id of the user that last updated this record.';
+
+COMMENT ON COLUMN legislation_source.update_utc_timestamp IS 'The timestamp when this record was last updated. Stored in UTC with no offset.';
 
 ALTER TABLE legislation
 ADD COLUMN IF NOT EXISTS legislation_source_guid UUID;

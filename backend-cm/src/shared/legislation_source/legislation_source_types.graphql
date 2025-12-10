@@ -6,7 +6,9 @@ type LegislationSource {
   agencyCode: String!
   activeInd: Boolean!
   importedInd: Boolean!
+  importStatus: String
   lastImportTimestamp: String
+  lastImportLog: String
   createUserId: String
   createUtcTimestamp: String
 }

@@ -3,6 +3,7 @@ import { Inject, Logger } from "@nestjs/common";
 import { ParkService } from "./shared/park/park.service";
 import { ParkAreaMappingService } from "./shared/park/parkAreaMapping.service";
 import { LegislationService } from "./shared/legislation/legislation.service";
+import { LegislationSourceService } from "./shared/legislation_source/legislation_source.service";
 import { runParksImport } from "./cli/parks/parks-import";
 import { runBcLawsImport } from "./cli/bclaws/bclaws-import";
 
@@ -16,6 +17,7 @@ export class ImportCommand extends CommandRunner {
     @Inject(ParkService) private readonly _parkService: ParkService,
     @Inject(ParkAreaMappingService) private readonly _parkAreaMappingService: ParkAreaMappingService,
     @Inject(LegislationService) private readonly _legislationService: LegislationService,
+    @Inject(LegislationSourceService) private readonly _legislationSourceService: LegislationSourceService,
   ) {
     super();
   }
@@ -76,7 +78,7 @@ export class ImportCommand extends CommandRunner {
         await runParksImport(this._parkService, this._parkAreaMappingService, this.logger);
         break;
       case "bclaws":
-        await runBcLawsImport(this._legislationService, this.logger);
+        await runBcLawsImport(this._legislationService, this._legislationSourceService, this.logger);
         break;
       default:
         throw new Error(`Unknown job: ${job}. Valid jobs: parks, bclaws`);

@@ -39,19 +39,6 @@ export interface CreateLegislationInput {
   createUserId: string;
 }
 
-export interface LegislationSource {
-  legislationSourceGuid: string;
-  shortDescription: string;
-  longDescription: string | null;
-  sourceUrl: string;
-  agencyCode: string;
-  activeInd: boolean;
-  importedInd: boolean;
-  lastImportTimestamp: string | null;
-  createUserId?: string;
-  createUtcTimestamp?: Date;
-}
-
 @Injectable()
 export class LegislationService {
   constructor(
@@ -66,32 +53,41 @@ export class LegislationService {
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
-        SELECT legislation_guid, -- Parent Nodes
-          parent_legislation_guid,
-          legislation_type_code,
-          display_order,
+        SELECT 
+          l.legislation_guid, -- Parent Nodes
+          l.parent_legislation_guid,
+          l.legislation_type_code,
+          l.display_order,
           (
-            CASE legislation_type_code  
+            CASE l.legislation_type_code  
               WHEN 'SEC' THEN '1'
               WHEN 'SUBSEC' THEN '2'
               WHEN 'PAR' THEN '3'
               WHEN 'SUBPAR' THEN '4'
               ELSE '9'
-            END || ':' || LPAD(display_order::text, 4, '0')  -- LPAD so that 1, 2, 10 sorts correctly as 0001, 0002, 0010
+            END || ':' || LPAD(l.display_order::text, 4, '0') -- LPAD so that 1, 2, 10 sorts correctly as 0001, 0002, 0010
           ) AS sort_path  
-        FROM legislation
+        FROM legislation l
+        -- Join to legislation_source when finding root nodes (no ancestorGuid)
+        -- When ancestorGuid is provided, the parent was already filtered by agency at the parent level
+        LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
         WHERE 
-          -- If ancestorGuid is provided, match it; else match root nodes
-          (COALESCE(${ancestorGuid}, '') <> '' AND legislation_guid = ${ancestorGuid}::uuid)
-          OR
-          (COALESCE(${ancestorGuid}, '') = '' AND parent_legislation_guid IS NULL)
+          (
+            -- When ancestorGuid is provided, match it directly
+            (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
+            OR
+            -- When no ancestorGuid, find root nodes filtered by agency
+            (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
+          )
+        
         UNION ALL
+        
         SELECT -- Child nodes
           l.legislation_guid,
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          d.sort_path || '.' || -- append child path to parent e.g 0001.0001, 0001.0002 etc.
+          d.sort_path || '.' || -- append child path to parent e.g. 0001.0001, 0001.0002, etc.
           (
             CASE l.legislation_type_code
               WHEN 'SEC' THEN '1'
@@ -103,8 +99,7 @@ export class LegislationService {
             || ':' || LPAD(l.display_order::text, 4, '0')
           ) AS sort_path
         FROM legislation l
-        INNER JOIN descendants d 
-          ON l.parent_legislation_guid = d.legislation_guid
+        INNER JOIN descendants d ON l.parent_legislation_guid = d.legislation_guid
       )
       SELECT 
         l.legislation_guid,
@@ -119,19 +114,12 @@ export class LegislationService {
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
       WHERE 
-        l.legislation_guid IN (SELECT legislation_guid FROM descendants)
-        AND (
+        (
           ${legislationTypeCodes ?? []} = '{}'::text[]
           OR l.legislation_type_code = ANY(${legislationTypeCodes ?? []}::text[])
         )
         AND (l.effective_date IS NULL OR l.effective_date <= ${today}::date)
         AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
-        AND EXISTS (
-          SELECT 1 
-          FROM legislation_agency_xref lax
-          WHERE lax.legislation_guid = l.legislation_guid
-            AND lax.agency_code = ${agencyCode}
-        )
       ORDER BY d.sort_path;
       `;
     try {
@@ -254,7 +242,7 @@ export class LegislationService {
   /**
    * Finds legislation by type code, citation, and parent GUID
    */
-  async findByTypeAndCitation(
+  private async _findByTypeAndCitation(
     legislationTypeCode: string,
     citation: string | null,
     parentLegislationGuid: string | null,
@@ -272,7 +260,7 @@ export class LegislationService {
    * Upserts legislation based on type code, citation, and parent GUID
    */
   async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
-    const existing = await this.findByTypeAndCitation(
+    const existing = await this._findByTypeAndCitation(
       input.legislationTypeCode,
       input.citation ?? null,
       input.parentLegislationGuid ?? null,
@@ -302,277 +290,24 @@ export class LegislationService {
   }
 
   /**
-   * Gets distinct child legislation types for a given parent legislation
+   * Gets all legislation type codes from the lookup table
    */
-  async getChildTypes(agencyCode: string, parentGuid?: string): Promise<string[]> {
-    const today = new Date();
-
-    // Build the where clause for parent
-    const parentWhere = parentGuid ? { parent_legislation_guid: parentGuid } : { parent_legislation_guid: null };
-
-    // Find all children matching criteria
-    const children = await this.prisma.legislation.findMany({
+  async getAllLegislationTypeCodes() {
+    const types = await this.prisma.legislation_type_code.findMany({
       where: {
-        ...parentWhere,
-        OR: [{ effective_date: null }, { effective_date: { lte: today } }],
-        AND: [{ OR: [{ expiry_date: null }, { expiry_date: { gt: today } }] }],
-        legislation_agency_xref: {
-          some: {
-            agency_code: agencyCode,
-          },
-        },
+        active_ind: true,
       },
-      select: {
-        legislation_type_code: true,
-      },
-      distinct: ["legislation_type_code"],
-    });
-
-    // Extract unique types and sort by hierarchy order
-    const typeOrder: Record<string, number> = {
-      ACT: 1,
-      REG: 2,
-      BYLAW: 3,
-      PART: 4,
-      DIV: 5,
-      RULE: 6,
-      SCHED: 7,
-      SEC: 8,
-      SUBSEC: 9,
-      PAR: 10,
-      SUBPAR: 11,
-      DEF: 12,
-    };
-
-    const types = children.map((c) => c.legislation_type_code);
-    types.sort((a, b) => (typeOrder[a] ?? 9) - (typeOrder[b] ?? 9));
-
-    return types;
-  }
-
-  /**
-   * Gets direct children of a legislation node (not recursive descendants)
-   */
-  async findDirectChildren(agencyCode: string, parentGuid: string, legislationTypeCode?: string) {
-    const today = new Date();
-
-    const whereClause: any = {
-      parent_legislation_guid: parentGuid,
-      OR: [{ effective_date: null }, { effective_date: { lte: today } }],
-      AND: [{ OR: [{ expiry_date: null }, { expiry_date: { gt: today } }] }],
-      legislation_agency_xref: {
-        some: {
-          agency_code: agencyCode,
-        },
-      },
-    };
-
-    // Add type filter if provided
-    if (legislationTypeCode) {
-      whereClause.legislation_type_code = legislationTypeCode;
-    }
-
-    const prismaLegislation = await this.prisma.legislation.findMany({
-      where: whereClause,
       orderBy: {
         display_order: "asc",
       },
     });
 
-    try {
-      return this.mapper.mapArray<legislation, Legislation>(
-        prismaLegislation as legislation[],
-        "legislation",
-        "Legislation",
-      );
-    } catch (error) {
-      this.logger.error("Error mapping legislation", error);
-    }
-  }
-
-  /**
-   * Creates an agency association for a legislation record
-   */
-  async createAgencyXref(legislationGuid: string, agencyCode: string, createUserId: string): Promise<void> {
-    // Check if association already exists
-    const existing = await this.prisma.legislation_agency_xref.findFirst({
-      where: {
-        legislation_guid: legislationGuid,
-        agency_code: agencyCode,
-      },
-    });
-
-    if (!existing) {
-      await this.prisma.legislation_agency_xref.create({
-        data: {
-          legislation_guid: legislationGuid,
-          agency_code: agencyCode,
-          create_user_id: createUserId,
-          create_utc_timestamp: new Date(),
-        },
-      });
-    }
-  }
-
-  async getPendingLegislationSources(): Promise<LegislationSource[]> {
-    const sources = await this.prisma.legislation_source.findMany({
-      where: {
-        active_ind: true,
-        imported_ind: false,
-      },
-      orderBy: {
-        short_description: "asc",
-      },
-    });
-
-    return sources.map((source) => ({
-      legislationSourceGuid: source.legislation_source_guid,
-      shortDescription: source.short_description,
-      longDescription: source.long_description,
-      sourceUrl: source.source_url,
-      agencyCode: source.agency_code,
-      activeInd: source.active_ind,
-      importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
+    return types.map((type) => ({
+      legislationTypeCode: type.legislation_type_code,
+      shortDescription: type.short_description,
+      longDescription: type.long_description,
+      displayOrder: type.display_order,
+      activeInd: type.active_ind,
     }));
-  }
-
-  async markLegislationSourceImported(legislationSourceGuid: string): Promise<void> {
-    await this.prisma.legislation_source.update({
-      where: {
-        legislation_source_guid: legislationSourceGuid,
-      },
-      data: {
-        imported_ind: true,
-        last_import_timestamp: new Date(),
-        update_user_id: "system",
-        update_utc_timestamp: new Date(),
-      },
-    });
-  }
-
-  async getAllLegislationSources(): Promise<LegislationSource[]> {
-    const sources = await this.prisma.legislation_source.findMany({
-      orderBy: [{ agency_code: "asc" }, { short_description: "asc" }],
-    });
-
-    return sources.map((source) => ({
-      legislationSourceGuid: source.legislation_source_guid,
-      shortDescription: source.short_description,
-      longDescription: source.long_description,
-      sourceUrl: source.source_url,
-      agencyCode: source.agency_code,
-      activeInd: source.active_ind,
-      importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
-      createUserId: source.create_user_id,
-      createUtcTimestamp: source.create_utc_timestamp,
-    }));
-  }
-
-  async getLegislationSourceById(legislationSourceGuid: string): Promise<LegislationSource | null> {
-    const source = await this.prisma.legislation_source.findUnique({
-      where: { legislation_source_guid: legislationSourceGuid },
-    });
-
-    if (!source) {
-      return null;
-    }
-
-    return {
-      legislationSourceGuid: source.legislation_source_guid,
-      shortDescription: source.short_description,
-      longDescription: source.long_description,
-      sourceUrl: source.source_url,
-      agencyCode: source.agency_code,
-      activeInd: source.active_ind,
-      importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
-      createUserId: source.create_user_id,
-      createUtcTimestamp: source.create_utc_timestamp,
-    };
-  }
-
-  async createLegislationSource(input: {
-    shortDescription: string;
-    longDescription?: string | null;
-    sourceUrl: string;
-    agencyCode: string;
-    createUserId: string;
-  }): Promise<LegislationSource> {
-    const source = await this.prisma.legislation_source.create({
-      data: {
-        short_description: input.shortDescription,
-        long_description: input.longDescription ?? null,
-        source_url: input.sourceUrl,
-        agency_code: input.agencyCode,
-        active_ind: true,
-        imported_ind: false,
-        create_user_id: input.createUserId,
-        create_utc_timestamp: new Date(),
-      },
-    });
-
-    return {
-      legislationSourceGuid: source.legislation_source_guid,
-      shortDescription: source.short_description,
-      longDescription: source.long_description,
-      sourceUrl: source.source_url,
-      agencyCode: source.agency_code,
-      activeInd: source.active_ind,
-      importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
-      createUserId: source.create_user_id,
-      createUtcTimestamp: source.create_utc_timestamp,
-    };
-  }
-
-  async updateLegislationSource(input: {
-    legislationSourceGuid: string;
-    shortDescription?: string;
-    longDescription?: string | null;
-    sourceUrl?: string;
-    agencyCode?: string;
-    activeInd?: boolean;
-    importedInd?: boolean;
-    updateUserId: string;
-  }): Promise<LegislationSource> {
-    const source = await this.prisma.legislation_source.update({
-      where: { legislation_source_guid: input.legislationSourceGuid },
-      data: {
-        ...(input.shortDescription !== undefined && { short_description: input.shortDescription }),
-        ...(input.longDescription !== undefined && { long_description: input.longDescription }),
-        ...(input.sourceUrl !== undefined && { source_url: input.sourceUrl }),
-        ...(input.agencyCode !== undefined && { agency_code: input.agencyCode }),
-        ...(input.activeInd !== undefined && { active_ind: input.activeInd }),
-        ...(input.importedInd !== undefined && { imported_ind: input.importedInd }),
-        update_user_id: input.updateUserId,
-        update_utc_timestamp: new Date(),
-      },
-    });
-
-    return {
-      legislationSourceGuid: source.legislation_source_guid,
-      shortDescription: source.short_description,
-      longDescription: source.long_description,
-      sourceUrl: source.source_url,
-      agencyCode: source.agency_code,
-      activeInd: source.active_ind,
-      importedInd: source.imported_ind,
-      lastImportTimestamp: source.last_import_timestamp?.toISOString() ?? null,
-      createUserId: source.create_user_id,
-      createUtcTimestamp: source.create_utc_timestamp,
-    };
-  }
-
-  async deleteLegislationSource(legislationSourceGuid: string): Promise<boolean> {
-    try {
-      await this.prisma.legislation_source.delete({
-        where: { legislation_source_guid: legislationSourceGuid },
-      });
-      return true;
-    } catch {
-      return false;
-    }
   }
 }

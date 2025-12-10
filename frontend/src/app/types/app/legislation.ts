@@ -25,24 +25,6 @@ export enum Legislation {
 }
 
 /**
- * Human-readable labels for legislation type codes
- */
-export const LegislationTypeLabels: Record<string, string> = {
-  ACT: "Act",
-  REG: "Regulation",
-  BYLAW: "Bylaw",
-  PART: "Part",
-  DIV: "Division",
-  RULE: "Rule",
-  SCHED: "Schedule",
-  SEC: "Section",
-  SUBSEC: "Subsection",
-  PAR: "Paragraph",
-  SUBPAR: "Subparagraph",
-  DEF: "Definition",
-};
-
-/**
  * Top-level legislation types (root documents)
  */
 export const RootLegislationTypes = [Legislation.ACT, Legislation.REGULATION, Legislation.BYLAW];

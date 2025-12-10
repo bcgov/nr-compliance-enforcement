@@ -39,6 +39,12 @@ export class legislation_source {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  import_status?: string = "PENDING";
+
+  @ApiPropertyOptional({ type: String })
+  last_import_log?: string;
+
   @ApiProperty({ isArray: true, type: () => legislation })
   legislation: legislation[];
 

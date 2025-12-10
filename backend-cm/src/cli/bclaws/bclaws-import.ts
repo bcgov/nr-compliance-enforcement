@@ -1,5 +1,7 @@
 import { Logger } from "@nestjs/common";
-import { LegislationService, LegislationSource } from "../../shared/legislation/legislation.service";
+import { LegislationService } from "../../shared/legislation/legislation.service";
+import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
+import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
 import { getBcLawsXml } from "../../external_api/bc-laws-service";
 import {
   parseBcLawsXml,
@@ -15,7 +17,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 interface InsertLegislationContext {
   actTitle: string;
   effectiveDate: Date | null;
-  agencyCode: string;
   legislationService: LegislationService;
   logger: Logger;
 }
@@ -97,22 +98,17 @@ async function insertLegislationTree(
   parentFullCitation: string | null = null,
   legislationSourceGuid: string | null = null,
 ): Promise<number> {
-  const { actTitle, effectiveDate, agencyCode, legislationService, logger } = context;
+  const { actTitle, effectiveDate, legislationService, logger } = context;
   let count = 0;
 
   // Build full citation for this node
   const fullCitation = buildFullCitation(actTitle, node, parentFullCitation);
 
-  // Truncate fields to fit database constraints
-  const truncatedCitation = node.citation?.slice(0, 64) ?? null;
-  const truncatedFullCitation = fullCitation.slice(0, 512);
-  const truncatedSectionTitle = node.sectionTitle?.slice(0, 64) ?? null;
-
   // Only set legislationSourceGuid on root node (when parentGuid is null)
   const sourceGuidForThisNode = parentGuid === null ? legislationSourceGuid : null;
 
   try {
-    logger.log(`Importing: ${node.typeCode} - ${truncatedCitation || truncatedSectionTitle || "(root)"}`);
+    logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
     await sleep(50); // Rate limiting
 
     // Upsert the legislation record
@@ -120,19 +116,14 @@ async function insertLegislationTree(
       legislationTypeCode: node.typeCode,
       parentLegislationGuid: parentGuid,
       legislationSourceGuid: sourceGuidForThisNode,
-      citation: truncatedCitation,
-      fullCitation: truncatedFullCitation,
-      sectionTitle: truncatedSectionTitle,
+      citation: node.citation ?? null,
+      fullCitation: fullCitation,
+      sectionTitle: node.sectionTitle ?? null,
       legislationText: node.legislationText,
       displayOrder: node.displayOrder,
       effectiveDate: effectiveDate,
       createUserId: "system",
     });
-
-    // Create agency association only for top-level node?
-    //if (parentGuid === null) {
-    await legislationService.createAgencyXref(created.legislation_guid, agencyCode, "BC_LAWS_IMPORT");
-    //}
 
     count++;
 
@@ -147,7 +138,7 @@ async function insertLegislationTree(
       );
     }
   } catch (error) {
-    logger.error(`Error inserting legislation: ${node.typeCode} - ${truncatedCitation}`, error);
+    logger.error(`Error inserting legislation: ${node.typeCode} - ${node.citation}`, error);
     // Continue with other nodes even if one fails
   }
 
@@ -157,9 +148,10 @@ async function insertLegislationTree(
 /**
  * Imports a single BC Laws XML document from a legislation source
  */
-async function importLegislationSource(
+async function importLegislationSourceDocument(
   source: LegislationSource,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
 ): Promise<number> {
   logger.log(`\n--- Importing: ${source.shortDescription} ---`);
@@ -187,7 +179,6 @@ async function importLegislationSource(
     const context: InsertLegislationContext = {
       actTitle,
       effectiveDate,
-      agencyCode: source.agencyCode,
       legislationService,
       logger,
     };
@@ -199,12 +190,23 @@ async function importLegislationSource(
       source.legislationSourceGuid, // Link root node to source
     );
 
-    // Mark the source as imported
-    await legislationService.markLegislationSourceImported(source.legislationSourceGuid);
+    const successLog = `Successfully imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
+    await legislationSourceService.markImported(source.legislationSourceGuid, successLog);
 
     logger.log(`Completed: ${source.shortDescription} - ${insertedCount} records imported/updated`);
     return insertedCount;
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    const errorLog = `Import failed: ${errorMessage}${errorStack ? `\n\nStack trace:\n${errorStack}` : ""}`;
+
+    // Mark the source as failed with error log
+    try {
+      await legislationSourceService.markFailed(source.legislationSourceGuid, errorLog);
+    } catch (markError) {
+      logger.error(`Failed to update import status for ${source.shortDescription}:`, markError);
+    }
+
     logger.error(`Error importing ${source.shortDescription}:`, error);
     throw error;
   }
@@ -214,13 +216,17 @@ async function importLegislationSource(
  * Imports pending BC Laws documents from the legislation_source table
  * Sources that have already been imported (imported_ind = true) are skipped
  */
-export async function runBcLawsImport(legislationService: LegislationService, logger: Logger): Promise<void> {
+export async function runBcLawsImport(
+  legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
+  logger: Logger,
+): Promise<void> {
   logger.log("Starting BC Laws import...");
   logger.log("Fetching pending legislation sources from database...");
 
   try {
     // Get pending legislation sources (active but not yet imported)
-    const sources = await legislationService.getPendingLegislationSources();
+    const sources = await legislationSourceService.getPending();
 
     if (sources.length === 0) {
       logger.log("No pending legislation sources to import. All sources have already been imported.");
@@ -240,7 +246,12 @@ export async function runBcLawsImport(legislationService: LegislationService, lo
     // Import each source
     for (const source of sources) {
       try {
-        const count = await importLegislationSource(source, legislationService, logger);
+        const count = await importLegislationSourceDocument(
+          source,
+          legislationService,
+          legislationSourceService,
+          logger,
+        );
         totalCount += count;
         successCount++;
       } catch {
@@ -252,7 +263,7 @@ export async function runBcLawsImport(legislationService: LegislationService, lo
     logger.log(
       `Total legislation records imported/updated: ${totalCount}, succeeded: ${successCount}, failed: ${failCount}`,
     );
-    logger.log("BC Laws import complete.");
+    logger.log("BC Laws import is complete.");
   } catch (error) {
     logger.error("Error during BC Laws import:", error);
     throw error;

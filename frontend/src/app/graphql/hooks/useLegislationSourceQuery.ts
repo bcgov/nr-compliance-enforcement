@@ -2,6 +2,8 @@ import { useGraphQLQuery } from "@/app/graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { gql } from "graphql-request";
 
+export type ImportStatus = "PENDING" | "SUCCESS" | "FAILED";
+
 export interface LegislationSource {
   legislationSourceGuid: string;
   shortDescription: string;
@@ -10,7 +12,9 @@ export interface LegislationSource {
   agencyCode: string;
   activeInd: boolean;
   importedInd: boolean;
+  importStatus: ImportStatus | null;
   lastImportTimestamp: string | null;
+  lastImportLog: string | null;
   createUserId?: string;
   createUtcTimestamp?: string;
 }
@@ -42,7 +46,9 @@ const GET_LEGISLATION_SOURCES = gql`
       agencyCode
       activeInd
       importedInd
+      importStatus
       lastImportTimestamp
+      lastImportLog
     }
   }
 `;
@@ -57,7 +63,9 @@ const GET_LEGISLATION_SOURCE = gql`
       agencyCode
       activeInd
       importedInd
+      importStatus
       lastImportTimestamp
+      lastImportLog
     }
   }
 `;

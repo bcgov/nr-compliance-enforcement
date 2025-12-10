@@ -45,6 +45,7 @@ export const LegislationSourceManagement: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmGuid, setDeleteConfirmGuid] = useState<string | null>(null);
+  const [viewLogSource, setViewLogSource] = useState<LegislationSource | null>(null);
 
   const createMutation = useCreateLegislationSource({
     onSuccess: () => {
@@ -160,7 +161,10 @@ export const LegislationSourceManagement: FC = () => {
 
   const getStatusBadge = (source: LegislationSource) => {
     if (!source.activeInd) return <span className="badge comp-status-badge-closed">Inactive</span>;
-    if (source.importedInd) return <span className="badge comp-status-badge-open">Imported</span>;
+    if (source.importStatus === "FAILED") return <span className="badge bg-danger">Failed</span>;
+    if (source.importStatus === "SUCCESS" || source.importedInd) {
+      return <span className="badge comp-status-badge-open">Imported</span>;
+    }
     return <span className="badge comp-status-badge-pending-review">Pending</span>;
   };
 
@@ -246,6 +250,11 @@ export const LegislationSourceManagement: FC = () => {
               <Dropdown.Item onClick={() => handleOpenEdit(source)}>
                 <i className="bi bi-pencil" /> Edit
               </Dropdown.Item>
+              {source.lastImportLog && (
+                <Dropdown.Item onClick={() => setViewLogSource(source)}>
+                  <i className="bi bi-file-text" /> View Log
+                </Dropdown.Item>
+              )}
               <Dropdown.Item
                 onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
                 className="text-danger"
@@ -451,6 +460,48 @@ export const LegislationSourceManagement: FC = () => {
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={!!viewLogSource}
+        onHide={() => setViewLogSource(null)}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Import Log - {viewLogSource?.shortDescription}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mb-3">
+            <strong>Status:</strong>{" "}
+            {viewLogSource?.importStatus === "SUCCESS" ? (
+              <span className="badge bg-success">Success</span>
+            ) : viewLogSource?.importStatus === "FAILED" ? (
+              <span className="badge bg-danger">Failed</span>
+            ) : (
+              <span className="badge bg-secondary">Pending</span>
+            )}
+          </div>
+          <div className="mb-3">
+            <strong>Last Import:</strong> {formatDateTime(viewLogSource?.lastImportTimestamp ?? undefined) || "Never"}
+          </div>
+          <div>
+            <strong>Log:</strong>
+            <pre
+              className="mt-2 p-3 bg-light border rounded"
+              style={{ maxHeight: "400px", overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+            >
+              {viewLogSource?.lastImportLog || "No log available"}
+            </pre>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-primary"
+            onClick={() => setViewLogSource(null)}
+          >
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

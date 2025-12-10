@@ -398,7 +398,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
-                          {section.legislationTypeCode !== Legislation.SECTION && <>{section.citation}</>}{" "}
+                          {section.legislationTypeCode !== Legislation.SECTION && <>{`(${section.citation})`}</>}{" "}
                           {section.legislationText}
                         </p>
                         {section.alternateText && (
