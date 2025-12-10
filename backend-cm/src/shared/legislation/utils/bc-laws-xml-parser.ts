@@ -110,7 +110,7 @@ const getBclText = (element: any): string => {
   }
 
   // Check if it has inline elements that need ordered extraction
-  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong"];
+  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "bcl:link"];
   const hasInlineElements = inlineKeys.some((key) => textElement[key] !== undefined);
 
   if (!hasInlineElements) {
