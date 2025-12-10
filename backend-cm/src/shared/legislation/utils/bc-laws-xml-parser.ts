@@ -78,9 +78,9 @@ let originalXmlString = "";
  */
 const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
-    .replace(/<[^>]+>/g, "") // Remove XML tags
+    .replace(/<[^<>]*>/g, "") // Remove XML tags
     .replace(/\s+/g, " ") // Whitespace
-    .replace(/\s+([,.:;!?])/g, "$1") // Remove space before punctuation
+    .replace(/ +([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
 };
 
@@ -169,7 +169,7 @@ const ensureArray = <T>(value: T | T[] | undefined): T[] => {
 const getIdOrder = (element: any): number => {
   const id = element?.["@_id"];
   if (!id) return Infinity;
-  const match = String(id).match(/\d+$/);
+  const match = String(id).match(/\d{1,10}$/);
   return match ? parseInt(match[0], 10) : Infinity;
 };
 
