@@ -474,14 +474,7 @@ export const LegislationSourceManagement: FC = () => {
         </Modal.Header>
         <Modal.Body>
           <div className="mb-3">
-            <strong>Status:</strong>{" "}
-            {viewLogSource?.importStatus === "SUCCESS" ? (
-              <span className="badge bg-success">Success</span>
-            ) : viewLogSource?.importStatus === "FAILED" ? (
-              <span className="badge bg-danger">Failed</span>
-            ) : (
-              <span className="badge bg-secondary">Pending</span>
-            )}
+            <strong>Status:</strong> {viewLogSource && getStatusBadge(viewLogSource)}
           </div>
           <div className="mb-3">
             <strong>Last Import:</strong> {formatDateTime(viewLogSource?.lastImportTimestamp ?? undefined) || "Never"}

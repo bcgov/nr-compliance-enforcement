@@ -78,9 +78,9 @@ let originalXmlString = "";
  */
 const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
-    .replace(/<[^<>]*>/g, "") // Remove XML tags
-    .replace(/\s+/g, " ") // Whitespace
-    .replace(/ {1,10}([,.:;!?])/g, "$1") // Remove up to 10 consecutive spaces before punctuation, bound to 10 spaces because sonar
+    .replaceAll(/<[^<>]*>/g, "") // Remove XML tags
+    .replaceAll(/\s+/g, " ") // Whitespace
+    .replaceAll(/ {1,10}([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
 };
 
@@ -115,7 +115,7 @@ const getBclText = (element: any): string => {
 
   if (!hasInlineElements) {
     // No inline elements, use simple extraction
-    return extractText(textElement).replace(/\s+/g, " ").trim();
+    return extractText(textElement).replaceAll(/\s+/g, " ").trim();
   }
 
   // Has inline elements, extract from original XML to preserve text order
@@ -128,7 +128,7 @@ const getBclText = (element: any): string => {
   }
 
   // No inline elements
-  return extractText(textElement).replace(/\s+/g, " ").trim();
+  return extractText(textElement).replaceAll(/\s+/g, " ").trim();
 };
 
 /**
@@ -150,7 +150,7 @@ const getMarginalnote = (element: any): string | null => {
   if (!marginalnote) {
     return null;
   }
-  return extractText(marginalnote).replace(/\s+/g, " ").trim() || null;
+  return extractText(marginalnote).replaceAll(/\s+/g, " ").trim() || null;
 };
 
 /**
@@ -169,8 +169,8 @@ const ensureArray = <T>(value: T | T[] | undefined): T[] => {
 const getIdOrder = (element: any): number => {
   const id = element?.["@_id"];
   if (!id) return Infinity;
-  const match = String(id).match(/\d{1,10}$/);
-  return match ? parseInt(match[0], 10) : Infinity;
+  const match = /\d{1,10}$/.exec(String(id));
+  return match ? Number.parseInt(match[0], 10) : Infinity;
 };
 
 /**
