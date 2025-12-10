@@ -80,7 +80,7 @@ const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
     .replace(/<[^<>]*>/g, "") // Remove XML tags
     .replace(/\s+/g, " ") // Whitespace
-    .replace(/ +([,.:;!?])/g, "$1") // Remove spaces before punctuation
+    .replace(/ {1,10}([,.:;!?])/g, "$1") // Remove up to 10 consecutive spaces before punctuation, bound to 10 spaces because sonar
     .trim();
 };
 
