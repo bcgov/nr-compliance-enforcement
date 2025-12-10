@@ -204,7 +204,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                   <div className="complaint-description-section">
                     <div className="comp-complaint-update-label">New lead agency:</div>
                     <div className="complaint-description-text">
-                      <strong>{(update.content as ComplaintReferral).referred_to_agency.longDescription}</strong>{" "}
+                      <strong>{(update.content as ComplaintReferral).referred_to_agency.longDescription}</strong>&nbsp;
                       <OverlayTrigger
                         placement="bottom"
                         delay={{ show: 250, hide: 400 }}
