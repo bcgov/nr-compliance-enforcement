@@ -147,7 +147,7 @@ const getBclTrailingText = (element: any): string | null => {
   if (!textElement) return null;
 
   if (Array.isArray(textElement) && textElement.length > 1) {
-    const lastText = textElement[textElement.length - 1];
+    const lastText = textElement.at(-1);
     return extractSingleBclText(lastText, element?.["@_id"]) || null;
   }
 
