@@ -11,7 +11,8 @@ export interface ParsedLegislationNode {
   typeCode: string; // ACT, REG, BYLAW, PART, DIV, RULE, SCHED, SEC, SUBSEC, PAR, SUBPAR, CL, SUBCL, DEF
   citation: string | null; // e.g., "1", "1(a)", "(a)"
   sectionTitle: string | null; // marginal note or title
-  legislationText: string | null;
+  legislationText: string | null; // Text before children
+  trailingText: string | null; // Text after children (e.g., concluding text after paragraph list)
   displayOrder: number;
   children: ParsedLegislationNode[];
 }
@@ -95,14 +96,10 @@ const findBclTextById = (elementId: string, xml: string): string | null => {
 };
 
 /**
- * Gets text content from bcl:text element preserving order of mixed content
- * For elements with inline content (in:desc, in:term, etc.) gets from original XML
+ * Extracts text from a single bcl:text element
  */
-const getBclText = (element: any): string => {
-  const textElement = element?.[`${NS_BCL}text`];
-  if (!textElement) {
-    return "";
-  }
+const extractSingleBclText = (textElement: any, elementId?: string): string => {
+  if (!textElement) return "";
 
   // For simple string content, return directly
   if (typeof textElement === "string") {
@@ -114,12 +111,10 @@ const getBclText = (element: any): string => {
   const hasInlineElements = inlineKeys.some((key) => textElement[key] !== undefined);
 
   if (!hasInlineElements) {
-    // No inline elements, use simple extraction
     return extractText(textElement).replaceAll(/\s+/g, " ").trim();
   }
 
   // Has inline elements, extract from original XML to preserve text order
-  const elementId = element?.["@_id"];
   if (elementId && originalXmlString) {
     const rawContent = findBclTextById(elementId, originalXmlString);
     if (rawContent) {
@@ -127,8 +122,36 @@ const getBclText = (element: any): string => {
     }
   }
 
-  // No inline elements
   return extractText(textElement).replaceAll(/\s+/g, " ").trim();
+};
+
+/**
+ * Gets the first text content from bcl:text element(s)
+ */
+const getBclText = (element: any): string => {
+  const textElement = element?.[`${NS_BCL}text`];
+  if (!textElement) return "";
+
+  if (Array.isArray(textElement)) {
+    return extractSingleBclText(textElement[0], element?.["@_id"]);
+  }
+
+  return extractSingleBclText(textElement, element?.["@_id"]);
+};
+
+/**
+ * Gets trailing text content for sandwich case
+ */
+const getBclTrailingText = (element: any): string | null => {
+  const textElement = element?.[`${NS_BCL}text`];
+  if (!textElement) return null;
+
+  if (Array.isArray(textElement) && textElement.length > 1) {
+    const lastText = textElement[textElement.length - 1];
+    return extractSingleBclText(lastText, element?.["@_id"]) || null;
+  }
+
+  return null;
 };
 
 /**
@@ -193,6 +216,7 @@ const parseDefinition = (def: any, order: number): ParsedLegislationNode => {
     citation: null,
     sectionTitle: termText || null,
     legislationText: fullText || null,
+    trailingText: getBclTrailingText(def),
     displayOrder: order,
     children,
   };
@@ -207,6 +231,7 @@ const parseSubclause = (subclause: any, order: number): ParsedLegislationNode =>
     citation: getBclNum(subclause),
     sectionTitle: null,
     legislationText: getBclText(subclause) || null,
+    trailingText: getBclTrailingText(subclause),
     displayOrder: order,
     children: [],
   };
@@ -229,6 +254,7 @@ const parseClause = (clause: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(clause),
     sectionTitle: null,
     legislationText: getBclText(clause) || null,
+    trailingText: getBclTrailingText(clause),
     displayOrder: order,
     children,
   };
@@ -251,6 +277,7 @@ const parseSubparagraph = (subpara: any, order: number): ParsedLegislationNode =
     citation: getBclNum(subpara),
     sectionTitle: null,
     legislationText: getBclText(subpara) || null,
+    trailingText: getBclTrailingText(subpara),
     displayOrder: order,
     children,
   };
@@ -280,6 +307,7 @@ const parseParagraph = (para: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(para),
     sectionTitle: null,
     legislationText: getBclText(para) || null,
+    trailingText: getBclTrailingText(para),
     displayOrder: order,
     children,
   };
@@ -319,6 +347,7 @@ const parseSubsection = (subsec: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(subsec),
     sectionTitle: null,
     legislationText: getBclText(subsec) || null,
+    trailingText: getBclTrailingText(subsec),
     displayOrder: order,
     children,
   };
@@ -363,6 +392,7 @@ const parseSection = (section: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(section),
     sectionTitle: getMarginalnote(section),
     legislationText: mainText || null,
+    trailingText: getBclTrailingText(section),
     displayOrder: order,
     children,
   };
@@ -386,6 +416,7 @@ const parseRule = (rule: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(rule),
     sectionTitle: getBclText(rule) || getMarginalnote(rule),
     legislationText: null,
+    trailingText: null,
     displayOrder: order,
     children,
   };
@@ -415,6 +446,7 @@ const parseDivision = (division: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(division),
     sectionTitle: getBclText(division) || getMarginalnote(division),
     legislationText: null,
+    trailingText: null,
     displayOrder: order,
     children,
   };
@@ -451,6 +483,7 @@ const parseSchedule = (schedule: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(schedule),
     sectionTitle: extractText(scheduleTitle) || null,
     legislationText: null,
+    trailingText: null,
     displayOrder: order,
     children,
   };
@@ -492,6 +525,7 @@ const parsePart = (part: any, order: number): ParsedLegislationNode => {
     citation: getBclNum(part),
     sectionTitle: getBclText(part) || null,
     legislationText: null,
+    trailingText: null,
     displayOrder: order,
     children,
   };
@@ -608,6 +642,7 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
     citation: metadata.chapter ? `Chapter ${metadata.chapter}` : null,
     sectionTitle: metadata.title,
     legislationText: null,
+    trailingText: null,
     displayOrder: 1,
     children,
   };

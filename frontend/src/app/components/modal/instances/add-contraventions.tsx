@@ -1,4 +1,4 @@
-import { FC, memo, useEffect, useState } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
@@ -12,7 +12,7 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
-import { indentByType, Legislation } from "@/app/types/app/legislation";
+import { indentByType, Legislation as LegislationEnum } from "@/app/types/app/legislation";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -22,7 +22,35 @@ import {
   CreateUpdateContraventionInput,
   InspectionParty,
   InvestigationParty,
+  Legislation,
 } from "@/generated/graphql";
+import { groupBy, flatMap } from "lodash";
+
+interface DisplayItem {
+  type: "legislation" | "trailing";
+  item: Legislation;
+  indentClass: string;
+}
+
+// Recursively flattens items to handle trailing text
+const buildDisplayItems = (items: Legislation[]): DisplayItem[] => {
+  if (!items?.length) return [];
+
+  const byParent = groupBy(items, (i) => i.parentGuid ?? "root");
+  const allGuids = new Set(items.map((i) => i.legislationGuid));
+  const indent = (i: Legislation) => indentByType[i.legislationTypeCode as keyof typeof indentByType] ?? "";
+
+  const flatten = (item: Legislation): DisplayItem[] => [
+    { type: "legislation", item, indentClass: indent(item) },
+    ...flatMap(byParent[item.legislationGuid ?? ""] ?? [], flatten),
+    ...(item.trailingText ? [{ type: "trailing" as const, item, indentClass: indent(item) }] : []),
+  ];
+
+  return flatMap(
+    items.filter((i) => !i.parentGuid || !allGuids.has(i.parentGuid)),
+    flatten,
+  );
+};
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 
 const ADD_CONTRAVENTION = gql`
@@ -115,20 +143,20 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.ACT],
+    legislationTypeCodes: [LegislationEnum.ACT],
     enabled: true,
   });
 
   const regulationsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.REGULATION],
+    legislationTypeCodes: [LegislationEnum.REGULATION],
     ancestorGuid: act || "",
     enabled: !!act,
   });
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SECTION],
+    legislationTypeCodes: [LegislationEnum.PART, LegislationEnum.DIVISION, LegislationEnum.SECTION],
     ancestorGuid: regulation || act,
     enabled: !!regulation || !!act,
   });
@@ -136,13 +164,13 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [
-      Legislation.SECTION,
-      Legislation.SUBSECTION,
-      Legislation.PARAGRAPH,
-      Legislation.SUBPARAGRAPH,
-      Legislation.CLAUSE,
-      Legislation.SUBCLAUSE,
-      Legislation.DEFINITION,
+      LegislationEnum.SECTION,
+      LegislationEnum.SUBSECTION,
+      LegislationEnum.PARAGRAPH,
+      LegislationEnum.SUBPARAGRAPH,
+      LegislationEnum.CLAUSE,
+      LegislationEnum.SUBCLAUSE,
+      LegislationEnum.DEFINITION,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -155,7 +183,9 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   // Use hierarchical options for sections (with Parts/Divisions as disabled headers)
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
-  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText);
+  const legislationItems = legislationTextQuery.data?.legislations?.filter((item) => !!item.legislationText) ?? [];
+
+  const displayItems = useMemo(() => buildDisplayItems(legislationItems), [legislationItems]);
 
   const partyOptions: Option[] = parties
     ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
@@ -385,30 +415,41 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
               </>
             )}
 
-            {section && legislationText && legislationText.length > 0 && (
+            {section && displayItems.length > 0 && (
               <>
-                {legislationText.map((section) => {
-                  const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+                {displayItems.map((displayItem, index) => {
+                  const { type, item, indentClass } = displayItem;
+
+                  // Trailing text
+                  if (type === "trailing") {
+                    return (
+                      <div
+                        key={`trailing-${item.legislationGuid}`}
+                        className={indentClass}
+                      >
+                        <p className={`contravention-section  mb-2 ${indentClass}`}>{item.trailingText}</p>
+                      </div>
+                    );
+                  }
+
                   return (
                     <button
-                      key={section.legislationGuid}
+                      key={item.legislationGuid ?? index}
                       type="button"
-                      className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
+                      className={`contravention-section ${selectedSection === item.legislationGuid ? "selected" : ""}`}
                       onClick={() => {
                         setValidationError("");
-                        setSelectedSection(section.legislationGuid as string);
+                        setSelectedSection(item.legislationGuid as string);
                       }}
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
-                          {section.legislationTypeCode !== Legislation.SECTION && section.citation && (
-                            <>{`(${section.citation})`} </>
+                          {item.legislationTypeCode !== LegislationEnum.SECTION && item.citation && (
+                            <>{`(${item.citation})`} </>
                           )}
-                          {section.legislationText}
+                          {item.legislationText}
                         </p>
-                        {section.alternateText && (
-                          <div className="contravention-alternate-text">{section.alternateText}</div>
-                        )}
+                        {item.alternateText && <div className="contravention-alternate-text">{item.alternateText}</div>}
                       </div>
                     </button>
                   );

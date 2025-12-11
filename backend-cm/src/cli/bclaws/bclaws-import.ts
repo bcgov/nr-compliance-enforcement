@@ -120,6 +120,7 @@ async function insertLegislationTree(
       fullCitation: fullCitation,
       sectionTitle: node.sectionTitle ?? null,
       legislationText: node.legislationText,
+      trailingText: node.trailingText,
       displayOrder: node.displayOrder,
       effectiveDate: effectiveDate,
       createUserId: "system",

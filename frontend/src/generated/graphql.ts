@@ -427,6 +427,13 @@ export type CreateInvestigationPersonInput = {
   personReference?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateLegislationSourceInput = {
+  agencyCode: Scalars['String']['input'];
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  shortDescription: Scalars['String']['input'];
+  sourceUrl: Scalars['String']['input'];
+};
+
 export type CreateNoteInput = {
   actor: Scalars['String']['input'];
   complaintId: Scalars['String']['input'];
@@ -970,6 +977,32 @@ export type Legislation = {
   legislationTypeCode?: Maybe<Scalars['String']['output']>;
   parentGuid?: Maybe<Scalars['String']['output']>;
   sectionTitle?: Maybe<Scalars['String']['output']>;
+  trailingText?: Maybe<Scalars['String']['output']>;
+};
+
+export type LegislationSource = {
+  __typename?: 'LegislationSource';
+  activeInd: Scalars['Boolean']['output'];
+  agencyCode: Scalars['String']['output'];
+  createUserId?: Maybe<Scalars['String']['output']>;
+  createUtcTimestamp?: Maybe<Scalars['String']['output']>;
+  importStatus?: Maybe<Scalars['String']['output']>;
+  importedInd: Scalars['Boolean']['output'];
+  lastImportLog?: Maybe<Scalars['String']['output']>;
+  lastImportTimestamp?: Maybe<Scalars['String']['output']>;
+  legislationSourceGuid: Scalars['String']['output'];
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription: Scalars['String']['output'];
+  sourceUrl: Scalars['String']['output'];
+};
+
+export type LegislationType = {
+  __typename?: 'LegislationType';
+  activeInd: Scalars['Boolean']['output'];
+  displayOrder: Scalars['Int']['output'];
+  legislationTypeCode: Scalars['String']['output'];
+  longDescription: Scalars['String']['output'];
+  shortDescription: Scalars['String']['output'];
 };
 
 export type Mutation = {
@@ -988,6 +1021,7 @@ export type Mutation = {
   createEvent: Event;
   createInspection: Inspection;
   createInvestigation: Investigation;
+  createLegislationSource: LegislationSource;
   createNote: ComplaintOutcome;
   createOffice?: Maybe<Office>;
   createPark: Park;
@@ -1000,6 +1034,7 @@ export type Mutation = {
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteEquipment: Scalars['Boolean']['output'];
+  deleteLegislationSource: Scalars['Boolean']['output'];
   deleteNote: ComplaintOutcome;
   deletePark: Park;
   deleteParkArea: ParkArea;
@@ -1021,6 +1056,7 @@ export type Mutation = {
   updateEquipment: ComplaintOutcome;
   updateInspection: Inspection;
   updateInvestigation: Investigation;
+  updateLegislationSource: LegislationSource;
   updateNote: ComplaintOutcome;
   updateOffice?: Maybe<Office>;
   updatePark: Park;
@@ -1105,6 +1141,11 @@ export type MutationcreateInvestigationArgs = {
 };
 
 
+export type MutationcreateLegislationSourceArgs = {
+  input: CreateLegislationSourceInput;
+};
+
+
 export type MutationcreateNoteArgs = {
   input: CreateNoteInput;
 };
@@ -1162,6 +1203,11 @@ export type MutationdeleteAuthorizationOutcomeArgs = {
 
 export type MutationdeleteEquipmentArgs = {
   deleteEquipmentInput: DeleteEquipmentInput;
+};
+
+
+export type MutationdeleteLegislationSourceArgs = {
+  legislationSourceGuid: Scalars['String']['input'];
 };
 
 
@@ -1276,6 +1322,11 @@ export type MutationupdateInspectionArgs = {
 export type MutationupdateInvestigationArgs = {
   input: UpdateInvestigationInput;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationupdateLegislationSourceArgs = {
+  input: UpdateLegislationSourceInput;
 };
 
 
@@ -1563,6 +1614,11 @@ export type Query = {
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   legislation?: Maybe<Legislation>;
+  legislationChildTypes: Array<Maybe<Scalars['String']['output']>>;
+  legislationDirectChildren: Array<Maybe<Legislation>>;
+  legislationSource?: Maybe<LegislationSource>;
+  legislationSources: Array<Maybe<LegislationSource>>;
+  legislationTypeCodes: Array<Maybe<LegislationType>>;
   legislations: Array<Maybe<Legislation>>;
   nonComplianceCodes: Array<Maybe<NonComplianceCode>>;
   office?: Maybe<Office>;
@@ -1771,6 +1827,24 @@ export type QueryinactionJustificationCodesArgs = {
 export type QuerylegislationArgs = {
   includeAncestors?: InputMaybe<Scalars['Boolean']['input']>;
   legislationGuid: Scalars['String']['input'];
+};
+
+
+export type QuerylegislationChildTypesArgs = {
+  agencyCode: Scalars['String']['input'];
+  parentGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerylegislationDirectChildrenArgs = {
+  agencyCode: Scalars['String']['input'];
+  legislationTypeCode?: InputMaybe<Scalars['String']['input']>;
+  parentGuid: Scalars['String']['input'];
+};
+
+
+export type QuerylegislationSourceArgs = {
+  legislationSourceGuid: Scalars['String']['input'];
 };
 
 
@@ -2063,6 +2137,16 @@ export type UpdateInvestigationInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLegislationSourceInput = {
+  activeInd?: InputMaybe<Scalars['Boolean']['input']>;
+  agencyCode?: InputMaybe<Scalars['String']['input']>;
+  importedInd?: InputMaybe<Scalars['Boolean']['input']>;
+  legislationSourceGuid: Scalars['String']['input'];
+  longDescription?: InputMaybe<Scalars['String']['input']>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
+  sourceUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateNoteInput = {

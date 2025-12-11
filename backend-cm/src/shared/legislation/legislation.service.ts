@@ -14,6 +14,7 @@ export interface LegislationRow {
   full_citation: string | null;
   section_title: string | null;
   legislation_text: string | null;
+  trailing_text: string | null;
   alternate_text: string | null;
   display_order: number;
   effective_date: Date | null;
@@ -32,6 +33,7 @@ export interface CreateLegislationInput {
   fullCitation?: string | null;
   sectionTitle?: string | null;
   legislationText?: string | null;
+  trailingText?: string | null;
   alternateText?: string | null;
   displayOrder: number;
   effectiveDate?: Date | null;
@@ -91,6 +93,7 @@ export class LegislationService {
         l.full_citation,
         l.section_title,
         l.legislation_text,
+        l.trailing_text,
         l.alternate_text,
         l.display_order
       FROM legislation l
@@ -166,6 +169,7 @@ export class LegislationService {
       l.full_citation,
       l.section_title,
       l.legislation_text,
+      l.trailing_text,
       l.alternate_text,
       l.display_order,
       COALESCE(a.depth, 1) as depth
@@ -211,6 +215,7 @@ export class LegislationService {
         full_citation: input.fullCitation ?? null,
         section_title: input.sectionTitle ?? null,
         legislation_text: input.legislationText ?? null,
+        trailing_text: input.trailingText ?? null,
         alternate_text: input.alternateText ?? null,
         display_order: input.displayOrder,
         effective_date: input.effectiveDate ?? null,
@@ -265,6 +270,7 @@ export class LegislationService {
           full_citation: input.fullCitation ?? existing.full_citation,
           section_title: input.sectionTitle ?? existing.section_title,
           legislation_text: input.legislationText ?? existing.legislation_text,
+          trailing_text: input.trailingText ?? existing.trailing_text,
           alternate_text: input.alternateText ?? existing.alternate_text,
           display_order: input.displayOrder,
           effective_date: input.effectiveDate ?? existing.effective_date,
