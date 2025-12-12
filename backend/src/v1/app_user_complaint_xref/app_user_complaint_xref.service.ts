@@ -131,6 +131,7 @@ export class AppUserComplaintXrefService {
   async assignNewAppUser(
     complaintIdentifier: string,
     createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto,
+    token?: string,
   ): Promise<AppUserComplaintXref> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -168,7 +169,7 @@ export class AppUserComplaintXrefService {
       this.logger.debug(`Successfully assigned app user to complaint ${complaintIdentifier}`);
 
       if (!hasHadAssignmentBefore) {
-        await this.updateWebEOC(complaintIdentifier);
+        await this.updateWebEOC(complaintIdentifier, token);
       }
     } catch (err) {
       this.logger.error(err);
@@ -193,6 +194,7 @@ export class AppUserComplaintXrefService {
     complaintIdentifier: string,
     createAppUserComplaintXrefDto: CreateAppUserComplaintXrefDto,
     closeConnection?: boolean, // should the connection be closed once completed.  Necessary because if this is part of another transaction, then that transaction will handle releasing the connection; otherwise, best to set to true so that the connection is released.
+    token?: string,
   ): Promise<AppUserComplaintXref> {
     this.logger.debug(`Assigning Complaint ${complaintIdentifier}`);
     let newAppUserComplaintXref: AppUserComplaintXref;
@@ -224,7 +226,7 @@ export class AppUserComplaintXrefService {
 
       //Update webEOC - Note session handling might be refactored in the future.
       if (!hasHadAssignmentBefore) {
-        await this.updateWebEOC(complaintIdentifier);
+        await this.updateWebEOC(complaintIdentifier, token);
       }
     } catch (err) {
       throw new BadRequestException(err);
@@ -413,9 +415,10 @@ export class AppUserComplaintXrefService {
     return collaborators;
   }
 
-  private async updateWebEOC(complaintIdentifier: string) {
+  private async updateWebEOC(complaintIdentifier: string, token?: string) {
     try {
-      const webeocIdentifier = (await this._complaintService.findById(complaintIdentifier)).webeocId;
+      const webeocIdentifier = (await this._complaintService.findById(complaintIdentifier, undefined, undefined, token))
+        .webeocId;
       if (webeocIdentifier) {
         // Only if it came from webEOC
         await this._webeocService.manageSession("POST");
