@@ -113,19 +113,17 @@ export class ComplaintOutcomeService {
     try {
       await this.prisma.$transaction(async (db) => {
         let assessmentId: string;
-        let case_file: any;
 
         if (!model.complaintOutcomeGuid) {
-          case_file = await this.createComplaintOutcome(db, {
+          complaintOutcomeGuid = await this.createComplaintOutcome(db, {
             complaintId: model.complaintId,
             outcomeAgencyCode: model.outcomeAgencyCode,
             createUserId: model.createUserId,
           });
 
-          complaintOutcomeGuid = case_file.complaint_outcome_guid;
-
-          this.logger.log(`Case file created with complaint_outcome_guid: ${complaintOutcomeGuid}`);
-          this.logger.log(`Lead created with lead_identifier: ${case_file.complaint_identifier}`);
+          this.logger.log(
+            `Complaint outcome created with complaint_outcome_guid ${complaintOutcomeGuid} for complaint ${model.complaintId}`,
+          );
         } else {
           complaintOutcomeGuid = model.complaintOutcomeGuid;
         }
@@ -1045,19 +1043,16 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
 
     await this.prisma.$transaction(async (db) => {
-      let case_file: any;
-
       if (!model.complaintOutcomeGuid) {
-        case_file = await this.createComplaintOutcome(db, {
+        complaintOutcomeGuid = await this.createComplaintOutcome(db, {
           complaintId: model.complaintId,
           outcomeAgencyCode: model.outcomeAgencyCode,
           createUserId: model.createUserId,
         });
 
-        complaintOutcomeGuid = case_file.complaint_outcome_guid;
-
-        this.logger.log(`Case file created with complaint_outcome_guid: ${complaintOutcomeGuid}`);
-        this.logger.log(`Lead created with lead_identifier: ${case_file.complaint_identifier}`);
+        this.logger.log(
+          `Complaint outcome created with complaint_outcome_guid ${complaintOutcomeGuid} for complaint ${model.complaintId}`,
+        );
       } else {
         complaintOutcomeGuid = model.complaintOutcomeGuid;
       }

@@ -13,7 +13,7 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model action {
-  action_guid                  String                  @id(map: "PK_action_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  action_guid                  String                  @id(map: "PK_action_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid       String                  @db.Uuid
   action_type_action_xref_guid String                  @db.Uuid
   actor_guid                   String                  @db.Uuid
@@ -58,7 +58,7 @@ model action_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model action_h {
-  h_action_guid                 String   @id(map: "PK_h_action") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_action_guid                 String   @id(map: "PK_h_action") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -70,7 +70,7 @@ model action_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model action_type_action_xref {
-  action_type_action_xref_guid                                                String           @id(map: "PK_action_type_action_xref_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  action_type_action_xref_guid                                                String           @id(map: "PK_action_type_action_xref_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   action_type_code                                                            String           @db.VarChar(10)
   action_code                                                                 String           @db.VarChar(10)
   display_order                                                               Int
@@ -119,7 +119,7 @@ model age_code {
 }
 
 model assessment {
-  assessment_guid                                                            String                 @id(map: "PK_assessment_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  assessment_guid                                                            String                 @id(map: "PK_assessment_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                     String                 @db.Uuid
   outcome_agency_code                                                        String                 @db.VarChar(10)
   inaction_reason_code                                                       String?                @db.VarChar(10)
@@ -145,7 +145,7 @@ model assessment {
 }
 
 model assessment_h {
-  h_assessment_guid             String   @id(map: "PK_h_assessment") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_assessment_guid             String   @id(map: "PK_h_assessment") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -157,7 +157,7 @@ model assessment_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model authorization_permit {
-  authorization_permit_guid String            @id(map: "PK_authorization_permit_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  authorization_permit_guid String            @id(map: "PK_authorization_permit_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid    String            @db.Uuid
   authorization_permit_id   String            @db.VarChar(50)
   active_ind                Boolean?          @default(true)
@@ -172,7 +172,7 @@ model authorization_permit {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model authorization_permit_h {
-  h_authorization_permit_guid   String   @id(map: "PK_h_authorization_permit") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_authorization_permit_guid   String   @id(map: "PK_h_authorization_permit") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -200,7 +200,7 @@ model case_location_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model case_note {
-  case_note_guid                                                         String              @id(map: "PK_case_note_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  case_note_guid                                                         String              @id(map: "PK_case_note_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                 String              @db.Uuid
   case_note                                                              String
   active_ind                                                             Boolean             @default(true)
@@ -218,14 +218,14 @@ model case_note {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model complaint_outcome {
-  complaint_outcome_guid String                 @id(map: "PK_case_file_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  complaint_outcome_guid String                 @id(map: "PK_case_file_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   owned_by_agency_code   String                 @db.VarChar(10)
   review_required_ind    Boolean?
   create_user_id         String                 @db.VarChar(32)
   create_utc_timestamp   DateTime               @db.Timestamp(6)
   update_user_id         String?                @db.VarChar(32)
   update_utc_timestamp   DateTime?              @db.Timestamp(6)
-  complaint_identifier   String?                @db.VarChar(20)
+  complaint_identifier   String?                @unique(map: "uq_complaint_outcome_complaint_identifier") @db.VarChar(20)
   action                 action[]
   assessment             assessment[]
   authorization_permit   authorization_permit[]
@@ -241,7 +241,7 @@ model complaint_outcome {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model complaint_outcome_h {
-  h_complaint_outcome_guid      String   @id(map: "PK_h_case_file") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_complaint_outcome_guid      String   @id(map: "PK_h_case_file") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -267,7 +267,7 @@ model configuration {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model configuration_h {
-  h_configuration_guid          String   @id(map: "PK_h_configuration") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_configuration_guid          String   @id(map: "PK_h_configuration") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.VarChar(10)
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -295,7 +295,7 @@ model conflict_history_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model decision {
-  decision_guid                                                                                                         String                               @id(map: "PK_decision_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  decision_guid                                                                                                         String                               @id(map: "PK_decision_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                                                                String                               @db.Uuid
   schedule_sector_xref_guid                                                                                             String                               @db.Uuid
   discharge_code                                                                                                        String                               @db.VarChar(10)
@@ -321,7 +321,7 @@ model decision {
 }
 
 model decision_h {
-  h_decision_guid               String   @id(map: "PK_h_decision") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_decision_guid               String   @id(map: "PK_h_decision") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -349,7 +349,7 @@ model discharge_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model drug_administered {
-  drug_administered_guid                                                                                 String                       @id(map: "PK_drug_administered_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  drug_administered_guid                                                                                 String                       @id(map: "PK_drug_administered_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   wildlife_guid                                                                                          String                       @db.Uuid
   drug_code                                                                                              String                       @db.VarChar(10)
   drug_method_code                                                                                       String                       @db.VarChar(10)
@@ -372,7 +372,7 @@ model drug_administered {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model drug_administered_h {
-  h_drug_administered_guid      String   @id(map: "PK_h_drug_administered") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_drug_administered_guid      String   @id(map: "PK_h_drug_administered") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -448,7 +448,7 @@ model ear_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model ear_tag {
-  ear_tag_guid                        String   @id(map: "PK_ear_tag_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ear_tag_guid                        String   @id(map: "PK_ear_tag_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   wildlife_guid                       String   @db.Uuid
   ear_code                            String   @db.VarChar(10)
   ear_tag_identifier                  String   @db.VarChar(10)
@@ -465,7 +465,7 @@ model ear_tag {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model ear_tag_h {
-  h_ear_tag_guid                String   @id(map: "PK_h_ear_tag") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_ear_tag_guid                String   @id(map: "PK_h_ear_tag") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -477,7 +477,7 @@ model ear_tag_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model equipment {
-  equipment_guid                                          String                   @id(map: "PK_equipment_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  equipment_guid                                          String                   @id(map: "PK_equipment_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   equipment_code                                          String?                  @db.VarChar(10)
   equipment_location_desc                                 String?                  @db.VarChar(120)
   equipment_geometry_point                                Unsupported("geometry")?
@@ -514,7 +514,7 @@ model equipment_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model equipment_h {
-  h_equipment_guid              String   @id(map: "PK_h_equipment") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_equipment_guid              String   @id(map: "PK_h_equipment") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -663,7 +663,7 @@ model outcome_agency_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model prevention_education {
-  prevention_education_guid                                                         String              @id(map: "PK_prevention_education_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  prevention_education_guid                                                         String              @id(map: "PK_prevention_education_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                            String              @db.Uuid
   outcome_agency_code                                                               String              @db.VarChar(10)
   active_ind                                                                        Boolean             @default(true)
@@ -695,7 +695,7 @@ model schedule_code {
 }
 
 model schedule_sector_xref {
-  schedule_sector_xref_guid                                       String        @id(map: "PK_schedule_sector_xref_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  schedule_sector_xref_guid                                       String        @id(map: "PK_schedule_sector_xref_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   schedule_code                                                   String        @db.VarChar(10)
   sector_code                                                     String        @db.VarChar(10)
   active_ind                                                      Boolean
@@ -745,7 +745,7 @@ model sex_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model site {
-  site_guid              String            @id(map: "PK_site_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  site_guid              String            @id(map: "PK_site_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid String            @db.Uuid
   site_id                String            @db.VarChar(50)
   active_ind             Boolean?          @default(true)
@@ -760,7 +760,7 @@ model site {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model site_h {
-  h_site_guid                   String   @id(map: "PK_h_site") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_site_guid                   String   @id(map: "PK_h_site") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -789,7 +789,7 @@ model threat_level_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model wildlife {
-  wildlife_guid                                                                                       String                         @id(map: "PK_wildlife_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  wildlife_guid                                                                                       String                         @id(map: "PK_wildlife_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                                              String                         @db.Uuid
   threat_level_code                                                                                   String?                        @db.VarChar(10)
   sex_code                                                                                            String?                        @db.VarChar(10)
@@ -818,7 +818,7 @@ model wildlife {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model wildlife_h {
-  h_wildlife_guid               String   @id(map: "PK_h_wildlife") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_wildlife_guid               String   @id(map: "PK_h_wildlife") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
