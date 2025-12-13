@@ -89,6 +89,7 @@ export class ComplaintOutcomeService {
         update_user_id: input.createUserId,
         create_utc_timestamp: new Date(),
         update_utc_timestamp: new Date(),
+        review_required_ind: !!input.reviewRequired,
       };
 
       const case_file = await db.complaint_outcome.create({
@@ -1248,6 +1249,7 @@ export class ComplaintOutcomeService {
             complaintId: reviewInput.complaintId,
             outcomeAgencyCode: reviewInput.outcomeAgencyCode,
             createUserId: reviewInput.userId,
+            reviewRequired: true,
           });
         });
         return complaintOutcomeId;
