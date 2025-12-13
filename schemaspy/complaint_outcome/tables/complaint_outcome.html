@@ -286,7 +286,7 @@
                                     <td><p>The timestamp when the case was updated.  The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="complaint_identifier">complaint_identifier</span></td>
+                                    <td><span id="complaint_identifier">complaint_identifier</span></td>
                                     <td>varchar</td>
                                     <td>20</td>
                                     <td title='nullable'>√</td>
@@ -337,12 +337,6 @@
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>complaint_outcome_guid</td>
-                                </tr>
-                                <tr>
-                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> uq_complaint_outcome_complaint_identifier</td>
-                                    <td>Must be unique</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>complaint_identifier</td>
                                 </tr>
                                 </tbody>
                             </table>
