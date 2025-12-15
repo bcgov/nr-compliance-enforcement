@@ -2033,7 +2033,7 @@ export class ComplaintService {
 
       //-- check to make sure that only one record was updated
       if (result.affected === 1) {
-        const complaint = await this.findById(id);
+        const complaint = await this.findById(id, undefined, undefined, token);
         this.eventPublisherService.publishComplaintStatusChangeEvents(id, status, complaint.type, token);
         return complaint as ComplaintDto;
       } else {
@@ -2058,6 +2058,7 @@ export class ComplaintService {
     id: string,
     complaintType: string,
     model: ComplaintDtoAlias,
+    token?: string,
   ): Promise<ComplaintDtoAlias> => {
     const agencyCode = model.ownedBy;
     const hasAssignees = (delegates: Array<DelegateDto>): boolean => {
@@ -2154,7 +2155,7 @@ export class ComplaintService {
             converted.create_user_id = idir;
             converted.complaint_identifier = id;
 
-            await this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
+            await this._appUserComplaintXrefService.assignNewAppUser(id, converted as any, token);
           } else {
             //-- the complaint has no assigned officer
             const unassigned = delegates.filter(({ isActive }) => !isActive);
@@ -2169,7 +2170,7 @@ export class ComplaintService {
               converted.update_user_id = idir;
               converted.complaint_identifier = id;
 
-              this._appUserComplaintXrefService.assignNewAppUser(id, converted as any);
+              this._appUserComplaintXrefService.assignNewAppUser(id, converted as any, token);
             }
           }
         } else {
@@ -2237,7 +2238,7 @@ export class ComplaintService {
         }
         await queryRunner.commitTransaction();
 
-        const result = (await this.findById(id, complaintType as COMPLAINT_TYPE)) as any;
+        const result = (await this.findById(id, complaintType as COMPLAINT_TYPE, undefined, token)) as any;
         return result;
       } else {
         throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.BAD_REQUEST);
@@ -2259,6 +2260,7 @@ export class ComplaintService {
     complaintType: COMPLAINT_TYPE,
     model: ComplaintDtoAlias,
     webeocInd?: boolean,
+    token?: string,
   ): Promise<ComplaintDtoAlias> => {
     this.logger.debug("Creating new complaint");
     const generateComplaintId = async (queryRunner: QueryRunner): Promise<string> => {
@@ -2406,7 +2408,9 @@ export class ComplaintService {
 
       await queryRunner.commitTransaction();
 
-      return (await this.findById(complaintId, complaintType)) as WildlifeComplaintDto | AllegationComplaintDto;
+      return (await this.findById(complaintId, complaintType, undefined, token)) as
+        | WildlifeComplaintDto
+        | AllegationComplaintDto;
     } catch (error) {
       await queryRunner.rollbackTransaction();
       this.logger.error(
