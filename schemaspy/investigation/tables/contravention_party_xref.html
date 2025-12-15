@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>assessment - default.complaint_outcome</title>
+        <title>contravention_party_xref - default.investigation</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -46,7 +46,7 @@
                 <nav class="navbar navbar-static-top">
                     <div class="container">
                         <div class="navbar-header">
-                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.complaint_outcome</span>
+                            <a href="../../index.html" class="navbar-brand"><b>default</b></a><span class="navbar-brand" style="padding-left: 0">.investigation</span>
                             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse"><i class="fa fa-bars"></i></button>
                         </div>
 
@@ -73,7 +73,20 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>assessment</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>contravention_party_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-file-text-o"></i>
+                            <h3 id="Description" class="box-title">Description</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div><!-- /.box-header -->
+                        <div class="box-body clearfix">
+                            <p>Cross reference table linking many contraventions to many parties.</p>
+                        </div><!-- /.box-body -->
+                    </div>
                 </section>
                 <!-- Main content -->
                 <section class="content">
@@ -109,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="assessment_guid">assessment_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contravention_party_xref_guid">contravention_party_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -117,21 +130,16 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="action.assessment_guid references assessment.assessment_guid via action_assessment_guid_fkey"><a href='action.html'>action</a><span class='relatedKey'>.assessment_guid</span></td>
-                                                <td class="constraint detail">action_assessment_guid_fkey</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Primary key. Unique identifier for contravention/party cross reference.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="complaint_outcome_guid">complaint_outcome_guid</span></td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="contravention_guid">contravention_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -144,40 +152,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="assessment.complaint_outcome_guid references complaint_outcome.complaint_outcome_guid via assessment_case_file_guid_fkey"><a href='complaint_outcome.html'>complaint_outcome</a><span class='relatedKey'>.complaint_outcome_guid</span></td>
-                                                <td class="constraint detail">assessment_case_file_guid_fkey</td>
+                                                <td title="contravention_party_xref.contravention_guid references contravention.contravention_guid via contravention_party_xref_contravention_guid_fkey"><a href='contravention.html'>contravention</a><span class='relatedKey'>.contravention_guid</span></td>
+                                                <td class="constraint detail">contravention_party_xref_contravention_guid_fkey</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Foreign key to contravention. Unique identifier for the contravention.</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="outcome_agency_code">outcome_agency_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="assessment.outcome_agency_code references outcome_agency_code.outcome_agency_code via FK_assessment__assessed_by_agency_code"><a href='outcome_agency_code.html'>outcome_agency_code</a><span class='relatedKey'>.outcome_agency_code</span></td>
-                                                <td class="constraint detail">FK_assessment__assessed_by_agency_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="inaction_reason_code">inaction_reason_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_party_guid">investigation_party_guid</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -188,127 +174,27 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="assessment.inaction_reason_code references inaction_reason_code.inaction_reason_code via FK_assessment__inaction_reason_code"><a href='inaction_reason_code.html'>inaction_reason_code</a><span class='relatedKey'>.inaction_reason_code</span></td>
-                                                <td class="constraint detail">FK_assessment__inaction_reason_code</td>
+                                                <td title="contravention_party_xref.investigation_party_guid references investigation_party.investigation_party_guid via contravention_party_xref_investigation_party_guid_fkey"><a href='investigation_party.html'>investigation_party</a><span class='relatedKey'>.investigation_party_guid</span></td>
+                                                <td class="constraint detail">contravention_party_xref_investigation_party_guid_fkey</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td></td>
+                                    <td><p>Foreign key to investigation party. Unique identifier for the party.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="action_not_required_ind">action_not_required_ind</span></td>
+                                    <td><span id="active_ind">active_ind</span></td>
                                     <td>bool</td>
                                     <td>1</td>
-                                    <td title='nullable'>√</td>
                                     <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="complainant_contacted_ind">complainant_contacted_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title='nullable'>√</td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>true</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="attended_ind">attended_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="case_location_code">case_location_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="assessment.case_location_code references case_location_code.case_location_code via fk_assessment__case_location_code"><a href='case_location_code.html'>case_location_code</a><span class='relatedKey'>.case_location_code</span></td>
-                                                <td class="constraint detail">fk_assessment__case_location_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="case_conflict_history_code">case_conflict_history_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="assessment.case_conflict_history_code references conflict_history_code.conflict_history_code via fk_assessment__case_conflict_history_code"><a href='conflict_history_code.html'>conflict_history_code</a><span class='relatedKey'>.conflict_history_code</span></td>
-                                                <td class="constraint detail">fk_assessment__case_conflict_history_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="case_threat_level_code">case_threat_level_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="assessment.case_threat_level_code references threat_level_code.threat_level_code via fk_assessment__case_threat_level_code"><a href='threat_level_code.html'>threat_level_code</a><span class='relatedKey'>.threat_level_code</span></td>
-                                                <td class="constraint detail">fk_assessment__case_threat_level_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td></td>
@@ -336,7 +222,7 @@
                                     <td>29,6</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>now()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -412,10 +298,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_assessment_guid</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> contravention_party_xref_pkey</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>assessment_guid</td>
+                                    <td>contravention_party_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -440,38 +326,22 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="action.html" target="_top" title="action" alt="" coords="1048,5,1325,357">
-<area shape="rect" id="node2" href="assessment.html" target="_top" title="assessment" alt="" coords="601,208,1004,688">
-<area shape="rect" id="node3" href="complaint_outcome.html" target="_top" title="complaint_outcome" alt="" coords="308,35,556,211">
-<area shape="rect" id="node4" href="conflict_history_code.html" target="_top" title="conflict_history_code" alt="" coords="309,563,555,680">
-<area shape="rect" id="node5" href="case_location_code.html" target="_top" title="case_location_code" alt="" coords="316,428,548,545">
-<area shape="rect" id="node6" href="threat_level_code.html" target="_top" title="threat_level_code" alt="" coords="316,697,548,815">
-<area shape="rect" id="node7" href="inaction_reason_code.html" target="_top" title="inaction_reason_code" alt="" coords="307,264,557,411">
-<area shape="rect" id="node8" href="outcome_agency_code.html" target="_top" title="outcome_agency_code" alt="" coords="5,188,263,305">
+<area shape="rect" id="node1" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="305,41,732,345">
+<area shape="rect" id="node2" href="contravention.html" target="_top" title="contravention" alt="" coords="17,5,249,152">
+<area shape="rect" id="node3" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="5,169,261,345">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/assessment.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/contravention_party_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="action.html" target="_top" title="action" alt="" coords="1140,519,1269,607">
-<area shape="rect" id="node2" href="action_type_action_xref.html" target="_top" title="action_type_action_xref" alt="" coords="761,1276,1028,1364">
-<area shape="rect" id="node3" href="assessment.html" target="_top" title="assessment" alt="" coords="693,673,1096,1153">
-<area shape="rect" id="node4" href="case_note.html" target="_top" title="case_note" alt="" coords="815,568,974,656">
-<area shape="rect" id="node5" href="complaint_outcome.html" target="_top" title="complaint_outcome" alt="" coords="359,461,597,549">
-<area shape="rect" id="node6" href="decision.html" target="_top" title="decision" alt="" coords="822,5,967,93">
-<area shape="rect" id="node7" href="equipment.html" target="_top" title="equipment" alt="" coords="811,357,978,445">
-<area shape="rect" id="node8" href="prevention_education.html" target="_top" title="prevention_education" alt="" coords="767,463,1022,551">
-<area shape="rect" id="node9" href="wildlife.html" target="_top" title="wildlife" alt="" coords="825,1171,964,1259">
-<area shape="rect" id="node10" href="conflict_history_code.html" target="_top" title="conflict_history_code" alt="" coords="355,915,601,1032">
-<area shape="rect" id="node11" href="case_location_code.html" target="_top" title="case_location_code" alt="" coords="362,780,594,897">
-<area shape="rect" id="node12" href="threat_level_code.html" target="_top" title="threat_level_code" alt="" coords="362,1049,594,1167">
-<area shape="rect" id="node13" href="inaction_reason_code.html" target="_top" title="inaction_reason_code" alt="" coords="353,675,603,763">
-<area shape="rect" id="node14" href="outcome_agency_code.html" target="_top" title="outcome_agency_code" alt="" coords="5,568,263,656">
-<area shape="rect" id="node16" href="hwcr_outcome_actioned_by_code.html" target="_top" title="hwcr_outcome_actioned_by_code" alt="" coords="307,1184,649,1272">
-<area shape="rect" id="node15" href="authorization_permit.html" target="_top" title="authorization_permit" alt="" coords="770,111,1019,199">
-<area shape="rect" id="node17" href="site.html" target="_top" title="site" alt="" coords="841,252,949,340">
+<area shape="rect" id="node1" href="contravention.html" target="_top" title="contravention" alt="" coords="245,68,477,215">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,212,189,300">
+<area shape="rect" id="node3" href="contravention_party_xref.html" target="_top" title="contravention_party_xref" alt="" coords="533,5,960,309">
+<area shape="rect" id="node4" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="233,263,489,439">
+<area shape="rect" id="node5" href="investigation_business.html" target="_top" title="investigation_business" alt="" coords="617,327,877,415">
+<area shape="rect" id="node6" href="investigation_person.html" target="_top" title="investigation_person" alt="" coords="624,432,869,520">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/assessment.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/contravention_party_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

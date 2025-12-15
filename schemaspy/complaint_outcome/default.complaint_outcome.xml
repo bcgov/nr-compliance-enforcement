@@ -263,6 +263,9 @@
          <index name="PK_case_file_guid" unique="true">
             <column ascending="true" name="complaint_outcome_guid"/>
          </index>
+         <index name="uq_complaint_outcome_complaint_identifier" unique="true">
+            <column ascending="true" name="complaint_identifier"/>
+         </index>
       </table>
       <table name="complaint_outcome_h" remarks="History table for case_file table" schema="complaint_outcome" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_complaint_outcome_guid" nullable="false" remarks="System generated unique key for case history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
