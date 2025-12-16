@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "2.0.144",
+  "version": "2.0.153",
   "description": "",
   "author": "",
   "private": true,
@@ -73,5 +73,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "overrides": {
+    "glob": ">=10.5.0"
   }
 }

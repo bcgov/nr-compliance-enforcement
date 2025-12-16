@@ -1,3 +1,4 @@
+import { contravention_party_xref } from "./contravention_party_xref";
 import { investigation_business } from "./investigation_business";
 import { investigation } from "./investigation";
 import { investigation_person } from "./investigation_person";
@@ -33,6 +34,9 @@ export class investigation_party {
 
   @ApiPropertyOptional({ type: String })
   party_association_role_ref?: string;
+
+  @ApiProperty({ isArray: true, type: () => contravention_party_xref })
+  contravention_party_xref: contravention_party_xref[];
 
   @ApiProperty({ isArray: true, type: () => investigation_business })
   investigation_business: investigation_business[];

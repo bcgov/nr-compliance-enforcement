@@ -114,7 +114,10 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   return (
     <>
       {title && (
-        <Modal.Header closeButton={true}>
+        <Modal.Header
+          className="pb-0"
+          closeButton={true}
+        >
           <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}

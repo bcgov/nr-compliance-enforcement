@@ -1,13 +1,14 @@
 generator client {
   provider        = "prisma-client-js"
   output          = "../../node_modules/.prisma/complaint_outcome"
-  previewFeatures = ["prismaSchemaFolder"]
+  previewFeatures = ["multiSchema", "prismaSchemaFolder"]
   binaryTargets   = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("COMPLAINT_OUTCOME_POSTGRES_URL")
+  schemas  = ["complaint_outcome"]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -36,6 +37,8 @@ model action {
   decision                     decision?               @relation(fields: [decision_guid], references: [decision_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_action__decision_guid")
   equipment                    equipment?              @relation(fields: [equipment_guid], references: [equipment_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_action__equipment_guid")
   wildlife                     wildlife?               @relation(fields: [wildlife_guid], references: [wildlife_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_action__wildlife_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -49,6 +52,8 @@ model action_code {
   update_user_id                                                           String?                   @db.VarChar(32)
   update_utc_timestamp                                                     DateTime?                 @db.Timestamp(6)
   action_type_action_xref_action_type_action_xref_action_codeToaction_code action_type_action_xref[] @relation("action_type_action_xref_action_codeToaction_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -59,6 +64,8 @@ model action_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -77,6 +84,7 @@ model action_type_action_xref {
   action_type_code_action_type_action_xref_action_type_codeToaction_type_code action_type_code @relation("action_type_action_xref_action_type_codeToaction_type_code", fields: [action_type_code], references: [action_type_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_action_type_action_xref__action_type_code")
 
   @@unique([action_type_code, action_code], map: "UK_action_type_action_xref__action_type_code__action_code")
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -90,6 +98,8 @@ model action_type_code {
   update_user_id                                                                     String?                   @db.VarChar(32)
   update_utc_timestamp                                                               DateTime?                 @db.Timestamp(6)
   action_type_action_xref_action_type_action_xref_action_type_codeToaction_type_code action_type_action_xref[] @relation("action_type_action_xref_action_type_codeToaction_type_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -104,6 +114,8 @@ model age_code {
   update_user_id                       String     @db.VarChar(32)
   update_utc_timestamp                 DateTime   @db.Timestamp(6)
   wildlife_wildlife_age_codeToage_code wildlife[] @relation("wildlife_age_codeToage_code")
+
+  @@schema("complaint_outcome")
 }
 
 model assessment {
@@ -128,6 +140,8 @@ model assessment {
   conflict_history_code                                                      conflict_history_code? @relation(fields: [case_conflict_history_code], references: [conflict_history_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_assessment__case_conflict_history_code")
   case_location_code_assessment_case_location_codeTocase_location_code       case_location_code?    @relation("assessment_case_location_codeTocase_location_code", fields: [case_location_code], references: [case_location_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_assessment__case_location_code")
   threat_level_code                                                          threat_level_code?     @relation(fields: [case_threat_level_code], references: [threat_level_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_assessment__case_threat_level_code")
+
+  @@schema("complaint_outcome")
 }
 
 model assessment_h {
@@ -137,6 +151,8 @@ model assessment_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -150,6 +166,8 @@ model authorization_permit {
   update_user_id            String?           @db.VarChar(32)
   update_utc_timestamp      DateTime?         @db.Timestamp(6)
   complaint_outcome         complaint_outcome @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_authorization_permit__case_file_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -160,6 +178,8 @@ model authorization_permit_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -174,6 +194,8 @@ model case_location_code {
   update_user_id                                               String?      @db.VarChar(32)
   update_utc_timestamp                                         DateTime?    @db.Timestamp(6)
   assessment_assessment_case_location_codeTocase_location_code assessment[] @relation("assessment_case_location_codeTocase_location_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -190,6 +212,43 @@ model case_note {
   action                                                                 action[]
   outcome_agency_code_case_note_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("case_note_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_note__agency_code")
   complaint_outcome                                                      complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_note__case_file_guid")
+
+  @@schema("complaint_outcome")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model complaint_outcome {
+  complaint_outcome_guid String                 @id(map: "PK_case_file_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  owned_by_agency_code   String                 @db.VarChar(10)
+  review_required_ind    Boolean?
+  create_user_id         String                 @db.VarChar(32)
+  create_utc_timestamp   DateTime               @db.Timestamp(6)
+  update_user_id         String?                @db.VarChar(32)
+  update_utc_timestamp   DateTime?              @db.Timestamp(6)
+  complaint_identifier   String?                @unique(map: "uq_complaint_outcome_complaint_identifier") @db.VarChar(20)
+  action                 action[]
+  assessment             assessment[]
+  authorization_permit   authorization_permit[]
+  case_note              case_note[]
+  outcome_agency_code    outcome_agency_code    @relation(fields: [owned_by_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_file__owned_by_agency_code")
+  decision               decision[]
+  prevention_education   prevention_education[]
+  site                   site[]
+  wildlife               wildlife[]
+
+  @@schema("complaint_outcome")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model complaint_outcome_h {
+  h_complaint_outcome_guid      String   @id(map: "PK_h_case_file") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -202,6 +261,8 @@ model configuration {
   create_utc_timestamp DateTime  @db.Timestamp(6)
   update_user_id       String    @db.VarChar(32)
   update_utc_timestamp DateTime? @db.Timestamp(6)
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -212,6 +273,8 @@ model configuration_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -226,6 +289,8 @@ model conflict_history_code {
   update_user_id        String       @db.VarChar(32)
   update_utc_timestamp  DateTime     @db.Timestamp(6)
   assessment            assessment[]
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -251,6 +316,8 @@ model decision {
   outcome_agency_code_decision_outcome_agency_codeTooutcome_agency_code                                                 outcome_agency_code?                 @relation("decision_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_decision__lead_agency_code")
   non_compliance_decision_matrix_code_decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code non_compliance_decision_matrix_code? @relation("decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code", fields: [non_compliance_decision_matrix_code], references: [non_compliance_decision_matrix_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_decision__ncdm_code")
   schedule_sector_xref                                                                                                  schedule_sector_xref                 @relation(fields: [schedule_sector_xref_guid], references: [schedule_sector_xref_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_decision__schedule_sector_xref_guid")
+
+  @@schema("complaint_outcome")
 }
 
 model decision_h {
@@ -260,6 +327,8 @@ model decision_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -274,6 +343,8 @@ model discharge_code {
   update_user_id                                   String     @db.VarChar(32)
   update_utc_timestamp                             DateTime   @db.Timestamp(6)
   decision_decision_discharge_codeTodischarge_code decision[] @relation("decision_discharge_codeTodischarge_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -295,6 +366,8 @@ model drug_administered {
   drug_method_code_drug_administered_drug_method_codeTodrug_method_code                                  drug_method_code             @relation("drug_administered_drug_method_codeTodrug_method_code", fields: [drug_method_code], references: [drug_method_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_drug_administered__drug_method_code")
   drug_remaining_outcome_code_drug_administered_drug_remaining_outcome_codeTodrug_remaining_outcome_code drug_remaining_outcome_code? @relation("drug_administered_drug_remaining_outcome_codeTodrug_remaining_outcome_code", fields: [drug_remaining_outcome_code], references: [drug_remaining_outcome_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_drug_administered__drug_remaining_outcome_code")
   wildlife                                                                                               wildlife                     @relation(fields: [wildlife_guid], references: [wildlife_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_drug_administered__wildlife_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -305,6 +378,8 @@ model drug_administered_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -319,6 +394,8 @@ model drug_code {
   update_user_id                                           String              @db.VarChar(32)
   update_utc_timestamp                                     DateTime            @db.Timestamp(6)
   drug_administered_drug_administered_drug_codeTodrug_code drug_administered[] @relation("drug_administered_drug_codeTodrug_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -333,6 +410,8 @@ model drug_method_code {
   update_user_id                                                         String              @db.VarChar(32)
   update_utc_timestamp                                                   DateTime            @db.Timestamp(6)
   drug_administered_drug_administered_drug_method_codeTodrug_method_code drug_administered[] @relation("drug_administered_drug_method_codeTodrug_method_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -347,6 +426,8 @@ model drug_remaining_outcome_code {
   update_user_id                                                                               String              @db.VarChar(32)
   update_utc_timestamp                                                                         DateTime            @db.Timestamp(6)
   drug_administered_drug_administered_drug_remaining_outcome_codeTodrug_remaining_outcome_code drug_administered[] @relation("drug_administered_drug_remaining_outcome_codeTodrug_remaining_outcome_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -361,6 +442,8 @@ model ear_code {
   update_user_id                     String    @db.VarChar(32)
   update_utc_timestamp               DateTime  @db.Timestamp(6)
   ear_tag_ear_tag_ear_codeToear_code ear_tag[] @relation("ear_tag_ear_codeToear_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -376,6 +459,8 @@ model ear_tag {
   active_ind                          Boolean?
   ear_code_ear_tag_ear_codeToear_code ear_code @relation("ear_tag_ear_codeToear_code", fields: [ear_code], references: [ear_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_ear_tag__ear_code")
   wildlife                            wildlife @relation(fields: [wildlife_guid], references: [wildlife_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_ear_tag__wildlife_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -386,6 +471,8 @@ model ear_tag_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -403,6 +490,8 @@ model equipment {
   quantity                                                Int?                     @db.SmallInt
   action                                                  action[]
   equipment_code_equipment_equipment_codeToequipment_code equipment_code?          @relation("equipment_equipment_codeToequipment_code", fields: [equipment_code], references: [equipment_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_equipment__equipment_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -419,6 +508,8 @@ model equipment_code {
   is_trap_ind                                        Boolean     @default(true)
   has_quantity_ind                                   Boolean     @default(false)
   equipment_equipment_equipment_codeToequipment_code equipment[] @relation("equipment_equipment_codeToequipment_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -429,6 +520,8 @@ model equipment_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -442,6 +535,8 @@ model equipment_status_code {
   create_utc_timestamp  DateTime  @db.Timestamp(6)
   update_user_id        String?   @db.VarChar(32)
   update_utc_timestamp  DateTime? @db.Timestamp(6)
+
+  @@schema("complaint_outcome")
 }
 
 model flyway_schema_history {
@@ -457,6 +552,7 @@ model flyway_schema_history {
   success        Boolean
 
   @@index([success], map: "flyway_schema_history_s_idx")
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -473,6 +569,8 @@ model hwcr_outcome_actioned_by_code {
   update_utc_timestamp                                                                       DateTime             @db.Timestamp(6)
   outcome_agency_code_hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code outcome_agency_code? @relation("hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_hwc_outcome_actioned_by__agency_code")
   wildlife_wildlife_hwcr_outcome_actioned_by_codeTohwcr_outcome_actioned_by_code             wildlife[]           @relation("wildlife_hwcr_outcome_actioned_by_codeTohwcr_outcome_actioned_by_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -487,6 +585,8 @@ model hwcr_outcome_code {
   update_user_id                                         String     @db.VarChar(32)
   update_utc_timestamp                                   DateTime   @db.Timestamp(6)
   wildlife_wildlife_hwcr_outcome_codeTohwcr_outcome_code wildlife[] @relation("wildlife_hwcr_outcome_codeTohwcr_outcome_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -503,6 +603,8 @@ model inaction_reason_code {
   update_utc_timestamp                                                              DateTime?           @db.Timestamp(6)
   assessment_assessment_inaction_reason_codeToinaction_reason_code                  assessment[]        @relation("assessment_inaction_reason_codeToinaction_reason_code")
   outcome_agency_code_inaction_reason_code_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("inaction_reason_code_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_inaction_reason_code__agency_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -517,6 +619,8 @@ model ipm_auth_category_code {
   update_user_id                                                   String?    @db.VarChar(32)
   update_utc_timestamp                                             DateTime?  @db.Timestamp(6)
   decision_decision_ipm_auth_category_codeToipm_auth_category_code decision[] @relation("decision_ipm_auth_category_codeToipm_auth_category_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -531,6 +635,47 @@ model non_compliance_decision_matrix_code {
   update_user_id                                                                             String     @db.VarChar(32)
   update_utc_timestamp                                                                       DateTime   @db.Timestamp(6)
   decision_decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code decision[] @relation("decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code")
+
+  @@schema("complaint_outcome")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model outcome_agency_code {
+  outcome_agency_code                                                                                  String                          @id(map: "PK_agency_code") @db.VarChar(10)
+  short_description                                                                                    String?                         @db.VarChar(50)
+  long_description                                                                                     String?                         @db.VarChar(250)
+  active_ind                                                                                           Boolean?
+  create_user_id                                                                                       String                          @db.VarChar(32)
+  create_utc_timestamp                                                                                 DateTime                        @db.Timestamp(6)
+  update_user_id                                                                                       String?                         @db.VarChar(32)
+  update_utc_timestamp                                                                                 DateTime?                       @db.Timestamp(6)
+  display_order                                                                                        Int?
+  assessment_assessment_outcome_agency_codeTooutcome_agency_code                                       assessment[]                    @relation("assessment_outcome_agency_codeTooutcome_agency_code")
+  case_note_case_note_outcome_agency_codeTooutcome_agency_code                                         case_note[]                     @relation("case_note_outcome_agency_codeTooutcome_agency_code")
+  complaint_outcome                                                                                    complaint_outcome[]
+  decision_decision_outcome_agency_codeTooutcome_agency_code                                           decision[]                      @relation("decision_outcome_agency_codeTooutcome_agency_code")
+  hwcr_outcome_actioned_by_code_hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code hwcr_outcome_actioned_by_code[] @relation("hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code")
+  inaction_reason_code_inaction_reason_code_outcome_agency_codeTooutcome_agency_code                   inaction_reason_code[]          @relation("inaction_reason_code_outcome_agency_codeTooutcome_agency_code")
+  prevention_education_prevention_education_outcome_agency_codeTooutcome_agency_code                   prevention_education[]          @relation("prevention_education_outcome_agency_codeTooutcome_agency_code")
+
+  @@schema("complaint_outcome")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model prevention_education {
+  prevention_education_guid                                                         String              @id(map: "PK_prevention_education_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  complaint_outcome_guid                                                            String              @db.Uuid
+  outcome_agency_code                                                               String              @db.VarChar(10)
+  active_ind                                                                        Boolean             @default(true)
+  create_user_id                                                                    String              @db.VarChar(32)
+  create_utc_timestamp                                                              DateTime            @db.Timestamp(6)
+  update_user_id                                                                    String?             @db.VarChar(32)
+  update_utc_timestamp                                                              DateTime?           @db.Timestamp(6)
+  action                                                                            action[]
+  outcome_agency_code_prevention_education_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("prevention_education_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__agency_code")
+  complaint_outcome                                                                 complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__case_file_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -545,6 +690,8 @@ model schedule_code {
   update_user_id                                                         String                 @db.VarChar(32)
   update_utc_timestamp                                                   DateTime               @db.Timestamp(6)
   schedule_sector_xref_schedule_sector_xref_schedule_codeToschedule_code schedule_sector_xref[] @relation("schedule_sector_xref_schedule_codeToschedule_code")
+
+  @@schema("complaint_outcome")
 }
 
 model schedule_sector_xref {
@@ -561,6 +708,7 @@ model schedule_sector_xref {
   sector_code_schedule_sector_xref_sector_codeTosector_code       sector_code   @relation("schedule_sector_xref_sector_codeTosector_code", fields: [sector_code], references: [sector_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_schedule_sector_xref__sector_code")
 
   @@unique([schedule_code, sector_code], map: "uk_schedule_sector_xref__schedule_sector")
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -575,6 +723,8 @@ model sector_code {
   update_user_id                                                     String                 @db.VarChar(32)
   update_utc_timestamp                                               DateTime               @db.Timestamp(6)
   schedule_sector_xref_schedule_sector_xref_sector_codeTosector_code schedule_sector_xref[] @relation("schedule_sector_xref_sector_codeTosector_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -589,6 +739,8 @@ model sex_code {
   update_user_id                       String     @db.VarChar(32)
   update_utc_timestamp                 DateTime   @db.Timestamp(6)
   wildlife_wildlife_sex_codeTosex_code wildlife[] @relation("wildlife_sex_codeTosex_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -602,6 +754,8 @@ model site {
   update_user_id         String?           @db.VarChar(32)
   update_utc_timestamp   DateTime?         @db.Timestamp(6)
   complaint_outcome      complaint_outcome @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_site__case_file_guid")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -612,6 +766,8 @@ model site_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -627,6 +783,8 @@ model threat_level_code {
   update_utc_timestamp                                   DateTime     @db.Timestamp(6)
   assessment                                             assessment[]
   wildlife_wildlife_threat_level_codeTothreat_level_code wildlife[]   @relation("wildlife_threat_level_codeTothreat_level_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -654,6 +812,8 @@ model wildlife {
   hwcr_outcome_code_wildlife_hwcr_outcome_codeTohwcr_outcome_code                                     hwcr_outcome_code?             @relation("wildlife_hwcr_outcome_codeTohwcr_outcome_code", fields: [hwcr_outcome_code], references: [hwcr_outcome_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__hwcr_outcome_code")
   sex_code_wildlife_sex_codeTosex_code                                                                sex_code?                      @relation("wildlife_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__sex_code")
   threat_level_code_wildlife_threat_level_codeTothreat_level_code                                     threat_level_code?             @relation("wildlife_threat_level_codeTothreat_level_code", fields: [threat_level_code], references: [threat_level_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__threat_level_code")
+
+  @@schema("complaint_outcome")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -664,69 +824,6 @@ model wildlife_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
-}
 
-model prevention_education {
-  prevention_education_guid                                                         String              @id(map: "PK_prevention_education_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  complaint_outcome_guid                                                            String              @db.Uuid
-  outcome_agency_code                                                               String              @db.VarChar(10)
-  active_ind                                                                        Boolean             @default(true)
-  create_user_id                                                                    String              @db.VarChar(32)
-  create_utc_timestamp                                                              DateTime            @db.Timestamp(6)
-  update_user_id                                                                    String?             @db.VarChar(32)
-  update_utc_timestamp                                                              DateTime?           @db.Timestamp(6)
-  action                                                                            action[]
-  outcome_agency_code_prevention_education_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("prevention_education_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__agency_code")
-  complaint_outcome                                                                 complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__case_file_guid")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model complaint_outcome {
-  complaint_outcome_guid String                 @id(map: "PK_case_file_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  owned_by_agency_code   String                 @db.VarChar(10)
-  review_required_ind    Boolean?
-  create_user_id         String                 @db.VarChar(32)
-  create_utc_timestamp   DateTime               @db.Timestamp(6)
-  update_user_id         String?                @db.VarChar(32)
-  update_utc_timestamp   DateTime?              @db.Timestamp(6)
-  complaint_identifier   String?                @db.VarChar(20)
-  action                 action[]
-  assessment             assessment[]
-  authorization_permit   authorization_permit[]
-  case_note              case_note[]
-  agency_code            outcome_agency_code    @relation(fields: [owned_by_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_file__owned_by_agency_code")
-  decision               decision[]
-  prevention_education   prevention_education[]
-  site                   site[]
-  wildlife               wildlife[]
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model complaint_outcome_h {
-  h_complaint_outcome_guid      String   @id(map: "PK_h_case_file") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model outcome_agency_code {
-  outcome_agency_code                                                                                  String                          @id(map: "PK_agency_code") @db.VarChar(10)
-  short_description                                                                                    String?                         @db.VarChar(50)
-  long_description                                                                                     String?                         @db.VarChar(250)
-  active_ind                                                                                           Boolean?
-  create_user_id                                                                                       String                          @db.VarChar(32)
-  create_utc_timestamp                                                                                 DateTime                        @db.Timestamp(6)
-  update_user_id                                                                                       String?                         @db.VarChar(32)
-  update_utc_timestamp                                                                                 DateTime?                       @db.Timestamp(6)
-  display_order                                                                                        Int?
-  assessment_assessment_outcome_agency_codeTooutcome_agency_code                                       assessment[]                    @relation("assessment_outcome_agency_codeTooutcome_agency_code")
-  case_note_case_note_outcome_agency_codeTooutcome_agency_code                                         case_note[]                     @relation("case_note_outcome_agency_codeTooutcome_agency_code")
-  complaint_outcome                                                                                    complaint_outcome[]
-  decision_decision_outcome_agency_codeTooutcome_agency_code                                           decision[]                      @relation("decision_outcome_agency_codeTooutcome_agency_code")
-  hwcr_outcome_actioned_by_code_hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code hwcr_outcome_actioned_by_code[] @relation("hwcr_outcome_actioned_by_code_outcome_agency_codeTooutcome_agency_code")
-  inaction_reason_code_inaction_reason_code_outcome_agency_codeTooutcome_agency_code                   inaction_reason_code[]          @relation("inaction_reason_code_outcome_agency_codeTooutcome_agency_code")
-  prevention_education_prevention_education_outcome_agency_codeTooutcome_agency_code                   prevention_education[]          @relation("prevention_education_outcome_agency_codeTooutcome_agency_code")
+  @@schema("complaint_outcome")
 }

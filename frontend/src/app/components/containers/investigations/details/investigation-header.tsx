@@ -2,14 +2,19 @@ import { FC } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { Investigation } from "@/generated/graphql";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import Option from "@apptypes/app/option";
 
 interface InvestigationHeaderProps {
   investigation?: Investigation;
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation }) => {
-
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigation?.leadAgency);
+  const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   return (
     <div className="comp-details-header">
@@ -88,8 +93,14 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
             </div>
           </div>
         </div>
+
+        <div
+          className="mt-1 max-width-48ch"
+          id="comp-details-lead-agency-text-id"
+        >
+          <span>Lead agency: {leadAgency}</span>
+        </div>
       </div>
     </div>
-  
   );
 };

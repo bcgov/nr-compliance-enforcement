@@ -30,6 +30,10 @@
 input[list]::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
+#incident-date::-webkit-calendar-picker-indicator,
+#incident-time::-webkit-calendar-picker-indicator {
+  display: none;
+}
 input[list] {
   color: #808080;
 }

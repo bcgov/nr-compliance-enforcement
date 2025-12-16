@@ -146,7 +146,7 @@ export class AppModule {
   constructor(@InjectMapper() private readonly mapper: Mapper) {}
 
   onModuleInit() {
-    initializeMappings(this.mapper); // ✅ Ensures mappings are registered after DI is ready
+    initializeMappings(this.mapper); // ✅ Ensures mappings are registered after DI is ready.
   }
 
   // let's add a middleware on all routes.

@@ -19,6 +19,7 @@ const GET_INVESTIGATION_POPUP = gql`
         shortDescription
         investigationStatusCode
       }
+      primaryInvestigatorGuid
     }
   }
 `;
@@ -35,6 +36,7 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
   });
 
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
+  const officers = useAppSelector((state) => state.officers.officers);
 
   const investigation = data?.getInvestigation;
   const status = investigation?.investigationStatus?.shortDescription ?? "Unknown";
@@ -42,10 +44,16 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
   const community = investigation?.locationAddress ?? "Unknown";
   const leadAgency = investigation?.leadAgency ?? "Unknown agency";
   const name = investigation?.name ?? investigationGuid;
-  const officerAssigned = "Not Assigned";
 
   const agencyCode = agencyCodes?.find(({ agency }) => agency === leadAgency)?.shortDescription ?? leadAgency;
   const agencyName = agencyCodes?.find(({ agency }) => agency === leadAgency)?.longDescription;
+
+  const primaryInvestigatorObj = officers.find(
+    (officer) => officer.app_user_guid === investigation?.primaryInvestigatorGuid,
+  );
+  const primaryInvestigatorName = primaryInvestigatorObj
+    ? `${primaryInvestigatorObj.last_name}, ${primaryInvestigatorObj.first_name}`
+    : "Not Assigned";
 
   return (
     <SummaryPopupLayout
@@ -54,10 +62,10 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
       status={status}
       statusClassName={applyStatusClass(status)}
       loggedValue={openedDate}
-      officerValue={officerAssigned}
+      officerValue={primaryInvestigatorName}
       officerAgency={agencyCode}
       officerAgencyName={agencyName}
-      officerUnassigned={officerAssigned === "Not Assigned"}
+      officerUnassigned={primaryInvestigatorName === "Not Assigned"}
       locationValue={community}
       detailsPath={`/investigation/${investigationGuid}`}
       detailsLabel="View investigation details"

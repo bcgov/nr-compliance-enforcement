@@ -64,8 +64,35 @@ export class InvestigationService {
           },
         },
         contravention: {
+          include: {
+            contravention_party_xref: {
+              include: {
+                investigation_party: {
+                  // Allows the person info to be mapped on the contravention object directly
+                  include: {
+                    investigation_person: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                    investigation_business: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+          },
           where: {
             active_ind: true,
+          },
+          orderBy: {
+            create_utc_timestamp: "asc",
           },
         },
       },
@@ -226,6 +253,10 @@ export class InvestigationService {
             owned_by_agency_ref: input.leadAgency,
             name: input.name,
             investigation_opened_utc_timestamp: new Date(),
+            primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
+            supervisor_guid_ref: input.supervisorGuid || null,
+            file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
+            discovery_date: input.discoveryDate,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -318,6 +349,22 @@ export class InvestigationService {
         }
         if (input.locationDescription !== undefined) {
           updateData.location_description = input.locationDescription;
+        }
+        if (input.primaryInvestigatorGuid !== undefined) {
+          updateData.primary_investigator_guid_ref = input.primaryInvestigatorGuid;
+        }
+        if (input.supervisorGuid !== undefined) {
+          updateData.supervisor_guid_ref = input.supervisorGuid;
+        }
+
+        if (input.fileCoordinatorGuid === "") {
+          updateData.file_coordinator_guid_ref = null;
+        } else {
+          updateData.file_coordinator_guid_ref = input.fileCoordinatorGuid;
+        }
+
+        if (input.discoveryDate !== undefined) {
+          updateData.discovery_date = input.discoveryDate;
         }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({
@@ -477,7 +524,7 @@ export class InvestigationService {
       // Get unmappable results. Raw SQL is required for PostGIS operations.
       const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
         SELECT COUNT(*) as count
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
           AND (
             location_geometry_point IS NULL OR
@@ -493,7 +540,7 @@ export class InvestigationService {
         SELECT
           investigation_guid,
           public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
           AND location_geometry_point IS NOT NULL
           AND public.ST_X(location_geometry_point) <> 0
@@ -540,7 +587,6 @@ export class InvestigationService {
         not: excludeInvestigationGuid,
       };
     }
-
     const existingInvestigation = await this.prisma.investigation.findFirst({
       where,
     });
@@ -554,7 +600,7 @@ export class InvestigationService {
       const query = `
         SELECT
             public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation
+        FROM investigation.investigation
         WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
       `;
       result = await this.prisma.$queryRawUnsafe(query);
@@ -578,7 +624,7 @@ export class InvestigationService {
     }
     try {
       const query = `
-        UPDATE investigation
+        UPDATE investigation.investigation
         SET location_geometry_point = ${point_data}
         WHERE investigation_guid = '${investigationGuid}'::uuid
       `;

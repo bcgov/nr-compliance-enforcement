@@ -121,8 +121,9 @@ export class ComplaintController {
     @Param("complaintType") complaintType: COMPLAINT_TYPE,
     @Param("id") id: string,
     @Body() model: ComplaintDtoAlias,
+    @Token() token: string,
   ): Promise<ComplaintDtoAlias> {
-    return await this.service.updateComplaintById(id, complaintType, model);
+    return await this.service.updateComplaintById(id, complaintType, model, token);
   }
 
   @Patch("/update-date-by-id/:id")

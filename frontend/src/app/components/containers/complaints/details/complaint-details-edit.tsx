@@ -247,6 +247,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [incidentDateTimeErrorMsg, setIncidentDateTimeErrorMsg] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
   const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
@@ -308,6 +309,7 @@ export const ComplaintDetailsEdit: FC = () => {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       dispatch(getComplaintById(id, complaintType));
+      dispatch(getCaseFile(id));
 
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
@@ -338,6 +340,7 @@ export const ComplaintDetailsEdit: FC = () => {
     setComplaintDescriptionError("");
     setAttractantsErrorMsg("");
     setCommunityError("");
+    setIncidentDateTimeErrorMsg("");
     setEmailMsg("");
     setPrimaryPhoneMsg("");
     setSecondaryPhoneMsg("");
@@ -383,6 +386,7 @@ export const ComplaintDetailsEdit: FC = () => {
       attractantsErrorMsg === "" &&
       communityError === "" &&
       coordinateErrorsInd === false &&
+      incidentDateTimeErrorMsg === "" &&
       emailMsg === "" &&
       primaryPhoneMsg === "" &&
       secondaryPhoneMsg === "" &&
@@ -1059,6 +1063,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   value={selectedIncidentDateTime}
                   onChange={handleIncidentDateTimeChange}
                   maxDate={maxDate}
+                  onErrorChange={setIncidentDateTimeErrorMsg}
                 />
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (
