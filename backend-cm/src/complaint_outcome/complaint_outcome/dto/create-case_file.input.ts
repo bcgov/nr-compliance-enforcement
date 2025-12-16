@@ -7,6 +7,7 @@ export class CreateComplaintOutcomeInput {
   equipment?: [CreateEquipmentDetailsInput];
   outcomeAgencyCode: string;
   createUserId: string;
+  reviewRequired?: boolean;
 }
 export class CreateAssessmentInput {
   complaintId: string;

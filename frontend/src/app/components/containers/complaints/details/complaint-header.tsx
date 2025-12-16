@@ -316,7 +316,6 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         as="button"
         id="export-pdf-button"
         onClick={() => exportComplaintToPdf()}
-        disabled={complaintAgency !== userAgency}
       >
         <i className="bi bi-file-earmark-pdf"></i>
         <span>Export</span>

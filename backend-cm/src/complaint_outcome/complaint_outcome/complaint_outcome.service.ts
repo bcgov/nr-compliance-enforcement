@@ -66,6 +66,22 @@ export class ComplaintOutcomeService {
     let complaintOutcomeGuid: string;
 
     try {
+      /**
+       * This is a fail safe to prevent the system from trying to create duplicate complaint outcomes
+       * In the event that a complaint_outcome already exists for this complaint, return that guid
+       */
+      const existingOutcome = await db.complaint_outcome.findFirst({
+        where: {
+          complaint_identifier: input.complaintId,
+        },
+        select: {
+          complaint_outcome_guid: true,
+        },
+      });
+      if (existingOutcome?.complaint_outcome_guid) {
+        this.logger.log(`Complaint outcome already exists for complaint ${input.complaintId}`);
+        return existingOutcome?.complaint_outcome_guid;
+      }
       const caseRecord = {
         owned_by_agency_code: input.outcomeAgencyCode,
         complaint_identifier: input.complaintId,
@@ -73,6 +89,7 @@ export class ComplaintOutcomeService {
         update_user_id: input.createUserId,
         create_utc_timestamp: new Date(),
         update_utc_timestamp: new Date(),
+        review_required_ind: !!input.reviewRequired,
       };
 
       const case_file = await db.complaint_outcome.create({
@@ -97,26 +114,17 @@ export class ComplaintOutcomeService {
     try {
       await this.prisma.$transaction(async (db) => {
         let assessmentId: string;
-        let case_file: any;
 
         if (!model.complaintOutcomeGuid) {
-          case_file = await db.complaint_outcome.create({
-            data: {
-              outcome_agency_code: {
-                connect: {
-                  outcome_agency_code: model.outcomeAgencyCode,
-                },
-              },
-              complaint_identifier: model.complaintId,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
+          complaintOutcomeGuid = await this.createComplaintOutcome(db, {
+            complaintId: model.complaintId,
+            outcomeAgencyCode: model.outcomeAgencyCode,
+            createUserId: model.createUserId,
           });
 
-          complaintOutcomeGuid = case_file.complaint_outcome_guid;
-
-          this.logger.log(`Case file created with complaint_outcome_guid: ${complaintOutcomeGuid}`);
-          this.logger.log(`Lead created with lead_identifier: ${case_file.complaint_identifier}`);
+          this.logger.log(
+            `Complaint outcome created with complaint_outcome_guid ${complaintOutcomeGuid} for complaint ${model.complaintId}`,
+          );
         } else {
           complaintOutcomeGuid = model.complaintOutcomeGuid;
         }
@@ -1036,26 +1044,16 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
 
     await this.prisma.$transaction(async (db) => {
-      let case_file: any;
-
       if (!model.complaintOutcomeGuid) {
-        case_file = await db.complaint_outcome.create({
-          data: {
-            outcome_agency_code: {
-              connect: {
-                outcome_agency_code: model.outcomeAgencyCode,
-              },
-            },
-            complaint_identifier: model.complaintId,
-            create_user_id: model.createUserId,
-            create_utc_timestamp: new Date(),
-          },
+        complaintOutcomeGuid = await this.createComplaintOutcome(db, {
+          complaintId: model.complaintId,
+          outcomeAgencyCode: model.outcomeAgencyCode,
+          createUserId: model.createUserId,
         });
 
-        complaintOutcomeGuid = case_file.complaint_outcome_guid;
-
-        this.logger.log(`Case file created with complaint_outcome_guid: ${complaintOutcomeGuid}`);
-        this.logger.log(`Lead created with lead_identifier: ${case_file.complaint_identifier}`);
+        this.logger.log(
+          `Complaint outcome created with complaint_outcome_guid ${complaintOutcomeGuid} for complaint ${model.complaintId}`,
+        );
       } else {
         complaintOutcomeGuid = model.complaintOutcomeGuid;
       }
@@ -1244,25 +1242,17 @@ export class ComplaintOutcomeService {
       reviewInput: ReviewInput,
     ): Promise<string> => {
       try {
-        let caseFileId: string;
+        let complaintOutcomeId: string;
         await this.prisma.$transaction(async (db) => {
           //create case
-          const caseFile = await db.complaint_outcome.create({
-            data: {
-              outcome_agency_code: {
-                connect: {
-                  outcome_agency_code: reviewInput.outcomeAgencyCode,
-                },
-              },
-              complaint_identifier: reviewInput.complaintId,
-              create_user_id: reviewInput.userId,
-              create_utc_timestamp: new Date(),
-              review_required_ind: true,
-            },
+          complaintOutcomeId = await this.createComplaintOutcome(db, {
+            complaintId: reviewInput.complaintId,
+            outcomeAgencyCode: reviewInput.outcomeAgencyCode,
+            createUserId: reviewInput.userId,
+            reviewRequired: true,
           });
-          caseFileId = caseFile.complaint_outcome_guid;
         });
-        return caseFileId;
+        return complaintOutcomeId;
       } catch (err) {
         this.logger.error(err);
         throw new GraphQLError("Error in createReviewCase", {});

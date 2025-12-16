@@ -225,7 +225,7 @@ model complaint_outcome {
   create_utc_timestamp   DateTime               @db.Timestamp(6)
   update_user_id         String?                @db.VarChar(32)
   update_utc_timestamp   DateTime?              @db.Timestamp(6)
-  complaint_identifier   String?                @db.VarChar(20)
+  complaint_identifier   String?                @unique(map: "uq_complaint_outcome_complaint_identifier") @db.VarChar(20)
   action                 action[]
   assessment             assessment[]
   authorization_permit   authorization_permit[]
