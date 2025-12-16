@@ -39,11 +39,11 @@ export class ImportCommand extends CommandRunner {
 
   async run(params: string[], options?: ImportCommandOptions): Promise<void> {
     if (!options?.job) {
-      this.logger.log("No job specified. Use --job <name> (e.g., --job parks or --job parks;bclaws)");
+      this.logger.log("No job specified. Use --job <name> (e.g., --job parks or --job parks,bclaws)");
       return;
     }
 
-    const jobs = options.job.split(";");
+    const jobs = options.job.split(",");
 
     for (const job of jobs) {
       const startTime = new Date();
@@ -87,7 +87,7 @@ export class ImportCommand extends CommandRunner {
 
   @Option({
     flags: "-j, --job <jobNames>",
-    description: "Job name(s) to run, semicolon-delimited (e.g., parks;bclaws)",
+    description: "Job name(s) to run, comma-delimited (e.g., parks,bclaws)",
   })
   parseJob(val: string): string {
     return val;

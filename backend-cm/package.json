@@ -32,7 +32,7 @@
     "test:cov": "jest --coverage --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "import:all": "nest start --entryFile=./src/cli.js -- import -j parks;bclaws",
+    "import:all": "nest start --entryFile=./src/cli.js -- import -j parks,bclaws",
     "import:parks": "nest start --entryFile=./src/cli.js -- import -j parks",
     "import:bclaws": "nest start --entryFile=./src/cli.js -- import -j bclaws"
   },
