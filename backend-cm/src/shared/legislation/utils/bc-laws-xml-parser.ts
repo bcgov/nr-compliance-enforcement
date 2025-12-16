@@ -162,9 +162,20 @@ const createNode = (
 });
 
 /**
- * Finds positions of multiple bcl:text elements at the same level
+ * Gets depth for nested elements
  */
-const getInterleavedTextPositions = (parentId: string): Array<{ start: number; end: number }> | null => {
+const getDepth = (content: string, i: number): number => {
+  for (const tag of NESTING_TAGS) {
+    if (content.substring(i, i + tag.length + 5) === `<bcl:${tag}`) return 1;
+    if (content.substring(i, i + tag.length + 6) === `</bcl:${tag}`) return -1;
+  }
+  return 0;
+};
+
+/**
+ * Gets the position bounds of an element
+ */
+const getBounds = (parentId: string): { content: string; offset: number } | null => {
   if (!parentId || !originalXmlString) return null;
 
   const parentIdPos = originalXmlString.indexOf(`id="${parentId}"`);
@@ -174,30 +185,32 @@ const getInterleavedTextPositions = (parentId: string): Array<{ start: number; e
   const tagEnd = originalXmlString.indexOf(">", parentIdPos);
   if (tagStart === -1 || tagEnd === -1) return null;
 
-  const tagMatch = originalXmlString.substring(tagStart + 1, tagEnd).match(/^(\S+)/);
+  const tagMatch = /^(\S+)/.exec(originalXmlString.substring(tagStart + 1, tagEnd));
   if (!tagMatch) return null;
 
   const closingPos = originalXmlString.indexOf(`</${tagMatch[1]}>`, tagEnd);
   if (closingPos === -1) return null;
 
-  const content = originalXmlString.substring(tagEnd + 1, closingPos);
+  return { content: originalXmlString.substring(tagEnd + 1, closingPos), offset: tagEnd + 1 };
+};
+
+/**
+ * Finds positions of multiple bcl:text elements at the same level
+ */
+const getTextPositions = (parentId: string): Array<{ start: number; end: number }> | null => {
+  const bounds = getBounds(parentId);
+  if (!bounds) return null;
+
+  const { content, offset } = bounds;
   const positions: Array<{ start: number; end: number }> = [];
   let depth = 0;
 
   for (let i = 0; i < content.length; i++) {
-    // Check for bcl:text at depth 0
     if (depth === 0 && content.substring(i, i + 10) === "<bcl:text>") {
       const endIdx = content.indexOf("</bcl:text>", i);
-      if (endIdx !== -1) {
-        positions.push({ start: tagEnd + 1 + i, end: tagEnd + 1 + endIdx + 11 });
-      }
+      if (endIdx !== -1) positions.push({ start: offset + i, end: offset + endIdx + 11 });
     }
-
-    // Track nesting depth
-    for (const tag of NESTING_TAGS) {
-      if (content.substring(i, i + tag.length + 5) === `<bcl:${tag}`) depth++;
-      if (content.substring(i, i + tag.length + 6) === `</bcl:${tag}`) depth--;
-    }
+    depth += getDepth(content, i);
   }
 
   return positions.length > 1 ? positions : null;
@@ -206,8 +219,8 @@ const getInterleavedTextPositions = (parentId: string): Array<{ start: number; e
 /**
  * Parses a paragraph element
  */
-const parseInterleavedText = (parentId: string): ParsedLegislationNode[] => {
-  const positions = getInterleavedTextPositions(parentId);
+const parseText = (parentId: string): ParsedLegislationNode[] => {
+  const positions = getTextPositions(parentId);
   if (!positions) return [];
 
   return positions.map((pos) =>
@@ -218,10 +231,10 @@ const parseInterleavedText = (parentId: string): ParsedLegislationNode[] => {
 };
 
 /**
- * Merges interleaved TEXT nodes sorted by position
+ * Merges TEXT nodes sorted by position
  * If first child is TEXT use it to set parent legislationText instead of adding it as a node
  */
-const mergeInterleavedText = (children: ParsedLegislationNode[], textNodes: ParsedLegislationNode[]): string | null => {
+const mergeText = (children: ParsedLegislationNode[], textNodes: ParsedLegislationNode[]): string | null => {
   if (textNodes.length === 0) return null;
 
   children.push(...textNodes);
@@ -304,13 +317,13 @@ const parseDefinition: ElementParser = (el, order) => {
 };
 
 const parseParagraph: ElementParser = (el, order) => {
-  const interleavedText = parseInterleavedText(el?.["@_id"]);
+  const text = parseText(el?.["@_id"]);
   const children = parseOrderedChildren(el, [
     { tag: "subparagraph", parse: parseSubparagraph },
     { tag: "clause", parse: parseClause },
   ]);
 
-  const extractedText = mergeInterleavedText(children, interleavedText);
+  const extractedText = mergeText(children, text);
 
   return createNode("PAR", order, {
     citation: getBclNum(el),
@@ -320,13 +333,13 @@ const parseParagraph: ElementParser = (el, order) => {
 };
 
 const parseSubsection: ElementParser = (el, order) => {
-  const interleavedText = parseInterleavedText(el?.["@_id"]);
+  const text = parseText(el?.["@_id"]);
   const children = parseOrderedChildren(el, [
     { tag: "definition", parse: parseDefinition },
     { tag: "paragraph", parse: parseParagraph },
   ]);
 
-  const extractedText = mergeInterleavedText(children, interleavedText);
+  const extractedText = mergeText(children, text);
 
   return createNode("SUBSEC", order, {
     citation: getBclNum(el),
@@ -336,14 +349,14 @@ const parseSubsection: ElementParser = (el, order) => {
 };
 
 const parseSection: ElementParser = (el, order) => {
-  const interleavedText = parseInterleavedText(el?.["@_id"]);
+  const text = parseText(el?.["@_id"]);
   const children = parseOrderedChildren(el, [
     { tag: "subsection", parse: parseSubsection },
     { tag: "definition", parse: parseDefinition },
     { tag: "paragraph", parse: parseParagraph },
   ]);
 
-  const extractedText = mergeInterleavedText(children, interleavedText);
+  const extractedText = mergeText(children, text);
 
   return createNode("SEC", order, {
     citation: getBclNum(el),
