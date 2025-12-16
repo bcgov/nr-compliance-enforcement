@@ -37,6 +37,7 @@ import { mapPrismaContinuationReportToContinuationReport } from "src/investigati
 import { mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode } from "src/shared/party_association_role_code/dto/party_association_role_code";
 import { mapPrismaLegislationToLegislation } from "../shared/legislation/dto/legislation";
 import { mapPrismaContreventionToContravention } from "../investigation/contravention/dto/contravention";
+import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_status_code/dto/task_status_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -77,4 +78,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaLegislationToLegislation(mapper);
   mapPrismaContreventionToContravention(mapper);
+  mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
 };
