@@ -195,8 +195,12 @@ const InspectionEdit: FC = () => {
 
     if (isEditMode && id) {
       navigate(`/inspection/${id}`);
+    } else if (id) {
+      navigate(`/inspection/${id}`);
+    } else if (caseIdentifier && !id) {
+      navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(`/inspections/${id}`);
+      navigate(`/inspections`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 

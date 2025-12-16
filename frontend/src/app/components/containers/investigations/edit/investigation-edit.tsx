@@ -245,8 +245,12 @@ const InvestigationEdit: FC = () => {
 
     if (isEditMode && id) {
       navigate(`/investigation/${id}`);
+    } else if (id) {
+      navigate(`/investigation/${id}`);
+    } else if (caseIdentifier && !id) {
+      navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(`/investigations/${id}`);
+      navigate(`/investigations`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
