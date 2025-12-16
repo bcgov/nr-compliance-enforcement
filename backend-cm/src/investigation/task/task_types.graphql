@@ -1,0 +1,11 @@
+type Task {
+  taskIdentifier: String!
+  investigationIdentifier: String!
+  taskTypeCode: String!
+  taskSubTypeCode: String!
+  taskStatusCode: String!
+  assignedUserIdentifier: String
+  taskNumber: String!
+  description: String
+  activeIndicator: Boolean!
+}

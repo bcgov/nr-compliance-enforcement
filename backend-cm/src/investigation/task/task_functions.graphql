@@ -1,0 +1,4 @@
+type Query {
+  tasks(investigationId: String): [Task]!
+  task(taskId: String): Task
+}
