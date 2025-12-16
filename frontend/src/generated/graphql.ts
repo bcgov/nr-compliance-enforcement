@@ -977,7 +977,6 @@ export type Legislation = {
   legislationTypeCode?: Maybe<Scalars['String']['output']>;
   parentGuid?: Maybe<Scalars['String']['output']>;
   sectionTitle?: Maybe<Scalars['String']['output']>;
-  trailingText?: Maybe<Scalars['String']['output']>;
 };
 
 export type LegislationSource = {

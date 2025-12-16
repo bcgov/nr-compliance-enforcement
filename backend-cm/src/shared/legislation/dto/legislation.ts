@@ -9,7 +9,6 @@ export class Legislation {
   fullCitation: string;
   sectionTitle: string;
   legislationText: string;
-  trailingText: string;
   alternateText: string;
   displayOrder: number;
   ancestors: Legislation[];
@@ -47,10 +46,6 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.legislationText,
       mapFrom((src) => src.legislation_text),
-    ),
-    forMember(
-      (dest) => dest.trailingText,
-      mapFrom((src) => src.trailing_text),
     ),
     forMember(
       (dest) => dest.alternateText,

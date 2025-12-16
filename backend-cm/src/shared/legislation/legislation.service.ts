@@ -14,7 +14,6 @@ export interface LegislationRow {
   full_citation: string | null;
   section_title: string | null;
   legislation_text: string | null;
-  trailing_text: string | null;
   alternate_text: string | null;
   display_order: number;
   effective_date: Date | null;
@@ -33,7 +32,6 @@ export interface CreateLegislationInput {
   fullCitation?: string | null;
   sectionTitle?: string | null;
   legislationText?: string | null;
-  trailingText?: string | null;
   alternateText?: string | null;
   displayOrder: number;
   effectiveDate?: Date | null;
@@ -93,7 +91,6 @@ export class LegislationService {
         l.full_citation,
         l.section_title,
         l.legislation_text,
-        l.trailing_text,
         l.alternate_text,
         l.display_order
       FROM legislation l
@@ -169,7 +166,6 @@ export class LegislationService {
       l.full_citation,
       l.section_title,
       l.legislation_text,
-      l.trailing_text,
       l.alternate_text,
       l.display_order,
       COALESCE(a.depth, 1) as depth
@@ -215,7 +211,6 @@ export class LegislationService {
         full_citation: input.fullCitation ?? null,
         section_title: input.sectionTitle ?? null,
         legislation_text: input.legislationText ?? null,
-        trailing_text: input.trailingText ?? null,
         alternate_text: input.alternateText ?? null,
         display_order: input.displayOrder,
         effective_date: input.effectiveDate ?? null,
@@ -235,6 +230,7 @@ export class LegislationService {
     citation: string | null,
     parentLegislationGuid: string | null,
     sectionTitle: string | null = null,
+    displayOrder: number | null = null,
   ): Promise<LegislationRow | null> {
     const where: any = {
       legislation_type_code: legislationTypeCode,
@@ -242,15 +238,21 @@ export class LegislationService {
       parent_legislation_guid: parentLegislationGuid,
     };
 
+    // DEF nodes have null citation so use sectionTitle to identify
     if (citation === null && sectionTitle !== null) {
       where.section_title = sectionTitle;
+    }
+
+    // TEXT nodes have null citation AND null sectionTitle so use displayOrder to identify
+    if (legislationTypeCode === "TEXT" && displayOrder !== null) {
+      where.display_order = displayOrder;
     }
 
     return this.prisma.legislation.findFirst({ where });
   }
 
   /**
-   * Upserts legislation based on type code, citation, parent GUID, and section title
+   * Upserts legislation based on type code, citation, parent GUID, title, and displayOrder
    */
   async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
     const existing = await this._findByTypeAndCitation(
@@ -258,6 +260,7 @@ export class LegislationService {
       input.citation ?? null,
       input.parentLegislationGuid ?? null,
       input.sectionTitle ?? null,
+      input.displayOrder,
     );
 
     if (existing) {
@@ -270,7 +273,6 @@ export class LegislationService {
           full_citation: input.fullCitation ?? existing.full_citation,
           section_title: input.sectionTitle ?? existing.section_title,
           legislation_text: input.legislationText ?? existing.legislation_text,
-          trailing_text: input.trailingText ?? existing.trailing_text,
           alternate_text: input.alternateText ?? existing.alternate_text,
           display_order: input.displayOrder,
           effective_date: input.effectiveDate ?? existing.effective_date,

@@ -51,9 +51,6 @@ export class legislation {
   @ApiPropertyOptional({ type: String })
   legislation_source_guid?: string;
 
-  @ApiPropertyOptional({ type: String })
-  trailing_text?: string;
-
   @ApiPropertyOptional({ type: () => legislation_source })
   legislation_source?: legislation_source;
 

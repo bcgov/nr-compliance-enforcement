@@ -77,6 +77,15 @@ VALUES
     NOW ()
   ),
   (
+    'TEXT',
+    'Text Segment',
+    'Text segment that appears between other child elements',
+    17,
+    true,
+    'SYSTEM',
+    NOW ()
+  ),
+  (
     'RULE',
     'Rule',
     'A rule within a Regulation, typically used in procedural or court rules.',

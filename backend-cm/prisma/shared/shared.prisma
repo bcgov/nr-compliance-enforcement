@@ -430,7 +430,6 @@ model legislation {
   update_user_id                                                                 String?               @db.VarChar(32)
   update_utc_timestamp                                                           DateTime?             @db.Timestamp(6)
   legislation_source_guid                                                        String?               @db.Uuid
-  trailing_text                                                                  String?
   legislation_source                                                             legislation_source?   @relation("legislationTolegislation_source", fields: [legislation_source_guid], references: [legislation_source_guid], onUpdate: NoAction, map: "fk_legislation_source")
   legislation_type_code_legislation_legislation_type_codeTolegislation_type_code legislation_type_code @relation("legislation_legislation_type_codeTolegislation_type_code", fields: [legislation_type_code], references: [legislation_type_code], onDelete: NoAction, onUpdate: NoAction)
   legislation                                                                    legislation?          @relation("legislationTolegislation", fields: [parent_legislation_guid], references: [legislation_guid], onDelete: Cascade, onUpdate: NoAction)

@@ -6,7 +6,6 @@ type Legislation {
   fullCitation: String
   sectionTitle: String
   legislationText: String
-  trailingText: String
   alternateText: String
   displayOrder: Int
   ancestors: [Legislation]

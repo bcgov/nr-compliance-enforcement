@@ -28,7 +28,6 @@ const SEARCH_LEGISLATION = gql`
     legislations(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
       legislationGuid
       legislationText
-      trailingText
       sectionTitle
       alternateText
       citation
@@ -46,7 +45,6 @@ const GET_LEGISLATION = gql`
       fullCitation
       alternateText
       legislationText
-      trailingText
       ancestors {
         legislationTypeCode
         legislationGuid
@@ -70,7 +68,6 @@ const GET_DIRECT_CHILDREN = gql`
     ) {
       legislationGuid
       legislationText
-      trailingText
       sectionTitle
       alternateText
       citation

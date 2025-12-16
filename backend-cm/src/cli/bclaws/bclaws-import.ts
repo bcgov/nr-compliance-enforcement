@@ -19,6 +19,7 @@ interface InsertLegislationContext {
   effectiveDate: Date | null;
   legislationService: LegislationService;
   logger: Logger;
+  errors: string[];
 }
 
 /**
@@ -120,7 +121,6 @@ async function insertLegislationTree(
       fullCitation: fullCitation,
       sectionTitle: node.sectionTitle ?? null,
       legislationText: node.legislationText,
-      trailingText: node.trailingText,
       displayOrder: node.displayOrder,
       effectiveDate: effectiveDate,
       createUserId: "system",
@@ -139,7 +139,9 @@ async function insertLegislationTree(
       );
     }
   } catch (error) {
-    logger.error(`Error inserting legislation: ${node.typeCode} - ${node.citation}`, error);
+    const errorMsg = `${node.typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(`Error inserting legislation: ${errorMsg}`);
+    context.errors.push(errorMsg);
     // Continue with other nodes even if one fails
   }
 
@@ -182,6 +184,7 @@ async function importLegislationSourceDocument(
       effectiveDate,
       legislationService,
       logger,
+      errors: [],
     };
     const insertedCount = await insertLegislationTree(
       parsedDocument.root,
@@ -190,6 +193,16 @@ async function importLegislationSourceDocument(
       null, // parentFullCitation
       source.legislationSourceGuid, // Link root node to source
     );
+
+    // Check if there were any errors during import
+    if (context.errors.length > 0) {
+      const errorLog = `Import completed with ${context.errors.length} error(s):\n${context.errors.join("\n")}`;
+      await legislationSourceService.markFailed(source.legislationSourceGuid, errorLog);
+      logger.warn(
+        `Completed with errors: ${source.shortDescription} - ${insertedCount} records, ${context.errors.length} errors`,
+      );
+      return insertedCount;
+    }
 
     const successLog = `Successfully imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
     await legislationSourceService.markImported(source.legislationSourceGuid, successLog);
@@ -265,9 +278,9 @@ export async function runBcLawsImport(
     logger.log(
       `Total legislation records imported/updated: ${totalCount}, succeeded: ${successCount}, failed: ${failCount}`,
     );
-    logger.log("BC Laws import is complete.");
+    logger.log("BC Laws import is complete");
   } catch (error) {
-    logger.error("Error during BC Laws import:", error);
+    logger.error("Error(s) during BC Laws import:", error);
     throw error;
   }
 }
