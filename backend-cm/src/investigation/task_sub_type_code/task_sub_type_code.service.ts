@@ -2,20 +2,21 @@ import { Injectable } from "@nestjs/common";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { task_status_code } from "../../../prisma/investigation/generated/task_status_code";
-import { TaskStatusCode } from "./dto/task_status_code";
+import { task_sub_type_code } from "../../../prisma/investigation/generated/task_sub_type_code";
+import { TaskSubTypeCode } from "./dto/task_sub_type_code";
 
 @Injectable()
-export class TaskStatusCodeService {
+export class TaskSubTypeCodeService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
   async findAll() {
-    const prismaStatuses = await this.prisma.task_status_code.findMany({
+    const prismaTaskSubTypes = await this.prisma.task_sub_type_code.findMany({
       select: {
-        task_status_code: true,
+        task_sub_type_code: true,
+        task_type_code: true,
         short_description: true,
         long_description: true,
         display_order: true,
@@ -26,10 +27,10 @@ export class TaskStatusCodeService {
       },
     });
 
-    return this.mapper.mapArray<task_status_code, TaskStatusCode>(
-      prismaStatuses as Array<task_status_code>,
-      "task_status_code",
-      "TaskStatusCode",
+    return this.mapper.mapArray<task_sub_type_code, TaskSubTypeCode>(
+      prismaTaskSubTypes as Array<task_sub_type_code>,
+      "task_sub_type_code",
+      "TaskSubTypeCode",
     );
   }
 }

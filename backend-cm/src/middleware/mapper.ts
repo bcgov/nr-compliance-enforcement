@@ -38,6 +38,8 @@ import { mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode } from "src
 import { mapPrismaLegislationToLegislation } from "../shared/legislation/dto/legislation";
 import { mapPrismaContreventionToContravention } from "../investigation/contravention/dto/contravention";
 import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_status_code/dto/task_status_code";
+import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
+import { mapPrismaTaskSubTypeCodeToTaskSubTypeCode } from "../investigation/task_sub_type_code/dto/task_sub_type_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -79,4 +81,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaLegislationToLegislation(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
+  mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
+  mapPrismaTaskSubTypeCodeToTaskSubTypeCode(mapper);
 };

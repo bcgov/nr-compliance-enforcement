@@ -70,6 +70,8 @@ import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 import { TaskStatusCodeModule } from "./investigation/task_status_code/task_status_code.module";
+import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
+import { TaskSubTypeCodeModule } from "./investigation/task_sub_type_code/task_sub_type_code.module";
 
 @Module({
   imports: [
@@ -140,6 +142,8 @@ import { TaskStatusCodeModule } from "./investigation/task_status_code/task_stat
     LegislationModule,
     ContraventionModule,
     TaskStatusCodeModule,
+    TaskTypeCodeModule,
+    TaskSubTypeCodeModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
