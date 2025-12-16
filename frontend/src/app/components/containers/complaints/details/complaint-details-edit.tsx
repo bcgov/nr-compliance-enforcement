@@ -309,6 +309,7 @@ export const ComplaintDetailsEdit: FC = () => {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
 
       dispatch(getComplaintById(id, complaintType));
+      dispatch(getCaseFile(id));
 
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);

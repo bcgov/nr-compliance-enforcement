@@ -7,6 +7,7 @@ import {
   navigateToDetailsScreen,
   validateComplaint,
   validateHWCSection,
+  waitForSpinner,
 } from "../../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 
@@ -73,6 +74,7 @@ test.describe("HWCR Outcome Equipment", () => {
     };
     await $equipment.locator("#equipment-copy-address-button").click();
     await fillInHWCSection($equipment, page, sectionParams);
+    await waitForSpinner(page);
     await validateHWCSection($equipment, page, sectionParams);
   });
 
