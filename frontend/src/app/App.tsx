@@ -34,6 +34,7 @@ import GenericErrorBoundary from "./components/error-handling/generic-error-boun
 import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
+import { LegislationSourceManagement } from "./components/containers/admin/legislation-source-management";
 import { AppUpdate } from "./AppUpdate";
 import Investigations from "@/app/components/containers/investigations/investigations";
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
@@ -222,6 +223,12 @@ const App: FC = () => {
                 <Route
                   path="/admin/feature"
                   element={<FeatureManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/laws"
+                  element={<LegislationSourceManagement />}
                 />
               </Route>
               <Route

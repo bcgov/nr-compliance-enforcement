@@ -21,10 +21,26 @@ type Props = {
   menuPlacement?: MenuPlacement;
 };
 
-// Custom Option component to render labelElement
+// Custom Option component to render labelElement or disabled items
 const CustomOption = (props: any) => {
   const { data } = props;
-  return <components.Option {...props}>{data.labelElement ?? data.label}</components.Option>;
+
+  // If there's a custom labelElement, use it
+  if (data.labelElement) {
+    return <components.Option {...props}>{data.labelElement}</components.Option>;
+  }
+
+  // If it's disabled, render muted text
+  if (data.isDisabled) {
+    return (
+      <components.Option {...props}>
+        <strong className="text-muted">{data.label}</strong>
+      </components.Option>
+    );
+  }
+
+  // Default rendering
+  return <components.Option {...props}>{data.label}</components.Option>;
 };
 
 // Custom filterOption to ensure searchability
@@ -67,11 +83,12 @@ export const CompSelect: FC<Props> = ({
       items.push(value);
     }
 
-    // Map options to include label and labelElement
+    // Map options to include label, labelElement, and isDisabled
     items = items.map((o) => ({
       label: o.label, //for searchability
       value: o.value,
       labelElement: o.labelElement,
+      isDisabled: o.isDisabled ?? false,
     }));
   }
 

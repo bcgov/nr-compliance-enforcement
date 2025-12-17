@@ -15,6 +15,7 @@ import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 import { PartyType } from "@/app/types/app/shared/party-type";
 import { PartyAssociationRole } from "@/app/types/app/shared/party-association-role";
+import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -123,6 +124,15 @@ export const fetchPartyAssociationRoles = (): AppThunk => async (dispatch) => {
   const response = await get<Array<PartyAssociationRole>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchLegislationTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.LEGISLATION_TYPE}`);
+  const response = await get<Array<LegislationType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.LEGISLATION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

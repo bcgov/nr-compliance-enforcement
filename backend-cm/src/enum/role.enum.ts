@@ -9,3 +9,4 @@ export enum Role {
 }
 
 export const coreRoles: Role[] = [Role.COS, Role.CEEB, Role.PARKS, Role.SECTOR];
+export const adminRoles: Role[] = [Role.TEMPORARY_TEST_ADMIN];
