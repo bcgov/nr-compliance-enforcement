@@ -1,5 +1,5 @@
-CREATE TABLE task_type_code  (
-    task_type_code                  VARCHAR(16) PRIMARY KEY  NOT NULL,
+CREATE TABLE task_category_type_code  (
+    task_category_type_code         VARCHAR(16) PRIMARY KEY  NOT NULL,
     short_description               VARCHAR(64) NOT NULL,
     long_description                VARCHAR(256),
     display_order                   INTEGER,
@@ -10,11 +10,57 @@ CREATE TABLE task_type_code  (
     update_utc_timestamp            TIMESTAMP WITHOUT TIME ZONE
 );
 
+COMMENT ON TABLE task_category_type_code IS
+    'Reference table defining categories of tasks.';
+
+COMMENT ON COLUMN task_category_type_code.task_category_type_code IS
+    'Primary key. Code representing the type of task category.';
+
+COMMENT ON COLUMN task_category_type_code.short_description IS
+    'The short description of the task category type code.  Used to store shorter versions of the long description when applicable.';
+
+COMMENT ON COLUMN task_category_type_code.long_description IS
+    'The long description of the task category type code.  May contain additional detail not typically displayed in the application.';
+
+COMMENT ON COLUMN task_category_type_code.display_order IS
+    'The order in which the values of the task category type code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added.';
+
+COMMENT ON COLUMN task_category_type_code.active_ind IS
+    'A boolean indicator to determine if the task category type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added.';
+
+COMMENT ON COLUMN task_category_type_code.create_user_id IS
+    'The id of the user that created the task category type code.';
+
+COMMENT ON COLUMN task_category_type_code.create_utc_timestamp IS
+    'The timestamp when the task category type code was created. The timestamp is stored in UTC with no offset.';
+
+COMMENT ON COLUMN task_category_type_code.update_user_id IS
+    'The id of the user that last updated the task category type code.';
+
+COMMENT ON COLUMN task_category_type_code.update_utc_timestamp IS
+    'The timestamp when the task type category code was last updated. The timestamp is stored in UTC with no offset.';
+
+CREATE TABLE task_type_code  (
+    task_type_code              VARCHAR(16) PRIMARY KEY  NOT NULL,
+    task_category_type_code     VARCHAR(16) NOT NULL REFERENCES task_category_type_code (task_category_type_code),
+    short_description           VARCHAR(64) NOT NULL,
+    long_description            VARCHAR(256),
+    display_order               INTEGER,
+    active_ind                  BOOLEAN DEFAULT true NOT NULL,
+    create_user_id              VARCHAR(32) NOT NULL,
+    create_utc_timestamp        TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    update_user_id              VARCHAR(32),
+    update_utc_timestamp        TIMESTAMP WITHOUT TIME ZONE
+);
+
 COMMENT ON TABLE task_type_code IS
-    'Reference table defining types and categories of tasks.';
+    'Reference table defining types and categories of tasks types.';
 
 COMMENT ON COLUMN task_type_code.task_type_code IS
     'Primary key. Code representing the type of task.';
+
+COMMENT ON COLUMN task_type_code.task_category_type_code IS
+    'Foreign key. Code representing the type task category.';
 
 COMMENT ON COLUMN task_type_code.short_description IS
     'The short description of the task type code.  Used to store shorter versions of the long description when applicable.';
@@ -39,52 +85,6 @@ COMMENT ON COLUMN task_type_code.update_user_id IS
 
 COMMENT ON COLUMN task_type_code.update_utc_timestamp IS
     'The timestamp when the task type code was last updated. The timestamp is stored in UTC with no offset.';
-
-CREATE TABLE task_sub_type_code  (
-    task_sub_type_code              VARCHAR(16) PRIMARY KEY  NOT NULL,
-    task_type_code                  VARCHAR(16) NOT NULL REFERENCES task_type_code (task_type_code),
-    short_description               VARCHAR(64) NOT NULL,
-    long_description                VARCHAR(256),
-    display_order                   INTEGER,
-    active_ind                      BOOLEAN DEFAULT true NOT NULL,
-    create_user_id                  VARCHAR(32) NOT NULL,
-    create_utc_timestamp            TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
-    update_user_id                  VARCHAR(32),
-    update_utc_timestamp            TIMESTAMP WITHOUT TIME ZONE
-);
-
-COMMENT ON TABLE task_sub_type_code IS
-    'Reference table defining types and categories of sub tasks types.';
-
-COMMENT ON COLUMN task_sub_type_code.task_sub_type_code IS
-    'Primary key. Code representing the type of sub task.';
-
-COMMENT ON COLUMN task_sub_type_code.task_type_code IS
-    'Foreign key. Code representing the type task.';
-
-COMMENT ON COLUMN task_sub_type_code.short_description IS
-    'The short description of the task sub type code.  Used to store shorter versions of the long description when applicable.';
-
-COMMENT ON COLUMN task_sub_type_code.long_description IS
-    'The long description of the task sub type code.  May contain additional detail not typically displayed in the application.';
-
-COMMENT ON COLUMN task_sub_type_code.display_order IS
-    'The order in which the values of the task sub type code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added.';
-
-COMMENT ON COLUMN task_sub_type_code.active_ind IS
-    'A boolean indicator to determine if the task sub type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added.';
-
-COMMENT ON COLUMN task_sub_type_code.create_user_id IS
-    'The id of the user that created the task sub type code.';
-
-COMMENT ON COLUMN task_sub_type_code.create_utc_timestamp IS
-    'The timestamp when the task sub type code was created. The timestamp is stored in UTC with no offset.';
-
-COMMENT ON COLUMN task_sub_type_code.update_user_id IS
-    'The id of the user that last updated the task sub type code.';
-
-COMMENT ON COLUMN task_sub_type_code.update_utc_timestamp IS
-    'The timestamp when the task sub type code was last updated. The timestamp is stored in UTC with no offset.';
 
 CREATE TABLE task_status_code  (
     task_status_code                VARCHAR(16) PRIMARY KEY NOT NULL,
@@ -133,7 +133,6 @@ CREATE TABLE task (
     task_guid                       UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     investigation_guid              UUID NOT NULL REFERENCES investigation (investigation_guid),
     task_type_code                  VARCHAR(16) NOT NULL REFERENCES task_type_code (task_type_code),
-    task_sub_type_code              VARCHAR(16) NOT NULL REFERENCES task_sub_type_code (task_sub_type_code),
     task_status_code                VARCHAR(16) NOT NULL REFERENCES task_status_code (task_status_code),
     assigned_app_user_guid_ref      UUID,
     task_number                     INTEGER NOT NULL,
@@ -159,9 +158,6 @@ COMMENT ON COLUMN task.investigation_guid IS
 
 COMMENT ON COLUMN task.task_type_code IS
     'Foreign key references task_type_code.task_type_code. Code representing the task type. This key should never be exposed to users via any system utilizing the tables.';
-
-COMMENT ON COLUMN task.task_sub_type_code IS
-    'Foreign key references task_sub_type_code.task_sub_type_code. Code representing the task sub type. This key should never be exposed to users via any system utilizing the tables.';
 
 COMMENT ON COLUMN task.task_status_code IS
     'Foreign key references task_status_code.task_status_code. Code representing the task status. This key should never be exposed to users via any system utilizing the tables.';

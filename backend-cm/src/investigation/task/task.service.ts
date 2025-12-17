@@ -22,7 +22,6 @@ export class TaskService {
         task_guid: true,
         investigation_guid: true,
         task_type_code: true,
-        task_sub_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         task_number: true,
@@ -46,7 +45,6 @@ export class TaskService {
         task_guid: true,
         investigation_guid: true,
         task_type_code: true,
-        task_sub_type_code: true,
         task_status_code: true,
         assigned_app_user_guid_ref: true,
         task_number: true,
@@ -89,7 +87,6 @@ export class TaskService {
             data: {
               investigation_guid: taskInput.investigationIdentifier,
               task_type_code: taskInput.taskTypeCode,
-              task_sub_type_code: taskInput.taskSubTypeCode,
               task_status_code: taskInput.taskStatusCode,
               assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
               task_number: nextTaskNumber,
@@ -148,7 +145,6 @@ export class TaskService {
         },
         data: {
           task_type_code: taskInput.taskTypeCode,
-          task_sub_type_code: taskInput.taskSubTypeCode,
           task_status_code: taskInput.taskStatusCode,
           assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
           description: taskInput.description,

@@ -3,6 +3,7 @@ import { task_type_code } from "../../../../prisma/investigation/generated/task_
 
 export class TaskTypeCode {
   taskTypeCode: string;
+  taskCategoryTypeCode: string;
   shortDescription: string;
   longDescription: string;
   displayOrder: number;
@@ -17,6 +18,10 @@ export const mapPrismaTaskTypeCodeToTaskTypeCode = (mapper: Mapper) => {
     forMember(
       (dest) => dest.taskTypeCode,
       mapFrom((src) => src.task_type_code),
+    ),
+    forMember(
+      (dest) => dest.taskCategoryTypeCode,
+      mapFrom((src) => src.task_category_type_code),
     ),
     forMember(
       (dest) => dest.shortDescription,

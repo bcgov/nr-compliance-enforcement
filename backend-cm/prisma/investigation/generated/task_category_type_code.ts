@@ -1,11 +1,7 @@
-import { task } from "./task";
-import { task_category_type_code } from "./task_category_type_code";
+import { task_type_code } from "./task_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class task_type_code {
-  @ApiProperty({ type: String })
-  task_type_code: string;
-
+export class task_category_type_code {
   @ApiProperty({ type: String })
   task_category_type_code: string;
 
@@ -33,9 +29,6 @@ export class task_type_code {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiProperty({ isArray: true, type: () => task })
-  task_task_task_type_codeTotask_type_code: task[];
-
-  @ApiProperty({ type: () => task_category_type_code })
-  task_category_type_code_task_type_code_task_category_type_codeTotask_category_type_code: task_category_type_code;
+  @ApiProperty({ isArray: true, type: () => task_type_code })
+  task_type_code_task_type_code_task_category_type_codeTotask_category_type_code: task_type_code[];
 }

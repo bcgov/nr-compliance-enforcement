@@ -1,27 +1,22 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
-import { task_sub_type_code } from "../../../../prisma/investigation/generated/task_sub_type_code";
+import { task_category_type_code } from "../../../../prisma/investigation/generated/task_category_type_code";
 
-export class TaskSubTypeCode {
-  taskSubTypeCode: string;
-  taskTypeCode: string;
+export class TaskCategoryTypeCode {
+  taskCategoryTypeCode: string;
   shortDescription: string;
   longDescription: string;
   displayOrder: number;
   activeIndicator: boolean;
 }
 
-export const mapPrismaTaskSubTypeCodeToTaskSubTypeCode = (mapper: Mapper) => {
-  createMap<task_sub_type_code, TaskSubTypeCode>(
+export const mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode = (mapper: Mapper) => {
+  createMap<task_category_type_code, TaskCategoryTypeCode>(
     mapper,
-    "task_sub_type_code",
-    "TaskSubTypeCode",
+    "task_category_type_code",
+    "TaskCategoryTypeCode",
     forMember(
-      (dest) => dest.taskSubTypeCode,
-      mapFrom((src) => src.task_sub_type_code),
-    ),
-    forMember(
-      (dest) => dest.taskTypeCode,
-      mapFrom((src) => src.task_type_code),
+      (dest) => dest.taskCategoryTypeCode,
+      mapFrom((src) => src.task_category_type_code),
     ),
     forMember(
       (dest) => dest.shortDescription,

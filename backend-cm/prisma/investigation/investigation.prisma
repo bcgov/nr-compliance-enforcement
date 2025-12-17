@@ -307,23 +307,21 @@ model contravention_party_xref {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model task {
-  task_guid                                                      String             @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid                                             String             @db.Uuid
-  task_type_code                                                 String             @db.VarChar(16)
-  task_sub_type_code                                             String             @db.VarChar(16)
-  task_status_code                                               String             @db.VarChar(16)
-  assigned_app_user_guid_ref                                     String?            @db.Uuid
-  task_number                                                    Int
-  description                                                    String?
-  active_ind                                                     Boolean            @default(true)
-  create_user_id                                                 String             @db.VarChar(32)
-  create_utc_timestamp                                           DateTime           @default(now()) @db.Timestamp(6)
-  update_user_id                                                 String?            @db.VarChar(32)
-  update_utc_timestamp                                           DateTime?          @db.Timestamp(6)
-  investigation                                                  investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
-  task_status_code_task_task_status_codeTotask_status_code       task_status_code   @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
-  task_sub_type_code_task_task_sub_type_codeTotask_sub_type_code task_sub_type_code @relation("task_task_sub_type_codeTotask_sub_type_code", fields: [task_sub_type_code], references: [task_sub_type_code], onDelete: NoAction, onUpdate: NoAction)
-  task_type_code_task_task_type_codeTotask_type_code             task_type_code     @relation("task_task_type_codeTotask_type_code", fields: [task_type_code], references: [task_type_code], onDelete: NoAction, onUpdate: NoAction)
+  task_guid                                                String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid                                       String           @db.Uuid
+  task_type_code                                           String           @db.VarChar(16)
+  task_status_code                                         String           @db.VarChar(16)
+  assigned_app_user_guid_ref                               String?          @db.Uuid
+  task_number                                              Int
+  description                                              String?
+  active_ind                                               Boolean          @default(true)
+  create_user_id                                           String           @db.VarChar(32)
+  create_utc_timestamp                                     DateTime         @default(now()) @db.Timestamp(6)
+  update_user_id                                           String?          @db.VarChar(32)
+  update_utc_timestamp                                     DateTime?        @db.Timestamp(6)
+  investigation                                            investigation    @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
+  task_status_code_task_task_status_codeTotask_status_code task_status_code @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
+  task_type_code_task_task_type_codeTotask_type_code       task_type_code   @relation("task_task_type_codeTotask_type_code", fields: [task_type_code], references: [task_type_code], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([investigation_guid, task_number], map: "unique_task_number_per_investigation")
   @@schema("investigation")
@@ -358,36 +356,35 @@ model task_status_code {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model task_sub_type_code {
-  task_sub_type_code                                               String         @id @db.VarChar(16)
-  task_type_code                                                   String         @db.VarChar(16)
-  short_description                                                String         @db.VarChar(64)
-  long_description                                                 String?        @db.VarChar(256)
-  display_order                                                    Int?
-  active_ind                                                       Boolean        @default(true)
-  create_user_id                                                   String         @db.VarChar(32)
-  create_utc_timestamp                                             DateTime       @default(now()) @db.Timestamp(6)
-  update_user_id                                                   String?        @db.VarChar(32)
-  update_utc_timestamp                                             DateTime?      @db.Timestamp(6)
-  task_task_task_sub_type_codeTotask_sub_type_code                 task[]         @relation("task_task_sub_type_codeTotask_sub_type_code")
-  task_type_code_task_sub_type_code_task_type_codeTotask_type_code task_type_code @relation("task_sub_type_code_task_type_codeTotask_type_code", fields: [task_type_code], references: [task_type_code], onDelete: NoAction, onUpdate: NoAction)
+model task_type_code {
+  task_type_code                                                                          String                  @id @db.VarChar(16)
+  task_category_type_code                                                                 String                  @db.VarChar(16)
+  short_description                                                                       String                  @db.VarChar(64)
+  long_description                                                                        String?                 @db.VarChar(256)
+  display_order                                                                           Int?
+  active_ind                                                                              Boolean                 @default(true)
+  create_user_id                                                                          String                  @db.VarChar(32)
+  create_utc_timestamp                                                                    DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                                                                          String?                 @db.VarChar(32)
+  update_utc_timestamp                                                                    DateTime?               @db.Timestamp(6)
+  task_task_task_type_codeTotask_type_code                                                task[]                  @relation("task_task_type_codeTotask_type_code")
+  task_category_type_code_task_type_code_task_category_type_codeTotask_category_type_code task_category_type_code @relation("task_type_code_task_category_type_codeTotask_category_type_code", fields: [task_category_type_code], references: [task_category_type_code], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("investigation")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model task_type_code {
-  task_type_code                                                       String               @id @db.VarChar(16)
-  short_description                                                    String               @db.VarChar(64)
-  long_description                                                     String?              @db.VarChar(256)
-  display_order                                                        Int?
-  active_ind                                                           Boolean              @default(true)
-  create_user_id                                                       String               @db.VarChar(32)
-  create_utc_timestamp                                                 DateTime             @default(now()) @db.Timestamp(6)
-  update_user_id                                                       String?              @db.VarChar(32)
-  update_utc_timestamp                                                 DateTime?            @db.Timestamp(6)
-  task_task_task_type_codeTotask_type_code                             task[]               @relation("task_task_type_codeTotask_type_code")
-  task_sub_type_code_task_sub_type_code_task_type_codeTotask_type_code task_sub_type_code[] @relation("task_sub_type_code_task_type_codeTotask_type_code")
+model task_category_type_code {
+  task_category_type_code                                                        String           @id @db.VarChar(16)
+  short_description                                                              String           @db.VarChar(64)
+  long_description                                                               String?          @db.VarChar(256)
+  display_order                                                                  Int?
+  active_ind                                                                     Boolean          @default(true)
+  create_user_id                                                                 String           @db.VarChar(32)
+  create_utc_timestamp                                                           DateTime         @default(now()) @db.Timestamp(6)
+  update_user_id                                                                 String?          @db.VarChar(32)
+  update_utc_timestamp                                                           DateTime?        @db.Timestamp(6)
+  task_type_code_task_type_code_task_category_type_codeTotask_category_type_code task_type_code[] @relation("task_type_code_task_category_type_codeTotask_category_type_code")
 
   @@schema("investigation")
 }

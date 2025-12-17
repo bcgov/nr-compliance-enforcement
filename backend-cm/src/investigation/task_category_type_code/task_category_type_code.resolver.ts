@@ -1,18 +1,18 @@
 import { Resolver, Query } from "@nestjs/graphql";
-import { TaskSubTypeCodeService } from "./task_sub_type_code.service";
+import { TaskCategoryTypeCodeService } from "./task_category_type_code.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 
 @UseGuards(JwtRoleGuard)
-@Resolver("TaskSubTypeCode")
-export class TaskSubTypeCodeResolver {
-  constructor(private readonly taskSubTypeCodeService: TaskSubTypeCodeService) {}
+@Resolver("TaskCategoryTypeCode")
+export class TaskCategoryTypeCodeResolver {
+  constructor(private readonly taskCategoryCodeService: TaskCategoryTypeCodeService) {}
 
-  @Query("taskSubTypeCodes")
+  @Query("taskCategoryTypeCodes")
   @Roles(coreRoles)
   async findAll() {
-    return await this.taskSubTypeCodeService.findAll();
+    return await this.taskCategoryCodeService.findAll();
   }
 }

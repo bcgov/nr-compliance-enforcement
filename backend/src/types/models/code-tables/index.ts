@@ -69,6 +69,9 @@ export const AvailableCodeTables = [
   "email-reference",
   "party-type",
   "party-association-role",
+  "task-status-type",
+  "task-type",
+  "task-category-type",
 ];
 
 export const AvailableAgencies = ["cos"];

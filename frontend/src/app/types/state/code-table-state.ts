@@ -43,6 +43,9 @@ import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 import { PartyType } from "../app/shared/party-type";
 import { PartyAssociationRole } from "../app/shared/party-association-role";
+import { TaskStatusType } from "@/app/types/app/investigation/task-status";
+import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
+import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 
 export interface CodeTableState {
   [key: string]:
@@ -90,7 +93,10 @@ export interface CodeTableState {
     | Array<ParkArea>
     | Array<EmailReference>
     | Array<PartyType>
-    | Array<PartyAssociationRole>;
+    | Array<PartyAssociationRole>
+    | Array<TaskStatusType>
+    | Array<TaskCategoryType>
+    | Array<TaskType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -136,4 +142,7 @@ export interface CodeTableState {
   "email-reference": Array<EmailReference>;
   "party-type": Array<PartyType>;
   "party-association-role": Array<PartyAssociationRole>;
+  "task-status-type": Array<TaskStatusType>;
+  "task-category-type": Array<TaskCategoryType>;
+  "task-type": Array<TaskType>;
 }

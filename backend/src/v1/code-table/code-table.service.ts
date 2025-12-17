@@ -841,6 +841,32 @@ export class CodeTableService {
         return results;
       }
 
+      case "task-status-type": {
+        const { data } = await get(token, {
+          query: "{ taskStatusCodes { taskStatusCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskStatusCodes;
+        return results;
+      }
+
+      case "task-category-type": {
+        const { data } = await get(token, {
+          query:
+            "{ taskCategoryTypeCodes { taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskCategoryTypeCodes;
+        return results;
+      }
+
+      case "task-type": {
+        const { data } = await get(token, {
+          query:
+            "{ taskTypeCodes { taskTypeCode taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskTypeCodes;
+        return results;
+      }
+
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },

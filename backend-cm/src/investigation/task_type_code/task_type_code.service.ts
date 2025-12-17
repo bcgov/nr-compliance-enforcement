@@ -2,8 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { task_type_code } from "../../../prisma/investigation/generated/task_type_code";
 import { TaskTypeCode } from "./dto/task_type_code";
+import { task_type_code } from "../../../prisma/investigation/generated/task_type_code";
 
 @Injectable()
 export class TaskTypeCodeService {
@@ -16,6 +16,7 @@ export class TaskTypeCodeService {
     const prismaTaskTypes = await this.prisma.task_type_code.findMany({
       select: {
         task_type_code: true,
+        task_category_type_code: true,
         short_description: true,
         long_description: true,
         display_order: true,

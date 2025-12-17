@@ -5,7 +5,6 @@ export class Task {
   taskIdentifier: string;
   investigationIdentifier: string;
   taskTypeCode: string;
-  taskSubTypeCode: string;
   taskStatusCode: string;
   assignedUserIdentifier: string;
   taskNumber: number;
@@ -17,7 +16,6 @@ export class CreateUpdateTaskInput {
   taskIdentifier?: string;
   investigationIdentifier?: string;
   taskTypeCode?: string;
-  taskSubTypeCode?: string;
   taskStatusCode?: string;
   assignedUserIdentifier?: string;
   description?: string;
@@ -35,10 +33,6 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationIdentifier,
       mapFrom((src) => src.investigation_guid),
-    ),
-    forMember(
-      (dest) => dest.taskSubTypeCode,
-      mapFrom((src) => src.task_sub_type_code),
     ),
     forMember(
       (dest) => dest.taskTypeCode,
