@@ -841,6 +841,15 @@ export class CodeTableService {
         return results;
       }
 
+      case "legislation-type": {
+        const { data } = await get(token, {
+          query:
+            "{ legislationTypeCodes { legislationTypeCode shortDescription longDescription displayOrder activeInd }}",
+        });
+        const results = data.legislationTypeCodes;
+        return results;
+      }
+
       case "email-reference": {
         const data = await this._emailReferenceRepository.find({
           where: { active_ind: true },

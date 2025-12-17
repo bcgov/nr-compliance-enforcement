@@ -35,7 +35,7 @@ $modal-content-border-radius: "5px";
 // $modal-sm:                          300px !default;
 $modal-md: 508px !default;
 // $modal-lg:                          800px !default;
-// $modal-xl:                          1140px !default;
+$modal-xl: 1140px !default;
 
 // $modal-fade-transform:              translate(0, -50px) !default;
 // $modal-show-transform:              none !default;
@@ -123,5 +123,15 @@ $modal-md: 508px !default;
 }
 
 .contravention-section p {
+  margin: 0;
+}
+
+.contravention-text-segment {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.contravention-text-segment p {
   margin: 0;
 }
