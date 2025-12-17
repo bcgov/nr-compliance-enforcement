@@ -1,6 +1,6 @@
 import { FC, useState, useContext, useCallback, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
-import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
+import { Button, CloseButton, Collapse, Offcanvas, OverlayTrigger, Tooltip } from "react-bootstrap";
 
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
@@ -110,6 +110,37 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
     setViewType(view);
   };
 
+  const sectorComplaintsTooltipOverlay = () => (
+    <OverlayTrigger
+      key="sector-complaints-tooltip-overlay"
+      placement="right"
+      trigger={["hover", "click"]}
+      overlay={
+        <Tooltip
+          id={"sector-complaints-tooltip"}
+          className="comp-tooltip comp-tooltip-right sector-complaints-tooltip"
+          style={{
+            maxWidth: "260px",
+          }}
+        >
+          <p
+            className="sector-complaint-info"
+            style={{ marginBottom: 0, whiteSpace: "pre-line", wordBreak: "break-word" }}
+          >
+            Complaints containing sensitive information are hidden based on agency permissions.
+          </p>
+        </Tooltip>
+      }
+    >
+      <p className="permission-info">
+        <i
+          id="sector-complaint-info-icon"
+          className="bi bi-info-circle-fill"
+        ></i>
+      </p>
+    </OverlayTrigger>
+  );
+
   // Show/Hide Mobile Filters
   const [show, setShow] = useState(false);
   const hideFilters = () => setShow(false);
@@ -125,13 +156,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <div className="title-text-container">
-            <h1>{storedComplaintType === COMPLAINT_TYPES.SECTOR ? "Sector view" : "Complaints"}</h1>
-            {complaintType === COMPLAINT_TYPES.SECTOR && (
-              <p className="permission-info">
-                <i className="bi bi-info-circle-fill"></i>Complaints containing sensitive information are hidden based
-                on agency permissions.
-              </p>
-            )}
+            <h1>Complaints</h1>
+            {complaintType === COMPLAINT_TYPES.SECTOR && sectorComplaintsTooltipOverlay()}
           </div>
           {!UserService.hasRole(Roles.SECTOR) && (
             <Button onClick={() => handleCreateClick()}>
