@@ -8,7 +8,7 @@
             <child column="agency_code_ref" foreignKey="app_user_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="app_user"/>
             <child column="lead_agency" foreignKey="fk_case_file__agency_code" implied="false" onDeleteCascade="false" schema="shared" table="case_file"/>
             <child column="agency_code_ref" foreignKey="geo_org_structure_agency_fk" implied="false" onDeleteCascade="false" schema="shared" table="geo_org_unit_structure"/>
-            <child column="agency_code" foreignKey="legislation_agency_xref_agency_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_agency_xref"/>
+            <child column="agency_code" foreignKey="fk_legislation_source_agency" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
             <child column="agency_code_ref" foreignKey="office_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="office"/>
             <child column="agency_code_ref" foreignKey="team_agency_code_fk" implied="false" onDeleteCascade="false" schema="shared" table="team"/>
          </column>
@@ -454,7 +454,6 @@
       <table name="legislation" remarks="Stores hierarchical legislation. Each row may represent an Act, Regulation, Section, Subsection, Paragraph, or Subparagraph. Self-referencing parent_legislation_guid creates the hierarchy." schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_guid" nullable="false" remarks="Primary key. Unique identifier for the legislation element." size="2147483647" type="uuid" typeCode="1111">
             <child column="parent_legislation_guid" foreignKey="legislation_parent_legislation_guid_fkey" implied="false" onDeleteCascade="true" schema="shared" table="legislation"/>
-            <child column="legislation_guid" foreignKey="legislation_agency_xref_legislation_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_agency_xref"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_type_code" nullable="false" remarks="Foreign key to legislation_type_code. Defines the type of this legislative element." size="16" type="varchar" typeCode="12">
             <parent column="legislation_type_code" foreignKey="legislation_legislation_type_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation_type_code"/>
@@ -462,9 +461,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="parent_legislation_guid" nullable="true" remarks="Self-referencing FK to represent hierarchy (e.g., Act -&gt; Regulation -&gt; Section -&gt; Subsection). Null for top-level items." size="2147483647" type="uuid" typeCode="1111">
             <parent column="legislation_guid" foreignKey="legislation_parent_legislation_guid_fkey" implied="false" onDeleteCascade="true" schema="shared" table="legislation"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="citation" nullable="true" remarks="Short citation for the legislative provision (e.g., &quot;10(3)(a)&quot;)." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="full_citation" nullable="true" remarks="Full citation string including Act/Reg and all hierarchy if needed." size="512" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="section_title" nullable="true" remarks="Title of the section, if applicable. Sections may have titles; subsections often do not." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="citation" nullable="true" remarks="Short citation for the legislative provision (e.g., &quot;10(3)(a)&quot;)." size="128" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="full_citation" nullable="true" remarks="Full citation string including Act/Reg and all hierarchy if needed." size="1024" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="section_title" nullable="true" remarks="Title of the section, if applicable. Sections may have titles; subsections often do not." size="128" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="legislation_text" nullable="true" remarks="The actual legislative text." size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="alternate_text" nullable="true" remarks="Analyst-provided summary text for usability (e.g., &quot;Accept delivery without manifest&quot;).   This value might come from a document such as the COS Field Operations Guide." size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="display_order" nullable="false" remarks="The order in which the legislation should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added.  May contain duplicates to allow for hierarchical ordering." size="10" type="int4" typeCode="4"/>
@@ -474,6 +473,9 @@
          <column autoUpdated="false" defaultValue="now()" digits="6" id="12" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation." size="32" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="14" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="legislation_source_guid" nullable="true" remarks="Reference to the legislation_source that this legislation was imported from. Only set on top-level (root) records." size="2147483647" type="uuid" typeCode="1111">
+            <parent column="legislation_source_guid" foreignKey="fk_legislation_source" implied="false" onDeleteCascade="false" schema="shared" table="legislation_source"/>
+         </column>
          <primaryKey column="legislation_guid" sequenceNumberInPK="1"/>
          <index name="legislation_pkey" unique="true">
             <column ascending="true" name="legislation_guid"/>
@@ -488,35 +490,6 @@
             <column ascending="true" name="legislation_type_code"/>
          </index>
       </table>
-      <table name="legislation_agency_xref" remarks="Stores a mapping of which agencies are responsible for enforcing which legislative provisions." schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_agency_xref_guid" nullable="false" remarks="Primary key. Unique identifier for the agency/legislation mapping." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="legislation_guid" nullable="false" remarks="Foreign key to legislation.   Defines a specific piece of legislation." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="legislation_guid" foreignKey="legislation_agency_xref_legislation_guid_fkey" implied="false" onDeleteCascade="false" schema="shared" table="legislation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code" nullable="false" remarks="Foreign key to agency_code.   Defines a specific agency that uses the app." size="10" type="varchar" typeCode="12">
-            <parent column="agency_code" foreignKey="legislation_agency_xref_agency_code_fkey" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="create_user_id" nullable="false" remarks="The id of the user that created the legislation/agency mapping." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the legislation/agency mapping was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="update_user_id" nullable="true" remarks="The id of the user that last updated the legislation/agency mapping." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the legislation/agency mapping was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="legislation_agency_xref_guid" sequenceNumberInPK="1"/>
-         <index name="legislation_agency_xref_pkey" unique="true">
-            <column ascending="true" name="legislation_agency_xref_guid"/>
-         </index>
-      </table>
-      <table name="legislation_agency_xref_h" remarks="History table for legislation agency xref table" schema="shared" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_agency_xref_guid" nullable="false" remarks="System generated unique key for legislation history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the legislation table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the legislation table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_legislation_agency_xref_guid" sequenceNumberInPK="1"/>
-         <index name="PK_h_legislation_agency_xref" unique="true">
-            <column ascending="true" name="h_legislation_agency_xref_guid"/>
-         </index>
-      </table>
       <table name="legislation_h" remarks="History table for legislation table" schema="shared" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_legislation_guid" nullable="false" remarks="System generated unique key for legislation history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the legislation that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
@@ -527,6 +500,30 @@
          <primaryKey column="h_legislation_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_legislation" unique="true">
             <column ascending="true" name="h_legislation_guid"/>
+         </index>
+      </table>
+      <table name="legislation_source" remarks="Defines BC Laws XML documents to be imported into the legislation table" schema="shared" type="TABLE">
+         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="legislation_source_guid" nullable="false" remarks="Primary key. Unique identifier for this legislation source record." size="2147483647" type="uuid" typeCode="1111">
+            <child column="legislation_source_guid" foreignKey="fk_legislation_source" implied="false" onDeleteCascade="false" schema="shared" table="legislation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="Short name or title for this legislation source (e.g., Environmental Management Act)." size="64" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="Optional longer description with additional context about this legislation source." size="256" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="source_url" nullable="false" remarks="Full URL to the BC Laws XML document (e.g., https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml)." size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="agency_code" nullable="false" remarks="Foreign key to agency_code. Defines which agency this legislation source belongs to." size="10" type="varchar" typeCode="12">
+            <parent column="agency_code" foreignKey="fk_legislation_source_agency" implied="false" onDeleteCascade="false" schema="shared" table="agency_code"/>
+         </column>
+         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="Whether this source is active. Inactive sources will not be imported." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="false" digits="0" id="6" name="imported_ind" nullable="false" remarks="Whether this source has been imported. If true, the import job will skip it." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="last_import_timestamp" nullable="true" remarks="Timestamp of the last successful import. NULL if never imported." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="create_user_id" nullable="false" remarks="The id of the user that created this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="now()" digits="6" id="9" name="create_utc_timestamp" nullable="false" remarks="The timestamp when this record was created. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="update_user_id" nullable="true" remarks="The id of the user that last updated this record." size="32" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="update_utc_timestamp" nullable="true" remarks="The timestamp when this record was last updated. Stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="'PENDING'::character varying" digits="0" id="12" name="import_status" nullable="true" remarks="Status of the last import attempt: PENDING, SUCCESS, or FAILED." size="16" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="last_import_log" nullable="true" remarks="Log message or error details from the last import attempt." size="2147483647" type="text" typeCode="12"/>
+         <primaryKey column="legislation_source_guid" sequenceNumberInPK="1"/>
+         <index name="legislation_source_pkey" unique="true">
+            <column ascending="true" name="legislation_source_guid"/>
          </index>
       </table>
       <table name="legislation_type_code" remarks="Reference table defining types of legislation (Act, Regulation, Section, Subsection, etc.)." schema="shared" type="TABLE">

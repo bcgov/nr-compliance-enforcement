@@ -3,7 +3,6 @@ person_h
 party_h
 office_h
 legislation_h
-legislation_agency_xref_h
 geo_org_unit_structure_h
 flyway_schema_history
 contact_method_h
@@ -15,7 +14,6 @@ app_user_h
 event
 geo_org_unit_structure
 park_area_xref
-legislation_agency_xref
 contact_method
 case_activity
 app_user_team_xref
@@ -28,6 +26,7 @@ person
 app_user
 legislation
 office
+legislation_source
 party
 geo_organization_unit_code
 team_code
