@@ -1,5 +1,7 @@
 type Mutation {
   createTask(input: CreateUpdateTaskInput!): Task!
+  removeTask(taskId: String!): Task!
+  updateTask(input: CreateUpdateTaskInput!): Task!
 }
 
 type Query {

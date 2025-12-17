@@ -11,10 +11,11 @@ type Task {
 }
 
 input CreateUpdateTaskInput {
-  investigationIdentifier: String!
-  taskTypeCode: String!
-  taskSubTypeCode: String!
-  taskStatusCode: String!
+  taskIdentifier: String
+  investigationIdentifier: String
+  taskTypeCode: String
+  taskSubTypeCode: String
+  taskStatusCode: String
   assignedUserIdentifier: String
   description: String
 }

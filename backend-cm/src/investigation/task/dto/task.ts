@@ -14,13 +14,13 @@ export class Task {
 }
 
 export class CreateUpdateTaskInput {
-  investigationIdentifier: string;
-  taskTypeCode: string;
-  taskSubTypeCode: string;
-  taskStatusCode: string;
-  assignedUserIdentifier: string;
-  taskNumber: number;
-  description: string;
+  taskIdentifier?: string;
+  investigationIdentifier?: string;
+  taskTypeCode?: string;
+  taskSubTypeCode?: string;
+  taskStatusCode?: string;
+  assignedUserIdentifier?: string;
+  description?: string;
 }
 
 export const mapPrismaTaskToTask = (mapper: Mapper) => {

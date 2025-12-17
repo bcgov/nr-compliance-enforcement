@@ -28,4 +28,16 @@ export class TaskResolver {
   async create(@Args("input") taskInput: CreateUpdateTaskInput) {
     return await this.taskService.create(taskInput);
   }
+
+  @Mutation("removeTask")
+  @Roles(coreRoles)
+  async remove(@Args("taskId") taskIdentifier: string) {
+    return await this.taskService.remove(taskIdentifier);
+  }
+
+  @Mutation("updateTask")
+  @Roles(coreRoles)
+  async update(@Args("input") taskInput: CreateUpdateTaskInput) {
+    return await this.taskService.update(taskInput);
+  }
 }

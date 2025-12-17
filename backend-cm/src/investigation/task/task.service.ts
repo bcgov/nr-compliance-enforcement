@@ -120,4 +120,47 @@ export class TaskService {
       }
     }
   }
+
+  async remove(taskIdentifier: string): Promise<Task> {
+    try {
+      await this.prisma.task.update({
+        where: {
+          task_guid: taskIdentifier,
+        },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    } catch (error) {
+      this.logger.error("Error removing contravention:", error);
+      throw error;
+    }
+    return await this.findOne(taskIdentifier);
+  }
+
+  async update(taskInput: CreateUpdateTaskInput): Promise<Task> {
+    try {
+      const task = await this.prisma.task.update({
+        where: {
+          task_guid: taskInput.taskIdentifier,
+        },
+        data: {
+          task_type_code: taskInput.taskTypeCode,
+          task_sub_type_code: taskInput.taskSubTypeCode,
+          task_status_code: taskInput.taskStatusCode,
+          assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
+          description: taskInput.description,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+
+      return await this.findOne(task.task_guid);
+    } catch (error) {
+      this.logger.error("Error adding task:", error);
+      throw error;
+    }
+  }
 }
