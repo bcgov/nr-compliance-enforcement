@@ -119,7 +119,7 @@ test.describe("HWCR File Review - Complete Review", () => {
       await expect($div).toContainText("OfficerCE Test Acct 1, ENV");
     }).toPass();
     await $review.locator("#file-review-save-button").click();
-
+    await waitForSpinner(page);
     //validate the checkboxes
     await expect($review.locator("#review-required")).toBeChecked();
     await expect($review.locator("#review-complete")).toBeChecked();
