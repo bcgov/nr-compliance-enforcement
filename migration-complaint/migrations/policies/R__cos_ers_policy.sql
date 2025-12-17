@@ -16,15 +16,15 @@ CREATE POLICY policy_cos_ers_complaints ON complaint.complaint
   USING (
     -- Use CASE to guarantee short-circuit on the first condition that is true
     CASE
-      -- First check: allow access if the user's idir_user_guid claim is not set
+      -- Allow access if the user's idir_user_guid claim is not set
       -- This allows mutations to bypass the RLS policy for now.
       WHEN COALESCE(current_setting('jwt.claims.idir_user_guid', true), '') = '' THEN true
-      -- Second check: verify JWT token is not expired if it is set
+      -- Verify JWT token is not expired if it is set
       -- jwt.claims.exp is in seconds, compare with current timestamp in seconds
       WHEN (COALESCE(current_setting('jwt.claims.exp', true), '0')::bigint) < EXTRACT(EPOCH FROM NOW())::bigint THEN false
       -- Third check: for non-COS/ERS complaints, allow access (no restrictions)
       WHEN NOT (owned_by_agency_code_ref = 'COS' AND complaint_type_code = 'ERS') THEN true
-      -- Fourth check: for COS/ERS complaints, verify user has access via one of:
+      -- For COS/ERS complaints, verify user has access via one of:
       -- - COS role
       -- - Referral (from requesting users agency)
       -- - Collaborator
