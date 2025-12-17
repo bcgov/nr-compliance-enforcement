@@ -79,3 +79,19 @@ export const selectPartyAssociationRoleDropdown = createSelector([selectCodeTabl
     }),
   );
 });
+
+export const selectLegislationTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items;
+});
+
+export const selectLegislationTypeLabels = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items.reduce(
+    (acc, item) => {
+      acc[item.legislationTypeCode] = item.shortDescription;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+});
