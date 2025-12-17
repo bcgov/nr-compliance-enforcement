@@ -5,7 +5,16 @@ type Task {
   taskSubTypeCode: String!
   taskStatusCode: String!
   assignedUserIdentifier: String
-  taskNumber: String!
+  taskNumber: Int!
   description: String
   activeIndicator: Boolean!
+}
+
+input CreateUpdateTaskInput {
+  investigationIdentifier: String!
+  taskTypeCode: String!
+  taskSubTypeCode: String!
+  taskStatusCode: String!
+  assignedUserIdentifier: String
+  description: String
 }

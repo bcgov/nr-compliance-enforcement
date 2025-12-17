@@ -65,13 +65,14 @@ import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.
 import { AppUserModule } from "./shared/app_user/app_user.module";
 import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
 import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
-import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
+import { ContinuationReportModule } from "./investigation/continuation_report/continuation_report.module";
 import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_code/party_association_role_code.module";
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 import { TaskStatusCodeModule } from "./investigation/task_status_code/task_status_code.module";
 import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
 import { TaskSubTypeCodeModule } from "./investigation/task_sub_type_code/task_sub_type_code.module";
+import { TaskModule } from "./investigation/task/task.module";
 
 @Module({
   imports: [
@@ -144,6 +145,7 @@ import { TaskSubTypeCodeModule } from "./investigation/task_sub_type_code/task_s
     TaskStatusCodeModule,
     TaskTypeCodeModule,
     TaskSubTypeCodeModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],

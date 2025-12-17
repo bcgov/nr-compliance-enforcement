@@ -13,6 +13,16 @@ export class Task {
   activeIndicator: boolean;
 }
 
+export class CreateUpdateTaskInput {
+  investigationIdentifier: string;
+  taskTypeCode: string;
+  taskSubTypeCode: string;
+  taskStatusCode: string;
+  assignedUserIdentifier: string;
+  taskNumber: number;
+  description: string;
+}
+
 export const mapPrismaTaskToTask = (mapper: Mapper) => {
   createMap<task, Task>(
     mapper,
