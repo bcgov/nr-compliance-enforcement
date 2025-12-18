@@ -52,6 +52,8 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
         form.setFieldValue("dueDate", null);
         form.setFieldValue("description", "");
       }
+    } else {
+      form.reset();
     }
   }, [show, diaryDate]);
 
@@ -128,6 +130,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                   classNamePrefix="comp-select"
                   errMsg={field.state.meta.errors?.[0]?.message || field.state.meta.errors?.[0] || ""}
                   maxDate={new Date(2099, 11, 31)}
+                  showPreviousMonths={false}
                 />
               </div>
             )}
