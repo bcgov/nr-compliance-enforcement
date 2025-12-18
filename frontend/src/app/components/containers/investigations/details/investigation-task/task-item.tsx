@@ -8,10 +8,11 @@ import { useSelector } from "react-redux";
 
 interface TaskItemProps {
   task: Task;
+  onEdit: (taskId: string) => void;
   investigationData?: Investigation;
 }
 
-export const TaskItem = ({ task, investigationData }: TaskItemProps) => {
+export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => {
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const leadAgency = investigationData?.leadAgency ?? "COS";
@@ -20,10 +21,6 @@ export const TaskItem = ({ task, investigationData }: TaskItemProps) => {
   const subCategory = taskSubCategories.find((subCategory) => subCategory.value === task?.taskTypeCode);
   const category = taskCategories.find((category) => category.value === subCategory?.taskCategory);
   const assignedOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
-
-  function handleEditTask(task: Task): void {
-    throw new Error("Function not implemented.");
-  }
 
   function handleRemoveTask(taskIdentifier: string): void {
     throw new Error("Function not implemented.");
@@ -44,7 +41,7 @@ export const TaskItem = ({ task, investigationData }: TaskItemProps) => {
               variant="outline-primary"
               size="sm"
               id="task-edit-button"
-              onClick={() => handleEditTask(task)}
+              onClick={() => onEdit(task.taskIdentifier)} // orchestration is done via the parent component
             >
               <i className="bi bi-pencil"></i>
               <span>Edit</span>
