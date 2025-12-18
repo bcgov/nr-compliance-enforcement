@@ -7,6 +7,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import {
   convertLegislationToOption,
+  convertLegislationToHierarchicalOptions,
   useLegislation,
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
@@ -127,7 +128,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.SECTION],
+    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SECTION],
     ancestorGuid: regulation || act,
     enabled: !!regulation || !!act,
   });
@@ -139,6 +140,10 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
       Legislation.SUBSECTION,
       Legislation.PARAGRAPH,
       Legislation.SUBPARAGRAPH,
+      Legislation.CLAUSE,
+      Legislation.SUBCLAUSE,
+      Legislation.DEFINITION,
+      Legislation.TEXT,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -149,7 +154,8 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   // Data
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
-  const secOptions = convertLegislationToOption(sectionsQuery.data?.legislations);
+  // Use hierarchical options for sections (with Parts/Divisions as disabled headers)
+  const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
   const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText);
 
   const partyOptions: Option[] = parties
@@ -384,6 +390,18 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
               <>
                 {legislationText.map((section) => {
                   const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+
+                  if (section.legislationTypeCode === Legislation.TEXT) {
+                    return (
+                      <div
+                        key={section.legislationGuid}
+                        className="contravention-text-segment"
+                      >
+                        <p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>
+                      </div>
+                    );
+                  }
+
                   return (
                     <button
                       key={section.legislationGuid}
@@ -396,7 +414,9 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                     >
                       <div>
                         <p className={`mb-2 ${indentClass}`}>
-                          {section.legislationTypeCode !== Legislation.SECTION && <>{section.citation}</>}{" "}
+                          {section.legislationTypeCode !== Legislation.SECTION && section.citation && (
+                            <>{`(${section.citation})`} </>
+                          )}
                           {section.legislationText}
                         </p>
                         {section.alternateText && (

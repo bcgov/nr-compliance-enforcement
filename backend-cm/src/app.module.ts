@@ -68,6 +68,7 @@ import { InspectionPartyModule } from "./inspection/inspection_party/inspection_
 import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
 import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_code/party_association_role_code.module";
 import { LegislationModule } from "./shared/legislation/legislation.module";
+import { LegislationSourceModule } from "./shared/legislation_source/legislation_source.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 
@@ -138,6 +139,7 @@ import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
     ContinuationReportModule,
     PartyAssociationRoleCodeModule,
     LegislationModule,
+    LegislationSourceModule,
     ContraventionModule,
     DiaryDateModule,
   ],
