@@ -180,7 +180,7 @@ test.describe("HWCR File Review - Complete Review", () => {
     await page.locator("#details-screen-update-status-button").click();
     await expect(page.locator("#complaint_status_dropdown input")).not.toBeDisabled();
     await page.locator("#complaint_status_dropdown").click();
-    await page.getByText(/Open/).first().click();
+    await page.getByRole("option", { name: "Open" }).first().click();
     await expect(page.locator(".modal-footer .btn-primary")).toBeVisible();
     await page.locator(".modal-footer .btn-primary").click();
   });
