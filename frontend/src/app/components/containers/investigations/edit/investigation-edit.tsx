@@ -243,11 +243,9 @@ const InvestigationEdit: FC = () => {
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
-    if (isEditMode && id) {
+    if (id) {
       navigate(`/investigation/${id}`);
-    } else if (id) {
-      navigate(`/investigation/${id}`);
-    } else if (caseIdentifier && !id) {
+    } else if (caseIdentifier) {
       navigate(`/case/${caseIdentifier}`);
     } else {
       navigate(`/investigations`);
