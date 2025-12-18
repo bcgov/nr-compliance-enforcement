@@ -1,8 +1,14 @@
-import { useAppSelector } from "@/app/hooks/hooks";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { openModal } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
+import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, Task } from "@/generated/graphql";
+import { gql } from "graphql-request";
+import { useCallback } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 
@@ -12,19 +18,59 @@ interface TaskItemProps {
   investigationData?: Investigation;
 }
 
+const REMOVE_TASK = gql`
+  mutation RemoveTask($taskId: String!) {
+    removeTask(taskId: $taskId) {
+      taskIdentifier
+    }
+  }
+`;
+
 export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => {
+  // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
 
+  // Data
+  const dispatch = useAppDispatch();
   const subCategory = taskSubCategories.find((subCategory) => subCategory.value === task?.taskTypeCode);
   const category = taskCategories.find((category) => category.value === subCategory?.taskCategory);
   const assignedOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
 
-  function handleRemoveTask(taskIdentifier: string): void {
-    throw new Error("Function not implemented.");
-  }
+  // Functions
+  const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {
+    onSuccess: () => {
+      ToggleSuccess("Task removed successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error removing task:", error);
+      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove task");
+    },
+  });
+
+  const handleRemoveTask = useCallback(
+    (taskIdentifier: string, taskNumber: number) => {
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: DELETE_CONFIRM,
+          data: {
+            title: `Remove Task ${taskNumber}`,
+            description: `Are you sure you want to remove this task from this investigation? This action cannot be undone.`,
+            deleteConfirmed: () => {},
+          },
+          callback: () => {
+            removeTaskMutation.mutate({
+              taskId: taskIdentifier,
+            });
+          },
+        }),
+      );
+    },
+    [dispatch, removeTaskMutation],
+  );
 
   return (
     <section className="comp-details-section">
@@ -50,7 +96,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
               variant="outline-primary"
               size="sm"
               id="task-remove-button"
-              onClick={() => handleRemoveTask(task?.taskIdentifier)}
+              onClick={() => handleRemoveTask(task?.taskIdentifier, task?.taskNumber)}
             >
               <i className="bi bi-trash"></i>
               <span>Delete</span>
@@ -91,3 +137,6 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
     </section>
   );
 };
+function dispatch(arg0: any) {
+  throw new Error("Function not implemented.");
+}
