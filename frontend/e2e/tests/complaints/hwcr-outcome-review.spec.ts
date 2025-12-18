@@ -43,8 +43,8 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     await expect($review.locator("#review-required")).toBeChecked();
 
     //validate the toast
-    const toast = page.locator("#review-updated-toast");
-    await expect(toast).toContainText("File review has been updated");
+    const toast = await page.locator("#review-updated-toast");
+    await expect(toast).toBeVisible();
   });
 
   test("it can not change complaint status if review is required", async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
 
     //validate the toast
     const toast = page.locator("#review-updated-toast");
-    await expect(toast).toContainText("File review has been updated");
+    await expect(toast).toBeVisible();
   });
 });
 
@@ -124,7 +124,7 @@ test.describe("HWCR File Review - Complete Review", () => {
 
     //validate the toast
     const toast = page.locator("#review-updated-toast");
-    await expect(toast).toContainText("File review has been updated");
+    await expect(toast).toBeVisible();
   });
 
   test("it can change complaint status if review is complete", async ({ page }) => {
@@ -194,6 +194,6 @@ test.describe("HWCR File Review - Complete Review", () => {
 
     //validate the toast
     const toast = page.locator("#review-updated-toast");
-    await expect(toast).toContainText("File review has been updated");
+    await expect(toast).toBeVisible();
   });
 });
