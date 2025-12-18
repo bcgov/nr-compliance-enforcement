@@ -42,11 +42,9 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     //validate the checkboxes
     await expect($review.locator("#review-required")).toBeChecked();
 
-    //validate the toast (there might be 2 on the screen if we had to do some cleanup)
-    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
-    const found = toasts.some((text) => text.includes("File review has been updated"));
-
-    expect(found).toBe(true);
+    //validate the toast
+    const toast = page.locator("#review-updated-toast");
+    await expect(toast).toContainText("File review has been updated");
   });
 
   test("it can not change complaint status if review is required", async ({ page }) => {
@@ -82,7 +80,7 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     await expect($review.locator("#review-required")).not.toBeChecked();
 
     //validate the toast
-    const toast = page.locator(".Toastify__toast-body");
+    const toast = page.locator("#review-updated-toast");
     await expect(toast).toContainText("File review has been updated");
   });
 });
@@ -124,11 +122,9 @@ test.describe("HWCR File Review - Complete Review", () => {
     await expect($review.locator("#review-required")).toBeChecked();
     await expect($review.locator("#review-complete")).toBeChecked();
 
-    //validate the toast (there might be 2 on the screen if we had to do some cleanup)
-    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
-    const found = toasts.some((text) => text.includes("File review has been updated"));
-
-    expect(found).toBe(true);
+    //validate the toast
+    const toast = page.locator("#review-updated-toast");
+    await expect(toast).toContainText("File review has been updated");
   });
 
   test("it can change complaint status if review is complete", async ({ page }) => {
@@ -197,7 +193,7 @@ test.describe("HWCR File Review - Complete Review", () => {
     await expect($review.locator("#review-required")).not.toBeChecked();
 
     //validate the toast
-    const toast = page.locator(".Toastify__toast-body");
+    const toast = page.locator("#review-updated-toast");
     await expect(toast).toContainText("File review has been updated");
   });
 });
