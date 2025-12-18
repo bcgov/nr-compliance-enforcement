@@ -22,11 +22,11 @@ export class PgSessionModule implements OnModuleInit {
   constructor(private readonly dataSource: DataSource) {}
 
   onModuleInit() {
+    const logger = this.logger;
     // Grab the original methods to either wrap or fallback to
     const originalDataSourceQuery = this.dataSource.query.bind(this.dataSource);
     const originalManagerQuery = this.dataSource.manager.query.bind(this.dataSource.manager);
     const originalCreateQueryRunner = this.dataSource.createQueryRunner.bind(this.dataSource);
-    const logger = this.logger;
     const dataSource = this.dataSource; // Capture DataSource reference for use in bound functions
 
     // Helper function to wrap a query in a transaction with JWT claims
