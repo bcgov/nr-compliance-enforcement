@@ -1,7 +1,7 @@
 import { app_user } from "./app_user";
 import { case_file } from "./case_file";
 import { geo_org_unit_structure } from "./geo_org_unit_structure";
-import { legislation_agency_xref } from "./legislation_agency_xref";
+import { legislation_source } from "./legislation_source";
 import { office } from "./office";
 import { team } from "./team";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -46,8 +46,8 @@ export class agency_code {
   @ApiProperty({ isArray: true, type: () => geo_org_unit_structure })
   geo_org_unit_structure: geo_org_unit_structure[];
 
-  @ApiProperty({ isArray: true, type: () => legislation_agency_xref })
-  legislation_agency_xref_legislation_agency_xref_agency_codeToagency_code: legislation_agency_xref[];
+  @ApiProperty({ isArray: true, type: () => legislation_source })
+  legislation_source_legislation_source_agency_codeToagency_code: legislation_source[];
 
   @ApiProperty({ isArray: true, type: () => office })
   office: office[];

@@ -43,6 +43,7 @@ import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 import { PartyType } from "../app/shared/party-type";
 import { PartyAssociationRole } from "../app/shared/party-association-role";
+import { LegislationType } from "../app/code-tables/legislation-type";
 
 export interface CodeTableState {
   [key: string]:
@@ -90,7 +91,8 @@ export interface CodeTableState {
     | Array<ParkArea>
     | Array<EmailReference>
     | Array<PartyType>
-    | Array<PartyAssociationRole>;
+    | Array<PartyAssociationRole>
+    | Array<LegislationType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -136,4 +138,5 @@ export interface CodeTableState {
   "email-reference": Array<EmailReference>;
   "party-type": Array<PartyType>;
   "party-association-role": Array<PartyAssociationRole>;
+  "legislation-type": Array<LegislationType>;
 }

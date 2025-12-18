@@ -873,6 +873,7 @@
 
   .comp-details-input {
     flex: 0 auto;
+    min-width: 0;
 
     &.full-width {
       flex: 1 1 auto;
@@ -1736,6 +1737,7 @@ p {
 
 .comp-details-edit-input {
   flex: 1;
+  min-width: 0;
 }
 
 .btn-close {

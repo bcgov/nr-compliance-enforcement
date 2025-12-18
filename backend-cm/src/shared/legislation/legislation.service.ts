@@ -5,6 +5,40 @@ import { Mapper } from "@automapper/core";
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
 
+export interface LegislationRow {
+  legislation_guid: string;
+  legislation_type_code: string;
+  parent_legislation_guid: string | null;
+  legislation_source_guid: string | null;
+  citation: string | null;
+  full_citation: string | null;
+  section_title: string | null;
+  legislation_text: string | null;
+  alternate_text: string | null;
+  display_order: number;
+  effective_date: Date | null;
+  expiry_date: Date | null;
+  create_user_id: string;
+  create_utc_timestamp: Date;
+  update_user_id: string | null;
+  update_utc_timestamp: Date | null;
+}
+
+export interface CreateLegislationInput {
+  legislationTypeCode: string;
+  parentLegislationGuid?: string | null;
+  legislationSourceGuid?: string | null;
+  citation?: string | null;
+  fullCitation?: string | null;
+  sectionTitle?: string | null;
+  legislationText?: string | null;
+  alternateText?: string | null;
+  displayOrder: number;
+  effectiveDate?: Date | null;
+  expiryDate?: Date | null;
+  createUserId: string;
+}
+
 @Injectable()
 export class LegislationService {
   constructor(
@@ -19,45 +53,35 @@ export class LegislationService {
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
-        SELECT legislation_guid, -- Parent Nodes
-          parent_legislation_guid,
-          legislation_type_code,
-          display_order,
+        SELECT 
+          l.legislation_guid, -- Parent Nodes
+          l.parent_legislation_guid,
+          l.legislation_type_code,
+          l.display_order,
+          LPAD(l.display_order::text, 4, '0') AS sort_path -- Sort by display_order (document order)
+        FROM legislation l
+        -- Join to legislation_source when finding root nodes (no ancestorGuid)
+        -- When ancestorGuid is provided, the parent was already filtered by agency at the parent level
+        LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
+        WHERE
           (
-            CASE legislation_type_code  
-              WHEN 'SEC' THEN '1'
-              WHEN 'SUBSEC' THEN '2'
-              WHEN 'PAR' THEN '3'
-              WHEN 'SUBPAR' THEN '4'
-              ELSE '9'
-            END || ':' || LPAD(display_order::text, 4, '0')  -- LPAD so that 1, 2, 10 sorts correctly as 0001, 0002, 0010
-          ) AS sort_path  
-        FROM legislation
-        WHERE 
-          -- If ancestorGuid is provided, match it; else match root nodes
-          (COALESCE(${ancestorGuid}, '') <> '' AND legislation_guid = ${ancestorGuid}::uuid)
+            -- When ancestorGuid is provided, match it directly
+            (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
           OR
-          (COALESCE(${ancestorGuid}, '') = '' AND parent_legislation_guid IS NULL)
+            -- When no ancestorGuid, find root nodes filtered by agency
+            (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
+          )
+        
         UNION ALL
+        
         SELECT -- Child nodes
           l.legislation_guid,
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          d.sort_path || '.' || -- append child path to parent e.g 0001.0001, 0001.0002 etc.
-          (
-            CASE l.legislation_type_code
-              WHEN 'SEC' THEN '1'
-              WHEN 'SUBSEC' THEN '2'
-              WHEN 'PAR' THEN '3'
-              WHEN 'SUBPAR' THEN '4'
-              ELSE '9'
-            END
-            || ':' || LPAD(l.display_order::text, 4, '0')
-          ) AS sort_path
+          d.sort_path || '.' || LPAD(l.display_order::text, 4, '0') AS sort_path
         FROM legislation l
-        INNER JOIN descendants d 
-          ON l.parent_legislation_guid = d.legislation_guid
+        INNER JOIN descendants d ON l.parent_legislation_guid = d.legislation_guid
       )
       SELECT 
         l.legislation_guid,
@@ -72,19 +96,12 @@ export class LegislationService {
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
       WHERE 
-        l.legislation_guid IN (SELECT legislation_guid FROM descendants)
-        AND (
+        (
           ${legislationTypeCodes ?? []} = '{}'::text[]
           OR l.legislation_type_code = ANY(${legislationTypeCodes ?? []}::text[])
         )
-        AND l.effective_date < ${today}::date
+        AND (l.effective_date IS NULL OR l.effective_date <= ${today}::date)
         AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
-        AND EXISTS (
-          SELECT 1 
-          FROM legislation_agency_xref lax
-          WHERE lax.legislation_guid = l.legislation_guid
-            AND lax.agency_code = ${agencyCode}
-        )
       ORDER BY d.sort_path;
       `;
     try {
@@ -179,5 +196,115 @@ export class LegislationService {
     } catch (error) {
       this.logger.error("Error mapping legislation", error);
     }
+  }
+
+  /**
+   * Creates a new legislation record
+   */
+  async create(input: CreateLegislationInput): Promise<LegislationRow> {
+    return this.prisma.legislation.create({
+      data: {
+        legislation_type_code: input.legislationTypeCode,
+        parent_legislation_guid: input.parentLegislationGuid ?? null,
+        legislation_source_guid: input.legislationSourceGuid ?? null,
+        citation: input.citation ?? null,
+        full_citation: input.fullCitation ?? null,
+        section_title: input.sectionTitle ?? null,
+        legislation_text: input.legislationText ?? null,
+        alternate_text: input.alternateText ?? null,
+        display_order: input.displayOrder,
+        effective_date: input.effectiveDate ?? null,
+        expiry_date: input.expiryDate ?? null,
+        create_user_id: input.createUserId,
+        create_utc_timestamp: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Finds legislation by type code, citation, parent GUID, and optionally section title
+   * Definitions have null citation, section_title is used as additional key
+   */
+  private async _findByTypeAndCitation(
+    legislationTypeCode: string,
+    citation: string | null,
+    parentLegislationGuid: string | null,
+    sectionTitle: string | null = null,
+    displayOrder: number | null = null,
+  ): Promise<LegislationRow | null> {
+    const where: any = {
+      legislation_type_code: legislationTypeCode,
+      citation: citation,
+      parent_legislation_guid: parentLegislationGuid,
+    };
+
+    // DEF nodes have null citation so use sectionTitle to identify
+    if (citation === null && sectionTitle !== null) {
+      where.section_title = sectionTitle;
+    }
+
+    // TEXT nodes have null citation AND null sectionTitle so use displayOrder to identify
+    if (legislationTypeCode === "TEXT" && displayOrder !== null) {
+      where.display_order = displayOrder;
+    }
+
+    return this.prisma.legislation.findFirst({ where });
+  }
+
+  /**
+   * Upserts legislation based on type code, citation, parent GUID, title, and displayOrder
+   */
+  async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
+    const existing = await this._findByTypeAndCitation(
+      input.legislationTypeCode,
+      input.citation ?? null,
+      input.parentLegislationGuid ?? null,
+      input.sectionTitle ?? null,
+      input.displayOrder,
+    );
+
+    if (existing) {
+      return this.prisma.legislation.update({
+        where: {
+          legislation_guid: existing.legislation_guid,
+        },
+        data: {
+          legislation_source_guid: input.legislationSourceGuid ?? existing.legislation_source_guid,
+          full_citation: input.fullCitation ?? existing.full_citation,
+          section_title: input.sectionTitle ?? existing.section_title,
+          legislation_text: input.legislationText ?? existing.legislation_text,
+          alternate_text: input.alternateText ?? existing.alternate_text,
+          display_order: input.displayOrder,
+          effective_date: input.effectiveDate ?? existing.effective_date,
+          expiry_date: input.expiryDate ?? existing.expiry_date,
+          update_user_id: input.createUserId,
+          update_utc_timestamp: new Date(),
+        },
+      });
+    }
+
+    return this.create(input);
+  }
+
+  /**
+   * Gets all legislation type codes from the lookup table
+   */
+  async getAllLegislationTypeCodes() {
+    const types = await this.prisma.legislation_type_code.findMany({
+      where: {
+        active_ind: true,
+      },
+      orderBy: {
+        display_order: "asc",
+      },
+    });
+
+    return types.map((type) => ({
+      legislationTypeCode: type.legislation_type_code,
+      shortDescription: type.short_description,
+      longDescription: type.long_description,
+      displayOrder: type.display_order,
+      activeInd: type.active_ind,
+    }));
   }
 }

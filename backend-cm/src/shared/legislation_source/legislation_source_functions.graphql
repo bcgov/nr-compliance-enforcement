@@ -1,0 +1,10 @@
+type Query {
+  legislationSources: [LegislationSource]!
+  legislationSource(legislationSourceGuid: String!): LegislationSource
+}
+
+type Mutation {
+  createLegislationSource(input: CreateLegislationSourceInput!): LegislationSource!
+  updateLegislationSource(input: UpdateLegislationSourceInput!): LegislationSource!
+  deleteLegislationSource(legislationSourceGuid: String!): Boolean!
+}
