@@ -1,9 +1,10 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable, Logger } from "@nestjs/common";
-import { DiaryDate, DiaryDateInput, diary_date } from "./dto/diary_date";
+import { DiaryDate, DiaryDateInput } from "./dto/diary_date";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
+import { diary_date } from "../../../prisma/investigation/generated/diary_date";
 
 @Injectable()
 export class DiaryDateService {
