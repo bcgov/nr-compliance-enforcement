@@ -29,7 +29,6 @@ export class ImportCommand extends CommandRunner {
     }
   }
 
-  
   @Option({
     flags: "-j, --job <jobName>",
     description: "Job name to run",
@@ -39,7 +38,7 @@ export class ImportCommand extends CommandRunner {
   }
 
   async runParksImport(): Promise<void> {
-    this.logger.log("Importing parks...");
+    this.logger.log("Importing parks..."); // test
     const parks = await getAllParks();
     for (const park of parks) {
       try {

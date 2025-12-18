@@ -503,3 +503,18 @@ input[list]:placeholder-shown {
   margin-top: 0.4em;
   margin-bottom: auto;
 }
+
+.diary-dates-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+// Keep form rows stacked vertically inside modals
+.modal .comp-details-form-row {
+  flex-direction: column;
+  gap: 4px;
+
+  > label {
+    width: auto;
+    margin-top: 0;
+  }
+}

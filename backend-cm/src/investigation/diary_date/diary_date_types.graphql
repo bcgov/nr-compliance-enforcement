@@ -1,0 +1,18 @@
+type DiaryDate {
+  diaryDateGuid: String
+  investigationGuid: String
+  dueDate: Date
+  description: String
+  addedTimestamp: Date
+  addedUserGuid: String
+  updatedTimestamp: Date
+  updatedUserGuid: String
+}
+
+input DiaryDateInput {
+  diaryDateGuid: String
+  investigationGuid: String!
+  dueDate: Date!
+  description: String!
+  userGuid: String
+}

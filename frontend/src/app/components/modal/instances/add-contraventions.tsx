@@ -339,7 +339,7 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
                         const value = option?.value || "";
                         field.handleChange(value);
                         setRegulation(value);
-                        // Reset section when regulation changes
+                        // Reset section when regulation change
                         setSection("");
                         setSelectedSection("");
                       }}
