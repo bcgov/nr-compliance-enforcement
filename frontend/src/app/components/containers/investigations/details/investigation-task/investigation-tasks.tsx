@@ -7,7 +7,7 @@ import { appUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { CreateUpdateTaskInput, Investigation } from "@/generated/graphql";
+import { CreateUpdateTaskInput, Investigation, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { FC, useState } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { gql } from "graphql-request";
+import { TaskItem } from "@/app/components/containers/investigations/details/investigation-task/task-item";
 
 interface InvestigationTasksProps {
   investigationGuid: string;
@@ -53,6 +54,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
   const [selectedCategory, setSelectedCategory] = useState("");
 
   // Data
+  const tasks = investigationData?.tasks;
   const taskCategoryOptions = taskCategories.map((option: any) => {
     return {
       value: option.value,
@@ -121,6 +123,17 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
           <div className="col-12">
             <h3>Tasks</h3>
           </div>
+        </div>
+
+        <div className="task-list">
+          {tasks?.map((task) => (
+            <div key={task?.taskIdentifier}>
+              <TaskItem
+                task={task as Task}
+                investigationData={investigationData}
+              />
+            </div>
+          ))}
         </div>
 
         {showAddCard && (

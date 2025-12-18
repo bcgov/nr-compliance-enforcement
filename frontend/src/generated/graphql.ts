@@ -893,6 +893,7 @@ export type Investigation = {
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
+  tasks?: Maybe<Array<Maybe<Task>>>;
 };
 
 export type InvestigationBusiness = {
