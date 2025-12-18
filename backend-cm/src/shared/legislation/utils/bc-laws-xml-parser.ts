@@ -241,7 +241,6 @@ const mergeText = (children: ParsedLegislationNode[], textNodes: ParsedLegislati
   children.sort((a, b) => a.displayOrder - b.displayOrder);
 
   const firstText = children[0]?.typeCode === "TEXT" ? (children.shift()?.legislationText ?? null) : null;
-  children.forEach((child, idx) => (child.displayOrder = idx + 1));
 
   return firstText;
 };
@@ -269,20 +268,23 @@ const parseOrderedChildren = (
 };
 
 /**
- * Parse child elements in sequence
+ * Parse child elements in sequence, using XML positions as displayOrder
  */
 const parseSequentialChildren = (
   parent: any,
   childTypes: Array<{ tag: string; parse: ElementParser }>,
 ): ParsedLegislationNode[] => {
   const children: ParsedLegislationNode[] = [];
-  let order = 0;
 
   for (const { tag, parse } of childTypes) {
     ensureArray(parent?.[`${NS_BCL}${tag}`]).forEach((el) => {
-      children.push(parse(el, ++order));
+      const xmlPos = getXmlPosition(el);
+      children.push(parse(el, xmlPos));
     });
   }
+
+  // Sort by XML position to ensure correct order
+  children.sort((a, b) => a.displayOrder - b.displayOrder);
 
   return children;
 };
