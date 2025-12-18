@@ -117,7 +117,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
             label="Due date"
             required
             validators={{
-              onChange: ({ value }: { value: Date | null }) => (!value ? "Date is required" : undefined),
+              onChange: ({ value }: { value: Date | null }) => (value ? undefined : "Date is required"),
             }}
             render={(field) => (
               <div className="comp-details-input">

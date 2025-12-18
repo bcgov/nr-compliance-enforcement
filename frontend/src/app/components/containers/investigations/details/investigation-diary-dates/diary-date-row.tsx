@@ -51,8 +51,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
             onClick={handleEditClick}
             title="Edit diary date"
           >
-            <i className="bi bi-pencil" />
-            Edit
+            <i className="bi bi-pencil" /> Edit
           </Button>
           <Button
             variant="outline-primary"
@@ -60,8 +59,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
             onClick={handleDeleteClick}
             title="Delete diary date"
           >
-            <i className="bi bi-trash" />
-            Delete
+            <i className="bi bi-trash" /> Delete
           </Button>
         </div>
       </td>
