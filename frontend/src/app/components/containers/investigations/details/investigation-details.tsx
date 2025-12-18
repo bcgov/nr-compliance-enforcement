@@ -11,6 +11,7 @@ import { InvestigationContraventions } from "@/app/components/containers/investi
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
+import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-tasks";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -99,6 +100,13 @@ export const InvestigationDetails: FC = () => {
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
             caseName={caseName ?? ""}
+          />
+        );
+      case "tasks":
+        return (
+          <InvestigationTasks
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
           />
         );
       case "parties":

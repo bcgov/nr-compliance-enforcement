@@ -79,3 +79,22 @@ export const selectPartyAssociationRoleDropdown = createSelector([selectCodeTabl
     }),
   );
 });
+
+export const selectTaskCategory = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-category-type": items } = codeTables;
+  return items.map(({ taskCategoryTypeCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectTaskSubCategory = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-type": items } = codeTables;
+  return items.map(({ taskTypeCode: value, taskCategoryTypeCode: taskCategory, longDescription: label }) => ({
+    label,
+    taskCategory,
+    value,
+  }));
+});
+
+export const selectTaskStatus = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-status-type": items } = codeTables;
+  return items.map(({ taskStatusCode: value, longDescription: label }) => ({ label, value }));
+});
