@@ -28,8 +28,8 @@ export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? className : className + " error-border";
 
-  // Use controlled value if provided, otherwise  uncontrolled with defaultValue
-  const valueProp = value !== undefined ? { value } : { defaultValue };
+  // Use controlled value if provided, otherwise uncontrolled with defaultValue
+  const valueProp = value ? { value } : { defaultValue };
 
   return (
     <div className="width-full">
