@@ -197,10 +197,12 @@ const InspectionEdit: FC = () => {
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
-    if (isEditMode && id) {
+    if (id) {
       navigate(`/inspection/${id}`);
+    } else if (caseIdentifier) {
+      navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(`/inspections/${id}`);
+      navigate(`/inspections`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
