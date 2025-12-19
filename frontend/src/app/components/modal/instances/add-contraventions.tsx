@@ -156,7 +156,9 @@ export const AddContraventionModal: FC<AddContraventionModalProps> = ({ close, s
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   // Use hierarchical options for sections (with Parts/Divisions as disabled headers)
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
-  const legislationText = legislationTextQuery.data?.legislations?.filter((section) => !!section.legislationText);
+  const legislationText = legislationTextQuery.data?.legislations
+    ?.filter((section) => !!section.legislationText)
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
   const partyOptions: Option[] = parties
     ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
