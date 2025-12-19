@@ -102,7 +102,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                   id="diary-date-description"
                   className="comp-form-control comp-details-input"
                   rows={3}
-                  defaultValue={field.state.value}
+                  value={field.state.value}
                   onChange={(value: string) => field.handleChange(value)}
                   placeholderText="Enter description..."
                   maxLength={4000}
