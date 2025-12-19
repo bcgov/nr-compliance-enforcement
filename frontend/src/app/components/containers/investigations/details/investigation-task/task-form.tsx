@@ -3,18 +3,20 @@ import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import DatePicker from "react-datepicker";
-import { appUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
+import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import z from "zod";
+import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -53,6 +55,22 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       "task-officer-assigned": "",
       "task-status": "",
     },
+    onSubmit: async ({ value }) => {
+      const input: CreateUpdateTaskInput = {
+        taskIdentifier: task?.taskIdentifier,
+        investigationIdentifier: investigationGuid,
+        taskTypeCode: value["task-sub-category"] || "",
+        taskStatusCode: value["task-status"] || "",
+        assignedUserIdentifier: value["task-officer-assigned"] || "",
+        description: value["task-description"] || "",
+      };
+
+      if (isEditMode) {
+        editTaskMutation.mutate({ input: input });
+      } else {
+        addTaskMutation.mutate({ input: input });
+      }
+    },
   });
 
   // State
@@ -63,6 +81,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [selectedCategory, setSelectedCategory] = useState("");
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
+  const dispatch = useAppDispatch();
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -73,6 +92,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   });
 
   const isEditMode = !!task;
+
+  if (!isEditMode) {
+    // Set defaults
+    form.setFieldValue("task-officer-assigned", form.getFieldValue("task-officer-assigned") || idir);
+    form.setFieldValue("task-status", form.getFieldValue("task-status") || "OPEN");
+  }
 
   // Use Effects
 
@@ -122,26 +147,28 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   });
 
   const handleSubmit = async () => {
-    const input: CreateUpdateTaskInput = {
-      taskIdentifier: task?.taskIdentifier,
-      investigationIdentifier: investigationGuid,
-      taskTypeCode: form.getFieldValue("task-sub-category") || "",
-      taskStatusCode: form.getFieldValue("task-status") || "",
-      assignedUserIdentifier: form.getFieldValue("task-officer-assigned") || "",
-      description: form.getFieldValue("task-description") || "",
-    };
-
-    if (isEditMode) {
-      editTaskMutation.mutate({ input: input });
-    } else {
-      addTaskMutation.mutate({ input: input });
-    }
+    await form.handleSubmit();
   };
 
   const handleCancel = async () => {
+    console.log("hello");
     setSelectedCategory("");
     form.reset();
     onClose();
+  };
+
+  const cancelButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: CANCEL_CONFIRM,
+        data: {
+          title: "Cancel changes?",
+          description: "Your changes will be lost.",
+          cancelConfirmed: () => handleCancel(),
+        },
+      }),
+    );
   };
 
   const taskSubCategoryOptions = taskSubCategories
@@ -190,6 +217,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             name="task-category"
             label="Task category"
             required
+            validators={{
+              onChange: z.string().min(1, "Task category is required"),
+              onSubmit: z.string().min(1, "Task category is required"),
+            }}
             render={(field) => (
               <CompSelect
                 id="task-category-select"
@@ -217,8 +248,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               name="task-sub-category"
               label="Task sub-category"
               required
+              validators={{
+                onChange: z.string().min(1, "Task sub category is required"),
+                onSubmit: z.string().min(1, "Task sub category is required"),
+              }}
               render={(field) => (
                 <CompSelect
+                  key={selectedCategory} // Force the component to re-render when the category changes
                   id="task-sub-category-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
@@ -261,6 +297,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             name="task-officer-assigned"
             label="Officer assigned"
             required
+            validators={{
+              onChange: z.string().min(1, "Officer assigned is required"),
+              onSubmit: z.string().min(1, "Officer assigned is required"),
+            }}
             render={(field) => (
               <CompSelect
                 id="task-officer-select"
@@ -284,6 +324,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             name="task-status"
             label="Status"
             required
+            validators={{
+              onChange: z.string().min(1, "Status is required"),
+              onSubmit: z.string().min(1, "Status is required"),
+            }}
             render={(field) => (
               <CompSelect
                 id="task-status-select"
@@ -344,16 +388,16 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         <div className="comp-details-form-buttons">
           <Button
             variant="outline-primary"
-            id="add-contravention-cancel-button"
+            id="add-task-cancel-button"
             title="Cancel"
-            onClick={handleCancel}
+            onClick={cancelButtonClick}
           >
             Cancel
           </Button>
           <Button
             variant="primary"
-            id="add-contravention-save-button"
-            title="Save Add Contravention"
+            id="add-task-save-button"
+            title="Save Add Task"
             onClick={handleSubmit}
           >
             <span>Save</span>

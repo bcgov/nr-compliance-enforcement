@@ -1,8 +1,9 @@
+import { applyStatusClass, formatDate } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
@@ -30,6 +31,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
+  const taskStatuses = useAppSelector(selectTaskStatus);
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
 
@@ -37,6 +39,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
   const dispatch = useAppDispatch();
   const subCategory = taskSubCategories.find((subCategory) => subCategory.value === task?.taskTypeCode);
   const category = taskCategories.find((category) => category.value === subCategory?.taskCategory);
+  const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
   const assignedOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
 
   // Functions
@@ -81,6 +84,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
         <Card.Header className="comp-card-header">
           <div className="comp-card-header-title">
             <h4>Task {task.taskNumber}</h4>
+            <span className={`badge ${applyStatusClass(task.taskStatusCode)}`}>{status?.label}</span>
           </div>
           <div className="comp-card-header-actions">
             <Button
@@ -130,7 +134,9 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
                 <pre id="comp-task-assigned-user">{`${assignedOfficer?.last_name},  ${assignedOfficer?.first_name}`}</pre>
               </dd>
             </div>
-            <div style={{ fontSize: "14px", color: "#7a7a7a" }}>{`Created at TBD by TBD (TBD))`}</div>
+            <div
+              style={{ fontSize: "14px", color: "#7a7a7a" }}
+            >{`Created on ${formatDate(new Date().toString())} by Wilcox, Alec (COS)`}</div>
           </dl>
         </Card.Body>
       </Card>
