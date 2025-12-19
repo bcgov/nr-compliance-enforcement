@@ -58,7 +58,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid }) => {
   const [deletingDiaryDateGuid, setDeletingDiaryDateGuid] = useState<string | null>(null);
   const currentUserGuid = useAppSelector(selectAppUserGuid);
 
-  const { data, refetch } = useGraphQLQuery<{ getDiaryDates: DiaryDate[] }>(GET_DIARY_DATES, {
+  const { data, refetch } = useGraphQLQuery<{ diaryDates: DiaryDate[] }>(GET_DIARY_DATES, {
     queryKey: ["diaryDates", investigationGuid],
     variables: { investigationGuid },
     enabled: !!investigationGuid,
