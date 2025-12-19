@@ -9,7 +9,7 @@
 [![MIT License](https://img.shields.io/github/license/bcgov/nr-quickstart-typescript.svg)](/LICENSE.md)
 [![Lifecycle](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
-# Compliance and Enforcement: OpenShift, TypeScript and Postgres/PostGIS
+# Compliance and Enforcement
 
 Manages public complaints as well as investigative case files for multiple Compliance and Enforcement divisions across the natural resource sector.
 
