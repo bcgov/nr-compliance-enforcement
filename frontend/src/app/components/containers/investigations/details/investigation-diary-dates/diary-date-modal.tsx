@@ -91,7 +91,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
             label="Description"
             required
             validators={{
-              onChange: z
+              onSubmit: z
                 .string()
                 .min(1, "Description is required")
                 .max(4000, "Description must be 4000 characters or less"),
@@ -117,7 +117,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
             label="Due date"
             required
             validators={{
-              onChange: ({ value }: { value: Date | null }) => (value ? undefined : "Date is required"),
+              onSubmit: ({ value }: { value: Date | null }) => (value ? undefined : "Date is required"),
             }}
             render={(field) => (
               <div className="comp-details-input">
