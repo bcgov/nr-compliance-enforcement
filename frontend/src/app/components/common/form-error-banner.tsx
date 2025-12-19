@@ -23,7 +23,7 @@ export const FormErrorBanner = ({ form }: FormStatusProps) => {
                 src={notificationInvalid}
                 alt="error"
                 className="filter-image-spacing"
-              />
+              />{" "}
               Errors in form
             </div>
           );
