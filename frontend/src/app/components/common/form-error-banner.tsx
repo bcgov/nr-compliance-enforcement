@@ -8,7 +8,7 @@ export const FormErrorBanner = ({ form }: FormStatusProps) => {
   return (
     <form.Subscribe
       selector={(state) => {
-        const isAnyFieldValidating = Object.values(state.fieldMeta).some((meta) => meta.isValidating);
+        const isAnyFieldValidating = Object.values(state.fieldMeta).some((meta) => meta?.isValidating);
         return [state.canSubmit, isAnyFieldValidating];
       }}
     >
