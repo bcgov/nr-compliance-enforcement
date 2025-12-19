@@ -15,16 +15,16 @@ export class diary_date {
   description: string;
 
   @ApiProperty({ type: Date })
-  added_utc_timestamp: Date;
+  app_create_utc_timestamp: Date;
 
   @ApiPropertyOptional({ type: String })
-  added_user_guid?: string;
+  app_create_user_guid_ref?: string;
 
   @ApiPropertyOptional({ type: Date })
-  updated_utc_timestamp?: Date;
+  app_update_utc_timestamp?: Date;
 
   @ApiPropertyOptional({ type: String })
-  updated_user_guid?: string;
+  app_update_user_guid_ref?: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;

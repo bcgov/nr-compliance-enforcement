@@ -1615,6 +1615,7 @@ export type Query = {
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
+  diaryDates?: Maybe<Array<DiaryDate>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
   drugCodes: Array<Maybe<DrugCode>>;
   drugMethodCodes: Array<Maybe<DrugMethodCode>>;
@@ -1630,7 +1631,6 @@ export type Query = {
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getContinuationReport?: Maybe<ContinuationReport>;
   getContinuationReports?: Maybe<Array<ContinuationReport>>;
-  getDiaryDates?: Maybe<Array<DiaryDate>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
@@ -1764,6 +1764,11 @@ export type QuerycosGeoOrgUnitsArgs = {
 };
 
 
+export type QuerydiaryDatesArgs = {
+  investigationGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -1791,11 +1796,6 @@ export type QuerygetContinuationReportArgs = {
 
 
 export type QuerygetContinuationReportsArgs = {
-  investigationGuid: Scalars['String']['input'];
-};
-
-
-export type QuerygetDiaryDatesArgs = {
   investigationGuid: Scalars['String']['input'];
 };
 

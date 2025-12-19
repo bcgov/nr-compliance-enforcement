@@ -4,12 +4,12 @@ CREATE TABLE
         investigation_guid uuid NOT NULL,
         due_date date NOT NULL,
         description character varying(4000) NOT NULL,
-        added_utc_timestamp timestamp without time zone NOT NULL,
-        added_user_guid uuid,
-        updated_utc_timestamp timestamp without time zone,
-        updated_user_guid uuid,
         active_ind boolean DEFAULT true NOT NULL,
         create_user_id character varying(32) NOT NULL,
+        app_create_utc_timestamp timestamp without time zone NOT NULL,
+        app_create_user_guid_ref uuid,
+        app_update_utc_timestamp timestamp without time zone,
+        app_update_user_guid_ref uuid,
         create_utc_timestamp timestamp without time zone DEFAULT now () NOT NULL,
         update_user_id character varying(32),
         update_utc_timestamp timestamp without time zone,
@@ -26,13 +26,13 @@ COMMENT ON COLUMN investigation.diary_date.due_date IS 'The due date for the dia
 
 COMMENT ON COLUMN investigation.diary_date.description IS 'Description of the diary date entry.';
 
-COMMENT ON COLUMN investigation.diary_date.added_utc_timestamp IS 'The timestamp when the diary date was added. The timestamp is stored in UTC with no offset.';
+COMMENT ON COLUMN investigation.diary_date.app_create_utc_timestamp IS 'The timestamp when the diary date was added. The timestamp is stored in UTC with no offset.';
 
-COMMENT ON COLUMN investigation.diary_date.added_user_guid IS 'The foreign key reference to the app user who added the diary date.';
+COMMENT ON COLUMN investigation.diary_date.app_create_user_guid_ref IS 'The foreign key reference to the app user who added the diary date.';
 
-COMMENT ON COLUMN investigation.diary_date.updated_utc_timestamp IS 'The timestamp when the diary date was last updated. The timestamp is stored in UTC with no offset.';
+COMMENT ON COLUMN investigation.diary_date.app_update_utc_timestamp IS 'The timestamp when the diary date was last updated. The timestamp is stored in UTC with no offset.';
 
-COMMENT ON COLUMN investigation.diary_date.updated_user_guid IS 'The foreign key reference to the app user who last updated the diary date.';
+COMMENT ON COLUMN investigation.diary_date.app_update_user_guid_ref IS 'The foreign key reference to the app user who last updated the diary date.';
 
 COMMENT ON COLUMN investigation.diary_date.active_ind IS 'True if the diary date is active, false if it was deleted.';
 

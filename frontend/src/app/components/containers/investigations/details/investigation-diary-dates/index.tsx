@@ -13,7 +13,7 @@ import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
 
 const GET_DIARY_DATES = gql`
   query GetDiaryDates($investigationGuid: String!) {
-    getDiaryDates(investigationGuid: $investigationGuid) {
+    diaryDates(investigationGuid: $investigationGuid) {
       diaryDateGuid
       investigationGuid
       dueDate
@@ -88,7 +88,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid }) => {
     },
   });
 
-  const diaryDates = data?.getDiaryDates ?? [];
+  const diaryDates = data?.diaryDates ?? [];
 
   const handleAddClick = () => {
     setEditingDiaryDate(null);

@@ -311,10 +311,10 @@ model diary_date {
   investigation_guid    String        @db.Uuid
   due_date              DateTime      @db.Date
   description           String        @db.VarChar(4000)
-  added_utc_timestamp   DateTime      @db.Timestamp(6)
-  added_user_guid       String?       @db.Uuid
-  updated_utc_timestamp DateTime?     @db.Timestamp(6)
-  updated_user_guid     String?       @db.Uuid
+  app_create_utc_timestamp   DateTime      @db.Timestamp(6)
+  app_create_user_guid_ref       String?       @db.Uuid
+  app_update_utc_timestamp DateTime?     @db.Timestamp(6)
+  app_update_user_guid_ref     String?       @db.Uuid
   active_ind            Boolean       @default(true)
   create_user_id        String        @db.VarChar(32)
   create_utc_timestamp  DateTime      @default(now()) @db.Timestamp(6)

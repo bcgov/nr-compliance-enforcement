@@ -11,7 +11,7 @@ export class DiaryDateResolver {
   constructor(private readonly diaryDateService: DiaryDateService) {}
   private readonly logger = new Logger(DiaryDateResolver.name);
 
-  @Query("getDiaryDates")
+  @Query("diaryDates")
   @Roles(coreRoles)
   async findMany(@Args("investigationGuid") investigationGuid: string) {
     try {

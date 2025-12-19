@@ -56,19 +56,19 @@ export const mapPrismaDiaryDateToDiaryDate = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.addedTimestamp,
-      mapFrom((src) => src.added_utc_timestamp),
+      mapFrom((src) => src.app_create_utc_timestamp),
     ),
     forMember(
       (dest) => dest.addedUserGuid,
-      mapFrom((src) => src.added_user_guid),
+      mapFrom((src) => src.app_create_user_guid_ref),
     ),
     forMember(
       (dest) => dest.updatedTimestamp,
-      mapFrom((src) => src.updated_utc_timestamp),
+      mapFrom((src) => src.app_update_utc_timestamp),
     ),
     forMember(
       (dest) => dest.updatedUserGuid,
-      mapFrom((src) => src.updated_user_guid),
+      mapFrom((src) => src.app_update_user_guid_ref),
     ),
   );
 };
