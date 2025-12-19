@@ -19,9 +19,9 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInspectionInput, UpdateInspectionInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import Option from "@apptypes/app/option";
 import { bcUtmZoneNumbers } from "@common/methods";
-import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 
 const CHECK_INSPECTION_NAME_EXISTS = gql`
   query CheckInspectionNameExists($name: String!, $leadAgency: String!, $excludeInspectionGuid: String) {
@@ -157,6 +157,9 @@ const InspectionEdit: FC = () => {
 
   const form = useForm({
     defaultValues,
+    onSubmitInvalid: async () => {
+      ToggleError("Errors in form");
+    },
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: UpdateInspectionInput = {
@@ -188,9 +191,6 @@ const InspectionEdit: FC = () => {
 
         createInspectionMutation.mutate({ input: createInput });
       }
-    },
-    onSubmitInvalid: async ({ value }) => {
-      ToggleError("Errors in form");
     },
   });
 
@@ -242,7 +242,9 @@ const InspectionEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Inspection Details</h2>
         </div>
+
         <FormErrorBanner form={form} />
+
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
             <FormField
