@@ -26,6 +26,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
@@ -238,6 +239,9 @@ const InvestigationEdit: FC = () => {
         createInvestigationMutation.mutate({ input: createInput });
       }
     },
+    onSubmitInvalid: async ({ value }) => {
+      ToggleError("Errors in form");
+    },
   });
 
   const confirmCancelChanges = useCallback(() => {
@@ -293,6 +297,7 @@ const InvestigationEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Investigation details</h2>
         </div>
+        <FormErrorBanner form={form} />
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
