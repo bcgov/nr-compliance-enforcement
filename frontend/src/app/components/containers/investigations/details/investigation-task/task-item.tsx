@@ -41,6 +41,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
   const category = taskCategories.find((category) => category.value === subCategory?.taskCategory);
   const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
   const assignedOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
+  const createdOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
 
   // Functions
   const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {
@@ -136,7 +137,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
             </div>
             <div
               style={{ fontSize: "14px", color: "#7a7a7a" }}
-            >{`Created on ${formatDate(new Date().toString())} by Wilcox, Alec (COS)`}</div>
+            >{`Created on ${formatDate(task.createdDate)} by ${createdOfficer?.last_name}, ${createdOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
           </dl>
         </Card.Body>
       </Card>

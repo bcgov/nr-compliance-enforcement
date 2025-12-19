@@ -4,6 +4,8 @@ type Task {
   taskTypeCode: String!
   taskStatusCode: String!
   assignedUserIdentifier: String
+  createdByUserIdentifier: String!
+  createdDate: Date!
   taskNumber: Int!
   description: String
   activeIndicator: Boolean!
@@ -15,5 +17,6 @@ input CreateUpdateTaskInput {
   taskTypeCode: String
   taskStatusCode: String
   assignedUserIdentifier: String
+  appUserIdentifier: String
   description: String
 }

@@ -45,6 +45,8 @@ const GET_INVESTIGATION = gql`
         taskTypeCode
         taskStatusCode
         assignedUserIdentifier
+        createdByUserIdentifier
+        createdDate
         taskNumber
         description
         activeIndicator

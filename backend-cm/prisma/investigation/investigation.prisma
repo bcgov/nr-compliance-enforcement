@@ -311,8 +311,12 @@ model task {
   investigation_guid                                       String           @db.Uuid
   task_type_code                                           String           @db.VarChar(16)
   task_status_code                                         String           @db.VarChar(16)
-  assigned_app_user_guid_ref                               String?          @db.Uuid
   task_number                                              Int
+  app_create_user_guid_ref                                 String           @db.Uuid
+  app_create_utc_timestamp                                 DateTime         @db.Timestamp(6)
+  app_update_user_guid_ref                                 String?          @db.Uuid
+  app_update_utc_timestamp                                 DateTime?        @db.Timestamp(6)
+  assigned_app_user_guid_ref                               String?          @db.Uuid
   description                                              String?
   active_ind                                               Boolean          @default(true)
   create_user_id                                           String           @db.VarChar(32)

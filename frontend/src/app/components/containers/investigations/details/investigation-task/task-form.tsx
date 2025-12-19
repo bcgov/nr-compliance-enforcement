@@ -12,7 +12,7 @@ import { RootState } from "@/app/store/store";
 import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
@@ -36,11 +36,6 @@ const EDIT_TASK = gql`
   mutation UpdateTask($input: CreateUpdateTaskInput!) {
     updateTask(input: $input) {
       taskIdentifier
-      investigationIdentifier
-      taskTypeCode
-      taskStatusCode
-      assignedUserIdentifier
-      description
     }
   }
 `;
@@ -62,6 +57,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         taskTypeCode: value["task-sub-category"] || "",
         taskStatusCode: value["task-status"] || "",
         assignedUserIdentifier: value["task-officer-assigned"] || "",
+        appUserIdentifier: idir,
         description: value["task-description"] || "",
       };
 

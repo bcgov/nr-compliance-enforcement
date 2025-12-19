@@ -455,6 +455,7 @@ export type CreateUpdateContraventionInput = {
 };
 
 export type CreateUpdateTaskInput = {
+  appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   assignedUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   investigationIdentifier?: InputMaybe<Scalars['String']['input']>;
@@ -2015,6 +2016,8 @@ export type Task = {
   __typename?: 'Task';
   activeIndicator: Scalars['Boolean']['output'];
   assignedUserIdentifier?: Maybe<Scalars['String']['output']>;
+  createdByUserIdentifier: Scalars['String']['output'];
+  createdDate: Scalars['Date']['output'];
   description?: Maybe<Scalars['String']['output']>;
   investigationIdentifier: Scalars['String']['output'];
   taskIdentifier: Scalars['String']['output'];

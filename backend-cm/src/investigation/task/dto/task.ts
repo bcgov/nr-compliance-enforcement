@@ -7,6 +7,8 @@ export class Task {
   taskTypeCode: string;
   taskStatusCode: string;
   assignedUserIdentifier: string;
+  createdByUserIdentifier: string;
+  createdDate: Date;
   taskNumber: number;
   description: string;
   activeIndicator: boolean;
@@ -18,6 +20,7 @@ export class CreateUpdateTaskInput {
   taskTypeCode?: string;
   taskStatusCode?: string;
   assignedUserIdentifier?: string;
+  appUserIdentifier?: string;
   description?: string;
 }
 
@@ -45,6 +48,14 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     forMember(
       (dest) => dest.assignedUserIdentifier,
       mapFrom((src) => src.assigned_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.createdByUserIdentifier,
+      mapFrom((src) => src.app_create_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.createdDate,
+      mapFrom((src) => src.create_utc_timestamp),
     ),
     forMember(
       (dest) => dest.taskNumber,

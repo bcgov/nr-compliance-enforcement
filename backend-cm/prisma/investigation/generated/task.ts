@@ -16,11 +16,23 @@ export class task {
   @ApiProperty({ type: String })
   task_status_code: string;
 
-  @ApiPropertyOptional({ type: String })
-  assigned_app_user_guid_ref?: string;
-
   @ApiProperty({ type: Number })
   task_number: number;
+
+  @ApiProperty({ type: String })
+  app_create_user_guid_ref: string;
+
+  @ApiProperty({ type: Date })
+  app_create_utc_timestamp: Date;
+
+  @ApiPropertyOptional({ type: String })
+  app_update_user_guid_ref?: string;
+
+  @ApiPropertyOptional({ type: Date })
+  app_update_utc_timestamp?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  assigned_app_user_guid_ref?: string;
 
   @ApiPropertyOptional({ type: String })
   description?: string;

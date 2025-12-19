@@ -19,8 +19,8 @@ import { contravention_party_xref as _contravention_party_xref } from "./contrav
 import { task as _task } from "./task";
 import { task_h as _task_h } from "./task_h";
 import { task_status_code as _task_status_code } from "./task_status_code";
-import { task_sub_type_code as _task_sub_type_code } from "./task_sub_type_code";
 import { task_type_code as _task_type_code } from "./task_type_code";
+import { task_category_type_code as _task_category_type_code } from "./task_category_type_code";
 
 export namespace PrismaModel {
   export class continuation_report extends _continuation_report {}
@@ -44,8 +44,8 @@ export namespace PrismaModel {
   export class task extends _task {}
   export class task_h extends _task_h {}
   export class task_status_code extends _task_status_code {}
-  export class task_sub_type_code extends _task_sub_type_code {}
   export class task_type_code extends _task_type_code {}
+  export class task_category_type_code extends _task_category_type_code {}
 
   export const extraModels = [
     continuation_report,
@@ -69,7 +69,7 @@ export namespace PrismaModel {
     task,
     task_h,
     task_status_code,
-    task_sub_type_code,
     task_type_code,
+    task_category_type_code,
   ];
 }

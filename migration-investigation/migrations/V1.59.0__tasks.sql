@@ -134,8 +134,12 @@ CREATE TABLE task (
     investigation_guid              UUID NOT NULL REFERENCES investigation (investigation_guid),
     task_type_code                  VARCHAR(16) NOT NULL REFERENCES task_type_code (task_type_code),
     task_status_code                VARCHAR(16) NOT NULL REFERENCES task_status_code (task_status_code),
-    assigned_app_user_guid_ref      UUID,
     task_number                     INTEGER NOT NULL,
+    app_create_user_guid_ref        UUID NOT NULL,
+    app_create_utc_timestamp        TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    app_update_user_guid_ref        UUID,
+    app_update_utc_timestamp        TIMESTAMP WITHOUT TIME ZONE,
+    assigned_app_user_guid_ref      UUID,
     description                     TEXT,
     active_ind                      BOOLEAN NOT NULL DEFAULT TRUE,
     create_user_id                  VARCHAR(32) NOT NULL,
@@ -163,7 +167,19 @@ COMMENT ON COLUMN task.task_status_code IS
     'Foreign key references task_status_code.task_status_code. Code representing the task status. This key should never be exposed to users via any system utilizing the tables.';
 
 COMMENT ON COLUMN task.assigned_app_user_guid_ref IS
-    'Uneforced foreign key references shared.app_userapp_user_guid. GUID representing the officer assigned to the task. This key should never be exposed to users via any system utilizing the tables.';
+    'Uneforced foreign key references shared.app_user_guid. GUID representing the officer assigned to the task. This key should never be exposed to users via any system utilizing the tables. Used in the app for displaying who created the record.';
+
+COMMENT ON COLUMN task.app_create_utc_timestamp IS
+    'The timestamp when the task was created. The timestamp is stored in UTC with no offset.  Used in the app for displaying who created the record.';
+
+COMMENT ON COLUMN task.app_create_user_guid_ref IS
+    'Uneforced foreign key references shared.app_user_guid. GUID representing the officer that created the task. This key should never be exposed to users via any system utilizing the tables. Could be used in the app to show who updated the record.';
+
+COMMENT ON COLUMN task.app_update_utc_timestamp IS
+    'The timestamp when the task was updated. The timestamp is stored in UTC with no offset.  Could be used in the app to show who updated the record. ';
+
+COMMENT ON COLUMN task.app_update_user_guid_ref IS
+    'Uneforced foreign key references shared.app_user_guid. GUID representing the officer that updated the task. This key should never be exposed to users via any system utilizing the tables.';
 
 COMMENT ON COLUMN task.task_number IS
     'System generated incremental task number';
