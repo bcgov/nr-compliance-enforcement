@@ -16,6 +16,7 @@ import { officer_investigation_xref_code as _officer_investigation_xref_code } f
 import { officer_investigation_xref_code_h as _officer_investigation_xref_code_h } from "./officer_investigation_xref_code_h";
 import { officer_investigation_xref_h as _officer_investigation_xref_h } from "./officer_investigation_xref_h";
 import { contravention_party_xref as _contravention_party_xref } from "./contravention_party_xref";
+import { diary_date as _diary_date } from "./diary_date";
 
 export namespace PrismaModel {
   export class continuation_report extends _continuation_report {}
@@ -36,6 +37,7 @@ export namespace PrismaModel {
   export class officer_investigation_xref_code_h extends _officer_investigation_xref_code_h {}
   export class officer_investigation_xref_h extends _officer_investigation_xref_h {}
   export class contravention_party_xref extends _contravention_party_xref {}
+  export class diary_date extends _diary_date {}
 
   export const extraModels = [
     continuation_report,
@@ -56,5 +58,6 @@ export namespace PrismaModel {
     officer_investigation_xref_code_h,
     officer_investigation_xref_h,
     contravention_party_xref,
+    diary_date,
   ];
 }

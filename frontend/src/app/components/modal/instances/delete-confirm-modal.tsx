@@ -17,10 +17,13 @@ export const DeleteConfirmModal: FC<DeleteConfirmModalProps> = (props) => {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Header closeButton>
+      <Modal.Header
+        closeButton
+        className="pb-0"
+      >
         <Modal.Title id="contained-modal-title-vcenter">{props.title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="pb-0">
         <div className="cancel_confirm_modal_description">
           <p>{props.content}</p>
         </div>

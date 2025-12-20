@@ -70,6 +70,7 @@ import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { LegislationSourceModule } from "./shared/legislation_source/legislation_source.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
+import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 
 @Module({
   imports: [
@@ -140,6 +141,7 @@ import { ContraventionModule } from "./investigation/contravention/contravention
     LegislationModule,
     LegislationSourceModule,
     ContraventionModule,
+    DiaryDateModule,
   ],
   controllers: [AppController],
   providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
