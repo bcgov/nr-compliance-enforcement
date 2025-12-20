@@ -7,7 +7,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "case_file":"elipses":w -> "app_user":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "case_file":"elipses":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "geo_org_unit_structure":"elipses":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
-  "legislation_source":"elipses":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
+  "legislation_agency_xref":"elipses":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "office":"elipses":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "team":"agency_code_ref":w -> "agency_code":"agency_code":e [arrowhead=none dir=back arrowtail=crowodot];
   "team":"team_code":w -> "team_code":"team_code":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -70,16 +70,16 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="geo_org_unit_structure"
   ];
-  "legislation_source" [
+  "legislation_agency_xref" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="107" HEIGHT="16"><B>legislation_source</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="138" HEIGHT="16"><B>legislation_agency_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
-    URL="legislation_source.html"
+    URL="legislation_agency_xref.html"
     target="_top"
-    tooltip="legislation_source"
+    tooltip="legislation_agency_xref"
   ];
   "office" [
    label=<

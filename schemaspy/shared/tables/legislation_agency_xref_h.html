@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>legislation_source - default.shared</title>
+        <title>legislation_agency_xref_h - default.shared</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>legislation_source</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>legislation_agency_xref_h</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Defines BC Laws XML documents to be imported into the legislation table</p>
+                            <p>History table for legislation agency xref table</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="legislation_source_guid">legislation_source_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="h_legislation_agency_xref_guid">h_legislation_agency_xref_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -130,23 +130,18 @@
                                     <td>uuid_generate_v4()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="legislation.legislation_source_guid references legislation_source.legislation_source_guid via fk_legislation_source"><a href='legislation.html'>legislation</a><span class='relatedKey'>.legislation_source_guid</span></td>
-                                                <td class="constraint detail">fk_legislation_source</td>
-                                                <td class="constraint detail"><span title='Null on delete:&#10;Foreign key to parent set to NULL when parent deleted'>N</span></td>
-                                            </tr>
                                         </table>
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Primary key. Unique identifier for this legislation source record.</p></td>
+                                    <td><p>System generated unique key for legislation history. This key should never be exposed to users via any system utilizing the tables.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="short_description">short_description</span></td>
-                                    <td>varchar</td>
-                                    <td>64</td>
+                                    <td><span id="target_row_id">target_row_id</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -158,104 +153,14 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Short name or title for this legislation source (e.g., Environmental Management Act).</p></td>
+                                    <td><p>The unique key for the legislation that has been created or modified.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="long_description">long_description</span></td>
-                                    <td>varchar</td>
-                                    <td>256</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Optional longer description with additional context about this legislation source.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="source_url">source_url</span></td>
-                                    <td>varchar</td>
-                                    <td>512</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Full URL to the BC Laws XML document (e.g., <a href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml">https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/03053_00_multi/xml</a>).</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="agency_code">agency_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="legislation_source.agency_code references agency_code.agency_code via fk_legislation_source_agency"><a href='agency_code.html'>agency_code</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">fk_legislation_source_agency</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>Foreign key to agency_code. Defines which agency this legislation source belongs to.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="active_ind">active_ind</span></td>
-                                    <td>bool</td>
+                                    <td><span id="operation_type">operation_type</span></td>
+                                    <td>bpchar</td>
                                     <td>1</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>true</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Whether this source is active. Inactive sources will not be imported.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="imported_ind">imported_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>false</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Whether this source has been imported. If true, the import job will skip it.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="last_import_timestamp">last_import_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
                                     <td>null</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
@@ -265,15 +170,15 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Timestamp of the last successful import. NULL if never imported.</p></td>
+                                    <td><p>The operation performed: I = Insert, U = Update, D = Delete</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="create_user_id">create_user_id</span></td>
+                                    <td><span id="operation_user_id">operation_user_id</span></td>
                                     <td>varchar</td>
                                     <td>32</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>CURRENT_USER</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -282,10 +187,10 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created this record.</p></td>
+                                    <td><p>The id of the user that created or modified the data in the legislation table. Defaults to the logged in user if not passed in by the application.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
+                                    <td><span id="operation_executed_at">operation_executed_at</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
                                     <td title=''></td>
@@ -299,62 +204,11 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when this record was created. Stored in UTC with no offset.</p></td>
+                                    <td><p>The timestamp when the data in the legislation table was created or modified. The timestamp is stored in UTC with no Offset.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="update_user_id">update_user_id</span></td>
-                                    <td>varchar</td>
-                                    <td>32</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The id of the user that last updated this record.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
-                                    <td>timestamp</td>
-                                    <td>29,6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when this record was last updated. Stored in UTC with no offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="import_status">import_status</span></td>
-                                    <td>varchar</td>
-                                    <td>16</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>&#39;PENDING&#39;::character varying</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Status of the last import attempt: PENDING, SUCCESS, or FAILED.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="last_import_log">last_import_log</span></td>
-                                    <td>text</td>
+                                    <td><span id="data_after_executed_operation">data_after_executed_operation</span></td>
+                                    <td>jsonb</td>
                                     <td>2147483647</td>
                                     <td title='nullable'>√</td>
                                     <td title=''></td>
@@ -367,7 +221,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Log message or error details from the last import attempt.</p></td>
+                                    <td><p>A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -400,10 +254,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> legislation_source_pkey</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_h_legislation_agency_xref</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>legislation_source_guid</td>
+                                    <td>h_legislation_agency_xref_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -423,30 +277,13 @@
                                 <h5>Close relationships within degrees of separation</h5>
                                 <ul class="nav nav-tabs pull-left ui-sortable-handle">
                                     <li class="active"><a href="#oneDegreeImg-chart" data-toggle="tab" aria-expanded="true">One</a></li>
-                                    <li class=""><a href="#twodegreesDegreeImg-chart" data-toggle="tab" aria-expanded="true">Two degrees</a></li>
                                 </ul>
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="legislation.html" target="_top" title="legislation" alt="" coords="693,5,927,240">
-<area shape="rect" id="node2" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="281,120,649,600">
-<area shape="rect" id="node3" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,240,237,357">
+<area shape="rect" id="node1" href="legislation_agency_xref_h.html" target="_top" title="legislation_agency_xref_h" alt="" coords="5,5,444,251">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/legislation_source.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
-                                    </div>
-                                    <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
-                                        <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="735,69,885,157">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,172,237,289">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="403,69,527,157">
-<area shape="rect" id="node4" href="case_file.html" target="_top" title="case_file" alt="" coords="971,104,1117,192">
-<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="335,210,596,298">
-<area shape="rect" id="node6" href="legislation.html" target="_top" title="legislation" alt="" coords="693,294,927,529">
-<area shape="rect" id="node7" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="281,421,649,901">
-<area shape="rect" id="node8" href="legislation_type_code.html" target="_top" title="legislation_type_code" alt="" coords="341,316,590,404">
-<area shape="rect" id="node9" href="team.html" target="_top" title="team" alt="" coords="405,918,526,1006">
-</map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/legislation_source.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/legislation_agency_xref_h.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

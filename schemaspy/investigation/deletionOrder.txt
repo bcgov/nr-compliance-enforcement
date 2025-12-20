@@ -10,7 +10,6 @@ officer_investigation_xref
 contravention_party_xref
 investigation_person
 investigation_business
-diary_date
 continuation_report
 contravention
 investigation_party
