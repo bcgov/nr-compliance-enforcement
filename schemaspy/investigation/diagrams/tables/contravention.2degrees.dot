@@ -4,6 +4,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "contravention":"investigation_guid":w -> "investigation":"investigation_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contravention_party_xref":"contravention_guid":w -> "contravention":"contravention_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "contravention_party_xref":"investigation_party_guid":w -> "investigation_party":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "diary_date":"elipses":w -> "investigation":"investigation_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "investigation":"investigation_status":w -> "investigation_status_code":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "investigation_party":"elipses":w -> "investigation":"investigation_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "officer_investigation_xref":"elipses":w -> "investigation":"investigation_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -50,6 +51,17 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="contravention_party_xref"
   ];
+  "diary_date" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="62" HEIGHT="16"><B>diary_date</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="diary_date.html"
+    target="_top"
+    tooltip="diary_date"
+  ];
   "investigation" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -60,7 +72,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="name" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="222" HEIGHT="16">name</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="location_geometry_point" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="222" HEIGHT="16">location_geometry_point</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
     </TABLE>>
     URL="investigation.html"
     target="_top"

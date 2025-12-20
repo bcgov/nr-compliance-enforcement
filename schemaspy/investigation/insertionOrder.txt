@@ -4,6 +4,7 @@ investigation
 investigation_party
 contravention
 continuation_report
+diary_date
 investigation_business
 investigation_person
 contravention_party_xref

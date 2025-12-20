@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>officer_investigation_xref - default.investigation</title>
+        <title>diary_date - default.investigation</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>officer_investigation_xref</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>diary_date</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -84,7 +84,7 @@
                             </div>
                         </div><!-- /.box-header -->
                         <div class="box-body clearfix">
-                            <p>Used to create a relationship between an officer and a investigation. One officer can play many roles on a investigation, and many people could be involved in a single investigation.</p>
+                            <p>A table that holds diary date entries for an investigation</p>
                         </div><!-- /.box-body -->
                     </div>
                 </section>
@@ -122,7 +122,7 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_investigation_xref_guid">officer_investigation_xref_guid</span></td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="diary_date_guid">diary_date_guid</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
                                     <td title=''></td>
@@ -136,24 +136,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>System generated unique key for a relationship between an officer and a investigation. This key should never be exposed to users via any system utilizing the tables.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="officer_guid_ref">officer_guid_ref</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>A reference to the system generated unique key for an officer found outside of this schema.</p></td>
+                                    <td><p>Primary key: System generated unique identifier for a diary date entry.</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="investigation_guid">investigation_guid</span></td>
@@ -169,18 +152,18 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="officer_investigation_xref.investigation_guid references investigation.investigation_guid via FK_officer_investigation_xref__investigation_guid"><a href='investigation.html'>investigation</a><span class='relatedKey'>.investigation_guid</span></td>
-                                                <td class="constraint detail">FK_officer_investigation_xref__investigation_guid</td>
+                                                <td title="diary_date.investigation_guid references investigation.investigation_guid via fk_diary_date_investigation"><a href='investigation.html'>investigation</a><span class='relatedKey'>.investigation_guid</span></td>
+                                                <td class="constraint detail">fk_diary_date_investigation</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>The GUID for the investigation.</p></td>
+                                    <td><p>Foreign key: System generated unique identifier for an investigation</p></td>
                                 </tr>
                                 <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="officer_investigation_xref_code">officer_investigation_xref_code</span></td>
-                                    <td>varchar</td>
-                                    <td>10</td>
+                                    <td><span id="due_date">due_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -190,14 +173,43 @@
                                     </td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="officer_investigation_xref.officer_investigation_xref_code references officer_investigation_xref_code.officer_investigation_xref_code via FK_officer_investigation_xref__officer_investigation_xref_code"><a href='officer_investigation_xref_code.html'>officer_investigation_xref_code</a><span class='relatedKey'>.officer_investigation_xref_code</span></td>
-                                                <td class="constraint detail">FK_officer_investigation_xref__officer_investigation_xref_code</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
                                         </table>
                                     </td>
-                                    <td><p>A human readable code used to identify a relationship type between an officer and a investigation.</p></td>
+                                    <td><p>The due date for the diary entry (date only, no time).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="description">description</span></td>
+                                    <td>varchar</td>
+                                    <td>4000</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Description of the diary date entry.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="active_ind">active_ind</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>true</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>True if the diary date is active, false if it was deleted.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_user_id">create_user_id</span></td>
@@ -214,7 +226,75 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that created the relationship between an officer and a investigation.</p></td>
+                                    <td><p>The id of the user that created the record.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="app_create_utc_timestamp">app_create_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the diary date was added. The timestamp is stored in UTC with no offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="app_create_user_guid_ref">app_create_user_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The foreign key reference to the app user who added the diary date.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="app_update_utc_timestamp">app_update_utc_timestamp</span></td>
+                                    <td>timestamp</td>
+                                    <td>29,6</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The timestamp when the diary date was last updated. The timestamp is stored in UTC with no offset.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="app_update_user_guid_ref">app_update_user_guid_ref</span></td>
+                                    <td>uuid</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The foreign key reference to the app user who last updated the diary date.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="create_utc_timestamp">create_utc_timestamp</span></td>
@@ -222,7 +302,7 @@
                                     <td>29,6</td>
                                     <td title=''></td>
                                     <td title=''></td>
-                                    <td>null</td>
+                                    <td>now()</td>
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
@@ -231,13 +311,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The timestamp when the relationship between an officer and a investigation  was created.  The timestamp is stored in UTC with no Offset.</p></td>
+                                    <td><p>The timestamp when the record was created. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_user_id">update_user_id</span></td>
                                     <td>varchar</td>
                                     <td>32</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -248,30 +328,13 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The id of the user that updated the relationship between an officer and a investigation .</p></td>
+                                    <td><p>The id of the user that updated the record.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="update_utc_timestamp">update_utc_timestamp</span></td>
                                     <td>timestamp</td>
                                     <td>29,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The timestamp when the relationship between an officer and a investigation  was updated.  The timestamp is stored in UTC with no Offset.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="active_ind">active_ind</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
+                                    <td title='nullable'>√</td>
                                     <td title=''></td>
                                     <td>null</td>
                                     <td>
@@ -282,7 +345,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>A boolean indicator to determine if the relationship type between an officer and a investigation code is active.</p></td>
+                                    <td><p>The timestamp when the record was updated. The timestamp is stored in UTC with no offset.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -315,10 +378,10 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> PK_officer_investigation_xref_guid</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> diary_date_pkey</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
-                                    <td>officer_investigation_xref_guid</td>
+                                    <td>diary_date_guid</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -343,24 +406,22 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="395,56,824,389">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,5,351,240">
-<area shape="rect" id="node3" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="15,257,341,375">
+<area shape="rect" id="node1" href="diary_date.html" target="_top" title="diary_date" alt="" coords="395,5,797,456">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="5,37,351,272">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/officer_investigation_xref.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/diary_date.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="819,5,1059,93">
-<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,213,680,448">
-<area shape="rect" id="node5" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,275,291,363">
-<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="842,111,1035,199">
-<area shape="rect" id="node4" href="diary_date.html" target="_top" title="diary_date" alt="" coords="857,216,1020,304">
-<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="822,321,1055,409">
-<area shape="rect" id="node7" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="724,427,1153,760">
-<area shape="rect" id="node8" href="officer_investigation_xref_code.html" target="_top" title="officer_investigation_xref_code" alt="" coords="345,517,670,635">
+<area shape="rect" id="node1" href="continuation_report.html" target="_top" title="continuation_report" alt="" coords="805,5,1045,93">
+<area shape="rect" id="node2" href="investigation.html" target="_top" title="investigation" alt="" coords="335,248,680,483">
+<area shape="rect" id="node5" href="investigation_status_code.html" target="_top" title="investigation_status_code" alt="" coords="5,309,291,397">
+<area shape="rect" id="node3" href="contravention.html" target="_top" title="contravention" alt="" coords="829,111,1022,199">
+<area shape="rect" id="node4" href="diary_date.html" target="_top" title="diary_date" alt="" coords="724,216,1127,667">
+<area shape="rect" id="node6" href="investigation_party.html" target="_top" title="investigation_party" alt="" coords="809,684,1042,772">
+<area shape="rect" id="node7" href="officer_investigation_xref.html" target="_top" title="officer_investigation_xref" alt="" coords="785,789,1066,877">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/officer_investigation_xref.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/diary_date.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>
