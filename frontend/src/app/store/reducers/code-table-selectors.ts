@@ -1,6 +1,4 @@
 import { RootState } from "@store/store";
-import Option from "@apptypes/app/option";
-import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { createSelector } from "@reduxjs/toolkit";
 const selectCodeTables = (state: RootState) => state.codeTables;
 

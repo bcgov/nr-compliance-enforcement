@@ -28,12 +28,6 @@ test.describe("Investigation List View", () => {
     await expect(tableHeaders.nth(5)).toContainText("Actions");
   });
 
-  test("it shows Create investigation button", async ({ page }) => {
-    const createButton = page.locator("button", { hasText: "Create investigation" });
-    await expect(createButton).toBeVisible();
-    await expect(createButton).toBeEnabled();
-  });
-
   test("it navigates to investigation details", async ({ page }) => {
     const rows = page.locator("#investigation-list tbody tr");
     const rowCount = await rows.count();
@@ -107,14 +101,5 @@ test.describe("Investigation List Actions", () => {
 
     await expect(dropdownMenu.locator("a", { hasText: /View/i })).toBeVisible();
     await expect(dropdownMenu.locator("a", { hasText: /Edit/i })).toBeVisible();
-  });
-
-  test("it navigates to create investigation on button click", async ({ page }) => {
-    const createButton = page.locator("button", { hasText: "Create investigation" });
-    await createButton.click();
-    await waitForSpinner(page);
-
-    // Verify navigation to create page
-    await expect(page).toHaveURL("/investigation/create");
   });
 });

@@ -66,6 +66,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
       <div className="row">
         <div className="col-12">
           <Button
+            id="add-task-button"
             variant="primary"
             size="sm"
             onClick={() => setshowAddCard(true)}
