@@ -19,6 +19,8 @@ Manages public complaints as well as investigative case files for multiple Compl
 - Test: https://test.natsuite.nrs.gov.bc.ca/
 - Prod: https://natsuite.nrs.gov.bc.ca/
 
+For development environments 'X' in the URL refers to the last digit of the PR. In the event of multiple PRs with the same last digit the one with the most recent activity is deployed.
+
 Pipelines are run using [GitHub Actions](https://github.com/bcgov/nr-compliance-enforcement/actions).
 
 ## Features
@@ -129,7 +131,7 @@ Each pull request will automatically create a comment on the pull request itself
 
 GitHub protection rules have been setup to require an approval before a pull request is merged into main. Developers cannot approve their own pull request.
 
-Approving the pull request will trigger a migration request to TEST. To complete the migration, an approved member of the team will need to review and approve the deployment.
+Approving the pull request will trigger a migration request to TEST.
 
 Similarly, once deployed to test, there is an option to approve the migration to production.
 
@@ -138,10 +140,11 @@ Similarly, once deployed to test, there is an option to approve the migration to
 Runs on pull request submission. Also runs if new commits are made on existing pull request.
 
 - Provides safe, sandboxed deployment environments
+- Validates Flyway migrations
 - Build action pushes to GitHub Container Registry (ghcr.io)
-- Build triggers select new builds vs reusing builds
-- Deployment includes health checks
-- Playwright e2e tests
+- Runs ZAP scans against front end back ends
+- Commits to gitops repository to trigger Argo build
+- Playwright e2e tests (via Argo)
 
 ![](.github/graphics/pr-open.png)
 
@@ -150,7 +153,6 @@ Runs on pull request submission. Also runs if new commits are made on existing p
 Runs on pull request close or merge.
 
 - Cleans up OpenShift objects/artifacts
-- Merge promotes successful build images to TEST
 
 ![](.github/graphics/pr-close.png)
 
@@ -159,7 +161,7 @@ Runs on pull request close or merge.
 Runs on pull request to validate changes before merge.
 
 - Linting and code quality checks
-- Unit tests for all components
+- Updates PR with links to Dev Environment, Argo and Playwright results
 
 ![](.github/graphics/pr-validate.png)
 
@@ -167,25 +169,30 @@ Runs on pull request to validate changes before merge.
 
 Runs on merge to release branch.
 
-- Promotes builds through environments
-- Guarded migrations to test and production (each require a review)
+- Promotes build to test environment
+- Generates schemaspy documentation
 
-## Release to Main (`release-main.yml`)
+![](.github/graphics/merge-release.png)
 
-Runs on merge to main branch.
+## Release to Production (`release-main.yml`)
 
-- Code scanning and reporting to GitHub Security overview
+Manually triggered.
+
+- Merges release branch into main branch
 - Zero-downtime\* TEST deployment
 - Zero-downtime\* PROD deployment
-- Labels successful deployment images as PROD
+- Labels successful deployment images as PROD (currently failing in the image below)
 
 \* excludes database changes
+
+![](.github/graphics/release-main.png)
 
 ## Analysis (`analysis.yml`)
 
 Runs on pull request submission or merge to main.
 
-- Unit tests with coverage
+- Unit tests
+- Trivy security scan
 - SonarCloud code analysis and reporting
 
 ![](.github/graphics/analysis.png)
