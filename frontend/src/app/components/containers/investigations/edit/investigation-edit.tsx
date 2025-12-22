@@ -399,7 +399,7 @@ const InvestigationEdit: FC = () => {
               name="primaryInvestigator"
               label="Primary investigator"
               required
-              validators={{ onChange: z.string().min(1, "Primary investigator is required") }}
+              validators={{ onSubmit: z.string().min(1, "Primary investigator is required") }}
               render={(field) => (
                 <CompSelect
                   id="primary-investigator-select"

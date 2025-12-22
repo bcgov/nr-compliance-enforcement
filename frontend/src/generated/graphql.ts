@@ -461,6 +461,16 @@ export type CreateUpdateContraventionInput = {
   legislationReference: Scalars['String']['input'];
 };
 
+export type CreateUpdateTaskInput = {
+  appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  assignedUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  investigationIdentifier?: InputMaybe<Scalars['String']['input']>;
+  taskIdentifier?: InputMaybe<Scalars['String']['input']>;
+  taskStatusCode?: InputMaybe<Scalars['String']['input']>;
+  taskTypeCode?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateWildlifeInput = {
   complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
@@ -911,6 +921,7 @@ export type Investigation = {
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
+  tasks?: Maybe<Array<Maybe<Task>>>;
 };
 
 export type InvestigationBusiness = {
@@ -1049,6 +1060,7 @@ export type Mutation = {
   createPerson: Person;
   createPrevention: ComplaintOutcome;
   createReview: ComplaintOutcome;
+  createTask: Task;
   createWildlife: ComplaintOutcome;
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
@@ -1065,6 +1077,7 @@ export type Mutation = {
   removeContravention: Investigation;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
+  removeTask: Task;
   saveContinuationReport: ContinuationReport;
   saveDiaryDate: DiaryDate;
   updateAppUser?: Maybe<AppUser>;
@@ -1086,6 +1099,7 @@ export type Mutation = {
   updatePerson: Person;
   updatePrevention: ComplaintOutcome;
   updateReview: ComplaintOutcome;
+  updateTask: Task;
   updateWildlife: ComplaintOutcome;
 };
 
@@ -1207,6 +1221,11 @@ export type MutationcreateReviewArgs = {
 };
 
 
+export type MutationcreateTaskArgs = {
+  input: CreateUpdateTaskInput;
+};
+
+
 export type MutationcreateWildlifeArgs = {
   input: CreateWildlifeInput;
 };
@@ -1287,6 +1306,11 @@ export type MutationremovePartyFromInspectionArgs = {
 export type MutationremovePartyFromInvestigationArgs = {
   investigationGuid: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];
+};
+
+
+export type MutationremoveTaskArgs = {
+  taskId: Scalars['String']['input'];
 };
 
 
@@ -1403,6 +1427,11 @@ export type MutationupdatePreventionArgs = {
 
 export type MutationupdateReviewArgs = {
   reviewInput: ReviewInput;
+};
+
+
+export type MutationupdateTaskArgs = {
+  input: CreateUpdateTaskInput;
 };
 
 
@@ -1681,6 +1710,11 @@ export type Query = {
   searchParties: PartyResult;
   sectorCodes: Array<Maybe<SectorCode>>;
   sexCodes: Array<Maybe<SexCode>>;
+  task?: Maybe<Task>;
+  taskCategoryTypeCodes: Array<Maybe<TaskTypeCode>>;
+  taskStatusCodes: Array<Maybe<TaskStatusCode>>;
+  taskTypeCodes: Array<Maybe<TaskTypeCode>>;
+  tasks: Array<Maybe<Task>>;
   team?: Maybe<Team>;
   teamCodes: Array<Maybe<TeamCode>>;
   teams: Array<Maybe<Team>>;
@@ -2006,6 +2040,16 @@ export type QuerysearchPartiesArgs = {
 };
 
 
+export type QuerytaskArgs = {
+  taskId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerytasksArgs = {
+  investigationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryteamArgs = {
   teamGuid: Scalars['String']['input'];
 };
@@ -2077,6 +2121,48 @@ export type SexCode = {
   longDescription?: Maybe<Scalars['String']['output']>;
   sexCode?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type Task = {
+  __typename?: 'Task';
+  activeIndicator: Scalars['Boolean']['output'];
+  assignedUserIdentifier?: Maybe<Scalars['String']['output']>;
+  createdByUserIdentifier: Scalars['String']['output'];
+  createdDate: Scalars['Date']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  investigationIdentifier: Scalars['String']['output'];
+  taskIdentifier: Scalars['String']['output'];
+  taskNumber: Scalars['Int']['output'];
+  taskStatusCode: Scalars['String']['output'];
+  taskTypeCode: Scalars['String']['output'];
+};
+
+export type TaskCategoryTypeCode = {
+  __typename?: 'TaskCategoryTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  taskCategoryTypeCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type TaskStatusCode = {
+  __typename?: 'TaskStatusCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  taskStatusCode?: Maybe<Scalars['String']['output']>;
+};
+
+export type TaskTypeCode = {
+  __typename?: 'TaskTypeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  taskCategoryTypeCode?: Maybe<Scalars['String']['output']>;
+  taskTypeCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type Team = {

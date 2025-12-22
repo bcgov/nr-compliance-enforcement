@@ -33,10 +33,14 @@ import { mapPrismaAppUserTeamXrefToAppUserTeamXref } from "../shared/app_user_te
 import { mapPrismaBusinessToInspectionBusiness } from "../inspection/inspection_business/dto/inspection_business";
 import { mapPrismaPersonToInspectionPerson } from "../inspection/inspection_person/dto/inspection_person";
 import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/dto/inspection_party";
-import { mapPrismaContinuationReportToContinuationReport } from "src/investigation/continuation_report/dto/continuation_report";
-import { mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode } from "src/shared/party_association_role_code/dto/party_association_role_code";
+import { mapPrismaContinuationReportToContinuationReport } from "../investigation/continuation_report/dto/continuation_report";
+import { mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode } from "../shared/party_association_role_code/dto/party_association_role_code";
 import { mapPrismaLegislationToLegislation } from "../shared/legislation/dto/legislation";
 import { mapPrismaContreventionToContravention } from "../investigation/contravention/dto/contravention";
+import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_status_code/dto/task_status_code";
+import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
+import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investigation/task_category_type_code/dto/task_category_type_code";
+import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 
 export const initializeMappings = (mapper: Mapper) => {
@@ -78,5 +82,9 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaLegislationToLegislation(mapper);
   mapPrismaContreventionToContravention(mapper);
+  mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
+  mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
+  mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
+  mapPrismaTaskToTask(mapper);
   mapPrismaDiaryDateToDiaryDate(mapper);
 };

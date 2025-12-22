@@ -4,6 +4,7 @@ import { diary_date } from "./diary_date";
 import { investigation_status_code } from "./investigation_status_code";
 import { investigation_party } from "./investigation_party";
 import { officer_investigation_xref } from "./officer_investigation_xref";
+import { task } from "./task";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class investigation {
@@ -75,4 +76,7 @@ export class investigation {
 
   @ApiProperty({ isArray: true, type: () => officer_investigation_xref })
   officer_investigation_xref: officer_investigation_xref[];
+
+  @ApiProperty({ isArray: true, type: () => task })
+  task: task[];
 }
