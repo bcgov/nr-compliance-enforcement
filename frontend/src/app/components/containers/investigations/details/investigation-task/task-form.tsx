@@ -147,7 +147,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   };
 
   const handleCancel = async () => {
-    console.log("hello");
     setSelectedCategory("");
     form.reset();
     onClose();

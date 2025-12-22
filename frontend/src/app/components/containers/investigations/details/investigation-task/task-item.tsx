@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 
 interface TaskItemProps {
   task: Task;
+  canEdit: boolean;
   onEdit: (taskId: string) => void;
   investigationData?: Investigation;
 }
@@ -27,7 +28,7 @@ const REMOVE_TASK = gql`
   }
 `;
 
-export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => {
+export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemProps) => {
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -89,6 +90,7 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
           </div>
           <div className="comp-card-header-actions">
             <Button
+              disabled={!canEdit}
               variant="outline-primary"
               size="sm"
               id="task-edit-button"
@@ -144,6 +146,3 @@ export const TaskItem = ({ task, investigationData, onEdit }: TaskItemProps) => 
     </section>
   );
 };
-function dispatch(arg0: any) {
-  throw new Error("Function not implemented.");
-}

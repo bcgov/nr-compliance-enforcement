@@ -106,8 +106,6 @@ export class TaskService {
 
         return await this.findOne(task.task_guid);
       } catch (error) {
-        lastError = error;
-
         // Check if it's a unique constraint violation
         if (error?.code === "P2002") {
           if (attempt < maxRetries - 1) {

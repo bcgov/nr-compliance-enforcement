@@ -28,55 +28,54 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
   };
 
   return (
-    <>
-      <div className="comp-details-view">
-        <div className="row">
-          <div className="col-12">
-            <h3>Tasks</h3>
-          </div>
-        </div>
-
-        <div className="task-list">
-          {tasks?.map((task) => (
-            <div key={task?.taskIdentifier}>
-              {editingTaskId === task?.taskIdentifier ? (
-                <TaskForm
-                  investigationGuid={investigationGuid}
-                  task={task as Task}
-                  onClose={handleCloseForm}
-                />
-              ) : (
-                <TaskItem
-                  task={task as Task}
-                  investigationData={investigationData}
-                  onEdit={handleEditTask}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
-        {showAddCard && (
-          <TaskForm
-            investigationGuid={investigationGuid}
-            onClose={handleCloseForm}
-          />
-        )}
-
-        <div className="row">
-          <div className="col-12">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setshowAddCard(true)}
-            >
-              <i className="bi bi-plus-circle me-1" /> {/**/}
-              Add Task
-            </Button>
-          </div>
+    <div className="comp-details-view">
+      <div className="row">
+        <div className="col-12">
+          <h3>Tasks</h3>
         </div>
       </div>
-    </>
+
+      <div className="task-list">
+        {tasks?.map((task) => (
+          <div key={task?.taskIdentifier}>
+            {editingTaskId === task?.taskIdentifier ? (
+              <TaskForm
+                investigationGuid={investigationGuid}
+                task={task}
+                onClose={handleCloseForm}
+              />
+            ) : (
+              <TaskItem
+                task={task as Task}
+                investigationData={investigationData}
+                canEdit={!editingTaskId}
+                onEdit={handleEditTask}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {showAddCard && (
+        <TaskForm
+          investigationGuid={investigationGuid}
+          onClose={handleCloseForm}
+        />
+      )}
+
+      <div className="row">
+        <div className="col-12">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setshowAddCard(true)}
+          >
+            <i className="bi bi-plus-circle me-1" /> {/**/}
+            Add Task
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
