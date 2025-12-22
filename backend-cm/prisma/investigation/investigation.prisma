@@ -390,21 +390,26 @@ model task_category_type_code {
   update_user_id                                                                 String?          @db.VarChar(32)
   update_utc_timestamp                                                           DateTime?        @db.Timestamp(6)
   task_type_code_task_type_code_task_category_type_codeTotask_category_type_code task_type_code[] @relation("task_type_code_task_category_type_codeTotask_category_type_code")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model diary_date {
-  diary_date_guid       String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid    String        @db.Uuid
-  due_date              DateTime      @db.Date
-  description           String        @db.VarChar(4000)
-  app_create_utc_timestamp   DateTime      @db.Timestamp(6)
-  app_create_user_guid_ref       String?       @db.Uuid
+  diary_date_guid          String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid       String        @db.Uuid
+  due_date                 DateTime      @db.Date
+  description              String        @db.VarChar(4000)
+  active_ind               Boolean       @default(true)
+  create_user_id           String        @db.VarChar(32)
+  app_create_utc_timestamp DateTime      @db.Timestamp(6)
+  app_create_user_guid_ref String?       @db.Uuid
   app_update_utc_timestamp DateTime?     @db.Timestamp(6)
-  app_update_user_guid_ref     String?       @db.Uuid
-  active_ind            Boolean       @default(true)
-  create_user_id        String        @db.VarChar(32)
-  create_utc_timestamp  DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id        String?       @db.VarChar(32)
-  update_utc_timestamp  DateTime?     @db.Timestamp(6)
-  investigation         investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_investigation")
+  app_update_user_guid_ref String?       @db.Uuid
+  create_utc_timestamp     DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id           String?       @db.VarChar(32)
+  update_utc_timestamp     DateTime?     @db.Timestamp(6)
+  investigation            investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_investigation")
 
   @@schema("investigation")
 }
