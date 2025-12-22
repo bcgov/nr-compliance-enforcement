@@ -97,7 +97,7 @@ export interface CodeTableState {
     | Array<PartyAssociationRole>
     | Array<TaskStatusType>
     | Array<TaskCategoryType>
-    | Array<TaskType>;
+    | Array<TaskType>
     | Array<LegislationType>;
 
   agency: Array<Agency>;

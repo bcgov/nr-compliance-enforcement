@@ -156,7 +156,10 @@ export const fetchTaskTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<TaskType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.TASK_TYPE, data: response };
-    
+    dispatch(setCodeTable(payload));
+  }
+};
+
 export const fetchLegislationTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.LEGISLATION_TYPE}`);
   const response = await get<Array<LegislationType>>(dispatch, parameters);

@@ -334,6 +334,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(taskType).any()) {
       dispatch(fetchTaskTypes());
+    }
     if (!from(legislationType).any()) {
       dispatch(fetchLegislationTypes());
     }
