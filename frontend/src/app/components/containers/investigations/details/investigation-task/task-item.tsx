@@ -4,14 +4,12 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
-import { RootState } from "@/app/store/store";
+import { selectOfficers } from "@/app/store/reducers/officer";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback } from "react";
 import { Button, Card } from "react-bootstrap";
-import { useSelector } from "react-redux";
 
 interface TaskItemProps {
   task: Task;
@@ -33,16 +31,15 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
-  const leadAgency = investigationData?.leadAgency ?? "COS";
-  const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
+  const officerList = useAppSelector(selectOfficers);
 
   // Data
   const dispatch = useAppDispatch();
   const subCategory = taskSubCategories.find((subCategory) => subCategory.value === task?.taskTypeCode);
   const category = taskCategories.find((category) => category.value === subCategory?.taskCategory);
   const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
-  const assignedOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
-  const createdOfficer = officersInAgencyList.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
+  const assignedOfficer = officerList?.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
+  const createdOfficer = officerList?.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
 
   // Functions
   const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {

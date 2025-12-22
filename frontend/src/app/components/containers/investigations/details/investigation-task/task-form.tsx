@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import DatePicker from "react-datepicker";
 import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
@@ -48,6 +48,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       "task-sub-category": "",
       "task-description": "",
       "task-officer-assigned": "",
+      "task-created-by": "",
       "task-status": "",
     },
     onSubmit: async ({ value }) => {
@@ -77,6 +78,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [selectedCategory, setSelectedCategory] = useState("");
   const agency = useAppSelector(selectOfficerAgency);
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
+  const allOfficers = useAppSelector(selectOfficers);
   const dispatch = useAppDispatch();
 
   // Data
@@ -112,6 +114,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       form.setFieldValue("task-sub-category", task.taskTypeCode || "");
       form.setFieldValue("task-description", task.description || "");
       form.setFieldValue("task-officer-assigned", task.assignedUserIdentifier || "");
+      form.setFieldValue("task-created-by", task.createdByUserIdentifier || "");
       form.setFieldValue("task-status", task.taskStatusCode || "");
     }
   }, [task, taskSubCategories]);
@@ -176,6 +179,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
 
   const assignableOfficers = officersInAgencyList.map((option: any) => {
+    return {
+      value: option.app_user_guid,
+      label: `${option.last_name}, ${option.first_name}`,
+    };
+  });
+
+  const allOfficerOptions = allOfficers?.map((option: any) => {
     return {
       value: option.app_user_guid,
       label: `${option.last_name}, ${option.first_name}`,
@@ -362,22 +372,26 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             form={form}
             name="task-created-by"
             label="Created by"
-            render={(field) => (
-              <CompSelect
-                id="task-created-by-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={assignableOfficers}
-                value={assignableOfficers.find((opt) => opt.value === idir)}
-                onChange={(option) => field.handleChange(option?.value || "")}
-                placeholder="Type in or select"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={true}
-                errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                isDisabled
-              />
-            )}
+            render={(field) => {
+              const resolvedValue = field.state.value || idir;
+
+              return (
+                <CompSelect
+                  id="task-created-by-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={allOfficerOptions}
+                  value={allOfficerOptions?.find((opt) => opt.value === resolvedValue)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Type in or select"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled
+                />
+              );
+            }}
           />
         </form>
         <div className="comp-details-form-buttons">
