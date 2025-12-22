@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { Repository } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -864,6 +864,9 @@ export class CodeTableService {
             "{ taskTypeCodes { taskTypeCode taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const results = data.taskTypeCodes;
+        return results;
+      }
+
       case "legislation-type": {
         const { data } = await get(token, {
           query:
