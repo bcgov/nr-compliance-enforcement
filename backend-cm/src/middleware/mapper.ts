@@ -41,6 +41,7 @@ import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_s
 import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
 import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investigation/task_category_type_code/dto/task_category_type_code";
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
+import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 
 export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToContactMethod(mapper);
@@ -85,4 +86,5 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
   mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
   mapPrismaTaskToTask(mapper);
+  mapPrismaDiaryDateToDiaryDate(mapper);
 };

@@ -97,4 +97,18 @@ export const selectTaskSubCategory = createSelector([selectCodeTables], (codeTab
 export const selectTaskStatus = createSelector([selectCodeTables], (codeTables) => {
   const { "task-status-type": items } = codeTables;
   return items.map(({ taskStatusCode: value, longDescription: label }) => ({ label, value }));
+export const selectLegislationTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items;
+});
+
+export const selectLegislationTypeLabels = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items.reduce(
+    (acc, item) => {
+      acc[item.legislationTypeCode] = item.shortDescription;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 });

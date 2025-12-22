@@ -864,6 +864,12 @@ export class CodeTableService {
             "{ taskTypeCodes { taskTypeCode taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const results = data.taskTypeCodes;
+      case "legislation-type": {
+        const { data } = await get(token, {
+          query:
+            "{ legislationTypeCodes { legislationTypeCode shortDescription longDescription displayOrder activeInd }}",
+        });
+        const results = data.legislationTypeCodes;
         return results;
       }
 

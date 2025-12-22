@@ -18,6 +18,7 @@ import { PartyAssociationRole } from "@/app/types/app/shared/party-association-r
 import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
 import { TaskType } from "@/app/types/app/investigation/task-category-detail";
+import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -155,6 +156,12 @@ export const fetchTaskTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<TaskType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.TASK_TYPE, data: response };
+    
+export const fetchLegislationTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.LEGISLATION_TYPE}`);
+  const response = await get<Array<LegislationType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.LEGISLATION_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

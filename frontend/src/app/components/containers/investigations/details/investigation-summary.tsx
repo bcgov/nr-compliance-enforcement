@@ -10,6 +10,7 @@ import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { DiaryDates } from "./investigation-diary-dates";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -238,6 +239,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   </div>
                 </div>
               )}
+              <DiaryDates investigationGuid={investigationGuid} />
+              <br />
               {investigationData?.locationGeometry?.coordinates && (
                 <MapObjectLocation
                   map_object_type={MapObjectType.Investigation}
