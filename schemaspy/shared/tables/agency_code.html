@@ -146,8 +146,8 @@
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
-                                                <td title="legislation_agency_xref.agency_code references agency_code.agency_code via legislation_agency_xref_agency_code_fkey"><a href='legislation_agency_xref.html'>legislation_agency_xref</a><span class='relatedKey'>.agency_code</span></td>
-                                                <td class="constraint detail">legislation_agency_xref_agency_code_fkey</td>
+                                                <td title="legislation_source.agency_code references agency_code.agency_code via fk_legislation_source_agency"><a href='legislation_source.html'>legislation_source</a><span class='relatedKey'>.agency_code</span></td>
+                                                <td class="constraint detail">fk_legislation_source_agency</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                             <tr>
@@ -382,62 +382,62 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="727,120,959,355">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="724,120,956,355">
 <area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,347,364,709">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="411,208,679,384">
-<area shape="rect" id="node4" href="case_file.html" target="_top" title="case_file" alt="" coords="1003,5,1257,240">
-<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="409,401,681,607">
-<area shape="rect" id="node6" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="408,624,683,800">
-<area shape="rect" id="node7" href="team.html" target="_top" title="team" alt="" coords="429,817,661,993">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="410,208,678,384">
+<area shape="rect" id="node4" href="case_file.html" target="_top" title="case_file" alt="" coords="1000,5,1255,240">
+<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="408,401,680,607">
+<area shape="rect" id="node6" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="427,624,661,771">
+<area shape="rect" id="node7" href="team.html" target="_top" title="team" alt="" coords="428,788,660,964">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/agency_code.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="767,405,918,493">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,361,364,724">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="483,369,607,457">
-<area shape="rect" id="node10" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="35,96,334,184">
-<area shape="rect" id="node4" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1003,293,1241,381">
-<area shape="rect" id="node5" href="team.html" target="_top" title="team" alt="" coords="727,212,959,388">
-<area shape="rect" id="node13" href="team_code.html" target="_top" title="team_code" alt="" coords="463,228,628,316">
-<area shape="rect" id="node6" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1285,473,1467,561">
-<area shape="rect" id="node7" href="case_file.html" target="_top" title="case_file" alt="" coords="1049,476,1195,564">
-<area shape="rect" id="node8" href="case_status_code.html" target="_top" title="case_status_code" alt="" coords="735,547,951,635">
-<area shape="rect" id="node9" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="409,5,681,211">
-<area shape="rect" id="node11" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="408,628,683,804">
-<area shape="rect" id="node12" href="legislation.html" target="_top" title="legislation" alt="" coords="103,741,266,829">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="765,321,915,409">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,276,364,639">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="482,355,606,443">
+<area shape="rect" id="node10" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="35,656,334,744">
+<area shape="rect" id="node4" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1000,225,1239,313">
+<area shape="rect" id="node5" href="team.html" target="_top" title="team" alt="" coords="724,128,956,304">
+<area shape="rect" id="node13" href="team_code.html" target="_top" title="team_code" alt="" coords="461,169,627,257">
+<area shape="rect" id="node6" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1283,427,1464,515">
+<area shape="rect" id="node7" href="case_file.html" target="_top" title="case_file" alt="" coords="1046,429,1193,517">
+<area shape="rect" id="node8" href="case_status_code.html" target="_top" title="case_status_code" alt="" coords="732,427,948,515">
+<area shape="rect" id="node9" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="408,568,680,773">
+<area shape="rect" id="node11" href="legislation.html" target="_top" title="legislation" alt="" coords="759,8,921,96">
+<area shape="rect" id="node12" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="427,5,661,152">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/agency_code.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="727,120,959,355">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="724,120,956,355">
 <area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,347,364,709">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="411,208,679,384">
-<area shape="rect" id="node4" href="case_file.html" target="_top" title="case_file" alt="" coords="1003,5,1257,240">
-<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="409,401,681,607">
-<area shape="rect" id="node6" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="408,624,683,800">
-<area shape="rect" id="node7" href="team.html" target="_top" title="team" alt="" coords="429,817,661,993">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="410,208,678,384">
+<area shape="rect" id="node4" href="case_file.html" target="_top" title="case_file" alt="" coords="1000,5,1255,240">
+<area shape="rect" id="node5" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="408,401,680,607">
+<area shape="rect" id="node6" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="427,624,661,771">
+<area shape="rect" id="node7" href="team.html" target="_top" title="team" alt="" coords="428,788,660,964">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/agency_code.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="767,389,918,477">
-<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,301,364,664">
-<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="483,481,607,569">
-<area shape="rect" id="node4" href="park_area.html" target="_top" title="park_area" alt="" coords="466,376,625,464">
-<area shape="rect" id="node11" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="35,684,334,772">
-<area shape="rect" id="node5" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1003,293,1241,381">
-<area shape="rect" id="node6" href="team.html" target="_top" title="team" alt="" coords="727,196,959,372">
-<area shape="rect" id="node14" href="team_code.html" target="_top" title="team_code" alt="" coords="463,5,628,93">
-<area shape="rect" id="node7" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1285,549,1467,637">
-<area shape="rect" id="node8" href="case_file.html" target="_top" title="case_file" alt="" coords="1049,552,1195,640">
-<area shape="rect" id="node9" href="case_status_code.html" target="_top" title="case_status_code" alt="" coords="735,623,951,711">
-<area shape="rect" id="node10" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="409,623,681,828">
-<area shape="rect" id="node12" href="legislation_agency_xref.html" target="_top" title="legislation_agency_xref" alt="" coords="408,111,683,287">
-<area shape="rect" id="node13" href="legislation.html" target="_top" title="legislation" alt="" coords="103,143,266,231">
+<area shape="rect" id="node1" href="app_user.html" target="_top" title="app_user" alt="" coords="765,361,915,449">
+<area shape="rect" id="node2" href="agency_code.html" target="_top" title="agency_code" alt="" coords="5,284,364,647">
+<area shape="rect" id="node3" href="office.html" target="_top" title="office" alt="" coords="482,464,606,552">
+<area shape="rect" id="node4" href="park_area.html" target="_top" title="park_area" alt="" coords="465,359,623,447">
+<area shape="rect" id="node11" href="geo_organization_unit_code.html" target="_top" title="geo_organization_unit_code" alt="" coords="35,667,334,755">
+<area shape="rect" id="node5" href="app_user_team_xref.html" target="_top" title="app_user_team_xref" alt="" coords="1000,184,1239,272">
+<area shape="rect" id="node6" href="team.html" target="_top" title="team" alt="" coords="724,5,956,181">
+<area shape="rect" id="node14" href="team_code.html" target="_top" title="team_code" alt="" coords="461,17,627,105">
+<area shape="rect" id="node7" href="case_activity.html" target="_top" title="case_activity" alt="" coords="1283,532,1464,620">
+<area shape="rect" id="node8" href="case_file.html" target="_top" title="case_file" alt="" coords="1046,535,1193,623">
+<area shape="rect" id="node9" href="case_status_code.html" target="_top" title="case_status_code" alt="" coords="732,605,948,693">
+<area shape="rect" id="node10" href="geo_org_unit_structure.html" target="_top" title="geo_org_unit_structure" alt="" coords="408,605,680,811">
+<area shape="rect" id="node12" href="legislation.html" target="_top" title="legislation" alt="" coords="759,199,921,287">
+<area shape="rect" id="node13" href="legislation_source.html" target="_top" title="legislation_source" alt="" coords="427,159,661,305">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/agency_code.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

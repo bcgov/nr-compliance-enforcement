@@ -1,13 +1,18 @@
 investigation_status_code
 officer_investigation_xref_code
+task_category_type_code
+task_status_code
 investigation
 investigation_party
 contravention
+task_type_code
 continuation_report
+diary_date
 investigation_business
 investigation_person
 contravention_party_xref
 officer_investigation_xref
+task
 flyway_schema_history
 investigation_business_h
 investigation_h
@@ -16,3 +21,4 @@ investigation_person_h
 investigation_status_code_h
 officer_investigation_xref_code_h
 officer_investigation_xref_h
+task_h

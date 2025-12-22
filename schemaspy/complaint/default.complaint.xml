@@ -435,7 +435,7 @@
             <column ascending="true" name="h_configuration_guid"/>
          </index>
       </table>
-      <table name="email_reference" numRows="24" remarks="Used to track shared email addresses used by various agencies." schema="complaint" type="TABLE">
+      <table name="email_reference" numRows="25" remarks="Used to track shared email addresses used by various agencies." schema="complaint" type="TABLE">
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="email_reference_guid" nullable="false" remarks="System generated unique key for the referral action." size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="email_address" nullable="false" remarks="The email address used by parties referenced by this record." size="256" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="agency_code_ref" nullable="true" remarks="Key representing an agency stored in the agency_code table of the shared schema.  The agency that the email address belongs to." size="10" type="varchar" typeCode="12"/>
