@@ -15,6 +15,9 @@ import { ParkArea } from "@/app/types/app/code-tables/park-area";
 import { EmailReference } from "@/app/types/app/code-tables/email-reference";
 import { PartyType } from "@/app/types/app/shared/party-type";
 import { PartyAssociationRole } from "@/app/types/app/shared/party-association-role";
+import { TaskStatusType } from "@/app/types/app/investigation/task-status";
+import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
+import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
@@ -124,6 +127,35 @@ export const fetchPartyAssociationRoles = (): AppThunk => async (dispatch) => {
   const response = await get<Array<PartyAssociationRole>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchTaskStatusTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TASK_STATUS_TYPE}`);
+  const response = await get<Array<TaskStatusType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TASK_STATUS_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchTaskCategoryTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TASK_CATEGORY_TYPE}`,
+  );
+  const response = await get<Array<TaskCategoryType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TASK_CATEGORY_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchTaskTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TASK_TYPE}`);
+  const response = await get<Array<TaskType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TASK_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

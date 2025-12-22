@@ -9,6 +9,7 @@ import { IsOptional } from "class-validator";
 import { Point, PointScalar } from "src/common/custom_scalars";
 import { InvestigationParty } from "src/investigation/investigation_party/dto/investigation_party";
 import { Contravention } from "../../../investigation/contravention/dto/contravention";
+import { Task } from "src/investigation/task/dto/task";
 
 export class Investigation {
   investigationGuid: string;
@@ -28,6 +29,7 @@ export class Investigation {
   discoveryDate: Date;
   parties: [InvestigationParty];
   contraventions: [Contravention];
+  tasks: [Task];
 }
 
 @InputType()
@@ -219,6 +221,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.contraventions,
       mapFrom((src) => mapper.mapArray(src.contravention ?? [], "contravention", "Contravention")),
+    ),
+    forMember(
+      (dest) => dest.tasks,
+      mapFrom((src) => mapper.mapArray(src.task ?? [], "task", "Task")),
     ),
   );
 };

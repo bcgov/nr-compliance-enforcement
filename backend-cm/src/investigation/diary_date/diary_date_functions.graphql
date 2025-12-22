@@ -1,0 +1,8 @@
+type Query {
+  diaryDates(investigationGuid: String!): [DiaryDate!]
+}
+
+type Mutation {
+  saveDiaryDate(input: DiaryDateInput!): DiaryDate!
+  deleteDiaryDate(diaryDateGuid: String!): Boolean!
+}

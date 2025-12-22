@@ -1,0 +1,10 @@
+type Mutation {
+  createTask(input: CreateUpdateTaskInput!): Task!
+  removeTask(taskId: String!): Task!
+  updateTask(input: CreateUpdateTaskInput!): Task!
+}
+
+type Query {
+  tasks(investigationId: String): [Task]!
+  task(taskId: String): Task
+}
