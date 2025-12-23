@@ -107,10 +107,6 @@ const Inspections: FC = () => {
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prevShow) => !prevShow), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prevShow) => !prevShow), []);
 
-  const handleCreateClick = () => {
-    navigate("/inspection/create");
-  };
-
   const renderDesktopFilterSection = () => (
     <Collapse
       in={showDesktopFilters}
@@ -171,13 +167,6 @@ const Inspections: FC = () => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Inspections</h1>
-          <Button
-            onClick={handleCreateClick}
-            variant="primary"
-          >
-            <i className="bi bi-plus-circle" />
-            <span>Create inspection</span>
-          </Button>
         </div>
 
         <InspectionFilterBar

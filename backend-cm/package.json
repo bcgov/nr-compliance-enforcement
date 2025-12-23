@@ -32,7 +32,9 @@
     "test:cov": "jest --coverage --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "import:parks": "nest start --entryFile=./src/cli.js -- import -j parks"
+    "import:all": "nest start --entryFile=./src/cli.js -- import -j parks,bclaws",
+    "import:parks": "nest start --entryFile=./src/cli.js -- import -j parks",
+    "import:bclaws": "nest start --entryFile=./src/cli.js -- import -j bclaws"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
@@ -57,6 +59,7 @@
     "class-validator": "^0.14.3",
     "copyfiles": "^2.4.1",
     "dotenv": "^16.0.1",
+    "fast-xml-parser": "^5.3.2",
     "geojson": "^0.5.0",
     "graphql": "^16.8.1",
     "graphql-type-json": "^0.3.2",
@@ -151,5 +154,5 @@
       "glob": "^7.2.3"
     }
   },
-  "version": "2.0.153"
+  "version": "2.0.156"
 }

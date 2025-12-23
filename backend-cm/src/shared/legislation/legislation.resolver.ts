@@ -25,4 +25,10 @@ export class LegislationResolver {
   async findOne(@Args("legislationGuid") legislationGuid: string, @Args("includeAncestors") includeAncestors: boolean) {
     return await this.legislationService.findOne(legislationGuid, includeAncestors);
   }
+
+  @Query("legislationTypeCodes")
+  @Roles(coreRoles)
+  async getLegislationTypeCodes() {
+    return await this.legislationService.getAllLegislationTypeCodes();
+  }
 }

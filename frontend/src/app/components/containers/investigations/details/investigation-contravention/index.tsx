@@ -23,7 +23,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     document.body.click();
     dispatch(
       openModal({
-        modalSize: "lg",
+        modalSize: "xl",
         modalType: ADD_CONTRAVENTION,
         data: {
           title: "Add contravention to investigation",

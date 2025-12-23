@@ -82,7 +82,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, par
     document.body.click();
     dispatch(
       openModal({
-        modalSize: "lg",
+        modalSize: "xl",
         modalType: ADD_CONTRAVENTION,
         data: {
           title: "Edit contravention",

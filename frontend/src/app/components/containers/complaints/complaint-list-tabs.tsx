@@ -59,7 +59,7 @@ export const ComplaintListTabs: FC<props> = ({ complaintType, viewType, complain
           record = { ...record, name: "General Incidents" };
           break;
         case COMPLAINT_TYPES.SECTOR:
-          record = { ...record, name: "Sector Complaints" };
+          record = { ...record, name: "Sector View" };
           break;
         default:
           record = { ...record, name: "default" };
