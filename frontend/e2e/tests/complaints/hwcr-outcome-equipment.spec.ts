@@ -82,9 +82,9 @@ test.describe("HWCR Outcome Equipment", () => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
     await validateComplaint(page, "23-032456", "Racoon");
 
-    const $equipment = page.locator(".comp-outcome-equipment");
+    const $equipment = await page.locator(".comp-outcome-equipment");
 
-    await $equipment.locator("#equipment-edit-button").click();
+    await page.locator("#equipment-edit-button").click();
 
     let sectionParams = {
       section: "EQUIPMENT",

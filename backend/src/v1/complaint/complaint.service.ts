@@ -293,7 +293,6 @@ export class ComplaintService {
     type: COMPLAINT_TYPE,
     includeCosOrganization: boolean,
     count: boolean,
-    excludeCOSEnforcement?: boolean,
     agencies?: string[],
     showReferrals?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
@@ -306,14 +305,6 @@ export class ComplaintService {
           .leftJoin("allegation.complaint_identifier", "complaint")
           .leftJoin("allegation.violation_code", "violation_code")
           .leftJoin("complaint.complaint_referral", "complaint_referral");
-
-        if (excludeCOSEnforcement) {
-          builder.andWhere(
-            `(complaint.owned_by_agency_code_ref != 'COS'
-              OR (:showReferrals = true AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)))`,
-            { showReferrals, agency_codes: agencies },
-          );
-        }
         break;
       case "GIR":
         builder = this._girComplaintRepository
@@ -334,15 +325,7 @@ export class ComplaintService {
         break;
       case "SECTOR":
       default:
-        if (excludeCOSEnforcement) {
-          builder = this.complaintsRepository
-            .createQueryBuilder("complaint")
-            .leftJoin("complaint.complaint_referral", "complaint_referral")
-            .andWhere(
-              "NOT (complaint.owned_by_agency_code_ref = :agency AND complaint.complaint_type_code = :complaintType)",
-              { agency: "COS", complaintType: "ERS" },
-            );
-        } else builder = this.complaintsRepository.createQueryBuilder("complaint");
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -372,7 +355,6 @@ export class ComplaintService {
 
   private readonly _generateQueryBuilder = (
     type: COMPLAINT_TYPE,
-    excludeCOSEnforcement?: boolean,
     agencies?: string[],
     showReferrals?: boolean,
   ): SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint> => {
@@ -391,13 +373,6 @@ export class ComplaintService {
             "violation_code.long_description",
             "violation_agency_xref.agency_code_ref",
           ]);
-        if (excludeCOSEnforcement) {
-          builder.andWhere(
-            `(complaint.owned_by_agency_code_ref != 'COS'
-              OR (:showReferrals = true AND complaint_referral.referred_by_agency_code_ref IN (:...agency_codes)))`,
-            { showReferrals, agency_codes: agencies },
-          );
-        }
         break;
       case "GIR":
         builder = this._girComplaintRepository
@@ -439,14 +414,7 @@ export class ComplaintService {
         break;
       case "SECTOR":
       default:
-        if (excludeCOSEnforcement) {
-          builder = this.complaintsRepository
-            .createQueryBuilder("complaint")
-            .andWhere(
-              "NOT (complaint.owned_by_agency_code_ref = :agency AND complaint.complaint_type_code = :complaintType)",
-              { agency: "COS", complaintType: "ERS" },
-            );
-        } else builder = this.complaintsRepository.createQueryBuilder("complaint");
+        builder = this.complaintsRepository.createQueryBuilder("complaint");
         break;
     }
 
@@ -1226,46 +1194,6 @@ export class ComplaintService {
     }
   };
 
-  canViewComplaint = async (id: string, req?: any): Promise<boolean> => {
-    return true; // Temporarily allow COS Enforcement complaints to be viewed by all agencies
-    // Comment out the logic below until we have a requirement to restrict access again
-
-    // let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
-
-    // try {
-    //   builder = this.complaintsRepository
-    //     .createQueryBuilder("complaint")
-    //     .leftJoin("complaint.complaint_type_code", "complaint_type")
-    //     .addSelect([
-    //       "complaint_type.complaint_type_code",
-    //       "complaint_type.short_description",
-    //       "complaint_type.long_description",
-    //     ]);
-
-    //   builder.where("complaint.complaint_identifier = :id", { id });
-
-    //   const res = await builder.getOne();
-    //   const { owned_by_agency_code_ref, complaint_type_code } = res as Complaint;
-
-    //   if (complaint_type_code.complaint_type_code === "ERS") {
-    //     const hasCOSRole = hasRole(req, Role.COS);
-    //     const collaborators = await this._personService.getCollaborators(id);
-    //     const isCollab = collaborators.some(
-    //       (collab: any) => collab.authUserGuid.split("-").join("") === req.user.idir_user_guid.toLowerCase(),
-    //     );
-    //     const isCOSComplaint = owned_by_agency_code_ref === "COS";
-    //     if (isCOSComplaint) {
-    //       if (!hasCOSRole && !isCollab) {
-    //         return false;
-    //       }
-    //     }
-    //   }
-    //   return true;
-    // } catch (e) {
-    //   this.logger.error(e);
-    // }
-  };
-
   findById = async (
     id: string,
     complaintType?: COMPLAINT_TYPE,
@@ -1308,12 +1236,6 @@ export class ComplaintService {
 
       switch (complaintType) {
         case "ERS": {
-          if (req) {
-            const canViewComplaint = await this.canViewComplaint(id, req);
-            if (!canViewComplaint) {
-              throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
-            }
-          }
           const complaint = this.mapper.map<AllegationComplaint, AllegationComplaintDto>(
             result as AllegationComplaint,
             "AllegationComplaint",
@@ -1454,10 +1376,7 @@ export class ComplaintService {
           ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
           : complaintType;
 
-      //-- exclude COS's enforcement complaints in Sector view if the user does not have COS role
-      const excludeCosEnforcement: boolean = !agencies.includes(Role.COS);
-
-      let builder = this._generateQueryBuilder(filterComplaintType, excludeCosEnforcement, agencies, showReferrals);
+      let builder = this._generateQueryBuilder(filterComplaintType, agencies, showReferrals);
 
       //-- apply filters if used
       if (Object.keys(filters).length !== 0) {
@@ -1777,12 +1696,10 @@ export class ComplaintService {
         ? (filters.complaintTypeFilter as COMPLAINT_TYPE)
         : complaintType;
 
-      const excludeCosEnforcement: boolean = !agencies.includes(Role.COS);
       let builder = this._generateMapQueryBuilder(
         filterComplaintType,
         includeCosOrganization,
         count,
-        excludeCosEnforcement,
         agencies,
         model.showReferrals,
       );
