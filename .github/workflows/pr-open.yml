@@ -106,6 +106,9 @@ jobs:
       sha: ${{ github.sha }}
     timeout-minutes: 15
     steps:
+      - name: Copy in GitHub Script
+        run: |
+          cp .github/scripts/push_e2e_check.sh frontend/
       - uses: bcgov/action-builder-ghcr@v2.3.0
         with:
           package: frontend-playwright
