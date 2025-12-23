@@ -12,6 +12,7 @@ interface ValidationDatePickerProps {
   classNamePrefix: string;
   errMsg: string;
   isDisabled?: boolean;
+  showPreviousMonths?: boolean;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -25,6 +26,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   classNamePrefix,
   errMsg,
   isDisabled,
+  showPreviousMonths = true,
 }) => {
   const handleDateChange = (date: Date) => {
     onChange(date);
@@ -49,7 +51,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           minDate={minDate}
           autoComplete="false"
           monthsShown={2}
-          showPreviousMonths
+          showPreviousMonths={showPreviousMonths}
           disabled={isDisabled}
         />
       </div>

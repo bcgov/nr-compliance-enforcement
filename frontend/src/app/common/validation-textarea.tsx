@@ -3,6 +3,7 @@ import { FC } from "react";
 interface ValidationTextAreaProps {
   className: string;
   defaultValue?: string;
+  value?: string;
   id: string;
   onChange: Function;
   errMsg: string;
@@ -15,6 +16,7 @@ interface ValidationTextAreaProps {
 export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
   className,
   defaultValue,
+  value,
   id,
   onChange,
   errMsg,
@@ -25,13 +27,17 @@ export const ValidationTextArea: FC<ValidationTextAreaProps> = ({
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? className : className + " error-border";
+
+  // Use controlled value if provided, otherwise uncontrolled with defaultValue
+  const valueProp = value ? { value } : { defaultValue };
+
   return (
     <div className="width-full">
       <div>
         <textarea
           id={id}
           className={calulatedClass}
-          defaultValue={defaultValue}
+          {...valueProp}
           rows={rows}
           onChange={(e) => onChange(e.target.value)}
           maxLength={maxLength}

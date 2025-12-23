@@ -1,0 +1,22 @@
+type Task {
+  taskIdentifier: String!
+  investigationIdentifier: String!
+  taskTypeCode: String!
+  taskStatusCode: String!
+  assignedUserIdentifier: String
+  createdByUserIdentifier: String!
+  createdDate: Date!
+  taskNumber: Int!
+  description: String
+  activeIndicator: Boolean!
+}
+
+input CreateUpdateTaskInput {
+  taskIdentifier: String
+  investigationIdentifier: String
+  taskTypeCode: String
+  taskStatusCode: String
+  assignedUserIdentifier: String
+  appUserIdentifier: String
+  description: String
+}

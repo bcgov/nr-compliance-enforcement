@@ -708,6 +708,9 @@ p {
   .badge {
     margin-top: 2px;
   }
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .comp-card-header-metadata {
