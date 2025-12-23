@@ -53,7 +53,7 @@ import { RootState } from "@/app/store/store";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { isValidEmail } from "@/app/common/validate-email";
 import { AgencyType } from "@/app/types/app/agency-types";
-import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -546,6 +546,12 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleIncidentDateTimeChange = (date: Date) => {
+    setSelectedIncidentDateTime(date);
+    if (date > new Date()) {
+      setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+    } else {
+      setIncidentDateTimeErrorMsg("");
+    }
     const complaint = { ...complaintData, incidentDateTime: date } as Complaint;
     applyComplaintData(complaint);
   };
@@ -900,11 +906,15 @@ export const CreateComplaint: FC = () => {
           >
             <label htmlFor="complaint-incident-time">Incident date/time</label>
             <div className="comp-details-edit-input">
-              <CompDateTimePicker
-                value={selectedIncidentDateTime}
+              <ValidationDatePicker
+                id="comp-create-incident-date"
+                selectedDate={selectedIncidentDateTime || null}
                 onChange={handleIncidentDateTimeChange}
-                maxDate={currentDate}
-                onErrorChange={setIncidentDateTimeErrorMsg}
+                className="comp-details-edit-calendar-input"
+                classNamePrefix="comp-select"
+                errMsg={incidentDateTimeErrorMsg}
+                maxDate={new Date()}
+                showTimePicker={true}
               />
             </div>
           </div>

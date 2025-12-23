@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, forwardRef } from "react";
 import DatePicker from "react-datepicker";
 
 interface ValidationDatePickerProps {
@@ -7,12 +7,13 @@ interface ValidationDatePickerProps {
   maxDate: Date;
   minDate?: Date;
   onChange: (date: Date) => void;
-  placeholder: string;
+  placeholder?: string;
   id: string;
   classNamePrefix: string;
   errMsg: string;
   isDisabled?: boolean;
   showPreviousMonths?: boolean;
+  showTimePicker?: boolean;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -21,12 +22,12 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   maxDate,
   minDate,
   onChange,
-  placeholder,
   id,
   classNamePrefix,
   errMsg,
   isDisabled,
   showPreviousMonths = true,
+  showTimePicker = false,
 }) => {
   const handleDateChange = (date: Date) => {
     onChange(date);
@@ -36,24 +37,50 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   const calculatedBorderClass = errMsg === "" ? "" : "error-border";
 
   return (
-    <div className={className}>
-      <div>
-        <DatePicker
-          selected={selectedDate ? new Date(selectedDate) : undefined}
-          onChange={handleDateChange}
-          placeholderText={placeholder}
-          className={`${calculatedBorderClass} ${classNamePrefix}`}
-          id={id}
-          showIcon
-          dateFormat="yyyy-MM-dd"
-          wrapperClassName="comp-details-edit-calendar-input"
-          maxDate={maxDate}
-          minDate={minDate}
-          autoComplete="false"
-          monthsShown={2}
-          showPreviousMonths={showPreviousMonths}
-          disabled={isDisabled}
-        />
+    <div className="comp-lat-long-input">
+      <div className="d-flex flex-row gap-2">
+        <div
+          className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
+          style={{ maxWidth: "180px" }}
+        >
+          <i className="bi bi-calendar" />
+          <DatePicker
+            selected={selectedDate ? new Date(selectedDate) : undefined}
+            onChange={handleDateChange}
+            placeholderText="yyyy-mm-dd"
+            className={`${calculatedBorderClass} ${classNamePrefix}`}
+            id={id}
+            dateFormat="yyyy-MM-dd"
+            // wrapperClassName="comp-details-edit-calendar-input"
+            maxDate={maxDate}
+            minDate={minDate}
+            autoComplete="false"
+            monthsShown={2}
+            disabled={isDisabled}
+            showIcon={false}
+            showPreviousMonths={showPreviousMonths}
+          />
+        </div>
+
+        {showTimePicker && (
+          <div
+            className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
+            style={{ maxWidth: "180px" }}
+          >
+            <i className="bi bi-clock" />
+            <DatePicker
+              selected={selectedDate ? new Date(selectedDate) : undefined}
+              onChange={handleDateChange}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={1}
+              timeCaption="Time"
+              timeFormat="HH:mm"
+              dateFormat="HH:mm"
+              placeholderText="hh:mm"
+            />
+          </div>
+        )}
       </div>
       <div className={calculatedClass}>{errMsg}</div>
     </div>
