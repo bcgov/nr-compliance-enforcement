@@ -1,9 +1,7 @@
+import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { ContraventionItem } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-item";
-import { useAppDispatch } from "@/app/hooks/hooks";
-import { openModal } from "@/app/store/reducers/app";
-import { ADD_CONTRAVENTION } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationContraventionProps {
@@ -15,24 +13,20 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   investigationGuid,
   investigationData,
 }) => {
-  const dispatch = useAppDispatch();
+  // State
+  const [showAddCard, setshowAddCard] = useState(false);
+  const [editingContraventionId, setEditingContraventionId] = useState<string | null>(null);
 
   const contraventions = investigationData?.contraventions;
 
-  const handleAddContravention = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "xl",
-        modalType: ADD_CONTRAVENTION,
-        data: {
-          title: "Add contravention to investigation",
-          action: "Add",
-          activityGuid: investigationGuid,
-          parties: investigationData?.parties,
-        },
-      }),
-    );
+  // Functions
+  const handleCloseForm = () => {
+    setshowAddCard(false);
+    setEditingContraventionId(null);
+  };
+
+  const handleEditContravention = (contraventionId: string) => {
+    setEditingContraventionId(contraventionId);
   };
 
   return (
@@ -42,25 +36,46 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           <h3>Contraventions</h3>
         </div>
       </div>
+
       <div className="contraventions-list">
         {contraventions?.map((contravention, index) => (
           <div key={contravention?.contraventionIdentifier}>
-            <ContraventionItem
-              contravention={contravention as Contravention}
-              investigationGuid={investigationGuid}
-              index={index}
-              parties={investigationData?.parties as InvestigationParty[]}
-            />
+            {editingContraventionId === contravention?.contraventionIdentifier ? (
+              <ContraventionForm
+                activityGuid={investigationGuid}
+                onClose={handleCloseForm}
+                contravention={contravention}
+                parties={investigationData?.parties as InvestigationParty[]}
+                contraventionNumber={(index + 1).toString()}
+              />
+            ) : (
+              <ContraventionItem
+                contravention={contravention as Contravention}
+                investigationGuid={investigationGuid}
+                index={index}
+                canEdit={!editingContraventionId}
+                onEdit={handleEditContravention}
+              />
+            )}
           </div>
         ))}
       </div>
+
+      {showAddCard && (
+        <ContraventionForm
+          activityGuid={investigationGuid}
+          onClose={handleCloseForm}
+          parties={investigationData?.parties as InvestigationParty[]}
+        />
+      )}
+
       <div className="row">
         <div className="col-12">
           <Button
             variant="primary"
             size="sm"
             id="details-screen-edit-button"
-            onClick={() => handleAddContravention()}
+            onClick={() => setshowAddCard(true)}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add contravention</span>
