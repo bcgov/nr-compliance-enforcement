@@ -811,7 +811,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   id="complaint-outcome-date"
                   selectedDate={selectedDate}
                   onChange={handleDateChange}
-                  placeholder="Select date"
                   className="comp-details-edit-calendar-input" // Adjust class as needed
                   classNamePrefix="comp-select" // Adjust class as needed
                   errMsg={assessmentDateErrorMessage} // Pass error message if any
