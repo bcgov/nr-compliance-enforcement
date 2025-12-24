@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
-import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
 import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-task";
+import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {

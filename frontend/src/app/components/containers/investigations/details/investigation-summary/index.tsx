@@ -1,14 +1,14 @@
 import { Investigation } from "@/generated/graphql";
-import { FC } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { FC, useState } from "react";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
-import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
-import { Button, Card } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import { DiaryDates } from "./investigation-diary-dates";
+import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
+import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -23,8 +23,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   caseGuid,
   caseName,
 }) => {
-  const navigate = useNavigate();
-
   const discoveryDate = investigationData?.discoveryDate
     ? new Date(investigationData.discoveryDate).toString()
     : undefined;
@@ -48,8 +46,14 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const supervisorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.supervisorGuid));
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
+  const [isEdit, setisEdit] = useState(false);
+
   const editButtonClick = () => {
-    navigate(`/investigation/${investigationGuid}/edit`);
+    setisEdit(true);
+  };
+
+  const handleCloseForm = () => {
+    setisEdit(false);
   };
 
   return (
@@ -169,71 +173,23 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               <span>Edit</span>
             </Button>
           </div>
+
           {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-          {investigationData && (
-            <section className="comp-details-section">
-              <Card
-                className="mb-3"
-                border="default"
-              >
-                <Card.Body>
-                  <dl>
-                    <div>
-                      <dt>Investigation ID</dt>
-                      <dd>
-                        <pre id="investigation-summary-id">{investigationData.name}</pre>
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Case ID</dt>
-                      <dd>
-                        <pre id="investigation-summary-case-id">
-                          {caseGuid ? <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link> : "N/A"}
-                        </pre>
-                      </dd>
-                    </div>
-                    {investigationData.description && (
-                      <div>
-                        <dt>Investigation description</dt>
-                        <dd>
-                          <pre id="investigation-summary-description">{investigationData.description}</pre>
-                        </dd>
-                      </div>
-                    )}
-                    {investigationData.locationAddress && (
-                      <div>
-                        <dt>Location/address</dt>
-                        <dd>
-                          <pre id="investigation-summary-location">{investigationData.locationAddress}</pre>
-                        </dd>
-                      </div>
-                    )}
-                    {investigationData.locationDescription && (
-                      <div>
-                        <dt>Location description</dt>
-                        <dd>
-                          <pre id="investigation-summary-description">{investigationData.locationDescription}</pre>
-                        </dd>
-                      </div>
-                    )}
-                    {investigationData.locationGeometry && (
-                      <CompLocationInfo
-                        xCoordinate={
-                          investigationData.locationGeometry.coordinates?.[0] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[0].toString() ?? "")
-                        }
-                        yCoordinate={
-                          investigationData.locationGeometry.coordinates?.[1] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[1].toString() ?? "")
-                        }
-                      />
-                    )}
-                  </dl>
-                </Card.Body>
-              </Card>
-            </section>
+
+          {investigationData && !isEdit && (
+            <InvestigationItem
+              investigationData={investigationData}
+              caseGuid={caseGuid}
+              caseName={caseName ?? ""}
+            ></InvestigationItem>
+          )}
+
+          {investigationData && isEdit && (
+            <InvestigationForm
+              caseIdentifier={caseGuid}
+              id={investigationData.investigationGuid ?? ""}
+              onClose={handleCloseForm}
+            ></InvestigationForm>
           )}
 
           <DiaryDates investigationGuid={investigationGuid} />

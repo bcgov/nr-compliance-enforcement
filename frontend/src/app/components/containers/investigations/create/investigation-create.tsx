@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
-import { InvestigationEditHeader } from "./investigation-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
@@ -27,6 +26,7 @@ import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
+import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
@@ -113,7 +113,7 @@ const GET_INVESTIGATION = gql`
   }
 `;
 
-const InvestigationEdit: FC = () => {
+const InvestigationCreate: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { caseIdentifier, id } = useParams<{ caseIdentifier?: string; id?: string }>();
@@ -287,7 +287,7 @@ const InvestigationEdit: FC = () => {
 
   return (
     <div className="comp-investigation-edit-headerdetails">
-      <InvestigationEditHeader
+      <InvestigationCreateHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         isEditMode={isEditMode}
@@ -602,4 +602,4 @@ const InvestigationEdit: FC = () => {
   );
 };
 
-export default InvestigationEdit;
+export default InvestigationCreate;

@@ -10,7 +10,7 @@ interface InvestigationEditHeaderProps {
   investigationGuid?: string;
 }
 
-export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
+export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
   isEditMode = false,
