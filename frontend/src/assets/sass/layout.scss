@@ -876,6 +876,10 @@ td.actions-col {
 }
 
 // TABS
+.case-nav-tabs .nav-link {
+  transition: none;
+}
+
 .nav-link {
   font-size: 0.875rem;
   color: $bc-brand-links;
