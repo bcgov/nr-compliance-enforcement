@@ -15,9 +15,9 @@ import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { openModal, appUserGuid } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { CreateInvestigationInput, UpdateInvestigationInput } from "@/generated/graphql";
+import { UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { bcUtmZoneNumbers } from "@common/methods";
 import Option from "@apptypes/app/option";
@@ -41,29 +41,6 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
       leadAgency: $leadAgency
       excludeInvestigationGuid: $excludeInvestigationGuid
     )
-  }
-`;
-
-const CREATE_INVESTIGATION_MUTATION = gql`
-  mutation CreateInvestigation($input: CreateInvestigationInput!) {
-    createInvestigation(input: $input) {
-      investigationGuid
-      description
-      name
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-      locationAddress
-      locationDescription
-      locationGeometry
-      primaryInvestigatorGuid
-      supervisorGuid
-      fileCoordinatorGuid
-      discoveryDate
-    }
   }
 `;
 
@@ -123,19 +100,15 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const isEditMode = !!id;
-
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const currentAppUserGuid = useAppSelector(appUserGuid);
 
   const { data: investigationData, isLoading } = useGraphQLQuery(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", id],
     variables: { investigationGuid: id },
-    enabled: isEditMode,
   });
 
-  const selectedDiscoveryDateTime = isEditMode ? new Date(investigationData?.getInvestigation?.discoveryDate) : null;
+  const selectedDiscoveryDateTime = new Date(investigationData?.getInvestigation?.discoveryDate);
 
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -148,21 +121,8 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
         }))
       : [];
 
-  const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    onSuccess: (data: any) => {
-      ToggleSuccess("Investigation created successfully");
-      navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
-      onClose();
-    },
-    onError: (error: any) => {
-      console.error("Error creating investigation:", error);
-      ToggleError("Failed to create investigation");
-      onClose();
-    },
-  });
-
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    onSuccess: (data: any) => {
+    onSuccess: () => {
       ToggleSuccess("Investigation updated successfully");
       onClose();
     },
@@ -175,7 +135,7 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
 
   const defaultValues = useMemo(() => {
     // If there is investigation data set the default state of the form to the investigation data
-    if (isEditMode && investigationData?.getInvestigation) {
+    if (investigationData?.getInvestigation) {
       return {
         investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
         leadAgency: investigationData.getInvestigation.leadAgency || "",
@@ -191,7 +151,7 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
       };
     }
     return {
-      investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+      investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
       leadAgency: getUserAgency(),
       description: "",
       locationAddress: "",
@@ -203,51 +163,31 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
       fileCoordinator: "",
       discoveryDate: "",
     };
-  }, [isEditMode, investigationData]);
+  }, [investigationData]);
 
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
-      if (isEditMode) {
-        const updateInput: UpdateInvestigationInput = {
-          leadAgency: value.leadAgency,
-          investigationStatus: value.investigationStatus,
-          description: value.description,
-          locationAddress: value.locationAddress,
-          locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
-          name: value.name,
-          supervisorGuid: value.supervisor,
-          primaryInvestigatorGuid: value.primaryInvestigator,
-          fileCoordinatorGuid: value.fileCoordinator,
-          discoveryDate: value.discoveryDate,
-        };
+      const updateInput: UpdateInvestigationInput = {
+        leadAgency: value.leadAgency,
+        investigationStatus: value.investigationStatus,
+        description: value.description,
+        locationAddress: value.locationAddress,
+        locationDescription: value.locationDescription,
+        locationGeometry: value.locationGeometry,
+        name: value.name,
+        supervisorGuid: value.supervisor,
+        primaryInvestigatorGuid: value.primaryInvestigator,
+        fileCoordinatorGuid: value.fileCoordinator,
+        discoveryDate: value.discoveryDate,
+      };
 
-        updateInvestigationMutation.mutate({
-          investigationGuid: id,
-          input: updateInput,
-        });
-      } else {
-        const createInput: CreateInvestigationInput = {
-          caseIdentifier: caseIdentifier,
-          leadAgency: value.leadAgency,
-          description: value.description,
-          name: value.name,
-          investigationStatus: value.investigationStatus,
-          locationAddress: value.locationAddress,
-          locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
-          createdByAppUserGuid: currentAppUserGuid || "",
-          supervisorGuid: value.supervisor ?? undefined,
-          primaryInvestigatorGuid: value.primaryInvestigator ?? "",
-          fileCoordinatorGuid: value.fileCoordinator ?? "",
-          discoveryDate: value.discoveryDate,
-        };
-
-        createInvestigationMutation.mutate({ input: createInput });
-      }
+      updateInvestigationMutation.mutate({
+        investigationGuid: id,
+        input: updateInput,
+      });
     },
-    onSubmitInvalid: async ({ value }) => {
+    onSubmitInvalid: () => {
       ToggleError("Errors in form");
     },
   });
@@ -255,15 +195,7 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
   const confirmCancelChanges = useCallback(() => {
     form.reset();
     onClose();
-
-    if (id) {
-      navigate(`/investigation/${id}`);
-    } else if (caseIdentifier) {
-      navigate(`/case/${caseIdentifier}`);
-    } else {
-      navigate(`/investigations`);
-    }
-  }, [navigate, isEditMode, caseIdentifier, id, form]);
+  }, [navigate, caseIdentifier, id, form]);
 
   const cancelButtonClick = useCallback(() => {
     dispatch(
@@ -283,7 +215,7 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
     form.handleSubmit();
   }, [form]);
 
-  const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
+  const isSubmitting = updateInvestigationMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
 
   const handleDiscoveryDateTimeChange = (date: Date | null) => {
@@ -324,7 +256,7 @@ export const InvestigationForm = ({ caseIdentifier, id, onClose }: Investigation
                       {
                         name: value,
                         leadAgency: leadAgency,
-                        excludeInvestigationGuid: isEditMode ? id : undefined,
+                        excludeInvestigationGuid: id,
                       },
                     );
                     if (result.checkInvestigationNameExists) {

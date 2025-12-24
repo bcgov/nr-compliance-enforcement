@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useForm } from "@tanstack/react-form";
@@ -61,79 +61,17 @@ const CREATE_INVESTIGATION_MUTATION = gql`
   }
 `;
 
-const UPDATE_INVESTIGATION_MUTATION = gql`
-  mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
-    updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
-      investigationGuid
-      description
-      name
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-      locationAddress
-      locationDescription
-      locationGeometry
-      primaryInvestigatorGuid
-      supervisorGuid
-      fileCoordinatorGuid
-      discoveryDate
-    }
-  }
-`;
-
-const GET_INVESTIGATION = gql`
-  query GetInvestigation($investigationGuid: String!) {
-    getInvestigation(investigationGuid: $investigationGuid) {
-      __typename
-      investigationGuid
-      description
-      name
-      openedTimestamp
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-      locationAddress
-      locationDescription
-      locationGeometry
-      primaryInvestigatorGuid
-      supervisorGuid
-      fileCoordinatorGuid
-      discoveryDate
-    }
-    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
-      caseIdentifier
-      name
-    }
-  }
-`;
-
 const InvestigationCreate: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { caseIdentifier, id } = useParams<{ caseIdentifier?: string; id?: string }>();
-
-  const isEditMode = !!id;
+  const { caseIdentifier } = useParams<{ caseIdentifier?: string }>();
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
-
-  const { data: investigationData, isLoading } = useGraphQLQuery(GET_INVESTIGATION, {
-    queryKey: ["getInvestigation", id],
-    variables: { investigationGuid: id },
-    enabled: isEditMode,
-  });
-
-  const selectedDiscoveryDateTime = isEditMode ? new Date(investigationData?.getInvestigation?.discoveryDate) : null;
-
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
+  const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date>();
 
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
@@ -154,36 +92,9 @@ const InvestigationCreate: FC = () => {
     },
   });
 
-  const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
-    onSuccess: (data: any) => {
-      ToggleSuccess("Investigation updated successfully");
-      navigate(`/investigation/${id}`);
-    },
-    onError: (error: any) => {
-      console.error("Error updating investigation:", error);
-      ToggleError("Failed to update investigation");
-    },
-  });
-
-  const defaultValues = useMemo(() => {
-    // If there is investigation data set the default state of the form to the investigation data
-    if (isEditMode && investigationData?.getInvestigation) {
-      return {
-        investigationStatus: investigationData.getInvestigation.investigationStatus?.investigationStatusCode || "",
-        leadAgency: investigationData.getInvestigation.leadAgency || "",
-        description: investigationData.getInvestigation.description || "",
-        locationAddress: investigationData.getInvestigation.locationAddress || "",
-        locationDescription: investigationData.getInvestigation.locationDescription || "",
-        locationGeometry: investigationData.getInvestigation.locationGeometry || null,
-        name: investigationData.getInvestigation.name || "",
-        supervisor: investigationData.getInvestigation.supervisorGuid || "",
-        primaryInvestigator: investigationData.getInvestigation.primaryInvestigatorGuid || "",
-        fileCoordinator: investigationData.getInvestigation.fileCoordinatorGuid || "",
-        discoveryDate: investigationData.getInvestigation.discoveryDate || null,
-      };
-    }
-    return {
-      investigationStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
+  const form = useForm({
+    defaultValues: {
+      investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
       leadAgency: getUserAgency(),
       description: "",
       locationAddress: "",
@@ -194,52 +105,27 @@ const InvestigationCreate: FC = () => {
       primaryInvestigator: "",
       fileCoordinator: "",
       discoveryDate: "",
-    };
-  }, [isEditMode, investigationData]);
-
-  const form = useForm({
-    defaultValues,
-    onSubmit: async ({ value }) => {
-      if (isEditMode) {
-        const updateInput: UpdateInvestigationInput = {
-          leadAgency: value.leadAgency,
-          investigationStatus: value.investigationStatus,
-          description: value.description,
-          locationAddress: value.locationAddress,
-          locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
-          name: value.name,
-          supervisorGuid: value.supervisor,
-          primaryInvestigatorGuid: value.primaryInvestigator,
-          fileCoordinatorGuid: value.fileCoordinator,
-          discoveryDate: value.discoveryDate,
-        };
-
-        updateInvestigationMutation.mutate({
-          investigationGuid: id,
-          input: updateInput,
-        });
-      } else {
-        const createInput: CreateInvestigationInput = {
-          caseIdentifier: caseIdentifier as string,
-          leadAgency: value.leadAgency,
-          description: value.description,
-          name: value.name,
-          investigationStatus: value.investigationStatus,
-          locationAddress: value.locationAddress,
-          locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
-          createdByAppUserGuid: currentAppUserGuid || "",
-          supervisorGuid: value.supervisor ?? undefined,
-          primaryInvestigatorGuid: value.primaryInvestigator ?? "",
-          fileCoordinatorGuid: value.fileCoordinator ?? "",
-          discoveryDate: value.discoveryDate,
-        };
-
-        createInvestigationMutation.mutate({ input: createInput });
-      }
     },
-    onSubmitInvalid: async ({ value }) => {
+    onSubmit: async ({ value }) => {
+      const createInput: CreateInvestigationInput = {
+        caseIdentifier: caseIdentifier as string,
+        leadAgency: value.leadAgency,
+        description: value.description,
+        name: value.name,
+        investigationStatus: value.investigationStatus,
+        locationAddress: value.locationAddress,
+        locationDescription: value.locationDescription,
+        locationGeometry: value.locationGeometry,
+        createdByAppUserGuid: currentAppUserGuid || "",
+        supervisorGuid: value.supervisor ?? undefined,
+        primaryInvestigatorGuid: value.primaryInvestigator ?? "",
+        fileCoordinatorGuid: value.fileCoordinator ?? "",
+        discoveryDate: value.discoveryDate,
+      };
+
+      createInvestigationMutation.mutate({ input: createInput });
+    },
+    onSubmitInvalid: () => {
       ToggleError("Errors in form");
     },
   });
@@ -247,14 +133,12 @@ const InvestigationCreate: FC = () => {
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
-    if (id) {
-      navigate(`/investigation/${id}`);
-    } else if (caseIdentifier) {
+    if (caseIdentifier) {
       navigate(`/case/${caseIdentifier}`);
     } else {
       navigate(`/investigations`);
     }
-  }, [navigate, isEditMode, caseIdentifier, id, form]);
+  }, [navigate, caseIdentifier, form]);
 
   const cancelButtonClick = useCallback(() => {
     dispatch(
@@ -274,12 +158,13 @@ const InvestigationCreate: FC = () => {
     form.handleSubmit();
   }, [form]);
 
-  const isSubmitting = createInvestigationMutation.isPending || updateInvestigationMutation.isPending;
-  const isDisabled = isSubmitting || isLoading;
+  const isSubmitting = createInvestigationMutation.isPending;
+  const isDisabled = isSubmitting;
 
   const handleDiscoveryDateTimeChange = (date: Date | null) => {
     if (date) {
       form.setFieldValue("discoveryDate", new Date(date).toISOString());
+      setSelectedDiscoveryDateTime(date);
     } else {
       form.setFieldValue("discoveryDate", "");
     }
@@ -290,9 +175,7 @@ const InvestigationCreate: FC = () => {
       <InvestigationCreateHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
-        isEditMode={isEditMode}
         caseIdentifier={caseIdentifier}
-        investigationGuid={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
@@ -323,7 +206,7 @@ const InvestigationCreate: FC = () => {
                     {
                       name: value,
                       leadAgency: leadAgency,
-                      excludeInvestigationGuid: isEditMode ? id : undefined,
+                      excludeInvestigationGuid: undefined,
                     },
                   );
                   if (result.checkInvestigationNameExists) {
@@ -468,7 +351,7 @@ const InvestigationCreate: FC = () => {
               required
               validators={{
                 onSubmit: ({ value }: { value: string }) => {
-                  const dateValue = value || investigationData?.getInvestigation?.discoveryDate || "";
+                  const dateValue = value || "";
                   if (!dateValue || dateValue.length < 1) {
                     return "Discovery date is required";
                   } else if (new Date(dateValue) > new Date()) {
