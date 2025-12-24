@@ -771,7 +771,7 @@ export const createReview =
           dispatch(setReviewComplete(res.reviewComplete));
         }
         dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
-        ToggleSuccess("File review has been updated");
+        ToggleSuccess("File review has been updated", { toastId: "review-updated-toast" });
       } else {
         ToggleError("Unable to update file review");
       }
@@ -806,7 +806,7 @@ export const updateReview =
         dispatch(setIsReviewedRequired(res.isReviewRequired));
         dispatch(setReviewComplete(res.reviewComplete));
         dispatch(getComplaintStatusById(complaintId, COMPLAINT_TYPES.HWCR));
-        ToggleSuccess("File review has been updated");
+        ToggleSuccess("File review has been updated", { toastId: "review-updated-toast" });
       } else {
         ToggleError("Unable to update file review");
       }

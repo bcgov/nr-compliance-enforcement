@@ -42,11 +42,9 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     //validate the checkboxes
     await expect($review.locator("#review-required")).toBeChecked();
 
-    //validate the toast (there might be 2 on the screen if we had to do some cleanup)
-    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
-    const found = toasts.some((text) => text.includes("File review has been updated"));
-
-    expect(found).toBe(true);
+    //validate the toast
+    const toast = await page.locator("#review-updated-toast");
+    await expect(toast).toBeVisible();
   });
 
   test("it can not change complaint status if review is required", async ({ page }) => {
@@ -82,8 +80,8 @@ test.describe("HWCR File Review - Review Required Basic Functionality", () => {
     await expect($review.locator("#review-required")).not.toBeChecked();
 
     //validate the toast
-    const toast = page.locator(".Toastify__toast-body");
-    await expect(toast).toContainText("File review has been updated");
+    const toast = page.locator("#review-updated-toast");
+    await expect(toast).toBeVisible();
   });
 });
 
@@ -119,16 +117,14 @@ test.describe("HWCR File Review - Complete Review", () => {
       await expect($div).toContainText("OfficerCE Test Acct 1, ENV");
     }).toPass();
     await $review.locator("#file-review-save-button").click();
-
+    await waitForSpinner(page);
     //validate the checkboxes
     await expect($review.locator("#review-required")).toBeChecked();
     await expect($review.locator("#review-complete")).toBeChecked();
 
-    //validate the toast (there might be 2 on the screen if we had to do some cleanup)
-    const toasts = await page.locator(".Toastify__toast-body").allTextContents();
-    const found = toasts.some((text) => text.includes("File review has been updated"));
-
-    expect(found).toBe(true);
+    //validate the toast
+    const toast = page.locator("#review-updated-toast");
+    await expect(toast).toBeVisible();
   });
 
   test("it can change complaint status if review is complete", async ({ page }) => {
@@ -180,7 +176,7 @@ test.describe("HWCR File Review - Complete Review", () => {
     await page.locator("#details-screen-update-status-button").click();
     await expect(page.locator("#complaint_status_dropdown input")).not.toBeDisabled();
     await page.locator("#complaint_status_dropdown").click();
-    await page.getByText(/Open/).first().click();
+    await page.getByRole("option", { name: "Open" }).first().click();
     await expect(page.locator(".modal-footer .btn-primary")).toBeVisible();
     await page.locator(".modal-footer .btn-primary").click();
   });
@@ -197,7 +193,7 @@ test.describe("HWCR File Review - Complete Review", () => {
     await expect($review.locator("#review-required")).not.toBeChecked();
 
     //validate the toast
-    const toast = page.locator(".Toastify__toast-body");
-    await expect(toast).toContainText("File review has been updated");
+    const toast = page.locator("#review-updated-toast");
+    await expect(toast).toBeVisible();
   });
 });
