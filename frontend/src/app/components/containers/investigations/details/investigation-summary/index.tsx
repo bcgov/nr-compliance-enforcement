@@ -8,7 +8,7 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
+import { InvestigationEditForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-edit";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -185,11 +185,11 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
           )}
 
           {investigationData && isEdit && (
-            <InvestigationForm
+            <InvestigationEditForm
               caseIdentifier={caseGuid}
               id={investigationData.investigationGuid ?? ""}
               onClose={handleCloseForm}
-            ></InvestigationForm>
+            ></InvestigationEditForm>
           )}
 
           <DiaryDates investigationGuid={investigationGuid} />
