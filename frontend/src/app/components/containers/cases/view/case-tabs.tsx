@@ -37,6 +37,47 @@ export const CaseTabs: FC = () => {
     }
   };
 
+  const renderTabContent = () => {
+    switch (currentTab) {
+      case "summary":
+        return (
+          <InvestigationSummary
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            caseGuid={caseIdentifier ?? ""}
+            caseName={caseName ?? ""}
+          />
+        );
+      case "tasks":
+        return (
+          <InvestigationTasks
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+      case "parties":
+        return (
+          <InvestigationParties
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+      case "contraventions":
+        return (
+          <InvestigationContraventions
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
+      case "documents":
+        return <InvestigationDocumentation />;
+      case "continuation":
+        return <InvestigationContinuation investigationData={investigationData} />;
+      case "admin":
+        return <InvestigationAdministration />;
+    }
+  };
+
   return (
     <Nav className="nav nav-tabs case-nav-tabs px-4">
       {Object.entries(CASE_TAB_ITEMS).map(([key, label]) => {

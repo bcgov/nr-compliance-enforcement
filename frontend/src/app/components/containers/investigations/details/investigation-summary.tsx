@@ -3,11 +3,9 @@ import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
-import Option from "@apptypes/app/option";
-import { Button } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { DiaryDates } from "./investigation-diary-dates";
@@ -36,7 +34,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const lastUpdated = investigationData?.openedTimestamp
     ? new Date(investigationData.openedTimestamp).toString()
     : undefined;
-  const officerAssigned = "Not Assigned";
 
   const primaryInvestigatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));
   const primaryInvestigator = primaryInvestigatorObj
@@ -160,8 +157,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <hr className="mt-4 mb-4 border-2"></hr>
       <div className="comp-details-view">
         <div className="comp-details-content">
-          <div className="d-flex align-items-center gap-4 mb-3">
-            <h3 className="mb-0">Investigation details</h3>
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h3 className="mb-0">Investigation summary</h3>
             <Button
               variant="outline-primary"
               size="sm"
@@ -174,55 +171,52 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
           </div>
           {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
           {investigationData && (
-            <div>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <strong>Investigation ID</strong>
-                    <p>{investigationData.name}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <strong>Case ID</strong>
-                    {caseGuid ? (
-                      <p>
-                        <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link>
-                      </p>
-                    ) : (
-                      <p>N/A</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {investigationData.description && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <strong>Description</strong>
-                      <p>{investigationData.description}</p>
+            <section className="comp-details-section">
+              <Card
+                className="mb-3"
+                border="default"
+              >
+                <Card.Body>
+                  <dl>
+                    <div>
+                      <dt>Investigation ID</dt>
+                      <dd>
+                        <pre id="investigation-summary-id">{investigationData.name}</pre>
+                      </dd>
                     </div>
-                  </div>
-                </div>
-              )}
-              {investigationData.locationAddress && (
-                <div>
-                  <dt>Location/address</dt>
-                  <dd id="comp-details-location">{investigationData.locationAddress}</dd>
-                </div>
-              )}
-              {investigationData.locationDescription && (
-                <div>
-                  <dt>Location description</dt>
-                  <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
-                </div>
-              )}
-              {investigationData.locationGeometry && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
+                    <div>
+                      <dt>Case ID</dt>
+                      <dd>
+                        <pre id="investigation-summary-case-id">
+                          {caseGuid ? <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link> : "N/A"}
+                        </pre>
+                      </dd>
+                    </div>
+                    {investigationData.description && (
+                      <div>
+                        <dt>Investigation description</dt>
+                        <dd>
+                          <pre id="investigation-summary-description">{investigationData.description}</pre>
+                        </dd>
+                      </div>
+                    )}
+                    {investigationData.locationAddress && (
+                      <div>
+                        <dt>Location/address</dt>
+                        <dd>
+                          <pre id="investigation-summary-location">{investigationData.locationAddress}</pre>
+                        </dd>
+                      </div>
+                    )}
+                    {investigationData.locationDescription && (
+                      <div>
+                        <dt>Location description</dt>
+                        <dd>
+                          <pre id="investigation-summary-description">{investigationData.locationDescription}</pre>
+                        </dd>
+                      </div>
+                    )}
+                    {investigationData.locationGeometry && (
                       <CompLocationInfo
                         xCoordinate={
                           investigationData.locationGeometry.coordinates?.[0] === 0
@@ -235,23 +229,24 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                             : (investigationData.locationGeometry.coordinates?.[1].toString() ?? "")
                         }
                       />
-                    </div>
-                  </div>
-                </div>
-              )}
-              <DiaryDates investigationGuid={investigationGuid} />
-              <br />
-              {investigationData?.locationGeometry?.coordinates && (
-                <MapObjectLocation
-                  map_object_type={MapObjectType.Investigation}
-                  locationCoordinates={{
-                    lat: investigationData.locationGeometry.coordinates[1],
-                    lng: investigationData.locationGeometry.coordinates[0],
-                  }}
-                  draggable={false}
-                />
-              )}
-            </div>
+                    )}
+                  </dl>
+                </Card.Body>
+              </Card>
+            </section>
+          )}
+
+          <DiaryDates investigationGuid={investigationGuid} />
+          <br />
+          {investigationData?.locationGeometry?.coordinates && (
+            <MapObjectLocation
+              map_object_type={MapObjectType.Investigation}
+              locationCoordinates={{
+                lat: investigationData.locationGeometry.coordinates[1],
+                lng: investigationData.locationGeometry.coordinates[0],
+              }}
+              draggable={false}
+            />
           )}
         </div>
       </div>

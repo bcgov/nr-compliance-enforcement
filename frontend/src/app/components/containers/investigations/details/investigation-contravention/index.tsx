@@ -37,17 +37,10 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
   return (
     <div className="comp-details-view">
-      <div className="d-flex align-items-center gap-4 mb-3">
-        <h3 className="mb-0">Contraventions</h3>
-        <Button
-          variant="outline-primary"
-          size="sm"
-          id="details-screen-edit-button"
-          onClick={() => handleAddContravention()}
-        >
-          <i className="bi bi-plus-lg"></i>
-          <span>Add Contravention</span>
-        </Button>
+      <div className="row">
+        <div className="col-12">
+          <h3>Contraventions</h3>
+        </div>
       </div>
       <div className="contraventions-list">
         {contraventions?.map((contravention, index) => (
@@ -60,6 +53,19 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             />
           </div>
         ))}
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <Button
+            variant="primary"
+            size="sm"
+            id="details-screen-edit-button"
+            onClick={() => handleAddContravention()}
+          >
+            <i className="bi bi-plus-circle"></i>
+            <span>Add contravention</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
-import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
@@ -160,11 +159,7 @@ export const InvestigationDetails: FC = () => {
     <div className="comp-complaint-details">
       <InvestigationHeader investigation={investigationData} />
 
-      <section className="comp-details-body comp-container">
-        <hr className="comp-details-body-spacer"></hr>
-        <InvestigationTabs />
-        {renderTabContent()}
-      </section>
+      <div className="comp-details-body">{renderTabContent()}</div>
     </div>
   );
 };

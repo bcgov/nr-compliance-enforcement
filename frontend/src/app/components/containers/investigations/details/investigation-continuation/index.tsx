@@ -170,12 +170,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   };
 
   return (
-    <div className="comp-complaint-details mt-4">
+    <div className="comp-complaint-details">
       <div
         className="comp-details-section-header flex gap-3"
         style={{ justifyContent: "flex-start" }}
       >
-        <h2>Continuation report</h2>
+        <h3>Continuation report</h3>
         <Button
           variant="outline-primary"
           size="sm"
