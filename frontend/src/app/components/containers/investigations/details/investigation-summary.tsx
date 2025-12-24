@@ -207,18 +207,16 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   </div>
                 </div>
               )}
-              {investigationData.locationAddress && (
-                <div>
-                  <dt>Location/address</dt>
-                  <dd id="comp-details-location">{investigationData.locationAddress}</dd>
-                </div>
-              )}
-              {investigationData.locationDescription && (
-                <div>
-                  <dt>Location description</dt>
-                  <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
-                </div>
-              )}
+              <div>
+                <dt>Location/address</dt>
+                <dd id="comp-details-location">{investigationData.locationAddress}</dd>
+              </div>
+
+              <div>
+                <dt>Location description</dt>
+                <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
+              </div>
+
               {investigationData.locationGeometry && (
                 <div className="row">
                   <div className="col-12">

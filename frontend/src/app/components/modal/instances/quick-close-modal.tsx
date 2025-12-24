@@ -138,12 +138,15 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
               variant="info"
               className="comp-complaint-details-alert"
             >
-              <i className="bi bi-exclamation-triangle-fill"></i>
-              <span>
-                {" "}
-                Without an officer assigned to this complaint the selected officer will be assigned as part of the quick
-                close.
-              </span>
+              <div className="d-flex">
+                <div className="align-self-center me-3">
+                  <i className="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div>
+                  Without an officer assigned to this complaint the selected officer will be assigned as part of the
+                  quick close.
+                </div>
+              </div>
             </Alert>
           </div>
         )}

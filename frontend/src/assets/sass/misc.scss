@@ -181,17 +181,22 @@ input[list]:placeholder-shown {
   }
 
   // Sizing
-  &-sm::before {
-    width: 2rem;
-    height: 2rem;
-    font-size: 0.875rem;
-    line-height: 2rem;
+  &-sm {
+    --avatar-size: 2rem;
+
+    &::before {
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      font-size: 0.875rem;
+      line-height: var(--avatar-size);
+    }
   }
 
   span {
     flex: 1 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: var(--avatar-size);
   }
 
   // Color Variations
