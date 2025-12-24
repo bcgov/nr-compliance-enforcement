@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 import COMPLAINT_TYPES from "../../../src/app/types/app/complaint-types";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import {
-  enterDateTimeInCompDateTimePicker,
+  enterDateTimeInDatePicker,
   navigateToEditScreen,
   selectItemById,
   typeAndTriggerChange,
@@ -150,7 +150,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
       .locator("#complaint-description-textarea-id")
       .pressSequentially(editCallDetails.description, { delay: 0 });
     await page.locator("#complaint-description-textarea-id").click();
-    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
+    await enterDateTimeInDatePicker(page, "complaint-incident-time", "01", "13", "45");
     await page.locator(".comp-select__multi-value__remove").first().click();
     await page.locator(".comp-select__multi-value__remove").first().click();
     await page.locator(".comp-select__multi-value__remove").first().click();
@@ -260,7 +260,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
       .locator("#complaint-description-textarea-id")
       .pressSequentially(originalCallDetails.description, { delay: 0 });
     await page.locator("#complaint-description-textarea-id").click();
-    await enterDateTimeInCompDateTimePicker(page, "11", "13", "45");
+    await enterDateTimeInDatePicker(page, "complaint-incident-time", "11", "13", "45");
     await page.locator(".comp-select__multi-value__remove").first().click();
     await page.locator(".comp-select__multi-value__remove").first().click();
     await page.locator(".comp-select__multi-value__remove").first().click();
@@ -360,8 +360,9 @@ test.describe("Complaint Edit Page spec - Additional Checks", () => {
 
     // Incident Time
     await expect(page.locator("#incident-time-pair-id label")).toContainText("Incident date/time");
-    await expect(page.locator("#incident-date")).toBeVisible();
-    await expect(page.locator("#incident-time")).toBeVisible();
+    await expect(page.locator("#complaint-incident-time")).toBeVisible();
+    // await expect(page.locator("#incident-date")).toBeVisible();
+    // await expect(page.locator("#incident-time")).toBeVisible();
 
     // Location description
     await expect(page.locator("#location-description-pair-id label")).toContainText("Location description");

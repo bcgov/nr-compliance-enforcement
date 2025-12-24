@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { enterDateTimeInCompDateTimePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
+import { enterDateTimeInDatePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Investigation Edit functionality
@@ -64,7 +64,7 @@ test.describe("Investigation Edit Form", () => {
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
-    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
+    await enterDateTimeInDatePicker(page, "investigation-discovery-date", "01", "13", "45");
 
     // Make a change
     const newDescription = `${originalDescription} - Updated at ${Date.now()}`;

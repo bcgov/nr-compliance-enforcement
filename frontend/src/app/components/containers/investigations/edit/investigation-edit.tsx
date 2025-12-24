@@ -130,7 +130,6 @@ const InvestigationEdit: FC = () => {
     enabled: isEditMode,
   });
 
-  // const selectedDiscoveryDateTime = isEditMode ? new Date(investigationData?.getInvestigation?.discoveryDate) : null;
   const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
     isEditMode && investigationData?.getInvestigation?.discoveryDate
       ? new Date(investigationData.getInvestigation.discoveryDate)

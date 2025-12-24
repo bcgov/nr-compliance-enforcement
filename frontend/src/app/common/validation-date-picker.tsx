@@ -1,4 +1,4 @@
-import { FC, forwardRef } from "react";
+import { FC } from "react";
 import DatePicker from "react-datepicker";
 
 interface ValidationDatePickerProps {
@@ -7,7 +7,6 @@ interface ValidationDatePickerProps {
   maxDate: Date;
   minDate?: Date;
   onChange: (date: Date) => void;
-  placeholder?: string;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -51,7 +50,6 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={id}
             dateFormat="yyyy-MM-dd"
-            // wrapperClassName="comp-details-edit-calendar-input"
             maxDate={maxDate}
             minDate={minDate}
             autoComplete="false"
@@ -69,6 +67,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           >
             <i className="bi bi-clock" />
             <DatePicker
+              id={`${id}-timepicker`}
               selected={selectedDate ? new Date(selectedDate) : undefined}
               onChange={handleDateChange}
               showTimeSelect

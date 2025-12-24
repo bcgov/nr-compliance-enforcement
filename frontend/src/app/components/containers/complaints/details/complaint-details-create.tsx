@@ -907,7 +907,7 @@ export const CreateComplaint: FC = () => {
             <label htmlFor="complaint-incident-time">Incident date/time</label>
             <div className="comp-details-edit-input">
               <ValidationDatePicker
-                id="comp-create-incident-date"
+                id="complaint-incident-time"
                 selectedDate={selectedIncidentDateTime || null}
                 onChange={handleIncidentDateTimeChange}
                 className="comp-details-edit-calendar-input"
