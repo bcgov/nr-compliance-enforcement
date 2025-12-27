@@ -57,27 +57,6 @@
             <column ascending="true" name="contravention_party_xref_guid"/>
          </index>
       </table>
-      <table name="diary_date" remarks="A table that holds diary date entries for an investigation" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="diary_date_guid" nullable="false" remarks="Primary key: System generated unique identifier for a diary date entry." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_guid" nullable="false" remarks="Foreign key: System generated unique identifier for an investigation" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="investigation_guid" foreignKey="fk_diary_date_investigation" implied="false" onDeleteCascade="false" schema="investigation" table="investigation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="due_date" nullable="false" remarks="The due date for the diary entry (date only, no time)." size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="description" nullable="false" remarks="Description of the diary date entry." size="4000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="True if the diary date is active, false if it was deleted." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the record." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="app_create_utc_timestamp" nullable="false" remarks="The timestamp when the diary date was added. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="app_create_user_guid_ref" nullable="true" remarks="The foreign key reference to the app user who added the diary date." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="app_update_utc_timestamp" nullable="true" remarks="The timestamp when the diary date was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="app_update_user_guid_ref" nullable="true" remarks="The foreign key reference to the app user who last updated the diary date." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="10" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the record was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="update_user_id" nullable="true" remarks="The id of the user that updated the record." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the record was updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="diary_date_guid" sequenceNumberInPK="1"/>
-         <index name="diary_date_pkey" unique="true">
-            <column ascending="true" name="diary_date_guid"/>
-         </index>
-      </table>
       <table name="flyway_schema_history" remarks="" schema="investigation" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="installed_rank" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="version" nullable="true" remarks="" size="50" type="varchar" typeCode="12"/>
@@ -101,10 +80,8 @@
          <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="investigation_guid" nullable="false" remarks="System generated unique key for a case.  This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
             <child column="investigation_guid" foreignKey="fk_investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="continuation_report"/>
             <child column="investigation_guid" foreignKey="contravention_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="contravention"/>
-            <child column="investigation_guid" foreignKey="fk_diary_date_investigation" implied="false" onDeleteCascade="false" schema="investigation" table="diary_date"/>
             <child column="investigation_guid" foreignKey="fk_investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="investigation_party"/>
             <child column="investigation_guid" foreignKey="FK_officer_investigation_xref__investigation_guid" implied="false" onDeleteCascade="false" schema="investigation" table="officer_investigation_xref"/>
-            <child column="investigation_guid" foreignKey="task_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_description" nullable="true" remarks="A summary of the investigation as provided by users." size="4000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="owned_by_agency_ref" nullable="false" remarks="A reference to the human readable code used to identify the agency that owns this case, found in the shared schema." size="10" type="varchar" typeCode="12"/>
@@ -343,104 +320,6 @@
          <primaryKey column="h_officer_investigation_xref_guid" sequenceNumberInPK="1"/>
          <index name="PK_h_officer_investigation_xref" unique="true">
             <column ascending="true" name="h_officer_investigation_xref_guid"/>
-         </index>
-      </table>
-      <table name="task" remarks="An investigation can have many tasks. A task is a major action taken on an investigation by an investigator." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="task_guid" nullable="false" remarks="Primary key. System generated unique key for tasks. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="investigation_guid" nullable="false" remarks="Foreign key references investigation.investigation_guid. System generated unique key for investigations. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111">
-            <parent column="investigation_guid" foreignKey="task_investigation_guid_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="investigation"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="task_type_code" nullable="false" remarks="Foreign key references task_type_code.task_type_code. Code representing the task type. This key should never be exposed to users via any system utilizing the tables." size="16" type="varchar" typeCode="12">
-            <parent column="task_type_code" foreignKey="task_task_type_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task_type_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="task_status_code" nullable="false" remarks="Foreign key references task_status_code.task_status_code. Code representing the task status. This key should never be exposed to users via any system utilizing the tables." size="16" type="varchar" typeCode="12">
-            <parent column="task_status_code" foreignKey="task_task_status_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task_status_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="task_number" nullable="false" remarks="System generated incremental task number" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="app_create_user_guid_ref" nullable="false" remarks="Uneforced foreign key references shared.app_user_guid. GUID representing the officer that created the task. This key should never be exposed to users via any system utilizing the tables. Could be used in the app to show who updated the record." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="app_create_utc_timestamp" nullable="false" remarks="The timestamp when the task was created. The timestamp is stored in UTC with no offset.  Used in the app for displaying who created the record." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="app_update_user_guid_ref" nullable="true" remarks="Uneforced foreign key references shared.app_user_guid. GUID representing the officer that updated the task. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="app_update_utc_timestamp" nullable="true" remarks="The timestamp when the task was updated. The timestamp is stored in UTC with no offset.  Could be used in the app to show who updated the record." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="assigned_app_user_guid_ref" nullable="true" remarks="Uneforced foreign key references shared.app_user_guid. GUID representing the officer assigned to the task. This key should never be exposed to users via any system utilizing the tables. Used in the app for displaying who created the record." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="description" nullable="true" remarks="A description of the work required to complete the task" size="2147483647" type="text" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="11" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the task is active.  Inactive values are still retained in the system for legacy data integrity" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="create_user_id" nullable="false" remarks="The id of the user that created the task." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="13" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the task was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="update_user_id" nullable="true" remarks="The id of the user that last updated the task." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the task was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="task_guid" sequenceNumberInPK="1"/>
-         <index name="task_pkey" unique="true">
-            <column ascending="true" name="task_guid"/>
-         </index>
-         <index name="unique_task_number_per_investigation" unique="true">
-            <column ascending="true" name="investigation_guid"/>
-            <column ascending="true" name="task_number"/>
-         </index>
-      </table>
-      <table name="task_category_type_code" remarks="Reference table defining categories of tasks." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="task_category_type_code" nullable="false" remarks="Primary key. Code representing the type of task category." size="16" type="varchar" typeCode="12">
-            <child column="task_category_type_code" foreignKey="task_type_code_task_category_type_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task_type_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the task category type code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the task category type code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the task category type code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the task category type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the task category type code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the task category type code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that last updated the task category type code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the task type category code was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="task_category_type_code" sequenceNumberInPK="1"/>
-         <index name="task_category_type_code_pkey" unique="true">
-            <column ascending="true" name="task_category_type_code"/>
-         </index>
-      </table>
-      <table name="task_h" remarks="History table for task table" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="uuid_generate_v4()" digits="0" id="0" name="h_task_guid" nullable="false" remarks="System generated unique key for task history. This key should never be exposed to users via any system utilizing the tables." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="target_row_id" nullable="false" remarks="The unique key for the task that has been created or modified." size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="operation_type" nullable="false" remarks="The operation performed: I = Insert, U = Update, D = Delete" size="1" type="bpchar" typeCode="1"/>
-         <column autoUpdated="false" defaultValue="CURRENT_USER" digits="0" id="3" name="operation_user_id" nullable="false" remarks="The id of the user that created or modified the data in the task table. Defaults to the logged in user if not passed in by the application." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="4" name="operation_executed_at" nullable="false" remarks="The timestamp when the data in the task table was created or modified. The timestamp is stored in UTC with no Offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="data_after_executed_operation" nullable="true" remarks="A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table." size="2147483647" type="jsonb" typeCode="1111"/>
-         <primaryKey column="h_task_guid" sequenceNumberInPK="1"/>
-         <index name="task_h_pkey" unique="true">
-            <column ascending="true" name="h_task_guid"/>
-         </index>
-      </table>
-      <table name="task_status_code" remarks="Reference table defining task status types" schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="task_status_code" nullable="false" remarks="Primary key. Code representing the task status types." size="16" type="varchar" typeCode="12">
-            <child column="task_status_code" foreignKey="task_task_status_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="short_description" nullable="false" remarks="The short description of the task status code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="long_description" nullable="true" remarks="The long description of the task status code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="display_order" nullable="true" remarks="The order in which the values of the task status code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="4" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the task status is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="create_user_id" nullable="false" remarks="The id of the user that created the task status code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="6" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the task status code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="update_user_id" nullable="true" remarks="The id of the user that last updated the task status code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the task status code was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="task_status_code" sequenceNumberInPK="1"/>
-         <index name="task_status_code_pkey" unique="true">
-            <column ascending="true" name="task_status_code"/>
-         </index>
-      </table>
-      <table name="task_type_code" remarks="Reference table defining types and categories of tasks types." schema="investigation" type="TABLE">
-         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="task_type_code" nullable="false" remarks="Primary key. Code representing the type of task." size="16" type="varchar" typeCode="12">
-            <child column="task_type_code" foreignKey="task_task_type_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="task_category_type_code" nullable="false" remarks="Foreign key. Code representing the type task category." size="16" type="varchar" typeCode="12">
-            <parent column="task_category_type_code" foreignKey="task_type_code_task_category_type_code_fkey" implied="false" onDeleteCascade="false" schema="investigation" table="task_category_type_code"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="short_description" nullable="false" remarks="The short description of the task type code.  Used to store shorter versions of the long description when applicable." size="64" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="long_description" nullable="true" remarks="The long description of the task type code.  May contain additional detail not typically displayed in the application." size="256" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="display_order" nullable="true" remarks="The order in which the values of the task type code should be displayed when presented to a user in a list.  Originally incremented by 10s to allow for new values to be easily added." size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="true" digits="0" id="5" name="active_ind" nullable="false" remarks="A boolean indicator to determine if the task type is active.  Inactive values are still retained in the system for legacy data integrity but are not valid choices for new data being added." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="create_user_id" nullable="false" remarks="The id of the user that created the task type code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="now()" digits="6" id="7" name="create_utc_timestamp" nullable="false" remarks="The timestamp when the task type code was created. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="update_user_id" nullable="true" remarks="The id of the user that last updated the task type code." size="32" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="9" name="update_utc_timestamp" nullable="true" remarks="The timestamp when the task type code was last updated. The timestamp is stored in UTC with no offset." size="29" type="timestamp" typeCode="93"/>
-         <primaryKey column="task_type_code" sequenceNumberInPK="1"/>
-         <index name="task_type_code_pkey" unique="true">
-            <column ascending="true" name="task_type_code"/>
          </index>
       </table>
    </tables>

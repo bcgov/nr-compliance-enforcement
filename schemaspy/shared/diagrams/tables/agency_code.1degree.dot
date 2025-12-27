@@ -5,7 +5,7 @@ digraph "oneDegreeRelationshipsDiagram" {
   "case_file":"created_by_app_user_guid":w -> "app_user":"app_user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "case_file":"lead_agency":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "geo_org_unit_structure":"agency_code_ref":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "legislation_source":"agency_code":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "legislation_agency_xref":"agency_code":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "office":"agency_code_ref":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "team":"agency_code_ref":w -> "agency_code":"agency_code.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "agency_code" [
@@ -75,18 +75,19 @@ digraph "oneDegreeRelationshipsDiagram" {
     target="_top"
     tooltip="geo_org_unit_structure"
   ];
-  "legislation_source" [
+  "legislation_agency_xref" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="107" HEIGHT="16"><B>legislation_source</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="legislation_source_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="138" HEIGHT="16">legislation_source_guid</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="agency_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="138" HEIGHT="16">agency_code</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="138" HEIGHT="16"><B>legislation_agency_xref</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="legislation_agency_xref_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="169" HEIGHT="16">legislation_agency_xref_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="legislation_guid" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="169" HEIGHT="16">legislation_guid</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="agency_code" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="169" HEIGHT="16">agency_code</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
-    URL="legislation_source.html"
+    URL="legislation_agency_xref.html"
     target="_top"
-    tooltip="legislation_source"
+    tooltip="legislation_agency_xref"
   ];
   "office" [
    label=<
