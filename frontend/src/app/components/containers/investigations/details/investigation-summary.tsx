@@ -217,38 +217,39 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                 <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
               </div>
 
-              {investigationData.locationGeometry && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <CompLocationInfo
-                        xCoordinate={
-                          investigationData.locationGeometry.coordinates?.[0] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[0].toString() ?? "")
-                        }
-                        yCoordinate={
-                          investigationData.locationGeometry.coordinates?.[1] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[1].toString() ?? "")
-                        }
-                      />
-                    </div>
+              <div className="row">
+                <div className="col-12">
+                  <div className="form-group">
+                    <CompLocationInfo
+                      xCoordinate={
+                        investigationData?.locationGeometry?.coordinates?.[0] === 0
+                          ? ""
+                          : (investigationData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
+                      }
+                      yCoordinate={
+                        investigationData?.locationGeometry?.coordinates?.[1] === 0
+                          ? ""
+                          : (investigationData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
+                      }
+                    />
                   </div>
                 </div>
-              )}
+              </div>
               <DiaryDates investigationGuid={investigationGuid} />
               <br />
-              {investigationData?.locationGeometry?.coordinates && (
-                <MapObjectLocation
-                  map_object_type={MapObjectType.Investigation}
-                  locationCoordinates={{
-                    lat: investigationData.locationGeometry.coordinates[1],
-                    lng: investigationData.locationGeometry.coordinates[0],
-                  }}
-                  draggable={false}
-                />
-              )}
+              <MapObjectLocation
+                map_object_type={MapObjectType.Investigation}
+                locationCoordinates={
+                  investigationData?.locationGeometry?.coordinates
+                    ? {
+                        lat: investigationData.locationGeometry.coordinates[1],
+                        lng: investigationData.locationGeometry.coordinates[0],
+                      }
+                    : undefined
+                }
+                draggable={false}
+                defaultCenter={{ lat: 55.0, lng: -125.0 }}
+              />
             </div>
           )}
         </div>
