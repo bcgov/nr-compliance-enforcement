@@ -23,8 +23,8 @@ import { geo_org_unit_structure_h as _geo_org_unit_structure_h } from "./geo_org
 import { geo_org_unit_type_code as _geo_org_unit_type_code } from "./geo_org_unit_type_code";
 import { geo_organization_unit_code as _geo_organization_unit_code } from "./geo_organization_unit_code";
 import { legislation as _legislation } from "./legislation";
-import { legislation_source as _legislation_source } from "./legislation_source";
 import { legislation_h as _legislation_h } from "./legislation_h";
+import { legislation_source as _legislation_source } from "./legislation_source";
 import { legislation_type_code as _legislation_type_code } from "./legislation_type_code";
 import { office as _office } from "./office";
 import { office_h as _office_h } from "./office_h";
@@ -68,8 +68,8 @@ export namespace PrismaModel {
   export class geo_org_unit_type_code extends _geo_org_unit_type_code {}
   export class geo_organization_unit_code extends _geo_organization_unit_code {}
   export class legislation extends _legislation {}
-  export class legislation_source extends _legislation_source {}
   export class legislation_h extends _legislation_h {}
+  export class legislation_source extends _legislation_source {}
   export class legislation_type_code extends _legislation_type_code {}
   export class office extends _office {}
   export class office_h extends _office_h {}
@@ -113,8 +113,8 @@ export namespace PrismaModel {
     geo_org_unit_type_code,
     geo_organization_unit_code,
     legislation,
-    legislation_source,
     legislation_h,
+    legislation_source,
     legislation_type_code,
     office,
     office_h,
