@@ -3,7 +3,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_CONTRAVENTION, DELETE_CONFIRM } from "@/app/types/modal/modal-types";
+import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Contravention, InvestigationParty } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback } from "react";
@@ -13,10 +13,17 @@ interface ContraventionItemProps {
   contravention: Contravention;
   investigationGuid: string;
   index: number;
-  parties: InvestigationParty[];
+  canEdit: boolean;
+  onEdit: (contraventionId: string) => void;
 }
 
-export const ContraventionItem = ({ contravention, investigationGuid, index, parties }: ContraventionItemProps) => {
+export const ContraventionItem = ({
+  contravention,
+  investigationGuid,
+  index,
+  canEdit,
+  onEdit,
+}: ContraventionItemProps) => {
   const REMOVE_CONTRAVENTION = gql`
     mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
       removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
@@ -78,22 +85,6 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, par
     [dispatch, investigationGuid, removeContraventionMutation],
   );
 
-  const handleEditContravention = (contravention: Contravention) => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "xl",
-        modalType: ADD_CONTRAVENTION,
-        data: {
-          title: "Edit contravention",
-          action: "Edit",
-          activityGuid: investigationGuid,
-          existingContravention: contravention,
-          parties: parties,
-        },
-      }),
-    );
-  };
   return (
     <Card
       className="mb-3"
@@ -101,14 +92,15 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, par
     >
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
-          <h4>Contravention {index + 1} (Alleged)</h4>
+          <h4>Contravention {index + 1}</h4>
         </div>
         <div className="comp-card-header-actions">
           <Button
+            disabled={!canEdit}
             variant="outline-primary"
             size="sm"
             id="contravention-edit-button"
-            onClick={() => handleEditContravention(contravention)}
+            onClick={() => onEdit(contravention.contraventionIdentifier)} // orchestration is done via the parent component
           >
             <i className="bi bi-pencil"></i>
             <span>Edit</span>

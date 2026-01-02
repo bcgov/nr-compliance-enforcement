@@ -5,17 +5,13 @@ import { Link } from "react-router-dom";
 interface InvestigationEditHeaderProps {
   cancelButtonClick: () => void;
   saveButtonClick: () => void;
-  isEditMode?: boolean;
   caseIdentifier?: string;
-  investigationGuid?: string;
 }
 
-export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
+export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
-  isEditMode = false,
   caseIdentifier,
-  investigationGuid,
 }) => {
   return (
     <div className="comp-details-header">
@@ -27,16 +23,11 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to="/investigations">Investigations</Link>
               </li>
-              {caseIdentifier && (
-                <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to={`/investigations/${investigationGuid}`}>{investigationGuid}</Link>
-                </li>
-              )}
               <li
                 className="breadcrumb-item"
                 aria-current="page"
               >
-                {isEditMode ? "Edit investigation" : "Create investigation"}
+                {"Create investigation"}
               </li>
             </ol>
           </nav>
@@ -46,17 +37,13 @@ export const InvestigationEditHeader: FC<InvestigationEditHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              {isEditMode && investigationGuid ? (
-                <span>Investigation #{investigationGuid}</span>
-              ) : (
-                <span>{isEditMode ? "Edit investigation" : "Create investigation"} </span>
-              )}
+              <span>{"Create investigation"} </span>
             </h1>
           </div>
           <div className="comp-header-actions">
             <Button
               id="details-screen-cancel-edit-button-top"
-              title={isEditMode ? "Cancel edit Investigation" : "Cancel create investigation"}
+              title={"Cancel create investigation"}
               variant="outline-light"
               onClick={cancelButtonClick}
             >

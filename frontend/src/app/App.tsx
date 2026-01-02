@@ -41,7 +41,6 @@ import { InvestigationDetails } from "@/app/components/containers/investigations
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
-import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 import { InspectionDetails } from "@/app/components/containers/inspections/details/inspection-details";
@@ -50,6 +49,7 @@ import Inspections from "@/app/components/containers/inspections/inspections";
 import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
+import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -155,13 +155,7 @@ const App: FC = () => {
                 {investigationsActive && (
                   <Route
                     path="/case/:caseIdentifier/createInvestigation"
-                    element={<InvestigationEdit />}
-                  />
-                )}
-                {investigationsActive && (
-                  <Route
-                    path="/investigation/:id/edit"
-                    element={<InvestigationEdit />}
+                    element={<InvestigationCreate />}
                   />
                 )}
                 {investigationsActive && (
