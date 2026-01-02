@@ -1675,6 +1675,8 @@ export type Query = {
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   legislation?: Maybe<Legislation>;
+  legislationChildTypes: Array<Maybe<Scalars['String']['output']>>;
+  legislationDirectChildren: Array<Maybe<Legislation>>;
   legislationSource?: Maybe<LegislationSource>;
   legislationSources: Array<Maybe<LegislationSource>>;
   legislationTypeCodes: Array<Maybe<LegislationType>>;
@@ -1896,6 +1898,19 @@ export type QueryinactionJustificationCodesArgs = {
 export type QuerylegislationArgs = {
   includeAncestors?: InputMaybe<Scalars['Boolean']['input']>;
   legislationGuid: Scalars['String']['input'];
+};
+
+
+export type QuerylegislationChildTypesArgs = {
+  agencyCode: Scalars['String']['input'];
+  parentGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerylegislationDirectChildrenArgs = {
+  agencyCode: Scalars['String']['input'];
+  legislationTypeCode?: InputMaybe<Scalars['String']['input']>;
+  parentGuid: Scalars['String']['input'];
 };
 
 
