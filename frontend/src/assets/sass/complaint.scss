@@ -1805,15 +1805,15 @@ p {
 }
 
 .comp-details-edit-calendar-input input:focus {
-  border: 1px solid $blue-100 !important;
+  border: none !important;
   outline: none;
-  box-shadow: 0px 0px 0px 4px $blue-300 !important;
+  box-shadow: none;
 }
 
 .comp-filter-calendar-input input:focus {
-  border: 1px solid $blue-100 !important;
+  border: none !important;
   outline: none;
-  box-shadow: 0px 0px 0px 4px $blue-300 !important;
+  box-shadow: none;
 }
 
 //override -- default is one pixel too high

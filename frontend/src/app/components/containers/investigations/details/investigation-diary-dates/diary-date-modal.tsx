@@ -125,7 +125,6 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                   id="diary-date-due-date"
                   selectedDate={field.state.value}
                   onChange={(date: Date) => field.handleChange(date)}
-                  placeholder="Select date"
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                   errMsg={field.state.meta.errors?.[0]?.message || field.state.meta.errors?.[0] || ""}

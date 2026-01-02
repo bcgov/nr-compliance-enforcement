@@ -81,7 +81,7 @@ import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
-import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -593,6 +593,12 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleIncidentDateTimeChange = (date: Date) => {
+    setSelectedIncidentDateTime(date);
+    if (date > new Date()) {
+      setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+    } else {
+      setIncidentDateTimeErrorMsg("");
+    }
     const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -1059,12 +1065,18 @@ export const ComplaintDetailsEdit: FC = () => {
                 id="incident-time-pair-id"
               >
                 <label>Incident date/time</label>
-                <CompDateTimePicker
-                  value={selectedIncidentDateTime}
-                  onChange={handleIncidentDateTimeChange}
-                  maxDate={maxDate}
-                  onErrorChange={setIncidentDateTimeErrorMsg}
-                />
+                <div className="comp-details-edit-input">
+                  <ValidationDatePicker
+                    id="complaint-incident-time"
+                    selectedDate={selectedIncidentDateTime || null}
+                    onChange={handleIncidentDateTimeChange}
+                    className="comp-details-edit-calendar-input"
+                    classNamePrefix="comp-select"
+                    errMsg={incidentDateTimeErrorMsg}
+                    maxDate={new Date()}
+                    showTimePicker={true}
+                  />
+                </div>
               </div>
               {complaintType === COMPLAINT_TYPES.HWCR && (
                 <div
