@@ -197,7 +197,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
       <div className="comp-details-form-buttons">
         <Button
           variant="outline-primary"
-          id="add-task-cancel-button"
+          id="investigation-cancel-button"
           title="Cancel"
           onClick={cancelButtonClick}
         >
@@ -205,8 +205,8 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
         </Button>
         <Button
           variant="primary"
-          id="add-task-save-button"
-          title="Save Add Task"
+          id="investigation-save-button"
+          title="Save Investigation"
           onClick={saveButtonClick}
         >
           <span>Save</span>

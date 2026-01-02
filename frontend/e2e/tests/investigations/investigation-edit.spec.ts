@@ -33,7 +33,8 @@ test.describe("Investigation Edit Form", () => {
 
   test("it loads existing data", async ({ page }) => {
     // Verify we're on edit page
-    await expect(page).toHaveURL(/\/investigation\/[^/]+\/edit$/);
+    const saveButton = page.locator("#investigation-save-button");
+    await expect(saveButton).toBeVisible();
 
     // Wait for form data to load
     const nameInput = page.locator("#display-name");
@@ -72,7 +73,7 @@ test.describe("Investigation Edit Form", () => {
     await descriptionInput.fill(newDescription);
 
     // Save
-    const saveButton = page.locator("#details-screen-save-button-top");
+    const saveButton = page.locator("#investigation-save-button");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
     await saveButton.click();
     await waitForSpinner(page);
@@ -90,7 +91,8 @@ test.describe("Investigation Edit Form", () => {
     await nameInput.clear();
 
     // Try to save
-    await page.locator("#details-screen-save-button-top").click();
+    const saveButton = page.locator("#investigation-save-button");
+    saveButton.click();
 
     // Should show validation error
     const errorMessage = page.locator(".error-message, .text-danger, [class*='error']").first();
@@ -106,7 +108,8 @@ test.describe("Investigation Edit Form", () => {
     await descriptionInput.fill("Changed description");
 
     // Click cancel
-    await page.locator("#details-screen-cancel-edit-button-top").click();
+    const cancelButton = page.locator("#investigation-cancel-button");
+    cancelButton.click();
 
     // Confirmation modal should appear
     const modal = page.locator(".modal");
