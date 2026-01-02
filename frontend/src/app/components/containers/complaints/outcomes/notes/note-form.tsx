@@ -129,16 +129,18 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
           >
             <label htmlFor="supporting-notes-time-pair-id">Date logged</label>
             <div className="comp-details-input">
-              <DatePicker
-                id="supporting-notes-time-pair-id"
-                selected={currentDate}
-                onChange={(e) => e}
-                dateFormat="yyyy-MM-dd"
-                wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
-                readOnly
-                disabled
-                showIcon
-              />
+              <div className="d-flex comp-form-control align-items-center datepicker-disabled">
+                <i className="bi bi-calendar" />
+                <DatePicker
+                  id="supporting-notes-time-pair-id"
+                  selected={currentDate}
+                  onChange={(e) => e}
+                  dateFormat="yyyy-MM-dd"
+                  wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
+                  readOnly
+                  disabled
+                />
+              </div>
             </div>
           </div>
           <div className="comp-details-form-row">

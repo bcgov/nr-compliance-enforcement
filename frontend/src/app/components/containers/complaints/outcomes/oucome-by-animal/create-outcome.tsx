@@ -644,7 +644,6 @@ export const CreateAnimalOutcome: FC<props> = ({
                     selectedDate={data?.date}
                     classNamePrefix="comp-details-edit-calendar-input"
                     className={"animal-outcome-details-input"}
-                    placeholder={"Select"}
                     errMsg={outcomeDateError}
                   />
                 </div>
