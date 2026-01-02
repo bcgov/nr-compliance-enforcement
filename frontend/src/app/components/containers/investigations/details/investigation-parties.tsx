@@ -101,17 +101,9 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
     <>
       <div className="row">
         <div className="col-12">
-          <Button
-            variant="warning"
-            size="sm"
-            onClick={handleAddParty}
-          >
-            <i className="bi bi-plus-circle me-1" /> {/**/}
-            Add Party
-          </Button>
+          <h3>Parties</h3>
         </div>
       </div>
-
       <div className="row">
         <div className="col-4">
           <PartiesList
@@ -120,6 +112,18 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
             onRemoveParty={handleRemoveParty}
             activityType={CaseActivities.INVESTIGATION}
           />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleAddParty}
+          >
+            <i className="bi bi-plus-circle me-1" /> {/**/}
+            Add party
+          </Button>
         </div>
       </div>
     </>
