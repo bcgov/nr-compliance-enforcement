@@ -1,11 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import {
-  enterDateTimeInCompDateTimePicker,
-  navigateToCreateScreen,
-  selectItemById,
-  waitForSpinner,
-} from "../../utils/helpers";
+import { enterDateTimeInDatePicker, navigateToCreateScreen, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /*
 Test to verify that the user is able to click the edit button
@@ -93,7 +88,7 @@ test.describe("Complaint Create Page spec - Create View", () => {
     await page.locator("#complaint-description-textarea-id").clear();
     await page.locator("#complaint-description-textarea-id").fill(createCallDetails.description);
     await page.locator("#complaint-description-textarea-id").click();
-    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
+    await enterDateTimeInDatePicker(page, "complaint-incident-time", "01", "13", "45");
     await selectItemById("violation-in-progress-select-id", createCallDetails.violationInProgressString, page);
     await selectItemById("violation-observed-select-id", createCallDetails.violationObservedString, page);
     await selectItemById("community-select-id", createCallDetails.community, page);

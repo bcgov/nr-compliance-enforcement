@@ -1,6 +1,6 @@
 import { test, expect, Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { enterDateTimeInCompDateTimePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
+import { enterDateTimeInDatePicker, selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Investigation Creation functionality
@@ -77,7 +77,7 @@ test.describe("Investigation Create Form", () => {
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
-    await enterDateTimeInCompDateTimePicker(page, "01", "13", "45");
+    await enterDateTimeInDatePicker(page, "investigation-discovery-date", "01", "13", "45");
 
     // Wait for async validation to complete
     await validationResponsePromise;

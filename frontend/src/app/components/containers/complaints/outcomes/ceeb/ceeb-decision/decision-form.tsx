@@ -545,7 +545,6 @@ export const DecisionForm: FC<props> = ({
               id="outcome-decision-outcome-date"
               selectedDate={data?.actionTakenDate}
               onChange={handleDateChange}
-              placeholder="Select date"
               className="comp-details-edit-calendar-input" // Adjust class as needed
               classNamePrefix="comp-select" // Adjust class as needed
               errMsg={dateActionTakenErrorMessage} // Pass error message if any

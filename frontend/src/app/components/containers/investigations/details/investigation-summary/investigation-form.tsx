@@ -1,7 +1,6 @@
 import { bcUtmZoneNumbers } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
-import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
 import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
@@ -17,6 +16,7 @@ import { gql } from "graphql-request";
 import { useSelector } from "react-redux";
 import z from "zod";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 interface InvestigationFormProps {
   form: any;
@@ -243,14 +243,18 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
                 field.handleChange(selectedDiscoveryDateTime.toISOString());
               }
               return (
-                <CompDateTimePicker
-                  value={selectedDiscoveryDateTime}
+                <ValidationDatePicker
+                  id="investigation-discovery-date"
+                  selectedDate={selectedDiscoveryDateTime}
                   onChange={(date: Date) => {
                     handleDiscoveryDateTimeChange(date);
                     field.handleChange(date ? date.toISOString() : "");
                   }}
+                  className="comp-details-edit-calendar-input"
+                  classNamePrefix="comp-select"
+                  errMsg={field.state.meta.errors?.[0] || ""}
                   maxDate={new Date()}
-                  errorMessage={field.state.meta.errors?.[0] || ""}
+                  showTimePicker={true}
                 />
               );
             }}
