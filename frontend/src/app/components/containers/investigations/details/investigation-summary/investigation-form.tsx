@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { useState } from "react";
 
 interface InvestigationFormProps {
   form: any;
@@ -37,7 +38,10 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
 
 export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const selectedDiscoveryDateTime = discoveryDate ? new Date(discoveryDate) : undefined;
+  const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
+    discoveryDate ? new Date(discoveryDate) : null,
+  );
+
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
@@ -51,6 +55,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
       : [];
 
   const handleDiscoveryDateTimeChange = (date: Date | null) => {
+    setSelectedDiscoveryDateTime(date);
     if (date) {
       form.setFieldValue("discoveryDate", new Date(date).toISOString());
     } else {
