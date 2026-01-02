@@ -526,7 +526,6 @@ button.modal-buttons {
 }
 
 .refer-complaint-modal-alert-item {
-  padding-bottom: 5px;
   color: rgba(149, 125, 49);
 }
 
@@ -649,6 +648,10 @@ p {
 .comp-complaint-breadcrumb {
   color: $white;
   margin-top: -4px;
+}
+
+.breadcrumb {
+  --bs-breadcrumb-divider-color: #{$white};
 }
 
 // BUTTONS
@@ -973,5 +976,14 @@ td.actions-col {
 }
 
 .investigation-nav-link.inactive {
+  background-color: $gray-200;
+}
+
+.inspection-nav-link.active {
+  background-color: $bc-gov-primary !important;
+  font-weight: bold !important;
+}
+
+.inspection-nav-link.inactive {
   background-color: $gray-200;
 }
