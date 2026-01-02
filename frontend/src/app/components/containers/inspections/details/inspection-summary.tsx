@@ -186,36 +186,38 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                   <dd id="comp-details-location-description">{inspectionData.locationDescription}</dd>
                 </div>
               )}
-              {inspectionData.locationGeometry && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <CompLocationInfo
-                        xCoordinate={
-                          inspectionData.locationGeometry.coordinates?.[0] === 0
-                            ? ""
-                            : (inspectionData.locationGeometry.coordinates?.[0].toString() ?? "")
-                        }
-                        yCoordinate={
-                          inspectionData.locationGeometry.coordinates?.[1] === 0
-                            ? ""
-                            : (inspectionData.locationGeometry.coordinates?.[1].toString() ?? "")
-                        }
-                      />
-                    </div>
+              <div className="row">
+                <div className="col-12">
+                  <div className="form-group">
+                    <CompLocationInfo
+                      xCoordinate={
+                        inspectionData?.locationGeometry?.coordinates?.[0] === 0
+                          ? ""
+                          : (inspectionData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
+                      }
+                      yCoordinate={
+                        inspectionData?.locationGeometry?.coordinates?.[1] === 0
+                          ? ""
+                          : (inspectionData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
+                      }
+                    />
                   </div>
                 </div>
-              )}
-              {inspectionData?.locationGeometry?.coordinates && (
-                <MapObjectLocation
-                  map_object_type={MapObjectType.Inspection}
-                  locationCoordinates={{
-                    lat: inspectionData.locationGeometry.coordinates[1],
-                    lng: inspectionData.locationGeometry.coordinates[0],
-                  }}
-                  draggable={false}
-                />
-              )}
+              </div>
+              <MapObjectLocation
+                map_object_type={MapObjectType.Inspection}
+                locationCoordinates={
+                  inspectionData?.locationGeometry?.coordinates
+                    ? {
+                        lat: inspectionData.locationGeometry.coordinates[1],
+                        lng: inspectionData.locationGeometry.coordinates[0],
+                      }
+                    : undefined
+                }
+                draggable={false}
+                defaultCenter={{ lat: 55, lng: -125 }}
+                defaultZoom={inspectionData?.locationGeometry?.coordinates ? 12 : 5}
+              />
             </div>
           )}
         </div>

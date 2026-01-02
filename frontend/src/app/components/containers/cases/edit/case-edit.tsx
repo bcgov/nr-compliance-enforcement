@@ -15,6 +15,7 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal, appUserGuid } from "@store/reducers/app";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
@@ -153,6 +154,9 @@ const CaseEdit: FC = () => {
   }, [isEditMode, caseData]);
 
   const form = useForm({
+    onSubmitInvalid: async () => {
+      ToggleError("Errors in form");
+    },
     defaultValues,
     onSubmit: async ({ value }) => {
       if (isEditMode) {
@@ -227,6 +231,7 @@ const CaseEdit: FC = () => {
           <h2>Case Details</h2>
         </div>
 
+        <FormErrorBanner form={form} />
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
             <FormField

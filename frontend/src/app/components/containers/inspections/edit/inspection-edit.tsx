@@ -19,6 +19,7 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInspectionInput, UpdateInspectionInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import Option from "@apptypes/app/option";
 import { bcUtmZoneNumbers } from "@common/methods";
 
@@ -156,6 +157,9 @@ const InspectionEdit: FC = () => {
 
   const form = useForm({
     defaultValues,
+    onSubmitInvalid: async () => {
+      ToggleError("Errors in form");
+    },
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: UpdateInspectionInput = {
@@ -193,10 +197,12 @@ const InspectionEdit: FC = () => {
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
-    if (isEditMode && id) {
+    if (id) {
       navigate(`/inspection/${id}`);
+    } else if (caseIdentifier) {
+      navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(`/inspections/${id}`);
+      navigate(`/inspections`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
@@ -236,6 +242,8 @@ const InspectionEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Inspection Details</h2>
         </div>
+
+        <FormErrorBanner form={form} />
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>

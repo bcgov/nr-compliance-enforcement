@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable, Logger, Scope } from "@nestjs/common";
+import { Inject, Injectable, Logger, Scope } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { caseFileQueryFields, get, post } from "../../../external_api/shared_data";
@@ -49,10 +49,6 @@ export class ComplaintOutcomeService {
   }
 
   find = async (complaint_id: string, token: string, req: any): Promise<ComplaintOutcomeDto> => {
-    const canViewRecord = await this.complaintService.canViewComplaint(complaint_id, req);
-    if (!canViewRecord) {
-      throw new HttpException("Unauthorized", HttpStatus.UNAUTHORIZED);
-    }
     const { data, errors } = await get(token, {
       query: `{getComplaintOutcomeByComplaintId (complaintId: "${complaint_id}")
         ${caseFileQueryFields}

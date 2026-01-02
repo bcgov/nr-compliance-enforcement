@@ -19,6 +19,7 @@ type Investigation {
   discoveryDate: Date
   parties: [InvestigationParty]
   contraventions: [Contravention]
+  tasks: [Task]
 }
 
 input CreateInvestigationInput {

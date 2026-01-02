@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { MiddlewareConsumer, Module } from "@nestjs/common";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
+import { RequestInterceptor } from "./pg-session-extension/request-interceptor";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HTTPLoggerMiddleware } from "./middleware/req.res.logger";
@@ -65,11 +67,16 @@ import { CosGeoOrgUnitModule } from "./shared/cos_geo_org_unit/cos_geo_org_unit.
 import { AppUserModule } from "./shared/app_user/app_user.module";
 import { AppUserTeamXrefModule } from "./shared/app_user_team_xref/app_user_team_xref.module";
 import { InspectionPartyModule } from "./inspection/inspection_party/inspection_party.module";
-import { ContinuationReportModule } from "src/investigation/continuation_report/continuation_report.module";
+import { ContinuationReportModule } from "./investigation/continuation_report/continuation_report.module";
 import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_code/party_association_role_code.module";
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { LegislationSourceModule } from "./shared/legislation_source/legislation_source.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
+import { TaskStatusCodeModule } from "./investigation/task_status_code/task_status_code.module";
+import { TaskCategoryTypeCodeModule } from "./investigation/task_category_type_code/task_category_type_code.module";
+import { TaskModule } from "./investigation/task/task.module";
+import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
+import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 
 @Module({
   imports: [
@@ -140,9 +147,24 @@ import { ContraventionModule } from "./investigation/contravention/contravention
     LegislationModule,
     LegislationSourceModule,
     ContraventionModule,
+    TaskStatusCodeModule,
+    TaskTypeCodeModule,
+    TaskCategoryTypeCodeModule,
+    TaskModule,
+    DiaryDateModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ImportCommand, DateScalar, JSONObjectScalar, PointScalar],
+  providers: [
+    AppService,
+    ImportCommand,
+    DateScalar,
+    JSONObjectScalar,
+    PointScalar,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestInterceptor,
+    },
+  ],
 })
 export class AppModule {
   constructor(@InjectMapper() private readonly mapper: Mapper) {}

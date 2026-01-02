@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useForm } from "@tanstack/react-form";
@@ -25,7 +25,8 @@ import Option from "@apptypes/app/option";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
-import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
@@ -129,7 +130,11 @@ const InvestigationEdit: FC = () => {
     enabled: isEditMode,
   });
 
-  const selectedDiscoveryDateTime = isEditMode ? new Date(investigationData?.getInvestigation?.discoveryDate) : null;
+  const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
+    isEditMode && investigationData?.getInvestigation?.discoveryDate
+      ? new Date(investigationData.getInvestigation.discoveryDate)
+      : null,
+  );
 
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -238,15 +243,20 @@ const InvestigationEdit: FC = () => {
         createInvestigationMutation.mutate({ input: createInput });
       }
     },
+    onSubmitInvalid: async ({ value }) => {
+      ToggleError("Errors in form");
+    },
   });
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
-    if (isEditMode && id) {
+    if (id) {
       navigate(`/investigation/${id}`);
+    } else if (caseIdentifier) {
+      navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(`/investigations/${id}`);
+      navigate(`/investigations`);
     }
   }, [navigate, isEditMode, caseIdentifier, id, form]);
 
@@ -272,6 +282,7 @@ const InvestigationEdit: FC = () => {
   const isDisabled = isSubmitting || isLoading;
 
   const handleDiscoveryDateTimeChange = (date: Date | null) => {
+    setSelectedDiscoveryDateTime(date);
     if (date) {
       form.setFieldValue("discoveryDate", new Date(date).toISOString());
     } else {
@@ -293,6 +304,7 @@ const InvestigationEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Investigation details</h2>
         </div>
+        <FormErrorBanner form={form} />
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
@@ -392,7 +404,7 @@ const InvestigationEdit: FC = () => {
               name="primaryInvestigator"
               label="Primary investigator"
               required
-              validators={{ onChange: z.string().min(1, "Primary investigator is required") }}
+              validators={{ onSubmit: z.string().min(1, "Primary investigator is required") }}
               render={(field) => (
                 <CompSelect
                   id="primary-investigator-select"
@@ -477,14 +489,18 @@ const InvestigationEdit: FC = () => {
                   field.handleChange(selectedDiscoveryDateTime.toISOString());
                 }
                 return (
-                  <CompDateTimePicker
-                    value={selectedDiscoveryDateTime}
-                    onChange={(date: Date) => {
+                  <ValidationDatePicker
+                    id="investigation-discovery-date"
+                    selectedDate={selectedDiscoveryDateTime}
+                    onChange={(date: Date | null) => {
                       handleDiscoveryDateTimeChange(date);
                       field.handleChange(date ? date.toISOString() : "");
                     }}
+                    className="comp-details-edit-calendar-input"
+                    classNamePrefix="comp-select"
+                    errMsg={field.state.meta.errors?.[0] || ""}
                     maxDate={new Date()}
-                    errorMessage={field.state.meta.errors?.[0] || ""}
+                    showTimePicker={true}
                   />
                 );
               }}

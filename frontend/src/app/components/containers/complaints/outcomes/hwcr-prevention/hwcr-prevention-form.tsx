@@ -250,7 +250,6 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
                 id="prev-educ-outcome-date"
                 selectedDate={selectedDate}
                 onChange={handleDateChange}
-                placeholder="Select date"
                 className="comp-details-edit-calendar-input" // Adjust class as needed
                 classNamePrefix="comp-select" // Adjust class as needed
                 errMsg={preventionDateErrorMessage} // Pass error message if any

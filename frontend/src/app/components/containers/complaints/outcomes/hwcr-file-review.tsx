@@ -55,9 +55,7 @@ export const HWCRFileReview: FC = () => {
       if (officers) {
         const officer = officers.filter((person) => person.auth_user_guid === reviewCompleteAction.actor);
         if (officer.length > 0) {
-          const {
-            first_name, last_name
-          } = officer[0];
+          const { first_name, last_name } = officer[0];
           displayName = `${last_name}, ${first_name}`;
           setOfficerName(displayName);
           setReviewCompleteDate(reviewCompleteAction.date);
@@ -245,16 +243,18 @@ export const HWCRFileReview: FC = () => {
                   >
                     <label htmlFor="file-review-time-pair-id">Date</label>
                     <div className="comp-details-input">
-                      <DatePicker
-                        id="file-review-time-pair-id"
-                        selected={new Date()}
-                        onChange={(e) => e}
-                        dateFormat="yyyy-MM-dd"
-                        wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
-                        showIcon
-                        readOnly
-                        disabled
-                      />
+                      <div className="d-flex comp-form-control align-items-center datepicker-disabled">
+                        <i className="bi bi-calendar" />
+                        <DatePicker
+                          id="file-review-time-pair-id"
+                          selected={new Date()}
+                          onChange={(e) => e}
+                          dateFormat="yyyy-MM-dd"
+                          wrapperClassName="comp-details-edit-calendar-input datepicker-disabled"
+                          readOnly
+                          disabled
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
