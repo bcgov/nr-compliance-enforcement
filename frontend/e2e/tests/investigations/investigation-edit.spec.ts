@@ -93,7 +93,7 @@ test.describe("Investigation Edit Form", () => {
     // Try to save
     const saveButton = page.locator("#investigation-save-button");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
-    saveButton.click();
+    await saveButton.click();
 
     // Should show validation error
     const errorMessage = page.locator(".error-message, .text-danger, [class*='error']").first();
