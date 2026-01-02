@@ -9,6 +9,7 @@ type Props = {
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
   defaultCenter?: { lat: number; lng: number };
+  defaultZoom?: number;
 };
 
 export const MapObjectLocation: FC<Props> = ({
@@ -17,6 +18,7 @@ export const MapObjectLocation: FC<Props> = ({
   draggable,
   onMarkerMove,
   defaultCenter,
+  defaultZoom = 12,
 }) => {
   const mapElements: MapElement[] = [];
   const name = `${map_object_type} location`;
@@ -44,6 +46,7 @@ export const MapObjectLocation: FC<Props> = ({
         draggable={draggable}
         onMarkerMove={onMarkerMove}
         geocodedLocation={defaultCenter}
+        defaultZoom={defaultZoom}
       />
     </section>
   );

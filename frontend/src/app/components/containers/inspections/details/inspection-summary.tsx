@@ -215,7 +215,8 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                     : undefined
                 }
                 draggable={false}
-                defaultCenter={{ lat: 55.0, lng: -125.0 }}
+                defaultCenter={{ lat: 55, lng: -125 }}
+                defaultZoom={inspectionData?.locationGeometry?.coordinates ? 12 : 5}
               />
             </div>
           )}

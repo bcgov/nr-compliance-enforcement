@@ -248,7 +248,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                     : undefined
                 }
                 draggable={false}
-                defaultCenter={{ lat: 55.0, lng: -125.0 }}
+                defaultCenter={{ lat: 55, lng: -125 }}
+                defaultZoom={investigationData?.locationGeometry?.coordinates ? 12 : 5}
               />
             </div>
           )}
