@@ -194,16 +194,20 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
 
           <DiaryDates investigationGuid={investigationGuid} />
           <br />
-          {investigationData?.locationGeometry?.coordinates && (
-            <MapObjectLocation
-              map_object_type={MapObjectType.Investigation}
-              locationCoordinates={{
-                lat: investigationData.locationGeometry.coordinates[1],
-                lng: investigationData.locationGeometry.coordinates[0],
-              }}
-              draggable={false}
-            />
-          )}
+          <MapObjectLocation
+            map_object_type={MapObjectType.Investigation}
+            locationCoordinates={
+              investigationData?.locationGeometry?.coordinates
+                ? {
+                    lat: investigationData.locationGeometry.coordinates[1],
+                    lng: investigationData.locationGeometry.coordinates[0],
+                  }
+                : undefined
+            }
+            draggable={false}
+            defaultCenter={{ lat: 55, lng: -125 }}
+            defaultZoom={investigationData?.locationGeometry?.coordinates ? 12 : 5}
+          />
         </div>
       </div>
     </>
