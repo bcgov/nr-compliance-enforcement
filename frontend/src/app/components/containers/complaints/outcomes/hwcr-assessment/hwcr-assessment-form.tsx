@@ -388,6 +388,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const validateLocationType = useCallback((): boolean => {
     if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
       setLocationErrorMessage("Required");
+      return true;
     }
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
