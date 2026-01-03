@@ -72,7 +72,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
             onClick={() => setshowAddCard(true)}
           >
             <i className="bi bi-plus-circle me-1" /> {/**/}
-            Add Task
+            Add task
           </Button>
         </div>
       </div>
