@@ -187,8 +187,8 @@ export const CaseView: FC = () => {
                     id="details-screen-edit-button"
                     onClick={editButtonClick}
                   >
-                    <i className="bi bi-pencil" />
-                    Edit case
+                    {" "}
+                    <i className="bi bi-pencil" /> Edit case
                   </Button>
                 </div>
               </div>

@@ -40,7 +40,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                 <span>Investigation #</span>
                 {investigationId}
               </h1>
-              {investigation?.investigationStatus && investigation?.investigationStatus.investigationStatusCode && (
+              {investigation?.investigationStatus && investigation?.investigationStatus?.investigationStatusCode && (
                 <span
                   className={`badge ${applyStatusClass(investigation?.investigationStatus.investigationStatusCode)}`}
                 >
