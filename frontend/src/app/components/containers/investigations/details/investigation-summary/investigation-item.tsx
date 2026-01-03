@@ -63,24 +63,19 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
               <dt>Location description</dt>
               <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
             </div>
-            <div className="row">
-              <div className="col-12">
-                <div className="form-group">
-                  <CompLocationInfo
-                    xCoordinate={
-                      investigationData?.locationGeometry?.coordinates?.[0] === 0
-                        ? ""
-                        : (investigationData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
-                    }
-                    yCoordinate={
-                      investigationData?.locationGeometry?.coordinates?.[1] === 0
-                        ? ""
-                        : (investigationData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
-                    }
-                  />
-                </div>
-              </div>
-            </div>
+
+            <CompLocationInfo
+              xCoordinate={
+                investigationData?.locationGeometry?.coordinates?.[0] === 0
+                  ? ""
+                  : (investigationData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
+              }
+              yCoordinate={
+                investigationData?.locationGeometry?.coordinates?.[1] === 0
+                  ? ""
+                  : (investigationData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
+              }
+            />
           </dl>
         </Card.Body>
       </Card>
