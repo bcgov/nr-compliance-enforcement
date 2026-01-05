@@ -13,7 +13,7 @@ interface InvestigationItemProps {
 }
 
 export const InvestigationItem = ({ investigationData, caseGuid, caseName }: InvestigationItemProps) => {
-  const createdByObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));
+  const createdByObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
   const createdBy = createdByObj ? `${createdByObj?.last_name}, ${createdByObj?.first_name}` : "Not Assigned";
   return (
     <section className="comp-details-section">
