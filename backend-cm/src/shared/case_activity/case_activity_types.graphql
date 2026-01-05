@@ -1,12 +1,12 @@
-scalar Date
+scalar DateTime
 
 type CaseActivity {
   caseActivityGuid: String
   caseFileGuid: String
   activityType: CaseActivityTypeCode
   activityIdentifier: String
-  effectiveDate: Date
-  expiryDate: Date
+  effectiveDate: DateTime
+  expiryDate: DateTime
 }
 
 input CaseActivityCreateInput {

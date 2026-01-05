@@ -35,7 +35,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
         <div className="d-flex gap-4 ">
           <span className="d-flex text-nowrap">
             <i className="bi bi-calendar me-2"></i>
-            <strong>{diaryDate.dueDate ? formatDate(new Date(diaryDate.dueDate).toString()) : "N/A"}</strong>
+            <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
         </div>

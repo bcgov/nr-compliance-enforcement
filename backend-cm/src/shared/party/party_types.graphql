@@ -1,11 +1,11 @@
-scalar Date
+scalar DateTime
 
 type Party {
   partyIdentifier: String
   partyTypeCode: String
   longDescription: String
   shortDescription: String
-  createdDateTime: Date
+  createdDateTime: DateTime
   person: Person
   business: Business
 }
