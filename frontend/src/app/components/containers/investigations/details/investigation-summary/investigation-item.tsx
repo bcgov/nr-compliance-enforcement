@@ -32,6 +32,22 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
                 </pre>
               </dd>
             </div>
+            <div>
+              <dt>Created by</dt>
+              <dd id="comp-details-created-by"> {createdBy}</dd>
+            </div>
+            <div>
+              <dt>Date logged</dt>
+              <dd id="comp-details-date-logged">
+                {investigationData.openedTimestamp && (
+                  <div>
+                    <i className="bi bi-calendar"></i>&nbsp;{formatDate(investigationData.openedTimestamp)}
+                    &nbsp;&nbsp;
+                    <i className="bi bi-clock"></i>&nbsp;{formatTime(investigationData.openedTimestamp)}
+                  </div>
+                )}
+              </dd>
+            </div>
             {investigationData.description && (
               <div>
                 <dt>Investigation description</dt>
