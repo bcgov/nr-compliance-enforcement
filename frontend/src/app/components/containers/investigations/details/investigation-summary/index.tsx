@@ -3,12 +3,14 @@ import { FC, useState } from "react";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
 import { InvestigationEditForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-edit";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -23,6 +25,10 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   caseGuid,
   caseName,
 }) => {
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
+  const leadAgency = agencyText ? agencyText.label : "Unknown";
+
   const discoveryDate = investigationData?.discoveryDate
     ? new Date(investigationData.discoveryDate).toString()
     : undefined;
@@ -60,9 +66,15 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
     <>
       <div className="comp-header-status-container">
         <div className="comp-details-status investigation-header">
+          <dl>
+            <dt id="comp-details-lead-agency-text-id">Lead Agency</dt>
+            <div>
+              <i className="bi bi-buildings"></i>&nbsp;{leadAgency}
+            </div>
+          </dl>
           <dl className="comp-details-date-assigned">
             <dt>Discovery date</dt>
-            <dd className="comp-date-time-value">
+            <dd className="comp-date-time-value flex-column">
               {discoveryDate && (
                 <>
                   <div>
@@ -79,28 +91,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             </dd>
           </dl>
 
-          <dl className="comp-details-date-logged">
-            <dt>Date logged</dt>
-            <dd className="comp-date-time-value">
-              {dateLogged && (
-                <>
-                  <div id="case-date-logged">
-                    <i className="bi bi-calendar"></i>
-                    {formatDate(dateLogged)}
-                  </div>
-                  <div>
-                    <i className="bi bi-clock"></i>
-                    {formatTime(dateLogged)}
-                  </div>
-                </>
-              )}
-              {!dateLogged && <>N/A</>}
-            </dd>
-          </dl>
-
           <dl className="comp-details-date-assigned">
             <dt>Last updated</dt>
-            <dd className="comp-date-time-value">
+            <dd className="comp-date-time-value flex-column">
               {lastUpdated && (
                 <>
                   <div>
@@ -170,7 +163,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               onClick={editButtonClick}
             >
               <i className="bi bi-pencil"></i>
-              <span>Edit</span>
+              <span>Edit summary</span>
             </Button>
           </div>
 
