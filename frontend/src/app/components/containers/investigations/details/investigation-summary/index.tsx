@@ -67,7 +67,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <div className="comp-header-status-container">
         <div className="comp-details-status investigation-header">
           <dl>
-            <dt>Lead Agency</dt>
+            <dt id="comp-details-lead-agency-text-id">Lead Agency</dt>
             <div>
               <i className="bi bi-buildings"></i>&nbsp;{leadAgency}
             </div>
