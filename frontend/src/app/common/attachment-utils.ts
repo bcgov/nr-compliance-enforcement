@@ -51,14 +51,17 @@ export async function handlePersistAttachments({
   setAttachmentsToDelete,
   attachmentType,
   complaintType,
-}: PersistAttachmentsParams) {
+}: PersistAttachmentsParams): Promise<void> {
+  const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, complaintType));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, complaintType)));
   }
 
   if (attachmentsToAdd) {
-    dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType, complaintType));
+    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType)));
   }
+
+  await Promise.all(tasks);
 
   // Clear the attachments since they've been added or saved.
   setAttachmentsToAdd(null);

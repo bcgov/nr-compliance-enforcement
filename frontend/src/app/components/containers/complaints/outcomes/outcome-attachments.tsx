@@ -4,12 +4,11 @@ import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { ToggleError } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
 import AttachmentEnum from "@constants/attachment-enum";
-import { clearAttachments, getAttachments, selectAttachments } from "@store/reducers/attachments";
+import { clearAttachments } from "@store/reducers/attachments";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
@@ -30,7 +29,6 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   const EDIT_STATE = 1;
 
   const dispatch = useAppDispatch();
-  const carouselData = useAppSelector(selectAttachments(AttachmentEnum.OUTCOME_ATTACHMENT));
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
@@ -39,43 +37,26 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [outcomeAttachmentCount, setOutcomeAttachmentCount] = useState<number>(0);
-  const [componentState, setComponentState] = useState<number>(DISPLAY_STATE);
-  const [cancelPendingUpload, setCancelPendingUpload] = useState<boolean>(false);
+  const [componentState, setComponentState] = useState<number>(outcomeAttachmentCount > 0 ? DISPLAY_STATE : EDIT_STATE);
+  const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   // state to manage the visibility of the card when showAddButton is true
   const [isCardVisible, setIsCardVisible] = useState<boolean>(!showAddButton);
 
-  const showSectionErrors =
-    componentState === EDIT_STATE &&
-    (outcomeAttachmentCount > 0 || carouselData.length > 0) &&
-    isInEdit.showSectionErrors;
+  const showSectionErrors = componentState === EDIT_STATE && outcomeAttachmentCount > 0 && isInEdit.showSectionErrors;
 
-  // get the attachments when the complaint loads
   useEffect(() => {
-    if (id) {
-      dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
+    dispatch(setIsInEdit({ attachments: componentState === EDIT_STATE }));
+  }, [dispatch, componentState]);
+
+  useEffect(() => {
+    if (showAddButton) {
+      return;
     }
-  }, [id, dispatch]);
 
-  useEffect(() => {
-    if (componentState === DISPLAY_STATE) {
-      dispatch(setIsInEdit({ attachments: false }));
-    } else if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
-      dispatch(setIsInEdit({ attachments: false }));
-    } else dispatch(setIsInEdit({ attachments: true }));
-    return () => {
-      dispatch(setIsInEdit({ attachments: false }));
-    };
-  }, [dispatch, componentState, carouselData, outcomeAttachmentCount]);
-
-  useEffect(() => {
-    if (carouselData.length > 0) {
-      if (showAddButton) setIsCardVisible(true);
-      setComponentState(DISPLAY_STATE);
-    } else {
-      setComponentState(EDIT_STATE);
-    }
-  }, [carouselData, showAddButton]);
+    setIsCardVisible(componentState === EDIT_STATE || outcomeAttachmentCount > 0);
+  }, [componentState, outcomeAttachmentCount, showAddButton]);
 
   const handleSlideCountChange = useCallback(
     (count: number) => {
@@ -86,37 +67,34 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
 
   const saveButtonClick = async () => {
     //initial state when there is no attachments
-    if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
+    if (outcomeAttachmentCount === 0) {
       if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
       return;
     }
 
-    if (!hasValidationErrors()) {
-      handlePersistAttachments({
-        dispatch,
-        attachmentsToAdd,
-        attachmentsToDelete,
-        complaintIdentifier: id,
-        setAttachmentsToAdd,
-        setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
-        complaintType,
-      });
-      if (outcomeAttachmentCount === 0) {
-        if (showAddButton) setIsCardVisible(false);
-        setComponentState(EDIT_STATE);
-      } else {
-        setComponentState(DISPLAY_STATE);
-      }
+    await handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd,
+      attachmentsToDelete,
+      identifier: id,
+      setAttachmentsToAdd,
+      setAttachmentsToDelete,
+      attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
+      complaintType,
+    });
+    setAttachmentRefreshKey((k) => k + 1);
+    if (outcomeAttachmentCount === 0) {
+      if (showAddButton) setIsCardVisible(false);
+      setComponentState(EDIT_STATE);
     } else {
-      ToggleError("Errors in form");
+      setComponentState(DISPLAY_STATE);
     }
   };
 
   const cancelConfirmed = () => {
     //initial state when there is no attachments
-    if (outcomeAttachmentCount === 0 && carouselData.length === 0) {
+    if (outcomeAttachmentCount === 0) {
       setComponentState(EDIT_STATE);
       if (showAddButton) setIsCardVisible(false);
       return;
@@ -125,17 +103,15 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
     if (outcomeAttachmentCount > 0) {
       setAttachmentsToAdd([]);
       dispatch(clearAttachments());
-      setCancelPendingUpload(true);
+      setIsPendingUpload(true);
     }
-    if (carouselData.length > 0) {
+    if (outcomeAttachmentCount > 0) {
       setComponentState(DISPLAY_STATE);
     } else {
       if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);
     }
-    setOutcomeAttachmentCount(carouselData.length);
     setAttachmentsToDelete([]);
-    dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
   };
 
   const cancelButtonClick = () => {
@@ -158,12 +134,6 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
-  };
-
-  const hasValidationErrors = () => {
-    const noErrors = false;
-
-    return noErrors;
   };
 
   return (
@@ -217,15 +187,16 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
             )}
             <AttachmentsCarousel
               attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
-              complaintIdentifier={id}
+              identifier={id}
               allowUpload={componentState === EDIT_STATE}
               allowDelete={componentState === EDIT_STATE}
-              cancelPendingUpload={cancelPendingUpload}
-              setCancelPendingUpload={setCancelPendingUpload}
+              cancelPendingUpload={isPendingUpload}
+              setCancelPendingUpload={setIsPendingUpload}
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
               disabled={isReadOnly}
+              refreshKey={attachmentRefreshKey}
             />
             {componentState === EDIT_STATE && (
               <div className="comp-details-form-buttons">

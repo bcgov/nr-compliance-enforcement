@@ -1,11 +1,10 @@
-export const AddTaskAttachments = {
+export const RemoveAttachments = {
   41: (state: any) => {
+    const { outcomeAttachments } = state.attachments ?? {};
+
     return {
       ...state,
-      attachments: {
-        ...state.attachments,
-        taskAttachments: [],
-      },
+      attachments: outcomeAttachments,
     };
   },
 };

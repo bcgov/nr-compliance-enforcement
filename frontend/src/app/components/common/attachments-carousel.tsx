@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getAttachments, setAttachments, setOutcomeAttachments, setTaskAttachments } from "@store/reducers/attachments";
+import { getAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
@@ -22,6 +22,7 @@ type Props = {
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
   disabled?: boolean | null;
+  refreshKey?: number;
 };
 
 export const AttachmentsCarousel: FC<Props> = ({
@@ -35,6 +36,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   onSlideCountChange,
   setCancelPendingUpload,
   disabled,
+  refreshKey,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -63,19 +65,18 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // get the attachments when the Carousel loads
   useEffect(() => {
-    if (identifier) {
-      dispatch(getAttachments(identifier, attachmentType));
-    }
-  }, [attachmentType, identifier, dispatch]);
-
-  useEffect(() => {
+    console.log(identifier);
     if (!identifier) {
       return;
     }
+
     let isMounted = true;
 
     const loadAttachments = async () => {
+      console.log("Getting attachments: " + attachmentType);
       const attachments = await dispatch(getAttachments(identifier, attachmentType));
+      console.log(attachments);
+      console.log("Got attachments:" + attachmentType);
 
       if (isMounted) {
         setCarouselData(attachments);
@@ -87,16 +88,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     return () => {
       isMounted = false;
     };
-  }, [dispatch, identifier, attachmentType]);
-
-  //-- when the component unmounts clear the attachments from redux
-  useEffect(() => {
-    return () => {
-      dispatch(setAttachments([]));
-      dispatch(setOutcomeAttachments([]));
-      dispatch(setTaskAttachments([]));
-    };
-  }, [dispatch]);
+  }, [dispatch, identifier, attachmentType, refreshKey]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {

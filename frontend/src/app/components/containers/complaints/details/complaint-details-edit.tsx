@@ -186,7 +186,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
 
-  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown) as Option[];
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
@@ -253,6 +253,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
   const [mapElements, setMapElements] = useState<MapElement[]>([]);
 
   const handleSlideCountChange = useCallback(
@@ -314,16 +315,18 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      handlePersistAttachments({
+      await handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        complaintIdentifier: id,
+        identifier: id,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
         attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
         complaintType,
       });
+
+      setAttachmentRefreshKey((k) => k + 1);
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -882,8 +885,9 @@ export const ComplaintDetailsEdit: FC = () => {
                   <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
                     <AttachmentsCarousel
                       attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                      complaintIdentifier={id}
+                      identifier={id}
                       onSlideCountChange={handleSlideCountChange}
+                      refreshKey={attachmentRefreshKey}
                     />
                   </div>
                 </Card.Body>
@@ -1508,7 +1512,7 @@ export const ComplaintDetailsEdit: FC = () => {
               <div>
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                  complaintIdentifier={id}
+                  identifier={id}
                   allowUpload={true}
                   allowDelete={true}
                   onFilesSelected={onHandleAddAttachments}

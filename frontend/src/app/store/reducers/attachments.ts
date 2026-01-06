@@ -1,9 +1,8 @@
-import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "@store/store";
+import { createSlice } from "@reduxjs/toolkit";
+import { AppThunk } from "@store/store";
 import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
-import { AttachmentsState } from "@apptypes/state/attachments-state";
 import config from "@/config";
 import {
   getThumbnailFile,
@@ -15,12 +14,9 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
 import { getComplaintById } from "./complaints";
+import { AttachmentsState } from "@/app/types/state/attachments-state";
 
-const initialState: AttachmentsState = {
-  complaintsAttachments: [],
-  outcomeAttachments: [],
-  taskAttachments: [],
-};
+const initialState: AttachmentsState = {};
 
 /**
  * Attachments for each complaint
@@ -30,82 +26,10 @@ export const attachmentsSlice = createSlice({
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
-    // used when retrieving attachments from objectstore
-    setAttachments: (state, action) => {
-      const {
-        payload: { attachments },
-      } = action;
-      return { ...state, complaintsAttachments: attachments ?? [] };
-    },
-
     // used when removing an attachment from a complaint
-    removeAttachment: (state, action) => {
-      return {
-        ...state,
-        complaintsAttachments: state.complaintsAttachments.filter((attachment) => attachment.id !== action.payload),
-        outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
-        taskAttachments: state.taskAttachments.filter((attachment) => attachment.id !== action.payload),
-      };
-    },
-
-    // used when adding an attachment to a complaint
-    addAttachment: (state, action) => {
-      const { name, type, size, id } = action.payload; // Extract relevant info
-      const serializedFile = { name, type, size, id };
-
-      return {
-        ...state,
-        complaintsAttachments: [...state.complaintsAttachments, serializedFile],
-      };
-    },
-
-    // used when retrieving attachments from objectstore
-    setOutcomeAttachments: (state, action) => {
-      const {
-        payload: { attachments },
-      } = action;
-      return { ...state, outcomeAttachments: attachments ?? [] };
-    },
-
-    setTaskAttachments: (state, action) => {
-      const {
-        payload: { attachments },
-      } = action;
-      return { ...state, taskAttachments: attachments ?? [] };
-    },
-
-    // used when removing an attachment from a complaint
-    removeOutcomeAttachment: (state, action) => {
-      return {
-        ...state,
-        outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
-      };
-    },
-
-    removeTaskAttachment: (state, action) => {
-      return {
-        ...state,
-        outcomeAttachments: state.taskAttachments.filter((attachment) => attachment.id !== action.payload),
-      };
-    },
-
-    // used when adding an attachment to a complaint
-    addOutcomeAttachment: (state, action) => {
-      const { name, type, size, id } = action.payload; // Extract relevant info
-      const serializedFile = { name, type, size, id };
-
-      return {
-        ...state,
-        outcomeAttachments: [...state.outcomeAttachments, serializedFile],
-      };
-    },
-
     clearAttachments: (state) => {
       return {
         ...state,
-        complaintsAttachments: [],
-        outcomeAttachments: [],
-        taskAttachments: [],
       };
     },
   },
@@ -116,17 +40,7 @@ export const attachmentsSlice = createSlice({
 });
 
 // export the actions/reducers
-export const {
-  setAttachments,
-  removeAttachment,
-  addAttachment,
-  setOutcomeAttachments,
-  setTaskAttachments,
-  removeOutcomeAttachment,
-  removeTaskAttachment,
-  addOutcomeAttachment,
-  clearAttachments,
-} = attachmentsSlice.actions;
+export const { clearAttachments } = attachmentsSlice.actions;
 
 // Get list of the attachments
 export const getAttachments =
@@ -196,8 +110,7 @@ export const deleteAttachments =
         try {
           const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
-          await deleteMethod<string>(dispatch, parameters);
-          const response = dispatch(removeAttachment(attachment.id)); // delete from store
+          const response = await deleteMethod<string>(dispatch, parameters);
           if (isImage(attachment.name)) {
             const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
 
@@ -228,7 +141,7 @@ export const deleteAttachments =
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (attachments: File[], identifier: string, attachmentType: AttachmentEnum, complaintType?: string): AppThunk =>
+  (attachments: File[], identifier: string, attachmentType: AttachmentEnum): AppThunk<Promise<void>> =>
   async (dispatch) => {
     if (!attachments) {
       return;
@@ -267,13 +180,6 @@ export const saveAttachments =
           ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
           : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
         const response = await putFile<COMSObject>(dispatch, parameters, header, attachment);
-        switch (attachmentType) {
-          case AttachmentEnum.COMPLAINT_ATTACHMENT:
-            dispatch(addAttachment(response)); // dispatch with serializable payload
-            break;
-          case AttachmentEnum.OUTCOME_ATTACHMENT:
-            dispatch(addOutcomeAttachment(response)); // dispatch with serializable payload
-        }
 
         if (isImage(attachment.name)) {
           const thumbHeader = {
@@ -308,12 +214,6 @@ export const saveAttachments =
       } catch (error) {
         handleError(attachment, error);
       }
-
-      if (isComplaintAttachment && complaintType) {
-        // refresh store
-        dispatch(getComplaintById(identifier, complaintType));
-        dispatch(getAttachments(identifier, attachmentType));
-      }
     }
   };
 
@@ -324,34 +224,5 @@ const handleError = (attachment: File, error: any) => {
     ToggleError(`Attachment "${attachment.name}" could not be saved.`);
   }
 };
-
-//-- selectors
-export const selectAttachments = (attachmentType: AttachmentEnum) =>
-  createSelector(
-    [
-      (state: RootState) => state.attachments.complaintsAttachments,
-      (state: RootState) => state.attachments.outcomeAttachments,
-      (state: RootState) => state.attachments.taskAttachments,
-    ],
-    (complaintsAttachments, outcomeAttachments, taskAttachments): COMSObject[] => {
-      switch (attachmentType) {
-        case AttachmentEnum.COMPLAINT_ATTACHMENT:
-          return complaintsAttachments ?? [];
-        case AttachmentEnum.OUTCOME_ATTACHMENT:
-          return outcomeAttachments ?? [];
-        case AttachmentEnum.TASK_ATTACHMENT:
-          return taskAttachments ?? [];
-      }
-    },
-  );
-
-export const selectOutcomeAttachments =
-  () =>
-  (state: RootState): COMSObject[] => {
-    const { attachments: attachmentsRoot } = state;
-    const { outcomeAttachments } = attachmentsRoot;
-
-    return outcomeAttachments ?? [];
-  };
 
 export default attachmentsSlice.reducer;

@@ -87,6 +87,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -154,7 +155,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const handleSubmit = async () => {
     await form.handleSubmit();
-    handlePersistAttachments({
+    await handlePersistAttachments({
       dispatch,
       attachmentsToAdd,
       attachmentsToDelete,
@@ -163,6 +164,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       setAttachmentsToDelete,
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,
     });
+    setAttachmentRefreshKey((k) => k + 1);
   };
 
   const handleCancel = async () => {
@@ -436,6 +438,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
+              refreshKey={attachmentRefreshKey}
             />
           </fieldset>
         </div>
