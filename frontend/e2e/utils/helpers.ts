@@ -202,6 +202,13 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
         await loc.locator(checkbox).check();
       }
     }
+
+    if (
+      (await page.locator("#select-location-type").count()) > 0 &&
+      (await page.locator("#select-location-type").isVisible())
+    ) {
+      await selectItemById("select-location-type", "Rural", page);
+    }
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
       await loc.locator(checkbox).check();
