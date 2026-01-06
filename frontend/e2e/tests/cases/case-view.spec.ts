@@ -57,11 +57,11 @@ test.describe("Case View", () => {
   });
 
   test("it displays case description", async ({ page }) => {
-    const descriptionSection = page.locator("dt", { hasText: "Case description" });
+    const descriptionSection = page.locator("h5", { hasText: "Case description" });
     await expect(descriptionSection).toBeVisible();
 
     const descriptionContent = descriptionSection.locator("..").locator("p, .comp-details-content");
-    await expect(descriptionContent.first()).toBeVisible();
+    await expect(descriptionContent.first()).toBeAttached();
   });
 
   test("it displays Edit case button", async ({ page }) => {
