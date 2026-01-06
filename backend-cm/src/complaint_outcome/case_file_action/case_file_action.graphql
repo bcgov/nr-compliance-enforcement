@@ -3,7 +3,7 @@ type CaseFileAction {
   actionTypeCode: String!
   actionCode: String!
   actor: String!
-  date: Date!
+  date: DateTime!
   displayOrder: Int
   activeIndicator: Boolean
   shortDescription: String!
