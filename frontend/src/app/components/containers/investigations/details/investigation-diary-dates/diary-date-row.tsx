@@ -14,7 +14,7 @@ interface DiaryDateRowProps {
 export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelete }) => {
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser
-    ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code_ref})`
+    ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
     : "Unknown";
   const addedTimestamp = diaryDate.addedTimestamp
     ? formatDateTime(new Date(diaryDate.addedTimestamp).toISOString())
