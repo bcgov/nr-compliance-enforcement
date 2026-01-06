@@ -179,24 +179,24 @@ export const formatDateTime = (input: string | undefined): string => {
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToFilename = (
+export const injectIdentifierToFilename = (
   filename: string,
-  complaintIdentifier: string,
+  identifier: string,
   attachmentType: AttachmentEnum,
 ): string => {
   // Find the last dot in the filename to separate the extension
   const lastDotIndex = filename.lastIndexOf(".");
 
-  // If there's no dot, just append the complaintId at the end
+  // If there's no dot, just append the identifier at the end
   if (lastDotIndex === -1) {
-    return `${filename} ${complaintIdentifier} ${attachmentType}`;
+    return `${filename} ${identifier} ${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex);
   const fileExtension = filename.substring(lastDotIndex);
 
-  // Otherwise, insert the complaintId before the extension
-  return `${fileNameWithoutExtension} ${complaintIdentifier} ${attachmentType}${fileExtension}`;
+  // Otherwise, insert the identifier before the extension
+  return `${fileNameWithoutExtension} ${identifier} ${attachmentType}${fileExtension}`;
 };
 
 export const isImage = (filename: string): boolean => {
@@ -204,9 +204,9 @@ export const isImage = (filename: string): boolean => {
 };
 
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
-export const injectComplaintIdentifierToThumbFilename = (
+export const injectIdentifierToThumbFilename = (
   filename: string,
-  complaintIdentifier: string,
+  identifier: string,
   attachmentType: AttachmentEnum,
 ): string => {
   // Find the last dot in the filename to separate the extension
@@ -214,14 +214,14 @@ export const injectComplaintIdentifierToThumbFilename = (
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-    return `${filename} ${complaintIdentifier} ${attachmentType}`;
+    return `${filename} ${identifier} ${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return `${fileNameWithoutExtension} ${complaintIdentifier}${attachmentType}${fileExtension}`;
+  return `${fileNameWithoutExtension} ${identifier}${attachmentType}${fileExtension}`;
 };
 
 // Used to retrieve the coordinates in the decimal format

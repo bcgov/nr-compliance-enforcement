@@ -12,11 +12,15 @@ import { RootState } from "@/app/store/store";
 import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { COMSObject } from "@/app/types/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@/app/common/attachment-utils";
+import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -80,6 +84,9 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
   const allOfficers = useAppSelector(selectOfficers);
   const dispatch = useAppDispatch();
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -147,6 +154,15 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const handleSubmit = async () => {
     await form.handleSubmit();
+    handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd,
+      attachmentsToDelete,
+      identifier: task?.taskIdentifier || "",
+      setAttachmentsToAdd,
+      setAttachmentsToDelete,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+    });
   };
 
   const handleCancel = async () => {
@@ -198,6 +214,21 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       label: option.label,
     };
   });
+
+  const onHandleAddAttachments = (selectedFiles: File[]) => {
+    handleAddAttachments(setAttachmentsToAdd, selectedFiles);
+  };
+
+  const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
+  };
+
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setAttachmentCount(count);
+    },
+    [setAttachmentCount],
+  );
 
   return (
     <Card
@@ -394,6 +425,20 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             }}
           />
         </form>
+        <div className="mt-3">
+          <fieldset>
+            <h4>Attachments ({attachmentCount})</h4>
+            <AttachmentsCarousel
+              attachmentType={AttachmentEnum.TASK_ATTACHMENT}
+              identifier={task?.taskIdentifier}
+              allowUpload={true}
+              allowDelete={true}
+              onFilesSelected={onHandleAddAttachments}
+              onFileDeleted={onHandleDeleteAttachment}
+              onSlideCountChange={handleSlideCountChange}
+            />
+          </fieldset>
+        </div>
         <div className="comp-details-form-buttons">
           <Button
             variant="outline-primary"

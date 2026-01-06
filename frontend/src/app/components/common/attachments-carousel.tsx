@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getAttachments, selectAttachments, setAttachments, setOutcomeAttachments } from "@store/reducers/attachments";
+import { getAttachments, setAttachments, setOutcomeAttachments, setTaskAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
@@ -13,7 +13,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 
 type Props = {
   attachmentType: AttachmentEnum;
-  complaintIdentifier?: string;
+  identifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   cancelPendingUpload?: boolean;
@@ -26,7 +26,7 @@ type Props = {
 
 export const AttachmentsCarousel: FC<Props> = ({
   attachmentType,
-  complaintIdentifier,
+  identifier,
   allowUpload,
   allowDelete,
   cancelPendingUpload,
@@ -41,7 +41,7 @@ export const AttachmentsCarousel: FC<Props> = ({
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize);
 
-  const carouselData = useAppSelector(selectAttachments(attachmentType));
+  const [carouselData, setCarouselData] = useState<COMSObject[]>([]);
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
   const SLIDE_HEIGHT = 200;
@@ -61,18 +61,40 @@ export const AttachmentsCarousel: FC<Props> = ({
     }
   }, [carouselData]);
 
-  // get the attachments when the complaint loads
+  // get the attachments when the Carousel loads
   useEffect(() => {
-    if (complaintIdentifier) {
-      dispatch(getAttachments(complaintIdentifier, attachmentType));
+    if (identifier) {
+      dispatch(getAttachments(identifier, attachmentType));
     }
-  }, [attachmentType, complaintIdentifier, dispatch]);
+  }, [attachmentType, identifier, dispatch]);
+
+  useEffect(() => {
+    if (!identifier) {
+      return;
+    }
+    let isMounted = true;
+
+    const loadAttachments = async () => {
+      const attachments = await dispatch(getAttachments(identifier, attachmentType));
+
+      if (isMounted) {
+        setCarouselData(attachments);
+      }
+    };
+
+    loadAttachments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch, identifier, attachmentType]);
 
   //-- when the component unmounts clear the attachments from redux
   useEffect(() => {
     return () => {
       dispatch(setAttachments([]));
       dispatch(setOutcomeAttachments([]));
+      dispatch(setTaskAttachments([]));
     };
   }, [dispatch]);
 

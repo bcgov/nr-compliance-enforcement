@@ -34,11 +34,11 @@ interface PersistAttachmentsParams {
   dispatch: any;
   attachmentsToAdd: File[] | null;
   attachmentsToDelete: COMSObject[] | null;
-  complaintIdentifier: string;
+  identifier: string;
   setAttachmentsToAdd: any;
   setAttachmentsToDelete: any;
   attachmentType: AttachmentEnum;
-  complaintType: string;
+  complaintType?: string;
 }
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
@@ -46,18 +46,18 @@ export async function handlePersistAttachments({
   dispatch,
   attachmentsToAdd,
   attachmentsToDelete,
-  complaintIdentifier,
+  identifier,
   setAttachmentsToAdd,
   setAttachmentsToDelete,
   attachmentType,
   complaintType,
 }: PersistAttachmentsParams) {
   if (attachmentsToDelete) {
-    dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier, complaintType, attachmentType));
+    dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, complaintType));
   }
 
   if (attachmentsToAdd) {
-    dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, complaintType, attachmentType));
+    dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType, complaintType));
   }
 
   // Clear the attachments since they've been added or saved.

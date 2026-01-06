@@ -7,8 +7,8 @@ import { AttachmentsState } from "@apptypes/state/attachments-state";
 import config from "@/config";
 import {
   getThumbnailFile,
-  injectComplaintIdentifierToFilename,
-  injectComplaintIdentifierToThumbFilename,
+  injectIdentifierToFilename,
+  injectIdentifierToThumbFilename,
   isImage,
 } from "@common/methods";
 import { ToggleError, ToggleSuccess } from "@common/toast";
@@ -19,6 +19,7 @@ import { getComplaintById } from "./complaints";
 const initialState: AttachmentsState = {
   complaintsAttachments: [],
   outcomeAttachments: [],
+  taskAttachments: [],
 };
 
 /**
@@ -43,6 +44,7 @@ export const attachmentsSlice = createSlice({
         ...state,
         complaintsAttachments: state.complaintsAttachments.filter((attachment) => attachment.id !== action.payload),
         outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
+        taskAttachments: state.taskAttachments.filter((attachment) => attachment.id !== action.payload),
       };
     },
 
@@ -65,11 +67,25 @@ export const attachmentsSlice = createSlice({
       return { ...state, outcomeAttachments: attachments ?? [] };
     },
 
+    setTaskAttachments: (state, action) => {
+      const {
+        payload: { attachments },
+      } = action;
+      return { ...state, taskAttachments: attachments ?? [] };
+    },
+
     // used when removing an attachment from a complaint
     removeOutcomeAttachment: (state, action) => {
       return {
         ...state,
         outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
+      };
+    },
+
+    removeTaskAttachment: (state, action) => {
+      return {
+        ...state,
+        outcomeAttachments: state.taskAttachments.filter((attachment) => attachment.id !== action.payload),
       };
     },
 
@@ -89,6 +105,7 @@ export const attachmentsSlice = createSlice({
         ...state,
         complaintsAttachments: [],
         outcomeAttachments: [],
+        taskAttachments: [],
       };
     },
   },
@@ -104,20 +121,28 @@ export const {
   removeAttachment,
   addAttachment,
   setOutcomeAttachments,
+  setTaskAttachments,
   removeOutcomeAttachment,
+  removeTaskAttachment,
   addOutcomeAttachment,
   clearAttachments,
 } = attachmentsSlice.actions;
 
-// Get list of the attachments and update store
+// Get list of the attachments
 export const getAttachments =
-  (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
+  (identifier: string, attachmentType: AttachmentEnum): AppThunk<Promise<COMSObject[]>> =>
   async (dispatch) => {
+    const attachmentList: COMSObject[] = [];
     try {
       const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
 
+      const isComplaintAttachment =
+        attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
+
+      const headerKey = isComplaintAttachment ? "x-amz-meta-complaint-id" : "x-amz-meta-task-id";
+
       let response = await get<Array<COMSObject>>(dispatch, parameters, {
-        "x-amz-meta-complaint-id": complaint_identifier,
+        [headerKey]: identifier,
         "x-amz-meta-is-thumb": "N",
         "x-amz-meta-attachment-type": attachmentType,
       });
@@ -126,7 +151,7 @@ export const getAttachments =
         for (const attachment of response) {
           if (isImage(attachment.name)) {
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-              "x-amz-meta-complaint-id": complaint_identifier,
+              [headerKey]: identifier,
               "x-amz-meta-is-thumb": "Y",
               "x-amz-meta-thumb-for": attachment?.id,
             });
@@ -143,19 +168,14 @@ export const getAttachments =
           }
         }
 
-        const attachmentList: Array<COMSObject> = response ?? [];
-
-        switch (attachmentType) {
-          case AttachmentEnum.COMPLAINT_ATTACHMENT:
-            dispatch(setAttachments({ attachments: attachmentList }));
-            break;
-          case AttachmentEnum.OUTCOME_ATTACHMENT:
-            dispatch(setOutcomeAttachments({ attachments: attachmentList }));
-            break;
-        }
+        attachmentList.push(...response);
+        return attachmentList;
       }
+      return attachmentList;
     } catch (error) {
+      console.error(error);
       ToggleError(`Error retrieving attachments`);
+      return [];
     }
   };
 
@@ -163,11 +183,14 @@ export const getAttachments =
 export const deleteAttachments =
   (
     attachments: COMSObject[],
-    complaint_identifier: string,
-    complaintType: string,
+    identifier: string | null,
     attachmentType: AttachmentEnum,
+    complaintType?: string,
   ): AppThunk =>
   async (dispatch) => {
+    const isComplaintAttachment =
+      attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
+
     if (attachments) {
       for (const attachment of attachments) {
         try {
@@ -182,50 +205,57 @@ export const deleteAttachments =
           }
 
           if (response) {
-            const parameters = generateApiParameters(
-              `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
-            );
-            await patch<boolean>(dispatch, parameters);
+            if (isComplaintAttachment) {
+              const parameters = generateApiParameters(
+                `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`,
+              );
+              await patch<boolean>(dispatch, parameters);
+            }
             ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
           }
         } catch (error) {
+          console.error(error);
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
       }
       // refresh store
-      dispatch(getComplaintById(complaint_identifier, complaintType));
-      dispatch(getAttachments(complaint_identifier, attachmentType));
+      if (identifier && complaintType) {
+        dispatch(getComplaintById(identifier, complaintType));
+        dispatch(getAttachments(identifier, attachmentType));
+      }
     }
   };
 
 // save new attachment(s) to object store
 export const saveAttachments =
-  (
-    attachments: File[],
-    complaint_identifier: string,
-    complaintType: string,
-    attachmentType: AttachmentEnum,
-  ): AppThunk =>
+  (attachments: File[], identifier: string, attachmentType: AttachmentEnum, complaintType?: string): AppThunk =>
   async (dispatch) => {
     if (!attachments) {
       return;
     }
 
+    const isComplaintAttachment =
+      attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
+
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
 
-    let historicalComplaintAttachments = await get<Array<COMSObject>>(dispatch, params, {
-      "x-amz-meta-complaint-id": complaint_identifier,
+    const headerKey = isComplaintAttachment ? "x-amz-meta-complaint-id" : "x-amz-meta-task-id";
+
+    const historicalHeader = {
+      [headerKey]: identifier,
       "x-amz-meta-is-thumb": "N",
       "x-amz-meta-attachment-type": attachmentType,
-    });
+    };
+
+    let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader);
 
     for (const attachment of attachments) {
       const attachmentName = encodeURIComponent(
-        injectComplaintIdentifierToFilename(attachment.name, complaint_identifier, attachmentType),
+        injectIdentifierToFilename(attachment.name, identifier, attachmentType),
       );
-      const existingAttachment = historicalComplaintAttachments.find((item) => item.name === attachmentName);
+      const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
       const header = {
-        "x-amz-meta-complaint-id": complaint_identifier,
+        [headerKey]: identifier,
         "x-amz-meta-is-thumb": "N",
         "x-amz-meta-attachment-type": attachmentType,
         "Content-Disposition": `attachment; filename="${attachmentName}"`,
@@ -247,11 +277,11 @@ export const saveAttachments =
 
         if (isImage(attachment.name)) {
           const thumbHeader = {
-            "x-amz-meta-complaint-id": complaint_identifier,
+            [headerKey]: identifier,
             "x-amz-meta-is-thumb": "Y",
             "x-amz-meta-thumb-for": response.id,
             "Content-Disposition": `attachment; filename="${encodeURIComponent(
-              injectComplaintIdentifierToThumbFilename(attachment.name, complaint_identifier, attachmentType),
+              injectIdentifierToThumbFilename(attachment.name, identifier, attachmentType),
             )}"`,
             "Content-Type": "image/jpeg",
           };
@@ -267,18 +297,23 @@ export const saveAttachments =
         }
 
         if (response) {
-          const parameters = generateApiParameters(
-            `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
-          );
-          await patch<boolean>(dispatch, parameters);
+          if (isComplaintAttachment) {
+            const parameters = generateApiParameters(
+              `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`,
+            );
+            await patch<boolean>(dispatch, parameters);
+          }
           ToggleSuccess(`Attachment "${attachment.name}" saved`);
         }
       } catch (error) {
         handleError(attachment, error);
       }
-      // refresh store
-      dispatch(getComplaintById(complaint_identifier, complaintType));
-      dispatch(getAttachments(complaint_identifier, attachmentType));
+
+      if (isComplaintAttachment && complaintType) {
+        // refresh store
+        dispatch(getComplaintById(identifier, complaintType));
+        dispatch(getAttachments(identifier, attachmentType));
+      }
     }
   };
 
@@ -296,13 +331,16 @@ export const selectAttachments = (attachmentType: AttachmentEnum) =>
     [
       (state: RootState) => state.attachments.complaintsAttachments,
       (state: RootState) => state.attachments.outcomeAttachments,
+      (state: RootState) => state.attachments.taskAttachments,
     ],
-    (complaintsAttachments, outcomeAttachments): COMSObject[] => {
+    (complaintsAttachments, outcomeAttachments, taskAttachments): COMSObject[] => {
       switch (attachmentType) {
         case AttachmentEnum.COMPLAINT_ATTACHMENT:
           return complaintsAttachments ?? [];
         case AttachmentEnum.OUTCOME_ATTACHMENT:
           return outcomeAttachments ?? [];
+        case AttachmentEnum.TASK_ATTACHMENT:
+          return taskAttachments ?? [];
       }
     },
   );

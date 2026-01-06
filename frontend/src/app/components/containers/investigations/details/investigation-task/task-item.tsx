@@ -1,5 +1,7 @@
 import { applyStatusClass, formatDate } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
@@ -133,6 +135,17 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
               <dd>
                 <pre id="comp-task-assigned-user">{`${assignedOfficer?.last_name},  ${assignedOfficer?.first_name}`}</pre>
               </dd>
+            </div>
+            <div className="mt-3">
+              <fieldset>
+                <h4>Attachments ({"TBD"})</h4>
+                <AttachmentsCarousel
+                  attachmentType={AttachmentEnum.TASK_ATTACHMENT}
+                  identifier={task?.taskIdentifier}
+                  allowUpload={false}
+                  allowDelete={false}
+                />
+              </fieldset>
             </div>
             <div
               style={{ fontSize: "14px", color: "#7a7a7a" }}
