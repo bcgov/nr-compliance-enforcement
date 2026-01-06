@@ -50,7 +50,7 @@ CREATE POLICY policy_cos_ers_complaints ON complaint.complaint
           INNER JOIN shared.app_user au ON au.app_user_guid = aucx.app_user_guid_ref
           WHERE aucx.complaint_identifier = complaint.complaint_identifier
           AND aucx.app_user_complaint_xref_code = 'COLLABORAT'
-          AND au.auth_user_guid::text = COALESCE(current_setting('jwt.claims.idir_user_guid', true), '')
+          AND UPPER(REPLACE(au.auth_user_guid::text, '-', '')) = UPPER(REPLACE(COALESCE(current_setting('jwt.claims.idir_user_guid', true), ''), '-', ''))
           AND (au.deactivate_ind = false OR au.deactivate_ind IS NULL)
         )
       ) THEN true

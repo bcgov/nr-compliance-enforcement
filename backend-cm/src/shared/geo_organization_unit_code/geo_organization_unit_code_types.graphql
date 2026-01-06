@@ -2,8 +2,8 @@ type GeoOrganizationUnitCode {
   geoOrganizationUnitCode: String
   shortDescription: String
   longDescription: String
-  effectiveDate: Date
-  expiryDate: Date
+  effectiveDate: DateTime
+  expiryDate: DateTime
   geoOrgUnitTypeCode: String
   administrativeOfficeIndicator: Boolean
 }
