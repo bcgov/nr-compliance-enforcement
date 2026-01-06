@@ -13,6 +13,7 @@ interface ValidationDatePickerProps {
   isDisabled?: boolean;
   showPreviousMonths?: boolean;
   showTimePicker?: boolean;
+  vertical?: boolean;
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -27,6 +28,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   isDisabled,
   showPreviousMonths = true,
   showTimePicker = false,
+  vertical = false,
 }) => {
   const handleDateChange = (date: Date) => {
     onChange(date);
@@ -36,11 +38,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   const calculatedBorderClass = errMsg === "" ? "" : "error-border";
 
   return (
-    <div className="comp-lat-long-input">
+    <div className={`comp-lat-long-input ${vertical ? "d-flex flex-column" : ""}`}>
       <div className="d-flex flex-row gap-2">
         <div
           className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
-          style={{ maxWidth: "180px" }}
+          style={vertical ? undefined : { maxWidth: "180px" }}
         >
           <i className="bi bi-calendar" />
           <DatePicker

@@ -130,6 +130,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                   errMsg={field.state.meta.errors?.[0]?.message || field.state.meta.errors?.[0] || ""}
                   maxDate={new Date(2099, 11, 31)}
                   showPreviousMonths={false}
+                  vertical
                 />
               </div>
             )}

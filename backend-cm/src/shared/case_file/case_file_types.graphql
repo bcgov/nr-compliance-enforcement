@@ -1,10 +1,10 @@
-scalar Date
+scalar DateTime
 
 type CaseFile {
   caseIdentifier: String
   leadAgency: AgencyCode
   caseStatus: CaseStatusCode
-  openedTimestamp: Date
+  openedTimestamp: DateTime
   description: String
   name: String
   createdByAppUserGuid: String
@@ -46,8 +46,8 @@ input CaseFileFilters {
   search: String
   leadAgency: String
   caseStatus: String
-  startDate: Date
-  endDate: Date
+  startDate: DateTime
+  endDate: DateTime
   sortBy: String
   sortOrder: String
 }
