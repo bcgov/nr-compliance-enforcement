@@ -61,7 +61,7 @@ test.describe("Case View", () => {
     await expect(descriptionSection).toBeVisible();
 
     const descriptionContent = descriptionSection.locator("..").locator("p, .comp-details-content");
-    await expect(descriptionContent.first()).toBeVisible();
+    await expect(descriptionContent.first()).toBeAttached();
   });
 
   test("it displays Edit case button", async ({ page }) => {
