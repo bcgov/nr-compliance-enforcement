@@ -298,7 +298,7 @@ export const ContraventionForm = ({
     <Card className="mb-3">
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
-          <h4>{isEditMode ? `Edit contravention ${contraventionNumber}` : "Add contravention"}</h4>
+          <h5>{isEditMode ? `Edit contravention ${contraventionNumber}` : "Add contravention"}</h5>
         </div>
       </Card.Header>
       <Card.Body>
