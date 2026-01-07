@@ -3,7 +3,7 @@ import { Nav } from "react-bootstrap";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const INVESTIGATION_TAB_ITEMS = {
-  summary: "Summary",
+  summary: "Details",
   tasks: "Tasks",
   contraventions: "Contraventions",
   parties: "Parties",
