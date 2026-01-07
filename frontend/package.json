@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.165",
+  "version": "2.0.166",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
