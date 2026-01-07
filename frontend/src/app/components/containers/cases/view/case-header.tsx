@@ -35,7 +35,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   return (
     <>
       <div className="comp-details-header">
-        <div className="comp-container mw-100 px-5">
+        <div className="comp-container">
           {/* <!-- breadcrumb start --> */}
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
