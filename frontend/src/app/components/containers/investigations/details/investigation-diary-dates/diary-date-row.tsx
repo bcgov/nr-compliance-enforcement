@@ -44,7 +44,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
         </div>
       </td>
       <td>
-        <div className="d-flex gap-2 justify-content-end text-nowrap">
+        <div className="d-flex gap-2 justify-content-end text-nowrap pt-1">
           <Button
             variant="outline-primary"
             size="sm"

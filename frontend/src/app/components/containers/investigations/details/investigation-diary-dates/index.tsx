@@ -138,7 +138,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid }) => {
       {diaryDates.length === 0 ? (
         <></>
       ) : (
-        <div className="border rounded p-3 mt-3">
+        <div className="border rounded p-3 pt-0 pb-0 mt-3">
           <Table className="mb-0 table-borderless diary-dates-table">
             <tbody>
               {diaryDates.map((diaryDate) => (
