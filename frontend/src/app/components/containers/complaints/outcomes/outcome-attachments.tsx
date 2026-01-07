@@ -8,7 +8,6 @@ import { openModal } from "@store/reducers/app";
 import { useParams } from "react-router-dom";
 import { Button, Card } from "react-bootstrap";
 import AttachmentEnum from "@constants/attachment-enum";
-import { clearAttachments } from "@store/reducers/attachments";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
@@ -102,7 +101,6 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
 
     if (outcomeAttachmentCount > 0) {
       setAttachmentsToAdd([]);
-      dispatch(clearAttachments());
       setIsPendingUpload(true);
     }
     if (outcomeAttachmentCount > 0) {

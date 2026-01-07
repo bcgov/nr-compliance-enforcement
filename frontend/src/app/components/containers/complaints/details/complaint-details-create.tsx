@@ -659,7 +659,7 @@ export const CreateComplaint: FC = () => {
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        complaintIdentifier: complaintId,
+        identifier: complaintId,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
         attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,

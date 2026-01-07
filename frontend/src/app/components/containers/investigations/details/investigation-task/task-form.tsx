@@ -24,8 +24,9 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 
 interface TaskFormProps {
   investigationGuid: string;
-  onClose: () => void;
+  onClose: (newTask?: Task) => void;
   task?: Task;
+  onAttachmentsChanged?: () => void;
 }
 
 const ADD_TASK = gql`
@@ -44,7 +45,7 @@ const EDIT_TASK = gql`
   }
 `;
 
-export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
+export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChanged }: TaskFormProps) => {
   // Form Definition
   const form = useForm({
     defaultValues: {
@@ -87,7 +88,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
-  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -129,11 +129,35 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   // Functions
 
+  const persistTaskAttachments = async (taskIdentifier: string) => {
+    if (!attachmentsToAdd && !attachmentsToDelete) return;
+    await handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd,
+      attachmentsToDelete,
+      identifier: taskIdentifier,
+      setAttachmentsToAdd,
+      setAttachmentsToDelete,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+    });
+    onAttachmentsChanged?.();
+  };
+
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
-    onSuccess: () => {
-      ToggleSuccess("Task added successfully");
-      form.reset();
-      onClose();
+    onSuccess: (data) => {
+      (async () => {
+        try {
+          ToggleSuccess("Task added successfully");
+          await persistTaskAttachments(data.createTask.taskIdentifier);
+          form.reset();
+          onClose({
+            ...data.createTask,
+          } as Task);
+        } catch (error) {
+          console.error("Error persisting attachments:", error);
+          ToggleError("Failed to save attachments for task");
+        }
+      })();
     },
     onError: (error: any) => {
       console.error("Error adding task:", error);
@@ -144,6 +168,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const editTaskMutation = useGraphQLMutation(EDIT_TASK, {
     onSuccess: () => {
       ToggleSuccess("Task edited successfully");
+      void persistTaskAttachments(task!.taskIdentifier);
       form.reset();
       onClose();
     },
@@ -155,16 +180,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const handleSubmit = async () => {
     await form.handleSubmit();
-    await handlePersistAttachments({
-      dispatch,
-      attachmentsToAdd,
-      attachmentsToDelete,
-      identifier: task?.taskIdentifier || "",
-      setAttachmentsToAdd,
-      setAttachmentsToDelete,
-      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
-    });
-    setAttachmentRefreshKey((k) => k + 1);
   };
 
   const handleCancel = async () => {
@@ -438,7 +453,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
-              refreshKey={attachmentRefreshKey}
             />
           </fieldset>
         </div>

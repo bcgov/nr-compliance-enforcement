@@ -10,7 +10,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 
 interface TaskItemProps {
@@ -18,6 +18,7 @@ interface TaskItemProps {
   canEdit: boolean;
   onEdit: (taskId: string) => void;
   investigationData?: Investigation;
+  refreshToken?: number;
 }
 
 const REMOVE_TASK = gql`
@@ -28,12 +29,13 @@ const REMOVE_TASK = gql`
   }
 `;
 
-export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemProps) => {
+export const TaskItem = ({ task, investigationData, canEdit, onEdit, refreshToken }: TaskItemProps) => {
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officerList = useAppSelector(selectOfficers);
+  const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
   const dispatch = useAppDispatch();
@@ -53,6 +55,13 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
       ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove task");
     },
   });
+
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setAttachmentCount(count);
+    },
+    [setAttachmentCount],
+  );
 
   const handleRemoveTask = useCallback(
     (taskIdentifier: string, taskNumber: number) => {
@@ -138,12 +147,14 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
             </div>
             <div className="mt-3">
               <fieldset>
-                <h4>Attachments ({"TBD"})</h4>
+                <h4>Attachments ({attachmentCount})</h4>
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.TASK_ATTACHMENT}
                   identifier={task?.taskIdentifier}
                   allowUpload={false}
                   allowDelete={false}
+                  refreshKey={refreshToken}
+                  onSlideCountChange={handleSlideCountChange}
                 />
               </fieldset>
             </div>

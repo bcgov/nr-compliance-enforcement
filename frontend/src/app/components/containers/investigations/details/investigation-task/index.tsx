@@ -13,14 +13,23 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
   // State
   const [showAddCard, setshowAddCard] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [attachmentRefreshToken, setAttachmentRefreshToken] = useState<{ [taskId: string]: number }>({});
 
   // Data
   const tasks = investigationData?.tasks;
 
   // Functions
-  const handleCloseForm = () => {
+  const handleCloseForm = (newTask?: Task) => {
     setshowAddCard(false);
     setEditingTaskId(null);
+
+    if (newTask) {
+      // bump the refresh token for the new task
+      setAttachmentRefreshToken((prev) => ({
+        ...prev,
+        [newTask.taskIdentifier]: 1,
+      }));
+    }
   };
 
   const handleEditTask = (taskId: string) => {
@@ -43,6 +52,12 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
                 investigationGuid={investigationGuid}
                 task={task}
                 onClose={handleCloseForm}
+                onAttachmentsChanged={() => {
+                  setAttachmentRefreshToken((prev) => ({
+                    ...prev,
+                    [task.taskIdentifier]: (prev[task.taskIdentifier] || 0) + 1,
+                  }));
+                }}
               />
             ) : (
               <TaskItem
@@ -50,6 +65,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
                 investigationData={investigationData}
                 canEdit={!editingTaskId}
                 onEdit={handleEditTask}
+                refreshToken={attachmentRefreshToken[task?.taskIdentifier ?? ""] || 0}
               />
             )}
           </div>

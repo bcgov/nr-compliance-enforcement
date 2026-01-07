@@ -65,7 +65,6 @@ export const AttachmentsCarousel: FC<Props> = ({
 
   // get the attachments when the Carousel loads
   useEffect(() => {
-    console.log(identifier);
     if (!identifier) {
       return;
     }
@@ -73,10 +72,7 @@ export const AttachmentsCarousel: FC<Props> = ({
     let isMounted = true;
 
     const loadAttachments = async () => {
-      console.log("Getting attachments: " + attachmentType);
       const attachments = await dispatch(getAttachments(identifier, attachmentType));
-      console.log(attachments);
-      console.log("Got attachments:" + attachmentType);
 
       if (isMounted) {
         setCarouselData(attachments);
