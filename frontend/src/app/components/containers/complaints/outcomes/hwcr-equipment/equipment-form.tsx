@@ -545,7 +545,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   onChange={(date: Date | null) => date && setDateSet(date)}
                   errMsg={dateSetErrorMsg}
                   selectedDate={dateSet}
-                  placeholder="Select Date"
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                 />
@@ -588,7 +587,6 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       onChange={(date: Date) => setDateRemoved(date)}
                       errMsg={dateRemovedErrorMsg}
                       selectedDate={dateRemoved}
-                      placeholder="Select Date"
                       className="comp-details-edit-calendar-input"
                       classNamePrefix="comp-select"
                     />

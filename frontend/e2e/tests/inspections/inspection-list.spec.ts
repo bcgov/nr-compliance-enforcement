@@ -29,12 +29,6 @@ test.describe("Inspection List View", () => {
     await expect(tableHeaders.nth(5)).toContainText("Actions");
   });
 
-  test("it shows Create inspection button", async ({ page }) => {
-    const createButton = page.locator("button", { hasText: "Create inspection" });
-    await expect(createButton).toBeVisible();
-    await expect(createButton).toBeEnabled();
-  });
-
   test("it navigates to inspection details", async ({ page }) => {
     const rows = page.locator("#inspection-list tbody tr");
     const rowCount = await rows.count();

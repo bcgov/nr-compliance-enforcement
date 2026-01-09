@@ -2,9 +2,9 @@ import { Scalar, CustomScalar } from "@nestjs/graphql";
 import { Kind, ValueNode } from "graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
 
-@Scalar("Date")
-export class DateScalar implements CustomScalar<string, Date> {
-  description = "Date custom scalar type";
+@Scalar("DateTime")
+export class DateTimeScalar implements CustomScalar<string, Date> {
+  description = "DateTime custom scalar type";
 
   parseValue(value: number): Date {
     return new Date(value);
@@ -14,6 +14,32 @@ export class DateScalar implements CustomScalar<string, Date> {
   }
 
   parseLiteral(ast: ValueNode): Date {
+    if (ast.kind === Kind.INT) {
+      return new Date(ast.value);
+    }
+    return null;
+  }
+}
+
+@Scalar("Date")
+export class DateScalar implements CustomScalar<string, Date> {
+  description = "Date custom scalar type for date-only values";
+
+  parseValue(value: string | number): Date {
+    if (typeof value === "string") {
+      return new Date(value + "T00:00:00.000Z");
+    }
+    return new Date(value);
+  }
+
+  serialize(value: Date): string {
+    return value.toISOString().split("T")[0];
+  }
+
+  parseLiteral(ast: ValueNode): Date {
+    if (ast.kind === Kind.STRING) {
+      return new Date(ast.value + "T00:00:00.000Z");
+    }
     if (ast.kind === Kind.INT) {
       return new Date(ast.value);
     }

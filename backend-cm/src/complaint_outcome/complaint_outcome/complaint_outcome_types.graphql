@@ -1,4 +1,4 @@
-scalar Date
+scalar DateTime
 
 type KeyValuePair {
   key: String
@@ -57,7 +57,7 @@ type EquipmentDetails {
   address: String
   xCoordinate: String
   yCoordinate: String
-  createDate: Date
+  createDate: DateTime
   actions: [CaseFileAction]
   wasAnimalCaptured: String
   quantity: Int
@@ -124,7 +124,7 @@ type Decision {
   assignedTo: String
   actionTaken: String
   actionTakenLongDescription: String
-  actionTakenDate: Date
+  actionTakenDate: DateTime
 }
 
 type PermitSite {

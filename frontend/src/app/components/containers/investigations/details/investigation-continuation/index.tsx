@@ -22,7 +22,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid, profileDisplayName } from "@store/reducers/app";
 import "@assets/sass/investigation-continuation.scss";
-import { CompDateTimePicker } from "@/app/components/common/comp-date-time-picker";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 const SAVE_REPORT_MUTATION = gql`
   mutation SaveContinuationReport($input: ContinuationReportInput!) {
@@ -170,12 +170,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   };
 
   return (
-    <div className="comp-complaint-details mt-4">
+    <div className="comp-complaint-details">
       <div
         className="comp-details-section-header flex gap-3"
         style={{ justifyContent: "flex-start" }}
       >
-        <h2>Continuation report</h2>
+        <h3>Continuation report</h3>
         <Button
           variant="outline-primary"
           size="sm"
@@ -199,26 +199,35 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           </div>
 
           {/* Date actioned */}
-          <div className="mt-3 comp-details-form-row w-50">
-            <div className="col-4">
+          <div className="mt-3 comp-details-form-row">
+            <div className="col-2">
               Date/time actioned<span className="required-ind">*</span>
             </div>
             <div className="comp-details-edit-input">
-              <CompDateTimePicker
-                value={selectedActionedDateTime}
+              <ValidationDatePicker
+                id="investigation-continuation-report-date-picker"
+                selectedDate={selectedActionedDateTime}
                 onChange={handleActionedDateTimeChange}
+                className="comp-details-edit-calendar-input"
+                classNamePrefix="comp-select"
+                errMsg={
+                  selectedActionedDateTime && selectedActionedDateTime > new Date()
+                    ? "Date and time cannot be in the future"
+                    : ""
+                }
                 maxDate={new Date()}
+                showTimePicker={true}
               />
             </div>
           </div>
 
           {/* Officer assigned */}
           <div
-            className="comp-details-form-row w-50"
+            className="comp-details-form-row"
             id="officer-assigned-pair-id"
           >
             <div
-              className="col-4"
+              className="col-2"
               id="officer-assigned-select-label-id"
             >
               Officer<span className="required-ind">*</span>
@@ -228,7 +237,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               showInactive={false}
               classNamePrefix="comp-select"
               onChange={(e) => handleAssignedOfficerChange(e)}
-              className="comp-details-input w-100 max-w-350"
+              className="comp-details-input w-100 max-w-370"
               options={assignableOfficers}
               placeholder="Select"
               enableValidation={false}

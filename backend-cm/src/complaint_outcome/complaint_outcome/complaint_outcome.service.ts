@@ -1242,15 +1242,12 @@ export class ComplaintOutcomeService {
       reviewInput: ReviewInput,
     ): Promise<string> => {
       try {
-        let complaintOutcomeId: string;
-        await this.prisma.$transaction(async (db) => {
-          //create case
-          complaintOutcomeId = await this.createComplaintOutcome(db, {
-            complaintId: reviewInput.complaintId,
-            outcomeAgencyCode: reviewInput.outcomeAgencyCode,
-            createUserId: reviewInput.userId,
-            reviewRequired: true,
-          });
+        //create complaint outcome ("case" in the old naming convention)
+        const complaintOutcomeId = await this.createComplaintOutcome(db, {
+          complaintId: reviewInput.complaintId,
+          outcomeAgencyCode: reviewInput.outcomeAgencyCode,
+          createUserId: reviewInput.userId,
+          reviewRequired: true,
         });
         return complaintOutcomeId;
       } catch (err) {

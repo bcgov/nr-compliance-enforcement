@@ -1,15 +1,16 @@
 import { Investigation } from "@/generated/graphql";
-import { FC } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { FC, useState } from "react";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
-import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
+import { InvestigationEditForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-edit";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -24,7 +25,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   caseGuid,
   caseName,
 }) => {
-  const navigate = useNavigate();
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
+  const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   const discoveryDate = investigationData?.discoveryDate
     ? new Date(investigationData.discoveryDate).toString()
@@ -35,7 +38,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const lastUpdated = investigationData?.openedTimestamp
     ? new Date(investigationData.openedTimestamp).toString()
     : undefined;
-  const officerAssigned = "Not Assigned";
 
   const primaryInvestigatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));
   const primaryInvestigator = primaryInvestigatorObj
@@ -50,17 +52,37 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const supervisorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.supervisorGuid));
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
+  const [isEdit, setisEdit] = useState(false);
+
   const editButtonClick = () => {
-    navigate(`/investigation/${investigationGuid}/edit`);
+    setisEdit(true);
+  };
+
+  const handleCloseForm = () => {
+    setisEdit(false);
   };
 
   return (
     <>
       <div className="comp-header-status-container">
         <div className="comp-details-status investigation-header">
+          <dl>
+            <dt id="comp-details-lead-agency-label-id">Lead Agency</dt>
+            <dd>
+              <div className="comp-lead-agency">
+                <i className="bi bi-buildings"></i>
+                <span
+                  id="comp-details-lead-agency-text-id"
+                  className="comp-lead-agency-name"
+                >
+                  {leadAgency}
+                </span>
+              </div>
+            </dd>
+          </dl>
           <dl className="comp-details-date-assigned">
             <dt>Discovery date</dt>
-            <dd className="comp-date-time-value">
+            <dd className="comp-date-time-value flex-column">
               {discoveryDate && (
                 <>
                   <div>
@@ -77,28 +99,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             </dd>
           </dl>
 
-          <dl className="comp-details-date-logged">
-            <dt>Date logged</dt>
-            <dd className="comp-date-time-value">
-              {dateLogged && (
-                <>
-                  <div id="case-date-logged">
-                    <i className="bi bi-calendar"></i>
-                    {formatDate(dateLogged)}
-                  </div>
-                  <div>
-                    <i className="bi bi-clock"></i>
-                    {formatTime(dateLogged)}
-                  </div>
-                </>
-              )}
-              {!dateLogged && <>N/A</>}
-            </dd>
-          </dl>
-
           <dl className="comp-details-date-assigned">
             <dt>Last updated</dt>
-            <dd className="comp-date-time-value">
+            <dd className="comp-date-time-value flex-column">
               {lastUpdated && (
                 <>
                   <div>
@@ -159,8 +162,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <hr className="mt-4 mb-4 border-2"></hr>
       <div className="comp-details-view">
         <div className="comp-details-content">
-          <div className="d-flex align-items-center gap-4 mb-3">
-            <h3 className="mb-0">Investigation details</h3>
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <h3 className="mb-0">Investigation summary</h3>
             <Button
               variant="outline-primary"
               size="sm"
@@ -168,88 +171,44 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               onClick={editButtonClick}
             >
               <i className="bi bi-pencil"></i>
-              <span>Edit</span>
+              <span>Edit summary</span>
             </Button>
           </div>
+
           {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
-          {investigationData && (
-            <div>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <strong>Investigation ID</strong>
-                    <p>{investigationData.name}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="form-group">
-                    <strong>Case ID</strong>
-                    {caseGuid ? (
-                      <p>
-                        <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link>
-                      </p>
-                    ) : (
-                      <p>N/A</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {investigationData.description && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <strong>Description</strong>
-                      <p>{investigationData.description}</p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {investigationData.locationAddress && (
-                <div>
-                  <dt>Location/address</dt>
-                  <dd id="comp-details-location">{investigationData.locationAddress}</dd>
-                </div>
-              )}
-              {investigationData.locationDescription && (
-                <div>
-                  <dt>Location description</dt>
-                  <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
-                </div>
-              )}
-              {investigationData.locationGeometry && (
-                <div className="row">
-                  <div className="col-12">
-                    <div className="form-group">
-                      <CompLocationInfo
-                        xCoordinate={
-                          investigationData.locationGeometry.coordinates?.[0] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[0].toString() ?? "")
-                        }
-                        yCoordinate={
-                          investigationData.locationGeometry.coordinates?.[1] === 0
-                            ? ""
-                            : (investigationData.locationGeometry.coordinates?.[1].toString() ?? "")
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-              {investigationData?.locationGeometry?.coordinates && (
-                <MapObjectLocation
-                  map_object_type={MapObjectType.Investigation}
-                  locationCoordinates={{
+
+          {investigationData && !isEdit && (
+            <InvestigationItem
+              investigationData={investigationData}
+              caseGuid={caseGuid}
+              caseName={caseName ?? ""}
+            ></InvestigationItem>
+          )}
+
+          {investigationData && isEdit && (
+            <InvestigationEditForm
+              caseIdentifier={caseGuid}
+              id={investigationData.investigationGuid ?? ""}
+              onClose={handleCloseForm}
+            ></InvestigationEditForm>
+          )}
+
+          <DiaryDates investigationGuid={investigationGuid} />
+          <br />
+          <MapObjectLocation
+            map_object_type={MapObjectType.Investigation}
+            locationCoordinates={
+              investigationData?.locationGeometry?.coordinates
+                ? {
                     lat: investigationData.locationGeometry.coordinates[1],
                     lng: investigationData.locationGeometry.coordinates[0],
-                  }}
-                  draggable={false}
-                />
-              )}
-            </div>
-          )}
+                  }
+                : undefined
+            }
+            draggable={false}
+            defaultCenter={{ lat: 55, lng: -125 }}
+            defaultZoom={investigationData?.locationGeometry?.coordinates ? 12 : 5}
+          />
         </div>
       </div>
     </>

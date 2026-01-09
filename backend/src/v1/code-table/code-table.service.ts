@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, SelectQueryBuilder } from "typeorm";
+import { Repository } from "typeorm";
 
 import BaseCodeTable, {
   Agency,
@@ -838,6 +838,41 @@ export class CodeTableService {
             "{ partyAssociationRoles { partyAssociationRole caseActivityTypeCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const results = data.partyAssociationRoles;
+        return results;
+      }
+
+      case "task-status-type": {
+        const { data } = await get(token, {
+          query: "{ taskStatusCodes { taskStatusCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskStatusCodes;
+        return results;
+      }
+
+      case "task-category-type": {
+        const { data } = await get(token, {
+          query:
+            "{ taskCategoryTypeCodes { taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskCategoryTypeCodes;
+        return results;
+      }
+
+      case "task-type": {
+        const { data } = await get(token, {
+          query:
+            "{ taskTypeCodes { taskTypeCode taskCategoryTypeCode shortDescription longDescription displayOrder activeIndicator}}",
+        });
+        const results = data.taskTypeCodes;
+        return results;
+      }
+
+      case "legislation-type": {
+        const { data } = await get(token, {
+          query:
+            "{ legislationTypeCodes { legislationTypeCode shortDescription longDescription displayOrder activeInd }}",
+        });
+        const results = data.legislationTypeCodes;
         return results;
       }
 

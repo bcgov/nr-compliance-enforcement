@@ -63,6 +63,11 @@ export class InvestigationService {
             active_ind: true,
           },
         },
+        task: {
+          where: {
+            active_ind: true,
+          },
+        },
         contravention: {
           include: {
             contravention_party_xref: {

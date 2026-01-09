@@ -174,6 +174,26 @@ export const CaseView: FC = () => {
       default:
         return (
           <div className="container-fluid px-5 py-3">
+            <div className="row mb-2">
+              <div className="comp-details-section-header">
+                <div>
+                  <h5 className="fw-bold">Case description</h5>
+                  <p>{caseData?.description}</p>
+                </div>
+                <div className="comp-details-section-header-actions align-self-center text-nowrap">
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    id="details-screen-edit-button"
+                    onClick={editButtonClick}
+                  >
+                    {" "}
+                    <i className="bi bi-pencil" /> Edit case
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             <div className="row g-3">
               <ComplaintColumn
                 complaints={linkedComplaints}

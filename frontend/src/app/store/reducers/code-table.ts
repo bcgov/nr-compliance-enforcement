@@ -46,6 +46,10 @@ import {
   fetchEmailReference,
   fetchPartyTypes,
   fetchPartyAssociationRoles,
+  fetchTaskStatusTypes,
+  fetchTaskCategoryTypes,
+  fetchTaskTypes,
+  fetchLegislationTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -98,6 +102,10 @@ const initialState: CodeTableState = {
   "email-reference": [],
   "party-type": [],
   "party-association-role": [],
+  "task-status-type": [],
+  "task-category-type": [],
+  "task-type": [],
+  "legislation-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -168,6 +176,10 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "park-area": parkArea,
       "email-reference": emailReference,
       "party-type": partyType,
+      "task-status-type": taskStatusType,
+      "task-category-type": taskCategoryType,
+      "task-type": taskType,
+      "legislation-type": legislationType,
     },
   } = state;
 
@@ -314,6 +326,18 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(partyAssociationRole).any()) {
       dispatch(fetchPartyAssociationRoles());
     }
+    if (!from(taskStatusType).any()) {
+      dispatch(fetchTaskStatusTypes());
+    }
+    if (!from(taskCategoryType).any()) {
+      dispatch(fetchTaskCategoryTypes());
+    }
+    if (!from(taskType).any()) {
+      dispatch(fetchTaskTypes());
+    }
+    if (!from(legislationType).any()) {
+      dispatch(fetchLegislationTypes());
+    }
   } catch (error) {}
 };
 
@@ -370,6 +394,10 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchParkAreas());
     dispatch(fetchPartyTypes());
     dispatch(fetchPartyAssociationRoles());
+    dispatch(fetchTaskStatusTypes());
+    dispatch(fetchTaskCategoryTypes());
+    dispatch(fetchTaskTypes());
+    dispatch(fetchLegislationTypes());
   } catch (error) {
     console.error(error);
   }

@@ -4,13 +4,13 @@ import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation } from "@/generated/graphql";
-import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
-import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
+import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-task";
+import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -38,6 +38,17 @@ const GET_INVESTIGATION = gql`
           businessGuid
         }
         partyAssociationRole
+      }
+      tasks {
+        taskIdentifier
+        taskTypeCode
+        taskStatusCode
+        assignedUserIdentifier
+        createdByUserIdentifier
+        createdDate
+        taskNumber
+        description
+        activeIndicator
       }
       contraventions {
         contraventionIdentifier
@@ -101,6 +112,13 @@ export const InvestigationDetails: FC = () => {
             caseName={caseName ?? ""}
           />
         );
+      case "tasks":
+        return (
+          <InvestigationTasks
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+          />
+        );
       case "parties":
         return (
           <InvestigationParties
@@ -141,11 +159,7 @@ export const InvestigationDetails: FC = () => {
     <div className="comp-complaint-details">
       <InvestigationHeader investigation={investigationData} />
 
-      <section className="comp-details-body comp-container">
-        <hr className="comp-details-body-spacer"></hr>
-        <InvestigationTabs />
-        {renderTabContent()}
-      </section>
+      <div className="comp-details-body">{renderTabContent()}</div>
     </div>
   );
 };

@@ -36,6 +36,7 @@ import { AddEmailReference } from "@/app/store/migrations/migration-36";
 import { AddSectorComplaints } from "@/app/store/migrations/migration-37";
 import { AddPartyType } from "./migrations/migration-38";
 import { AddPartyAssociationRole } from "./migrations/migration-39";
+import { AddTaskTables } from "./migrations/migration-40";
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -85,6 +86,7 @@ migration = {
   ...AddSectorComplaints,
   ...AddPartyType,
   ...AddPartyAssociationRole,
+  ...AddTaskTables,
 };
 
 export default migration;

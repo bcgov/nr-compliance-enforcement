@@ -15,7 +15,6 @@ import {
   ADD_COMPLAINT_TO_CASE,
   CREATE_ADD_CASE,
   ADD_PARTY,
-  ADD_CONTRAVENTION,
   REMOVE_ACTIVITY_FROM_CASE,
   REMOVE_PARTY,
 } from "@apptypes/modal/modal-types";
@@ -40,7 +39,6 @@ import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-case";
 import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/remove-activity-from-case";
 import { AddPartyModal } from "@/app/components/modal/instances/add-party";
-import { AddContraventionModal } from "@/app/components/modal/instances/add-contraventions";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -60,6 +58,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [CREATE_ADD_CASE]: CreateAddCaseModal,
   [REMOVE_ACTIVITY_FROM_CASE]: RemoveActivityFromCaseModal,
   [ADD_PARTY]: AddPartyModal,
-  [ADD_CONTRAVENTION]: AddContraventionModal,
   [REMOVE_PARTY]: RemovePartyModal,
 };

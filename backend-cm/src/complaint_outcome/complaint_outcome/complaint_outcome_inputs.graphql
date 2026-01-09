@@ -1,4 +1,4 @@
-scalar Date
+scalar DateTime
 
 input KeyValuePairInput {
   key: String
@@ -30,7 +30,7 @@ input AssessmentInput {
 
 input AssessmentActionInput {
   actor: String!
-  date: Date!
+  date: DateTime!
   actionCode: String!
   activeIndicator: Boolean!
   isLegacy: Boolean
@@ -59,7 +59,7 @@ input PreventionInput {
 
 input PreventionActionInput {
   actor: String!
-  date: Date!
+  date: DateTime!
   actionCode: String!
   activeIndicator: Boolean!
 }
@@ -89,7 +89,7 @@ input ReviewInput {
 
 input ReviewActionInput {
   actor: String!
-  date: Date!
+  date: DateTime!
   actionCode: String!
   actionId: String
   activeIndicator: Boolean
@@ -151,7 +151,7 @@ input EquipmentDetailsInput {
 
 input EquipmentActionInput {
   actionGuid: String
-  date: Date
+  date: DateTime
   actor: String
   activeIndicator: Boolean
   actionCode: String
@@ -216,7 +216,7 @@ input DrugInput {
 input WildlifeActionInput {
   id: String
   actor: String
-  date: Date
+  date: DateTime
   action: String
   activeIndicator: Boolean
 }
@@ -249,7 +249,7 @@ input DecisionInput {
   leadAgency: String
   assignedTo: String
   actionTaken: String
-  actionTakenDate: Date
+  actionTakenDate: DateTime
 }
 
 input CreateAuthorizationOutcomeInput {

@@ -44,6 +44,10 @@ export const CODE_TABLE_TYPES = {
   EMAIL_REFERENCE: "email-reference",
   PARTY_TYPE: "party-type",
   PARTY_ASSOCIATION_ROLE: "party-association-role",
+  TASK_STATUS_TYPE: "task-status-type",
+  TASK_TYPE: "task-type",
+  TASK_CATEGORY_TYPE: "task-category-type",
+  LEGISLATION_TYPE: "legislation-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

@@ -131,7 +131,6 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
               selectedDate={date}
               classNamePrefix="comp-details-edit-calendar-input"
               className={"animal-drug-auth-details-input"}
-              placeholder={"Select"}
               errMsg={authorizationDateError}
             />
           </div>

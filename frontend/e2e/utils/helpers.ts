@@ -132,19 +132,9 @@ export async function enterDateTimeInDatePicker(
 
   // Locate the time input field and click it to open the time picker
   if (hour && minute) {
-    await page.locator(`#${datePickerId}`).click();
-    await page.locator(".react-datepicker-time__input").locator("input:scope").fill(`${hour}:${minute}`);
+    await page.locator(`#${datePickerId}-timepicker`).locator("input:scope").fill(`${hour}:${minute}`);
     await page.keyboard.press("Escape");
     await page.keyboard.press("Escape");
-  }
-}
-
-export async function enterDateTimeInCompDateTimePicker(page: Page, day: string, hour?: string, minute?: string) {
-  await page.locator("#incident-date").locator("input:scope").fill(`2025-06-${day}`);
-
-  // Locate the time input field and click it to open the time picker
-  if (hour && minute) {
-    await page.locator("#incident-time").locator("input:scope").fill(`${hour}:${minute}`);
   }
 }
 
@@ -189,6 +179,23 @@ interface HWCSectionParams {
   equipmentType?;
 }
 
+async function fillInHWCAssessment(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
+  const { actionRequired, checkboxes } = sectionParams;
+  await selectItemById("action-required", actionRequired, page);
+  if (actionRequired === "Yes") {
+    for (let checkbox of checkboxes) {
+      await loc.locator(checkbox).check();
+    }
+  }
+
+  if (
+    (await page.locator("#select-location-type").count()) > 0 &&
+    (await page.locator("#select-location-type").isVisible())
+  ) {
+    await selectItemById("select-location-type", "Rural", page);
+  }
+}
+
 export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
   let officerId = "prev-educ-outcome-officer";
   let datePickerId = "prev-educ-outcome-date";
@@ -206,12 +213,7 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
   }
 
   if (section === "ASSESSMENT" && actionRequired) {
-    await selectItemById("action-required", actionRequired, page);
-    if (actionRequired === "Yes") {
-      for (let checkbox of checkboxes) {
-        await loc.locator(checkbox).check();
-      }
-    }
+    await fillInHWCAssessment(loc, page, sectionParams);
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
       await loc.locator(checkbox).check();

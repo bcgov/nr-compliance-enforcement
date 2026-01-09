@@ -27,9 +27,11 @@ a {
 }
 
 .comp-container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 24px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 // APPLICATION HEADER
@@ -526,7 +528,6 @@ button.modal-buttons {
 }
 
 .refer-complaint-modal-alert-item {
-  padding-bottom: 5px;
   color: rgba(149, 125, 49);
 }
 
@@ -651,6 +652,10 @@ p {
   margin-top: -4px;
 }
 
+.breadcrumb {
+  --bs-breadcrumb-divider-color: #{$white};
+}
+
 // BUTTONS
 .btn {
   font-size: 0.875rem;
@@ -708,6 +713,9 @@ p {
   .badge {
     margin-top: 2px;
   }
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .comp-card-header-metadata {
@@ -873,6 +881,10 @@ td.actions-col {
 }
 
 // TABS
+.case-nav-tabs .nav-link {
+  transition: none;
+}
+
 .nav-link {
   font-size: 0.875rem;
   color: $bc-brand-links;
@@ -970,5 +982,14 @@ td.actions-col {
 }
 
 .investigation-nav-link.inactive {
+  background-color: $gray-200;
+}
+
+.inspection-nav-link.active {
+  background-color: $bc-gov-primary !important;
+  font-weight: bold !important;
+}
+
+.inspection-nav-link.inactive {
   background-color: $gray-200;
 }

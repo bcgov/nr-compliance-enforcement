@@ -16,46 +16,25 @@
     box-shadow 0.15s ease-in-out;
 }
 
-#incident-date,
-#incident-time,
-#incident-date:focus,
-#incident-time:focus,
-#incident-date:focus-visible,
-#incident-time:focus-visible {
-  border: none;
-  outline: none;
-  margin-left: 8px;
-  padding: 0;
-}
-input[list]::-webkit-calendar-picker-indicator {
-  opacity: 0;
-}
-#incident-date::-webkit-calendar-picker-indicator,
-#incident-time::-webkit-calendar-picker-indicator {
-  display: none;
-}
-input[list] {
-  color: #808080;
-}
-input[list] + datalist option[value=""] {
-  color: #808080 !important;
-}
-input[list]:not(:focus):not([value=""]):not(:placeholder-shown) {
-  color: inherit;
-}
-input[list]:placeholder-shown {
-  color: inherit;
+.comp-date-time-picker {
+  display: block;
+  width: 100%;
+  padding: 4px 12px;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: $gray-900;
+  background-color: $white;
+  background-clip: padding-box;
+  border: 1px solid hsl(0, 0%, 80%);
+  appearance: none;
+  border-radius: 4px;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
-.icon-button {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-}
-
+.comp-date-time-picker:focus-within,
 .comp-form-control:focus-visible {
   border: 1px solid $blue-100 !important;
   outline: none;
@@ -71,10 +50,6 @@ input[list]:placeholder-shown {
   position: relative;
   top: -15px;
   left: -4px;
-}
-
-.placeholder-input {
-  color: #808080 !important;
 }
 
 [data-initials]:before {
@@ -181,17 +156,22 @@ input[list]:placeholder-shown {
   }
 
   // Sizing
-  &-sm::before {
-    width: 2rem;
-    height: 2rem;
-    font-size: 0.875rem;
-    line-height: 2rem;
+  &-sm {
+    --avatar-size: 2rem;
+
+    &::before {
+      width: var(--avatar-size);
+      height: var(--avatar-size);
+      font-size: 0.875rem;
+      line-height: var(--avatar-size);
+    }
   }
 
   span {
     flex: 1 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: var(--avatar-size);
   }
 
   // Color Variations
@@ -298,15 +278,15 @@ input[list]:placeholder-shown {
 }
 
 .react-datepicker__input-container input {
-  padding: 6px 10px 5px 10px;
+  padding-left: 10px;
   width: 100%;
-  background-color: hsl(0, 0%, 95%);
-  border-color: hwb(0 90% 10%);
-  color: hsl(0, 0%, 60%);
+  color: #1a1a1a;
   border-radius: 4px;
-  border-style: solid;
+  border-style: none;
   border-width: 1px;
   box-sizing: border-box;
+  outline: none;
+  box-shadow: none;
 }
 
 .react-datepicker__view-calendar-icon input {
@@ -327,7 +307,9 @@ input[list]:placeholder-shown {
   position: absolute;
 }
 
-.datepicker-disabled > .react-datepicker__view-calendar-icon input {
+.datepicker-disabled,
+.datepicker-disabled > .react-datepicker__view-calendar-icon input,
+.datepicker-disabled .react-datepicker__input-container input {
   background-color: hsl(0, 0%, 95%);
   border-color: hwb(0 90% 10%);
   color: hsl(0, 0%, 60%);
@@ -502,4 +484,19 @@ input[list]:placeholder-shown {
 .redirect-title {
   margin-top: 0.4em;
   margin-bottom: auto;
+}
+
+.diary-dates-table tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+// Keep form rows stacked vertically inside modals
+.modal .comp-details-form-row {
+  flex-direction: column;
+  gap: 4px;
+
+  > label {
+    width: auto;
+    margin-top: 0;
+  }
 }

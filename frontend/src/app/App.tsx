@@ -34,13 +34,13 @@ import GenericErrorBoundary from "./components/error-handling/generic-error-boun
 import { VerifyAccess } from "./components/containers/pages/verify-access";
 import { Roles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
+import { LegislationSourceManagement } from "./components/containers/admin/legislation-source-management";
 import { AppUpdate } from "./AppUpdate";
 import Investigations from "@/app/components/containers/investigations/investigations";
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
 import { isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { PartyView } from "./components/containers/parties/view";
-import InvestigationEdit from "@/app/components/containers/investigations/edit/investigation-edit";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
 import { InspectionDetails } from "@/app/components/containers/inspections/details/inspection-details";
@@ -49,6 +49,7 @@ import Inspections from "@/app/components/containers/inspections/inspections";
 import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
+import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -154,13 +155,7 @@ const App: FC = () => {
                 {investigationsActive && (
                   <Route
                     path="/case/:caseIdentifier/createInvestigation"
-                    element={<InvestigationEdit />}
-                  />
-                )}
-                {investigationsActive && (
-                  <Route
-                    path="/investigation/:id/edit"
-                    element={<InvestigationEdit />}
+                    element={<InvestigationCreate />}
                   />
                 )}
                 {investigationsActive && (
@@ -222,6 +217,12 @@ const App: FC = () => {
                 <Route
                   path="/admin/feature"
                   element={<FeatureManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/laws"
+                  element={<LegislationSourceManagement />}
                 />
               </Route>
               <Route

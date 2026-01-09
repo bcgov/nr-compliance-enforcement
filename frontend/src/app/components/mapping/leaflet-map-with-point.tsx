@@ -24,13 +24,14 @@ type Props = {
   onMarkerMove?: (lat: number, lng: number) => void;
   mapElements: MapElement[];
   geocodedLocation?: { lat: number; lng: number };
+  defaultZoom?: number;
 };
 
 /**
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, geocodedLocation }) => {
+const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, geocodedLocation, defaultZoom = 12 }) => {
   const iconHTML = ReactDOMServer.renderToString(<FontAwesomeIcon icon={faMapMarkerAlt} />);
   const [mapCenterPosition, setMapCenterPosition] = useState<{
     lat: number;
@@ -197,7 +198,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
       <MapContainer
         id="map"
         center={mapCenterPosition}
-        zoom={12}
+        zoom={defaultZoom}
         maxZoom={18}
         style={{ height: "400px", width: "100%" }}
         className="map-container markercluster-map"

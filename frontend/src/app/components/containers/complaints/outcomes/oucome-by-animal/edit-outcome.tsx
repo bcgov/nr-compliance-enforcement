@@ -678,7 +678,6 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     }
                   }}
                   selectedDate={data?.date}
-                  placeholder={"Select"}
                   errMsg={outcomeDateError}
                 />
               </div>

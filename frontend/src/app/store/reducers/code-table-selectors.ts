@@ -1,6 +1,4 @@
 import { RootState } from "@store/store";
-import Option from "@apptypes/app/option";
-import { ScheduleSectorXref } from "@apptypes/app/code-tables/schedule-sector-xref";
 import { createSelector } from "@reduxjs/toolkit";
 const selectCodeTables = (state: RootState) => state.codeTables;
 
@@ -77,5 +75,40 @@ export const selectPartyAssociationRoleDropdown = createSelector([selectCodeTabl
       displayOrder,
       caseActivityTypeCode,
     }),
+  );
+});
+
+export const selectTaskCategory = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-category-type": items } = codeTables;
+  return items.map(({ taskCategoryTypeCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectTaskSubCategory = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-type": items } = codeTables;
+  return items.map(({ taskTypeCode: value, taskCategoryTypeCode: taskCategory, longDescription: label }) => ({
+    label,
+    taskCategory,
+    value,
+  }));
+});
+
+export const selectTaskStatus = createSelector([selectCodeTables], (codeTables) => {
+  const { "task-status-type": items } = codeTables;
+  return items.map(({ taskStatusCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectLegislationTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items;
+});
+
+export const selectLegislationTypeLabels = createSelector([selectCodeTables], (codeTables) => {
+  const { "legislation-type": items } = codeTables;
+  return items.reduce(
+    (acc, item) => {
+      acc[item.legislationTypeCode] = item.shortDescription;
+      return acc;
+    },
+    {} as Record<string, string>,
   );
 });

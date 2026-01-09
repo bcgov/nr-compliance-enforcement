@@ -240,12 +240,20 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
           className="comp-complaint-details-alert refer-complaint-modal-alert"
           id="comp-complaint-refer-alert"
         >
-          <ul className="refer-complaint-modal-alert-list">
-            <FeatureFlag feature={FEATURE_TYPES.REFERRAL_EMAILS}>
-              <li className="refer-complaint-modal-alert-item">{`Clicking ‘Refer’ will send an email on your behalf to notify the recipient of this referral.`}</li>
-            </FeatureFlag>
-            <li className="refer-complaint-modal-alert-item">{`You will no longer have the ability to edit this complaint.`}</li>
-          </ul>
+          <FeatureFlag feature={FEATURE_TYPES.REFERRAL_EMAILS}>
+            <div className="d-flex refer-complaint-modal-alert-item">
+              <div className="align-self-center mx-2">
+                <i className="bi bi-exclamation-triangle-fill"></i>
+              </div>
+              <div>{`Clicking 'Refer' will send an email on your behalf to notify the recipient of this referral.`}</div>
+            </div>
+          </FeatureFlag>
+          <div className="d-flex refer-complaint-modal-alert-item">
+            <div className="align-self-center mx-2">
+              <i className="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>{`You will no longer have the ability to edit this complaint.`}</div>
+          </div>
         </Alert>
         <div className="comp-details-form">
           <div className="comp-details-form-row--refer refer-complaint-agency--new">

@@ -388,6 +388,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const validateLocationType = useCallback((): boolean => {
     if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
       setLocationErrorMessage("Required");
+      return true;
     }
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
       setJustificationRequiredErrorMessage("Required when Action Required is No");
@@ -811,7 +812,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   id="complaint-outcome-date"
                   selectedDate={selectedDate}
                   onChange={handleDateChange}
-                  placeholder="Select date"
                   className="comp-details-edit-calendar-input" // Adjust class as needed
                   classNamePrefix="comp-select" // Adjust class as needed
                   errMsg={assessmentDateErrorMessage} // Pass error message if any

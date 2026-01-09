@@ -6,7 +6,7 @@ type Investigation {
   description: String
   leadAgency: String
   investigationStatus: InvestigationStatusCode
-  openedTimestamp: Date
+  openedTimestamp: DateTime
   caseIdentifier: String
   createdByAppUserGuid: String
   locationGeometry: Point
@@ -16,9 +16,10 @@ type Investigation {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
-  discoveryDate: Date
+  discoveryDate: DateTime
   parties: [InvestigationParty]
   contraventions: [Contravention]
+  tasks: [Task]
 }
 
 input CreateInvestigationInput {
@@ -34,7 +35,7 @@ input CreateInvestigationInput {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
-  discoveryDate: Date
+  discoveryDate: DateTime
 }
 
 input UpdateInvestigationInput {
@@ -48,15 +49,15 @@ input UpdateInvestigationInput {
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
-  discoveryDate: Date
+  discoveryDate: DateTime
 }
 
 input InvestigationFilters {
   search: String
   leadAgency: String
   investigationStatus: String
-  startDate: Date
-  endDate: Date
+  startDate: DateTime
+  endDate: DateTime
   sortBy: String
   sortOrder: String
 }
