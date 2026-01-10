@@ -64,8 +64,17 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
     </Tooltip>
   );
   const isDisabled = () => {
-    const isEnabled = status !== "CLOSED" && (userIsCollaborator || agencyCode === UserService.getUserAgency());
-    return !isEnabled;
+    // Editing is disabled if any of the following are true:
+    // 1. complaint status is "CLOSED"
+    // 2. user's agency doesn't match the note's agency
+    // 3. user's agency does not own the complaint AND the user is not an active collaborator on it
+    const userAgency = UserService.getUserAgency();
+    const noteOwnedByDifferentAgency = agencyCode !== userAgency;
+    const complaintOwnedByDifferentAgency = complaint?.ownedBy !== userAgency;
+
+    return (
+      status === "CLOSED" || noteOwnedByDifferentAgency || (complaintOwnedByDifferentAgency && !userIsCollaborator)
+    );
   };
 
   return (
