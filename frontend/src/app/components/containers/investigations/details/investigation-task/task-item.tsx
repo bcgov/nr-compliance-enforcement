@@ -7,10 +7,11 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 
 interface TaskItemProps {
@@ -18,7 +19,6 @@ interface TaskItemProps {
   canEdit: boolean;
   onEdit: (taskId: string) => void;
   investigationData?: Investigation;
-  refreshToken?: number;
 }
 
 const REMOVE_TASK = gql`
@@ -29,13 +29,14 @@ const REMOVE_TASK = gql`
   }
 `;
 
-export const TaskItem = ({ task, investigationData, canEdit, onEdit, refreshToken }: TaskItemProps) => {
+export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemProps) => {
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officerList = useAppSelector(selectOfficers);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   // Data
   const dispatch = useAppDispatch();
@@ -44,6 +45,18 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit, refreshToke
   const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
   const assignedOfficer = officerList?.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
   const createdOfficer = officerList?.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
+  const taskIdentifier = task.taskIdentifier;
+
+  // Use Effects
+  useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe((id) => {
+      if (id === taskIdentifier) {
+        setAttachmentRefreshKey((k) => k + 1);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [taskIdentifier]);
 
   // Functions
   const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {
@@ -153,7 +166,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit, refreshToke
                   identifier={task?.taskIdentifier}
                   allowUpload={false}
                   allowDelete={false}
-                  refreshKey={refreshToken}
+                  refreshKey={attachmentRefreshKey}
                   onSlideCountChange={handleSlideCountChange}
                 />
               </fieldset>

@@ -83,6 +83,7 @@ import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { Id } from "react-toastify";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -135,6 +136,16 @@ export const ComplaintDetailsEdit: FC = () => {
   const data = useAppSelector(selectComplaint);
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+
+  useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe((complaintId) => {
+      if (complaintId === id) {
+        setAttachmentRefreshKey((k) => k + 1);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [id]);
 
   useEffect(() => {
     dispatch(getCaseFile(id));

@@ -22,12 +22,12 @@ import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments
 import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 interface TaskFormProps {
   investigationGuid: string;
   onClose: (newTask?: Task) => void;
   task?: Task;
-  onAttachmentsChanged?: () => void;
 }
 
 const ADD_TASK = gql`
@@ -46,7 +46,7 @@ const EDIT_TASK = gql`
   }
 `;
 
-export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChanged }: TaskFormProps) => {
+export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
   // Form Definition
   const form = useForm({
     defaultValues: {
@@ -145,7 +145,7 @@ export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChange
       });
     }
 
-    await handlePersistAttachments({
+    handlePersistAttachments({
       dispatch,
       attachmentsToAdd,
       attachmentsToDelete,
@@ -158,7 +158,7 @@ export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChange
       if (attachmentsToAdd) {
         DismissToast(toastId);
       }
-      onAttachmentsChanged?.();
+      attachmentUploadComplete$.next(taskIdentifier);
     });
   };
 
@@ -167,7 +167,7 @@ export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChange
       (async () => {
         try {
           ToggleSuccess("Task added successfully");
-          await persistTaskAttachments(data.createTask.taskIdentifier);
+          persistTaskAttachments(data.createTask.taskIdentifier);
           form.reset();
           onClose({
             ...data.createTask,
