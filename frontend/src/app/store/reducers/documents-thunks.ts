@@ -12,11 +12,11 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 
 export const generateExportComplaintInputParams = (
   id: string,
-  complaintAttachments: COMSObject[],
-  outcomeAttachments: COMSObject[],
   type: string,
   dateLogged: Date,
   agency: string,
+  complaintAttachments: COMSObject[],
+  outcomeAttachments?: COMSObject[],
 ) => {
   let fileName = "";
 
@@ -73,11 +73,11 @@ export const exportComplaint =
 
       const exportComplaintInput = generateExportComplaintInputParams(
         id,
-        complaintAttachments,
-        outcomeAttachments,
         type,
         dateLogged,
         agency,
+        complaintAttachments,
+        outcomeAttachments,
       );
 
       const url = `${config.API_BASE_URL}/v1/document/export-complaint`;

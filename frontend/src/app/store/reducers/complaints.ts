@@ -664,18 +664,16 @@ export const createComplaintReferral =
   async (dispatch, getState) => {
     try {
       const attachments = await dispatch(getAttachments(complaint_identifier, AttachmentEnum.COMPLAINT_ATTACHMENT));
-      console.log("after get");
-      console.log(attachments);
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code_ref);
       const externalAgencyInd = agency?.externalAgencyInd;
 
       const documentExportParams = generateExportComplaintInputParams(
         complaint_identifier,
-        attachments,
         complaint_type,
         date_logged,
         referred_by_agency_code_ref,
+        attachments,
       );
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-referral`, {
         complaint_identifier,
