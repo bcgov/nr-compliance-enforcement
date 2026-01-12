@@ -3,6 +3,7 @@ import { FC, useState } from "react";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
