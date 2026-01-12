@@ -6,11 +6,14 @@ import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-input";
-import { AttachmentsState } from "@/app/types/state/attachments-state";
+import { COMSObject } from "@/app/types/coms/object";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { getAttachments } from "@/app/store/reducers/attachments";
 
 export const generateExportComplaintInputParams = (
   id: string,
-  attachments: AttachmentsState,
+  complaintAttachments: COMSObject[],
+  outcomeAttachments: COMSObject[],
   type: string,
   dateLogged: Date,
   agency: string,
@@ -39,6 +42,8 @@ export const generateExportComplaintInputParams = (
     // Can't find any agency information - use previous standard
     fileName = `Complaint-${id}-${type}-${format(dateLogged, "yyyy-MM-dd")}.pdf`;
   }
+
+  const attachments = { complaintsAttachments: complaintAttachments, outcomeAttachments: outcomeAttachments };
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
   return exportComplaintInput;
@@ -55,7 +60,8 @@ export const exportComplaint =
     forAgency?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
-    const { attachments } = getState();
+    const complaintAttachments = await dispatch(getAttachments(id, AttachmentEnum.COMPLAINT_ATTACHMENT));
+    const outcomeAttachments = await dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
     try {
       const agency = forAgency ?? getUserAgency();
 
@@ -65,7 +71,14 @@ export const exportComplaint =
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const exportComplaintInput = generateExportComplaintInputParams(id, attachments, type, dateLogged, agency);
+      const exportComplaintInput = generateExportComplaintInputParams(
+        id,
+        complaintAttachments,
+        outcomeAttachments,
+        type,
+        dateLogged,
+        agency,
+      );
 
       const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
 
