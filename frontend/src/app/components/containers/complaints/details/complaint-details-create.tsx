@@ -663,7 +663,6 @@ export const CreateComplaint: FC = () => {
         setAttachmentsToAdd,
         setAttachmentsToDelete,
         attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        complaintType,
       });
     }
 

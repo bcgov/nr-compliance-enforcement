@@ -11,6 +11,8 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import { DismissToast, ToggleInformation } from "@/app/common/toast";
+import { Id } from "react-toastify";
 
 type props = {
   showAddButton?: boolean;
@@ -36,21 +38,41 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   // files to remove from COMS when complaint is saved
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [outcomeAttachmentCount, setOutcomeAttachmentCount] = useState<number>(0);
-  const [componentState, setComponentState] = useState<number>(outcomeAttachmentCount > 0 ? DISPLAY_STATE : EDIT_STATE);
+  const [componentState, setComponentState] = useState<number>(EDIT_STATE);
   const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
-  // state to manage the visibility of the card when showAddButton is true
-  const [isCardVisible, setIsCardVisible] = useState<boolean>(!showAddButton);
+  // state to manage the visibility of the card.  Default to true and hide in use effects
+  const [isCardVisible, setIsCardVisible] = useState<boolean>(true);
 
   const showSectionErrors = componentState === EDIT_STATE && outcomeAttachmentCount > 0 && isInEdit.showSectionErrors;
 
+  // Manage reduxState which is used for validation of closed complaints
   useEffect(() => {
     dispatch(setIsInEdit({ attachments: componentState === EDIT_STATE }));
   }, [dispatch, componentState]);
 
+  // Manage component State which controls which buttons are visible
+  useEffect(() => {
+    // When attachments load from server and count > 0, switch to DISPLAY_STATE
+    // But only if there are no pending uploads or deletions
+    if (
+      outcomeAttachmentCount > 0 &&
+      componentState === EDIT_STATE &&
+      (!attachmentsToAdd || attachmentsToAdd.length === 0) &&
+      (!attachmentsToDelete || attachmentsToDelete.length === 0)
+    ) {
+      setComponentState(DISPLAY_STATE);
+    }
+  }, [outcomeAttachmentCount, attachmentsToAdd, attachmentsToDelete]);
+
+  // Manages the Add buton behavior for differences between CEEB and COS attachments
   useEffect(() => {
     if (showAddButton) {
+      // When showAddButton is true, show the card if attachments exist
+      if (outcomeAttachmentCount > 0) {
+        setIsCardVisible(true);
+      }
       return;
     }
 
@@ -65,14 +87,19 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
   );
 
   const saveButtonClick = async () => {
-    //initial state when there is no attachments
-    if (outcomeAttachmentCount === 0) {
-      if (showAddButton) setIsCardVisible(false);
-      setComponentState(EDIT_STATE);
-      return;
+    let toastId: Id;
+
+    if (attachmentsToAdd) {
+      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
     }
 
-    await handlePersistAttachments({
+    handlePersistAttachments({
       dispatch,
       attachmentsToAdd,
       attachmentsToDelete,
@@ -80,9 +107,14 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
       setAttachmentsToAdd,
       setAttachmentsToDelete,
       attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
-      complaintType,
+      isSynchronous: false,
+    }).then(() => {
+      if (attachmentsToAdd) {
+        DismissToast(toastId);
+      }
+      setAttachmentRefreshKey((k) => k + 1);
     });
-    setAttachmentRefreshKey((k) => k + 1);
+
     if (outcomeAttachmentCount === 0) {
       if (showAddButton) setIsCardVisible(false);
       setComponentState(EDIT_STATE);

@@ -147,7 +147,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit, refreshToke
             </div>
             <div className="mt-3">
               <fieldset>
-                <h4>Attachments ({attachmentCount})</h4>
+                {attachmentCount > 0 && <h4>Attachments ({attachmentCount})</h4>}
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.TASK_ATTACHMENT}
                   identifier={task?.taskIdentifier}

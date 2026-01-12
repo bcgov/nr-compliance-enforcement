@@ -38,6 +38,7 @@ interface PersistAttachmentsParams {
   setAttachmentsToAdd: any;
   setAttachmentsToDelete: any;
   attachmentType: AttachmentEnum;
+  isSynchronous: boolean;
   complaintType?: string;
 }
 
@@ -50,15 +51,15 @@ export async function handlePersistAttachments({
   setAttachmentsToAdd,
   setAttachmentsToDelete,
   attachmentType,
-  complaintType,
+  isSynchronous,
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType, complaintType)));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType)));
   }
 
   if (attachmentsToAdd) {
-    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType)));
+    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType, isSynchronous)));
   }
 
   await Promise.all(tasks);

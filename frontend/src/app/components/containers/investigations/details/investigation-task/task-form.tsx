@@ -1,4 +1,4 @@
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
@@ -21,6 +21,7 @@ import { COMSObject } from "@/app/types/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@/app/common/attachment-utils";
 import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { Id } from "react-toastify";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -131,6 +132,19 @@ export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChange
 
   const persistTaskAttachments = async (taskIdentifier: string) => {
     if (!attachmentsToAdd && !attachmentsToDelete) return;
+
+    let toastId: Id;
+
+    if (attachmentsToAdd) {
+      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+    }
+
     await handlePersistAttachments({
       dispatch,
       attachmentsToAdd,
@@ -139,8 +153,13 @@ export const TaskForm = ({ task, investigationGuid, onClose, onAttachmentsChange
       setAttachmentsToAdd,
       setAttachmentsToDelete,
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      isSynchronous: false,
+    }).then(() => {
+      if (attachmentsToAdd) {
+        DismissToast(toastId);
+      }
+      onAttachmentsChanged?.();
     });
-    onAttachmentsChanged?.();
   };
 
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {

@@ -46,7 +46,7 @@ import { from } from "linq-to-typescript";
 import { openModal, isFeatureActive } from "@store/reducers/app";
 import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { ToggleError } from "@common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
 import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
@@ -82,6 +82,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { Id } from "react-toastify";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -315,7 +316,19 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      await handlePersistAttachments({
+      let toastId: Id;
+
+      if (attachmentsToAdd) {
+        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+          position: "top-right",
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+          draggable: false,
+        });
+      }
+
+      handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
@@ -323,10 +336,13 @@ export const ComplaintDetailsEdit: FC = () => {
         setAttachmentsToAdd,
         setAttachmentsToDelete,
         attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        complaintType,
+        isSynchronous: false,
+      }).then(() => {
+        if (attachmentsToAdd) {
+          DismissToast(toastId);
+        }
+        setAttachmentRefreshKey((k) => k + 1);
       });
-
-      setAttachmentRefreshKey((k) => k + 1);
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {

@@ -221,7 +221,7 @@ export const injectIdentifierToThumbFilename = (
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return `${fileNameWithoutExtension} ${identifier}${attachmentType}${fileExtension}`;
+  return `${fileNameWithoutExtension} ${identifier} ${attachmentType}${fileExtension}`;
 };
 
 // Used to retrieve the coordinates in the decimal format
