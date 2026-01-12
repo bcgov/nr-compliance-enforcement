@@ -92,7 +92,7 @@ export const ContraventionItem = ({
     >
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
-          <h4>Contravention {index + 1}</h4>
+          <h5>Contravention {index + 1}</h5>
         </div>
         <div className="comp-card-header-actions">
           <Button

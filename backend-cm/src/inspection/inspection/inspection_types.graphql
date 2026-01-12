@@ -5,7 +5,7 @@ type Inspection {
   description: String
   leadAgency: String
   inspectionStatus: InspectionStatusCode
-  openedTimestamp: Date
+  openedTimestamp: DateTime
   name: String
   createdByAppUserGuid: String
   locationGeometry: Point
@@ -32,8 +32,8 @@ input InspectionFilters {
   search: String
   leadAgency: String
   inspectionStatus: String
-  startDate: Date
-  endDate: Date
+  startDate: DateTime
+  endDate: DateTime
   sortBy: String
   sortOrder: String
 }

@@ -142,6 +142,12 @@ export const formatDate = (input: string | undefined, includeRelative: boolean =
   }
 
   try {
+    // Handle date-only strings eg (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+      if (!includeRelative) return input;
+      return `${input} (${formatDistanceToNow(new Date(input + "T00:00:00Z"), { addSuffix: true })})`;
+    }
+
     const date = new Date(input);
 
     if (Number.isNaN(date.getTime())) {

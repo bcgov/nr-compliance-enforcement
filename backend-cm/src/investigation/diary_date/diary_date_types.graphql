@@ -1,18 +1,21 @@
+scalar Date
+scalar DateTime
+
 type DiaryDate {
   diaryDateGuid: String
   investigationGuid: String
   dueDate: Date
   description: String
-  addedTimestamp: Date
+  addedTimestamp: DateTime
   addedUserGuid: String
-  updatedTimestamp: Date
+  updatedTimestamp: DateTime
   updatedUserGuid: String
 }
 
 input DiaryDateInput {
   diaryDateGuid: String
   investigationGuid: String!
-  dueDate: Date!
+  dueDate: DateTime!
   description: String!
   userGuid: String
 }

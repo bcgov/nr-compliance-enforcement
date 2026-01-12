@@ -4,8 +4,8 @@ type ContinuationReport {
   continuationReportGuid: String
   investigationGuid: String
   contentJson: String
-  actionedTimestamp: Date
-  reportedTimestamp: Date
+  actionedTimestamp: DateTime
+  reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
 }
@@ -15,8 +15,8 @@ input ContinuationReportInput {
   continuationReportGuid: String
   contentJson: String
   contentText: String
-  actionedTimestamp: Date
-  reportedTimestamp: Date
+  actionedTimestamp: DateTime
+  reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
 }

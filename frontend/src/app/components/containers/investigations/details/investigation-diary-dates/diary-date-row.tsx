@@ -14,7 +14,7 @@ interface DiaryDateRowProps {
 export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelete }) => {
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser
-    ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code_ref})`
+    ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
     : "Unknown";
   const addedTimestamp = diaryDate.addedTimestamp
     ? formatDateTime(new Date(diaryDate.addedTimestamp).toISOString())
@@ -35,7 +35,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
         <div className="d-flex gap-4 ">
           <span className="d-flex text-nowrap">
             <i className="bi bi-calendar me-2"></i>
-            <strong>{diaryDate.dueDate ? formatDate(new Date(diaryDate.dueDate).toString()) : "N/A"}</strong>
+            <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
         </div>
@@ -44,7 +44,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
         </div>
       </td>
       <td>
-        <div className="d-flex gap-2 justify-content-end text-nowrap">
+        <div className="d-flex gap-2 justify-content-end text-nowrap pt-1">
           <Button
             variant="outline-primary"
             size="sm"

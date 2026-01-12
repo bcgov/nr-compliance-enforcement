@@ -1,7 +1,10 @@
+import { formatDate, formatTime } from "@/app/common/methods";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
+import { useAppSelector } from "@/app/hooks/hooks";
 import { Investigation } from "@/generated/graphql";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 
 interface InvestigationItemProps {
   investigationData: Investigation;
@@ -10,6 +13,8 @@ interface InvestigationItemProps {
 }
 
 export const InvestigationItem = ({ investigationData, caseGuid, caseName }: InvestigationItemProps) => {
+  const createdByObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
+  const createdBy = createdByObj ? `${createdByObj?.last_name}, ${createdByObj?.first_name}` : "Not Assigned";
   return (
     <section className="comp-details-section">
       <Card
@@ -19,17 +24,27 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
         <Card.Body>
           <dl>
             <div>
-              <dt>Investigation ID</dt>
-              <dd>
-                <pre id="investigation-summary-id">{investigationData.name}</pre>
-              </dd>
-            </div>
-            <div>
               <dt>Case ID</dt>
               <dd>
                 <pre id="investigation-summary-case-id">
                   {caseGuid ? <Link to={`/case/${caseGuid}`}>{caseName || caseGuid}</Link> : "N/A"}
                 </pre>
+              </dd>
+            </div>
+            <div>
+              <dt>Created by</dt>
+              <dd id="comp-details-created-by"> {createdBy}</dd>
+            </div>
+            <div>
+              <dt>Date logged</dt>
+              <dd id="comp-details-date-logged">
+                {investigationData.openedTimestamp && (
+                  <div>
+                    <i className="bi bi-calendar"></i>&nbsp;{formatDate(investigationData.openedTimestamp)}
+                    &nbsp;&nbsp;
+                    <i className="bi bi-clock"></i>&nbsp;{formatTime(investigationData.openedTimestamp)}
+                  </div>
+                )}
               </dd>
             </div>
             {investigationData.description && (
@@ -48,24 +63,19 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
               <dt>Location description</dt>
               <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
             </div>
-            <div className="row">
-              <div className="col-12">
-                <div className="form-group">
-                  <CompLocationInfo
-                    xCoordinate={
-                      investigationData?.locationGeometry?.coordinates?.[0] === 0
-                        ? ""
-                        : (investigationData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
-                    }
-                    yCoordinate={
-                      investigationData?.locationGeometry?.coordinates?.[1] === 0
-                        ? ""
-                        : (investigationData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
-                    }
-                  />
-                </div>
-              </div>
-            </div>
+
+            <CompLocationInfo
+              xCoordinate={
+                investigationData?.locationGeometry?.coordinates?.[0] === 0
+                  ? ""
+                  : (investigationData?.locationGeometry?.coordinates?.[0]?.toString() ?? "")
+              }
+              yCoordinate={
+                investigationData?.locationGeometry?.coordinates?.[1] === 0
+                  ? ""
+                  : (investigationData?.locationGeometry?.coordinates?.[1]?.toString() ?? "")
+              }
+            />
           </dl>
         </Card.Body>
       </Card>

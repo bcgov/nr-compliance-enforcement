@@ -18,7 +18,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
   const tasks = investigationData?.tasks;
 
   // Functions
-  const handleCloseForm = (newTask?: Task) => {
+  const handleCloseForm = () => {
     setshowAddCard(false);
     setEditingTaskId(null);
   };

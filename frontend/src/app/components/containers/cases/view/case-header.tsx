@@ -35,7 +35,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   return (
     <>
       <div className="comp-details-header">
-        <div className="comp-container mw-100 px-5">
+        <div className="comp-container">
           {/* <!-- breadcrumb start --> */}
           <div className="comp-complaint-breadcrumb">
             <nav aria-label="breadcrumb">
@@ -85,31 +85,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
       <CaseTabs />
       {isOnSummaryTab && (
         <div className="px-4">
-          <section className="comp-details-body pb-0">
-            <div className="comp-details-section-header">
-              <div>
-                <dt className="mb-1 pb-0">Case description</dt>
-                <div className="comp-details-content">
-                  <div className="row">
-                    <p>{caseData?.description}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="comp-details-section-header-actions mb-0 pb-0">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="details-screen-edit-button"
-                  onClick={editButtonClick}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit case</span>
-                </Button>
-              </div>
-            </div>
-          </section>
-          {/* <!-- case status details start --> */}
-          <section className="comp-details-body pt-0">
+          <section className="comp-details-body">
             <div className="comp-header-status-container">
               <div className="comp-details-status">
                 <dl>

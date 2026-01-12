@@ -2,6 +2,7 @@ import { FC, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
+import { parse } from "date-fns";
 import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
@@ -43,10 +44,12 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
     },
   });
 
+  const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
+
   useEffect(() => {
     if (show) {
       if (diaryDate) {
-        form.setFieldValue("dueDate", new Date(diaryDate.dueDate));
+        form.setFieldValue("dueDate", parseDate(diaryDate.dueDate));
         form.setFieldValue("description", diaryDate.description || "");
       } else {
         form.setFieldValue("dueDate", null);
@@ -130,6 +133,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                   errMsg={field.state.meta.errors?.[0]?.message || field.state.meta.errors?.[0] || ""}
                   maxDate={new Date(2099, 11, 31)}
                   showPreviousMonths={false}
+                  vertical
                 />
               </div>
             )}
