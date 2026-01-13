@@ -1352,6 +1352,7 @@ export const CreateComplaint: FC = () => {
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
             onSlideCountChange={handleSlideCountChange}
+            showPreview={true}
           />
         </fieldset>
       </section>

@@ -472,6 +472,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
+              showPreview={false}
             />
           </fieldset>
         </div>

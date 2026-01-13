@@ -227,6 +227,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
               onSlideCountChange={handleSlideCountChange}
               disabled={isReadOnly}
               refreshKey={attachmentRefreshKey}
+              showPreview={true}
             />
             {componentState === EDIT_STATE && (
               <div className="comp-details-form-buttons">

@@ -915,6 +915,7 @@ export const ComplaintDetailsEdit: FC = () => {
                       identifier={id}
                       onSlideCountChange={handleSlideCountChange}
                       refreshKey={attachmentRefreshKey}
+                      showPreview={true}
                     />
                   </div>
                 </Card.Body>
@@ -1545,6 +1546,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   onFilesSelected={onHandleAddAttachments}
                   onFileDeleted={onHandleDeleteAttachment}
                   onSlideCountChange={handleSlideCountChange}
+                  showPreview={true}
                 />
               </div>
             </fieldset>
