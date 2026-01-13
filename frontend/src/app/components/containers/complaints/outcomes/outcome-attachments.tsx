@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -215,7 +215,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
                 <span>Save section before closing the complaint.</span>
               </div>
             )}
-            <AttachmentsCarousel
+            <Attachments
               attachmentType={AttachmentEnum.OUTCOME_ATTACHMENT}
               identifier={id}
               allowUpload={componentState === EDIT_STATE}

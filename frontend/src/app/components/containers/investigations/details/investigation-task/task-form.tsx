@@ -19,7 +19,7 @@ import z from "zod";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { COMSObject } from "@/app/types/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@/app/common/attachment-utils";
-import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
+import { Attachments } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -464,7 +464,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         <div className="mt-3">
           <fieldset>
             <h4>Attachments ({attachmentCount})</h4>
-            <AttachmentsCarousel
+            <Attachments
               attachmentType={AttachmentEnum.TASK_ATTACHMENT}
               identifier={task?.taskIdentifier}
               allowUpload={true}

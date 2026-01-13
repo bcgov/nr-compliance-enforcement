@@ -51,7 +51,7 @@ import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { Complaint } from "@apptypes/app/complaints/complaint";
@@ -910,7 +910,7 @@ export const ComplaintDetailsEdit: FC = () => {
               <Card>
                 <Card.Body>
                   <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
-                    <AttachmentsCarousel
+                    <Attachments
                       attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
                       identifier={id}
                       onSlideCountChange={handleSlideCountChange}
@@ -1538,7 +1538,7 @@ export const ComplaintDetailsEdit: FC = () => {
             <fieldset>
               <h3>Complainant attachments ({complaintAttachmentCount})</h3>
               <div>
-                <AttachmentsCarousel
+                <Attachments
                   attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
                   identifier={id}
                   allowUpload={true}

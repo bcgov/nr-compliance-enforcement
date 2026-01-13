@@ -26,7 +26,7 @@ type Props = {
   refreshKey?: number;
 };
 
-export const AttachmentsCarousel: FC<Props> = ({
+export const Attachments: FC<Props> = ({
   attachmentType,
   showPreview,
   identifier,

@@ -34,7 +34,7 @@ import { createComplaint, selectComplaintDetails, setComplaint } from "@store/re
 import { from } from "linq-to-typescript";
 import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
 import { useNavigate } from "react-router-dom";
-import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 
@@ -1345,7 +1345,7 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           <legend>Complainant attachments ({complaintAttachmentCount})</legend>
-          <AttachmentsCarousel
+          <Attachments
             attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
             allowUpload={true}
             allowDelete={true}

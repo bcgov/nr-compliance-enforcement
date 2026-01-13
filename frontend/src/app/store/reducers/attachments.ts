@@ -165,7 +165,7 @@ const saveSingleAttachment = async ({
     };
 
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
-    let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader);
+    let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 
     const thumbName = encodeURIComponent(injectIdentifierToThumbFilename(attachment.name, identifier, attachmentType));
 
@@ -227,7 +227,7 @@ export const saveAttachments =
       "x-amz-meta-attachment-type": attachmentType,
     };
 
-    let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader);
+    let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader, isSynchronous);
 
     for (const attachment of attachments) {
       try {

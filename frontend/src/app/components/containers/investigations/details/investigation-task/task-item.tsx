@@ -1,6 +1,6 @@
 import { applyStatusClass, formatDate } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { AttachmentsCarousel } from "@/app/components/common/attachments-carousel";
+import { Attachments } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
@@ -161,7 +161,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
             <div className="mt-3">
               <fieldset className="comp-carousel-fieldset-no-preview">
                 {attachmentCount > 0 && <h4>Attachments ({attachmentCount})</h4>}
-                <AttachmentsCarousel
+                <Attachments
                   attachmentType={AttachmentEnum.TASK_ATTACHMENT}
                   identifier={task?.taskIdentifier}
                   allowUpload={false}
