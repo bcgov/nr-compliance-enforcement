@@ -33,16 +33,28 @@ interface DeleteAttachmentParams {
   isComplaintAttachment: boolean;
 }
 
-const buildAttachmentHeader = (
-  attachmentConfig: AttachmentTypeConfig,
-  identifier: string,
-  subIdentifier: string | undefined,
-  attachmentType: AttachmentEnum,
-  contentType: string,
-  isThumb: boolean,
-  attachmentName?: string,
-  attachmentId?: string,
-): Record<string, any> => {
+interface BuildHeaderParams {
+  attachmentConfig: AttachmentTypeConfig;
+  identifier: string;
+  subIdentifier: string | undefined;
+  attachmentType: AttachmentEnum;
+  contentType: string;
+  isThumb: boolean;
+  attachmentName?: string;
+  attachmentId?: string;
+}
+
+const buildAttachmentHeader = ({
+  attachmentConfig,
+  identifier,
+  subIdentifier,
+  attachmentType,
+  contentType,
+  isThumb,
+  attachmentName,
+  attachmentId,
+}: BuildHeaderParams): Record<string, any> => {
+  // Common fields
   const header: Record<string, any> = {
     [attachmentConfig.headerKey]: identifier,
     "x-amz-meta-is-thumb": isThumb ? "Y" : "N",
@@ -78,23 +90,30 @@ export const getAttachments =
     try {
       const attachmentConfig = getAttachmentConfig(attachmentType);
       const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
-      const header = buildAttachmentHeader(attachmentConfig, identifier, subIdentifier, attachmentType, "", false);
+      const header = buildAttachmentHeader({
+        attachmentConfig,
+        identifier,
+        subIdentifier,
+        attachmentType,
+        contentType: "",
+        isThumb: false,
+      });
 
       let response = await get<Array<COMSObject>>(dispatch, parameters, header);
 
       if (response && from(response).any()) {
         for (const attachment of response) {
           if (isImage(attachment.name)) {
-            const thumbHeader = buildAttachmentHeader(
+            const thumbHeader = buildAttachmentHeader({
               attachmentConfig,
               identifier,
               subIdentifier,
               attachmentType,
-              "",
-              true,
-              attachment?.name,
-              attachment?.id,
-            );
+              contentType: "",
+              isThumb: true,
+              attachmentName: attachment?.name,
+              attachmentId: attachment?.id,
+            });
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
 
             const thumbId = thumbArrayResponse[0]?.id;
@@ -185,15 +204,15 @@ const saveSingleAttachment = async ({
 
   const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
 
-  const header = buildAttachmentHeader(
+  const header = buildAttachmentHeader({
     attachmentConfig,
     identifier,
     subIdentifier,
     attachmentType,
-    attachment.type,
-    false,
+    contentType: attachment.type,
+    isThumb: false,
     attachmentName,
-  );
+  });
 
   const parameters = existingAttachment
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
@@ -202,15 +221,15 @@ const saveSingleAttachment = async ({
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
 
   if (isImage(attachment.name)) {
-    const historicalThumbHeader = buildAttachmentHeader(
+    const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
       subIdentifier,
       attachmentType,
-      attachment.type,
-      true,
-      attachment.name,
-    );
+      contentType: attachment.type,
+      isThumb: true,
+      attachmentName: attachment.name,
+    });
 
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
@@ -221,16 +240,16 @@ const saveSingleAttachment = async ({
 
     const existingThumb = historicalThumbs.find((item) => item.name === thumbName);
 
-    const thumbHeader = buildAttachmentHeader(
+    const thumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
       subIdentifier,
       attachmentType,
-      attachment.type,
-      true,
-      thumbName,
-      response.id,
-    );
+      contentType: attachment.type,
+      isThumb: true,
+      attachmentName: thumbName,
+      attachmentId: response.id,
+    });
 
     const thumbnailFile = await getThumbnailFile(attachment).catch((error) => {
       console.error("Error occurred while getting thumbnail file:", error);
@@ -273,14 +292,14 @@ export const saveAttachments =
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
 
     // Build header with both primary and sub header keys if applicable
-    const historicalHeader = buildAttachmentHeader(
+    const historicalHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
       subIdentifier,
       attachmentType,
-      "",
-      false,
-    );
+      contentType: "",
+      isThumb: false,
+    });
 
     let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader, isSynchronous);
 
