@@ -674,6 +674,7 @@ export const CreateComplaint: FC = () => {
           attachmentsToAdd,
           attachmentsToDelete,
           identifier: complaintId,
+          subIdentifier: undefined,
           setAttachmentsToAdd,
           setAttachmentsToDelete,
           attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,

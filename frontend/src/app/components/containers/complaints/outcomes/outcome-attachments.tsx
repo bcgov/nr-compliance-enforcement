@@ -104,6 +104,7 @@ export const OutcomeAttachments: FC<props> = ({ showAddButton = false }) => {
       attachmentsToAdd,
       attachmentsToDelete,
       identifier: id,
+      subIdentifier: undefined,
       setAttachmentsToAdd,
       setAttachmentsToDelete,
       attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,

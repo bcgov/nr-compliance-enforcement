@@ -663,7 +663,9 @@ export const createComplaintReferral =
   ): AppThunk =>
   async (dispatch, getState) => {
     try {
-      const attachments = await dispatch(getAttachments(complaint_identifier, AttachmentEnum.COMPLAINT_ATTACHMENT));
+      const attachments = await dispatch(
+        getAttachments(complaint_identifier, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT),
+      );
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code_ref);
       const externalAgencyInd = agency?.externalAgencyInd;

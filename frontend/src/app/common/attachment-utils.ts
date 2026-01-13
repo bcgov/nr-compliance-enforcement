@@ -35,6 +35,7 @@ interface PersistAttachmentsParams {
   attachmentsToAdd: File[] | null;
   attachmentsToDelete: COMSObject[] | null;
   identifier: string;
+  subIdentifier: string | undefined;
   setAttachmentsToAdd: any;
   setAttachmentsToDelete: any;
   attachmentType: AttachmentEnum;
@@ -48,6 +49,7 @@ export async function handlePersistAttachments({
   attachmentsToAdd,
   attachmentsToDelete,
   identifier,
+  subIdentifier,
   setAttachmentsToAdd,
   setAttachmentsToDelete,
   attachmentType,
@@ -59,7 +61,7 @@ export async function handlePersistAttachments({
   }
 
   if (attachmentsToAdd) {
-    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, attachmentType, isSynchronous)));
+    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, subIdentifier, attachmentType, isSynchronous)));
   }
 
   await Promise.all(tasks);

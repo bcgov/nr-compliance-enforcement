@@ -15,6 +15,7 @@ type Props = {
   attachmentType: AttachmentEnum;
   showPreview: boolean;
   identifier?: string;
+  subIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   cancelPendingUpload?: boolean;
@@ -30,6 +31,7 @@ export const Attachments: FC<Props> = ({
   attachmentType,
   showPreview,
   identifier,
+  subIdentifier,
   allowUpload,
   allowDelete,
   cancelPendingUpload,
@@ -74,7 +76,7 @@ export const Attachments: FC<Props> = ({
     let isMounted = true;
 
     const loadAttachments = async () => {
-      const attachments = await dispatch(getAttachments(identifier, attachmentType));
+      const attachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
 
       if (isMounted) {
         setCarouselData(attachments);
@@ -86,7 +88,7 @@ export const Attachments: FC<Props> = ({
     return () => {
       isMounted = false;
     };
-  }, [dispatch, identifier, attachmentType, refreshKey]);
+  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {

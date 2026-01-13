@@ -12,16 +12,18 @@ import {
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
+import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
 
 interface SaveAttachmentParams {
   dispatch: any;
   attachment: File;
   identifier: string;
+  subIdentifier: string | undefined;
   attachmentType: AttachmentEnum;
   isSynchronous: boolean;
   historicalAttachments: Array<COMSObject>;
   isComplaintAttachment: boolean;
-  headerKey: string;
+  attachmentConfig: AttachmentTypeConfig;
 }
 
 interface DeleteAttachmentParams {
@@ -31,33 +33,69 @@ interface DeleteAttachmentParams {
   isComplaintAttachment: boolean;
 }
 
+const buildAttachmentHeader = (
+  attachmentConfig: AttachmentTypeConfig,
+  identifier: string,
+  subIdentifier: string | undefined,
+  attachmentType: AttachmentEnum,
+  contentType: string,
+  isThumb: boolean,
+  attachmentName?: string,
+  attachmentId?: string,
+): Record<string, any> => {
+  const header: Record<string, any> = {
+    [attachmentConfig.headerKey]: identifier,
+    "x-amz-meta-is-thumb": isThumb ? "Y" : "N",
+    "x-amz-meta-attachment-type": attachmentType,
+    "Content-Disposition": `attachment; filename="${attachmentName}"`,
+  };
+
+  if (attachmentConfig.subHeaderKey) {
+    //if we're creating something like a task where we have a parent but not sub identifier yet we need a dummy value to filter everything out
+    header[attachmentConfig.subHeaderKey] = subIdentifier ?? "00000000-0000-0000-0000-000000000000";
+  }
+
+  if (contentType) {
+    header["Content-Type"] = isThumb ? "image/jpeg" : contentType;
+  }
+
+  if (isThumb && attachmentId) {
+    header["x-amz-meta-thumb-for"] = attachmentId;
+  }
+
+  return header;
+};
+
 // Get list of the attachments
 export const getAttachments =
-  (identifier: string, attachmentType: AttachmentEnum): AppThunk<Promise<COMSObject[]>> =>
+  (
+    identifier: string,
+    subIdentifier: string | undefined,
+    attachmentType: AttachmentEnum,
+  ): AppThunk<Promise<COMSObject[]>> =>
   async (dispatch) => {
     const attachmentList: COMSObject[] = [];
     try {
+      const attachmentConfig = getAttachmentConfig(attachmentType);
       const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
+      const header = buildAttachmentHeader(attachmentConfig, identifier, subIdentifier, attachmentType, "", false);
 
-      const isComplaintAttachment =
-        attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
-
-      const headerKey = isComplaintAttachment ? "x-amz-meta-complaint-id" : "x-amz-meta-task-id";
-
-      let response = await get<Array<COMSObject>>(dispatch, parameters, {
-        [headerKey]: identifier,
-        "x-amz-meta-is-thumb": "N",
-        "x-amz-meta-attachment-type": attachmentType,
-      });
+      let response = await get<Array<COMSObject>>(dispatch, parameters, header);
 
       if (response && from(response).any()) {
         for (const attachment of response) {
           if (isImage(attachment.name)) {
-            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-              [headerKey]: identifier,
-              "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": attachment?.id,
-            });
+            const thumbHeader = buildAttachmentHeader(
+              attachmentConfig,
+              identifier,
+              subIdentifier,
+              attachmentType,
+              "",
+              true,
+              attachment?.name,
+              attachment?.id,
+            );
+            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
 
             const thumbId = thumbArrayResponse[0]?.id;
 
@@ -133,23 +171,29 @@ const saveSingleAttachment = async ({
   dispatch,
   attachment,
   identifier,
+  subIdentifier,
   attachmentType,
   isSynchronous,
   historicalAttachments,
   isComplaintAttachment,
-  headerKey,
+  attachmentConfig,
 }: SaveAttachmentParams) => {
-  const attachmentName = encodeURIComponent(injectIdentifierToFilename(attachment.name, identifier, attachmentType));
+  const attachmentIdentifier = subIdentifier ?? identifier;
+  const attachmentName = encodeURIComponent(
+    injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType),
+  );
 
   const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
 
-  const header = {
-    [headerKey]: identifier,
-    "x-amz-meta-is-thumb": "N",
-    "x-amz-meta-attachment-type": attachmentType,
-    "Content-Disposition": `attachment; filename="${attachmentName}"`,
-    "Content-Type": attachment?.type,
-  };
+  const header = buildAttachmentHeader(
+    attachmentConfig,
+    identifier,
+    subIdentifier,
+    attachmentType,
+    attachment.type,
+    false,
+    attachmentName,
+  );
 
   const parameters = existingAttachment
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
@@ -158,27 +202,35 @@ const saveSingleAttachment = async ({
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
 
   if (isImage(attachment.name)) {
-    const historicalThumbHeader = {
-      [headerKey]: identifier,
-      "x-amz-meta-is-thumb": "Y",
-      "x-amz-meta-attachment-type": attachmentType,
-    };
+    const historicalThumbHeader = buildAttachmentHeader(
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      attachment.type,
+      true,
+      attachment.name,
+    );
 
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 
-    const thumbName = encodeURIComponent(injectIdentifierToThumbFilename(attachment.name, identifier, attachmentType));
+    const thumbName = encodeURIComponent(
+      injectIdentifierToThumbFilename(attachment.name, attachmentIdentifier, attachmentType),
+    );
 
     const existingThumb = historicalThumbs.find((item) => item.name === thumbName);
 
-    const thumbHeader = {
-      [headerKey]: identifier,
-      "x-amz-meta-is-thumb": "Y",
-      "x-amz-meta-thumb-for": response.id,
-      "x-amz-meta-attachment-type": attachmentType,
-      "Content-Disposition": `attachment; filename="${thumbName}"`,
-      "Content-Type": "image/jpeg",
-    };
+    const thumbHeader = buildAttachmentHeader(
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      attachment.type,
+      true,
+      thumbName,
+      response.id,
+    );
 
     const thumbnailFile = await getThumbnailFile(attachment).catch((error) => {
       console.error("Error occurred while getting thumbnail file:", error);
@@ -206,6 +258,7 @@ export const saveAttachments =
   (
     attachments: File[],
     identifier: string,
+    subIdentifier: string | undefined,
     attachmentType: AttachmentEnum,
     isSynchronous: boolean,
   ): AppThunk<Promise<void>> =>
@@ -214,18 +267,20 @@ export const saveAttachments =
       return;
     }
 
-    const isComplaintAttachment =
-      attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
+    const attachmentConfig = getAttachmentConfig(attachmentType);
+    const isComplaintAttachment = attachmentConfig.shouldUpdateComplaintDate ?? false;
 
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
 
-    const headerKey = isComplaintAttachment ? "x-amz-meta-complaint-id" : "x-amz-meta-task-id";
-
-    const historicalHeader = {
-      [headerKey]: identifier,
-      "x-amz-meta-is-thumb": "N",
-      "x-amz-meta-attachment-type": attachmentType,
-    };
+    // Build header with both primary and sub header keys if applicable
+    const historicalHeader = buildAttachmentHeader(
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      "",
+      false,
+    );
 
     let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader, isSynchronous);
 
@@ -235,18 +290,18 @@ export const saveAttachments =
           dispatch,
           attachment,
           identifier,
+          subIdentifier,
           attachmentType,
           isSynchronous,
           historicalAttachments,
           isComplaintAttachment,
-          headerKey,
+          attachmentConfig,
         });
       } catch (error) {
         handleError(attachment, error);
       }
     }
   };
-
 const handleError = (attachment: File, error: any) => {
   if (axios.isAxiosError(error) && error.response?.status === 409) {
     ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);

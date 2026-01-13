@@ -163,7 +163,8 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                 {attachmentCount > 0 && <h4>Attachments ({attachmentCount})</h4>}
                 <Attachments
                   attachmentType={AttachmentEnum.TASK_ATTACHMENT}
-                  identifier={task?.taskIdentifier}
+                  identifier={investigationData?.investigationGuid ?? ""}
+                  subIdentifier={task?.taskIdentifier}
                   allowUpload={false}
                   allowDelete={false}
                   refreshKey={attachmentRefreshKey}

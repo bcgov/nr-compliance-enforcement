@@ -60,8 +60,8 @@ export const exportComplaint =
     forAgency?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch, getState) => {
-    const complaintAttachments = await dispatch(getAttachments(id, AttachmentEnum.COMPLAINT_ATTACHMENT));
-    const outcomeAttachments = await dispatch(getAttachments(id, AttachmentEnum.OUTCOME_ATTACHMENT));
+    const complaintAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT));
+    const outcomeAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT));
     try {
       const agency = forAgency ?? getUserAgency();
 

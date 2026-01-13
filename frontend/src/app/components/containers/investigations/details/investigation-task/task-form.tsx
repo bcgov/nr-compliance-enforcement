@@ -149,7 +149,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       dispatch,
       attachmentsToAdd,
       attachmentsToDelete,
-      identifier: taskIdentifier,
+      identifier: investigationGuid,
+      subIdentifier: taskIdentifier,
       setAttachmentsToAdd,
       setAttachmentsToDelete,
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,
@@ -466,7 +467,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             <h4>Attachments ({attachmentCount})</h4>
             <Attachments
               attachmentType={AttachmentEnum.TASK_ATTACHMENT}
-              identifier={task?.taskIdentifier}
+              identifier={investigationGuid}
+              subIdentifier={task?.taskIdentifier}
               allowUpload={true}
               allowDelete={true}
               onFilesSelected={onHandleAddAttachments}
