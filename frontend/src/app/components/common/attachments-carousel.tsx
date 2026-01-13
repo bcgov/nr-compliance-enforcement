@@ -13,6 +13,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 
 type Props = {
   attachmentType: AttachmentEnum;
+  showPreview: boolean;
   identifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
@@ -27,6 +28,7 @@ type Props = {
 
 export const AttachmentsCarousel: FC<Props> = ({
   attachmentType,
+  showPreview,
   identifier,
   allowUpload,
   allowDelete,
@@ -211,31 +213,59 @@ export const AttachmentsCarousel: FC<Props> = ({
   return (
     <div ref={carouselContainerRef}>
       {(allowUpload || (slides && slides?.length > 0)) && (
-        <CarouselProvider
-          naturalSlideWidth={SLIDE_WIDTH}
-          naturalSlideHeight={SLIDE_HEIGHT}
-          totalSlides={slides ? slides.length : 0}
-          visibleSlides={visibleSlides}
-          className="comp-carousel"
-        >
-          <Slider className="coms-slider">
-            {allowUpload && (
-              <AttachmentUpload
-                onFileSelect={onFileSelect}
-                disabled={disabled}
-              />
-            )}
-            {slides?.map((item, index) => (
-              <AttachmentSlide
-                key={item.name}
-                attachment={item}
-                index={index}
-                allowDelete={allowDelete}
-                onFileRemove={() => onFileRemove(item)}
-              />
-            ))}
-          </Slider>
-        </CarouselProvider>
+        <>
+          {showPreview ? (
+            <CarouselProvider
+              naturalSlideWidth={SLIDE_WIDTH}
+              naturalSlideHeight={SLIDE_HEIGHT}
+              totalSlides={slides ? slides.length : 0}
+              visibleSlides={visibleSlides}
+              className="comp-carousel"
+            >
+              <Slider className="coms-slider">
+                {allowUpload && (
+                  <AttachmentUpload
+                    onFileSelect={onFileSelect}
+                    disabled={disabled}
+                  />
+                )}
+                {slides?.map((item, index) => (
+                  <AttachmentSlide
+                    key={item.id}
+                    attachment={item}
+                    index={index}
+                    allowDelete={allowDelete}
+                    onFileRemove={() => onFileRemove(item)}
+                    showPreview={true}
+                  />
+                ))}
+              </Slider>
+            </CarouselProvider>
+          ) : (
+            <div className="comp-carousel-no-preview">
+              {allowUpload && (
+                <div className="comp-carousel-upload-no-preview">
+                  <AttachmentUpload
+                    onFileSelect={onFileSelect}
+                    disabled={disabled}
+                  />
+                </div>
+              )}
+              <div className="comp-carousel-slide-no-preview">
+                {slides?.map((item, index) => (
+                  <AttachmentSlide
+                    key={item.id}
+                    attachment={item}
+                    index={index}
+                    allowDelete={allowDelete}
+                    onFileRemove={() => onFileRemove(item)}
+                    showPreview={showPreview}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -159,7 +159,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
               </dd>
             </div>
             <div className="mt-3">
-              <fieldset>
+              <fieldset className="comp-carousel-fieldset-no-preview">
                 {attachmentCount > 0 && <h4>Attachments ({attachmentCount})</h4>}
                 <AttachmentsCarousel
                   attachmentType={AttachmentEnum.TASK_ATTACHMENT}
@@ -168,6 +168,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                   allowDelete={false}
                   refreshKey={attachmentRefreshKey}
                   onSlideCountChange={handleSlideCountChange}
+                  showPreview={false}
                 />
               </fieldset>
             </div>
