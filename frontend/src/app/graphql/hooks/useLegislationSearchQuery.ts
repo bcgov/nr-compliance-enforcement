@@ -180,8 +180,7 @@ export const convertLegislationToHierarchicalOptions = (
   // Sort comparator: by displayOrder, then by numeric citation
   const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
     (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
-    (Number.parseInt(a.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999) -
-      (Number.parseInt(b.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999);
+    (parseFloat(a.citation ?? "") || 9999) - (parseFloat(b.citation ?? "") || 9999);
 
   // Group by parent, then sort each group
   const childrenMap = new Map<string, Legislation[]>();
