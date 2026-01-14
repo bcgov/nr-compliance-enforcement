@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { getBcLawsXml } from "../../external_api/bc-laws-service";
+import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/bc-laws-service";
 import {
   parseBcLawsXml,
   ParsedLegislationNode,
@@ -20,6 +20,7 @@ interface InsertLegislationContext {
   legislationService: LegislationService;
   logger: Logger;
   errors: string[];
+  rootLegislationGuid?: string;
 }
 
 /**
@@ -91,6 +92,7 @@ function buildFullCitation(actTitle: string, node: ParsedLegislationNode, parent
 /**
  * Recursively inserts legislation nodes into the database
  * @param legislationSourceGuid - Only set on the root node to link back to the import source
+ * @param actGuid - For regulation documents, the parent Act's legislation_guid
  */
 async function insertLegislationTree(
   node: ParsedLegislationNode,
@@ -98,6 +100,7 @@ async function insertLegislationTree(
   parentGuid: string | null = null,
   parentFullCitation: string | null = null,
   legislationSourceGuid: string | null = null,
+  actGuid: string | null = null,
 ): Promise<number> {
   const { actTitle, effectiveDate, legislationService, logger } = context;
   let count = 0;
@@ -108,14 +111,17 @@ async function insertLegislationTree(
   // Only set legislationSourceGuid on root node (when parentGuid is null)
   const sourceGuidForThisNode = parentGuid === null ? legislationSourceGuid : null;
 
+  // For regulation root nodes, link to parent Act if provided
+  const parentLegislationGuid = parentGuid === null && node.typeCode === "REG" && actGuid ? actGuid : parentGuid;
+
   try {
     logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
-    await sleep(50); // Rate limiting
+    await sleep(10); // Rate limiting
 
     // Upsert the legislation record
     const created = await legislationService.upsert({
       legislationTypeCode: node.typeCode,
-      parentLegislationGuid: parentGuid,
+      parentLegislationGuid: parentLegislationGuid,
       legislationSourceGuid: sourceGuidForThisNode,
       citation: node.citation ?? null,
       fullCitation: fullCitation,
@@ -128,15 +134,14 @@ async function insertLegislationTree(
 
     count++;
 
+    // Track root legislation GUID for linking regulations
+    if (parentGuid === null) {
+      context.rootLegislationGuid = created.legislation_guid;
+    }
+
     // Recursively insert children (don't pass legislationSourceGuid - only for root)
     for (const child of node.children) {
-      count += await insertLegislationTree(
-        child,
-        context,
-        created.legislation_guid,
-        fullCitation,
-        null, // Children don't get the source GUID
-      );
+      count += await insertLegislationTree(child, context, created.legislation_guid, fullCitation, null);
     }
   } catch (error) {
     const errorMsg = `${node.typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;
@@ -146,6 +151,122 @@ async function insertLegislationTree(
   }
 
   return count;
+}
+
+interface RegulationImportResult {
+  totalRecords: number;
+  totalRegulations: number;
+  successfulRegs: number;
+  failedRegs: number;
+  skippedRegs: number;
+}
+
+/**
+ * Imports regulations for an Act from its regulationsSourceUrl
+ */
+async function importRegulations(
+  source: LegislationSource,
+  actRootGuid: string,
+  legislationService: LegislationService,
+  logger: Logger,
+  errors: string[],
+): Promise<RegulationImportResult> {
+  const result: RegulationImportResult = {
+    totalRecords: 0,
+    totalRegulations: 0,
+    successfulRegs: 0,
+    failedRegs: 0,
+    skippedRegs: 0,
+  };
+
+  if (!source.regulationsSourceUrl) {
+    return result;
+  }
+
+  logger.log(`\nFetching regulations...`);
+
+  try {
+    const regulations = await getBcLawsRegulations(source.regulationsSourceUrl);
+    result.totalRegulations = regulations.length;
+    logger.log(`Found ${regulations.length} regulation(s) to import`);
+
+    for (const reg of regulations) {
+      // Skip repealed regulations
+      if (reg.status === "Repealed") {
+        logger.log(`  Skipping (Repealed): ${reg.title}`);
+        result.skippedRegs++;
+        continue;
+      }
+
+      const recordCount = await importSingleRegulation(reg, actRootGuid, legislationService, logger, errors);
+      if (recordCount > 0) {
+        result.successfulRegs++;
+        result.totalRecords += recordCount;
+      } else {
+        result.failedRegs++;
+      }
+    }
+
+    // Log summary
+    if (regulations.length > 0) {
+      logger.log(`\nRegulations summary: ${result.successfulRegs} of ${regulations.length} imported successfully`);
+      if (result.skippedRegs > 0) {
+        logger.log(`  ${result.skippedRegs} regulation(s) skipped (Repealed)`);
+      }
+      if (result.failedRegs > 0) {
+        logger.warn(`  ${result.failedRegs} regulation(s) failed to import`);
+      }
+    }
+  } catch (error) {
+    const errorMsg = `Failed to fetch regulations: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(errorMsg);
+    errors.push(errorMsg);
+  }
+
+  return result;
+}
+
+async function importSingleRegulation(
+  reg: Regulation,
+  actRootGuid: string,
+  legislationService: LegislationService,
+  logger: Logger,
+  errors: string[],
+): Promise<number> {
+  logger.log(`  Importing: ${reg.title}`);
+
+  try {
+    logger.log(`  URL: ${reg.url}`);
+    const xmlString = await getBcLawsXml(reg.url);
+    const parsedDocument = parseBcLawsXml(xmlString);
+    const effectiveDate = parseAssentedDate(parsedDocument.metadata.assentedTo);
+
+    const context: InsertLegislationContext = {
+      actTitle: parsedDocument.metadata.title,
+      effectiveDate,
+      legislationService,
+      logger,
+      errors: [],
+    };
+
+    const count = await insertLegislationTree(
+      parsedDocument.root,
+      context,
+      null,
+      null,
+      null,
+      actRootGuid, // Link regulation to parent Act
+    );
+
+    errors.push(...context.errors);
+    logger.log(`  Completed: ${parsedDocument.metadata.title} - ${count} records`);
+    return count;
+  } catch (error) {
+    const errorMsg = `Regulation ${reg.title}: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(`  Error: ${errorMsg}`);
+    errors.push(errorMsg);
+    return 0;
+  }
 }
 
 /**
@@ -186,7 +307,7 @@ async function importLegislationSourceDocument(
       logger,
       errors: [],
     };
-    const insertedCount = await insertLegislationTree(
+    let insertedCount = await insertLegislationTree(
       parsedDocument.root,
       context,
       null, // No parent for root
@@ -194,9 +315,37 @@ async function importLegislationSourceDocument(
       source.legislationSourceGuid, // Link root node to source
     );
 
+    // Import regulations if regulationsSourceUrl is provided
+    let regResult: RegulationImportResult | null = null;
+    if (source.regulationsSourceUrl && context.rootLegislationGuid) {
+      regResult = await importRegulations(
+        source,
+        context.rootLegislationGuid,
+        legislationService,
+        logger,
+        context.errors,
+      );
+      insertedCount += regResult.totalRecords;
+    }
+
+    // Build the success/error log with regulation stats
+    const buildLogMessage = () => {
+      let msg = `Imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
+      if (regResult && regResult.totalRegulations > 0) {
+        msg += `\nRegulations: ${regResult.successfulRegs} of ${regResult.totalRegulations} imported successfully`;
+        if (regResult.skippedRegs > 0) {
+          msg += `, ${regResult.skippedRegs} skipped (Repealed)`;
+        }
+        if (regResult.failedRegs > 0) {
+          msg += `, ${regResult.failedRegs} failed`;
+        }
+      }
+      return msg;
+    };
+
     // Check if there were any errors during import
     if (context.errors.length > 0) {
-      const errorLog = `Import completed with ${context.errors.length} error(s):\n${context.errors.join("\n")}`;
+      const errorLog = `Import completed with ${context.errors.length} error(s):\n${buildLogMessage()}\n\nErrors:\n${context.errors.join("\n")}`;
       await legislationSourceService.markFailed(source.legislationSourceGuid, errorLog);
       logger.warn(
         `Completed with errors: ${source.shortDescription} - ${insertedCount} records, ${context.errors.length} errors`,
@@ -204,7 +353,7 @@ async function importLegislationSourceDocument(
       return insertedCount;
     }
 
-    const successLog = `Successfully imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
+    const successLog = buildLogMessage();
     await legislationSourceService.markImported(source.legislationSourceGuid, successLog);
 
     logger.log(`Completed: ${source.shortDescription} - ${insertedCount} records imported/updated`);

@@ -18,7 +18,7 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { indentByType, Legislation } from "@/app/types/app/legislation";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
@@ -148,6 +148,8 @@ export const ContraventionForm = ({
     agencyCode: userAgency,
     legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SECTION],
     ancestorGuid: regulation || act,
+    // When Act is selected but no regulation, exclude sections from child regulations
+    excludeRegulations: !!act && !regulation,
     enabled: !!regulation || !!act,
   });
 
@@ -162,6 +164,7 @@ export const ContraventionForm = ({
       Legislation.SUBCLAUSE,
       Legislation.DEFINITION,
       Legislation.TEXT,
+      Legislation.TABLE,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -173,11 +176,16 @@ export const ContraventionForm = ({
   const isEditMode = !!contravention;
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
-  // Use hierarchical options for sections (with Parts/Divisions as disabled headers)
+  // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
   const legislationText = legislationTextQuery.data?.legislations
-    ?.filter((section) => !!section.legislationText)
-    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    ?.filter((item) => !!item.legislationText)
+    .sort((a, b) => {
+      if (a.legislationGuid === section) return -1;
+      if (b.legislationGuid === section) return 1;
+      // Sort by displayOrder for children
+      return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
+    });
 
   const partyOptions: Option[] =
     parties
@@ -421,6 +429,44 @@ export const ContraventionForm = ({
                   );
                 }
 
+                if (section.legislationTypeCode === Legislation.TABLE && section.legislationText) {
+                  const lines = section.legislationText.split("\n").filter((line) => line.trim());
+                  const rows = lines.map((line) => line.split("|").map((cell) => cell.trim()));
+                  return (
+                    <div
+                      key={section.legislationGuid}
+                      className={`contravention-text-segment ${indentClass}`}
+                    >
+                      <Table
+                        bordered
+                        size="sm"
+                        className="legislation-table"
+                      >
+                        <thead>
+                          <tr>
+                            {rows[0]?.map((cell, i) => (
+                              <th key={i}>{cell}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rows.slice(1).map((row, rowIdx) => (
+                            <tr key={rowIdx}>
+                              {row.map((cell, cellIdx) => (
+                                <td key={cellIdx}>{cell}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  );
+                }
+
+                // For subsections without explicit citation, show (1)
+                const displayCitation =
+                  section.citation || (section.legislationTypeCode === Legislation.SUBSECTION ? "1" : null);
+
                 return (
                   <button
                     key={section.legislationGuid}
@@ -433,8 +479,8 @@ export const ContraventionForm = ({
                   >
                     <div>
                       <p className={`mb-2 ${indentClass}`}>
-                        {section.legislationTypeCode !== Legislation.SECTION && section.citation && (
-                          <>{`(${section.citation})`} </>
+                        {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
+                          <>{`(${displayCitation})`} </>
                         )}
                         {section.legislationText}
                       </p>

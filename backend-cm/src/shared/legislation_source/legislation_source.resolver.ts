@@ -30,6 +30,7 @@ export class LegislationSourceResolver {
       shortDescription: string;
       longDescription?: string;
       sourceUrl: string;
+      regulationsSourceUrl?: string;
       agencyCode: string;
     },
     @Context() context: any,
@@ -50,6 +51,7 @@ export class LegislationSourceResolver {
       shortDescription?: string;
       longDescription?: string;
       sourceUrl?: string;
+      regulationsSourceUrl?: string;
       agencyCode?: string;
       activeInd?: boolean;
       importedInd?: boolean;

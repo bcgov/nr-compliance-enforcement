@@ -8,7 +8,7 @@ import { XMLParser } from "fast-xml-parser";
  * - http://www.bclaws.ca/standards/bylaw.xsd
  */
 export interface ParsedLegislationNode {
-  typeCode: string; // ACT, REG, BYLAW, PART, DIV, RULE, SCHED, SEC, SUBSEC, PAR, SUBPAR, CL, SUBCL, DEF, TEXT
+  typeCode: string; // ACT, REG, BYLAW, PART, DIV, RULE, SCHED, SEC, SUBSEC, PAR, SUBPAR, CL, SUBCL, DEF, TEXT, TABLE
   citation: string | null; // e.g., "1", "1(a)", "(a)"
   sectionTitle: string | null; // marginal note or title
   legislationText: string | null;
@@ -40,12 +40,17 @@ const NS_ACT = "act:";
 const NS_REG = "reg:";
 const NS_BCL = "bcl:";
 const NS_IN = "in:";
+const NS_OASIS = "oasis:";
 
 // Tags that may contain nested bcl:text for sandwiches or clubhouses
 const NESTING_TAGS = ["paragraph", "definition", "subsection", "subparagraph", "clause"];
 
 /**
  * Extracts text content from a node handling various types of content
+ *
+ * NOTE: This is a bit hacky and specific to extracting text out of more deeply nested XML tags in the few
+ * examples found. It might not be possible to handle all cases with this approach and we may need to store
+ * the other elements in the tree.
  */
 const extractText = (node: any): string => {
   if (node == null) return "";
@@ -53,9 +58,23 @@ const extractText = (node: any): string => {
   if (typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(extractText).join("");
   if (typeof node === "object") {
-    const textKeys = ["#text", "in:term", "in:doc", "in:desc", "in:em", "in:strong"];
+    // Keys containing text content - check inline elements first, then #text
+    const textKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "bcl:link", "oasis:line"];
     const foundKey = textKeys.find((key) => node[key] !== undefined);
     if (foundKey) return extractText(node[foundKey]);
+
+    // Check #text last - if it's whitespace-only and other content exists, skip it
+    if (node["#text"] !== undefined) {
+      const textContent = String(node["#text"]);
+      const otherKeys = Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
+      // If #text is whitespace and there are other content keys, extract from those instead
+      if (textContent.trim() === "" && otherKeys.length > 0) {
+        return otherKeys.map((key) => extractText(node[key])).join("");
+      }
+      return textContent;
+    }
+
+    // Fallback: recursively extract from all non-attribute keys
     return Object.keys(node)
       .filter((key) => !key.startsWith("@_"))
       .map((key) => extractText(node[key]))
@@ -142,6 +161,15 @@ const getXmlPosition = (element: any): number => {
   if (!id || !originalXmlString) return Infinity;
   const pos = originalXmlString.indexOf(`id="${id}"`);
   return pos > -1 ? pos : Infinity;
+};
+
+/**
+ * Converts a citation string to a sortable number
+ */
+const getCitationSortOrder = (citation: string | null): number => {
+  if (!citation) return Infinity;
+  const num = parseFloat(citation);
+  return Number.isNaN(num) ? Infinity : num;
 };
 
 /**
@@ -242,6 +270,11 @@ const mergeText = (children: ParsedLegislationNode[], textNodes: ParsedLegislati
 
   const firstText = children[0]?.typeCode === "TEXT" ? (children.shift()?.legislationText ?? null) : null;
 
+  // Re-sequence displayOrder for consistent ordering
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
   return firstText;
 };
 
@@ -264,7 +297,13 @@ const parseOrderedChildren = (
 
   elements.sort((a, b) => a.xmlPos - b.xmlPos);
   // Use XML position as displayOrder so TEXT nodes can be ordered correctly
-  return elements.map((item) => item.parse(item.element, item.xmlPos));
+  const children = elements.map((item) => item.parse(item.element, item.xmlPos));
+
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
+  return children;
 };
 
 /**
@@ -285,6 +324,10 @@ const parseSequentialChildren = (
 
   // Sort by XML position to ensure correct order
   children.sort((a, b) => a.displayOrder - b.displayOrder);
+
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
 
   return children;
 };
@@ -358,7 +401,29 @@ const parseSection: ElementParser = (el, order) => {
     { tag: "paragraph", parse: parseParagraph },
   ]);
 
+  // Parse tables in sections
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(
+        createNode("TABLE", xmlPos, {
+          legislationText: tableText,
+        }),
+      );
+    }
+  });
+
+  // mergeText handles sorting/re-sequencing when there are TEXT nodes
   const extractedText = mergeText(children, text);
+
+  // If no TEXT nodes, still need to sort and re-sequence children (for TABLE nodes)
+  if (text.length === 0 && children.length > 0) {
+    children.sort((a, b) => a.displayOrder - b.displayOrder);
+    children.forEach((child, index) => {
+      child.displayOrder = index + 1;
+    });
+  }
 
   return createNode("SEC", order, {
     citation: getBclNum(el),
@@ -400,6 +465,112 @@ const parseSchedule: ElementParser = (el, order) => {
   });
 };
 
+/**
+ * Extracts text from a table entry, handling various content structures
+ */
+const getEntryText = (entry: any): string => {
+  if (!entry) return "";
+
+  // Entry may contain oasis:line elements with the actual text
+  const lines = entry[`${NS_OASIS}line`];
+  if (lines) {
+    return ensureArray(lines)
+      .map((line) => extractText(line))
+      .join(" ")
+      .trim();
+  }
+
+  // Direct bcl:link without oasis:line wrapper (common in conseqhead tables)
+  const link = entry[`${NS_BCL}link`];
+  if (link) {
+    return extractText(link).trim();
+  }
+
+  // Fallback to generic text extraction
+  return extractText(entry).trim();
+};
+
+/**
+ * Extracts content from table elements
+ */
+const getTableText = (table: any): string => {
+  if (!table) return "";
+  const rows: string[] = [];
+
+  const tgroup = table[`${NS_OASIS}tgroup`];
+  if (!tgroup) return "";
+
+  // Process header rows (BC Laws uses trow, not row)
+  const thead = tgroup[`${NS_OASIS}thead`];
+  if (thead) {
+    ensureArray(thead[`${NS_OASIS}trow`]).forEach((row) => {
+      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
+      if (cells.length > 0) rows.push(cells.join(" | "));
+    });
+  }
+
+  // Process body rows
+  const tbody = tgroup[`${NS_OASIS}tbody`];
+  if (tbody) {
+    ensureArray(tbody[`${NS_OASIS}trow`]).forEach((row) => {
+      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
+      if (cells.length > 0) rows.push(cells.join(" | "));
+    });
+  }
+
+  return rows.join("\n");
+};
+
+/**
+ * Parses conseqnote elements (editorial notes within conseqhead)
+ */
+const parseConseqnote: ElementParser = (el, order) => {
+  const editorialNote = el?.[`${NS_BCL}editorialnote`];
+  const noteText = editorialNote ? extractText(editorialNote).trim() : getBclText(el);
+  return createNode("TEXT", order, {
+    legislationText: noteText || null,
+  });
+};
+
+/**
+ * Parses conseqhead elements (Consequential and Related Amendments sections)
+ * These contain section ranges, editorial notes, and tables of amendments
+ */
+const parseConseqhead: ElementParser = (el, order) => {
+  const children: ParsedLegislationNode[] = [];
+
+  // Parse conseqnotes
+  ensureArray(el?.[`${NS_BCL}conseqnote`]).forEach((note) => {
+    const xmlPos = getXmlPosition(note);
+    children.push(parseConseqnote(note, xmlPos));
+  });
+
+  // Parse tables as TABLE type nodes
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(
+        createNode("TABLE", xmlPos, {
+          legislationText: tableText,
+        }),
+      );
+    }
+  });
+
+  children.sort((a, b) => a.displayOrder - b.displayOrder);
+
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
+  return createNode("SEC", order, {
+    citation: getBclNum(el),
+    sectionTitle: getBclText(el) || "Consequential and Related Amendments",
+    children,
+  });
+};
+
 parsePart = (el, order) =>
   createNode("PART", order, {
     citation: getBclNum(el),
@@ -408,6 +579,7 @@ parsePart = (el, order) =>
       { tag: "division", parse: parseDivision },
       { tag: "rule", parse: parseRule },
       { tag: "section", parse: parseSection },
+      { tag: "conseqhead", parse: parseConseqhead },
       { tag: "schedule", parse: parseSchedule },
     ]),
   });
@@ -415,23 +587,33 @@ parsePart = (el, order) =>
 const parseContent = (content: any): ParsedLegislationNode[] => {
   if (!content) return [];
 
-  const parts = ensureArray(content[`${NS_BCL}part`]);
-  const divisions = ensureArray(content[`${NS_BCL}division`]);
-  const rules = ensureArray(content[`${NS_BCL}rule`]);
+  const children = parseSequentialChildren(content, [
+    { tag: "part", parse: parsePart },
+    { tag: "division", parse: parseDivision },
+    { tag: "rule", parse: parseRule },
+    { tag: "section", parse: parseSection },
+    { tag: "conseqhead", parse: parseConseqhead },
+    { tag: "schedule", parse: parseSchedule },
+  ]);
 
-  const children: ParsedLegislationNode[] = [];
-  let order = 0;
+  // Re-sort parts by citation number to handle decimal ordering
+  children.sort((a, b) => {
+    // Only apply citation sorting to PART type nodes
+    if (a.typeCode === "PART" && b.typeCode === "PART") {
+      const aOrder = getCitationSortOrder(a.citation);
+      const bOrder = getCitationSortOrder(b.citation);
+      if (aOrder !== Infinity || bOrder !== Infinity) {
+        return aOrder - bOrder;
+      }
+    }
+    // For non-parts or non-numeric citations use XML position order
+    return a.displayOrder - b.displayOrder;
+  });
 
-  parts.forEach((el) => children.push(parsePart(el, ++order)));
-  divisions.forEach((el) => children.push(parseDivision(el, ++order)));
-  rules.forEach((el) => children.push(parseRule(el, ++order)));
-
-  // Only parse sections if no structural elements exist
-  if (parts.length === 0 && divisions.length === 0 && rules.length === 0) {
-    ensureArray(content[`${NS_BCL}section`]).forEach((el) => children.push(parseSection(el, ++order)));
-  }
-
-  ensureArray(content[`${NS_BCL}schedule`]).forEach((el) => children.push(parseSchedule(el, ++order)));
+  // Re-sequence displayOrder after sorting
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
 
   return children;
 };

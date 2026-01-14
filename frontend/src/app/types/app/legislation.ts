@@ -25,6 +25,7 @@ export enum Legislation {
   SUBCLAUSE = "SUBCL",
   DEFINITION = "DEF",
   TEXT = "TEXT",
+  TABLE = "TABLE",
 }
 
 /**
@@ -43,5 +44,6 @@ export enum indentByType {
   CL = "ms-5", //NOSONAR - same indent as subparagraph
   SUBCL = "ms-5", //NOSONAR - same indent as subparagraph
   DEF = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
-  TEXT = "ms-0", //NOSONAR - text segments inheret parent's indent level but lets set a default
+  TEXT = "ms-0", //NOSONAR - text segments inherit parent's indent level but lets set a default
+  TABLE = "ms-0", //NOSONAR - tables are displayed at root level
 }

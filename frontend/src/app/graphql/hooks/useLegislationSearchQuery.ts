@@ -7,6 +7,7 @@ export interface LegislationSearchParams {
   agencyCode: string;
   legislationTypeCodes: string[];
   ancestorGuid?: string;
+  excludeRegulations?: boolean;
   enabled: boolean;
 }
 
@@ -24,8 +25,18 @@ export interface LegislationDirectChildrenParams {
 }
 
 const SEARCH_LEGISLATION = gql`
-  query Legislations($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
-    legislations(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
+  query Legislations(
+    $agencyCode: String!
+    $legislationTypeCodes: [String]
+    $ancestorGuid: String
+    $excludeRegulations: Boolean
+  ) {
+    legislations(
+      agencyCode: $agencyCode
+      legislationTypeCodes: $legislationTypeCodes
+      ancestorGuid: $ancestorGuid
+      excludeRegulations: $excludeRegulations
+    ) {
       legislationGuid
       legislationText
       sectionTitle
@@ -91,11 +102,18 @@ export const useLegislation = (legislationGuid: string | undefined, includeAnces
 
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislations: Legislation[] }>(SEARCH_LEGISLATION, {
-    queryKey: ["legislations", searchParams.agencyCode, searchParams.legislationTypeCodes, searchParams.ancestorGuid],
+    queryKey: [
+      "legislations",
+      searchParams.agencyCode,
+      searchParams.legislationTypeCodes,
+      searchParams.ancestorGuid,
+      searchParams.excludeRegulations,
+    ],
     variables: {
       agencyCode: searchParams.agencyCode,
       legislationTypeCodes: searchParams.legislationTypeCodes,
       ancestorGuid: searchParams.ancestorGuid,
+      excludeRegulations: searchParams.excludeRegulations,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,
@@ -186,7 +204,14 @@ export const convertLegislationToHierarchicalOptions = (
   // Convert to options
   const formatLabel = (item: Legislation) => {
     const type = item.legislationTypeCode;
-    if (type === "PART" || type === "DIV") return item.sectionTitle ?? "";
+    if (type === "PART") {
+      const base = item.citation ? `Part ${item.citation}` : "Part";
+      return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
+    }
+    if (type === "DIV") {
+      const base = item.citation ? `Division ${item.citation}` : "Division";
+      return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
+    }
     if (type === "SEC" && item.citation) return `${item.citation} ${item.sectionTitle ?? item.legislationText ?? ""}`;
     return item.sectionTitle ?? item.legislationText ?? "";
   };
