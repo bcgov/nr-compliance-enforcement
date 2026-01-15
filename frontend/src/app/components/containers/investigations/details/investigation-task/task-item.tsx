@@ -9,7 +9,7 @@ import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { DiaryDate, Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback, useEffect } from "react";
-import { Button, Card, ListGroup } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_DIARY_DATES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { useLocation } from "react-router-dom";

@@ -18,7 +18,6 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { DiaryDateForm } from "@/app/components/containers/investigations/details/investigation-diary-dates/diary-date-form";
-import { useQueryClient } from "@tanstack/react-query";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import {
   DELETE_DIARY_DATE,
@@ -55,15 +54,11 @@ const EDIT_TASK = gql`
 `;
 
 export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
-  const queryClient = useQueryClient();
-  const { data: diaryDatesData, refetch } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(
-    GET_DIARY_DATES_BY_TASK,
-    {
-      queryKey: ["diaryDatesByTask", task?.taskIdentifier],
-      variables: { taskGuid: task?.taskIdentifier },
-      enabled: !!task?.taskIdentifier,
-    },
-  );
+  const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
+    queryKey: ["diaryDatesByTask", task?.taskIdentifier],
+    variables: { taskGuid: task?.taskIdentifier },
+    enabled: !!task?.taskIdentifier,
+  });
   const initialDiaryDatesData = diaryDatesData?.diaryDatesByTask || [];
 
   // Form Definition
@@ -178,28 +173,29 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   // Functions
 
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
-    onSuccess: async (data) => {
-      // First delete any marked diary dates
-      if (deletedDiaryDateGuids.length > 0) {
-        await deleteTrackedDiaryDates();
-      }
-
-      // Save diary dates after task is created
-      if (diaryDates.length > 0) {
+    onSuccess: (data) => {
+      const handleSuccess = async () => {
         try {
-          await saveDiaryDates(data.createTask.taskIdentifier);
+          // First delete any marked diary dates
+          if (deletedDiaryDateGuids.length > 0) {
+            await deleteTrackedDiaryDates();
+          }
+          if (diaryDates.length > 0) {
+            await saveDiaryDates(data.createTask.taskIdentifier);
+          }
+          ToggleSuccess("Task added successfully");
+          form.reset();
+          setDiaryDates([]);
+          setDiaryDateValidation({});
+          onClose();
         } catch (error) {
           console.error("Error saving diary dates:", error);
           ToggleError("Task added but some diary dates failed to save");
           return;
         }
-      }
-      ToggleSuccess("Task added successfully");
+      };
 
-      form.reset();
-      setDiaryDates([]);
-      setDiaryDateValidation({});
-      onClose();
+      handleSuccess();
     },
     onError: (error: any) => {
       console.error("Error adding task:", error);
@@ -208,28 +204,28 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   });
 
   const editTaskMutation = useGraphQLMutation(EDIT_TASK, {
-    onSuccess: async () => {
-      //Delete any marked diary dates
-      if (deletedDiaryDateGuids.length > 0) {
-        await deleteTrackedDiaryDates();
-      }
-
-      // Save diary dates after task is updated
-      if (diaryDates.length > 0) {
+    onSuccess: () => {
+      const handleSuccess = async () => {
         try {
-          await saveDiaryDates(task?.taskIdentifier);
+          // First delete any marked diary dates
+          if (deletedDiaryDateGuids.length > 0) {
+            await deleteTrackedDiaryDates();
+          }
+          if (diaryDates.length > 0) {
+            await saveDiaryDates(task?.taskIdentifier);
+          }
+          ToggleSuccess("Task edited successfully");
+          form.reset();
+          setDiaryDates([]);
+          setDiaryDateValidation({});
+          setDeletedDiaryDateGuids([]);
+          onClose();
         } catch (error) {
-          console.error("Error saving diary dates:", error);
           ToggleError("Task updated but some diary dates failed to save");
-          return;
         }
-      }
+      };
 
-      ToggleSuccess("Task edited successfully");
-      form.reset();
-      setDiaryDates([]);
-      setDiaryDateValidation({});
-      onClose();
+      handleSuccess();
     },
     onError: (error: any) => {
       console.error("Error editing task:", error);
