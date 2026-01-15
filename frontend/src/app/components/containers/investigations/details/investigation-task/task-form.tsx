@@ -59,7 +59,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     variables: { taskGuid: task?.taskIdentifier },
     enabled: !!task?.taskIdentifier,
   });
-  const initialDiaryDatesData = diaryDatesData?.diaryDatesByTask || [];
 
   // Form Definition
   const form = useForm({
@@ -221,6 +220,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           setDeletedDiaryDateGuids([]);
           onClose();
         } catch (error) {
+          console.error("Error editing task:", error);
           ToggleError("Task updated but some diary dates failed to save");
         }
       };
@@ -325,7 +325,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     // Reindex the validation state
     const reindexedValidation: Record<number, boolean> = {};
     Object.keys(newValidation).forEach((key) => {
-      const numKey = parseInt(key);
+      const numKey = Number.parseInt(key);
       if (numKey > index) {
         reindexedValidation[numKey - 1] = newValidation[numKey];
       } else {
@@ -598,7 +598,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           {/* Render Diary Date Forms */}
           {diaryDates.map((diaryDate, index: number) => (
             <DiaryDateForm
-              key={index}
+              key={`diary-date-in-task-${index}`}
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}

@@ -122,20 +122,18 @@ export const DiaryDateForm = ({
               }),
           }}
           render={(field) => (
-            <>
-              <ValidationDatePicker
-                classNamePrefix="comp-details-edit-calendar-input"
-                className="comp-details-input full-width"
-                id={`diary-date-${index}`}
-                maxDate={new Date()}
-                onChange={(date: any) => {
-                  field.handleChange(date);
-                }}
-                selectedDate={field.state.value}
-                errMsg={field.state.meta.errors?.[0]?.message || ""}
-                vertical={true}
-              />
-            </>
+            <ValidationDatePicker
+              classNamePrefix="comp-details-edit-calendar-input"
+              className="comp-details-input full-width"
+              id={`diary-date-${index}`}
+              maxDate={new Date()}
+              onChange={(date: any) => {
+                field.handleChange(date);
+              }}
+              selectedDate={field.state.value}
+              errMsg={field.state.meta.errors?.[0]?.message || ""}
+              vertical={true}
+            />
           )}
         />
       </Card.Body>

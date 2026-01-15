@@ -31,14 +31,11 @@ const REMOVE_TASK = gql`
 
 export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemProps) => {
   const { hash, search } = useLocation();
-  const { data: diaryDatesData, refetch } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(
-    GET_DIARY_DATES_BY_TASK,
-    {
-      queryKey: ["diaryDatesByTask", task.taskIdentifier],
-      variables: { taskGuid: task.taskIdentifier },
-      enabled: !!task.taskIdentifier,
-    },
-  );
+  const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
+    queryKey: ["diaryDatesByTask", task.taskIdentifier],
+    variables: { taskGuid: task.taskIdentifier },
+    enabled: !!task.taskIdentifier,
+  });
   const diaryDates = diaryDatesData?.diaryDatesByTask || [];
 
   // State
@@ -187,7 +184,10 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                           (officer) => officer.app_user_guid === diaryDate.addedUserGuid,
                         );
                         return (
-                          <div className="mb-3">
+                          <div
+                            className="mb-3"
+                            key={diaryDate.diaryDateGuid}
+                          >
                             <div>
                               <strong>{formatDate(diaryDate.dueDate)}</strong>
                               <span className="m-3">{diaryDate.description}</span>
