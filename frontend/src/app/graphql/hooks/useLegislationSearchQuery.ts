@@ -211,6 +211,10 @@ export const convertLegislationToHierarchicalOptions = (
       const base = item.citation ? `Division ${item.citation}` : "Division";
       return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
     }
+    if (type === "SCHED") {
+      // Schedules use sectionTitle for their name (e.g., "Schedule A")
+      return item.sectionTitle ?? (item.citation ? `Schedule ${item.citation}` : "Schedule");
+    }
     if (type === "SEC" && item.citation) return `${item.citation} ${item.sectionTitle ?? item.legislationText ?? ""}`;
     return item.sectionTitle ?? item.legislationText ?? "";
   };
@@ -218,6 +222,6 @@ export const convertLegislationToHierarchicalOptions = (
   return flatten(rootGuid).map((item) => ({
     label: formatLabel(item),
     value: item.legislationGuid ?? "",
-    isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV",
+    isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV" || item.legislationTypeCode === "SCHED",
   }));
 };

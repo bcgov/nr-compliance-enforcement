@@ -146,7 +146,7 @@ export const ContraventionForm = ({
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SECTION],
+    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SCHEDULE, Legislation.SECTION],
     ancestorGuid: regulation || act,
     // When Act is selected but no regulation, exclude sections from child regulations
     excludeRegulations: !!act && !regulation,

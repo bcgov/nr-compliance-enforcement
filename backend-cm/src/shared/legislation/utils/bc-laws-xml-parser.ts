@@ -452,16 +452,95 @@ const parseDivision: ElementParser = (el, order) =>
 
 let parsePart: ElementParser;
 
+/**
+ * Parses centertext elements
+ */
+const parseCentertext: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
+/**
+ * Parses lefttext elements (indented text blocks)
+ */
+const parseLefttext: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
+/**
+ * Parses form elements within schedules
+ */
+const parseForm: ElementParser = (el, order) => {
+  // Forms can contain various elements - extract all text content
+  const formTitle = el?.[`${NS_BCL}formtitle`];
+  return createNode("TEXT", order, {
+    sectionTitle: formTitle ? extractText(formTitle).trim() : null,
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+};
+
+/**
+ * Parses list elements
+ */
+const parseList: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
+/**
+ * Parses schedulesubtitle elements
+ */
+const parseScheduleSubtitle: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
 const parseSchedule: ElementParser = (el, order) => {
   const scheduleTitle = el?.[`${NS_BCL}scheduletitle`] || el?.[`${NS_BCL}num`];
+  const children: ParsedLegislationNode[] = [];
+
+  // Parse structural elements
+  const structuralChildren = parseSequentialChildren(el, [
+    { tag: "part", parse: parsePart },
+    { tag: "division", parse: parseDivision },
+    { tag: "section", parse: parseSection },
+  ]);
+  children.push(...structuralChildren);
+
+  // Parse text/content elements
+  const textChildren = parseSequentialChildren(el, [
+    { tag: "centertext", parse: parseCentertext },
+    { tag: "lefttext", parse: parseLefttext },
+    { tag: "form", parse: parseForm },
+    { tag: "list", parse: parseList },
+    { tag: "schedulesubtitle", parse: parseScheduleSubtitle },
+  ]);
+  children.push(...textChildren);
+
+  // Parse tables
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(
+        createNode("TABLE", xmlPos, {
+          legislationText: tableText,
+        }),
+      );
+    }
+  });
+
+  // Sort by XML position and re-sequence
+  children.sort((a, b) => a.displayOrder - b.displayOrder);
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
   return createNode("SCHED", order, {
     citation: getBclNum(el),
     sectionTitle: extractText(scheduleTitle) || null,
-    children: parseSequentialChildren(el, [
-      { tag: "part", parse: parsePart },
-      { tag: "division", parse: parseDivision },
-      { tag: "section", parse: parseSection },
-    ]),
+    children,
   });
 };
 
@@ -480,7 +559,7 @@ const getEntryText = (entry: any): string => {
       .trim();
   }
 
-  // Direct bcl:link without oasis:line wrapper (common in conseqhead tables)
+  // Direct bcl:link
   const link = entry[`${NS_BCL}link`];
   if (link) {
     return extractText(link).trim();
@@ -522,7 +601,7 @@ const getTableText = (table: any): string => {
 };
 
 /**
- * Parses conseqnote elements (editorial notes within conseqhead)
+ * Parses conseqnote elements
  */
 const parseConseqnote: ElementParser = (el, order) => {
   const editorialNote = el?.[`${NS_BCL}editorialnote`];
@@ -533,8 +612,7 @@ const parseConseqnote: ElementParser = (el, order) => {
 };
 
 /**
- * Parses conseqhead elements (Consequential and Related Amendments sections)
- * These contain section ranges, editorial notes, and tables of amendments
+ * Parses conseqhead elements
  */
 const parseConseqhead: ElementParser = (el, order) => {
   const children: ParsedLegislationNode[] = [];
@@ -584,10 +662,30 @@ parsePart = (el, order) =>
     ]),
   });
 
+/**
+ * Parses preamble elements
+ */
+const parsePreamble: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    sectionTitle: "Preamble",
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
+/**
+ * Parses subheading elements
+ */
+const parseSubheading: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
 const parseContent = (content: any): ParsedLegislationNode[] => {
   if (!content) return [];
 
   const children = parseSequentialChildren(content, [
+    { tag: "preamble", parse: parsePreamble },
+    { tag: "subheading", parse: parseSubheading },
+    { tag: "lefttext", parse: parseLefttext },
     { tag: "part", parse: parsePart },
     { tag: "division", parse: parseDivision },
     { tag: "rule", parse: parseRule },

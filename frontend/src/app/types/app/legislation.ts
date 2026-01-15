@@ -46,4 +46,5 @@ export enum indentByType {
   DEF = "ms-0", //NOSONAR - this is an intentional duplication due to legislation formatting rules
   TEXT = "ms-0", //NOSONAR - text segments inherit parent's indent level but lets set a default
   TABLE = "ms-0", //NOSONAR - tables are displayed at root level
+  SCHED = "ms-0", //NOSONAR - schedules are structural elements like parts
 }
