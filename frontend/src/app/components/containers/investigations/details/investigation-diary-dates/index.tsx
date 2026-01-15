@@ -3,7 +3,7 @@ import { gql } from "graphql-request";
 import { Button, Table } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
+import { DiaryDate, DiaryDateInput, Investigation } from "@/generated/graphql";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { DiaryDateRow } from "./diary-date-row";
 import { DiaryDateModal } from "./diary-date-modal";
@@ -11,7 +11,7 @@ import { DeleteConfirmModal } from "@/app/components/modal/instances/delete-conf
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
 
-const GET_DIARY_DATES = gql`
+export const GET_DIARY_DATES = gql`
   query GetDiaryDates($investigationGuid: String!) {
     diaryDates(investigationGuid: $investigationGuid) {
       diaryDateGuid
@@ -22,11 +22,28 @@ const GET_DIARY_DATES = gql`
       addedUserGuid
       updatedTimestamp
       updatedUserGuid
+      taskGuid
     }
   }
 `;
 
-const SAVE_DIARY_DATE = gql`
+export const GET_DIARY_DATES_BY_TASK = gql`
+  query GetDiaryDatesByTask($taskGuid: String!) {
+    diaryDatesByTask(taskGuid: $taskGuid) {
+      diaryDateGuid
+      investigationGuid
+      dueDate
+      description
+      addedTimestamp
+      addedUserGuid
+      updatedTimestamp
+      updatedUserGuid
+      taskGuid
+    }
+  }
+`;
+
+export const SAVE_DIARY_DATE = gql`
   mutation SaveDiaryDate($input: DiaryDateInput!) {
     saveDiaryDate(input: $input) {
       diaryDateGuid
@@ -37,11 +54,12 @@ const SAVE_DIARY_DATE = gql`
       addedUserGuid
       updatedTimestamp
       updatedUserGuid
+      taskGuid
     }
   }
 `;
 
-const DELETE_DIARY_DATE = gql`
+export const DELETE_DIARY_DATE = gql`
   mutation DeleteDiaryDate($diaryDateGuid: String!) {
     deleteDiaryDate(diaryDateGuid: $diaryDateGuid)
   }
@@ -49,9 +67,13 @@ const DELETE_DIARY_DATE = gql`
 
 interface DiaryDatesProps {
   investigationGuid: string;
+  investigationData?: Investigation;
 }
 
-export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid }) => {
+export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData }) => {
+  const tasks = investigationData?.tasks || [];
+
+  // State
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingDiaryDate, setEditingDiaryDate] = useState<DiaryDate | null>(null);
@@ -141,14 +163,20 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid }) => {
         <div className="border rounded p-3 pt-0 pb-0 mt-3">
           <Table className="mb-0 table-borderless diary-dates-table">
             <tbody>
-              {diaryDates.map((diaryDate) => (
-                <DiaryDateRow
-                  key={diaryDate.diaryDateGuid}
-                  diaryDate={diaryDate}
-                  onEdit={handleEditClick}
-                  onDelete={handleDeleteClick}
-                />
-              ))}
+              {diaryDates.map((diaryDate) => {
+                const taskNumber = tasks
+                  ? tasks.findIndex((task) => task?.taskIdentifier === diaryDate.taskGuid)
+                  : null;
+                return (
+                  <DiaryDateRow
+                    key={diaryDate.diaryDateGuid}
+                    diaryDate={diaryDate}
+                    onEdit={handleEditClick}
+                    onDelete={handleDeleteClick}
+                    taskNumber={taskNumber !== null && taskNumber !== -1 ? taskNumber + 1 : null}
+                  />
+                );
+              })}
             </tbody>
           </Table>
         </div>

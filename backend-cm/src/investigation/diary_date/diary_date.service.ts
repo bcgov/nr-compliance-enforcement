@@ -43,6 +43,33 @@ export class DiaryDateService {
     }
   }
 
+  async findManyByTaskGuid(taskGuid: string): Promise<DiaryDate[]> {
+    const prismaDiaryDates = await this.prisma.diary_date.findMany({
+      where: {
+        task_guid: taskGuid,
+        active_ind: true,
+      },
+      orderBy: {
+        due_date: "asc",
+      },
+    });
+
+    if (!prismaDiaryDates) {
+      return [];
+    }
+
+    try {
+      return this.mapper.mapArray<diary_date, DiaryDate>(
+        prismaDiaryDates as Array<diary_date>,
+        "diary_date",
+        "DiaryDate",
+      );
+    } catch (error) {
+      this.logger.error("Error mapping DiaryDate:", error);
+      throw error;
+    }
+  }
+
   async save(input: DiaryDateInput): Promise<DiaryDate> {
     let result;
     if (input.diaryDateGuid) {
@@ -56,6 +83,7 @@ export class DiaryDateService {
           app_update_user_guid_ref: input.userGuid,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
+          task_guid: input.taskGuid || null,
         },
       });
     } else {
@@ -71,6 +99,7 @@ export class DiaryDateService {
             active_ind: true,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
+            task_guid: input.taskGuid || null,
           },
         });
       } catch (error) {

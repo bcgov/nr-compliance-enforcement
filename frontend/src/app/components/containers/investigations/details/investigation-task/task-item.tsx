@@ -6,10 +6,13 @@ import { openModal } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
-import { Investigation, Task } from "@/generated/graphql";
+import { DiaryDate, Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { GET_DIARY_DATES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import { useLocation } from "react-router-dom";
 
 interface TaskItemProps {
   task: Task;
@@ -27,6 +30,14 @@ const REMOVE_TASK = gql`
 `;
 
 export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemProps) => {
+  const { hash, search } = useLocation();
+  const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
+    queryKey: ["diaryDatesByTask", task.taskIdentifier],
+    variables: { taskGuid: task.taskIdentifier },
+    enabled: !!task.taskIdentifier,
+  });
+  const diaryDates = diaryDatesData?.diaryDatesByTask || [];
+
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -40,6 +51,22 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
   const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
   const assignedOfficer = officerList?.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
   const createdOfficer = officerList?.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
+
+  // Effects
+  useEffect(() => {
+    //Scroll to specific task item if hash matches
+    const params = new URLSearchParams(search);
+    const section = params.get("section");
+
+    if (section) {
+      const element = document.getElementById(section);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }, [hash, search]);
 
   // Functions
   const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {
@@ -75,7 +102,10 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
   );
 
   return (
-    <section className="comp-details-section">
+    <section
+      className="comp-details-section"
+      id={`task-item-${task.taskNumber}`}
+    >
       <Card
         className="mb-3"
         border="default"
@@ -136,7 +166,43 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
             </div>
             <div
               style={{ fontSize: "14px", color: "#7a7a7a" }}
-            >{`Created on ${formatDate(task.createdDate)} by ${createdOfficer?.last_name}, ${createdOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
+            >{`Added on ${formatDate(task.createdDate)} by ${createdOfficer?.last_name}, ${createdOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
+
+            {diaryDates.length > 0 && (
+              <>
+                <hr className="m-0"></hr>
+                <div style={{ gap: "8px", alignItems: "center" }}>
+                  <i className="bi bi-calendar3-week"></i>
+                  <h5 className="fw-bold m-0">Diary Dates</h5>
+                </div>
+                <div>
+                  <dt></dt>
+                  <dd>
+                    <pre id="comp-task-category">
+                      {diaryDates.map((diaryDate) => {
+                        const diaryDateCreatedOfficer = officerList?.find(
+                          (officer) => officer.app_user_guid === diaryDate.addedUserGuid,
+                        );
+                        return (
+                          <div
+                            className="mb-3"
+                            key={diaryDate.diaryDateGuid}
+                          >
+                            <div>
+                              <strong>{formatDate(diaryDate.dueDate)}</strong>
+                              <span className="m-3">{diaryDate.description}</span>
+                            </div>
+                            <div
+                              style={{ fontSize: "14px", color: "#7a7a7a" }}
+                            >{`Added on ${formatDate(diaryDate.addedTimestamp)} by ${diaryDateCreatedOfficer?.last_name}, ${diaryDateCreatedOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
+                          </div>
+                        );
+                      })}
+                    </pre>
+                  </dd>
+                </div>
+              </>
+            )}
           </dl>
         </Card.Body>
       </Card>

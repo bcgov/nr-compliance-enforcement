@@ -26,6 +26,21 @@ export class DiaryDateResolver {
     }
   }
 
+  @Query("diaryDatesByTask")
+  @Roles(coreRoles)
+  async findManyByTask(@Args("taskGuid") taskGuid: string) {
+    try {
+      return await this.diaryDateService.findManyByTaskGuid(taskGuid);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching diary dates", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
   @Mutation("saveDiaryDate")
   @Roles(coreRoles)
   async save(@Args("input") input: DiaryDateInput) {

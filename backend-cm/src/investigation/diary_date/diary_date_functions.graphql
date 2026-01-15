@@ -1,5 +1,6 @@
 type Query {
   diaryDates(investigationGuid: String!): [DiaryDate!]
+  diaryDatesByTask(taskGuid: String!): [DiaryDate!]
 }
 
 type Mutation {

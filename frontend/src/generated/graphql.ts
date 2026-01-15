@@ -16,6 +16,7 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   Date: { input: any; output: any; }
+  DateTime: { input: any; output: any; }
   JSON: { input: any; output: any; }
   JSONObject: { input: any; output: any; }
   Point: { input: any; output: any; }
@@ -84,7 +85,7 @@ export type AssessmentActionInput = {
   actionCode: Scalars['String']['input'];
   activeIndicator: Scalars['Boolean']['input'];
   actor: Scalars['String']['input'];
-  date: Scalars['Date']['input'];
+  date: Scalars['DateTime']['input'];
   isLegacy?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -119,8 +120,8 @@ export type CaseActivity = {
   activityType?: Maybe<CaseActivityTypeCode>;
   caseActivityGuid?: Maybe<Scalars['String']['output']>;
   caseFileGuid?: Maybe<Scalars['String']['output']>;
-  effectiveDate?: Maybe<Scalars['Date']['output']>;
-  expiryDate?: Maybe<Scalars['Date']['output']>;
+  effectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  expiryDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CaseActivityCreateInput = {
@@ -153,7 +154,7 @@ export type CaseFile = {
   description?: Maybe<Scalars['String']['output']>;
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
-  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CaseFileAction = {
@@ -163,7 +164,7 @@ export type CaseFileAction = {
   actionTypeCode: Scalars['String']['output'];
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   actor: Scalars['String']['output'];
-  date: Scalars['Date']['output'];
+  date: Scalars['DateTime']['output'];
   displayOrder?: Maybe<Scalars['Int']['output']>;
   isLegacy?: Maybe<Scalars['Boolean']['output']>;
   longDescription: Scalars['String']['output'];
@@ -182,12 +183,12 @@ export type CaseFileCreateInput = {
 
 export type CaseFileFilters = {
   caseStatus?: InputMaybe<Scalars['String']['input']>;
-  endDate?: InputMaybe<Scalars['Date']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type CaseFileResult = {
@@ -268,23 +269,23 @@ export type ContactMethodInput = {
 export type ContinuationReport = {
   __typename?: 'ContinuationReport';
   actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  actionedTimestamp?: Maybe<Scalars['Date']['output']>;
+  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   contentJson?: Maybe<Scalars['String']['output']>;
   continuationReportGuid?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  reportedTimestamp?: Maybe<Scalars['Date']['output']>;
+  reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ContinuationReportInput = {
   actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  actionedTimestamp?: InputMaybe<Scalars['Date']['input']>;
+  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
   contentJson?: InputMaybe<Scalars['String']['input']>;
   contentText?: InputMaybe<Scalars['String']['input']>;
   continuationReportGuid?: InputMaybe<Scalars['String']['input']>;
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
   reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  reportedTimestamp?: InputMaybe<Scalars['Date']['input']>;
+  reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type Contravention = {
@@ -399,7 +400,7 @@ export type CreateInvestigationInput = {
   caseIdentifier: Scalars['String']['input'];
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  discoveryDate?: InputMaybe<Scalars['Date']['input']>;
+  discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -481,7 +482,7 @@ export type CreateWildlifeInput = {
 export type Decision = {
   __typename?: 'Decision';
   actionTaken?: Maybe<Scalars['String']['output']>;
-  actionTakenDate?: Maybe<Scalars['Date']['output']>;
+  actionTakenDate?: Maybe<Scalars['DateTime']['output']>;
   actionTakenLongDescription?: Maybe<Scalars['String']['output']>;
   assignedTo?: Maybe<Scalars['String']['output']>;
   discharge?: Maybe<Scalars['String']['output']>;
@@ -503,7 +504,7 @@ export type Decision = {
 
 export type DecisionInput = {
   actionTaken?: InputMaybe<Scalars['String']['input']>;
-  actionTakenDate?: InputMaybe<Scalars['Date']['input']>;
+  actionTakenDate?: InputMaybe<Scalars['DateTime']['input']>;
   assignedTo?: InputMaybe<Scalars['String']['input']>;
   discharge?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
@@ -549,21 +550,23 @@ export type DeleteWildlifeInput = {
 
 export type DiaryDate = {
   __typename?: 'DiaryDate';
-  addedTimestamp?: Maybe<Scalars['Date']['output']>;
+  addedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   addedUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   diaryDateGuid?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['Date']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
-  updatedTimestamp?: Maybe<Scalars['Date']['output']>;
+  taskGuid?: Maybe<Scalars['String']['output']>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   updatedUserGuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type DiaryDateInput = {
   description: Scalars['String']['input'];
   diaryDateGuid?: InputMaybe<Scalars['String']['input']>;
-  dueDate: Scalars['Date']['input'];
+  dueDate: Scalars['DateTime']['input'];
   investigationGuid: Scalars['String']['input'];
+  taskGuid?: InputMaybe<Scalars['String']['input']>;
   userGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -659,7 +662,7 @@ export type EquipmentActionInput = {
   actionGuid?: InputMaybe<Scalars['String']['input']>;
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   actor?: InputMaybe<Scalars['String']['input']>;
-  date?: InputMaybe<Scalars['Date']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type EquipmentCode = {
@@ -678,7 +681,7 @@ export type EquipmentDetails = {
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   address?: Maybe<Scalars['String']['output']>;
-  createDate?: Maybe<Scalars['Date']['output']>;
+  createDate?: Maybe<Scalars['DateTime']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   quantity?: Maybe<Scalars['Int']['output']>;
   typeCode?: Maybe<Scalars['String']['output']>;
@@ -716,7 +719,7 @@ export type Event = {
   content?: Maybe<Scalars['JSONObject']['output']>;
   eventGuid: Scalars['String']['output'];
   eventVerbTypeCode: EventVerbTypeCode;
-  publishedTimestamp: Scalars['Date']['output'];
+  publishedTimestamp: Scalars['DateTime']['output'];
   sourceEntityTypeCode?: Maybe<EventEntityTypeCode>;
   sourceId?: Maybe<Scalars['String']['output']>;
   targetEntityTypeCode: EventEntityTypeCode;
@@ -745,12 +748,12 @@ export type EventEntityTypeCode = {
 
 export type EventFilters = {
   actorId?: InputMaybe<Scalars['String']['input']>;
-  endDate?: InputMaybe<Scalars['Date']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   eventVerbTypeCode?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   sourceId?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
   targetId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -781,8 +784,8 @@ export type GeoOrgUnitTypeCode = {
 export type GeoOrganizationUnitCode = {
   __typename?: 'GeoOrganizationUnitCode';
   administrativeOfficeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  effectiveDate?: Maybe<Scalars['Date']['output']>;
-  expiryDate?: Maybe<Scalars['Date']['output']>;
+  effectiveDate?: Maybe<Scalars['DateTime']['output']>;
+  expiryDate?: Maybe<Scalars['DateTime']['output']>;
   geoOrgUnitTypeCode?: Maybe<Scalars['String']['output']>;
   geoOrganizationUnitCode?: Maybe<Scalars['String']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
@@ -837,7 +840,7 @@ export type Inspection = {
   locationDescription?: Maybe<Scalars['String']['output']>;
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   parties?: Maybe<Array<Maybe<InspectionParty>>>;
 };
 
@@ -850,13 +853,13 @@ export type InspectionBusiness = {
 };
 
 export type InspectionFilters = {
-  endDate?: InputMaybe<Scalars['Date']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type InspectionParty = {
@@ -908,7 +911,7 @@ export type Investigation = {
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
-  discoveryDate?: Maybe<Scalars['Date']['output']>;
+  discoveryDate?: Maybe<Scalars['DateTime']['output']>;
   fileCoordinatorGuid?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
@@ -917,7 +920,7 @@ export type Investigation = {
   locationDescription?: Maybe<Scalars['String']['output']>;
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
-  openedTimestamp?: Maybe<Scalars['Date']['output']>;
+  openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
@@ -933,13 +936,13 @@ export type InvestigationBusiness = {
 };
 
 export type InvestigationFilters = {
-  endDate?: InputMaybe<Scalars['Date']['input']>;
+  endDate?: InputMaybe<Scalars['DateTime']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
-  startDate?: InputMaybe<Scalars['Date']['input']>;
+  startDate?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type InvestigationParty = {
@@ -1514,7 +1517,7 @@ export type ParkInput = {
 export type Party = {
   __typename?: 'Party';
   business?: Maybe<Business>;
-  createdDateTime?: Maybe<Scalars['Date']['output']>;
+  createdDateTime?: Maybe<Scalars['DateTime']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   partyIdentifier?: Maybe<Scalars['String']['output']>;
   partyTypeCode?: Maybe<Scalars['String']['output']>;
@@ -1612,7 +1615,7 @@ export type PreventionActionInput = {
   actionCode: Scalars['String']['input'];
   activeIndicator: Scalars['Boolean']['input'];
   actor: Scalars['String']['input'];
-  date: Scalars['Date']['input'];
+  date: Scalars['DateTime']['input'];
 };
 
 export type PreventionInput = {
@@ -1645,6 +1648,7 @@ export type Query = {
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
   diaryDates?: Maybe<Array<DiaryDate>>;
+  diaryDatesByTask?: Maybe<Array<DiaryDate>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;
   drugCodes: Array<Maybe<DrugCode>>;
   drugMethodCodes: Array<Maybe<DrugMethodCode>>;
@@ -1675,8 +1679,6 @@ export type Query = {
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   legislation?: Maybe<Legislation>;
-  legislationChildTypes: Array<Maybe<Scalars['String']['output']>>;
-  legislationDirectChildren: Array<Maybe<Legislation>>;
   legislationSource?: Maybe<LegislationSource>;
   legislationSources: Array<Maybe<LegislationSource>>;
   legislationTypeCodes: Array<Maybe<LegislationType>>;
@@ -1803,6 +1805,11 @@ export type QuerydiaryDatesArgs = {
 };
 
 
+export type QuerydiaryDatesByTaskArgs = {
+  taskGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -1898,19 +1905,6 @@ export type QueryinactionJustificationCodesArgs = {
 export type QuerylegislationArgs = {
   includeAncestors?: InputMaybe<Scalars['Boolean']['input']>;
   legislationGuid: Scalars['String']['input'];
-};
-
-
-export type QuerylegislationChildTypesArgs = {
-  agencyCode: Scalars['String']['input'];
-  parentGuid?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QuerylegislationDirectChildrenArgs = {
-  agencyCode: Scalars['String']['input'];
-  legislationTypeCode?: InputMaybe<Scalars['String']['input']>;
-  parentGuid: Scalars['String']['input'];
 };
 
 
@@ -2065,7 +2059,7 @@ export type ReviewActionInput = {
   actionId?: InputMaybe<Scalars['String']['input']>;
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   actor: Scalars['String']['input'];
-  date: Scalars['Date']['input'];
+  date: Scalars['DateTime']['input'];
 };
 
 export type ReviewInput = {
@@ -2128,7 +2122,7 @@ export type Task = {
   activeIndicator: Scalars['Boolean']['output'];
   assignedUserIdentifier?: Maybe<Scalars['String']['output']>;
   createdByUserIdentifier: Scalars['String']['output'];
-  createdDate: Scalars['Date']['output'];
+  createdDate: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   investigationIdentifier: Scalars['String']['output'];
   taskIdentifier: Scalars['String']['output'];
@@ -2250,7 +2244,7 @@ export type UpdateInspectionInput = {
 
 export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  discoveryDate?: InputMaybe<Scalars['Date']['input']>;
+  discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
@@ -2324,7 +2318,7 @@ export type WildlifeActionInput = {
   action?: InputMaybe<Scalars['String']['input']>;
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   actor?: InputMaybe<Scalars['String']['input']>;
-  date?: InputMaybe<Scalars['Date']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
 };
 

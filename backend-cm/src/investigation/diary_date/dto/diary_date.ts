@@ -12,6 +12,7 @@ export class DiaryDate {
   addedUserGuid: string;
   updatedTimestamp: Date;
   updatedUserGuid: string;
+  taskGuid?: string;
 }
 
 @InputType()
@@ -31,6 +32,9 @@ export class DiaryDateInput {
 
   @Field(() => String)
   userGuid?: string;
+
+  @Field(() => String)
+  taskGuid?: string;
 }
 
 export const mapPrismaDiaryDateToDiaryDate = (mapper: Mapper) => {
@@ -69,6 +73,10 @@ export const mapPrismaDiaryDateToDiaryDate = (mapper: Mapper) => {
     forMember(
       (dest) => dest.updatedUserGuid,
       mapFrom((src) => src.app_update_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.taskGuid,
+      mapFrom((src) => src.task_guid),
     ),
   );
 };

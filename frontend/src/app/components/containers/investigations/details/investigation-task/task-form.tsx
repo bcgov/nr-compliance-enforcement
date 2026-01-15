@@ -9,7 +9,7 @@ import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducer
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
+import { CreateUpdateTaskInput, DiaryDateInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useEffect, useState } from "react";
@@ -17,11 +17,24 @@ import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { DiaryDateForm } from "@/app/components/containers/investigations/details/investigation-diary-dates/diary-date-form";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import {
+  DELETE_DIARY_DATE,
+  GET_DIARY_DATES_BY_TASK,
+  SAVE_DIARY_DATE,
+} from "@/app/components/containers/investigations/details/investigation-diary-dates";
 
 interface TaskFormProps {
   investigationGuid: string;
   onClose: () => void;
   task?: Task;
+}
+
+interface DiaryDate {
+  diaryDateGuid?: string;
+  description: string;
+  diaryDate: Date | null;
 }
 
 const ADD_TASK = gql`
@@ -41,6 +54,12 @@ const EDIT_TASK = gql`
 `;
 
 export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
+  const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
+    queryKey: ["diaryDatesByTask", task?.taskIdentifier],
+    variables: { taskGuid: task?.taskIdentifier },
+    enabled: !!task?.taskIdentifier,
+  });
+
   // Form Definition
   const form = useForm({
     defaultValues: {
@@ -52,6 +71,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       "task-status": "",
     },
     onSubmit: async ({ value }) => {
+      if (diaryDates.length > 0 && !areAllDiaryDatesValid()) {
+        setTriggerDiaryValidation(true);
+        setTimeout(() => setTriggerDiaryValidation(false), 100); // reset trigger
+        return;
+      }
+
       const input: CreateUpdateTaskInput = {
         taskIdentifier: task?.taskIdentifier,
         investigationIdentifier: investigationGuid,
@@ -80,6 +105,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
   const allOfficers = useAppSelector(selectOfficers);
   const dispatch = useAppDispatch();
+  const [diaryDates, setDiaryDates] = useState<DiaryDate[]>([]);
+  const [diaryDateValidation, setDiaryDateValidation] = useState<Record<number, boolean>>({});
+  const [triggerDiaryValidation, setTriggerDiaryValidation] = useState(false);
+  const [deletedDiaryDateGuids, setDeletedDiaryDateGuids] = useState<string[]>([]);
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -119,13 +148,53 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     }
   }, [task, taskSubCategories]);
 
+  // Populate diary dates when editing
+  useEffect(() => {
+    if (task && diaryDatesData?.diaryDatesByTask) {
+      const existingDiaryDates = diaryDatesData.diaryDatesByTask.map((dd) => ({
+        diaryDateGuid: dd.diaryDateGuid,
+        description: dd.description || "",
+        //@ts-ignore
+        diaryDate: dd.dueDate ? new Date(dd.dueDate) : null,
+      }));
+
+      setDiaryDates(existingDiaryDates);
+
+      // Initialize validation state for existing diary dates
+      const initialValidation: Record<number, boolean> = {};
+      existingDiaryDates.forEach((_, index) => {
+        initialValidation[index] = true; // Existing diary dates are already valid
+      });
+      setDiaryDateValidation(initialValidation);
+    }
+  }, [task, diaryDatesData]);
+
   // Functions
 
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
-    onSuccess: () => {
-      ToggleSuccess("Task added successfully");
-      form.reset();
-      onClose();
+    onSuccess: (data) => {
+      const handleSuccess = async () => {
+        try {
+          // First delete any marked diary dates
+          if (deletedDiaryDateGuids.length > 0) {
+            await deleteTrackedDiaryDates();
+          }
+          if (diaryDates.length > 0) {
+            await saveDiaryDates(data.createTask.taskIdentifier);
+          }
+          ToggleSuccess("Task added successfully");
+          form.reset();
+          setDiaryDates([]);
+          setDiaryDateValidation({});
+          onClose();
+        } catch (error) {
+          console.error("Error saving diary dates:", error);
+          ToggleError("Task added but some diary dates failed to save");
+          return;
+        }
+      };
+
+      handleSuccess();
     },
     onError: (error: any) => {
       console.error("Error adding task:", error);
@@ -135,9 +204,28 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const editTaskMutation = useGraphQLMutation(EDIT_TASK, {
     onSuccess: () => {
-      ToggleSuccess("Task edited successfully");
-      form.reset();
-      onClose();
+      const handleSuccess = async () => {
+        try {
+          // First delete any marked diary dates
+          if (deletedDiaryDateGuids.length > 0) {
+            await deleteTrackedDiaryDates();
+          }
+          if (diaryDates.length > 0) {
+            await saveDiaryDates(task?.taskIdentifier);
+          }
+          ToggleSuccess("Task edited successfully");
+          form.reset();
+          setDiaryDates([]);
+          setDiaryDateValidation({});
+          setDeletedDiaryDateGuids([]);
+          onClose();
+        } catch (error) {
+          console.error("Error editing task:", error);
+          ToggleError("Task updated but some diary dates failed to save");
+        }
+      };
+
+      handleSuccess();
     },
     onError: (error: any) => {
       console.error("Error editing task:", error);
@@ -145,12 +233,57 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     },
   });
 
+  const saveDiaryDateMutation = useGraphQLMutation(SAVE_DIARY_DATE, {
+    onError: (error: any) => {
+      console.error("Error saving diary date:", error);
+      ToggleError("Failed to save diary date");
+    },
+  });
+
+  const deleteDiaryDateMutation = useGraphQLMutation(DELETE_DIARY_DATE, {
+    onError: (error: any) => {
+      console.error("Error deleting diary date:", error);
+      ToggleError("Failed to delete diary date");
+    },
+  });
+
+  const saveDiaryDates = async (taskGuid: string | undefined) => {
+    const savePromises = diaryDates.map(async (diaryDate) => {
+      const input: DiaryDateInput = {
+        diaryDateGuid: diaryDate?.diaryDateGuid || undefined,
+        investigationGuid: investigationGuid,
+        dueDate: diaryDate.diaryDate?.toISOString() || "",
+        description: diaryDate.description,
+        userGuid: idir,
+        taskGuid: taskGuid || undefined,
+      };
+      return saveDiaryDateMutation.mutateAsync({ input });
+    });
+
+    await Promise.all(savePromises);
+  };
+
+  const deleteTrackedDiaryDates = async () => {
+    try {
+      const deletePromises = deletedDiaryDateGuids.map(async (guid) => {
+        return deleteDiaryDateMutation.mutateAsync({ diaryDateGuid: guid });
+      });
+
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error deleting diary dates:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async () => {
     await form.handleSubmit();
   };
 
   const handleCancel = async () => {
     setSelectedCategory("");
+    setDiaryDates([]);
+    setDiaryDateValidation({});
     form.reset();
     onClose();
   };
@@ -167,6 +300,63 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         },
       }),
     );
+  };
+
+  // Diary Date Functions
+  const addDiaryDate = () => {
+    setDiaryDates([...diaryDates, { description: "", diaryDate: null }]);
+  };
+
+  const deleteDiaryDate = async (index: number) => {
+    const diaryDateToDelete = diaryDates[index];
+
+    // If it's an existing diary date (has diaryDateGuid), track it for deletion
+    if (diaryDateToDelete.diaryDateGuid) {
+      setDeletedDiaryDateGuids([...deletedDiaryDateGuids, diaryDateToDelete.diaryDateGuid]);
+    }
+
+    //Remove from local state
+    const newDiaryDates = diaryDates.filter((_, i) => i !== index);
+    setDiaryDates(newDiaryDates);
+
+    // Update validation state
+    const newValidation = { ...diaryDateValidation };
+    delete newValidation[index];
+    // Reindex the validation state
+    const reindexedValidation: Record<number, boolean> = {};
+    Object.keys(newValidation).forEach((key) => {
+      const numKey = Number.parseInt(key);
+      if (numKey > index) {
+        reindexedValidation[numKey - 1] = newValidation[numKey];
+      } else {
+        reindexedValidation[numKey] = newValidation[numKey];
+      }
+    });
+    setDiaryDateValidation(reindexedValidation);
+  };
+
+  const handleDiaryDateValidationChange = (index: number, isValid: boolean) => {
+    setDiaryDateValidation((prev) => ({
+      ...prev,
+      [index]: isValid,
+    }));
+  };
+
+  const handleDiaryDateValuesChange = (index: number, values: { description: string; diaryDate: Date | null }) => {
+    setDiaryDates((prev) => {
+      const newDiaryDates = [...prev];
+      newDiaryDates[index] = {
+        ...newDiaryDates[index],
+        description: values.description,
+        diaryDate: values.diaryDate,
+      };
+      return newDiaryDates;
+    });
+  };
+
+  const areAllDiaryDatesValid = () => {
+    if (diaryDates.length === 0) return true;
+    return diaryDates.every((_, index) => diaryDateValidation[index] === true);
   };
 
   const taskSubCategoryOptions = taskSubCategories
@@ -394,6 +584,41 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             }}
           />
         </form>
+
+        {/* Diary Dates Section */}
+        <div className="mt-4">
+          <hr className="m-0"></hr>
+          <div
+            className="my-3"
+            style={{ display: "flex", gap: "8px", alignItems: "center" }}
+          >
+            <i className="bi bi-calendar3-week"></i>
+            <h5 className="fw-bold m-0">Diary Dates</h5>
+          </div>
+          {/* Render Diary Date Forms */}
+          {diaryDates.map((diaryDate, index: number) => (
+            <DiaryDateForm
+              key={diaryDate.diaryDateGuid}
+              index={index}
+              onDelete={deleteDiaryDate}
+              onValidationChange={handleDiaryDateValidationChange}
+              onValuesChange={handleDiaryDateValuesChange}
+              initialData={diaryDate}
+              triggerValidation={triggerDiaryValidation}
+            />
+          ))}
+          <Button
+            className="comp-add-drug-btn"
+            variant="outline-primary"
+            size="sm"
+            title="Add diary date"
+            onClick={addDiaryDate}
+          >
+            <i className="bi bi-plus-circle"></i>
+            <span>Add diary date</span>
+          </Button>
+        </div>
+
         <div className="comp-details-form-buttons">
           <Button
             variant="outline-primary"
