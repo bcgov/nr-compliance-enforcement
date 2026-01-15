@@ -598,7 +598,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           {/* Render Diary Date Forms */}
           {diaryDates.map((diaryDate, index: number) => (
             <DiaryDateForm
-              key={`diary-date-in-task-${index}`}
+              key={diaryDate.diaryDateGuid}
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}
