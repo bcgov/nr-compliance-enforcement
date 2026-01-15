@@ -178,14 +178,10 @@ export const ContraventionForm = ({
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
-  const legislationText = legislationTextQuery.data?.legislations
-    ?.filter((item) => !!item.legislationText)
-    .sort((a, b) => {
-      if (a.legislationGuid === section) return -1;
-      if (b.legislationGuid === section) return 1;
-      // Sort by displayOrder for children
-      return (a.displayOrder ?? 0) - (b.displayOrder ?? 0);
-    });
+
+  // Only filter to items with text, and DO NOT re-sort. Sorting by displayOrder
+  // will group all items with the same displayOrder regardless of parent.
+  const legislationText = legislationTextQuery.data?.legislations?.filter((item) => !!item.legislationText);
 
   const partyOptions: Option[] =
     parties
