@@ -45,63 +45,68 @@ const NS_OASIS = "oasis:";
 // Tags that may contain nested bcl:text for sandwiches or clubhouses
 const NESTING_TAGS = ["paragraph", "definition", "subsection", "subparagraph", "clause"];
 
+// Keys that contain inline text content
+const TEXT_CONTENT_KEYS = ["in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link", "oasis:line"];
+
+// Maps special XML keys to HTML markup
+const getMarkupForKey = (key: string): string | null => {
+  if (key === "in:hr") return " <hr/> ";
+  if (key === "in:br") return "<br/>";
+  return null;
+};
+
+// Gets content keys from a node (excludes attributes and #text)
+const getContentKeys = (node: Record<string, unknown>): string[] =>
+  Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
+
+// Extracts text from object keys, converting markup tags
+const extractFromKeys = (node: Record<string, unknown>, keys: string[]): string =>
+  keys.map((key) => getMarkupForKey(key) ?? extractText(node[key])).join("");
+
+// Handles #text node with potential sibling markup tags
+const extractTextNode = (node: Record<string, unknown>): string => {
+  const rawText = node["#text"];
+  const textContent = typeof rawText === "string" || typeof rawText === "number" ? String(rawText) : "";
+  const otherKeys = getContentKeys(node);
+
+  // If #text is whitespace and there are other content keys, extract from those instead
+  if (textContent.trim() === "" && otherKeys.length > 0) {
+    return extractFromKeys(node, otherKeys);
+  }
+
+  // Append any markup tags that are siblings to #text
+  const hrMarkup = otherKeys.includes("in:hr") ? " <hr/> " : "";
+  const brMarkup = otherKeys.includes("in:br") ? "<br/>" : "";
+  return textContent + hrMarkup + brMarkup;
+};
+
 /**
  * Extracts text content from a node handling various types of content
- *
- * NOTE: This is a bit hacky and specific to extracting text out of more deeply nested XML tags in the few
- * examples found. It might not be possible to handle all cases with this approach and we may need to store
- * the other elements in the tree.
  */
 const extractText = (node: any): string => {
   if (node == null) return "";
-  if (typeof node === "string") return node; // Don't trim
+  if (typeof node === "string") return node;
   if (typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(extractText).join("");
-  if (typeof node === "object") {
-    // Handle definitions by wrapping in quotes
-    if (node["in:term"] !== undefined) {
-      return `"${extractText(node["in:term"])}"`;
-    }
 
-    // Keys containing text content - check inline elements first, then #text
-    const textKeys = ["in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link", "oasis:line"];
-    const foundKey = textKeys.find((key) => node[key] !== undefined);
-    if (foundKey) return extractText(node[foundKey]);
+  if (typeof node !== "object") return "";
 
-    // Check #text last - if it's whitespace-only and other content exists, skip it
-    if (node["#text"] !== undefined) {
-      const textContent = String(node["#text"]);
-      const otherKeys = Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
-
-      const hasHr = otherKeys.includes("in:hr");
-
-      // If #text is whitespace and there are other content keys, extract from those instead
-      if (textContent.trim() === "" && otherKeys.length > 0) {
-        return otherKeys
-          .map((key) => {
-            if (key === "in:hr") return " <hr/> ";
-            if (key === "in:br") return "<br/>";
-            return extractText(node[key]);
-          })
-          .join("");
-      }
-      const hasBr = otherKeys.includes("in:br");
-      let result = textContent;
-      if (hasHr) result += " <hr/> ";
-      if (hasBr) result += "<br/>";
-      return result;
-    }
-
-    return Object.keys(node)
-      .filter((key) => !key.startsWith("@_"))
-      .map((key) => {
-        if (key === "in:hr") return " <hr/> ";
-        if (key === "in:br") return "<br/>";
-        return extractText(node[key]);
-      })
-      .join("");
+  // Handle definitions by wrapping in quotes
+  if (node["in:term"] !== undefined) {
+    return `"${extractText(node["in:term"])}"`;
   }
-  return "";
+
+  // Check for inline text content elements
+  const foundKey = TEXT_CONTENT_KEYS.find((key) => node[key] !== undefined);
+  if (foundKey) return extractText(node[foundKey]);
+
+  // Handle #text with potential sibling markup
+  if (node["#text"] !== undefined) {
+    return extractTextNode(node);
+  }
+
+  // Extract from all content keys
+  return extractFromKeys(node, getContentKeys(node));
 };
 
 let originalXmlString = "";
@@ -192,7 +197,7 @@ const getXmlPosition = (element: any): number => {
  */
 const getCitationSortOrder = (citation: string | null): number => {
   if (!citation) return Infinity;
-  const num = parseFloat(citation);
+  const num = Number.parseFloat(citation);
   return Number.isNaN(num) ? Infinity : num;
 };
 
@@ -686,20 +691,12 @@ const parsePreamble: ElementParser = (el, order) =>
     legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
   });
 
-/**
- * Parses subheading elements
- */
-const parseSubheading: ElementParser = (el, order) =>
-  createNode("TEXT", order, {
-    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
-  });
-
 const parseContent = (content: any): ParsedLegislationNode[] => {
   if (!content) return [];
 
   const children = parseSequentialChildren(content, [
     { tag: "preamble", parse: parsePreamble },
-    { tag: "subheading", parse: parseSubheading },
+    { tag: "subheading", parse: parseText },
     { tag: "lefttext", parse: parseText },
     { tag: "part", parse: parsePart },
     { tag: "division", parse: parseDivision },

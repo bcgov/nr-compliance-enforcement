@@ -86,9 +86,9 @@ export const CompSelect: FC<Props> = ({
     if (options.length > 0 && !("isActive" in options[0])) {
       items = [...options];
     } else {
-      items = [...options.filter((o) => (showInactive ? true : o.isActive))];
+      items = options.filter((o) => (showInactive ? true : o.isActive));
     }
-    if (value && !items.find((o) => o.value === value.value)) {
+    if (value && !items.some((o) => o.value === value.value)) {
       items.push(value);
     }
 

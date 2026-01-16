@@ -444,7 +444,7 @@ export const ContraventionForm = ({
                         <thead>
                           <tr>
                             {rows[0]?.map((cell, i) => (
-                              <th key={i}>
+                              <th key={`th-${i}-${cell.slice(0, 20)}`}>
                                 <LegislationText>{cell}</LegislationText>
                               </th>
                             ))}
@@ -452,9 +452,9 @@ export const ContraventionForm = ({
                         </thead>
                         <tbody>
                           {rows.slice(1).map((row, rowIdx) => (
-                            <tr key={rowIdx}>
+                            <tr key={`tr-${rowIdx}-${row[0]?.slice(0, 20)}`}>
                               {row.map((cell, cellIdx) => (
-                                <td key={cellIdx}>
+                                <td key={`td-${rowIdx}-${cellIdx}-${cell.slice(0, 20)}`}>
                                   <LegislationText>{cell}</LegislationText>
                                 </td>
                               ))}
