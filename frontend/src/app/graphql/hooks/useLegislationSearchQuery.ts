@@ -222,6 +222,7 @@ export const convertLegislationToHierarchicalOptions = (
   return flatten(rootGuid).map((item) => ({
     label: formatLabel(item),
     value: item.legislationGuid ?? "",
-    isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV" || item.legislationTypeCode === "SCHED",
+    isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV",
+    isHeader: item.legislationTypeCode === "SCHED",
   }));
 };

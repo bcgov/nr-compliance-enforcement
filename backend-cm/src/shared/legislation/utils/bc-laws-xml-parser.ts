@@ -58,8 +58,13 @@ const extractText = (node: any): string => {
   if (typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(extractText).join("");
   if (typeof node === "object") {
+    // Handle definitions by wrapping in quotes
+    if (node["in:term"] !== undefined) {
+      return `"${extractText(node["in:term"])}"`;
+    }
+
     // Keys containing text content - check inline elements first, then #text
-    const textKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "bcl:link", "oasis:line"];
+    const textKeys = ["in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link", "oasis:line"];
     const foundKey = textKeys.find((key) => node[key] !== undefined);
     if (foundKey) return extractText(node[foundKey]);
 
@@ -74,19 +79,24 @@ const extractText = (node: any): string => {
       if (textContent.trim() === "" && otherKeys.length > 0) {
         return otherKeys
           .map((key) => {
-            if (key === "in:hr") return " [HR] ";
+            if (key === "in:hr") return " <hr/> ";
+            if (key === "in:br") return "<br/>";
             return extractText(node[key]);
           })
           .join("");
       }
-      return hasHr ? textContent + " [HR] " : textContent;
+      const hasBr = otherKeys.includes("in:br");
+      let result = textContent;
+      if (hasHr) result += " <hr/> ";
+      if (hasBr) result += "<br/>";
+      return result;
     }
 
     return Object.keys(node)
       .filter((key) => !key.startsWith("@_"))
       .map((key) => {
-        // Handle HR tag for formulas
-        if (key === "in:hr") return " [HR] ";
+        if (key === "in:hr") return " <hr/> ";
+        if (key === "in:br") return "<br/>";
         return extractText(node[key]);
       })
       .join("");
@@ -101,8 +111,10 @@ let originalXmlString = "";
  */
 const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
-    .replaceAll(/<in:hr\s*\/?>/gi, " [HR] ") // Convert horizontal rules to marker
-    .replaceAll(/<[^<>]*>/g, "") // Remove remaining XML tags
+    .replaceAll(/<in:term[^>]*>([\s\S]*?)<\/in:term>/gi, '"$1"') // Wrap terms in quotes
+    .replaceAll(/<in:hr\s*\/?>/gi, " <hr/> ") // Convert horizontal rules to HTML tag
+    .replaceAll(/<in:br\s*\/?>/gi, "<br/>") // Convert line breaks to HTML tag
+    .replaceAll(/<(?!br\/?>|hr\/?>)[^<>]*>/gi, "") // Remove tags we don't want (all except <br/> and <hr/>)
     .replaceAll(/\s+/g, " ") // Whitespace
     .replaceAll(/ {1,10}([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
@@ -536,15 +548,17 @@ const extractLineFromRawXml = (textSnippet: string): string | null => {
 };
 
 /**
- * Extracts text from a table entry, handling various content structures
+ * Extracts text from a table entry, handling various content structures.
  */
 const getEntryText = (entry: any): string => {
   if (!entry) return "";
 
-  // Entry may contain oasis:line elements with the actual text
+  let result = "";
+
+  // May contain oasis:line elements with the actual text
   const lines = entry[`${NS_OASIS}line`];
   if (lines) {
-    return ensureArray(lines)
+    result = ensureArray(lines)
       .map((line) => {
         // Handle HR tags for formulas
         if (line["in:hr"] !== undefined) {
@@ -556,16 +570,18 @@ const getEntryText = (entry: any): string => {
       })
       .join(" ")
       .trim();
+  } else {
+    // Or bcl:link elements
+    const link = entry[`${NS_BCL}link`];
+    if (link) {
+      result = extractText(link).trim();
+    } else {
+      // Then extract plain text
+      result = extractText(entry).trim();
+    }
   }
 
-  // Direct bcl:link
-  const link = entry[`${NS_BCL}link`];
-  if (link) {
-    return extractText(link).trim();
-  }
-
-  // Fallback to generic text extraction
-  return extractText(entry).trim();
+  return result.replaceAll("\n", " ").replaceAll(/\s+/g, " ").trim();
 };
 
 /**
