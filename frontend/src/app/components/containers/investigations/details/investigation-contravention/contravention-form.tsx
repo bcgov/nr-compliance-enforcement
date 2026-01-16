@@ -21,6 +21,7 @@ import { indentByType, Legislation } from "@/app/types/app/legislation";
 import { Button, Card, Table } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { LegislationText } from "@/app/components/common/legislation-text";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
@@ -420,7 +421,9 @@ export const ContraventionForm = ({
                       key={section.legislationGuid}
                       className="contravention-text-segment"
                     >
-                      <p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>
+                      <p className={`mb-2 ${indentClass}`}>
+                        <LegislationText>{section.legislationText}</LegislationText>
+                      </p>
                     </div>
                   );
                 }
@@ -441,7 +444,9 @@ export const ContraventionForm = ({
                         <thead>
                           <tr>
                             {rows[0]?.map((cell, i) => (
-                              <th key={i}>{cell}</th>
+                              <th key={i}>
+                                <LegislationText>{cell}</LegislationText>
+                              </th>
                             ))}
                           </tr>
                         </thead>
@@ -449,7 +454,9 @@ export const ContraventionForm = ({
                           {rows.slice(1).map((row, rowIdx) => (
                             <tr key={rowIdx}>
                               {row.map((cell, cellIdx) => (
-                                <td key={cellIdx}>{cell}</td>
+                                <td key={cellIdx}>
+                                  <LegislationText>{cell}</LegislationText>
+                                </td>
                               ))}
                             </tr>
                           ))}
@@ -478,7 +485,7 @@ export const ContraventionForm = ({
                         {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
-                        {section.legislationText}
+                        <LegislationText>{section.legislationText}</LegislationText>
                       </p>
                       {section.alternateText && (
                         <div className="contravention-alternate-text">{section.alternateText}</div>

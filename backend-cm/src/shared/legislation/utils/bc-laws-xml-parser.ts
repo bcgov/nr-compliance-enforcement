@@ -67,17 +67,28 @@ const extractText = (node: any): string => {
     if (node["#text"] !== undefined) {
       const textContent = String(node["#text"]);
       const otherKeys = Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
+
+      const hasHr = otherKeys.includes("in:hr");
+
       // If #text is whitespace and there are other content keys, extract from those instead
       if (textContent.trim() === "" && otherKeys.length > 0) {
-        return otherKeys.map((key) => extractText(node[key])).join("");
+        return otherKeys
+          .map((key) => {
+            if (key === "in:hr") return " [HR] ";
+            return extractText(node[key]);
+          })
+          .join("");
       }
-      return textContent;
+      return hasHr ? textContent + " [HR] " : textContent;
     }
 
-    // Fallback: recursively extract from all non-attribute keys
     return Object.keys(node)
       .filter((key) => !key.startsWith("@_"))
-      .map((key) => extractText(node[key]))
+      .map((key) => {
+        // Handle HR tag for formulas
+        if (key === "in:hr") return " [HR] ";
+        return extractText(node[key]);
+      })
       .join("");
   }
   return "";
@@ -90,7 +101,8 @@ let originalXmlString = "";
  */
 const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
-    .replaceAll(/<[^<>]*>/g, "") // Remove XML tags
+    .replaceAll(/<in:hr\s*\/?>/gi, " [HR] ") // Convert horizontal rules to marker
+    .replaceAll(/<[^<>]*>/g, "") // Remove remaining XML tags
     .replaceAll(/\s+/g, " ") // Whitespace
     .replaceAll(/ {1,10}([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
@@ -245,9 +257,9 @@ const getTextPositions = (parentId: string): Array<{ start: number; end: number 
 };
 
 /**
- * Parses a paragraph element
+ * Parses a text element
  */
-const parseText = (parentId: string): ParsedLegislationNode[] => {
+const parseTextElement = (parentId: string): ParsedLegislationNode[] => {
   const positions = getTextPositions(parentId);
   if (!positions) return [];
 
@@ -282,6 +294,7 @@ type ElementParser = (element: any, order: number) => ParsedLegislationNode;
 
 /**
  * Parses child elements by type, sorted by XML position
+ * NOTE: Does not re-sequence displayOrder
  */
 const parseOrderedChildren = (
   parent: any,
@@ -296,14 +309,8 @@ const parseOrderedChildren = (
   }
 
   elements.sort((a, b) => a.xmlPos - b.xmlPos);
-  // Use XML position as displayOrder so TEXT nodes can be ordered correctly
-  const children = elements.map((item) => item.parse(item.element, item.xmlPos));
-
-  children.forEach((child, index) => {
-    child.displayOrder = index + 1;
-  });
-
-  return children;
+  // Keep XML position as displayOrder so mergeText can correctly interleave TEXT nodes
+  return elements.map((item) => item.parse(item.element, item.xmlPos));
 };
 
 /**
@@ -361,63 +368,30 @@ const parseDefinition: ElementParser = (el, order) => {
   });
 };
 
-const parseParagraph: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
-    { tag: "subparagraph", parse: parseSubparagraph },
-    { tag: "clause", parse: parseClause },
-  ]);
+/**
+ * Parser for elements with text nodes, tables, and child elements
+ */
+const parseElementWithTextAndTables = (
+  el: any,
+  order: number,
+  typeCode: string,
+  childTypes: Array<{ tag: string; parse: ElementParser }>,
+  includeMarginalNote: boolean = false,
+): ParsedLegislationNode => {
+  const text = parseTextElement(el?.["@_id"]);
+  const children = parseOrderedChildren(el, childTypes);
 
-  const extractedText = mergeText(children, text);
-
-  return createNode("PAR", order, {
-    citation: getBclNum(el),
-    legislationText: extractedText ?? (getBclText(el) || null),
-    children,
-  });
-};
-
-const parseSubsection: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
-    { tag: "definition", parse: parseDefinition },
-    { tag: "paragraph", parse: parseParagraph },
-  ]);
-
-  const extractedText = mergeText(children, text);
-
-  return createNode("SUBSEC", order, {
-    citation: getBclNum(el),
-    legislationText: extractedText ?? (getBclText(el) || null),
-    children,
-  });
-};
-
-const parseSection: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
-    { tag: "subsection", parse: parseSubsection },
-    { tag: "definition", parse: parseDefinition },
-    { tag: "paragraph", parse: parseParagraph },
-  ]);
-
-  // Parse tables in sections
+  // Parse tables
   ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
     const xmlPos = getXmlPosition(table);
     const tableText = getTableText(table);
     if (tableText) {
-      children.push(
-        createNode("TABLE", xmlPos, {
-          legislationText: tableText,
-        }),
-      );
+      children.push(createNode("TABLE", xmlPos, { legislationText: tableText }));
     }
   });
 
-  // mergeText handles sorting/re-sequencing when there are TEXT nodes
   const extractedText = mergeText(children, text);
 
-  // If no TEXT nodes, still need to sort and re-sequence children (for TABLE nodes)
   if (text.length === 0 && children.length > 0) {
     children.sort((a, b) => a.displayOrder - b.displayOrder);
     children.forEach((child, index) => {
@@ -425,13 +399,38 @@ const parseSection: ElementParser = (el, order) => {
     });
   }
 
-  return createNode("SEC", order, {
+  return createNode(typeCode, order, {
     citation: getBclNum(el),
-    sectionTitle: getMarginalnote(el),
+    sectionTitle: includeMarginalNote ? getMarginalnote(el) : null,
     legislationText: extractedText ?? (getBclText(el) || null),
     children,
   });
 };
+
+const parseParagraph: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(el, order, "PAR", [
+    { tag: "subparagraph", parse: parseSubparagraph },
+    { tag: "clause", parse: parseClause },
+  ]);
+
+const parseSubsection: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(el, order, "SUBSEC", [
+    { tag: "definition", parse: parseDefinition },
+    { tag: "paragraph", parse: parseParagraph },
+  ]);
+
+const parseSection: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(
+    el,
+    order,
+    "SEC",
+    [
+      { tag: "subsection", parse: parseSubsection },
+      { tag: "definition", parse: parseDefinition },
+      { tag: "paragraph", parse: parseParagraph },
+    ],
+    true, // include marginal note
+  );
 
 const parseRule: ElementParser = (el, order) =>
   createNode("RULE", order, {
@@ -453,48 +452,23 @@ const parseDivision: ElementParser = (el, order) =>
 let parsePart: ElementParser;
 
 /**
- * Parses centertext elements
+ * Parser simple text elements (centertext, lefttext, list, schedulesubtitle)
  */
-const parseCentertext: ElementParser = (el, order) =>
+const parseText: ElementParser = (el, order) =>
   createNode("TEXT", order, {
     legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
   });
 
 /**
- * Parses lefttext elements (indented text blocks)
- */
-const parseLefttext: ElementParser = (el, order) =>
-  createNode("TEXT", order, {
-    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
-  });
-
-/**
- * Parses form elements within schedules
+ * Parses form elements within schedules (includes form title)
  */
 const parseForm: ElementParser = (el, order) => {
-  // Forms can contain various elements - extract all text content
   const formTitle = el?.[`${NS_BCL}formtitle`];
   return createNode("TEXT", order, {
     sectionTitle: formTitle ? extractText(formTitle).trim() : null,
     legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
   });
 };
-
-/**
- * Parses list elements
- */
-const parseList: ElementParser = (el, order) =>
-  createNode("TEXT", order, {
-    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
-  });
-
-/**
- * Parses schedulesubtitle elements
- */
-const parseScheduleSubtitle: ElementParser = (el, order) =>
-  createNode("TEXT", order, {
-    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
-  });
 
 const parseSchedule: ElementParser = (el, order) => {
   const scheduleTitle = el?.[`${NS_BCL}scheduletitle`] || el?.[`${NS_BCL}num`];
@@ -510,11 +484,11 @@ const parseSchedule: ElementParser = (el, order) => {
 
   // Parse text/content elements
   const textChildren = parseSequentialChildren(el, [
-    { tag: "centertext", parse: parseCentertext },
-    { tag: "lefttext", parse: parseLefttext },
+    { tag: "centertext", parse: parseText },
+    { tag: "lefttext", parse: parseText },
     { tag: "form", parse: parseForm },
-    { tag: "list", parse: parseList },
-    { tag: "schedulesubtitle", parse: parseScheduleSubtitle },
+    { tag: "list", parse: parseText },
+    { tag: "schedulesubtitle", parse: parseText },
   ]);
   children.push(...textChildren);
 
@@ -545,6 +519,23 @@ const parseSchedule: ElementParser = (el, order) => {
 };
 
 /**
+ * Extracts content from oasis:line elements
+ */
+const extractLineFromRawXml = (textSnippet: string): string | null => {
+  if (!textSnippet || !originalXmlString) return null;
+
+  const lineMatches = [...originalXmlString.matchAll(/<oasis:line[^>]*>([\s\S]*?)<\/oasis:line>/g)];
+  for (const match of lineMatches) {
+    const lineContent = match[1];
+    // Handle HR tags for formulas
+    if (lineContent.includes(textSnippet.substring(0, 30)) && /<in:hr\s*\/?>/.test(lineContent)) {
+      return extractTextFromXml(lineContent);
+    }
+  }
+  return null;
+};
+
+/**
  * Extracts text from a table entry, handling various content structures
  */
 const getEntryText = (entry: any): string => {
@@ -554,7 +545,15 @@ const getEntryText = (entry: any): string => {
   const lines = entry[`${NS_OASIS}line`];
   if (lines) {
     return ensureArray(lines)
-      .map((line) => extractText(line))
+      .map((line) => {
+        // Handle HR tags for formulas
+        if (line["in:hr"] !== undefined) {
+          const textContent = extractText(line);
+          const rawContent = extractLineFromRawXml(textContent);
+          if (rawContent) return rawContent;
+        }
+        return extractText(line);
+      })
       .join(" ")
       .trim();
   }
@@ -623,7 +622,7 @@ const parseConseqhead: ElementParser = (el, order) => {
     children.push(parseConseqnote(note, xmlPos));
   });
 
-  // Parse tables as TABLE type nodes
+  // Parse tables
   ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
     const xmlPos = getXmlPosition(table);
     const tableText = getTableText(table);
@@ -685,7 +684,7 @@ const parseContent = (content: any): ParsedLegislationNode[] => {
   const children = parseSequentialChildren(content, [
     { tag: "preamble", parse: parsePreamble },
     { tag: "subheading", parse: parseSubheading },
-    { tag: "lefttext", parse: parseLefttext },
+    { tag: "lefttext", parse: parseText },
     { tag: "part", parse: parsePart },
     { tag: "division", parse: parseDivision },
     { tag: "rule", parse: parseRule },
