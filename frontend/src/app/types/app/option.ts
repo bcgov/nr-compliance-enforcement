@@ -7,4 +7,6 @@ export default interface Option {
   isActive?: boolean;
   // Used to make an option visible but unselectable
   isDisabled?: boolean;
+  // Used to style an option as a header while still being selectable
+  isHeader?: boolean;
 }

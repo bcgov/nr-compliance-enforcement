@@ -18,9 +18,10 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { indentByType, Legislation } from "@/app/types/app/legislation";
-import { Button, Card } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
+import { LegislationText } from "@/app/components/common/legislation-text";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
@@ -146,8 +147,10 @@ export const ContraventionForm = ({
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SECTION],
+    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SCHEDULE, Legislation.SECTION],
     ancestorGuid: regulation || act,
+    // When Act is selected but no regulation, exclude sections from child regulations
+    excludeRegulations: !!act && !regulation,
     enabled: !!regulation || !!act,
   });
 
@@ -162,6 +165,7 @@ export const ContraventionForm = ({
       Legislation.SUBCLAUSE,
       Legislation.DEFINITION,
       Legislation.TEXT,
+      Legislation.TABLE,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -173,11 +177,12 @@ export const ContraventionForm = ({
   const isEditMode = !!contravention;
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
-  // Use hierarchical options for sections (with Parts/Divisions as disabled headers)
+  // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
-  const legislationText = legislationTextQuery.data?.legislations
-    ?.filter((section) => !!section.legislationText)
-    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
+  // Only filter to items with text, and DO NOT re-sort. Sorting by displayOrder
+  // will group all items with the same displayOrder regardless of parent.
+  const legislationText = legislationTextQuery.data?.legislations?.filter((item) => !!item.legislationText);
 
   const partyOptions: Option[] =
     parties
@@ -416,10 +421,54 @@ export const ContraventionForm = ({
                       key={section.legislationGuid}
                       className="contravention-text-segment"
                     >
-                      <p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>
+                      <p className={`mb-2 ${indentClass}`}>
+                        <LegislationText>{section.legislationText}</LegislationText>
+                      </p>
                     </div>
                   );
                 }
+
+                if (section.legislationTypeCode === Legislation.TABLE && section.legislationText) {
+                  const lines = section.legislationText.split("\n").filter((line) => line.trim());
+                  const rows = lines.map((line) => line.split("|").map((cell) => cell.trim()));
+                  return (
+                    <div
+                      key={section.legislationGuid}
+                      className={`contravention-text-segment ${indentClass}`}
+                    >
+                      <Table
+                        bordered
+                        size="sm"
+                        className="legislation-table"
+                      >
+                        <thead>
+                          <tr>
+                            {rows[0]?.map((cell, i) => (
+                              <th key={`th-${i}-${cell.slice(0, 20)}`}>
+                                <LegislationText>{cell}</LegislationText>
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rows.slice(1).map((row, rowIdx) => (
+                            <tr key={`tr-${rowIdx}-${row[0]?.slice(0, 20)}`}>
+                              {row.map((cell, cellIdx) => (
+                                <td key={`td-${rowIdx}-${cellIdx}-${cell.slice(0, 20)}`}>
+                                  <LegislationText>{cell}</LegislationText>
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  );
+                }
+
+                // For subsections without explicit citation, show (1)
+                const displayCitation =
+                  section.citation || (section.legislationTypeCode === Legislation.SUBSECTION ? "1" : null);
 
                 return (
                   <button
@@ -433,10 +482,10 @@ export const ContraventionForm = ({
                   >
                     <div>
                       <p className={`mb-2 ${indentClass}`}>
-                        {section.legislationTypeCode !== Legislation.SECTION && section.citation && (
-                          <>{`(${section.citation})`} </>
+                        {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
+                          <>{`(${displayCitation})`} </>
                         )}
-                        {section.legislationText}
+                        <LegislationText>{section.legislationText}</LegislationText>
                       </p>
                       {section.alternateText && (
                         <div className="contravention-alternate-text">{section.alternateText}</div>

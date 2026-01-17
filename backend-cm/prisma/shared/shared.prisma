@@ -419,7 +419,7 @@ model legislation {
   parent_legislation_guid                                                        String?               @db.Uuid
   citation                                                                       String?               @db.VarChar(128)
   full_citation                                                                  String?               @db.VarChar(1024)
-  section_title                                                                  String?               @db.VarChar(128)
+  section_title                                                                  String?               @db.VarChar(256)
   legislation_text                                                               String?
   alternate_text                                                                 String?
   display_order                                                                  Int
@@ -457,6 +457,7 @@ model legislation_source {
   update_utc_timestamp                                    DateTime?     @db.Timestamp(6)
   import_status                                           String?       @default("PENDING") @db.VarChar(16)
   last_import_log                                         String?
+  regulations_source_url                                  String?       @db.VarChar(512)
   legislation                                             legislation[] @relation("legislationTolegislation_source")
   agency_code_legislation_source_agency_codeToagency_code agency_code   @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
 

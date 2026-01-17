@@ -22,6 +22,7 @@ interface EditingSource {
   shortDescription: string;
   longDescription: string;
   sourceUrl: string;
+  regulationsSourceUrl: string;
   agencyCode: string;
   activeInd: boolean;
   importedInd: boolean;
@@ -31,6 +32,7 @@ const emptySource: EditingSource = {
   shortDescription: "",
   longDescription: "",
   sourceUrl: "",
+  regulationsSourceUrl: "",
   agencyCode: "",
   activeInd: true,
   importedInd: false,
@@ -108,6 +110,7 @@ export const LegislationSourceManagement: FC = () => {
       shortDescription: source.shortDescription,
       longDescription: source.longDescription ?? "",
       sourceUrl: source.sourceUrl,
+      regulationsSourceUrl: source.regulationsSourceUrl ?? "",
       agencyCode: source.agencyCode,
       activeInd: source.activeInd,
       importedInd: source.importedInd,
@@ -134,6 +137,7 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -144,6 +148,7 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
       };
       createMutation.mutate({ input });
@@ -216,16 +221,35 @@ export const LegislationSourceManagement: FC = () => {
           {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
         </td>
         <td>{getAgencyLabel(source.agencyCode)}</td>
-        <td className="text-truncate">
-          <a
-            href={source.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="comp-cell-link"
-            title={source.sourceUrl}
-          >
-            {source.sourceUrl}
-          </a>
+        <td>
+          <div>
+            Act:
+            <br />
+            <a
+              href={source.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="comp-cell-link"
+              title={source.sourceUrl}
+            >
+              {source.sourceUrl}
+            </a>
+          </div>
+          {source.regulationsSourceUrl && (
+            <div className="pt-3">
+              Regulations:
+              <br />
+              <a
+                href={source.regulationsSourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="comp-cell-link"
+                title={source.regulationsSourceUrl}
+              >
+                {source.regulationsSourceUrl}
+              </a>
+            </div>
+          )}
         </td>
         <td style={{ textAlign: "center" }}>{getStatusBadge(source)}</td>
         <td>{formatDateTime(source.lastImportTimestamp ?? undefined)}</td>
@@ -303,7 +327,7 @@ export const LegislationSourceManagement: FC = () => {
                 <th style={{ width: "50px" }}>#</th>
                 <th>Description</th>
                 <th style={{ width: "130px" }}>Agency</th>
-                <th>Source URL</th>
+                <th>Source URLs</th>
                 <th style={{ width: "100px", textAlign: "center" }}>Status</th>
                 <th style={{ width: "160px" }}>Last Import</th>
                 <th style={{ width: "90px", textAlign: "center" }}>Actions</th>
@@ -368,9 +392,24 @@ export const LegislationSourceManagement: FC = () => {
                   divid="source-url-div"
                   type="input"
                   inputClass="comp-form-control"
-                  placeholder="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/.../xml"
+                  placeholder="URL for the act XML document"
                   value={editingSource.sourceUrl}
                   onChange={(e: any) => setEditingSource({ ...editingSource, sourceUrl: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="comp-details-form-row">
+              <label htmlFor="regulations-url-input">Regulations URL</label>
+              <div className="comp-details-edit-input">
+                <CompInput
+                  id="regulations-url-input"
+                  divid="regulations-url-div"
+                  type="input"
+                  inputClass="comp-form-control"
+                  placeholder="Optional URL for the regulations folder XML document"
+                  value={editingSource.regulationsSourceUrl}
+                  onChange={(e: any) => setEditingSource({ ...editingSource, regulationsSourceUrl: e.target.value })}
                 />
               </div>
             </div>

@@ -39,6 +39,15 @@ const CustomOption = (props: any) => {
     );
   }
 
+  // If it's a header render bold
+  if (data.isHeader) {
+    return (
+      <components.Option {...props}>
+        <strong>{data.label}</strong>
+      </components.Option>
+    );
+  }
+
   // Default rendering
   return <components.Option {...props}>{data.label}</components.Option>;
 };
@@ -77,18 +86,19 @@ export const CompSelect: FC<Props> = ({
     if (options.length > 0 && !("isActive" in options[0])) {
       items = [...options];
     } else {
-      items = [...options.filter((o) => (showInactive ? true : o.isActive))];
+      items = options.filter((o) => (showInactive ? true : o.isActive));
     }
-    if (value && !items.find((o) => o.value === value.value)) {
+    if (value && !items.some((o) => o.value === value.value)) {
       items.push(value);
     }
 
-    // Map options to include label, labelElement, and isDisabled
+    // Map options to include label, labelElement, isDisabled, and isHeader
     items = items.map((o) => ({
       label: o.label, //for searchability
       value: o.value,
       labelElement: o.labelElement,
       isDisabled: o.isDisabled ?? false,
+      isHeader: o.isHeader ?? false,
     }));
   }
 

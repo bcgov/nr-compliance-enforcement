@@ -8,7 +8,7 @@ import { XMLParser } from "fast-xml-parser";
  * - http://www.bclaws.ca/standards/bylaw.xsd
  */
 export interface ParsedLegislationNode {
-  typeCode: string; // ACT, REG, BYLAW, PART, DIV, RULE, SCHED, SEC, SUBSEC, PAR, SUBPAR, CL, SUBCL, DEF, TEXT
+  typeCode: string; // ACT, REG, BYLAW, PART, DIV, RULE, SCHED, SEC, SUBSEC, PAR, SUBPAR, CL, SUBCL, DEF, TEXT, TABLE
   citation: string | null; // e.g., "1", "1(a)", "(a)"
   sectionTitle: string | null; // marginal note or title
   legislationText: string | null;
@@ -40,29 +40,83 @@ const NS_ACT = "act:";
 const NS_REG = "reg:";
 const NS_BCL = "bcl:";
 const NS_IN = "in:";
+const NS_OASIS = "oasis:";
 
 // Tags that may contain nested bcl:text for sandwiches or clubhouses
 const NESTING_TAGS = ["paragraph", "definition", "subsection", "subparagraph", "clause"];
+
+// Keys that contain inline text content
+const TEXT_CONTENT_KEYS = ["in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link", "oasis:line"];
+
+// Maps special XML keys to HTML markup
+const getMarkupForKey = (key: string): string | null => {
+  if (key === "in:hr") return " <hr/> ";
+  if (key === "in:br") return "<br/>";
+  return null;
+};
+
+// Gets content keys from a node (excludes attributes and #text)
+const getContentKeys = (node: Record<string, unknown>): string[] =>
+  Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
+
+// Extracts text from object keys, converting markup tags
+const extractFromKeys = (node: Record<string, unknown>, keys: string[]): string =>
+  keys.map((key) => getMarkupForKey(key) ?? extractText(node[key])).join("");
+
+// Handles #text node with potential sibling markup tags
+const extractTextNode = (node: Record<string, unknown>): string => {
+  const rawText = node["#text"];
+  const textContent = typeof rawText === "string" || typeof rawText === "number" ? String(rawText) : "";
+  const otherKeys = getContentKeys(node);
+
+  // If #text is whitespace and there are other content keys, extract from those instead
+  if (textContent.trim() === "" && otherKeys.length > 0) {
+    return extractFromKeys(node, otherKeys);
+  }
+
+  // Append any markup tags that are siblings to #text
+  const hrMarkup = otherKeys.includes("in:hr") ? " <hr/> " : "";
+  const brMarkup = otherKeys.includes("in:br") ? "<br/>" : "";
+  return textContent + hrMarkup + brMarkup;
+};
 
 /**
  * Extracts text content from a node handling various types of content
  */
 const extractText = (node: any): string => {
   if (node == null) return "";
-  if (typeof node === "string") return node; // Don't trim
+  if (typeof node === "string") return node;
   if (typeof node === "number") return String(node);
   if (Array.isArray(node)) return node.map(extractText).join("");
-  if (typeof node === "object") {
-    const textKeys = ["#text", "in:term", "in:doc", "in:desc", "in:em", "in:strong"];
-    const foundKey = textKeys.find((key) => node[key] !== undefined);
-    if (foundKey) return extractText(node[foundKey]);
-    return Object.keys(node)
-      .filter((key) => !key.startsWith("@_"))
-      .map((key) => extractText(node[key]))
-      .join("");
+
+  if (typeof node !== "object") return "";
+
+  // Handle definitions by wrapping in quotes
+  if (node["in:term"] !== undefined) {
+    return `"${extractText(node["in:term"])}"`;
   }
-  return "";
+
+  // Check for inline text content elements
+  const foundKey = TEXT_CONTENT_KEYS.find((key) => node[key] !== undefined);
+  if (foundKey) return extractText(node[foundKey]);
+
+  // Handle #text with potential sibling markup
+  if (node["#text"] !== undefined) {
+    return extractTextNode(node);
+  }
+
+  // Extract from all content keys
+  return extractFromKeys(node, getContentKeys(node));
 };
+
+/**
+ * Strips HTML markup tags for cases where we don't want formatting such as titles
+ */
+const stripMarkupTags = (text: string): string =>
+  text
+    .replaceAll(/<(?:hr|br)\s*\/?>/gi, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
 
 let originalXmlString = "";
 
@@ -71,7 +125,10 @@ let originalXmlString = "";
  */
 const extractTextFromXml = (xmlContent: string): string => {
   return xmlContent
-    .replaceAll(/<[^<>]*>/g, "") // Remove XML tags
+    .replaceAll(/<in:term[^>]*>([\s\S]*?)<\/in:term>/gi, '"$1"') // Wrap terms in quotes
+    .replaceAll(/<in:hr\s*\/?>/gi, " <hr/> ") // Convert horizontal rules to HTML tag
+    .replaceAll(/<in:br\s*\/?>/gi, "<br/>") // Convert line breaks to HTML tag
+    .replaceAll(/<(?!br\/?>|hr\/?>)[^<>]*>/gi, "") // Remove tags we don't want (all except <br/> and <hr/>)
     .replaceAll(/\s+/g, " ") // Whitespace
     .replaceAll(/ {1,10}([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
@@ -82,7 +139,7 @@ const extractTextFromXml = (xmlContent: string): string => {
  */
 const findBclTextById = (elementId: string, xml: string): string | null => {
   const id = xml.indexOf(`id="${elementId}"`);
-  const start = id > -1 ? xml.indexOf("<bcl:text>", id) + 10 : -1; // 10 = "<bcl:text>".length
+  const start = id > -1 ? xml.indexOf("<bcl:text>", id) + 10 : -1;
   const end = start > 9 ? xml.indexOf("</bcl:text>", start) : -1;
   return end > -1 ? xml.substring(start, end) : null;
 };
@@ -96,7 +153,7 @@ const getBclText = (element: any): string => {
   if (!textElement) return "";
   if (typeof textElement === "string") return textElement.trim();
 
-  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "bcl:link"];
+  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link"];
   const hasInlineElements = inlineKeys.some((key) => textElement[key] !== undefined);
 
   if (hasInlineElements) {
@@ -123,7 +180,7 @@ const getBclNum = (element: any): string | null => {
  */
 const getMarginalnote = (element: any): string | null => {
   const note = element?.[`${NS_BCL}marginalnote`];
-  return note ? extractText(note).replaceAll(/\s+/g, " ").trim() || null : null;
+  return note ? stripMarkupTags(extractText(note)) || null : null;
 };
 
 /**
@@ -142,6 +199,15 @@ const getXmlPosition = (element: any): number => {
   if (!id || !originalXmlString) return Infinity;
   const pos = originalXmlString.indexOf(`id="${id}"`);
   return pos > -1 ? pos : Infinity;
+};
+
+/**
+ * Converts a citation string to a sortable number
+ */
+const getCitationSortOrder = (citation: string | null): number => {
+  if (!citation) return Infinity;
+  const num = Number.parseFloat(citation);
+  return Number.isNaN(num) ? Infinity : num;
 };
 
 /**
@@ -217,9 +283,9 @@ const getTextPositions = (parentId: string): Array<{ start: number; end: number 
 };
 
 /**
- * Parses a paragraph element
+ * Parses a text element
  */
-const parseText = (parentId: string): ParsedLegislationNode[] => {
+const parseTextElement = (parentId: string): ParsedLegislationNode[] => {
   const positions = getTextPositions(parentId);
   if (!positions) return [];
 
@@ -242,6 +308,11 @@ const mergeText = (children: ParsedLegislationNode[], textNodes: ParsedLegislati
 
   const firstText = children[0]?.typeCode === "TEXT" ? (children.shift()?.legislationText ?? null) : null;
 
+  // Re-sequence displayOrder for consistent ordering
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
   return firstText;
 };
 
@@ -249,6 +320,7 @@ type ElementParser = (element: any, order: number) => ParsedLegislationNode;
 
 /**
  * Parses child elements by type, sorted by XML position
+ * NOTE: Does not re-sequence displayOrder
  */
 const parseOrderedChildren = (
   parent: any,
@@ -263,7 +335,7 @@ const parseOrderedChildren = (
   }
 
   elements.sort((a, b) => a.xmlPos - b.xmlPos);
-  // Use XML position as displayOrder so TEXT nodes can be ordered correctly
+  // Keep XML position as displayOrder so mergeText can correctly interleave TEXT nodes
   return elements.map((item) => item.parse(item.element, item.xmlPos));
 };
 
@@ -285,6 +357,10 @@ const parseSequentialChildren = (
 
   // Sort by XML position to ensure correct order
   children.sort((a, b) => a.displayOrder - b.displayOrder);
+
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
 
   return children;
 };
@@ -312,73 +388,87 @@ const parseSubparagraph: ElementParser = (el, order) =>
 const parseDefinition: ElementParser = (el, order) => {
   const term = el?.[`${NS_IN}term`] || el?.[`${NS_BCL}text`]?.[`${NS_IN}term`];
   return createNode("DEF", order, {
-    sectionTitle: extractText(term) || null,
+    sectionTitle: stripMarkupTags(extractText(term)) || null,
     legislationText: getBclText(el) || null,
     children: parseSequentialChildren(el, [{ tag: "paragraph", parse: parseParagraph }]),
   });
 };
 
-const parseParagraph: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
+/**
+ * Parser for elements with text nodes, tables, and child elements
+ */
+const parseElementWithTextAndTables = (
+  el: any,
+  order: number,
+  typeCode: string,
+  childTypes: Array<{ tag: string; parse: ElementParser }>,
+  includeMarginalNote: boolean = false,
+): ParsedLegislationNode => {
+  const text = parseTextElement(el?.["@_id"]);
+  const children = parseOrderedChildren(el, childTypes);
+
+  // Parse tables
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(createNode("TABLE", xmlPos, { legislationText: tableText }));
+    }
+  });
+
+  const extractedText = mergeText(children, text);
+
+  if (text.length === 0 && children.length > 0) {
+    children.sort((a, b) => a.displayOrder - b.displayOrder);
+    children.forEach((child, index) => {
+      child.displayOrder = index + 1;
+    });
+  }
+
+  return createNode(typeCode, order, {
+    citation: getBclNum(el),
+    sectionTitle: includeMarginalNote ? getMarginalnote(el) : null,
+    legislationText: extractedText ?? (getBclText(el) || null),
+    children,
+  });
+};
+
+const parseParagraph: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(el, order, "PAR", [
     { tag: "subparagraph", parse: parseSubparagraph },
     { tag: "clause", parse: parseClause },
   ]);
 
-  const extractedText = mergeText(children, text);
-
-  return createNode("PAR", order, {
-    citation: getBclNum(el),
-    legislationText: extractedText ?? (getBclText(el) || null),
-    children,
-  });
-};
-
-const parseSubsection: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
+const parseSubsection: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(el, order, "SUBSEC", [
     { tag: "definition", parse: parseDefinition },
     { tag: "paragraph", parse: parseParagraph },
   ]);
 
-  const extractedText = mergeText(children, text);
-
-  return createNode("SUBSEC", order, {
-    citation: getBclNum(el),
-    legislationText: extractedText ?? (getBclText(el) || null),
-    children,
-  });
-};
-
-const parseSection: ElementParser = (el, order) => {
-  const text = parseText(el?.["@_id"]);
-  const children = parseOrderedChildren(el, [
-    { tag: "subsection", parse: parseSubsection },
-    { tag: "definition", parse: parseDefinition },
-    { tag: "paragraph", parse: parseParagraph },
-  ]);
-
-  const extractedText = mergeText(children, text);
-
-  return createNode("SEC", order, {
-    citation: getBclNum(el),
-    sectionTitle: getMarginalnote(el),
-    legislationText: extractedText ?? (getBclText(el) || null),
-    children,
-  });
-};
+const parseSection: ElementParser = (el, order) =>
+  parseElementWithTextAndTables(
+    el,
+    order,
+    "SEC",
+    [
+      { tag: "subsection", parse: parseSubsection },
+      { tag: "definition", parse: parseDefinition },
+      { tag: "paragraph", parse: parseParagraph },
+    ],
+    true, // include marginal note
+  );
 
 const parseRule: ElementParser = (el, order) =>
   createNode("RULE", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || getMarginalnote(el),
+    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
     children: parseSequentialChildren(el, [{ tag: "section", parse: parseSection }]),
   });
 
 const parseDivision: ElementParser = (el, order) =>
   createNode("DIV", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || getMarginalnote(el),
+    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
     children: parseSequentialChildren(el, [
       { tag: "section", parse: parseSection },
       { tag: "rule", parse: parseRule },
@@ -387,51 +477,262 @@ const parseDivision: ElementParser = (el, order) =>
 
 let parsePart: ElementParser;
 
+/**
+ * Parser simple text elements (centertext, lefttext, list, schedulesubtitle)
+ */
+const parseText: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+
+/**
+ * Parses form elements within schedules (includes form title)
+ */
+const parseForm: ElementParser = (el, order) => {
+  const formTitle = el?.[`${NS_BCL}formtitle`];
+  return createNode("TEXT", order, {
+    sectionTitle: formTitle ? stripMarkupTags(extractText(formTitle)) : null,
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
+  });
+};
+
 const parseSchedule: ElementParser = (el, order) => {
   const scheduleTitle = el?.[`${NS_BCL}scheduletitle`] || el?.[`${NS_BCL}num`];
+  const children: ParsedLegislationNode[] = [];
+
+  // Parse structural elements
+  const structuralChildren = parseSequentialChildren(el, [
+    { tag: "part", parse: parsePart },
+    { tag: "division", parse: parseDivision },
+    { tag: "section", parse: parseSection },
+  ]);
+  children.push(...structuralChildren);
+
+  // Parse text/content elements
+  const textChildren = parseSequentialChildren(el, [
+    { tag: "centertext", parse: parseText },
+    { tag: "lefttext", parse: parseText },
+    { tag: "form", parse: parseForm },
+    { tag: "list", parse: parseText },
+    { tag: "schedulesubtitle", parse: parseText },
+  ]);
+  children.push(...textChildren);
+
+  // Parse tables
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(
+        createNode("TABLE", xmlPos, {
+          legislationText: tableText,
+        }),
+      );
+    }
+  });
+
+  // Sort by XML position and re-sequence
+  children.sort((a, b) => a.displayOrder - b.displayOrder);
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
   return createNode("SCHED", order, {
     citation: getBclNum(el),
-    sectionTitle: extractText(scheduleTitle) || null,
-    children: parseSequentialChildren(el, [
-      { tag: "part", parse: parsePart },
-      { tag: "division", parse: parseDivision },
-      { tag: "section", parse: parseSection },
-    ]),
+    sectionTitle: stripMarkupTags(extractText(scheduleTitle)) || null,
+    children,
+  });
+};
+
+/**
+ * Extracts content from oasis:line elements
+ */
+const extractLineFromRawXml = (textSnippet: string): string | null => {
+  if (!textSnippet || !originalXmlString) return null;
+
+  const lineMatches = [...originalXmlString.matchAll(/<oasis:line[^>]*>([\s\S]*?)<\/oasis:line>/g)];
+  for (const match of lineMatches) {
+    const lineContent = match[1];
+    // Handle HR tags for formulas
+    if (lineContent.includes(textSnippet.substring(0, 30)) && /<in:hr\s*\/?>/.test(lineContent)) {
+      return extractTextFromXml(lineContent);
+    }
+  }
+  return null;
+};
+
+/**
+ * Extracts text from a table entry, handling various content structures.
+ */
+const getEntryText = (entry: any): string => {
+  if (!entry) return "";
+
+  let result = "";
+
+  // May contain oasis:line elements with the actual text
+  const lines = entry[`${NS_OASIS}line`];
+  if (lines) {
+    result = ensureArray(lines)
+      .map((line) => {
+        // Handle HR tags for formulas
+        if (line["in:hr"] !== undefined) {
+          const textContent = extractText(line);
+          const rawContent = extractLineFromRawXml(textContent);
+          if (rawContent) return rawContent;
+        }
+        return extractText(line);
+      })
+      .join(" ")
+      .trim();
+  } else {
+    // Or bcl:link elements
+    const link = entry[`${NS_BCL}link`];
+    if (link) {
+      result = extractText(link).trim();
+    } else {
+      // Then extract plain text
+      result = extractText(entry).trim();
+    }
+  }
+
+  return result.replaceAll("\n", " ").replaceAll(/\s+/g, " ").trim();
+};
+
+/**
+ * Extracts content from table elements
+ */
+const getTableText = (table: any): string => {
+  if (!table) return "";
+  const rows: string[] = [];
+
+  const tgroup = table[`${NS_OASIS}tgroup`];
+  if (!tgroup) return "";
+
+  // Process header rows (BC Laws uses trow, not row)
+  const thead = tgroup[`${NS_OASIS}thead`];
+  if (thead) {
+    ensureArray(thead[`${NS_OASIS}trow`]).forEach((row) => {
+      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
+      if (cells.length > 0) rows.push(cells.join(" | "));
+    });
+  }
+
+  // Process body rows
+  const tbody = tgroup[`${NS_OASIS}tbody`];
+  if (tbody) {
+    ensureArray(tbody[`${NS_OASIS}trow`]).forEach((row) => {
+      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
+      if (cells.length > 0) rows.push(cells.join(" | "));
+    });
+  }
+
+  return rows.join("\n");
+};
+
+/**
+ * Parses conseqnote elements
+ */
+const parseConseqnote: ElementParser = (el, order) => {
+  const editorialNote = el?.[`${NS_BCL}editorialnote`];
+  const noteText = editorialNote ? extractText(editorialNote).trim() : getBclText(el);
+  return createNode("TEXT", order, {
+    legislationText: noteText || null,
+  });
+};
+
+/**
+ * Parses conseqhead elements
+ */
+const parseConseqhead: ElementParser = (el, order) => {
+  const children: ParsedLegislationNode[] = [];
+
+  // Parse conseqnotes
+  ensureArray(el?.[`${NS_BCL}conseqnote`]).forEach((note) => {
+    const xmlPos = getXmlPosition(note);
+    children.push(parseConseqnote(note, xmlPos));
+  });
+
+  // Parse tables
+  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
+    const xmlPos = getXmlPosition(table);
+    const tableText = getTableText(table);
+    if (tableText) {
+      children.push(
+        createNode("TABLE", xmlPos, {
+          legislationText: tableText,
+        }),
+      );
+    }
+  });
+
+  children.sort((a, b) => a.displayOrder - b.displayOrder);
+
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
+
+  return createNode("SEC", order, {
+    citation: getBclNum(el),
+    sectionTitle: stripMarkupTags(getBclText(el)) || null,
+    children,
   });
 };
 
 parsePart = (el, order) =>
   createNode("PART", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || null,
+    sectionTitle: stripMarkupTags(getBclText(el)) || null,
     children: parseSequentialChildren(el, [
       { tag: "division", parse: parseDivision },
       { tag: "rule", parse: parseRule },
       { tag: "section", parse: parseSection },
+      { tag: "conseqhead", parse: parseConseqhead },
       { tag: "schedule", parse: parseSchedule },
     ]),
+  });
+
+/**
+ * Parses preamble elements
+ */
+const parsePreamble: ElementParser = (el, order) =>
+  createNode("TEXT", order, {
+    sectionTitle: "Preamble",
+    legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
   });
 
 const parseContent = (content: any): ParsedLegislationNode[] => {
   if (!content) return [];
 
-  const parts = ensureArray(content[`${NS_BCL}part`]);
-  const divisions = ensureArray(content[`${NS_BCL}division`]);
-  const rules = ensureArray(content[`${NS_BCL}rule`]);
+  const children = parseSequentialChildren(content, [
+    { tag: "preamble", parse: parsePreamble },
+    { tag: "subheading", parse: parseText },
+    { tag: "lefttext", parse: parseText },
+    { tag: "part", parse: parsePart },
+    { tag: "division", parse: parseDivision },
+    { tag: "rule", parse: parseRule },
+    { tag: "section", parse: parseSection },
+    { tag: "conseqhead", parse: parseConseqhead },
+    { tag: "schedule", parse: parseSchedule },
+  ]);
 
-  const children: ParsedLegislationNode[] = [];
-  let order = 0;
+  // Re-sort parts by citation number to handle decimal ordering
+  children.sort((a, b) => {
+    // Only apply citation sorting to PART type nodes
+    if (a.typeCode === "PART" && b.typeCode === "PART") {
+      const aOrder = getCitationSortOrder(a.citation);
+      const bOrder = getCitationSortOrder(b.citation);
+      if (aOrder !== Infinity || bOrder !== Infinity) {
+        return aOrder - bOrder;
+      }
+    }
+    // For non-parts or non-numeric citations use XML position order
+    return a.displayOrder - b.displayOrder;
+  });
 
-  parts.forEach((el) => children.push(parsePart(el, ++order)));
-  divisions.forEach((el) => children.push(parseDivision(el, ++order)));
-  rules.forEach((el) => children.push(parseRule(el, ++order)));
-
-  // Only parse sections if no structural elements exist
-  if (parts.length === 0 && divisions.length === 0 && rules.length === 0) {
-    ensureArray(content[`${NS_BCL}section`]).forEach((el) => children.push(parseSection(el, ++order)));
-  }
-
-  ensureArray(content[`${NS_BCL}schedule`]).forEach((el) => children.push(parseSchedule(el, ++order)));
+  // Re-sequence displayOrder after sorting
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
+  });
 
   return children;
 };
@@ -499,7 +800,7 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
     metadata,
     root: createNode(documentType, 1, {
       citation: metadata.chapter ? `Chapter ${metadata.chapter}` : null,
-      sectionTitle: metadata.title,
+      sectionTitle: stripMarkupTags(metadata.title),
       children,
     }),
   };

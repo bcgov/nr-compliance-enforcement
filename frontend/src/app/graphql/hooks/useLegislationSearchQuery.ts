@@ -7,6 +7,7 @@ export interface LegislationSearchParams {
   agencyCode: string;
   legislationTypeCodes: string[];
   ancestorGuid?: string;
+  excludeRegulations?: boolean;
   enabled: boolean;
 }
 
@@ -24,8 +25,18 @@ export interface LegislationDirectChildrenParams {
 }
 
 const SEARCH_LEGISLATION = gql`
-  query Legislations($agencyCode: String!, $legislationTypeCodes: [String], $ancestorGuid: String) {
-    legislations(agencyCode: $agencyCode, legislationTypeCodes: $legislationTypeCodes, ancestorGuid: $ancestorGuid) {
+  query Legislations(
+    $agencyCode: String!
+    $legislationTypeCodes: [String]
+    $ancestorGuid: String
+    $excludeRegulations: Boolean
+  ) {
+    legislations(
+      agencyCode: $agencyCode
+      legislationTypeCodes: $legislationTypeCodes
+      ancestorGuid: $ancestorGuid
+      excludeRegulations: $excludeRegulations
+    ) {
       legislationGuid
       legislationText
       sectionTitle
@@ -91,11 +102,18 @@ export const useLegislation = (legislationGuid: string | undefined, includeAnces
 
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislations: Legislation[] }>(SEARCH_LEGISLATION, {
-    queryKey: ["legislations", searchParams.agencyCode, searchParams.legislationTypeCodes, searchParams.ancestorGuid],
+    queryKey: [
+      "legislations",
+      searchParams.agencyCode,
+      searchParams.legislationTypeCodes,
+      searchParams.ancestorGuid,
+      searchParams.excludeRegulations,
+    ],
     variables: {
       agencyCode: searchParams.agencyCode,
       legislationTypeCodes: searchParams.legislationTypeCodes,
       ancestorGuid: searchParams.ancestorGuid,
+      excludeRegulations: searchParams.excludeRegulations,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,
@@ -162,8 +180,7 @@ export const convertLegislationToHierarchicalOptions = (
   // Sort comparator: by displayOrder, then by numeric citation
   const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
     (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
-    (Number.parseInt(a.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999) -
-      (Number.parseInt(b.citation?.replaceAll(/\D/g, "") ?? "", 10) || 9999);
+    (Number.parseFloat(a.citation ?? "") || 9999) - (Number.parseFloat(b.citation ?? "") || 9999);
 
   // Group by parent, then sort each group
   const childrenMap = new Map<string, Legislation[]>();
@@ -186,7 +203,18 @@ export const convertLegislationToHierarchicalOptions = (
   // Convert to options
   const formatLabel = (item: Legislation) => {
     const type = item.legislationTypeCode;
-    if (type === "PART" || type === "DIV") return item.sectionTitle ?? "";
+    if (type === "PART") {
+      const base = item.citation ? `Part ${item.citation}` : "Part";
+      return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
+    }
+    if (type === "DIV") {
+      const base = item.citation ? `Division ${item.citation}` : "Division";
+      return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
+    }
+    if (type === "SCHED") {
+      // Schedules use sectionTitle for their name (e.g., "Schedule A")
+      return item.sectionTitle ?? (item.citation ? `Schedule ${item.citation}` : "Schedule");
+    }
     if (type === "SEC" && item.citation) return `${item.citation} ${item.sectionTitle ?? item.legislationText ?? ""}`;
     return item.sectionTitle ?? item.legislationText ?? "";
   };
@@ -195,5 +223,6 @@ export const convertLegislationToHierarchicalOptions = (
     label: formatLabel(item),
     value: item.legislationGuid ?? "",
     isDisabled: item.legislationTypeCode === "PART" || item.legislationTypeCode === "DIV",
+    isHeader: item.legislationTypeCode === "SCHED",
   }));
 };
