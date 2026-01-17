@@ -195,14 +195,14 @@ export const injectIdentifierToFilename = (
 
   // If there's no dot, just append the identifier at the end
   if (lastDotIndex === -1) {
-    return `${filename} ${identifier} ${attachmentType}`;
+    return `${filename}_${identifier}_${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex);
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the identifier before the extension
-  return `${fileNameWithoutExtension} ${identifier} ${attachmentType}${fileExtension}`;
+  return `${fileNameWithoutExtension}_${identifier}_${attachmentType}${fileExtension}`;
 };
 
 export const isImage = (filename: string): boolean => {
@@ -220,14 +220,14 @@ export const injectIdentifierToThumbFilename = (
 
   // If there's no dot, just append the complaintId at the end
   if (lastDotIndex === -1) {
-    return `${filename} ${identifier} ${attachmentType}`;
+    return `${filename}_${identifier}_${attachmentType}`;
   }
 
   const fileNameWithoutExtension = filename.substring(0, lastDotIndex) + "-thumb";
   const fileExtension = filename.substring(lastDotIndex);
 
   // Otherwise, insert the complaintId before the extension
-  return `${fileNameWithoutExtension} ${identifier} ${attachmentType}${fileExtension}`;
+  return `${fileNameWithoutExtension}_${identifier}_${attachmentType}${fileExtension}`;
 };
 
 // Used to retrieve the coordinates in the decimal format
