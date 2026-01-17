@@ -16,17 +16,17 @@
     header {
       Content-Type text/javascript
     }
-    respond `window.VITE_KEYCLOAK_URL="{$KEYCLOAK_URL}";
-             window.VITE_KEYCLOAK_REALM="standard";
-             window.VITE_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
-             window.VITE_API_URL="/api";
-             window.VITE_GRAPHQL_URL="/graphql";
-             window.VITE_COMS_URL="{$COMS_URL}";
-             window.VITE_COMS_BUCKET="{$COMS_BUCKET}";
-             window.VITE_SECURE_COMS_BUCKET="{$SECURE_COMS_BUCKET}";
-             window.VITE_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}";
-             window.VITE_REDIRECT_MODE="{$REDIRECT_MODE}";
-             window.VITE_REDIRECT_HOST_NAME="{$REDIRECT_HOST_NAME}"`
+    respond `globalThis.VITE_KEYCLOAK_URL="{$KEYCLOAK_URL}";
+             globalThis.VITE_KEYCLOAK_REALM="standard";
+             globalThis.VITE_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-web-4794";
+             globalThis.VITE_API_URL="/api";
+             globalThis.VITE_GRAPHQL_URL="/graphql";
+             globalThis.VITE_COMS_URL="{$COMS_URL}";
+             globalThis.VITE_COMS_BUCKET="{$COMS_BUCKET}";
+             globalThis.VITE_SECURE_COMS_BUCKET="{$SECURE_COMS_BUCKET}";
+             globalThis.VITE_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}";
+             globalThis.VITE_REDIRECT_MODE="{$REDIRECT_MODE}";
+             globalThis.VITE_REDIRECT_HOST_NAME="{$REDIRECT_HOST_NAME}"`
   }
 
   root * /app/dist
