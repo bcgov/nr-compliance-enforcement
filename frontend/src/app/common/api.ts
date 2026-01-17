@@ -25,12 +25,12 @@ const STATUS_CODES = {
   Conflict: 409,
 };
 
-let requestCounter = 0;
+let blockingRequestCounter = 0;
 
 // Request interceptor to enable the loading indicator
 axios.interceptors.request.use((config) => {
-  requestCounter++;
-  if (requestCounter > 0 && (config as NatComRequestConfig).toggleLoading) {
+  if ((config as NatComRequestConfig).toggleLoading !== false) {
+    blockingRequestCounter++;
     store.dispatch(toggleLoading(true));
   }
   return config;
@@ -38,17 +38,19 @@ axios.interceptors.request.use((config) => {
 
 // Response interceptor to hide the loading indicator
 axios.interceptors.response.use(
-  function (response) {
-    requestCounter--;
-    if (requestCounter <= 0) {
-      store.dispatch(toggleLoading(false));
+  (response) => {
+    const config = response.config as NatComRequestConfig;
+    if (config.toggleLoading !== false) {
+      blockingRequestCounter--;
+      if (blockingRequestCounter <= 0) store.dispatch(toggleLoading(false));
     }
     return response;
   },
-  function (error) {
-    requestCounter--;
-    if (requestCounter <= 0) {
-      store.dispatch(toggleLoading(false));
+  (error) => {
+    const config = error.config as NatComRequestConfig;
+    if (config.toggleLoading !== false) {
+      blockingRequestCounter--;
+      if (blockingRequestCounter <= 0) store.dispatch(toggleLoading(false));
     }
     return Promise.reject(error);
   },

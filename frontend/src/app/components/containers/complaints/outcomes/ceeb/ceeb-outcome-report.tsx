@@ -26,7 +26,7 @@ export const CeebOutcomeReport: FC = () => {
       <AuthoizationOutcome />
       <CeebDecision />
       <Notes />
-      <OutcomeAttachments showAddButton={true} />
+      <OutcomeAttachments />
     </section>
   );
 };

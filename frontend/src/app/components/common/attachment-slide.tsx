@@ -13,86 +13,107 @@ type Props = {
   index: number;
   attachment: COMSObject;
   onFileRemove: (attachment: COMSObject) => void;
+  showPreview: boolean;
   allowDelete?: boolean;
 };
 
-export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onFileRemove }) => {
+export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onFileRemove, showPreview }) => {
   const dispatch = useAppDispatch();
 
-  // download attachment
   const handleAttachmentClick = async (objectid: string, filename: string) => {
     const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url`);
-
     const response = await get<string>(dispatch, parameters);
 
-    // Create an anchor element to trigger the download.  Note that the href is a pre-signed URL valid for 7 days (this is a COMS/Objectstore feature)
     const a = document.createElement("a");
-
     a.href = response;
-    a.download = filename; // Set the download filename
+    a.download = filename;
     a.target = "_blank";
     a.click();
   };
 
   const getSlideClass = () => {
     let className = "";
-
     if (attachment.errorMesage) {
       className = "comp-attachment-slide-error";
     } else if (attachment.pendingUpload) {
       className = "comp-attachment-slide-pending";
     }
-
     return className;
   };
 
+  const renderButtons = () => (
+    <>
+      {!attachment.pendingUpload && (
+        <Button
+          variant="light"
+          className="icon-btn comp-slide-download-btn"
+          tabIndex={index}
+          onClick={() => handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)}
+        >
+          <i className="bi bi-cloud-arrow-down"></i>
+        </Button>
+      )}
+      {allowDelete && (
+        <Button
+          variant="light"
+          className="icon-btn"
+          tabIndex={index}
+          onClick={() => onFileRemove(attachment)}
+        >
+          <i className="bi bi-trash3"></i>
+        </Button>
+      )}
+    </>
+  );
+
+  const content = (
+    <div className={showPreview ? `comp-attachment-slide ${getSlideClass()}` : "comp-carousel-files-no-preview"}>
+      {showPreview ? (
+        <>
+          <div className="comp-attachment-slide-actions">{renderButtons()}</div>
+          <div className="comp-attachment-slide-top">
+            <AttachmentIcon
+              filename={attachment.name}
+              imageIconString={attachment.imageIconString}
+            />
+          </div>
+          <div className="comp-attachment-slide-bottom">
+            <div className="comp-attachment-slide-name">{decodeURIComponent(attachment.name)}</div>
+            {attachment?.pendingUpload && attachment?.errorMesage ? (
+              <div className="comp-attachment-slide-meta">{attachment?.errorMesage}</div>
+            ) : (
+              <div className="comp-attachment-slide-meta">
+                {attachment?.pendingUpload
+                  ? "Save to upload attachment(s)"
+                  : formatDateTime(attachment.createdAt?.toString())}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <strong>{decodeURIComponent(attachment.name)}</strong>
+          <div className="comp-carousel-files-buttons-no-preview">{renderButtons()}</div>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <Slide
-      index={index}
-      key={index}
-    >
-      <div className={`comp-attachment-slide ${getSlideClass()}`}>
-        <div className="comp-attachment-slide-actions">
-          {!attachment.pendingUpload && (
-            <Button
-              variant="light"
-              className="icon-btn comp-slide-download-btn"
-              tabIndex={index}
-              onClick={() => handleAttachmentClick(`${attachment.id}`, `${attachment.name}`)}
-            >
-              <i className="bi bi-cloud-arrow-down"></i>
-            </Button>
-          )}
-          {allowDelete && (
-            <Button
-              variant="light"
-              className="icon-btn"
-              tabIndex={index}
-              onClick={() => onFileRemove(attachment)}
-            >
-              <i className="bi bi-trash3"></i>
-            </Button>
-          )}
-        </div>
-        <div className="comp-attachment-slide-top">
-          <AttachmentIcon
-            filename={attachment.name}
-            imageIconString={attachment.imageIconString}
-          />
-        </div>
-        <div className="comp-attachment-slide-bottom">
-          <div className="comp-attachment-slide-name">{decodeURIComponent(attachment.name)}</div>
-          {attachment?.pendingUpload && attachment?.errorMesage ? (
-            <div className="comp-attachment-slide-meta">{attachment?.errorMesage}</div>
-          ) : (
-            <div className="comp-attachment-slide-meta">
-              {attachment?.pendingUpload
-                ? "Save to upload attachment(s)"
-                : formatDateTime(attachment.createdAt?.toString())}
-            </div>
-          )}
-        </div>
-      </div>
-    </Slide>
+    <div>
+      {showPreview ? (
+        <Slide
+          index={index}
+          key={index}
+        >
+          {content}
+        </Slide>
+      ) : (
+        <>
+          {content}
+          <hr className="mt-0 mb-0" />
+        </>
+      )}
+    </div>
   );
 };
