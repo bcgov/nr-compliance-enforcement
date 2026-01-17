@@ -1,0 +1,1 @@
+UPDATE app_user set coms_enrolled_ind = false;

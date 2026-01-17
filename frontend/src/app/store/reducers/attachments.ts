@@ -89,7 +89,9 @@ export const getAttachments =
     const attachmentList: COMSObject[] = [];
     try {
       const attachmentConfig = getAttachmentConfig(attachmentType);
-      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
+      const bucketId =
+        attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}&latest=true`);
       const header = buildAttachmentHeader({
         attachmentConfig,
         identifier,
@@ -214,9 +216,11 @@ const saveSingleAttachment = async ({
     attachmentName,
   });
 
+  const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+
   const parameters = existingAttachment
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
-    : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+    : generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
 
@@ -231,7 +235,8 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 
     const thumbName = encodeURIComponent(
@@ -258,7 +263,7 @@ const saveSingleAttachment = async ({
     if (thumbnailFile) {
       const thumbParameters = existingThumb
         ? generateApiParameters(`${config.COMS_URL}/object/${existingThumb.id}`)
-        : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+        : generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
       await putFile<COMSObject>(dispatch, thumbParameters, thumbHeader, thumbnailFile, isSynchronous);
     }
@@ -289,7 +294,8 @@ export const saveAttachments =
     const attachmentConfig = getAttachmentConfig(attachmentType);
     const isComplaintAttachment = attachmentConfig.shouldUpdateComplaintDate ?? false;
 
-    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
     // Build header with both primary and sub header keys if applicable
     const historicalHeader = buildAttachmentHeader({

@@ -11,6 +11,7 @@ const config = {
   KEYCLOAK_REALM: window.VITE_KEYCLOAK_REALM || import.meta.env.VITE_KEYCLOAK_REALM,
   COMS_URL: window.VITE_COMS_URL || import.meta.env.VITE_COMS_URL,
   COMS_BUCKET: window.VITE_COMS_BUCKET || import.meta.env.VITE_COMS_BUCKET,
+  SECURE_COMS_BUCKET: window.VITE_SECURE_COMS_BUCKET || import.meta.env.VITE_SECURE_COMS_BUCKET,
   ENVIRONMENT_NAME: (window.VITE_ENVIRONMENT_NAME || import.meta.env.VITE_ENVIRONMENT_NAME) ?? "production",
   GRAPHQL_URL: window.VITE_GRAPHQL_URL || import.meta.env.VITE_GRAPHQL_URL || "http://localhost:3003/graphql",
   REDIRECT_MODE: window.VITE_REDIRECT_MODE || import.meta.env.VITE_REDIRECT_MODE || false,
