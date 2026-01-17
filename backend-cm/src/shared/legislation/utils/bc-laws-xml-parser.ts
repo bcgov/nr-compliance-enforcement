@@ -109,6 +109,15 @@ const extractText = (node: any): string => {
   return extractFromKeys(node, getContentKeys(node));
 };
 
+/**
+ * Strips HTML markup tags for cases where we don't want formatting such as titles
+ */
+const stripMarkupTags = (text: string): string =>
+  text
+    .replaceAll(/<(?:hr|br)\s*\/?>/gi, " ")
+    .replaceAll(/\s+/g, " ")
+    .trim();
+
 let originalXmlString = "";
 
 /**
@@ -130,7 +139,7 @@ const extractTextFromXml = (xmlContent: string): string => {
  */
 const findBclTextById = (elementId: string, xml: string): string | null => {
   const id = xml.indexOf(`id="${elementId}"`);
-  const start = id > -1 ? xml.indexOf("<bcl:text>", id) + 10 : -1; // 10 = "<bcl:text>".length
+  const start = id > -1 ? xml.indexOf("<bcl:text>", id) + 10 : -1;
   const end = start > 9 ? xml.indexOf("</bcl:text>", start) : -1;
   return end > -1 ? xml.substring(start, end) : null;
 };
@@ -144,7 +153,7 @@ const getBclText = (element: any): string => {
   if (!textElement) return "";
   if (typeof textElement === "string") return textElement.trim();
 
-  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "bcl:link"];
+  const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link"];
   const hasInlineElements = inlineKeys.some((key) => textElement[key] !== undefined);
 
   if (hasInlineElements) {
@@ -171,7 +180,7 @@ const getBclNum = (element: any): string | null => {
  */
 const getMarginalnote = (element: any): string | null => {
   const note = element?.[`${NS_BCL}marginalnote`];
-  return note ? extractText(note).replaceAll(/\s+/g, " ").trim() || null : null;
+  return note ? stripMarkupTags(extractText(note)) || null : null;
 };
 
 /**
@@ -379,7 +388,7 @@ const parseSubparagraph: ElementParser = (el, order) =>
 const parseDefinition: ElementParser = (el, order) => {
   const term = el?.[`${NS_IN}term`] || el?.[`${NS_BCL}text`]?.[`${NS_IN}term`];
   return createNode("DEF", order, {
-    sectionTitle: extractText(term) || null,
+    sectionTitle: stripMarkupTags(extractText(term)) || null,
     legislationText: getBclText(el) || null,
     children: parseSequentialChildren(el, [{ tag: "paragraph", parse: parseParagraph }]),
   });
@@ -452,14 +461,14 @@ const parseSection: ElementParser = (el, order) =>
 const parseRule: ElementParser = (el, order) =>
   createNode("RULE", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || getMarginalnote(el),
+    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
     children: parseSequentialChildren(el, [{ tag: "section", parse: parseSection }]),
   });
 
 const parseDivision: ElementParser = (el, order) =>
   createNode("DIV", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || getMarginalnote(el),
+    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
     children: parseSequentialChildren(el, [
       { tag: "section", parse: parseSection },
       { tag: "rule", parse: parseRule },
@@ -482,7 +491,7 @@ const parseText: ElementParser = (el, order) =>
 const parseForm: ElementParser = (el, order) => {
   const formTitle = el?.[`${NS_BCL}formtitle`];
   return createNode("TEXT", order, {
-    sectionTitle: formTitle ? extractText(formTitle).trim() : null,
+    sectionTitle: formTitle ? stripMarkupTags(extractText(formTitle)) : null,
     legislationText: extractText(el).replaceAll(/\s+/g, " ").trim() || null,
   });
 };
@@ -530,7 +539,7 @@ const parseSchedule: ElementParser = (el, order) => {
 
   return createNode("SCHED", order, {
     citation: getBclNum(el),
-    sectionTitle: extractText(scheduleTitle) || null,
+    sectionTitle: stripMarkupTags(extractText(scheduleTitle)) || null,
     children,
   });
 };
@@ -664,7 +673,7 @@ const parseConseqhead: ElementParser = (el, order) => {
 
   return createNode("SEC", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || "Consequential and Related Amendments",
+    sectionTitle: stripMarkupTags(getBclText(el)) || null,
     children,
   });
 };
@@ -672,7 +681,7 @@ const parseConseqhead: ElementParser = (el, order) => {
 parsePart = (el, order) =>
   createNode("PART", order, {
     citation: getBclNum(el),
-    sectionTitle: getBclText(el) || null,
+    sectionTitle: stripMarkupTags(getBclText(el)) || null,
     children: parseSequentialChildren(el, [
       { tag: "division", parse: parseDivision },
       { tag: "rule", parse: parseRule },
@@ -791,7 +800,7 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
     metadata,
     root: createNode(documentType, 1, {
       citation: metadata.chapter ? `Chapter ${metadata.chapter}` : null,
-      sectionTitle: metadata.title,
+      sectionTitle: stripMarkupTags(metadata.title),
       children,
     }),
   };
