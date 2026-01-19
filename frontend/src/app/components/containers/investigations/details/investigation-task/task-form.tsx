@@ -1,4 +1,4 @@
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { ToggleError, ToggleSuccess, ToggleWarning } from "@/app/common/toast";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
@@ -189,7 +189,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           onClose();
         } catch (error) {
           console.error("Error saving diary dates:", error);
-          ToggleError("Task added but some diary dates failed to save");
+          ToggleWarning("Task added but some diary dates failed to save");
           return;
         }
       };
@@ -221,7 +221,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           onClose();
         } catch (error) {
           console.error("Error editing task:", error);
-          ToggleError("Task updated but some diary dates failed to save");
+          ToggleWarning("Task updated but some diary dates failed to save");
         }
       };
 
@@ -252,7 +252,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       const input: DiaryDateInput = {
         diaryDateGuid: diaryDate?.diaryDateGuid || undefined,
         investigationGuid: investigationGuid,
-        dueDate: diaryDate.diaryDate?.toISOString() || "",
+        dueDate: (diaryDate.diaryDate as Date) || "",
         description: diaryDate.description,
         userGuid: idir,
         taskGuid: taskGuid || undefined,
@@ -588,10 +588,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         {/* Diary Dates Section */}
         <div className="mt-4">
           <hr className="m-0"></hr>
-          <div
-            className="my-3"
-            style={{ display: "flex", gap: "8px", alignItems: "center" }}
-          >
+          <div className="d-flex my-3 gap-2 align-items-center">
             <i className="bi bi-calendar3-week"></i>
             <h5 className="fw-bold m-0">Diary Dates</h5>
           </div>

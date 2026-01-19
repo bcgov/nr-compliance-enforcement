@@ -2088,6 +2088,12 @@ p {
   color: #0f5132 !important;
 }
 
+.Toastify__toast--warning {
+  border: 1px solid #eee3a8e0 !important;
+  border-radius: 3px !important;
+  background-color: $bc-gov-warning-100 !important;
+}
+
 .toast-link {
   color: #004d00;
   text-decoration: underline;
