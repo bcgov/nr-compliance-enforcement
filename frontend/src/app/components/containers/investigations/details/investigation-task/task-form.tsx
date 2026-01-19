@@ -1,4 +1,4 @@
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
@@ -12,15 +12,21 @@ import { RootState } from "@/app/store/store";
 import { CreateUpdateTaskInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { COMSObject } from "@/app/types/coms/object";
+import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@/app/common/attachment-utils";
+import { Attachments } from "@/app/components/common/attachments-carousel";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { Id } from "react-toastify";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 interface TaskFormProps {
   investigationGuid: string;
-  onClose: () => void;
+  onClose: (newTask?: Task) => void;
   task?: Task;
 }
 
@@ -80,6 +86,9 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, agency));
   const allOfficers = useAppSelector(selectOfficers);
   const dispatch = useAppDispatch();
+  const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
+  const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -121,11 +130,54 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   // Functions
 
+  const persistTaskAttachments = async (taskIdentifier: string) => {
+    if (!attachmentsToAdd && !attachmentsToDelete) return;
+
+    let toastId: Id;
+
+    if (attachmentsToAdd) {
+      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+    }
+
+    handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd,
+      attachmentsToDelete,
+      identifier: investigationGuid,
+      subIdentifier: taskIdentifier,
+      setAttachmentsToAdd,
+      setAttachmentsToDelete,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      isSynchronous: false,
+    }).then(() => {
+      if (attachmentsToAdd) {
+        DismissToast(toastId);
+      }
+      attachmentUploadComplete$.next(taskIdentifier);
+    });
+  };
+
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
-    onSuccess: () => {
-      ToggleSuccess("Task added successfully");
-      form.reset();
-      onClose();
+    onSuccess: (data) => {
+      (async () => {
+        try {
+          ToggleSuccess("Task added successfully");
+          persistTaskAttachments(data.createTask.taskIdentifier);
+          form.reset();
+          onClose({
+            ...data.createTask,
+          } as Task);
+        } catch (error) {
+          console.error("Error persisting attachments:", error);
+          ToggleError("Failed to save attachments for task");
+        }
+      })();
     },
     onError: (error: any) => {
       console.error("Error adding task:", error);
@@ -136,6 +188,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const editTaskMutation = useGraphQLMutation(EDIT_TASK, {
     onSuccess: () => {
       ToggleSuccess("Task edited successfully");
+      void persistTaskAttachments(task!.taskIdentifier);
       form.reset();
       onClose();
     },
@@ -198,6 +251,21 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       label: option.label,
     };
   });
+
+  const onHandleAddAttachments = (selectedFiles: File[]) => {
+    handleAddAttachments(setAttachmentsToAdd, selectedFiles);
+  };
+
+  const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
+  };
+
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setAttachmentCount(count);
+    },
+    [setAttachmentCount],
+  );
 
   return (
     <Card
@@ -394,6 +462,22 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             }}
           />
         </form>
+        <div className="mt-3">
+          <fieldset>
+            <h4>Attachments ({attachmentCount})</h4>
+            <Attachments
+              attachmentType={AttachmentEnum.TASK_ATTACHMENT}
+              identifier={investigationGuid}
+              subIdentifier={task?.taskIdentifier}
+              allowUpload={true}
+              allowDelete={true}
+              onFilesSelected={onHandleAddAttachments}
+              onFileDeleted={onHandleDeleteAttachment}
+              onSlideCountChange={handleSlideCountChange}
+              showPreview={false}
+            />
+          </fieldset>
+        </div>
         <div className="comp-details-form-buttons">
           <Button
             variant="outline-primary"

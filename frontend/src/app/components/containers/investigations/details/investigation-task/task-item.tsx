@@ -1,14 +1,17 @@
 import { applyStatusClass, formatDate } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { Attachments } from "@/app/components/common/attachments-carousel";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 
 interface TaskItemProps {
@@ -32,6 +35,8 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officerList = useAppSelector(selectOfficers);
+  const [attachmentCount, setAttachmentCount] = useState<number>(0);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   // Data
   const dispatch = useAppDispatch();
@@ -40,6 +45,18 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
   const status = taskStatuses.find((status) => status.value === task?.taskStatusCode);
   const assignedOfficer = officerList?.find((officer) => officer.app_user_guid === task.assignedUserIdentifier);
   const createdOfficer = officerList?.find((officer) => officer.app_user_guid === task.createdByUserIdentifier);
+  const taskIdentifier = task.taskIdentifier;
+
+  // Use Effects
+  useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe((id) => {
+      if (id === taskIdentifier) {
+        setAttachmentRefreshKey((k) => k + 1);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [taskIdentifier]);
 
   // Functions
   const removeTaskMutation = useGraphQLMutation(REMOVE_TASK, {
@@ -51,6 +68,13 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
       ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove task");
     },
   });
+
+  const handleSlideCountChange = useCallback(
+    (count: number) => {
+      setAttachmentCount(count);
+    },
+    [setAttachmentCount],
+  );
 
   const handleRemoveTask = useCallback(
     (taskIdentifier: string, taskNumber: number) => {
@@ -133,6 +157,21 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
               <dd>
                 <pre id="comp-task-assigned-user">{`${assignedOfficer?.last_name},  ${assignedOfficer?.first_name}`}</pre>
               </dd>
+            </div>
+            <div className="mt-3">
+              <fieldset className="comp-carousel-fieldset-no-preview">
+                {attachmentCount > 0 && <h4>Attachments ({attachmentCount})</h4>}
+                <Attachments
+                  attachmentType={AttachmentEnum.TASK_ATTACHMENT}
+                  identifier={investigationData?.investigationGuid ?? ""}
+                  subIdentifier={task?.taskIdentifier}
+                  allowUpload={false}
+                  allowDelete={false}
+                  refreshKey={attachmentRefreshKey}
+                  onSlideCountChange={handleSlideCountChange}
+                  showPreview={false}
+                />
+              </fieldset>
             </div>
             <div
               style={{ fontSize: "14px", color: "#7a7a7a" }}

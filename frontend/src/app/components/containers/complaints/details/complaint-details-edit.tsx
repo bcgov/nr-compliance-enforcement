@@ -46,12 +46,12 @@ import { from } from "linq-to-typescript";
 import { openModal, isFeatureActive } from "@store/reducers/app";
 import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { ToggleError } from "@common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
 import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
 import { SuspectWitnessDetails } from "./suspect-witness-details";
-import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { Complaint } from "@apptypes/app/complaints/complaint";
@@ -82,6 +82,8 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { Id } from "react-toastify";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -136,6 +138,16 @@ export const ComplaintDetailsEdit: FC = () => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
   useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe((complaintId) => {
+      if (complaintId === id) {
+        setAttachmentRefreshKey((k) => k + 1);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [id]);
+
+  useEffect(() => {
     dispatch(getCaseFile(id));
   }, [id, dispatch, allOfficers]);
 
@@ -186,7 +198,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
   const hwcrNatureOfComplaintCodes = useSelector(selectHwcrNatureOfComplaintCodeDropdown) as Option[];
 
-  const areaCodes = useAppSelector(selectCommunityCodeDropdown);
+  const areaCodes = useAppSelector(selectCommunityCodeDropdown) as Option[];
 
   const attractantCodes = useSelector(selectAttractantCodeDropdown) as Option[];
   const reportedByCodes = useSelector(selectReportedByDropdown) as Option[];
@@ -253,6 +265,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const parentCoordinates = useMemo(() => ({ lat: +latitude, lng: +longitude }), [latitude, longitude]);
 
   const [complaintAttachmentCount, setComplaintAttachmentCount] = useState<number>(0);
+  const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
   const [mapElements, setMapElements] = useState<MapElement[]>([]);
 
   const handleSlideCountChange = useCallback(
@@ -314,15 +327,33 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
+      let toastId: Id;
+
+      if (attachmentsToAdd) {
+        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+          position: "top-right",
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+          draggable: false,
+        });
+      }
+
       handlePersistAttachments({
         dispatch,
         attachmentsToAdd,
         attachmentsToDelete,
-        complaintIdentifier: id,
+        identifier: id,
+        subIdentifier: undefined,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
         attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        complaintType,
+        isSynchronous: false,
+      }).then(() => {
+        if (attachmentsToAdd) {
+          DismissToast(toastId);
+        }
+        setAttachmentRefreshKey((k) => k + 1);
       });
 
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -880,10 +911,12 @@ export const ComplaintDetailsEdit: FC = () => {
               <Card>
                 <Card.Body>
                   <div className={complaintAttachmentCount > 0 ? "comp-details-attachments" : ""}>
-                    <AttachmentsCarousel
+                    <Attachments
                       attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                      complaintIdentifier={id}
+                      identifier={id}
                       onSlideCountChange={handleSlideCountChange}
+                      refreshKey={attachmentRefreshKey}
+                      showPreview={true}
                     />
                   </div>
                 </Card.Body>
@@ -1506,14 +1539,15 @@ export const ComplaintDetailsEdit: FC = () => {
             <fieldset>
               <h3>Complainant attachments ({complaintAttachmentCount})</h3>
               <div>
-                <AttachmentsCarousel
+                <Attachments
                   attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
-                  complaintIdentifier={id}
+                  identifier={id}
                   allowUpload={true}
                   allowDelete={true}
                   onFilesSelected={onHandleAddAttachments}
                   onFileDeleted={onHandleDeleteAttachment}
                   onSlideCountChange={handleSlideCountChange}
+                  showPreview={true}
                 />
               </div>
             </fieldset>
