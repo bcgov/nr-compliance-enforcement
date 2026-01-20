@@ -165,7 +165,7 @@ const extractTitleFromXml = (nsPrefix: string): string | null => {
   if (!originalXmlString) return null;
 
   const tagName = `${nsPrefix}title`;
-  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)</${tagName}>`, "i");
+  const regex = new RegExp(String.raw`<${tagName}[^>]*>([\s\S]*?)</${tagName}>`, "i");
   const match = regex.exec(originalXmlString);
 
   if (match) {
