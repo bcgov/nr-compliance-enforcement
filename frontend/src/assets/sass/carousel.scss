@@ -40,6 +40,7 @@ div[class^="slideInner"] {
   background-color: $gray-110;
   color: $gray-400;
   cursor: pointer;
+  min-height: 200px;
 }
 
 .comp-attachment-upload-btn,
@@ -260,4 +261,35 @@ div[class^="slideInner"] {
 
 .coms-carousel-error {
   border-color: red;
+}
+
+.comp-carousel-no-preview {
+  display: flex;
+  gap: 20px;
+}
+
+.comp-carousel-fieldset-no-preview {
+  max-width: 100%;
+  width: 100%;
+}
+
+.comp-carousel-slide-no-preview {
+  width: 100%;
+}
+
+.comp-carousel-upload-no-preview {
+  width: 289px !important;
+  height: 200px !important;
+  flex-shrink: 0;
+}
+
+.comp-carousel-files-no-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comp-carousel-files-buttons-no-preview {
+  display: flex;
+  gap: 8px;
 }

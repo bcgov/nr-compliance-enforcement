@@ -65,6 +65,12 @@ export const DELETE_DIARY_DATE = gql`
   }
 `;
 
+export const DELETE_DIARY_DATES_BY_TASK = gql`
+  mutation DeleteDiaryDatesByTask($taskGuid: String!) {
+    deleteDiaryDatesByTask(taskGuid: $taskGuid)
+  }
+`;
+
 interface DiaryDatesProps {
   investigationGuid: string;
   investigationData?: Investigation;

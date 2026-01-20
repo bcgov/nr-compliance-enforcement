@@ -66,4 +66,17 @@ export class DiaryDateResolver {
       });
     }
   }
+
+  @Mutation("deleteDiaryDatesByTask")
+  @Roles(coreRoles)
+  async deleteByTask(@Args("taskGuid") taskGuid: string) {
+    try {
+      return await this.diaryDateService.deleteByTask(taskGuid);
+    } catch (error) {
+      this.logger.error("Delete DiaryDatesByTask error:", error);
+      throw new GraphQLError("Error deleting diary dates by task", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
 }

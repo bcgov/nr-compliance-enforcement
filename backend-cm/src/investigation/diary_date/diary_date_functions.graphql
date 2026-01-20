@@ -6,4 +6,5 @@ type Query {
 type Mutation {
   saveDiaryDate(input: DiaryDateInput!): DiaryDate!
   deleteDiaryDate(diaryDateGuid: String!): Boolean!
+  deleteDiaryDatesByTask(taskGuid: String!): Boolean!
 }

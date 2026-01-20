@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getAttachments, selectAttachments, setAttachments, setOutcomeAttachments } from "@store/reducers/attachments";
+import { getAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
@@ -13,7 +13,9 @@ import AttachmentEnum from "@constants/attachment-enum";
 
 type Props = {
   attachmentType: AttachmentEnum;
-  complaintIdentifier?: string;
+  showPreview: boolean;
+  identifier?: string;
+  subIdentifier?: string;
   allowUpload?: boolean;
   allowDelete?: boolean;
   cancelPendingUpload?: boolean;
@@ -22,11 +24,14 @@ type Props = {
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
   disabled?: boolean | null;
+  refreshKey?: number;
 };
 
-export const AttachmentsCarousel: FC<Props> = ({
+export const Attachments: FC<Props> = ({
   attachmentType,
-  complaintIdentifier,
+  showPreview,
+  identifier,
+  subIdentifier,
   allowUpload,
   allowDelete,
   cancelPendingUpload,
@@ -35,13 +40,14 @@ export const AttachmentsCarousel: FC<Props> = ({
   onSlideCountChange,
   setCancelPendingUpload,
   disabled,
+  refreshKey,
 }) => {
   const dispatch = useAppDispatch();
 
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize);
 
-  const carouselData = useAppSelector(selectAttachments(attachmentType));
+  const [carouselData, setCarouselData] = useState<COMSObject[]>([]);
 
   const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
   const SLIDE_HEIGHT = 200;
@@ -61,20 +67,28 @@ export const AttachmentsCarousel: FC<Props> = ({
     }
   }, [carouselData]);
 
-  // get the attachments when the complaint loads
+  // get the attachments when the Carousel loads
   useEffect(() => {
-    if (complaintIdentifier) {
-      dispatch(getAttachments(complaintIdentifier, attachmentType));
+    if (!identifier) {
+      return;
     }
-  }, [attachmentType, complaintIdentifier, dispatch]);
 
-  //-- when the component unmounts clear the attachments from redux
-  useEffect(() => {
-    return () => {
-      dispatch(setAttachments([]));
-      dispatch(setOutcomeAttachments([]));
+    let isMounted = true;
+
+    const loadAttachments = async () => {
+      const attachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
+
+      if (isMounted) {
+        setCarouselData(attachments);
+      }
     };
-  }, [dispatch]);
+
+    loadAttachments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch, identifier, subIdentifier, attachmentType, refreshKey]);
 
   // Update the slide count when the slides state changes
   useEffect(() => {
@@ -201,31 +215,59 @@ export const AttachmentsCarousel: FC<Props> = ({
   return (
     <div ref={carouselContainerRef}>
       {(allowUpload || (slides && slides?.length > 0)) && (
-        <CarouselProvider
-          naturalSlideWidth={SLIDE_WIDTH}
-          naturalSlideHeight={SLIDE_HEIGHT}
-          totalSlides={slides ? slides.length : 0}
-          visibleSlides={visibleSlides}
-          className="comp-carousel"
-        >
-          <Slider className="coms-slider">
-            {allowUpload && (
-              <AttachmentUpload
-                onFileSelect={onFileSelect}
-                disabled={disabled}
-              />
-            )}
-            {slides?.map((item, index) => (
-              <AttachmentSlide
-                key={item.name}
-                attachment={item}
-                index={index}
-                allowDelete={allowDelete}
-                onFileRemove={() => onFileRemove(item)}
-              />
-            ))}
-          </Slider>
-        </CarouselProvider>
+        <>
+          {showPreview ? (
+            <CarouselProvider
+              naturalSlideWidth={SLIDE_WIDTH}
+              naturalSlideHeight={SLIDE_HEIGHT}
+              totalSlides={slides ? slides.length : 0}
+              visibleSlides={visibleSlides}
+              className="comp-carousel"
+            >
+              <Slider className="coms-slider">
+                {allowUpload && (
+                  <AttachmentUpload
+                    onFileSelect={onFileSelect}
+                    disabled={disabled}
+                  />
+                )}
+                {slides?.map((item, index) => (
+                  <AttachmentSlide
+                    key={item.id}
+                    attachment={item}
+                    index={index}
+                    allowDelete={allowDelete}
+                    onFileRemove={() => onFileRemove(item)}
+                    showPreview={true}
+                  />
+                ))}
+              </Slider>
+            </CarouselProvider>
+          ) : (
+            <div className="comp-carousel-no-preview">
+              {allowUpload && (
+                <div className="comp-carousel-upload-no-preview">
+                  <AttachmentUpload
+                    onFileSelect={onFileSelect}
+                    disabled={disabled}
+                  />
+                </div>
+              )}
+              <div className="comp-carousel-slide-no-preview">
+                {slides?.map((item, index) => (
+                  <AttachmentSlide
+                    key={item.id}
+                    attachment={item}
+                    index={index}
+                    allowDelete={allowDelete}
+                    onFileRemove={() => onFileRemove(item)}
+                    showPreview={showPreview}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

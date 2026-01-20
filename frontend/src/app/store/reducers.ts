@@ -7,7 +7,6 @@ import app from "./reducers/app";
 import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
-import attachments from "./reducers/attachments";
 import complaintOutcomes from "./reducers/complaint-outcomes";
 import parks from "./reducers/park";
 
@@ -43,7 +42,6 @@ export const rootReducer = combineReducers({
   offices,
   complaints: persistReducer(complaintsPersistConfig, complaints),
   codeTables,
-  attachments,
   complaintOutcomes,
   parks: persistReducer(parksPersistConfig, parks),
 });

@@ -134,4 +134,21 @@ export class DiaryDateService {
       throw error;
     }
   }
+
+  async deleteByTask(taskGuid: string): Promise<boolean> {
+    try {
+      await this.prisma.diary_date.updateMany({
+        where: { task_guid: taskGuid },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+      return true;
+    } catch (error) {
+      this.logger.error("Error deleting DiaryDatesByTask:", error);
+      throw error;
+    }
+  }
 }

@@ -37,6 +37,8 @@ import { AddSectorComplaints } from "@/app/store/migrations/migration-37";
 import { AddPartyType } from "./migrations/migration-38";
 import { AddPartyAssociationRole } from "./migrations/migration-39";
 import { AddTaskTables } from "./migrations/migration-40";
+import { RemoveAttachments } from "@/app/store/migrations/migration-41";
+
 const BaseMigration = {
   0: (state: any) => {
     return {
@@ -87,6 +89,7 @@ migration = {
   ...AddPartyType,
   ...AddPartyAssociationRole,
   ...AddTaskTables,
+  ...RemoveAttachments,
 };
 
 export default migration;

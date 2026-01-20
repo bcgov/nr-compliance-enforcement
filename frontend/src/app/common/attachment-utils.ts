@@ -34,11 +34,13 @@ interface PersistAttachmentsParams {
   dispatch: any;
   attachmentsToAdd: File[] | null;
   attachmentsToDelete: COMSObject[] | null;
-  complaintIdentifier: string;
+  identifier: string;
+  subIdentifier: string | undefined;
   setAttachmentsToAdd: any;
   setAttachmentsToDelete: any;
   attachmentType: AttachmentEnum;
-  complaintType: string;
+  isSynchronous: boolean;
+  complaintType?: string;
 }
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
@@ -46,19 +48,23 @@ export async function handlePersistAttachments({
   dispatch,
   attachmentsToAdd,
   attachmentsToDelete,
-  complaintIdentifier,
+  identifier,
+  subIdentifier,
   setAttachmentsToAdd,
   setAttachmentsToDelete,
   attachmentType,
-  complaintType,
-}: PersistAttachmentsParams) {
+  isSynchronous,
+}: PersistAttachmentsParams): Promise<void> {
+  const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
-    dispatch(deleteAttachments(attachmentsToDelete, complaintIdentifier, complaintType, attachmentType));
+    tasks.push(dispatch(deleteAttachments(attachmentsToDelete, identifier, attachmentType)));
   }
 
   if (attachmentsToAdd) {
-    dispatch(saveAttachments(attachmentsToAdd, complaintIdentifier, complaintType, attachmentType));
+    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, subIdentifier, attachmentType, isSynchronous)));
   }
+
+  await Promise.all(tasks);
 
   // Clear the attachments since they've been added or saved.
   setAttachmentsToAdd(null);
