@@ -159,6 +159,22 @@ const extractTextFromXml = (xmlContent: string): string => {
 };
 
 /**
+ * Extracts title from raw XML, preserving order of mixed content
+ */
+const extractTitleFromXml = (nsPrefix: string): string | null => {
+  if (!originalXmlString) return null;
+
+  const tagName = `${nsPrefix}title`;
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)</${tagName}>`, "i");
+  const match = regex.exec(originalXmlString);
+
+  if (match) {
+    return stripMarkupTags(extractTextFromXml(match[1]));
+  }
+  return null;
+};
+
+/**
  * Strips inline element content from text, keeping only the "base" text.
  * Used for matching when inline content order is wrong.
  */
@@ -1151,7 +1167,7 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
 
   // Extract metadata
   const metadata: LegislationMetadata = {
-    title: extractText(rootElement[`${nsPrefix}title`]) || extractText(rootElement["title"]) || "Unknown Document",
+    title: extractTitleFromXml(nsPrefix) || extractText(rootElement[`${nsPrefix}title`]) || "Unknown Document",
     chapter: extractText(rootElement[`${nsPrefix}chapter`]) || extractText(rootElement["oicnum"]) || null,
     yearEnacted:
       extractText(rootElement[`${nsPrefix}yearenacted`]) || extractText(rootElement[`${nsPrefix}year`]) || null,

@@ -297,14 +297,15 @@ export const LegislationSourceManagement: FC = () => {
                   <i className="bi bi-file-text" /> View Log
                 </Dropdown.Item>
               )}
-              {source.importedInd && (
-                <Dropdown.Item
-                  onClick={() => setResetConfirmGuid(source.legislationSourceGuid)}
-                  className="text-danger"
-                >
-                  <i className="bi bi-arrow-counterclockwise" /> Reset Import
-                </Dropdown.Item>
-              )}
+              {source.importedInd ||
+                (source.importStatus === "FAILED" && (
+                  <Dropdown.Item
+                    onClick={() => setResetConfirmGuid(source.legislationSourceGuid)}
+                    className="text-danger"
+                  >
+                    <i className="bi bi-arrow-counterclockwise" /> Reset Import
+                  </Dropdown.Item>
+                ))}
               <Dropdown.Item
                 onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
                 className="text-danger"
