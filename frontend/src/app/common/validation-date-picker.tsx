@@ -71,7 +71,18 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             <DatePicker
               id={`${id}-timepicker`}
               selected={selectedDate ? new Date(selectedDate) : undefined}
-              onChange={handleDateChange}
+              onChange={(date) => {
+                if (date) {
+                  handleDateChange(date);
+                }
+              }}
+              onChangeRaw={(event) => {
+                const rawValue = event.target.value;
+                if (rawValue === "" && selectedDate) {
+                  selectedDate.setHours(0, 0, 0, 0);
+                  handleDateChange(selectedDate);
+                }
+              }}
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={1}
