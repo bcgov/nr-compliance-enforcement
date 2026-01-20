@@ -87,13 +87,53 @@ export class LegislationSourceService {
 
   async delete(legislationSourceGuid: string): Promise<boolean> {
     try {
-      await this.prisma.legislation_source.delete({
-        where: { legislation_source_guid: legislationSourceGuid },
+      await this.prisma.$transaction(async (tx) => {
+        // Find root legislation record
+        const rootLegislation = await tx.legislation.findMany({
+          where: { legislation_source_guid: legislationSourceGuid },
+          select: { legislation_guid: true },
+        });
+
+        if (rootLegislation.length > 0) {
+          // get all legislation_guids
+          const allLegislationGuids = await this.getChildLegislationGuids(
+            tx,
+            rootLegislation.map((l) => l.legislation_guid),
+          );
+
+          // delete legislation records
+          await tx.legislation.deleteMany({
+            where: { legislation_guid: { in: allLegislationGuids } },
+          });
+        }
+
+        // delete legislation_source record
+        await tx.legislation_source.delete({
+          where: { legislation_source_guid: legislationSourceGuid },
+        });
       });
       return true;
-    } catch {
+    } catch (error) {
+      this.logger.error(`Failed to delete legislation source ${legislationSourceGuid}:`, error);
       return false;
     }
+  }
+
+  private async getChildLegislationGuids(tx: any, parentGuids: string[]): Promise<string[]> {
+    const allGuids = [...parentGuids];
+    let currentLevel = parentGuids;
+
+    while (currentLevel.length > 0) {
+      const children = await tx.legislation.findMany({
+        where: { parent_legislation_guid: { in: currentLevel } },
+        select: { legislation_guid: true },
+      });
+
+      currentLevel = children.map((c: { legislation_guid: string }) => c.legislation_guid);
+      allGuids.push(...currentLevel);
+    }
+
+    return allGuids;
   }
 
   async markImported(legislationSourceGuid: string, log?: string): Promise<void> {
@@ -125,6 +165,49 @@ export class LegislationSourceService {
         update_utc_timestamp: new Date(),
       },
     });
+  }
+
+  async resetImport(legislationSourceGuid: string, updateUserId: string): Promise<boolean> {
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        // Find root legislation record
+        const rootLegislation = await tx.legislation.findMany({
+          where: { legislation_source_guid: legislationSourceGuid },
+          select: { legislation_guid: true },
+        });
+
+        if (rootLegislation.length > 0) {
+          // get all legislation_guids
+          const allLegislationGuids = await this.getChildLegislationGuids(
+            tx,
+            rootLegislation.map((l) => l.legislation_guid),
+          );
+
+          // delete legislation records
+          await tx.legislation.deleteMany({
+            where: { legislation_guid: { in: allLegislationGuids } },
+          });
+        }
+
+        // reset legislation_source record
+        await tx.legislation_source.update({
+          where: { legislation_source_guid: legislationSourceGuid },
+          data: {
+            imported_ind: false,
+            last_import_timestamp: null,
+            import_status: null,
+            last_import_log: null,
+            active_ind: false,
+            update_user_id: updateUserId,
+            update_utc_timestamp: new Date(),
+          },
+        });
+      });
+      return true;
+    } catch (error) {
+      this.logger.error(`Failed to reset import for legislation source ${legislationSourceGuid}:`, error);
+      return false;
+    }
   }
 
   private mapToDto(source: any): LegislationSource {

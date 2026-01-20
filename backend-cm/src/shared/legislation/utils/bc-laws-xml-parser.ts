@@ -169,7 +169,7 @@ const stripInlineContent = (xmlContent: string): string => {
     .replaceAll(/<in:em[^>]*>[\s\S]*?<\/in:em>/gi, "")
     .replaceAll(/<in:strong[^>]*>[\s\S]*?<\/in:strong>/gi, "")
     .replaceAll(/<in:term[^>]*>[\s\S]*?<\/in:term>/gi, "")
-    .replaceAll(/<[^>]*>/g, "")
+    .replaceAll(/<[^>]{0,1000000}>/g, "")
     .replaceAll(/\s+/g, " ")
     .trim()
     .toLowerCase();
@@ -183,7 +183,7 @@ const extractLineContentByText = (textSnippet: string, searchXml: string): strin
 
   // Because inline content gets appended at the end, extract text before any trailing content
   const searchText = textSnippet
-    .replaceAll(/<[^>]*>/g, "")
+    .replaceAll(/<[^>]{0,1000000}>/g, "")
     .replaceAll(/\s+/g, " ")
     .trim()
     .toLowerCase();

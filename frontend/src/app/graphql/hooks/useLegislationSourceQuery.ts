@@ -111,6 +111,12 @@ const DELETE_LEGISLATION_SOURCE = gql`
   }
 `;
 
+const RESET_LEGISLATION_SOURCE = gql`
+  mutation ResetLegislationSource($legislationSourceGuid: String!) {
+    resetLegislationSource(legislationSourceGuid: $legislationSourceGuid)
+  }
+`;
+
 export const useLegislationSources = () => {
   const { data, isLoading, error, refetch } = useGraphQLQuery<{ legislationSources: LegislationSource[] }>(
     GET_LEGISLATION_SOURCES,
@@ -164,6 +170,19 @@ export const useDeleteLegislationSource = (options?: {
 }) => {
   return useGraphQLMutation<{ deleteLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
     DELETE_LEGISLATION_SOURCE,
+    {
+      invalidateQueries: ["legislationSources"],
+      ...options,
+    },
+  );
+};
+
+export const useResetLegislationSource = (options?: {
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
+}) => {
+  return useGraphQLMutation<{ resetLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
+    RESET_LEGISLATION_SOURCE,
     {
       invalidateQueries: ["legislationSources"],
       ...options,

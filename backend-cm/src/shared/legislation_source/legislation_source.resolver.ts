@@ -70,4 +70,14 @@ export class LegislationSourceResolver {
   async deleteLegislationSource(@Args("legislationSourceGuid") legislationSourceGuid: string) {
     return await this.legislationSourceService.delete(legislationSourceGuid);
   }
+
+  @Mutation("resetLegislationSource")
+  @Roles(adminRoles)
+  async resetLegislationSource(
+    @Args("legislationSourceGuid") legislationSourceGuid: string,
+    @Context() context: any,
+  ) {
+    const userId = context.req?.user?.idir_username || "system";
+    return await this.legislationSourceService.resetImport(legislationSourceGuid, userId);
+  }
 }

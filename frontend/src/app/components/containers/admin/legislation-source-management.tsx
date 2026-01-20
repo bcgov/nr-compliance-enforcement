@@ -12,6 +12,7 @@ import {
   useCreateLegislationSource,
   useUpdateLegislationSource,
   useDeleteLegislationSource,
+  useResetLegislationSource,
   LegislationSource,
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
@@ -47,6 +48,7 @@ export const LegislationSourceManagement: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmGuid, setDeleteConfirmGuid] = useState<string | null>(null);
+  const [resetConfirmGuid, setResetConfirmGuid] = useState<string | null>(null);
   const [viewLogSource, setViewLogSource] = useState<LegislationSource | null>(null);
 
   const createMutation = useCreateLegislationSource({
@@ -82,6 +84,18 @@ export const LegislationSourceManagement: FC = () => {
     onError: (error: any) => {
       console.error("Error deleting legislation source:", error);
       ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to delete legislation source");
+    },
+  });
+
+  const resetMutation = useResetLegislationSource({
+    onSuccess: () => {
+      ToggleSuccess("Legislation source reset successfully");
+      setResetConfirmGuid(null);
+      refetch();
+    },
+    onError: (error: any) => {
+      console.error("Error resetting legislation source:", error);
+      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to reset legislation source");
     },
   });
 
@@ -157,6 +171,10 @@ export const LegislationSourceManagement: FC = () => {
 
   const handleDelete = (guid: string) => {
     deleteMutation.mutate({ legislationSourceGuid: guid });
+  };
+
+  const handleReset = (guid: string) => {
+    resetMutation.mutate({ legislationSourceGuid: guid });
   };
 
   const getAgencyLabel = (code: string) => {
@@ -277,6 +295,14 @@ export const LegislationSourceManagement: FC = () => {
               {source.lastImportLog && (
                 <Dropdown.Item onClick={() => setViewLogSource(source)}>
                   <i className="bi bi-file-text" /> View Log
+                </Dropdown.Item>
+              )}
+              {source.importedInd && (
+                <Dropdown.Item
+                  onClick={() => setResetConfirmGuid(source.legislationSourceGuid)}
+                  className="text-danger"
+                >
+                  <i className="bi bi-arrow-counterclockwise" /> Reset Import
                 </Dropdown.Item>
               )}
               <Dropdown.Item
@@ -485,10 +511,13 @@ export const LegislationSourceManagement: FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this legislation source? This action cannot be undone.</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to delete this legislation source? This will also delete all legislation records that
+          were imported from this source. This action cannot be undone.
+        </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="secondary"
+            variant="outline-primary"
             onClick={() => setDeleteConfirmGuid(null)}
           >
             Cancel
@@ -499,6 +528,34 @@ export const LegislationSourceManagement: FC = () => {
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={!!resetConfirmGuid}
+        onHide={() => setResetConfirmGuid(null)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Reset Import</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to reset this legislation source? This will delete all legislation records that were
+          imported from this source and mark the source as inactive. This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-primary"
+            onClick={() => setResetConfirmGuid(null)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => resetConfirmGuid && handleReset(resetConfirmGuid)}
+            disabled={resetMutation.isPending}
+          >
+            {resetMutation.isPending ? "Resetting..." : "Reset Import"}
           </Button>
         </Modal.Footer>
       </Modal>
