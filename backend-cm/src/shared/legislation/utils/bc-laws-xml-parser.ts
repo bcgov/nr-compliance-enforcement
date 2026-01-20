@@ -206,6 +206,22 @@ const extractLineContentByText = (textSnippet: string, searchXml: string): strin
 };
 
 /**
+ * Gets text from raw XML when content order needs preservation.
+ */
+const getTextFromRawXml = (parentId: string | undefined): string | null => {
+  if (!parentId || !originalXmlString) return null;
+
+  const bounds = getBounds(parentId);
+  if (!bounds) return null;
+
+  const textMatch = /<bcl:text[^>]*>([\s\S]*?)<\/bcl:text>/.exec(bounds.content);
+  if (textMatch && /<in:/.test(textMatch[1])) {
+    return extractTextFromXml(textMatch[1]);
+  }
+  return null;
+};
+
+/**
  * Gets text content from bcl:text element, using raw XML to preserve mixed content order.
  * fast-xml-parser loses the order of text mixed with inline elements so find by parent id
  */
@@ -220,18 +236,10 @@ const getBclText = (element: any): string => {
 
   // Check if element has inline content that needs order preservation
   const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link"];
-  if (inlineKeys.some((key) => textElement[key] !== undefined)) {
-    // Find bcl:text in raw XML by parent ID to get correct content order
-    const parentId = element?.["@_id"];
-    if (parentId && originalXmlString) {
-      const bounds = getBounds(parentId);
-      if (bounds) {
-        const textMatch = /<bcl:text[^>]*>([\s\S]*?)<\/bcl:text>/.exec(bounds.content);
-        if (textMatch && /<in:/.test(textMatch[1])) {
-          return extractTextFromXml(textMatch[1]);
-        }
-      }
-    }
+  const hasInlineContent = inlineKeys.some((key) => textElement[key] !== undefined);
+  if (hasInlineContent) {
+    const rawText = getTextFromRawXml(element?.["@_id"]);
+    if (rawText) return rawText;
   }
 
   return extractText(textElement).replaceAll(/\s+/g, " ").trim();
@@ -300,7 +308,7 @@ const getScheduleTextElementsWithPositions = (
 
   // Build regex to match all schedule text element tags
   const tagPattern = SCHEDULE_TEXT_TAGS.map((t) => `bcl:${t}`).join("|");
-  const regex = new RegExp(`<(${tagPattern})(?:\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`, "g");
+  const regex = new RegExp(String.raw`<(${tagPattern})(?:\s[^>]*)?>([\s\S]*?)<\/\1>`, "g");
 
   let match: RegExpExecArray | null;
   while ((match = regex.exec(content)) !== null) {
@@ -764,6 +772,44 @@ const parseForm: ElementParser = (el, order) => {
   });
 };
 
+/**
+ * Parses tables from element when no parent ID mapping exists
+ */
+const parseTablesWithoutParentId = (el: any): ParsedLegislationNode[] => {
+  const tables = el?.[`${NS_OASIS}table`];
+  if (!tables) return [];
+
+  const nodes: ParsedLegislationNode[] = [];
+  ensureArray(tables).forEach((table, idx) => {
+    const tableId = table?.["@_id"] || `schedule_table_${idx}`;
+    const content = getTableContentById(tableId) || getTableText(table);
+    if (content) {
+      nodes.push(
+        createNode("TABLE", getXmlPosition(table) || idx, {
+          citation: tableId,
+          legislationText: content,
+        }),
+      );
+    }
+  });
+  return nodes;
+};
+
+/**
+ * Creates a TEXT node for a schedule
+ */
+const createScheduleTextNode = (tag: string, position: number, content: string): ParsedLegislationNode => {
+  const text = extractTextFromXml(content);
+  if (tag === "form") {
+    const formTitleMatch = /<bcl:formtitle[^>]*>([\s\S]*?)<\/bcl:formtitle>/i.exec(content);
+    return createNode("TEXT", position, {
+      sectionTitle: formTitleMatch ? stripMarkupTags(extractTextFromXml(formTitleMatch[1])) : null,
+      legislationText: text || null,
+    });
+  }
+  return createNode("TEXT", position, { legislationText: text || null });
+};
+
 const parseSchedule: ElementParser = (el, order) => {
   const scheduleTitle = el?.[`${NS_BCL}scheduletitle`] || el?.[`${NS_BCL}num`];
   const children: ParsedLegislationNode[] = [];
@@ -781,23 +827,7 @@ const parseSchedule: ElementParser = (el, order) => {
   if (scheduleId) {
     const textElementsWithPositions = getScheduleTextElementsWithPositions(scheduleId);
     for (const { tag, position, content } of textElementsWithPositions) {
-      const text = extractTextFromXml(content);
-      if (tag === "form") {
-        // Extract form title if present
-        const formTitleMatch = /<bcl:formtitle[^>]*>([\s\S]*?)<\/bcl:formtitle>/i.exec(content);
-        children.push(
-          createNode("TEXT", position, {
-            sectionTitle: formTitleMatch ? stripMarkupTags(extractTextFromXml(formTitleMatch[1])) : null,
-            legislationText: text || null,
-          }),
-        );
-      } else {
-        children.push(
-          createNode("TEXT", position, {
-            legislationText: text || null,
-          }),
-        );
-      }
+      children.push(createScheduleTextNode(tag, position, content));
     }
   } else {
     // Fallback to old method if no schedule ID
@@ -826,23 +856,7 @@ const parseSchedule: ElementParser = (el, order) => {
       );
     }
   } else {
-    // Handle tables with no parent ID
-    const tables = el?.[`${NS_OASIS}table`];
-    if (tables) {
-      ensureArray(tables).forEach((table, idx) => {
-        const tableId = table?.["@_id"] || `schedule_table_${idx}`;
-        const tableContent = getTableContentById(tableId);
-        const content = tableContent || getTableText(table);
-        if (content) {
-          children.push(
-            createNode("TABLE", getXmlPosition(table) || idx, {
-              citation: tableId,
-              legislationText: content,
-            }),
-          );
-        }
-      });
-    }
+    children.push(...parseTablesWithoutParentId(el));
   }
 
   // Sort by XML position and re-sequence
