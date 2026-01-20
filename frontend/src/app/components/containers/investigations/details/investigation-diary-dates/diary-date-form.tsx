@@ -5,17 +5,15 @@ import { useForm } from "@tanstack/react-form";
 import { useEffect } from "react";
 import z from "zod";
 import { ValidationDatePicker } from "@common/validation-date-picker";
+import { DiaryDate } from "@/generated/graphql";
 
 interface DiaryDateFormProps {
   index: number;
   onDelete: (index: number) => void;
   onValidationChange: (index: number, isValid: boolean) => void;
-  onValuesChange: (index: number, values: { description: string; diaryDate: Date | null }) => void;
+  onValuesChange: (index: number, values: { description: string; dueDate: Date | null }) => void;
   triggerValidation?: boolean;
-  initialData?: {
-    description: string;
-    diaryDate: Date | null;
-  };
+  initialData?: DiaryDate | null;
 }
 
 export const DiaryDateForm = ({
@@ -29,7 +27,7 @@ export const DiaryDateForm = ({
   const form = useForm({
     defaultValues: {
       description: initialData?.description || "",
-      diaryDate: initialData?.diaryDate || null,
+      dueDate: initialData?.dueDate || null,
     },
   });
 
@@ -38,12 +36,12 @@ export const DiaryDateForm = ({
     const subscription = form.store.subscribe(() => {
       const state = form.store.state;
       const values = state.values;
-      const isValid = !!(values.description && values.diaryDate);
+      const isValid = !!(values.description && values.dueDate);
       onValidationChange(index, isValid);
       // Notify parent of value changes
       onValuesChange(index, {
         description: values.description,
-        diaryDate: values.diaryDate,
+        dueDate: values.dueDate,
       });
     });
 
@@ -104,7 +102,7 @@ export const DiaryDateForm = ({
         />
         <FormField
           form={form}
-          name="diaryDate"
+          name="dueDate"
           label="Due date"
           required
           validators={{
@@ -112,13 +110,13 @@ export const DiaryDateForm = ({
               .date()
               .nullable()
               .refine((val) => val !== null, {
-                message: "Diary date is required",
+                message: "Date is required",
               }),
             onSubmit: z
               .date()
               .nullable()
               .refine((val) => val !== null, {
-                message: "Diary date is required",
+                message: "Date is required",
               }),
           }}
           render={(field) => (
@@ -127,7 +125,7 @@ export const DiaryDateForm = ({
               className="comp-details-input full-width"
               id={`diary-date-${index}`}
               maxDate={new Date()}
-              onChange={(date: any) => {
+              onChange={(date: Date) => {
                 field.handleChange(date);
               }}
               selectedDate={field.state.value}

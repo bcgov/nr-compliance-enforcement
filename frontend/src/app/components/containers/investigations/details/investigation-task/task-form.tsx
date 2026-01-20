@@ -9,7 +9,7 @@ import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducer
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { CreateUpdateTaskInput, DiaryDateInput, Task } from "@/generated/graphql";
+import { CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
@@ -30,17 +30,12 @@ import { Attachments } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
+import { parse } from "date-fns";
 
 interface TaskFormProps {
   investigationGuid: string;
   onClose: (newTask?: Task) => void;
   task?: Task;
-}
-
-interface DiaryDate {
-  diaryDateGuid?: string;
-  description: string;
-  diaryDate: Date | null;
 }
 
 const ADD_TASK = gql`
@@ -157,14 +152,15 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     }
   }, [task, taskSubCategories]);
 
+  const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
+
   // Populate diary dates when editing
   useEffect(() => {
     if (task && diaryDatesData?.diaryDatesByTask) {
       const existingDiaryDates = diaryDatesData.diaryDatesByTask.map((dd) => ({
         diaryDateGuid: dd.diaryDateGuid,
         description: dd.description || "",
-        //@ts-ignore
-        diaryDate: dd.dueDate ? new Date(dd.dueDate) : null,
+        dueDate: dd.dueDate ? parseDate(dd.dueDate) : null,
       }));
 
       setDiaryDates(existingDiaryDates);
@@ -298,8 +294,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       const input: DiaryDateInput = {
         diaryDateGuid: diaryDate?.diaryDateGuid || undefined,
         investigationGuid: investigationGuid,
-        dueDate: (diaryDate.diaryDate as Date) || "",
-        description: diaryDate.description,
+        dueDate: (diaryDate.dueDate as Date) || "",
+        description: diaryDate?.description || "",
         userGuid: idir,
         taskGuid: taskGuid || undefined,
       };
@@ -350,7 +346,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   // Diary Date Functions
   const addDiaryDate = () => {
-    setDiaryDates([...diaryDates, { description: "", diaryDate: null }]);
+    setDiaryDates([...diaryDates, { description: "", dueDate: null }]);
   };
 
   const deleteDiaryDate = async (index: number) => {
@@ -388,13 +384,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     }));
   };
 
-  const handleDiaryDateValuesChange = (index: number, values: { description: string; diaryDate: Date | null }) => {
+  const handleDiaryDateValuesChange = (index: number, values: { description: string; dueDate: Date | null }) => {
     setDiaryDates((prev) => {
       const newDiaryDates = [...prev];
       newDiaryDates[index] = {
         ...newDiaryDates[index],
         description: values.description,
-        diaryDate: values.diaryDate,
+        dueDate: values.dueDate,
       };
       return newDiaryDates;
     });

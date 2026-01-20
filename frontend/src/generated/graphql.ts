@@ -562,7 +562,7 @@ export type DiaryDate = {
 };
 
 export type DiaryDateInput = {
-  description: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
   diaryDateGuid?: InputMaybe<Scalars['String']['input']>;
   dueDate: Scalars['DateTime']['input'];
   investigationGuid: Scalars['String']['input'];
@@ -1068,6 +1068,7 @@ export type Mutation = {
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteDiaryDate: Scalars['Boolean']['output'];
+  deleteDiaryDatesByTask: Scalars['Boolean']['output'];
   deleteEquipment: Scalars['Boolean']['output'];
   deleteLegislationSource: Scalars['Boolean']['output'];
   deleteNote: ComplaintOutcome;
@@ -1246,6 +1247,11 @@ export type MutationdeleteAuthorizationOutcomeArgs = {
 
 export type MutationdeleteDiaryDateArgs = {
   diaryDateGuid: Scalars['String']['input'];
+};
+
+
+export type MutationdeleteDiaryDatesByTaskArgs = {
+  taskGuid: Scalars['String']['input'];
 };
 
 

@@ -17,7 +17,7 @@ input DiaryDateInput {
   diaryDateGuid: String
   investigationGuid: String!
   dueDate: DateTime!
-  description: String!
+  description: String
   userGuid: String
   taskGuid: String
 }
