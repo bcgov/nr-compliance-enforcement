@@ -193,7 +193,10 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             ></InvestigationEditForm>
           )}
 
-          <DiaryDates investigationGuid={investigationGuid} />
+          <DiaryDates
+            investigationGuid={investigationGuid}
+            investigationData={investigationData}
+          />
           <br />
           <MapObjectLocation
             map_object_type={MapObjectType.Investigation}

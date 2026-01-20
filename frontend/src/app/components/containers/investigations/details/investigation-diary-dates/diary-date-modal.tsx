@@ -38,6 +38,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
         investigationGuid,
         dueDate: value.dueDate as Date,
         description: value.description.trim(),
+        taskGuid: diaryDate?.taskGuid || undefined,
       };
 
       await onSave(input);
