@@ -55,18 +55,34 @@ const getMarkupForKey = (key: string): string | null => {
   return null;
 };
 
-// Gets content keys from a node (excludes attributes and #text)
+// Gets content keys from a node
 const getContentKeys = (node: Record<string, unknown>): string[] =>
   Object.keys(node).filter((key) => !key.startsWith("@_") && key !== "#text");
 
-// Extracts text from object keys, converting markup tags
+// Extracts text from object keys converting markup tags
 const extractFromKeys = (node: Record<string, unknown>, keys: string[]): string =>
   keys.map((key) => getMarkupForKey(key) ?? extractText(node[key])).join("");
+
+// Converts a value to string if it's a string or number
+const toStringOrEmpty = (value: unknown): string => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  return "";
+};
 
 // Handles #text node with potential sibling markup tags
 const extractTextNode = (node: Record<string, unknown>): string => {
   const rawText = node["#text"];
-  const textContent = typeof rawText === "string" || typeof rawText === "number" ? String(rawText) : "";
+  // Handle #text as string, number, or array as fast-xml-parser is set to return arrays for all mixed content
+  let textContent = "";
+  if (typeof rawText === "string") {
+    textContent = rawText;
+  } else if (typeof rawText === "number") {
+    textContent = String(rawText);
+  } else if (Array.isArray(rawText)) {
+    textContent = rawText.map(toStringOrEmpty).join("");
+  }
+
   const otherKeys = getContentKeys(node);
 
   // If #text is whitespace and there are other content keys, extract from those instead
@@ -96,14 +112,19 @@ const extractText = (node: any): string => {
     return `"${extractText(node["in:term"])}"`;
   }
 
-  // Check for inline text content elements
-  const foundKey = TEXT_CONTENT_KEYS.find((key) => node[key] !== undefined);
-  if (foundKey) return extractText(node[foundKey]);
-
-  // Handle #text with potential sibling markup
+  // Handle #text with potential inline elements
   if (node["#text"] !== undefined) {
+    const otherKeys = getContentKeys(node);
+    if (otherKeys.length > 0) {
+      // Mixed content - extract #text and all other keys
+      return extractFromKeys(node, ["#text", ...otherKeys]);
+    }
     return extractTextNode(node);
   }
+
+  // Check for inline text content elements (when no #text present)
+  const foundKey = TEXT_CONTENT_KEYS.find((key) => node[key] !== undefined);
+  if (foundKey) return extractText(node[foundKey]);
 
   // Extract from all content keys
   return extractFromKeys(node, getContentKeys(node));
@@ -112,13 +133,16 @@ const extractText = (node: any): string => {
 /**
  * Strips HTML markup tags for cases where we don't want formatting such as titles
  */
-const stripMarkupTags = (text: string): string =>
-  text
+const stripMarkupTags = (text: string | null | undefined): string =>
+  (text ?? "")
     .replaceAll(/<(?:hr|br)\s*\/?>/gi, " ")
     .replaceAll(/\s+/g, " ")
     .trim();
 
 let originalXmlString = "";
+
+// Current table XML being processed (for scoped line searches)
+let currentTableXml = "";
 
 /**
  * Extracts text from XML string, preserving order of text and inline elements
@@ -128,39 +152,85 @@ const extractTextFromXml = (xmlContent: string): string => {
     .replaceAll(/<in:term[^>]*>([\s\S]*?)<\/in:term>/gi, '"$1"') // Wrap terms in quotes
     .replaceAll(/<in:hr\s*\/?>/gi, " <hr/> ") // Convert horizontal rules to HTML tag
     .replaceAll(/<in:br\s*\/?>/gi, "<br/>") // Convert line breaks to HTML tag
-    .replaceAll(/<(?!br\/?>|hr\/?>)[^<>]*>/gi, "") // Remove tags we don't want (all except <br/> and <hr/>)
-    .replaceAll(/\s+/g, " ") // Whitespace
+    .replaceAll(/<(?!br\/?>|hr\/?>)[^<>]*>/gi, "") // Remove all tags except <br/> and <hr/>
+    .replaceAll(/\s+/g, " ") // Normalize whitespace
     .replaceAll(/ {1,10}([,.:;!?])/g, "$1") // Remove spaces before punctuation
     .trim();
 };
 
 /**
- * Finds the <bcl:text> content for an element by ID
+ * Strips inline element content from text, keeping only the "base" text.
+ * Used for matching when inline content order is wrong.
  */
-const findBclTextById = (elementId: string, xml: string): string | null => {
-  const id = xml.indexOf(`id="${elementId}"`);
-  const start = id > -1 ? xml.indexOf("<bcl:text>", id) + 10 : -1;
-  const end = start > 9 ? xml.indexOf("</bcl:text>", start) : -1;
-  return end > -1 ? xml.substring(start, end) : null;
+const stripInlineContent = (xmlContent: string): string => {
+  return xmlContent
+    .replaceAll(/<in:sup[^>]*>[\s\S]*?<\/in:sup>/gi, "")
+    .replaceAll(/<in:sub[^>]*>[\s\S]*?<\/in:sub>/gi, "")
+    .replaceAll(/<in:em[^>]*>[\s\S]*?<\/in:em>/gi, "")
+    .replaceAll(/<in:strong[^>]*>[\s\S]*?<\/in:strong>/gi, "")
+    .replaceAll(/<in:term[^>]*>[\s\S]*?<\/in:term>/gi, "")
+    .replaceAll(/<[^>]*>/g, "")
+    .replaceAll(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
 };
 
 /**
- * Gets text content from bcl:text element preserving order of mixed content
- * For elements with inline content (in:desc, in:term, etc.) gets from original XML
+ * Extracts text from raw XML by finding oasis:line elements with inline markup.
+ */
+const extractLineContentByText = (textSnippet: string, searchXml: string): string | null => {
+  if (!textSnippet || !searchXml || textSnippet.length < 5) return null;
+
+  // Because inline content gets appended at the end, extract text before any trailing content
+  const searchText = textSnippet
+    .replaceAll(/<[^>]*>/g, "")
+    .replaceAll(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  if (searchText.length < 5) return null;
+
+  const lineRegex = /<oasis:line[^>]*>([\s\S]*?)<\/oasis:line>/g;
+  let match: RegExpExecArray | null;
+  while ((match = lineRegex.exec(searchXml)) !== null) {
+    const content = match[1];
+    if (!/<in:/.test(content)) continue;
+
+    const baseText = stripInlineContent(content);
+
+    if (baseText.length >= 5 && (searchText.includes(baseText) || baseText === searchText)) {
+      return extractTextFromXml(content);
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Gets text content from bcl:text element, using raw XML to preserve mixed content order.
+ * fast-xml-parser loses the order of text mixed with inline elements so find by parent id
  */
 const getBclText = (element: any): string => {
-  const textElement = element?.[`${NS_BCL}text`];
+  const textElements = element?.[`${NS_BCL}text`];
+  if (!textElements) return "";
+
+  // Parser returns array for bcl:text due to isArray config
+  const textElement = Array.isArray(textElements) ? textElements[0] : textElements;
   if (!textElement) return "";
   if (typeof textElement === "string") return textElement.trim();
 
+  // Check if element has inline content that needs order preservation
   const inlineKeys = ["in:term", "in:doc", "in:desc", "in:em", "in:strong", "in:sup", "in:sub", "bcl:link"];
-  const hasInlineElements = inlineKeys.some((key) => textElement[key] !== undefined);
-
-  if (hasInlineElements) {
-    const elementId = element?.["@_id"];
-    if (elementId && originalXmlString) {
-      const rawContent = findBclTextById(elementId, originalXmlString);
-      if (rawContent) return extractTextFromXml(rawContent);
+  if (inlineKeys.some((key) => textElement[key] !== undefined)) {
+    // Find bcl:text in raw XML by parent ID to get correct content order
+    const parentId = element?.["@_id"];
+    if (parentId && originalXmlString) {
+      const bounds = getBounds(parentId);
+      if (bounds) {
+        const textMatch = /<bcl:text[^>]*>([\s\S]*?)<\/bcl:text>/.exec(bounds.content);
+        if (textMatch && /<in:/.test(textMatch[1])) {
+          return extractTextFromXml(textMatch[1]);
+        }
+      }
     }
   }
 
@@ -199,6 +269,51 @@ const getXmlPosition = (element: any): number => {
   if (!id || !originalXmlString) return Infinity;
   const pos = originalXmlString.indexOf(`id="${id}"`);
   return pos > -1 ? pos : Infinity;
+};
+
+/**
+ * Schedule text element tags that need position-based ordering
+ */
+const SCHEDULE_TEXT_TAGS = [
+  "centertext",
+  "lefttext",
+  "indent1",
+  "indent2",
+  "indent3",
+  "form",
+  "list",
+  "schedulesubtitle",
+];
+
+/**
+ * Finds all schedule text elements with their XML positions from raw XML
+ * This is needed because these elements often don't have IDs
+ */
+const getScheduleTextElementsWithPositions = (
+  scheduleId: string,
+): Array<{ tag: string; position: number; content: string }> => {
+  const bounds = getBounds(scheduleId);
+  if (!bounds) return [];
+
+  const { content, offset } = bounds;
+  const elements: Array<{ tag: string; position: number; content: string }> = [];
+
+  // Build regex to match all schedule text element tags
+  const tagPattern = SCHEDULE_TEXT_TAGS.map((t) => `bcl:${t}`).join("|");
+  const regex = new RegExp(`<(${tagPattern})(?:\\s[^>]*)?>([\\s\\S]*?)<\\/\\1>`, "g");
+
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(content)) !== null) {
+    const fullTag = match[1];
+    const tag = fullTag.replace("bcl:", "");
+    elements.push({
+      tag,
+      position: offset + match.index,
+      content: match[2],
+    });
+  }
+
+  return elements;
 };
 
 /**
@@ -258,6 +373,59 @@ const getBounds = (parentId: string): { content: string; offset: number } | null
   if (closingPos === -1) return null;
 
   return { content: originalXmlString.substring(tagEnd + 1, closingPos), offset: tagEnd + 1 };
+};
+
+// Elements that can contain tables
+const CHILD_TAG_PATTERNS = [
+  { open: /<bcl:section\b/g, close: /<\/bcl:section>/g },
+  { open: /<bcl:subsection\b/g, close: /<\/bcl:subsection>/g },
+  { open: /<bcl:paragraph\b/g, close: /<\/bcl:paragraph>/g },
+  { open: /<bcl:schedule\b/g, close: /<\/bcl:schedule>/g },
+  { open: /<bcl:conseqhead\b/g, close: /<\/bcl:conseqhead>/g },
+];
+
+/**
+ * Counts nesting depth by counting open/close tags
+ */
+const getNestingDepth = (content: string): number => {
+  let depth = 0;
+  for (const { open, close } of CHILD_TAG_PATTERNS) {
+    open.lastIndex = 0;
+    close.lastIndex = 0;
+    while (open.exec(content)) depth++;
+    while (close.exec(content)) depth--;
+  }
+  return depth;
+};
+
+/**
+ * Finds tables that are direct children of a parent element
+ */
+const getTablesByParentId = (parentId: string | undefined): Array<{ tableId: string; position: number }> => {
+  if (!parentId || !originalXmlString) return [];
+
+  const bounds = getBounds(parentId);
+  if (!bounds) return [];
+
+  const { content, offset } = bounds;
+  const tables: Array<{ tableId: string; position: number }> = [];
+  const tableRegex = /<oasis:table\b[^>]*>/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = tableRegex.exec(content)) !== null) {
+    const posInContent = match.index;
+    const beforeTable = content.substring(0, posInContent);
+
+    // If depth > 0 this table is inside a nested element so skip
+    if (getNestingDepth(beforeTable) === 0) {
+      const absolutePos = offset + posInContent;
+      const idMatch = /\bid\s*=\s*["']([^"']+)["']/i.exec(match[0]);
+      const tableId = idMatch ? idMatch[1] : `pos_${absolutePos}`;
+      tables.push({ tableId, position: absolutePos });
+    }
+  }
+
+  return tables;
 };
 
 /**
@@ -395,9 +563,103 @@ const parseDefinition: ElementParser = (el, order) => {
 };
 
 /**
- * Parser for elements with text nodes, tables, and child elements
+ * Finds table tag start position by position
  */
-const parseElementWithTextAndTables = (
+const findTableByPosition = (posStr: string): number => {
+  const tagStart = Number.parseInt(posStr, 10);
+  if (Number.isNaN(tagStart) || tagStart < 0) return -1;
+  if (!originalXmlString.substring(tagStart, tagStart + 12).startsWith("<oasis:table")) return -1;
+  return tagStart;
+};
+
+/**
+ * Finds table tag start position by id
+ */
+const findTableById = (tableId: string): number => {
+  let idPos = originalXmlString.indexOf(`id="${tableId}"`);
+  if (idPos === -1) idPos = originalXmlString.indexOf(`id='${tableId}'`);
+  if (idPos === -1) return -1;
+  return originalXmlString.lastIndexOf("<oasis:table", idPos);
+};
+
+/**
+ * Finds the matching closing tag position
+ */
+const findTableClosePosition = (tagEnd: number): number => {
+  let depth = 1;
+  let searchPos = tagEnd + 1;
+
+  while (depth > 0 && searchPos < originalXmlString.length) {
+    const nextOpen = originalXmlString.indexOf("<oasis:table", searchPos);
+    const nextClose = originalXmlString.indexOf("</oasis:table>", searchPos);
+
+    if (nextClose === -1) return -1;
+
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      const openTagEnd = originalXmlString.indexOf(">", nextOpen);
+      if (openTagEnd !== -1 && originalXmlString.charAt(openTagEnd - 1) !== "/") {
+        depth++;
+      }
+      searchPos = openTagEnd + 1;
+    } else {
+      depth--;
+      if (depth === 0) return nextClose;
+      searchPos = nextClose + 14;
+    }
+  }
+  return -1;
+};
+
+/**
+ * Parses table XML and extracts text content
+ */
+const parseTableXml = (tableXml: string): string => {
+  const tableParser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+    textNodeName: "#text",
+    preserveOrder: false,
+    trimValues: false,
+    parseAttributeValue: false,
+    parseTagValue: false,
+  });
+
+  try {
+    const parsed = tableParser.parse(tableXml);
+    const table = parsed?.["oasis:table"];
+    currentTableXml = tableXml;
+    const result = getTableText(table);
+    currentTableXml = "";
+    return result;
+  } catch {
+    currentTableXml = "";
+    return "";
+  }
+};
+
+/**
+ * Gets table content from the raw XML by table ID or position
+ */
+const getTableContentById = (tableId: string): string => {
+  if (!tableId || !originalXmlString) return "";
+
+  const tagStart = tableId.startsWith("pos_") ? findTableByPosition(tableId.substring(4)) : findTableById(tableId);
+
+  if (tagStart === -1) return "";
+
+  const tagEnd = originalXmlString.indexOf(">", tagStart);
+  if (tagEnd === -1 || originalXmlString.charAt(tagEnd - 1) === "/") return "";
+
+  const tableEnd = findTableClosePosition(tagEnd);
+  if (tableEnd === -1) return "";
+
+  return parseTableXml(originalXmlString.substring(tagStart, tableEnd + 14));
+};
+
+/**
+ * Parser for elements handling text and tables
+ */
+const parseElement = (
   el: any,
   order: number,
   typeCode: string,
@@ -407,14 +669,20 @@ const parseElementWithTextAndTables = (
   const text = parseTextElement(el?.["@_id"]);
   const children = parseOrderedChildren(el, childTypes);
 
-  // Parse tables
-  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
-    const xmlPos = getXmlPosition(table);
-    const tableText = getTableText(table);
-    if (tableText) {
-      children.push(createNode("TABLE", xmlPos, { legislationText: tableText }));
-    }
-  });
+  // Get tables from our pre-built map (based on raw XML analysis)
+  const tablesFromMap = getTablesByParentId(el?.["@_id"]);
+
+  // Add tables from the map - each table becomes its own TABLE node
+  for (const tableInfo of tablesFromMap) {
+    const tableText = getTableContentById(tableInfo.tableId);
+    children.push(
+      createNode("TABLE", tableInfo.position, {
+        // Use table ID as citation to ensure uniqueness for database saving
+        citation: tableInfo.tableId,
+        legislationText: tableText || null,
+      }),
+    );
+  }
 
   const extractedText = mergeText(children, text);
 
@@ -434,19 +702,19 @@ const parseElementWithTextAndTables = (
 };
 
 const parseParagraph: ElementParser = (el, order) =>
-  parseElementWithTextAndTables(el, order, "PAR", [
+  parseElement(el, order, "PAR", [
     { tag: "subparagraph", parse: parseSubparagraph },
     { tag: "clause", parse: parseClause },
   ]);
 
 const parseSubsection: ElementParser = (el, order) =>
-  parseElementWithTextAndTables(el, order, "SUBSEC", [
+  parseElement(el, order, "SUBSEC", [
     { tag: "definition", parse: parseDefinition },
     { tag: "paragraph", parse: parseParagraph },
   ]);
 
 const parseSection: ElementParser = (el, order) =>
-  parseElementWithTextAndTables(
+  parseElement(
     el,
     order,
     "SEC",
@@ -461,14 +729,14 @@ const parseSection: ElementParser = (el, order) =>
 const parseRule: ElementParser = (el, order) =>
   createNode("RULE", order, {
     citation: getBclNum(el),
-    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
+    sectionTitle: stripMarkupTags(getBclText(el)) || getMarginalnote(el),
     children: parseSequentialChildren(el, [{ tag: "section", parse: parseSection }]),
   });
 
 const parseDivision: ElementParser = (el, order) =>
   createNode("DIV", order, {
     citation: getBclNum(el),
-    sectionTitle: stripMarkupTags(getBclText(el) || getMarginalnote(el)),
+    sectionTitle: stripMarkupTags(getBclText(el)) || getMarginalnote(el),
     children: parseSequentialChildren(el, [
       { tag: "section", parse: parseSection },
       { tag: "rule", parse: parseRule },
@@ -478,7 +746,7 @@ const parseDivision: ElementParser = (el, order) =>
 let parsePart: ElementParser;
 
 /**
- * Parser simple text elements (centertext, lefttext, list, schedulesubtitle)
+ * Parser simple text elements
  */
 const parseText: ElementParser = (el, order) =>
   createNode("TEXT", order, {
@@ -486,7 +754,7 @@ const parseText: ElementParser = (el, order) =>
   });
 
 /**
- * Parses form elements within schedules (includes form title)
+ * Parses form elements within schedules
  */
 const parseForm: ElementParser = (el, order) => {
   const formTitle = el?.[`${NS_BCL}formtitle`];
@@ -508,28 +776,74 @@ const parseSchedule: ElementParser = (el, order) => {
   ]);
   children.push(...structuralChildren);
 
-  // Parse text/content elements
-  const textChildren = parseSequentialChildren(el, [
-    { tag: "centertext", parse: parseText },
-    { tag: "lefttext", parse: parseText },
-    { tag: "form", parse: parseForm },
-    { tag: "list", parse: parseText },
-    { tag: "schedulesubtitle", parse: parseText },
-  ]);
-  children.push(...textChildren);
+  // Use XML positions for correct ordering
+  const scheduleId = el?.["@_id"];
+  if (scheduleId) {
+    const textElementsWithPositions = getScheduleTextElementsWithPositions(scheduleId);
+    for (const { tag, position, content } of textElementsWithPositions) {
+      const text = extractTextFromXml(content);
+      if (tag === "form") {
+        // Extract form title if present
+        const formTitleMatch = /<bcl:formtitle[^>]*>([\s\S]*?)<\/bcl:formtitle>/i.exec(content);
+        children.push(
+          createNode("TEXT", position, {
+            sectionTitle: formTitleMatch ? stripMarkupTags(extractTextFromXml(formTitleMatch[1])) : null,
+            legislationText: text || null,
+          }),
+        );
+      } else {
+        children.push(
+          createNode("TEXT", position, {
+            legislationText: text || null,
+          }),
+        );
+      }
+    }
+  } else {
+    // Fallback to old method if no schedule ID
+    const textChildren = parseSequentialChildren(el, [
+      { tag: "centertext", parse: parseText },
+      { tag: "lefttext", parse: parseText },
+      { tag: "form", parse: parseForm },
+      { tag: "list", parse: parseText },
+      { tag: "schedulesubtitle", parse: parseText },
+      { tag: "indent1", parse: parseText },
+      { tag: "indent2", parse: parseText },
+      { tag: "indent3", parse: parseText },
+    ]);
+    children.push(...textChildren);
+  }
 
   // Parse tables
-  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
-    const xmlPos = getXmlPosition(table);
-    const tableText = getTableText(table);
-    if (tableText) {
+  const scheduleTables = getTablesByParentId(el?.["@_id"]);
+  if (scheduleTables.length > 0) {
+    for (const tableInfo of scheduleTables) {
       children.push(
-        createNode("TABLE", xmlPos, {
-          legislationText: tableText,
+        createNode("TABLE", tableInfo.position, {
+          citation: tableInfo.tableId,
+          legislationText: getTableContentById(tableInfo.tableId) || null,
         }),
       );
     }
-  });
+  } else {
+    // Handle tables with no parent ID
+    const tables = el?.[`${NS_OASIS}table`];
+    if (tables) {
+      ensureArray(tables).forEach((table, idx) => {
+        const tableId = table?.["@_id"] || `schedule_table_${idx}`;
+        const tableContent = getTableContentById(tableId);
+        const content = tableContent || getTableText(table);
+        if (content) {
+          children.push(
+            createNode("TABLE", getXmlPosition(table) || idx, {
+              citation: tableId,
+              legislationText: content,
+            }),
+          );
+        }
+      });
+    }
+  }
 
   // Sort by XML position and re-sequence
   children.sort((a, b) => a.displayOrder - b.displayOrder);
@@ -545,88 +859,114 @@ const parseSchedule: ElementParser = (el, order) => {
 };
 
 /**
- * Extracts content from oasis:line elements
+ * Checks if there are inline elements that need order handling
  */
-const extractLineFromRawXml = (textSnippet: string): string | null => {
-  if (!textSnippet || !originalXmlString) return null;
-
-  const lineMatches = [...originalXmlString.matchAll(/<oasis:line[^>]*>([\s\S]*?)<\/oasis:line>/g)];
-  for (const match of lineMatches) {
-    const lineContent = match[1];
-    // Handle HR tags for formulas
-    if (lineContent.includes(textSnippet.substring(0, 30)) && /<in:hr\s*\/?>/.test(lineContent)) {
-      return extractTextFromXml(lineContent);
-    }
-  }
-  return null;
+const hasInlineElements = (node: any): boolean => {
+  if (!node || typeof node !== "object") return false;
+  if (Array.isArray(node)) return node.some(hasInlineElements);
+  const inlineKeys = ["in:hr", "in:br", "in:sup", "in:sub", "in:em", "in:strong", "in:term", "in:doc", "in:desc"];
+  return inlineKeys.some((key) => node[key] !== undefined) || Object.values(node).some(hasInlineElements);
 };
 
 /**
- * Extracts text from a table entry, handling various content structures.
+ * Extracts text from a table entry, preserving order of mixed content
  */
 const getEntryText = (entry: any): string => {
   if (!entry) return "";
 
+  const lines = entry[`${NS_OASIS}line`];
   let result = "";
 
-  // May contain oasis:line elements with the actual text
-  const lines = entry[`${NS_OASIS}line`];
   if (lines) {
     result = ensureArray(lines)
-      .map((line) => {
-        // Handle HR tags for formulas
-        if (line["in:hr"] !== undefined) {
-          const textContent = extractText(line);
-          const rawContent = extractLineFromRawXml(textContent);
-          if (rawContent) return rawContent;
-        }
-        return extractText(line);
-      })
+      .map((line) => extractText(line))
       .join(" ")
       .trim();
   } else {
-    // Or bcl:link elements
     const link = entry[`${NS_BCL}link`];
-    if (link) {
-      result = extractText(link).trim();
-    } else {
-      // Then extract plain text
-      result = extractText(entry).trim();
-    }
+    result = link ? extractText(link).trim() : extractText(entry).trim();
+  }
+
+  if (hasInlineElements(entry) && result.length >= 5) {
+    const rawContent =
+      extractLineContentByText(result, currentTableXml) || extractLineContentByText(result, originalXmlString);
+    if (rawContent) return rawContent;
   }
 
   return result.replaceAll("\n", " ").replaceAll(/\s+/g, " ").trim();
 };
 
 /**
- * Extracts content from table elements
+ * Generates HTML attributes from table entry attributes
+ */
+const getEntryAttributes = (entry: any): string => {
+  const attrs: string[] = [];
+
+  const rowspan = entry?.["@_rowspan"];
+  if (rowspan && rowspan !== "1") attrs.push(`rowspan="${rowspan}"`);
+
+  const colspan = entry?.["@_colspan"];
+  if (colspan && colspan !== "1") attrs.push(`colspan="${colspan}"`);
+
+  const align = entry?.["@_align"];
+  if (align) attrs.push(`align="${align}"`);
+
+  const valign = entry?.["@_valign"];
+  if (valign) attrs.push(`valign="${valign}"`);
+
+  return attrs.length > 0 ? " " + attrs.join(" ") : "";
+};
+
+/**
+ * Generates an HTML table cell element (th or td)
+ */
+const generateCell = (entry: any, isHeader: boolean): string => {
+  const tag = isHeader ? "th" : "td";
+  const attrs = getEntryAttributes(entry);
+  const content = getEntryText(entry);
+  return `<${tag}${attrs}>${content}</${tag}>`;
+};
+
+/**
+ * Extracts content from table elements as HTML
  */
 const getTableText = (table: any): string => {
   if (!table) return "";
-  const rows: string[] = [];
 
   const tgroup = table[`${NS_OASIS}tgroup`];
   if (!tgroup) return "";
 
-  // Process header rows (BC Laws uses trow, not row)
+  const parts: string[] = ["<table>"];
+
+  // Process header rows
   const thead = tgroup[`${NS_OASIS}thead`];
   if (thead) {
+    parts.push("<thead>");
     ensureArray(thead[`${NS_OASIS}trow`]).forEach((row) => {
-      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
-      if (cells.length > 0) rows.push(cells.join(" | "));
+      const cells = ensureArray(row[`${NS_OASIS}entry`])
+        .map((entry) => generateCell(entry, true))
+        .join("");
+      if (cells) parts.push(`<tr>${cells}</tr>`);
     });
+    parts.push("</thead>");
   }
 
   // Process body rows
   const tbody = tgroup[`${NS_OASIS}tbody`];
   if (tbody) {
+    parts.push("<tbody>");
     ensureArray(tbody[`${NS_OASIS}trow`]).forEach((row) => {
-      const cells = ensureArray(row[`${NS_OASIS}entry`]).map((entry) => getEntryText(entry));
-      if (cells.length > 0) rows.push(cells.join(" | "));
+      const cells = ensureArray(row[`${NS_OASIS}entry`])
+        .map((entry) => generateCell(entry, false))
+        .join("");
+      if (cells) parts.push(`<tr>${cells}</tr>`);
     });
+    parts.push("</tbody>");
   }
 
-  return rows.join("\n");
+  parts.push("</table>");
+
+  return parts.join("");
 };
 
 /**
@@ -653,17 +993,14 @@ const parseConseqhead: ElementParser = (el, order) => {
   });
 
   // Parse tables
-  ensureArray(el?.[`${NS_OASIS}table`]).forEach((table) => {
-    const xmlPos = getXmlPosition(table);
-    const tableText = getTableText(table);
-    if (tableText) {
-      children.push(
-        createNode("TABLE", xmlPos, {
-          legislationText: tableText,
-        }),
-      );
-    }
-  });
+  for (const tableInfo of getTablesByParentId(el?.["@_id"])) {
+    children.push(
+      createNode("TABLE", tableInfo.position, {
+        citation: tableInfo.tableId,
+        legislationText: getTableContentById(tableInfo.tableId) || null,
+      }),
+    );
+  }
 
   children.sort((a, b) => a.displayOrder - b.displayOrder);
 
@@ -738,8 +1075,7 @@ const parseContent = (content: any): ParsedLegislationNode[] => {
 };
 
 /**
- * Parses BC Laws XML document and returns structured legislation data
- * Supports Act, Regulation, and Bylaw schemas
+ * Parses BC Laws XML document and returns legislation data
  */
 export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
   originalXmlString = xmlString;
@@ -752,6 +1088,26 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
     trimValues: false,
     parseAttributeValue: false,
     parseTagValue: false,
+    // Ensure elements that can appear multiple times are always arrays
+    isArray: (name) =>
+      [
+        "bcl:text",
+        "bcl:section",
+        "bcl:subsection",
+        "bcl:paragraph",
+        "bcl:subparagraph",
+        "bcl:clause",
+        "bcl:subclause",
+        "bcl:definition",
+        "bcl:part",
+        "bcl:division",
+        "bcl:schedule",
+        "bcl:content",
+        "oasis:table",
+        "oasis:trow",
+        "oasis:entry",
+        "oasis:line",
+      ].includes(name),
   });
 
   const parsed = parser.parse(xmlString);

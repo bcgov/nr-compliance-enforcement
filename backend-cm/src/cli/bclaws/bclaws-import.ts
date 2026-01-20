@@ -116,7 +116,7 @@ async function insertLegislationTree(
 
   try {
     logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
-    await sleep(10); // Rate limiting
+    //await sleep(5); // Rate limiting
 
     // Upsert the legislation record
     const created = await legislationService.upsert({
@@ -134,7 +134,6 @@ async function insertLegislationTree(
 
     count++;
 
-    // Track root legislation GUID for linking regulations
     if (parentGuid === null) {
       context.rootLegislationGuid = created.legislation_guid;
     }

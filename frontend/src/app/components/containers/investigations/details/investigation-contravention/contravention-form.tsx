@@ -18,10 +18,11 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { indentByType, Legislation } from "@/app/types/app/legislation";
-import { Button, Card, Table } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { LegislationText } from "@/app/components/common/legislation-text";
+import { LegislationTable } from "@/app/components/common/legislation-table";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
@@ -429,39 +430,12 @@ export const ContraventionForm = ({
                 }
 
                 if (section.legislationTypeCode === Legislation.TABLE && section.legislationText) {
-                  const lines = section.legislationText.split("\n").filter((line) => line.trim());
-                  const rows = lines.map((line) => line.split("|").map((cell) => cell.trim()));
                   return (
                     <div
                       key={section.legislationGuid}
                       className={`contravention-text-segment ${indentClass}`}
                     >
-                      <Table
-                        bordered
-                        size="sm"
-                        className="legislation-table"
-                      >
-                        <thead>
-                          <tr>
-                            {rows[0]?.map((cell, i) => (
-                              <th key={`th-${i}-${cell.slice(0, 20)}`}>
-                                <LegislationText>{cell}</LegislationText>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rows.slice(1).map((row, rowIdx) => (
-                            <tr key={`tr-${rowIdx}-${row[0]?.slice(0, 20)}`}>
-                              {row.map((cell, cellIdx) => (
-                                <td key={`td-${rowIdx}-${cellIdx}-${cell.slice(0, 20)}`}>
-                                  <LegislationText>{cell}</LegislationText>
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
+                      <LegislationTable html={section.legislationText} />
                     </div>
                   );
                 }
