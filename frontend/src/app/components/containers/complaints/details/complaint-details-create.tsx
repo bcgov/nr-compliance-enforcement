@@ -32,9 +32,9 @@ import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
 import { from } from "linq-to-typescript";
-import { ToggleError } from "@common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
 import { useNavigate } from "react-router-dom";
-import { AttachmentsCarousel } from "@components/common/attachments-carousel";
+import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 
@@ -54,6 +54,8 @@ import { ParkSelect } from "@/app/components/common/park-select";
 import { isValidEmail } from "@/app/common/validate-email";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { Id } from "react-toastify";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
@@ -654,17 +656,36 @@ export const CreateComplaint: FC = () => {
 
   const handleComplaintProcessing = async (complaint: ComplaintAlias) => {
     let complaintId = await handleHwcrComplaint(complaint);
+
     if (complaintId) {
-      handlePersistAttachments({
-        dispatch,
-        attachmentsToAdd,
-        attachmentsToDelete,
-        complaintIdentifier: complaintId,
-        setAttachmentsToAdd,
-        setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        complaintType,
-      });
+      if (attachmentsToAdd) {
+        let toastId: Id;
+
+        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+          position: "top-right",
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+          draggable: false,
+        });
+
+        handlePersistAttachments({
+          dispatch,
+          attachmentsToAdd,
+          attachmentsToDelete,
+          identifier: complaintId,
+          subIdentifier: undefined,
+          setAttachmentsToAdd,
+          setAttachmentsToDelete,
+          attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+          isSynchronous: false,
+        }).then(() => {
+          if (attachmentsToAdd) {
+            DismissToast(toastId);
+          }
+          attachmentUploadComplete$.next(complaintId);
+        });
+      }
     }
 
     setErrorNotificationClass("comp-complaint-error display-none");
@@ -1325,13 +1346,14 @@ export const CreateComplaint: FC = () => {
 
         <fieldset>
           <legend>Complainant attachments ({complaintAttachmentCount})</legend>
-          <AttachmentsCarousel
+          <Attachments
             attachmentType={AttachmentEnum.COMPLAINT_ATTACHMENT}
             allowUpload={true}
             allowDelete={true}
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
             onSlideCountChange={handleSlideCountChange}
+            showPreview={true}
           />
         </fieldset>
       </section>

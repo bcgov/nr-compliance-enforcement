@@ -201,6 +201,8 @@ export class AppUserService {
     try {
       const currentRoles = user.client_roles;
       const permissions = currentRoles.includes(Role.READ_ONLY) ? ["READ"] : ["READ", "CREATE", "UPDATE", "DELETE"];
+      const comsUrl = `${process.env.OBJECTSTORE_API_URL}/bucket`;
+
       const comsPayload = {
         accessKeyId: process.env.OBJECTSTORE_ACCESS_KEY,
         bucket: process.env.OBJECTSTORE_BUCKET,
@@ -210,8 +212,18 @@ export class AppUserService {
         secretAccessKey: process.env.OBJECTSTORE_SECRET_KEY,
         permCodes: permissions,
       };
-      const comsUrl = `${process.env.OBJECTSTORE_API_URL}/bucket`;
       await put(token, comsUrl, comsPayload);
+
+      const secureComsPayload = {
+        accessKeyId: process.env.SECURE_OBJECTSTORE_ACCESS_KEY,
+        bucket: process.env.SECURE_OBJECTSTORE_BUCKET,
+        bucketName: process.env.SECURE_OBJECTSTORE_BUCKET_NAME,
+        key: process.env.SECURE_OBJECTSTORE_KEY,
+        endpoint: process.env.SECURE_OBJECTSTORE_HTTPS_URL,
+        secretAccessKey: process.env.SECURE_OBJECTSTORE_SECRET_KEY,
+        permCodes: permissions,
+      };
+      await put(token, comsUrl, secureComsPayload);
 
       // Update app_user to set coms_enrolled_ind = true
       const updatedAppUser = await updateAppUser(token, app_user_guid, {
