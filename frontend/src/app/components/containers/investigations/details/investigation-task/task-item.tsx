@@ -131,9 +131,12 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
             removeTaskMutation.mutate({
               taskId: taskIdentifier,
             });
-            removeDiaryDatesByTaskMutation.mutate({
-              taskGuid: taskIdentifier,
-            });
+            // Remove any diary dates associated with this task
+            if (diaryDates.length > 0) {
+              removeDiaryDatesByTaskMutation.mutate({
+                taskGuid: taskIdentifier,
+              });
+            }
           },
         }),
       );
