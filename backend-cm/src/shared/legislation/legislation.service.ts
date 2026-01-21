@@ -48,17 +48,23 @@ export class LegislationService {
 
   private readonly logger = new Logger(LegislationService.name);
 
-  async findMany(agencyCode: string, legislationTypeCodes?: string[], ancestorGuid?: string) {
+  async findMany(
+    agencyCode: string,
+    legislationTypeCodes?: string[],
+    ancestorGuid?: string,
+    excludeRegulations?: boolean,
+  ) {
     const today = new Date().toISOString().split("T")[0];
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
-        SELECT 
+        SELECT
           l.legislation_guid, -- Parent Nodes
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          LPAD(l.display_order::text, 4, '0') AS sort_path -- Sort by display_order (document order)
+          LPAD(l.display_order::text, 4, '0') AS sort_path, -- Sort by display_order (document order)
+          FALSE AS has_reg_ancestor -- Track if any ancestor is a REG
         FROM legislation l
         -- Join to legislation_source when finding root nodes (no ancestorGuid)
         -- When ancestorGuid is provided, the parent was already filtered by agency at the parent level
@@ -71,19 +77,21 @@ export class LegislationService {
             -- When no ancestorGuid, find root nodes filtered by agency
             (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
           )
-        
+
         UNION ALL
-        
+
         SELECT -- Child nodes
           l.legislation_guid,
           l.parent_legislation_guid,
           l.legislation_type_code,
           l.display_order,
-          d.sort_path || '.' || LPAD(l.display_order::text, 4, '0') AS sort_path
+          d.sort_path || '.' || LPAD(l.display_order::text, 4, '0') AS sort_path,
+          -- Mark as having REG ancestor if parent is REG or already has REG ancestor
+          d.has_reg_ancestor OR d.legislation_type_code = 'REG' AS has_reg_ancestor
         FROM legislation l
         INNER JOIN descendants d ON l.parent_legislation_guid = d.legislation_guid
       )
-      SELECT 
+      SELECT
         l.legislation_guid,
         l.legislation_type_code,
         l.parent_legislation_guid,
@@ -95,13 +103,15 @@ export class LegislationService {
         l.display_order
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
-      WHERE 
+      WHERE
         (
           ${legislationTypeCodes ?? []} = '{}'::text[]
           OR l.legislation_type_code = ANY(${legislationTypeCodes ?? []}::text[])
         )
         AND (l.effective_date IS NULL OR l.effective_date <= ${today}::date)
         AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
+        -- When excludeRegulations is true, exclude nodes that have a REG ancestor
+        AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
       ORDER BY d.sort_path;
       `;
     try {
@@ -224,6 +234,8 @@ export class LegislationService {
   /**
    * Finds legislation by type code, citation, parent GUID, and optionally section title
    * Definitions have null citation, section_title is used as additional key
+   * For root nodes legislationSourceGuid is used to distinguish between
+   * the same act imported for different agencies
    */
   private async _findByTypeAndCitation(
     legislationTypeCode: string,
@@ -231,6 +243,7 @@ export class LegislationService {
     parentLegislationGuid: string | null,
     sectionTitle: string | null = null,
     displayOrder: number | null = null,
+    legislationSourceGuid: string | null = null,
   ): Promise<LegislationRow | null> {
     const where: any = {
       legislation_type_code: legislationTypeCode,
@@ -248,11 +261,16 @@ export class LegislationService {
       where.display_order = displayOrder;
     }
 
+    if (parentLegislationGuid === null && legislationSourceGuid !== null) {
+      where.legislation_source_guid = legislationSourceGuid;
+    }
+
     return this.prisma.legislation.findFirst({ where });
   }
 
   /**
-   * Upserts legislation based on type code, citation, parent GUID, title, and displayOrder
+   * Upserts legislation based on type code, citation, parent GUID, title, displayOrder,
+   * and legislationSourceGuid
    */
   async upsert(input: CreateLegislationInput): Promise<LegislationRow> {
     const existing = await this._findByTypeAndCitation(
@@ -261,6 +279,7 @@ export class LegislationService {
       input.parentLegislationGuid ?? null,
       input.sectionTitle ?? null,
       input.displayOrder,
+      input.legislationSourceGuid ?? null,
     );
 
     if (existing) {

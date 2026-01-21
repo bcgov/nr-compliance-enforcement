@@ -12,6 +12,7 @@ import {
   useCreateLegislationSource,
   useUpdateLegislationSource,
   useDeleteLegislationSource,
+  useResetLegislationSource,
   LegislationSource,
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
@@ -22,6 +23,7 @@ interface EditingSource {
   shortDescription: string;
   longDescription: string;
   sourceUrl: string;
+  regulationsSourceUrl: string;
   agencyCode: string;
   activeInd: boolean;
   importedInd: boolean;
@@ -31,6 +33,7 @@ const emptySource: EditingSource = {
   shortDescription: "",
   longDescription: "",
   sourceUrl: "",
+  regulationsSourceUrl: "",
   agencyCode: "",
   activeInd: true,
   importedInd: false,
@@ -45,6 +48,7 @@ export const LegislationSourceManagement: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmGuid, setDeleteConfirmGuid] = useState<string | null>(null);
+  const [resetConfirmGuid, setResetConfirmGuid] = useState<string | null>(null);
   const [viewLogSource, setViewLogSource] = useState<LegislationSource | null>(null);
 
   const createMutation = useCreateLegislationSource({
@@ -83,6 +87,18 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
+  const resetMutation = useResetLegislationSource({
+    onSuccess: () => {
+      ToggleSuccess("Legislation source reset successfully");
+      setResetConfirmGuid(null);
+      refetch();
+    },
+    onError: (error: any) => {
+      console.error("Error resetting legislation source:", error);
+      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to reset legislation source");
+    },
+  });
+
   const filteredSources = useMemo(() => {
     if (!sources) return [];
     if (!searchQuery) return sources;
@@ -108,6 +124,7 @@ export const LegislationSourceManagement: FC = () => {
       shortDescription: source.shortDescription,
       longDescription: source.longDescription ?? "",
       sourceUrl: source.sourceUrl,
+      regulationsSourceUrl: source.regulationsSourceUrl ?? "",
       agencyCode: source.agencyCode,
       activeInd: source.activeInd,
       importedInd: source.importedInd,
@@ -134,6 +151,7 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -144,6 +162,7 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
       };
       createMutation.mutate({ input });
@@ -152,6 +171,10 @@ export const LegislationSourceManagement: FC = () => {
 
   const handleDelete = (guid: string) => {
     deleteMutation.mutate({ legislationSourceGuid: guid });
+  };
+
+  const handleReset = (guid: string) => {
+    resetMutation.mutate({ legislationSourceGuid: guid });
   };
 
   const getAgencyLabel = (code: string) => {
@@ -216,16 +239,35 @@ export const LegislationSourceManagement: FC = () => {
           {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
         </td>
         <td>{getAgencyLabel(source.agencyCode)}</td>
-        <td className="text-truncate">
-          <a
-            href={source.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="comp-cell-link"
-            title={source.sourceUrl}
-          >
-            {source.sourceUrl}
-          </a>
+        <td>
+          <div>
+            Act:
+            <br />
+            <a
+              href={source.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="comp-cell-link"
+              title={source.sourceUrl}
+            >
+              {source.sourceUrl}
+            </a>
+          </div>
+          {source.regulationsSourceUrl && (
+            <div className="pt-3">
+              Regulations:
+              <br />
+              <a
+                href={source.regulationsSourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="comp-cell-link"
+                title={source.regulationsSourceUrl}
+              >
+                {source.regulationsSourceUrl}
+              </a>
+            </div>
+          )}
         </td>
         <td style={{ textAlign: "center" }}>{getStatusBadge(source)}</td>
         <td>{formatDateTime(source.lastImportTimestamp ?? undefined)}</td>
@@ -255,6 +297,15 @@ export const LegislationSourceManagement: FC = () => {
                   <i className="bi bi-file-text" /> View Log
                 </Dropdown.Item>
               )}
+              {source.importedInd ||
+                (source.importStatus === "FAILED" && (
+                  <Dropdown.Item
+                    onClick={() => setResetConfirmGuid(source.legislationSourceGuid)}
+                    className="text-danger"
+                  >
+                    <i className="bi bi-arrow-counterclockwise" /> Reset Import
+                  </Dropdown.Item>
+                ))}
               <Dropdown.Item
                 onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
                 className="text-danger"
@@ -303,7 +354,7 @@ export const LegislationSourceManagement: FC = () => {
                 <th style={{ width: "50px" }}>#</th>
                 <th>Description</th>
                 <th style={{ width: "130px" }}>Agency</th>
-                <th>Source URL</th>
+                <th>Source URLs</th>
                 <th style={{ width: "100px", textAlign: "center" }}>Status</th>
                 <th style={{ width: "160px" }}>Last Import</th>
                 <th style={{ width: "90px", textAlign: "center" }}>Actions</th>
@@ -368,9 +419,24 @@ export const LegislationSourceManagement: FC = () => {
                   divid="source-url-div"
                   type="input"
                   inputClass="comp-form-control"
-                  placeholder="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/.../xml"
+                  placeholder="URL for the act XML document"
                   value={editingSource.sourceUrl}
                   onChange={(e: any) => setEditingSource({ ...editingSource, sourceUrl: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="comp-details-form-row">
+              <label htmlFor="regulations-url-input">Regulations URL</label>
+              <div className="comp-details-edit-input">
+                <CompInput
+                  id="regulations-url-input"
+                  divid="regulations-url-div"
+                  type="input"
+                  inputClass="comp-form-control"
+                  placeholder="Optional URL for the regulations folder XML document"
+                  value={editingSource.regulationsSourceUrl}
+                  onChange={(e: any) => setEditingSource({ ...editingSource, regulationsSourceUrl: e.target.value })}
                 />
               </div>
             </div>
@@ -446,10 +512,13 @@ export const LegislationSourceManagement: FC = () => {
         <Modal.Header closeButton>
           <Modal.Title>Confirm Delete</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this legislation source? This action cannot be undone.</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to delete this legislation source? This will also delete all legislation records that
+          were imported from this source. This action cannot be undone.
+        </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="secondary"
+            variant="outline-primary"
             onClick={() => setDeleteConfirmGuid(null)}
           >
             Cancel
@@ -460,6 +529,34 @@ export const LegislationSourceManagement: FC = () => {
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        show={!!resetConfirmGuid}
+        onHide={() => setResetConfirmGuid(null)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Reset Import</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to reset this legislation source? This will delete all legislation records that were
+          imported from this source and mark the source as inactive. This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-primary"
+            onClick={() => setResetConfirmGuid(null)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => resetConfirmGuid && handleReset(resetConfirmGuid)}
+            disabled={resetMutation.isPending}
+          >
+            {resetMutation.isPending ? "Resetting..." : "Reset Import"}
           </Button>
         </Modal.Footer>
       </Modal>
