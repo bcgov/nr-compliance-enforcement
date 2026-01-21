@@ -26,6 +26,21 @@ export class DiaryDateResolver {
     }
   }
 
+  @Query("diaryDatesByTask")
+  @Roles(coreRoles)
+  async findManyByTask(@Args("taskGuid") taskGuid: string) {
+    try {
+      return await this.diaryDateService.findManyByTaskGuid(taskGuid);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching diary dates", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
   @Mutation("saveDiaryDate")
   @Roles(coreRoles)
   async save(@Args("input") input: DiaryDateInput) {
@@ -47,6 +62,19 @@ export class DiaryDateResolver {
     } catch (error) {
       this.logger.error("Delete DiaryDate error:", error);
       throw new GraphQLError("Error deleting diary date", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
+  @Mutation("deleteDiaryDatesByTask")
+  @Roles(coreRoles)
+  async deleteByTask(@Args("taskGuid") taskGuid: string) {
+    try {
+      return await this.diaryDateService.deleteByTask(taskGuid);
+    } catch (error) {
+      this.logger.error("Delete DiaryDatesByTask error:", error);
+      throw new GraphQLError("Error deleting diary dates by task", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
     }

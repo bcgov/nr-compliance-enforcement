@@ -324,6 +324,7 @@ model task {
   create_utc_timestamp                                     DateTime         @default(now()) @db.Timestamp(6)
   update_user_id                                           String?          @db.VarChar(32)
   update_utc_timestamp                                     DateTime?        @db.Timestamp(6)
+  diary_date                                               diary_date[]
   investigation                                            investigation    @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   task_status_code_task_task_status_codeTotask_status_code task_status_code @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
   task_type_code_task_task_type_codeTotask_type_code       task_type_code   @relation("task_task_type_codeTotask_type_code", fields: [task_type_code], references: [task_type_code], onDelete: NoAction, onUpdate: NoAction)
@@ -409,7 +410,9 @@ model diary_date {
   create_utc_timestamp     DateTime      @default(now()) @db.Timestamp(6)
   update_user_id           String?       @db.VarChar(32)
   update_utc_timestamp     DateTime?     @db.Timestamp(6)
+  task_guid                String?       @db.Uuid
   investigation            investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_investigation")
+  task                     task?         @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_task")
 
   @@schema("investigation")
 }

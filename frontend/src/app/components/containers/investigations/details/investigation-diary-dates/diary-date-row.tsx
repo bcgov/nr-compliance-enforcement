@@ -4,14 +4,20 @@ import { DiaryDate } from "@/generated/graphql";
 import { formatDate, formatDateTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { useNavigate, useParams } from "react-router-dom";
+import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
   onEdit: (diaryDate: DiaryDate) => void;
   onDelete: (diaryDateGuid: string) => void;
+  taskNumber: number | null;
 }
 
-export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelete }) => {
+export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelete, taskNumber }) => {
+  const navigate = useNavigate();
+  const { investigationGuid } = useParams<InvestigationParams>();
+
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser
     ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
@@ -38,6 +44,17 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
             <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
+          {taskNumber && (
+            <button
+              className="badge comp-status-badge-conflict-history"
+              style={{ maxHeight: "20px", border: "none" }}
+              onClick={() => {
+                navigate(`/investigation/${investigationGuid}/tasks?section=task-item-${taskNumber}`);
+              }}
+            >
+              Task {taskNumber}
+            </button>
+          )}
         </div>
         <div className="text-muted small mt-2 mb-0">
           Added on {addedTimestamp} by {addedByName}

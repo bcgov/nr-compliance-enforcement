@@ -13,6 +13,10 @@ export const ToggleError = (message: string) => {
   toast.error(message);
 };
 
+export const ToggleWarning = (message: string) => {
+  toast.warning(message);
+};
+
 export const DismissToast = (toastId: Id) => {
   toast.dismiss(toastId);
 };
