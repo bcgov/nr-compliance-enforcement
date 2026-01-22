@@ -47,7 +47,17 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           <i className="bi bi-calendar" />
           <DatePicker
             selected={selectedDate ? new Date(selectedDate) : undefined}
-            onChange={handleDateChange}
+            onChange={(date) => {
+              if (date) {
+                handleDateChange(date);
+              }
+            }}
+            onBlur={(event) => {
+              const rawValue = event.target.value;
+              if (rawValue === "" && selectedDate) {
+                handleDateChange(null as any);
+              }
+            }}
             placeholderText="yyyy-mm-dd"
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={id}
@@ -71,7 +81,18 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             <DatePicker
               id={`${id}-timepicker`}
               selected={selectedDate ? new Date(selectedDate) : undefined}
-              onChange={handleDateChange}
+              onChange={(date) => {
+                if (date) {
+                  handleDateChange(date);
+                }
+              }}
+              onChangeRaw={(event) => {
+                const rawValue = event.target.value;
+                if (rawValue === "" && selectedDate) {
+                  selectedDate.setHours(0, 0, 0, 0);
+                  handleDateChange(selectedDate);
+                }
+              }}
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={1}
