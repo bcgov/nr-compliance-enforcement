@@ -16,8 +16,9 @@ export class LegislationResolver {
     @Args("agencyCode") agencyCode: string,
     @Args("legislationTypeCodes") legislationTypeCodes?: string[],
     @Args("ancestorGuid") ancestorGuid?: string,
+    @Args("excludeRegulations") excludeRegulations?: boolean,
   ) {
-    return this.legislationService.findMany(agencyCode, legislationTypeCodes, ancestorGuid);
+    return this.legislationService.findMany(agencyCode, legislationTypeCodes, ancestorGuid, excludeRegulations);
   }
 
   @Query("legislation")

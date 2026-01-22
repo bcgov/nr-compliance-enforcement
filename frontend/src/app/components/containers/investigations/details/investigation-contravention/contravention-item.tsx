@@ -8,6 +8,7 @@ import { Contravention, InvestigationParty } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
+import { LegislationText } from "@/app/components/common/legislation-text";
 
 interface ContraventionItemProps {
   contravention: Contravention;
@@ -48,7 +49,11 @@ export const ContraventionItem = ({
   const renderLegislation = () => {
     if (!legislationData) return "Loading...";
     const displayText = legislationData.alternateText ?? legislationData.legislationText;
-    return `${legislationData.fullCitation} : ${displayText}`;
+    return (
+      <>
+        {legislationData.fullCitation} : <LegislationText>{displayText}</LegislationText>
+      </>
+    );
   };
 
   const renderParty = (party: InvestigationParty) => {

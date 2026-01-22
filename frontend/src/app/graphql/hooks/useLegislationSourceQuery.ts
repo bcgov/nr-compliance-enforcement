@@ -9,6 +9,7 @@ export interface LegislationSource {
   shortDescription: string;
   longDescription: string | null;
   sourceUrl: string;
+  regulationsSourceUrl: string | null;
   agencyCode: string;
   activeInd: boolean;
   importedInd: boolean;
@@ -23,6 +24,7 @@ export interface CreateLegislationSourceInput {
   shortDescription: string;
   longDescription?: string;
   sourceUrl: string;
+  regulationsSourceUrl?: string;
   agencyCode: string;
 }
 
@@ -31,6 +33,7 @@ export interface UpdateLegislationSourceInput {
   shortDescription?: string;
   longDescription?: string;
   sourceUrl?: string;
+  regulationsSourceUrl?: string;
   agencyCode?: string;
   activeInd?: boolean;
   importedInd?: boolean;
@@ -43,6 +46,7 @@ const GET_LEGISLATION_SOURCES = gql`
       shortDescription
       longDescription
       sourceUrl
+      regulationsSourceUrl
       agencyCode
       activeInd
       importedInd
@@ -60,6 +64,7 @@ const GET_LEGISLATION_SOURCE = gql`
       shortDescription
       longDescription
       sourceUrl
+      regulationsSourceUrl
       agencyCode
       activeInd
       importedInd
@@ -77,6 +82,7 @@ const CREATE_LEGISLATION_SOURCE = gql`
       shortDescription
       longDescription
       sourceUrl
+      regulationsSourceUrl
       agencyCode
       activeInd
       importedInd
@@ -91,6 +97,7 @@ const UPDATE_LEGISLATION_SOURCE = gql`
       shortDescription
       longDescription
       sourceUrl
+      regulationsSourceUrl
       agencyCode
       activeInd
       importedInd
@@ -101,6 +108,12 @@ const UPDATE_LEGISLATION_SOURCE = gql`
 const DELETE_LEGISLATION_SOURCE = gql`
   mutation DeleteLegislationSource($legislationSourceGuid: String!) {
     deleteLegislationSource(legislationSourceGuid: $legislationSourceGuid)
+  }
+`;
+
+const RESET_LEGISLATION_SOURCE = gql`
+  mutation ResetLegislationSource($legislationSourceGuid: String!) {
+    resetLegislationSource(legislationSourceGuid: $legislationSourceGuid)
   }
 `;
 
@@ -157,6 +170,19 @@ export const useDeleteLegislationSource = (options?: {
 }) => {
   return useGraphQLMutation<{ deleteLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
     DELETE_LEGISLATION_SOURCE,
+    {
+      invalidateQueries: ["legislationSources"],
+      ...options,
+    },
+  );
+};
+
+export const useResetLegislationSource = (options?: {
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
+}) => {
+  return useGraphQLMutation<{ resetLegislationSource: boolean }, Error, { legislationSourceGuid: string }>(
+    RESET_LEGISLATION_SOURCE,
     {
       invalidateQueries: ["legislationSources"],
       ...options,

@@ -72,6 +72,7 @@ export const AvailableCodeTables = [
   "task-status-type",
   "task-type",
   "task-category-type",
+  "legislation-type",
 ];
 
 export const AvailableAgencies = ["cos"];

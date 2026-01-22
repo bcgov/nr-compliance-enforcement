@@ -1,4 +1,5 @@
 import { investigation } from "./investigation";
+import { task } from "./task";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class diary_date {
@@ -41,6 +42,12 @@ export class diary_date {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  task_guid?: string;
+
   @ApiProperty({ type: () => investigation })
   investigation: investigation;
+
+  @ApiPropertyOptional({ type: () => task })
+  task?: task;
 }
