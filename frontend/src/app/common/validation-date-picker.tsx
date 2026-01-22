@@ -6,7 +6,7 @@ interface ValidationDatePickerProps {
   selectedDate: Date | undefined | null;
   maxDate: Date;
   minDate?: Date;
-  onChange: (date: Date) => void;
+  onChange: (date: Date | null) => void;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -30,7 +30,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showTimePicker = false,
   vertical = false,
 }) => {
-  const handleDateChange = (date: Date) => {
+  const handleDateChange = (date: Date | null) => {
     onChange(date);
   };
 
@@ -47,7 +47,17 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
           <i className="bi bi-calendar" />
           <DatePicker
             selected={selectedDate ? new Date(selectedDate) : undefined}
-            onChange={handleDateChange}
+            onChange={(date) => {
+              if (date) {
+                handleDateChange(date);
+              }
+            }}
+            onBlur={(event) => {
+              const rawValue = event.target.value;
+              if (rawValue === "" && selectedDate) {
+                handleDateChange(null);
+              }
+            }}
             placeholderText="yyyy-mm-dd"
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={id}
