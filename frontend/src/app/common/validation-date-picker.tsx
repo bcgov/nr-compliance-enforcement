@@ -55,7 +55,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             onBlur={(event) => {
               const rawValue = event.target.value;
               if (rawValue === "" && selectedDate) {
-                handleDateChange(null);
+                handleDateChange(null as any);
               }
             }}
             placeholderText="yyyy-mm-dd"
