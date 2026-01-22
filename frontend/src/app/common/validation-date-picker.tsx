@@ -6,7 +6,7 @@ interface ValidationDatePickerProps {
   selectedDate: Date | undefined | null;
   maxDate: Date;
   minDate?: Date;
-  onChange: (date: Date | null) => void;
+  onChange: (date: Date) => void;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -30,7 +30,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showTimePicker = false,
   vertical = false,
 }) => {
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Date) => {
     onChange(date);
   };
 
