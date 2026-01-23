@@ -3,10 +3,7 @@ import { gql } from "graphql-request";
 import { useParams } from "react-router-dom";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Button, Accordion } from "react-bootstrap";
-import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
-import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { ReportRenderer } from "./report-renderer";
+import { ActivityNote, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
 import Option from "@apptypes/app/option";
@@ -17,24 +14,8 @@ import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid, profileDisplayName } from "@/app/store/reducers/app";
-import { useEditor } from "@tiptap/react";
-import { StarterKit } from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-
-const SAVE_REPORT_MUTATION = gql`
-  mutation SaveActivityNote($input: ActivityNoteInput!) {
-    saveActivityNote(input: $input) {
-      activityNoteGuid
-      activityNoteCode
-      investigationGuid
-      contentJson
-      actionedTimestamp
-      reportedTimestamp
-      actionedAppUserGuidRef
-      reportedAppUserGuidRef
-    }
-  }
-`;
+import { useActivityNoteForm } from "@/app/components/containers/investigations/hooks/use-activity-note";
+import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -65,22 +46,23 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
   // States
   const [activeKey, setActiveKey] = useState<string>("0");
-  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(defaultOfficer);
-  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>();
-  const [plainText, setPlainText] = useState<string>("");
 
-  // Tiptap editor setup
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: "New entry...",
-        emptyEditorClass: "is-editor-empty",
-      }),
-    ],
-    onUpdate: ({ editor }) => {
-      setPlainText(editor.getText());
-    },
+  // Hooks
+  const {
+    editor,
+    selectedOfficer,
+    setSelectedOfficer,
+    selectedActionedDateTime,
+    setSelectedActionedDateTime,
+    handleSave,
+    reset,
+    isValid,
+    isSaving,
+  } = useActivityNoteForm({
+    investigationGuid,
+    defaultOfficer,
+    reportedUserGuid,
+    onSaveSuccess: () => refetch(), // Refetch reports after save
   });
 
   // GraphQL queries and mutations
@@ -89,45 +71,6 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     variables: { investigationGuid: investigationGuid, activityNoteCode: "CONTREP" },
     enabled: !!investigationGuid,
   });
-
-  const saveReportMutation = useGraphQLMutation(SAVE_REPORT_MUTATION, {
-    onSuccess: (data: any) => {
-      ToggleSuccess("Report saved successfully");
-      reset();
-    },
-    onError: (error: any) => {
-      console.error("Error saving report:", error);
-      ToggleError("Failed to save report");
-    },
-  });
-
-  const reset = () => {
-    editor?.commands.clearContent();
-    setSelectedActionedDateTime(undefined);
-    setSelectedOfficer(defaultOfficer);
-  };
-
-  const handleSave = async () => {
-    if (!editor) return;
-
-    const json = JSON.stringify(editor.getJSON());
-    const plainText = editor.getText();
-
-    const input: ActivityNoteInput = {
-      investigationGuid: investigationGuid,
-      activityNoteGuid: null,
-      activityNoteCode: "CONTREP",
-      contentJson: json,
-      contentText: plainText,
-      actionedTimestamp: selectedActionedDateTime || new Date(),
-      reportedTimestamp: new Date(),
-      actionedAppUserGuidRef: selectedOfficer ? selectedOfficer.value : "",
-      reportedAppUserGuidRef: reportedUserGuid || "",
-    };
-
-    await saveReportMutation.mutateAsync({ input });
-    refetch();
-  };
 
   const reports = data?.getActivityNotes ?? [];
 
@@ -185,9 +128,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
             id="outcome-save-button"
             title="Save Outcome"
             onClick={handleSave}
-            disabled={!plainText || !selectedActionedDateTime || !selectedOfficer}
+            disabled={!isValid || isSaving}
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </Button>
         </div>
         <div className="space-y-4">
