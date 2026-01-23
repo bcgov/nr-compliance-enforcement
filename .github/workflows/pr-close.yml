@@ -63,7 +63,7 @@ jobs:
 
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh tag base ${{ github.event.number }}
+          ./.github/scripts/gitops.sh tag base ${{ github.event.number }} ${{ github.event.pull_request.head.sha }}
 
       - name: Disable dev environment
         run: |

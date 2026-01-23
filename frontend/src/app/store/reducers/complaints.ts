@@ -47,6 +47,8 @@ import { Collaborator } from "@apptypes/app/complaints/collaborator";
 import { generateExportComplaintInputParams } from "@/app/store/reducers/documents-thunks";
 import { CodeTableState } from "@/app/types/state/code-table-state";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
+import { getAttachments } from "@/app/store/reducers/attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -661,17 +663,19 @@ export const createComplaintReferral =
   ): AppThunk =>
   async (dispatch, getState) => {
     try {
-      const { attachments } = getState();
+      const attachments = await dispatch(
+        getAttachments(complaint_identifier, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT),
+      );
       const agencyTable = getState()?.codeTables?.agency as CodeTableState["agency"] | undefined;
       const agency = agencyTable?.find((item) => item.agency === referred_to_agency_code_ref);
       const externalAgencyInd = agency?.externalAgencyInd;
 
       const documentExportParams = generateExportComplaintInputParams(
         complaint_identifier,
-        attachments,
         complaint_type,
         date_logged,
         referred_by_agency_code_ref,
+        attachments,
       );
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint-referral`, {
         complaint_identifier,

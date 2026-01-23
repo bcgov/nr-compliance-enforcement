@@ -1,135 +1,122 @@
-import { createSlice, createSelector } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "@store/store";
+import { AppThunk } from "@store/store";
 import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
-import { AttachmentsState } from "@apptypes/state/attachments-state";
 import config from "@/config";
 import {
   getThumbnailFile,
-  injectComplaintIdentifierToFilename,
-  injectComplaintIdentifierToThumbFilename,
+  injectIdentifierToFilename,
+  injectIdentifierToThumbFilename,
   isImage,
 } from "@common/methods";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
-import { getComplaintById } from "./complaints";
+import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
 
-const initialState: AttachmentsState = {
-  complaintsAttachments: [],
-  outcomeAttachments: [],
+interface SaveAttachmentParams {
+  dispatch: any;
+  attachment: File;
+  identifier: string;
+  subIdentifier: string | undefined;
+  attachmentType: AttachmentEnum;
+  isSynchronous: boolean;
+  historicalAttachments: Array<COMSObject>;
+  isComplaintAttachment: boolean;
+  attachmentConfig: AttachmentTypeConfig;
+}
+
+interface DeleteAttachmentParams {
+  dispatch: any;
+  attachment: COMSObject;
+  identifier: string | null;
+  isComplaintAttachment: boolean;
+}
+
+interface BuildHeaderParams {
+  attachmentConfig: AttachmentTypeConfig;
+  identifier: string;
+  subIdentifier: string | undefined;
+  attachmentType: AttachmentEnum;
+  contentType: string;
+  isThumb: boolean;
+  attachmentName?: string;
+  attachmentId?: string;
+}
+
+const buildAttachmentHeader = ({
+  attachmentConfig,
+  identifier,
+  subIdentifier,
+  attachmentType,
+  contentType,
+  isThumb,
+  attachmentName,
+  attachmentId,
+}: BuildHeaderParams): Record<string, any> => {
+  // Common fields
+  const header: Record<string, any> = {
+    [attachmentConfig.headerKey]: identifier,
+    "x-amz-meta-is-thumb": isThumb ? "Y" : "N",
+    "x-amz-meta-attachment-type": attachmentType,
+    "Content-Disposition": `attachment; filename="${attachmentName}"`,
+  };
+
+  if (attachmentConfig.subHeaderKey) {
+    //if we're creating something like a task where we have a parent but not sub identifier yet we need a dummy value to filter everything out
+    header[attachmentConfig.subHeaderKey] = subIdentifier ?? "00000000-0000-0000-0000-000000000000";
+  }
+
+  if (contentType) {
+    header["Content-Type"] = isThumb ? "image/jpeg" : contentType;
+  }
+
+  if (isThumb && attachmentId) {
+    header["x-amz-meta-thumb-for"] = attachmentId;
+  }
+
+  return header;
 };
 
-/**
- * Attachments for each complaint
- */
-export const attachmentsSlice = createSlice({
-  name: "attachments",
-  initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
-  reducers: {
-    // used when retrieving attachments from objectstore
-    setAttachments: (state, action) => {
-      const {
-        payload: { attachments },
-      } = action;
-      return { ...state, complaintsAttachments: attachments ?? [] };
-    },
-
-    // used when removing an attachment from a complaint
-    removeAttachment: (state, action) => {
-      return {
-        ...state,
-        complaintsAttachments: state.complaintsAttachments.filter((attachment) => attachment.id !== action.payload),
-        outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
-      };
-    },
-
-    // used when adding an attachment to a complaint
-    addAttachment: (state, action) => {
-      const { name, type, size, id } = action.payload; // Extract relevant info
-      const serializedFile = { name, type, size, id };
-
-      return {
-        ...state,
-        complaintsAttachments: [...state.complaintsAttachments, serializedFile],
-      };
-    },
-
-    // used when retrieving attachments from objectstore
-    setOutcomeAttachments: (state, action) => {
-      const {
-        payload: { attachments },
-      } = action;
-      return { ...state, outcomeAttachments: attachments ?? [] };
-    },
-
-    // used when removing an attachment from a complaint
-    removeOutcomeAttachment: (state, action) => {
-      return {
-        ...state,
-        outcomeAttachments: state.outcomeAttachments.filter((attachment) => attachment.id !== action.payload),
-      };
-    },
-
-    // used when adding an attachment to a complaint
-    addOutcomeAttachment: (state, action) => {
-      const { name, type, size, id } = action.payload; // Extract relevant info
-      const serializedFile = { name, type, size, id };
-
-      return {
-        ...state,
-        outcomeAttachments: [...state.outcomeAttachments, serializedFile],
-      };
-    },
-
-    clearAttachments: (state) => {
-      return {
-        ...state,
-        complaintsAttachments: [],
-        outcomeAttachments: [],
-      };
-    },
-  },
-
-  // The `extraReducers` field lets the slice handle actions defined elsewhere,
-  // including actions generated by createAsyncThunk or in other slices.
-  extraReducers: (builder) => {},
-});
-
-// export the actions/reducers
-export const {
-  setAttachments,
-  removeAttachment,
-  addAttachment,
-  setOutcomeAttachments,
-  removeOutcomeAttachment,
-  addOutcomeAttachment,
-  clearAttachments,
-} = attachmentsSlice.actions;
-
-// Get list of the attachments and update store
+// Get list of the attachments
 export const getAttachments =
-  (complaint_identifier: string, attachmentType: AttachmentEnum): AppThunk =>
+  (
+    identifier: string,
+    subIdentifier: string | undefined,
+    attachmentType: AttachmentEnum,
+  ): AppThunk<Promise<COMSObject[]>> =>
   async (dispatch) => {
+    const attachmentList: COMSObject[] = [];
     try {
-      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}&latest=true`);
-
-      let response = await get<Array<COMSObject>>(dispatch, parameters, {
-        "x-amz-meta-complaint-id": complaint_identifier,
-        "x-amz-meta-is-thumb": "N",
-        "x-amz-meta-attachment-type": attachmentType,
+      const attachmentConfig = getAttachmentConfig(attachmentType);
+      const bucketId =
+        attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+      const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}&latest=true`);
+      const header = buildAttachmentHeader({
+        attachmentConfig,
+        identifier,
+        subIdentifier,
+        attachmentType,
+        contentType: "",
+        isThumb: false,
       });
+
+      let response = await get<Array<COMSObject>>(dispatch, parameters, header);
 
       if (response && from(response).any()) {
         for (const attachment of response) {
           if (isImage(attachment.name)) {
-            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, {
-              "x-amz-meta-complaint-id": complaint_identifier,
-              "x-amz-meta-is-thumb": "Y",
-              "x-amz-meta-thumb-for": attachment?.id,
+            const thumbHeader = buildAttachmentHeader({
+              attachmentConfig,
+              identifier,
+              subIdentifier,
+              attachmentType,
+              contentType: "",
+              isThumb: true,
+              attachmentName: attachment?.name,
+              attachmentId: attachment?.id,
             });
+            const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
 
             const thumbId = thumbArrayResponse[0]?.id;
 
@@ -143,145 +130,203 @@ export const getAttachments =
           }
         }
 
-        const attachmentList: Array<COMSObject> = response ?? [];
-
-        switch (attachmentType) {
-          case AttachmentEnum.COMPLAINT_ATTACHMENT:
-            dispatch(setAttachments({ attachments: attachmentList }));
-            break;
-          case AttachmentEnum.OUTCOME_ATTACHMENT:
-            dispatch(setOutcomeAttachments({ attachments: attachmentList }));
-            break;
-        }
+        attachmentList.push(...response);
+        return attachmentList;
       }
+      return attachmentList;
     } catch (error) {
+      console.error(error);
       ToggleError(`Error retrieving attachments`);
+      return [];
     }
   };
 
-// delete attachments from objectstore
+const deleteSingleAttachment = async ({
+  dispatch,
+  attachment,
+  identifier,
+  isComplaintAttachment,
+}: DeleteAttachmentParams) => {
+  const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
+
+  const response = await deleteMethod<string>(dispatch, parameters);
+
+  if (isImage(attachment.name)) {
+    const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
+    await deleteMethod<string>(dispatch, thumbParameters);
+  }
+
+  if (response) {
+    if (isComplaintAttachment) {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
+      await patch<boolean>(dispatch, parameters);
+    }
+    ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+  }
+};
+
 export const deleteAttachments =
-  (
-    attachments: COMSObject[],
-    complaint_identifier: string,
-    complaintType: string,
-    attachmentType: AttachmentEnum,
-  ): AppThunk =>
+  (attachments: COMSObject[], identifier: string | null, attachmentType: AttachmentEnum): AppThunk =>
   async (dispatch) => {
+    const isComplaintAttachment =
+      attachmentType === AttachmentEnum.COMPLAINT_ATTACHMENT || attachmentType === AttachmentEnum.OUTCOME_ATTACHMENT;
+
     if (attachments) {
       for (const attachment of attachments) {
         try {
-          const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
-
-          await deleteMethod<string>(dispatch, parameters);
-          const response = dispatch(removeAttachment(attachment.id)); // delete from store
-          if (isImage(attachment.name)) {
-            const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
-
-            await deleteMethod<string>(dispatch, thumbParameters);
-          }
-
-          if (response) {
-            const parameters = generateApiParameters(
-              `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
-            );
-            await patch<boolean>(dispatch, parameters);
-            ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
-          }
+          await deleteSingleAttachment({
+            dispatch,
+            attachment,
+            identifier,
+            isComplaintAttachment,
+          });
         } catch (error) {
+          console.error(error);
           ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
         }
       }
-      // refresh store
-      dispatch(getComplaintById(complaint_identifier, complaintType));
-      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
 
-// save new attachment(s) to object store
+const saveSingleAttachment = async ({
+  dispatch,
+  attachment,
+  identifier,
+  subIdentifier,
+  attachmentType,
+  isSynchronous,
+  historicalAttachments,
+  isComplaintAttachment,
+  attachmentConfig,
+}: SaveAttachmentParams) => {
+  const attachmentIdentifier = subIdentifier ?? identifier;
+  const attachmentName = encodeURIComponent(
+    injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType),
+  );
+
+  const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
+
+  const header = buildAttachmentHeader({
+    attachmentConfig,
+    identifier,
+    subIdentifier,
+    attachmentType,
+    contentType: attachment.type,
+    isThumb: false,
+    attachmentName,
+  });
+
+  const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+
+  const parameters = existingAttachment
+    ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
+    : generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
+
+  const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
+
+  if (isImage(attachment.name)) {
+    const historicalThumbHeader = buildAttachmentHeader({
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      contentType: attachment.type,
+      isThumb: true,
+      attachmentName: attachment.name,
+    });
+
+    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
+    let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
+
+    const thumbName = encodeURIComponent(
+      injectIdentifierToThumbFilename(attachment.name, attachmentIdentifier, attachmentType),
+    );
+
+    const existingThumb = historicalThumbs.find((item) => item.name === thumbName);
+
+    const thumbHeader = buildAttachmentHeader({
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      contentType: attachment.type,
+      isThumb: true,
+      attachmentName: thumbName,
+      attachmentId: response.id,
+    });
+
+    const thumbnailFile = await getThumbnailFile(attachment).catch((error) => {
+      console.error("Error occurred while getting thumbnail file:", error);
+    });
+
+    if (thumbnailFile) {
+      const thumbParameters = existingThumb
+        ? generateApiParameters(`${config.COMS_URL}/object/${existingThumb.id}`)
+        : generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
+
+      await putFile<COMSObject>(dispatch, thumbParameters, thumbHeader, thumbnailFile, isSynchronous);
+    }
+  }
+
+  if (response) {
+    if (isComplaintAttachment) {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
+      await patch<boolean>(dispatch, parameters, false);
+    }
+    ToggleSuccess(`Attachment "${attachment.name}" saved`);
+  }
+};
+
 export const saveAttachments =
   (
     attachments: File[],
-    complaint_identifier: string,
-    complaintType: string,
+    identifier: string,
+    subIdentifier: string | undefined,
     attachmentType: AttachmentEnum,
-  ): AppThunk =>
+    isSynchronous: boolean,
+  ): AppThunk<Promise<void>> =>
   async (dispatch) => {
     if (!attachments) {
       return;
     }
 
-    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
+    const attachmentConfig = getAttachmentConfig(attachmentType);
+    const isComplaintAttachment = attachmentConfig.shouldUpdateComplaintDate ?? false;
 
-    let historicalComplaintAttachments = await get<Array<COMSObject>>(dispatch, params, {
-      "x-amz-meta-complaint-id": complaint_identifier,
-      "x-amz-meta-is-thumb": "N",
-      "x-amz-meta-attachment-type": attachmentType,
+    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
+
+    // Build header with both primary and sub header keys if applicable
+    const historicalHeader = buildAttachmentHeader({
+      attachmentConfig,
+      identifier,
+      subIdentifier,
+      attachmentType,
+      contentType: "",
+      isThumb: false,
     });
 
+    let historicalAttachments = await get<Array<COMSObject>>(dispatch, params, historicalHeader, isSynchronous);
+
     for (const attachment of attachments) {
-      const attachmentName = encodeURIComponent(
-        injectComplaintIdentifierToFilename(attachment.name, complaint_identifier, attachmentType),
-      );
-      const existingAttachment = historicalComplaintAttachments.find((item) => item.name === attachmentName);
-      const header = {
-        "x-amz-meta-complaint-id": complaint_identifier,
-        "x-amz-meta-is-thumb": "N",
-        "x-amz-meta-attachment-type": attachmentType,
-        "Content-Disposition": `attachment; filename="${attachmentName}"`,
-        "Content-Type": attachment?.type,
-      };
-
       try {
-        const parameters = existingAttachment
-          ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
-          : generateApiParameters(`${config.COMS_URL}/object?bucketId=${config.COMS_BUCKET}`);
-        const response = await putFile<COMSObject>(dispatch, parameters, header, attachment);
-        switch (attachmentType) {
-          case AttachmentEnum.COMPLAINT_ATTACHMENT:
-            dispatch(addAttachment(response)); // dispatch with serializable payload
-            break;
-          case AttachmentEnum.OUTCOME_ATTACHMENT:
-            dispatch(addOutcomeAttachment(response)); // dispatch with serializable payload
-        }
-
-        if (isImage(attachment.name)) {
-          const thumbHeader = {
-            "x-amz-meta-complaint-id": complaint_identifier,
-            "x-amz-meta-is-thumb": "Y",
-            "x-amz-meta-thumb-for": response.id,
-            "Content-Disposition": `attachment; filename="${encodeURIComponent(
-              injectComplaintIdentifierToThumbFilename(attachment.name, complaint_identifier, attachmentType),
-            )}"`,
-            "Content-Type": "image/jpeg",
-          };
-
-          const thumbnailFile = await getThumbnailFile(attachment).catch((error) => {
-            //we are just going to ignore this and move on
-            console.error("Error occurred while getting thumbnail file:", error);
-          });
-
-          if (thumbnailFile) {
-            await putFile<COMSObject>(dispatch, parameters, thumbHeader, thumbnailFile);
-          }
-        }
-
-        if (response) {
-          const parameters = generateApiParameters(
-            `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaint_identifier}`,
-          );
-          await patch<boolean>(dispatch, parameters);
-          ToggleSuccess(`Attachment "${attachment.name}" saved`);
-        }
+        await saveSingleAttachment({
+          dispatch,
+          attachment,
+          identifier,
+          subIdentifier,
+          attachmentType,
+          isSynchronous,
+          historicalAttachments,
+          isComplaintAttachment,
+          attachmentConfig,
+        });
       } catch (error) {
         handleError(attachment, error);
       }
-      // refresh store
-      dispatch(getComplaintById(complaint_identifier, complaintType));
-      dispatch(getAttachments(complaint_identifier, attachmentType));
     }
   };
-
 const handleError = (attachment: File, error: any) => {
   if (axios.isAxiosError(error) && error.response?.status === 409) {
     ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);
@@ -289,31 +334,3 @@ const handleError = (attachment: File, error: any) => {
     ToggleError(`Attachment "${attachment.name}" could not be saved.`);
   }
 };
-
-//-- selectors
-export const selectAttachments = (attachmentType: AttachmentEnum) =>
-  createSelector(
-    [
-      (state: RootState) => state.attachments.complaintsAttachments,
-      (state: RootState) => state.attachments.outcomeAttachments,
-    ],
-    (complaintsAttachments, outcomeAttachments): COMSObject[] => {
-      switch (attachmentType) {
-        case AttachmentEnum.COMPLAINT_ATTACHMENT:
-          return complaintsAttachments ?? [];
-        case AttachmentEnum.OUTCOME_ATTACHMENT:
-          return outcomeAttachments ?? [];
-      }
-    },
-  );
-
-export const selectOutcomeAttachments =
-  () =>
-  (state: RootState): COMSObject[] => {
-    const { attachments: attachmentsRoot } = state;
-    const { outcomeAttachments } = attachmentsRoot;
-
-    return outcomeAttachments ?? [];
-  };
-
-export default attachmentsSlice.reducer;

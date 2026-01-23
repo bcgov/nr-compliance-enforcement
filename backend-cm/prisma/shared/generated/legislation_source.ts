@@ -45,6 +45,9 @@ export class legislation_source {
   @ApiPropertyOptional({ type: String })
   last_import_log?: string;
 
+  @ApiPropertyOptional({ type: String })
+  regulations_source_url?: string;
+
   @ApiProperty({ isArray: true, type: () => legislation })
   legislation: legislation[];
 
