@@ -1,8 +1,9 @@
 scalar Point
 
-type ContinuationReport {
-  continuationReportGuid: String
+type ActivityNote {
+  activityNoteGuid: String
   investigationGuid: String
+  activityNoteCode: String
   contentJson: String
   actionedTimestamp: DateTime
   reportedTimestamp: DateTime
@@ -10,9 +11,10 @@ type ContinuationReport {
   reportedAppUserGuidRef: String
 }
 
-input ContinuationReportInput {
+input ActivityNoteInput {
   investigationGuid: String
-  continuationReportGuid: String
+  activityNoteGuid: String
+  activityNoteCode: String
   contentJson: String
   contentText: String
   actionedTimestamp: DateTime

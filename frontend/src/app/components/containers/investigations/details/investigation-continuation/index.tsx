@@ -1,33 +1,31 @@
 import { FC, useState } from "react";
 import { gql } from "graphql-request";
 import { useParams } from "react-router-dom";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Button, Accordion } from "react-bootstrap";
-import { ContinuationReport, ContinuationReportInput, Investigation } from "@/generated/graphql";
+import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ReportRenderer } from "./report-renderer";
-import { MenuBarEditor } from "./menu-bar-editor";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
 import Option from "@apptypes/app/option";
-import { CompSelect } from "@/app/components/common/comp-select";
+import "@assets/sass/investigation-continuation.scss";
+import { ActivityNoteEditor } from "@/app/components/common/activity-note";
 import { useSelector } from "react-redux";
-import { AppUser } from "@apptypes/app/app_user/app_user";
 import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, profileDisplayName } from "@store/reducers/app";
-import "@assets/sass/investigation-continuation.scss";
-import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { appUserGuid, profileDisplayName } from "@/app/store/reducers/app";
+import { useEditor } from "@tiptap/react";
+import { StarterKit } from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 
 const SAVE_REPORT_MUTATION = gql`
-  mutation SaveContinuationReport($input: ContinuationReportInput!) {
-    saveContinuationReport(input: $input) {
-      continuationReportGuid
+  mutation SaveActivityNote($input: ActivityNoteInput!) {
+    saveActivityNote(input: $input) {
+      activityNoteGuid
+      activityNoteCode
       investigationGuid
       contentJson
       actionedTimestamp
@@ -39,23 +37,10 @@ const SAVE_REPORT_MUTATION = gql`
 `;
 
 const GET_REPORTS = gql`
-  query GetContinuationReports($investigationGuid: String!) {
-    getContinuationReports(investigationGuid: $investigationGuid) {
-      continuationReportGuid
-      investigationGuid
-      contentJson
-      actionedTimestamp
-      reportedTimestamp
-      actionedAppUserGuidRef
-      reportedAppUserGuidRef
-    }
-  }
-`;
-
-const SEARCH = gql`
-  query Search($q: String!) {
-    search(q: $q) {
-      continuationReportGuid
+  query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
+    getActivityNotes(investigationGuid: $investigationGuid, activityNoteCode: $activityNoteCode) {
+      activityNoteGuid
+      activityNoteCode
       investigationGuid
       contentJson
       actionedTimestamp
@@ -78,10 +63,10 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const reportedUserName = useAppSelector(profileDisplayName);
   const defaultOfficer: Option = { value: reportedUserGuid, label: reportedUserName };
 
-  //States
+  // States
   const [activeKey, setActiveKey] = useState<string>("0");
-  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date>();
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(defaultOfficer);
+  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>();
   const [plainText, setPlainText] = useState<string>("");
 
   // Tiptap editor setup
@@ -101,7 +86,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   // GraphQL queries and mutations
   const { data, refetch } = useGraphQLQuery(GET_REPORTS, {
     queryKey: ["reports", investigationGuid],
-    variables: { investigationGuid: investigationGuid },
+    variables: { investigationGuid: investigationGuid, activityNoteCode: "CONTREP" },
     enabled: !!investigationGuid,
   });
 
@@ -116,18 +101,6 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     },
   });
 
-  const assignableOfficers: Option[] =
-    officersInAgencyList && officersInAgencyList.length > 0
-      ? officersInAgencyList.map((officer: AppUser) => ({
-          value: officer.app_user_guid,
-          label: `${officer.last_name}, ${officer.first_name}`,
-        }))
-      : [];
-
-  const handleAssignedOfficerChange = (selected: Option | null) => {
-    setSelectedOfficer(selected);
-  };
-
   const reset = () => {
     editor?.commands.clearContent();
     setSelectedActionedDateTime(undefined);
@@ -136,10 +109,14 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
   const handleSave = async () => {
     if (!editor) return;
+
     const json = JSON.stringify(editor.getJSON());
-    const input: ContinuationReportInput = {
+    const plainText = editor.getText();
+
+    const input: ActivityNoteInput = {
       investigationGuid: investigationGuid,
-      continuationReportGuid: null,
+      activityNoteGuid: null,
+      activityNoteCode: "CONTREP",
       contentJson: json,
       contentText: plainText,
       actionedTimestamp: selectedActionedDateTime || new Date(),
@@ -147,11 +124,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       actionedAppUserGuidRef: selectedOfficer ? selectedOfficer.value : "",
       reportedAppUserGuidRef: reportedUserGuid || "",
     };
+
     await saveReportMutation.mutateAsync({ input });
     refetch();
   };
 
-  const reports = data?.getContinuationReports ?? [];
+  const reports = data?.getActivityNotes ?? [];
 
   let groups: any;
   if (reports) {
@@ -164,10 +142,6 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
     groups = Object.values(grouped).sort((a: any, b: any) => b.date - a.date);
   }
-
-  const handleActionedDateTimeChange = (date: Date) => {
-    setSelectedActionedDateTime(date);
-  };
 
   return (
     <div className="comp-complaint-details">
@@ -189,84 +163,33 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4 border rounded p-3 mb-5">
-          <MenuBarEditor editor={editor} />
-          <div className="">
-            <EditorContent
-              editor={editor}
-              className="tiptap-editor"
-            />
-          </div>
-
-          {/* Date actioned */}
-          <div className="mt-3 comp-details-form-row">
-            <div className="col-2">
-              Date/time actioned<span className="required-ind">*</span>
-            </div>
-            <div className="comp-details-edit-input">
-              <ValidationDatePicker
-                id="investigation-continuation-report-date-picker"
-                selectedDate={selectedActionedDateTime}
-                onChange={handleActionedDateTimeChange}
-                className="comp-details-edit-calendar-input"
-                classNamePrefix="comp-select"
-                errMsg={
-                  selectedActionedDateTime && selectedActionedDateTime > new Date()
-                    ? "Date and time cannot be in the future"
-                    : ""
-                }
-                maxDate={new Date()}
-                showTimePicker={true}
-              />
-            </div>
-          </div>
-
-          {/* Officer assigned */}
-          <div
-            className="comp-details-form-row"
-            id="officer-assigned-pair-id"
+        <ActivityNoteEditor
+          leadAgency={leadAgency}
+          editor={editor}
+          selectedActionedDateTime={selectedActionedDateTime}
+          setSelectedActionedDateTime={setSelectedActionedDateTime}
+          selectedOfficer={selectedOfficer}
+          setSelectedOfficer={setSelectedOfficer}
+        />
+        <div className="comp-details-form-buttons">
+          <Button
+            variant="outline-primary"
+            id="outcome-cancel-button"
+            title="Cancel Outcome"
+            onClick={reset}
           >
-            <div
-              className="col-2"
-              id="officer-assigned-select-label-id"
-            >
-              Officer<span className="required-ind">*</span>
-            </div>
-            <CompSelect
-              id="officer-assigned-select-id"
-              showInactive={false}
-              classNamePrefix="comp-select"
-              onChange={(e) => handleAssignedOfficerChange(e)}
-              className="comp-details-input w-100 max-w-370"
-              options={assignableOfficers}
-              placeholder="Select"
-              enableValidation={false}
-              value={selectedOfficer ?? null}
-              isClearable={true}
-            />
-          </div>
-
-          <div className="comp-details-form-buttons">
-            <Button
-              variant="outline-primary"
-              id="outcome-cancel-button"
-              title="Cancel Outcome"
-              onClick={reset}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              id="outcome-save-button"
-              title="Save Outcome"
-              onClick={handleSave}
-              disabled={!plainText || !selectedActionedDateTime || !selectedOfficer}
-            >
-              Save
-            </Button>
-          </div>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            id="outcome-save-button"
+            title="Save Outcome"
+            onClick={handleSave}
+            disabled={!plainText || !selectedActionedDateTime || !selectedOfficer}
+          >
+            Save
+          </Button>
         </div>
-
         <div className="space-y-4">
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {reports?.length === 0 ? (
@@ -307,7 +230,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                           {/* Reports in this group */}
                           <Accordion.Body className="p-0 overflow-hidden">
                             <div className="row">
-                              {group.reports.map((report: ContinuationReport, idx: number) => {
+                              {group.reports.map((report: ActivityNote, idx: number) => {
                                 const actionedOfficer =
                                   officersInAgencyList.find(
                                     (officer) => officer.app_user_guid === report.actionedAppUserGuidRef,
@@ -318,7 +241,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
 
                                 return (
                                   <div
-                                    key={report.continuationReportGuid}
+                                    key={report.activityNoteGuid}
                                     className={`mt-3 pl-0 ${idx === group.reports.length - 1 ? "mb-4" : "mb-2"}`}
                                   >
                                     <div className="comp-profile-card-info">
@@ -344,7 +267,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                     </div>
                                     <div className="prose prose-sm max-w-none">
                                       <ReportRenderer
-                                        key={report.continuationReportGuid}
+                                        key={report.activityNoteGuid}
                                         json={report.contentJson ? JSON.parse(report.contentJson) : {}}
                                       />
                                     </div>

@@ -1,76 +1,77 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable, Logger } from "@nestjs/common";
-import { ContinuationReport, ContinuationReportInput } from "./dto/continuation_report";
+import { ActivityNote, ActivityNoteInput } from "./dto/activity_note";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
-import { continuation_report } from "prisma/investigation/generated/continuation_report";
+import { activity_note } from "prisma/investigation/generated/activity_note";
 
 @Injectable()
-export class ContinuationReportService {
+export class ActivityNoteService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
   ) {}
 
-  private readonly logger = new Logger(ContinuationReportService.name);
+  private readonly logger = new Logger(ActivityNoteService.name);
 
-  async findOne(continuationReportGuid: string) {
-    const prismaContinuationReport = await this.prisma.continuation_report.findUnique({
+  async findOne(activityNoteGuid: string) {
+    const prismaActivityNote = await this.prisma.activity_note.findUnique({
       where: {
-        continuation_report_guid: continuationReportGuid,
+        activity_note_guid: activityNoteGuid,
         active_ind: true,
       },
     });
-    if (!prismaContinuationReport) {
-      throw new Error(`Continuation report with guid ${continuationReportGuid} not found`);
+    if (!prismaActivityNote) {
+      throw new Error(`Activity note with guid ${activityNoteGuid} not found`);
     }
 
     try {
-      return this.mapper.map<continuation_report, ContinuationReport>(
-        prismaContinuationReport as continuation_report,
-        "continuation_report",
-        "ContinuationReport",
+      return this.mapper.map<activity_note, ActivityNote>(
+        prismaActivityNote as activity_note,
+        "activity_note",
+        "ActivityNote",
       );
     } catch (error) {
-      this.logger.error("Error mapping ContinuationReport:", error);
+      this.logger.error("Error mapping ActivityNote:", error);
       throw error;
     }
   }
 
-  async findManyByInvestigationGuid(investigationGuid: string) {
-    const prismaContinuationReports = await this.prisma.continuation_report.findMany({
+  async findManyByInvestigationGuid(investigationGuid: string, activityNoteCode: string) {
+    const prismaActivityNotes = await this.prisma.activity_note.findMany({
       where: {
         investigation_guid: investigationGuid,
+        activity_note_code: activityNoteCode,
         active_ind: true,
       },
       orderBy: {
         actioned_utc_timestamp: "desc",
       },
     });
-    if (!prismaContinuationReports) {
-      throw new Error(`Continuation reports of investigation ${investigationGuid} not found`);
+    if (!prismaActivityNotes) {
+      throw new Error(`Activity notes of investigation ${investigationGuid} with code ${activityNoteCode} not found`);
     }
 
     try {
-      return this.mapper.mapArray<continuation_report, ContinuationReport>(
-        prismaContinuationReports as Array<continuation_report>,
-        "continuation_report",
-        "ContinuationReport",
+      return this.mapper.mapArray<activity_note, ActivityNote>(
+        prismaActivityNotes as Array<activity_note>,
+        "activity_note",
+        "ActivityNote",
       );
     } catch (error) {
-      this.logger.error("Error mapping ContinuationReport:", error);
+      this.logger.error("Error mapping ActivityNote:", error);
       throw error;
     }
   }
 
-  async save(input: ContinuationReportInput): Promise<ContinuationReport> {
+  async save(input: ActivityNoteInput): Promise<ActivityNote> {
     let result;
-    if (input.continuationReportGuid) {
-      //Update existing continuation report
-      result = await this.prisma.continuation_report.update({
-        where: { continuation_report_guid: input.continuationReportGuid },
+    if (input.activityNoteGuid) {
+      //Update existing activity note
+      result = await this.prisma.activity_note.update({
+        where: { activity_note_guid: input.activityNoteGuid },
         data: {
           investigation_guid: input.investigationGuid,
           content_json: JSON.parse(input.contentJson),
@@ -83,11 +84,12 @@ export class ContinuationReportService {
         },
       });
     } else {
-      // Create new continuation report
+      // Create new activity note
       try {
-        result = await this.prisma.continuation_report.create({
+        result = await this.prisma.activity_note.create({
           data: {
             investigation_guid: input.investigationGuid,
+            activity_note_code: input.activityNoteCode,
             content_json: JSON.parse(input.contentJson),
             content_text: input.contentText,
             actioned_utc_timestamp: input.actionedTimestamp,
@@ -102,20 +104,20 @@ export class ContinuationReportService {
           },
         });
       } catch (error) {
-        this.logger.error("Error creating Continuation Report:", error);
+        this.logger.error("Error creating Activity Note:", error);
         throw error;
       }
     }
 
     try {
-      const mappedResult = this.mapper.map<continuation_report, ContinuationReport>(
-        result as continuation_report,
-        "continuation_report",
-        "ContinuationReport",
+      const mappedResult = this.mapper.map<activity_note, ActivityNote>(
+        result as activity_note,
+        "activity_note",
+        "ActivityNote",
       );
       return mappedResult;
     } catch (error) {
-      this.logger.error("Error mapping Continuation Report:", error);
+      this.logger.error("Error mapping Activity Note:", error);
       throw error;
     }
   }

@@ -1,0 +1,9 @@
+type Query {
+  getActivityNote(activityNoteGuid: String!): ActivityNote
+  getActivityNotes(investigationGuid: String!, activityNoteCode: String): [ActivityNote!]
+  searchActivityNotes(searchString: String!): [ActivityNote!]
+}
+
+type Mutation {
+  saveActivityNote(input: ActivityNoteInput!): ActivityNote!
+}
