@@ -56,13 +56,17 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     setSelectedActionedDateTime,
     handleSave,
     reset,
-    isValid,
     isSaving,
+    contentError,
+    dateTimeError,
+    officerError,
   } = useActivityNoteForm({
     investigationGuid,
     defaultOfficer,
     reportedUserGuid,
-    onSaveSuccess: () => refetch(), // Refetch reports after save
+    onSaveSuccess: () => {
+      refetch();
+    }, // Refetch reports after save
   });
 
   // GraphQL queries and mutations
@@ -113,6 +117,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           setSelectedActionedDateTime={setSelectedActionedDateTime}
           selectedOfficer={selectedOfficer}
           setSelectedOfficer={setSelectedOfficer}
+          contentError={contentError}
+          dateTimeError={dateTimeError}
+          officerError={officerError}
         />
         <div className="comp-details-form-buttons">
           <Button
@@ -128,7 +135,6 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
             id="outcome-save-button"
             title="Save Outcome"
             onClick={handleSave}
-            disabled={!isValid || isSaving}
           >
             {isSaving ? "Saving..." : "Save"}
           </Button>

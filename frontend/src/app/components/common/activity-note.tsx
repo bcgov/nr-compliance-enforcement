@@ -16,6 +16,9 @@ interface ActivityNoteProps {
   setSelectedActionedDateTime: (date: Date | undefined) => void;
   selectedOfficer: Option | null;
   setSelectedOfficer: (officer: Option | null) => void;
+  contentError?: string;
+  dateTimeError?: string;
+  officerError?: string;
 }
 
 export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
@@ -25,6 +28,9 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   setSelectedActionedDateTime,
   selectedOfficer,
   setSelectedOfficer,
+  contentError = "",
+  dateTimeError = "",
+  officerError = "",
 }) => {
   // Redux State
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -37,22 +43,15 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
         }))
       : [];
 
-  const handleActionedDateTimeChange = (date: Date) => {
-    setSelectedActionedDateTime(date);
-  };
-
-  const handleAssignedOfficerChange = (selected: Option | null) => {
-    setSelectedOfficer(selected);
-  };
-
   return (
-    <div className="lg:col-span-2 space-y-4 border rounded p-3">
+    <div className="lg:col-span-2 space-y-4 border rounded p-3 mb-3">
       <MenuBarEditor editor={editor} />
       <div className="">
         <EditorContent
           editor={editor}
           className="tiptap-editor"
         />
+        {contentError && <div className="error-message">{contentError}</div>}
       </div>
 
       {/* Date actioned */}
@@ -64,14 +63,10 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           <ValidationDatePicker
             id="investigation-continuation-report-date-picker"
             selectedDate={selectedActionedDateTime}
-            onChange={handleActionedDateTimeChange}
+            onChange={setSelectedActionedDateTime}
             className="comp-details-edit-calendar-input"
             classNamePrefix="comp-select"
-            errMsg={
-              selectedActionedDateTime && selectedActionedDateTime > new Date()
-                ? "Date and time cannot be in the future"
-                : ""
-            }
+            errMsg={dateTimeError}
             maxDate={new Date()}
             showTimePicker={true}
           />
@@ -93,11 +88,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           id="officer-assigned-select-id"
           showInactive={false}
           classNamePrefix="comp-select"
-          onChange={(e) => handleAssignedOfficerChange(e)}
+          onChange={setSelectedOfficer}
           className="comp-details-input w-100 max-w-370"
           options={assignableOfficers}
           placeholder="Select"
-          enableValidation={false}
+          enableValidation={true}
+          errorMessage={officerError}
           value={selectedOfficer ?? null}
           isClearable={true}
         />

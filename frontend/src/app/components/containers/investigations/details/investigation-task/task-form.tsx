@@ -5,11 +5,11 @@ import { FormField } from "@/app/components/common/form-field";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import DatePicker from "react-datepicker";
-import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducers/app";
+import { appUserGuid, openModal, profileDisplayName, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
+import { ActivityNote, CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
@@ -31,6 +31,9 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { parse } from "date-fns";
+import { ActivityNoteEditor } from "@/app/components/common/activity-note";
+import { useActivityNoteForm } from "@/app/components/containers/investigations/hooks/use-activity-note";
+import Option from "@apptypes/app/option";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -78,6 +81,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         return;
       }
 
+      if (taskActions.length > 0 && !areAllTaskActionsValid()) {
+        setTriggerTaskActionValidation(true);
+        setTimeout(() => setTriggerTaskActionValidation(false), 100); // reset trigger
+        return;
+      }
+
       const input: CreateUpdateTaskInput = {
         taskIdentifier: task?.taskIdentifier,
         investigationIdentifier: investigationGuid,
@@ -110,9 +119,38 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [diaryDateValidation, setDiaryDateValidation] = useState<Record<number, boolean>>({});
   const [triggerDiaryValidation, setTriggerDiaryValidation] = useState(false);
   const [deletedDiaryDateGuids, setDeletedDiaryDateGuids] = useState<string[]>([]);
+  const [taskActions, setTaskActions] = useState<ActivityNote[]>([]);
+  const [triggerTaskActionValidation, setTriggerTaskActionValidation] = useState(false);
+  const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
+  const reportedUserGuid = useAppSelector(appUserGuid);
+  const reportedUserName = useAppSelector(profileDisplayName);
+  const defaultOfficer: Option = { value: reportedUserGuid, label: reportedUserName };
+
+  // Hooks
+  const {
+    editor,
+    selectedOfficer,
+    setSelectedOfficer,
+    selectedActionedDateTime,
+    setSelectedActionedDateTime,
+    handleSave,
+    reset,
+    isSaving,
+    contentError,
+    dateTimeError,
+    officerError,
+  } = useActivityNoteForm({
+    investigationGuid,
+    defaultOfficer,
+    reportedUserGuid,
+    triggerValidation: triggerTaskActionValidation,
+    onSaveSuccess: () => {
+      //refetch();
+    }, // Refetch reports after save
+  });
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -401,6 +439,16 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     return diaryDates.every((_, index) => diaryDateValidation[index] === true);
   };
 
+  const areAllTaskActionsValid = () => {
+    if (taskActions.length === 0) return true;
+    return taskActions.every((_, index) => taskActionValidation[index] === true);
+  };
+
+  // Task Action Functions
+  const addTaskAction = () => {
+    setTaskActions([...taskActions, { contentJson: "" }]);
+  };
+
   const taskSubCategoryOptions = taskSubCategories
     .filter((task: any) => task.taskCategory === selectedCategory)
     .map((option: any) => {
@@ -670,6 +718,40 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add diary date</span>
+          </Button>
+        </div>
+
+        {/* Task Action Section */}
+        <div className="mt-4">
+          <hr className="m-0"></hr>
+          <div className="d-flex my-3 gap-2 align-items-center">
+            <i className="bi bi-file-text"></i>
+            <h5 className="fw-bold m-0">Task actions</h5>
+          </div>
+          {/* Render Task Action Forms */}
+          {taskActions.map((taskAction) => (
+            <ActivityNoteEditor
+              key={taskAction.activityNoteGuid}
+              leadAgency={agency}
+              editor={editor}
+              selectedActionedDateTime={selectedActionedDateTime}
+              setSelectedActionedDateTime={setSelectedActionedDateTime}
+              selectedOfficer={selectedOfficer}
+              setSelectedOfficer={setSelectedOfficer}
+              contentError={contentError}
+              dateTimeError={dateTimeError}
+              officerError={officerError}
+            />
+          ))}
+          <Button
+            className="comp-add-task-action"
+            variant="outline-primary"
+            size="sm"
+            title="Add task Action"
+            onClick={addTaskAction}
+          >
+            <i className="bi bi-plus-circle"></i>
+            <span>Add task action</span>
           </Button>
         </div>
 
