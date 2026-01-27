@@ -2,24 +2,39 @@ import { FC, useState } from "react";
 import { gql } from "graphql-request";
 import { useParams } from "react-router-dom";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
-import { ActivityNote, Investigation } from "@/generated/graphql";
+import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
 import { formatDate, formatDateTime, formatTime } from "@common/methods";
-import Option from "@apptypes/app/option";
 import "@assets/sass/investigation-continuation.scss";
-import { ActivityNoteEditor } from "@/app/components/common/activity-note";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, profileDisplayName } from "@/app/store/reducers/app";
-import { useActivityNoteForm } from "@/app/components/containers/investigations/hooks/use-activity-note";
+import { appUserGuid } from "@/app/store/reducers/app";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
     getActivityNotes(investigationGuid: $investigationGuid, activityNoteCode: $activityNoteCode) {
+      activityNoteGuid
+      activityNoteCode
+      investigationGuid
+      contentJson
+      actionedTimestamp
+      reportedTimestamp
+      actionedAppUserGuidRef
+      reportedAppUserGuidRef
+    }
+  }
+`;
+
+export const SAVE_ACTIVITY_NOTE_MUTATION = gql`
+  mutation SaveActivityNote($input: ActivityNoteInput!) {
+    saveActivityNote(input: $input) {
       activityNoteGuid
       activityNoteCode
       investigationGuid
@@ -41,33 +56,13 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const reportedUserGuid = useAppSelector(appUserGuid);
-  const reportedUserName = useAppSelector(profileDisplayName);
-  const defaultOfficer: Option = { value: reportedUserGuid, label: reportedUserName };
 
   // States
   const [activeKey, setActiveKey] = useState<string>("0");
-
-  // Hooks
-  const {
-    editor,
-    selectedOfficer,
-    setSelectedOfficer,
-    selectedActionedDateTime,
-    setSelectedActionedDateTime,
-    handleSave,
-    reset,
-    isSaving,
-    contentError,
-    dateTimeError,
-    officerError,
-  } = useActivityNoteForm({
-    investigationGuid,
-    defaultOfficer,
-    reportedUserGuid,
-    onSaveSuccess: () => {
-      refetch();
-    }, // Refetch reports after save
-  });
+  const [isValid, setIsValid] = useState(false);
+  const [shouldReset, setShouldReset] = useState(false);
+  const [showContinuationReportErrors, setShowContinuationReportErrors] = useState(false);
+  const [continuationReport, setContinuationReport] = useState<Partial<ActivityNoteInput>>();
 
   // GraphQL queries and mutations
   const { data, refetch } = useGraphQLQuery(GET_REPORTS, {
@@ -75,6 +70,60 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     variables: { investigationGuid: investigationGuid, activityNoteCode: "CONTREP" },
     enabled: !!investigationGuid,
   });
+
+  const saveReportMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE_MUTATION, {
+    onSuccess: () => {
+      ToggleSuccess("Report saved successfully");
+      refetch();
+    },
+    onError: (error: any) => {
+      console.error("Error saving report:", error);
+      ToggleError("Failed to save report");
+    },
+  });
+
+  // Validation handler
+  const handleContinuationReportValidationChange = (isValid: boolean) => {
+    setIsValid(isValid);
+  };
+
+  // Values handler
+  const handleContinuationReportValuesChange = (values: Partial<ActivityNoteInput>) => {
+    setContinuationReport(values);
+  };
+
+  // Cancel handler
+  const resetForm = async () => {
+    setShouldReset(true);
+    setTimeout(() => setShouldReset(false), 100); // reset Trigger
+  };
+
+  // Save handler
+  const handleActivityNoteSave = async () => {
+    if (!isValid) {
+      setShowContinuationReportErrors(true);
+      return; // Validation failed - errors are now showing in the form
+    }
+
+    const values = continuationReport;
+
+    if (values) {
+      const input: ActivityNoteInput = {
+        investigationGuid,
+        activityNoteGuid: null,
+        activityNoteCode: "CONTREP",
+        contentJson: values.contentJson,
+        contentText: values.contentText,
+        actionedTimestamp: values.actionedTimestamp || new Date(),
+        reportedTimestamp: new Date(),
+        actionedAppUserGuidRef: values.actionedAppUserGuidRef,
+        reportedAppUserGuidRef: reportedUserGuid,
+      };
+
+      await saveReportMutation.mutateAsync({ input });
+      resetForm();
+    }
+  };
 
   const reports = data?.getActivityNotes ?? [];
 
@@ -110,23 +159,20 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ActivityNoteEditor
-          leadAgency={leadAgency}
-          editor={editor}
-          selectedActionedDateTime={selectedActionedDateTime}
-          setSelectedActionedDateTime={setSelectedActionedDateTime}
-          selectedOfficer={selectedOfficer}
-          setSelectedOfficer={setSelectedOfficer}
-          contentError={contentError}
-          dateTimeError={dateTimeError}
-          officerError={officerError}
+        <ActivityNoteWrapper
+          index={0} // Only ever one
+          onValidationChange={handleContinuationReportValidationChange}
+          onValuesChange={handleContinuationReportValuesChange}
+          showErrors={showContinuationReportErrors}
+          shouldReset={shouldReset}
         />
+
         <div className="comp-details-form-buttons">
           <Button
             variant="outline-primary"
             id="outcome-cancel-button"
             title="Cancel Outcome"
-            onClick={reset}
+            onClick={resetForm}
           >
             Cancel
           </Button>
@@ -134,9 +180,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
             variant="primary"
             id="outcome-save-button"
             title="Save Outcome"
-            onClick={handleSave}
+            onClick={handleActivityNoteSave}
           >
-            {isSaving ? "Saving..." : "Save"}
+            {saveReportMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </div>
         <div className="space-y-4">

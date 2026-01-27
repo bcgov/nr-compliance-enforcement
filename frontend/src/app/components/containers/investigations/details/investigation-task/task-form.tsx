@@ -5,11 +5,11 @@ import { FormField } from "@/app/components/common/form-field";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import DatePicker from "react-datepicker";
-import { appUserGuid, openModal, profileDisplayName, selectOfficerAgency } from "@/app/store/reducers/app";
+import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { ActivityNote, CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
+import { ActivityNoteInput, CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
@@ -31,9 +31,8 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { parse } from "date-fns";
-import { ActivityNoteEditor } from "@/app/components/common/activity-note";
-import { useActivityNoteForm } from "@/app/components/containers/investigations/hooks/use-activity-note";
-import Option from "@apptypes/app/option";
+import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
+import { SAVE_ACTIVITY_NOTE_MUTATION } from "@/app/components/containers/investigations/details/investigation-continuation";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -81,9 +80,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         return;
       }
 
+      // Check task action validation
       if (taskActions.length > 0 && !areAllTaskActionsValid()) {
-        setTriggerTaskActionValidation(true);
-        setTimeout(() => setTriggerTaskActionValidation(false), 100); // reset trigger
+        setShowTaskActionErrors(true);
+        ToggleError("Please complete all task action fields");
         return;
       }
 
@@ -119,38 +119,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [diaryDateValidation, setDiaryDateValidation] = useState<Record<number, boolean>>({});
   const [triggerDiaryValidation, setTriggerDiaryValidation] = useState(false);
   const [deletedDiaryDateGuids, setDeletedDiaryDateGuids] = useState<string[]>([]);
-  const [taskActions, setTaskActions] = useState<ActivityNote[]>([]);
-  const [triggerTaskActionValidation, setTriggerTaskActionValidation] = useState(false);
+  const [taskActions, setTaskActions] = useState<Partial<ActivityNoteInput[]>>([]);
+  const [showTaskActionErrors, setShowTaskActionErrors] = useState(false);
   const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
-  const reportedUserGuid = useAppSelector(appUserGuid);
-  const reportedUserName = useAppSelector(profileDisplayName);
-  const defaultOfficer: Option = { value: reportedUserGuid, label: reportedUserName };
-
-  // Hooks
-  const {
-    editor,
-    selectedOfficer,
-    setSelectedOfficer,
-    selectedActionedDateTime,
-    setSelectedActionedDateTime,
-    handleSave,
-    reset,
-    isSaving,
-    contentError,
-    dateTimeError,
-    officerError,
-  } = useActivityNoteForm({
-    investigationGuid,
-    defaultOfficer,
-    reportedUserGuid,
-    triggerValidation: triggerTaskActionValidation,
-    onSaveSuccess: () => {
-      //refetch();
-    }, // Refetch reports after save
-  });
 
   // Data
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -251,6 +225,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     onSuccess: (data) => {
       const handleSuccess = async () => {
         try {
+          // Diary Dates
+
           // First delete any marked diary dates
           if (deletedDiaryDateGuids.length > 0) {
             await deleteTrackedDiaryDates();
@@ -259,7 +235,18 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             await saveDiaryDates(data.createTask.taskIdentifier);
           }
           ToggleSuccess("Task added successfully");
+
+          // Attachments
+
           persistTaskAttachments(data.createTask.taskIdentifier);
+
+          // Actions
+          if (taskActions.length > 0) {
+            await saveTaskActions(data.createTask.taskIdentifier);
+          }
+
+          // Cleanup
+
           form.reset();
           setDiaryDates([]);
           setDiaryDateValidation({});
@@ -441,12 +428,55 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const areAllTaskActionsValid = () => {
     if (taskActions.length === 0) return true;
-    return taskActions.every((_, index) => taskActionValidation[index] === true);
+
+    const result = taskActions.every((_, index) => taskActionValidation[index] === true);
+    return result;
   };
 
   // Task Action Functions
   const addTaskAction = () => {
     setTaskActions([...taskActions, { contentJson: "" }]);
+  };
+
+  const handleTaskActionValidationChange = (isValid: boolean, index?: number) => {
+    setTaskActionValidation((prev) => ({
+      ...prev,
+      [index || 0]: isValid,
+    }));
+  };
+
+  const handleTaskActionValuesChange = (values: Partial<ActivityNoteInput>, index?: number) => {
+    setTaskActions((prev) => {
+      const newValues = [...prev];
+      newValues[index || 0] = values;
+      return newValues;
+    });
+  };
+
+  const saveActivityNoteMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE_MUTATION, {
+    onError: (error: any) => {
+      console.error("Error saving activity note:", error);
+      ToggleError("Failed to save activity note");
+    },
+  });
+
+  const saveTaskActions = async (taskGuid: string) => {
+    const savePromises = taskActions.map(async (values) => {
+      const input: ActivityNoteInput = {
+        investigationGuid: investigationGuid,
+        activityNoteGuid: null,
+        activityNoteCode: "TASKACT",
+        contentJson: values?.contentJson,
+        contentText: values?.contentText,
+        actionedTimestamp: values?.actionedTimestamp || new Date(),
+        reportedTimestamp: new Date(),
+        actionedAppUserGuidRef: values?.actionedAppUserGuidRef,
+        reportedAppUserGuidRef: idir,
+      };
+      return saveActivityNoteMutation.mutateAsync({ input });
+    });
+
+    await Promise.all(savePromises);
   };
 
   const taskSubCategoryOptions = taskSubCategories
@@ -729,18 +759,14 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
             <h5 className="fw-bold m-0">Task actions</h5>
           </div>
           {/* Render Task Action Forms */}
-          {taskActions.map((taskAction) => (
-            <ActivityNoteEditor
-              key={taskAction.activityNoteGuid}
-              leadAgency={agency}
-              editor={editor}
-              selectedActionedDateTime={selectedActionedDateTime}
-              setSelectedActionedDateTime={setSelectedActionedDateTime}
-              selectedOfficer={selectedOfficer}
-              setSelectedOfficer={setSelectedOfficer}
-              contentError={contentError}
-              dateTimeError={dateTimeError}
-              officerError={officerError}
+          {taskActions.map((taskAction, index: number) => (
+            <ActivityNoteWrapper
+              key={taskAction?.activityNoteGuid || index}
+              index={index}
+              onValidationChange={handleTaskActionValidationChange}
+              onValuesChange={handleTaskActionValuesChange}
+              initialData={taskAction}
+              showErrors={showTaskActionErrors}
             />
           ))}
           <Button
