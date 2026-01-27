@@ -40,6 +40,7 @@ export const GET_ACTIVITY_NOTES_BY_TASK = gql`
       activityNoteCode
       investigationGuid
       contentJson
+      contentText
       actionedTimestamp
       reportedTimestamp
       actionedAppUserGuidRef

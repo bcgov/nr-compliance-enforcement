@@ -98,6 +98,7 @@ export class ActivityNoteService {
         data: {
           investigation_guid: input.investigationGuid,
           content_json: JSON.parse(input.contentJson),
+          content_text: input.contentText,
           actioned_utc_timestamp: input.actionedTimestamp,
           reported_utc_timestamp: input.reportedTimestamp,
           actioned_app_user_guid_ref: input.actionedAppUserGuidRef,

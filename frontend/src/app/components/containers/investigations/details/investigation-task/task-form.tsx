@@ -9,7 +9,14 @@ import { appUserGuid, openModal, selectOfficerAgency } from "@/app/store/reducer
 import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
-import { ActivityNoteInput, CreateUpdateTaskInput, DiaryDate, DiaryDateInput, Task } from "@/generated/graphql";
+import {
+  ActivityNote,
+  ActivityNoteInput,
+  CreateUpdateTaskInput,
+  DiaryDate,
+  DiaryDateInput,
+  Task,
+} from "@/generated/graphql";
 import { useForm } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
@@ -32,7 +39,10 @@ import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { parse } from "date-fns";
 import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
-import { SAVE_ACTIVITY_NOTE_MUTATION } from "@/app/components/containers/investigations/details/investigation-continuation";
+import {
+  GET_ACTIVITY_NOTES_BY_TASK,
+  SAVE_ACTIVITY_NOTE_MUTATION,
+} from "@/app/components/containers/investigations/details/investigation-continuation";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -62,6 +72,15 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     variables: { taskGuid: task?.taskIdentifier },
     enabled: !!task?.taskIdentifier,
   });
+
+  const { data: taskActionsData } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
+    GET_ACTIVITY_NOTES_BY_TASK,
+    {
+      queryKey: ["getActivityNotesByTask", task?.taskIdentifier],
+      variables: { taskGuid: task?.taskIdentifier },
+      enabled: !!task?.taskIdentifier,
+    },
+  );
 
   // Form Definition
   const form = useForm({
@@ -186,6 +205,28 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     }
   }, [task, diaryDatesData]);
 
+  // Populate task actions when editing
+  useEffect(() => {
+    if (task && taskActionsData?.getActivityNotesByTask) {
+      const existingTaskActions = taskActionsData.getActivityNotesByTask.map((ta) => ({
+        activityNoteGuid: ta.activityNoteGuid,
+        contentJson: ta.contentJson,
+        contentText: ta.contentText,
+        actionedTimestamp: ta.actionedTimestamp || new Date(),
+        actionedAppUserGuidRef: ta?.actionedAppUserGuidRef,
+      }));
+
+      setTaskActions(existingTaskActions);
+
+      // Initialize validation state for existing diary dates
+      const initialValidation: Record<number, boolean> = {};
+      existingTaskActions.forEach((_, index) => {
+        initialValidation[index] = true; // Existing task Actions are already valid
+      });
+      setTaskActionValidation(initialValidation);
+    }
+  }, [task, taskActionsData]);
+
   // Functions
 
   const persistTaskAttachments = async (taskIdentifier: string) => {
@@ -281,6 +322,11 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           }
           ToggleSuccess("Task edited successfully");
           void persistTaskAttachments(task!.taskIdentifier);
+
+          if (taskActions.length > 0) {
+            await saveTaskActions(task!.taskIdentifier);
+          }
+
           form.reset();
           setDiaryDates([]);
           setDiaryDateValidation({});
@@ -465,7 +511,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       const input: ActivityNoteInput = {
         investigationGuid: investigationGuid,
         taskGuid: taskGuid,
-        activityNoteGuid: null,
+        activityNoteGuid: values?.activityNoteGuid,
         activityNoteCode: "TASKACT",
         contentJson: values?.contentJson,
         contentText: values?.contentText,

@@ -5,6 +5,7 @@ import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/stor
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { FC, useEffect } from "react";
 import Option from "@apptypes/app/option";
+import { selectOfficers } from "@/app/store/reducers/officer";
 
 interface ActivityNoteWrapperProps {
   index?: number;
@@ -23,13 +24,20 @@ export const ActivityNoteWrapper: FC<ActivityNoteWrapperProps> = ({
   showErrors,
   shouldReset,
 }) => {
-  const reportedUserGuid = useAppSelector(appUserGuid);
-  const reportedUserName = useAppSelector(profileDisplayName);
+  const currentUserGuid = useAppSelector(appUserGuid);
+  const currentUserName = useAppSelector(profileDisplayName);
   const agency = useAppSelector(selectOfficerAgency);
+  const allOfficers = useAppSelector(selectOfficers);
+  const existingOfficer = allOfficers?.find(
+    (item: { app_user_guid: string }) => item.app_user_guid === initialData?.actionedAppUserGuidRef,
+  );
+  const existingOfficerName = existingOfficer
+    ? `${existingOfficer.last_name}, ${existingOfficer.first_name}`
+    : undefined;
 
-  const defaultOfficer: Option = {
-    value: reportedUserGuid,
-    label: reportedUserName,
+  const initialOfficer: Option = {
+    value: existingOfficer?.app_user_guid ?? currentUserGuid,
+    label: existingOfficerName ?? currentUserName,
   };
 
   const {
@@ -40,13 +48,14 @@ export const ActivityNoteWrapper: FC<ActivityNoteWrapperProps> = ({
     setSelectedActionedDateTime,
     isValid,
     getInputValues,
+    plainText,
     contentError,
     dateTimeError,
     officerError,
     reset,
   } = useActivityNoteForm({
-    defaultOfficer,
-    initialContent: initialData?.contentJson ?? "",
+    initialOfficer: initialOfficer,
+    initialContent: initialData,
     showErrors,
   });
 
@@ -66,7 +75,7 @@ export const ActivityNoteWrapper: FC<ActivityNoteWrapperProps> = ({
   useEffect(() => {
     const values = getInputValues();
     onValuesChange(values, index);
-  }, [selectedActionedDateTime, selectedOfficer, index]);
+  }, [plainText, selectedActionedDateTime, selectedOfficer, index]);
 
   return (
     <ActivityNoteEditor

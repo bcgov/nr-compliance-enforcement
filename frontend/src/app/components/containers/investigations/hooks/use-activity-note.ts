@@ -3,23 +3,25 @@ import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Option from "@apptypes/app/option";
-import { ActivityNoteInput } from "@/generated/graphql";
+import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 
 interface UseActivityNoteFormProps {
-  defaultOfficer: Option;
-  initialContent?: string; // For editing existing notes
+  initialOfficer: Option;
+  initialContent?: ActivityNote; // For editing existing notes
   showErrors?: boolean;
 }
 
 export const useActivityNoteForm = ({
-  defaultOfficer,
+  initialOfficer,
   initialContent,
   showErrors = false,
 }: UseActivityNoteFormProps) => {
   // Form state
-  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(defaultOfficer);
-  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>();
-  const [plainText, setPlainText] = useState<string>("");
+  const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
+  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
+    initialContent?.actionedTimestamp ?? undefined,
+  );
+  const [plainText, setPlainText] = useState<string>(initialContent?.contentText ?? "");
 
   // Validation errors
   const [isValid, setIsValid] = useState(true);
@@ -36,7 +38,7 @@ export const useActivityNoteForm = ({
         emptyEditorClass: "is-editor-empty",
       }),
     ],
-    content: initialContent ? JSON.parse(initialContent) : undefined,
+    content: initialContent?.contentJson ? JSON.parse(initialContent.contentJson) : undefined,
     onUpdate: ({ editor }) => {
       setPlainText(editor.getText());
     },
@@ -72,8 +74,9 @@ export const useActivityNoteForm = ({
   // Get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
     return {
+      activityNoteGuid: initialContent?.activityNoteGuid,
       contentJson: editor ? JSON.stringify(editor.getJSON()) : "",
-      contentText: plainText,
+      contentText: editor ? editor.getText() : "",
       actionedTimestamp: selectedActionedDateTime,
       actionedAppUserGuidRef: selectedOfficer?.value || "",
     };
@@ -83,7 +86,7 @@ export const useActivityNoteForm = ({
     editor?.commands.clearContent();
     setPlainText("");
     setSelectedActionedDateTime(undefined);
-    setSelectedOfficer(defaultOfficer);
+    setSelectedOfficer(initialOfficer);
     setContentError("");
     setDateTimeError("");
     setOfficerError("");
@@ -93,6 +96,7 @@ export const useActivityNoteForm = ({
   return {
     editor,
     selectedOfficer,
+    plainText,
     setSelectedOfficer,
     selectedActionedDateTime,
     setSelectedActionedDateTime,

@@ -29,6 +29,7 @@ export type ActivityNote = {
   activityNoteCode?: Maybe<Scalars['String']['output']>;
   activityNoteGuid?: Maybe<Scalars['String']['output']>;
   contentJson?: Maybe<Scalars['String']['output']>;
+  contentText?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
   reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
@@ -1677,6 +1678,7 @@ export type Query = {
   geoOrganizationUnitCodes: Array<Maybe<GeoOrganizationUnitCode>>;
   getActivityNote?: Maybe<ActivityNote>;
   getActivityNotes?: Maybe<Array<ActivityNote>>;
+  getActivityNotesByTask?: Maybe<Array<ActivityNote>>;
   getComplaintOutcome?: Maybe<ComplaintOutcome>;
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
@@ -1835,6 +1837,11 @@ export type QuerygetActivityNoteArgs = {
 export type QuerygetActivityNotesArgs = {
   activityNoteCode?: InputMaybe<Scalars['String']['input']>;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type QuerygetActivityNotesByTaskArgs = {
+  taskGuid: Scalars['String']['input'];
 };
 
 

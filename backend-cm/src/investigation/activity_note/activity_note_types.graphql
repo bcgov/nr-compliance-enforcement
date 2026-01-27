@@ -5,6 +5,7 @@ type ActivityNote {
   investigationGuid: String
   activityNoteCode: String
   contentJson: String
+  contentText: String
   actionedTimestamp: DateTime
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
