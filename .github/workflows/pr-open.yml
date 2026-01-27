@@ -96,30 +96,31 @@ jobs:
           tags: |
             ${{ github.sha }}
 
-  # build prepackaged playwright images
-  # https://github.com/bcgov/action-builder-ghcr
-  build-playwright:
-    name: Build Playwright
-    runs-on: ubuntu-22.04
-    outputs:
-      digest: ${{ steps.build-playwright.outputs.digest }}
-      sha: ${{ github.sha }}
-    timeout-minutes: 15
-    steps:
-      - uses: bcgov/action-builder-ghcr@v2.3.0
-        with:
-          package: frontend-playwright
-          build_file: frontend/Dockerfile.playwright
-          build_context: frontend/
-          tag: ${{ github.event.number }}
-          tag_fallback: latest
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/frontend-playwright
-          target: ${{ github.event.number }}
-          tags: |
-            ${{ github.sha }}
+  # TEMP: speed up testing
+  # # build prepackaged playwright images
+  # # https://github.com/bcgov/action-builder-ghcr
+  # build-playwright:
+  #   name: Build Playwright
+  #   runs-on: ubuntu-22.04
+  #   outputs:
+  #     digest: ${{ steps.build-playwright.outputs.digest }}
+  #     sha: ${{ github.sha }}
+  #   timeout-minutes: 15
+  #   steps:
+  #     - uses: bcgov/action-builder-ghcr@v2.3.0
+  #       with:
+  #         package: frontend-playwright
+  #         build_file: frontend/Dockerfile.playwright
+  #         build_context: frontend/
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: latest
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/frontend-playwright
+  #         target: ${{ github.event.number }}
+  #         tags: |
+  #           ${{ github.sha }}
 
   tests:
     name: Tests
@@ -150,6 +151,7 @@ jobs:
           repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
+          fetch-depth: 0
 
       - name: Calculate Deployment Number
         id: get-deployment-number

@@ -22,6 +22,20 @@ jobs:
           PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
           echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
 
+  get-pr-creation-timestamp:
+    name: Get PR Creation
+    runs-on: ubuntu-22.04
+    outputs:
+      pr-creation-timestamp: ${{ steps.get-deployment-number.outputs.PR_CREATION_TIMESTAMP }}
+    steps:
+      - name: Get PR Creation timestamp
+        id: get-pr-creation-timestamp
+        shell: bash
+        run: |
+          created="${{ github.event.pull_request.created_at }}"
+          formatted=$(date -d "$created" +"%Y%m%d-%H%M%S")
+          echo "PR_CREATION_TIMESTAMP=$formatted" >> "$GITHUB_OUTPUT"
+
   validate:
     name: Validate PR
     needs: [get-deployment-number]
@@ -33,6 +47,7 @@ jobs:
         - [GitOps App](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite)
         - [GitOps E2E Logs](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite?resource=&node=batch/Job/f208ae-dev/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-e2e-playwright/0&tab=logs) 
         - [E2E Reports](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-e2e.apps.emerald.devops.gov.bc.ca/playwright/)
+        - [Developer Branch for Infrastructure Changes](https://github.com/bcgov-c/tenant-gitops-f208ae/tree/dev-${{ needs.get-deployment-number.outputs.deployment-number }}-${{ needs.get-deployment-number.outputs.pr-creation-timestamp }})
 
   results:
     name: Validate Results
