@@ -26,7 +26,7 @@ jobs:
     name: Get PR Creation
     runs-on: ubuntu-22.04
     outputs:
-      pr-creation-timestamp: ${{ steps.get-deployment-number.outputs.PR_CREATION_TIMESTAMP }}
+      pr-creation-timestamp: ${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
     steps:
       - name: Get PR Creation timestamp
         id: get-pr-creation-timestamp
