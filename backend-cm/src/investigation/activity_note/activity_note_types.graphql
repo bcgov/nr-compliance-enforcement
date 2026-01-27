@@ -14,6 +14,7 @@ type ActivityNote {
 input ActivityNoteInput {
   investigationGuid: String
   activityNoteGuid: String
+  taskGuid: String
   activityNoteCode: String
   contentJson: String
   contentText: String

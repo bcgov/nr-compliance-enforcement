@@ -993,3 +993,15 @@ td.actions-col {
 .inspection-nav-link.inactive {
   background-color: $gray-200;
 }
+
+.task-actions-view {
+  flex-direction: column !important;
+}
+
+#comp-task-action p {
+  margin-bottom: 0;
+}
+
+#comp-task-action .mt-1 {
+  margin-top: 0 !important;
+}

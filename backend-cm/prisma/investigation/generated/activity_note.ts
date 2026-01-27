@@ -1,4 +1,5 @@
 import { activity_note_code } from "./activity_note_code";
+import { task } from "./task";
 import { investigation } from "./investigation";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -42,11 +43,17 @@ export class activity_note {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  task_guid?: string;
+
   @ApiProperty({ type: String })
   activity_note_code: string;
 
   @ApiProperty({ type: () => activity_note_code })
   activity_note_code_activity_note_activity_note_codeToactivity_note_code: activity_note_code;
+
+  @ApiPropertyOptional({ type: () => task })
+  task?: task;
 
   @ApiProperty({ type: () => investigation })
   investigation: investigation;

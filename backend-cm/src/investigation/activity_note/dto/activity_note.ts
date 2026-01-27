@@ -6,6 +6,7 @@ import { IsOptional } from "class-validator";
 
 export class ActivityNote {
   activityNoteGuid: string;
+  taskGuid: string;
   investigationGuid: string;
   activityNoteCode: string;
   contentJson: string;
@@ -24,6 +25,10 @@ export class ActivityNoteInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   activityNoteGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  taskGuid?: string;
 
   @Field(() => String)
   activityNoteCode: string;
@@ -59,6 +64,10 @@ export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationGuid,
       mapFrom((src) => src.investigation_guid),
+    ),
+    forMember(
+      (dest) => dest.taskGuid,
+      mapFrom((src) => src.task_guid),
     ),
     forMember(
       (dest) => dest.activityNoteCode,

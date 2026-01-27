@@ -68,6 +68,13 @@ INSERT INTO activity_note_code (
     now()
 );
 
+ALTER TABLE investigation.activity_note
+ADD COLUMN task_guid UUID;
+
+ALTER TABLE investigation.activity_note ADD CONSTRAINT fk_activity_note_task FOREIGN KEY (task_guid) REFERENCES investigation.task (task_guid);
+
+COMMENT ON COLUMN investigation.activity_note.task_guid IS 'Foreign key: System generated unique identifier for a task.';
+
 ALTER TABLE investigation.activity_note 
 ADD COLUMN activity_note_code VARCHAR(16);
 

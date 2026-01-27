@@ -9,7 +9,7 @@ import { selectTaskCategory, selectTaskStatus, selectTaskSubCategory } from "@/a
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
-import { DiaryDate, Investigation, Task } from "@/generated/graphql";
+import { ActivityNote, DiaryDate, Investigation, Task } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -19,6 +19,8 @@ import {
   DELETE_DIARY_DATES_BY_TASK,
 } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { useLocation } from "react-router-dom";
+import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-continuation";
+import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 
 interface TaskItemProps {
   task: Task;
@@ -42,7 +44,16 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
     variables: { taskGuid: task.taskIdentifier },
     enabled: !!task.taskIdentifier,
   });
+  const { data: taskActionData } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
+    GET_ACTIVITY_NOTES_BY_TASK,
+    {
+      queryKey: ["getActivityNotesByTask", task.taskIdentifier],
+      variables: { taskGuid: task.taskIdentifier },
+      enabled: !!task.taskIdentifier,
+    },
+  );
   const diaryDates = diaryDatesData?.diaryDatesByTask || [];
+  const taskActions = taskActionData?.getActivityNotesByTask || [];
 
   // State
   const taskCategories = useAppSelector(selectTaskCategory);
@@ -258,6 +269,60 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                       })}
                     </pre>
                   </dd>
+                </div>
+              </>
+            )}
+
+            {taskActions.length > 0 && (
+              <>
+                <hr className="m-0"></hr>
+                <div style={{ gap: "8px", alignItems: "center" }}>
+                  <i className="bi bi-file-text"></i>
+                  <h5 className="fw-bold m-0">Task actions</h5>
+                </div>
+                <div className="task-actions-view">
+                  {taskActions.map((taskAction) => {
+                    const taskActionCreatedOfficer = officerList?.find(
+                      (officer) => officer.app_user_guid === taskAction.reportedAppUserGuidRef,
+                    );
+                    const taskActionActionedOfficer = officerList?.find(
+                      (officer) => officer.app_user_guid === taskAction.actionedAppUserGuidRef,
+                    );
+                    return (
+                      <div
+                        key={taskAction.activityNoteGuid}
+                        className="mb-3"
+                      >
+                        <dl>
+                          <div>
+                            <dt>Task action</dt>
+                            <dd>
+                              <pre id="comp-task-action">
+                                <ReportRenderer
+                                  json={taskAction.contentJson ? JSON.parse(taskAction.contentJson) : {}}
+                                />
+                              </pre>
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Date/time actioned</dt>
+                            <dd>
+                              <pre id="comp-task-action">{formatDate(taskAction.actionedTimestamp)}</pre>
+                            </dd>
+                          </div>
+                          <div>
+                            <dt>Officer</dt>
+                            <dd>
+                              <pre id="comp-task-action">{`${taskActionActionedOfficer?.last_name}, ${taskActionActionedOfficer?.first_name}`}</pre>
+                              <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
+                                {`Added on ${formatDate(taskAction.reportedTimestamp)} by ${taskActionCreatedOfficer?.last_name}, ${taskActionCreatedOfficer?.first_name} (${taskActionCreatedOfficer?.agency_code?.shortDescription})`}
+                              </div>
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}

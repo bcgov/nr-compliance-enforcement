@@ -44,6 +44,7 @@ export type ActivityNoteInput = {
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
   reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
   reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  taskGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AgeCode = {

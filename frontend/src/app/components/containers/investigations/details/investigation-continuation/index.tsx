@@ -32,6 +32,22 @@ const GET_REPORTS = gql`
   }
 `;
 
+// TODO move all these
+export const GET_ACTIVITY_NOTES_BY_TASK = gql`
+  query GetActivityNotesByTask($taskGuid: String!) {
+    getActivityNotesByTask(taskGuid: $taskGuid) {
+      activityNoteGuid
+      activityNoteCode
+      investigationGuid
+      contentJson
+      actionedTimestamp
+      reportedTimestamp
+      actionedAppUserGuidRef
+      reportedAppUserGuidRef
+    }
+  }
+`;
+
 export const SAVE_ACTIVITY_NOTE_MUTATION = gql`
   mutation SaveActivityNote($input: ActivityNoteInput!) {
     saveActivityNote(input: $input) {

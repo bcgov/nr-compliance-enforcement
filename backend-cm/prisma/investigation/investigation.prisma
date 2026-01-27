@@ -304,6 +304,7 @@ model task {
   create_utc_timestamp                                     DateTime         @default(now()) @db.Timestamp(6)
   update_user_id                                           String?          @db.VarChar(32)
   update_utc_timestamp                                     DateTime?        @db.Timestamp(6)
+  activity_note                                            activity_note[]
   diary_date                                               diary_date[]
   investigation                                            investigation    @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   task_status_code_task_task_status_codeTotask_status_code task_status_code @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
@@ -412,8 +413,10 @@ model activity_note {
   create_utc_timestamp                                                    DateTime           @default(now()) @db.Timestamp(6)
   update_user_id                                                          String?            @db.VarChar(32)
   update_utc_timestamp                                                    DateTime?          @db.Timestamp(6)
+  task_guid                                                               String?            @db.Uuid
   activity_note_code                                                      String             @db.VarChar(16)
   activity_note_code_activity_note_activity_note_codeToactivity_note_code activity_note_code @relation("activity_note_activity_note_codeToactivity_note_code", fields: [activity_note_code], references: [activity_note_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_code")
+  task                                                                    task?              @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_task")
   investigation                                                           investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
 
   @@schema("investigation")

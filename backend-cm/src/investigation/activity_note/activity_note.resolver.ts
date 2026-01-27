@@ -44,6 +44,21 @@ export class ActivityNoteResolver {
     }
   }
 
+  @Query("getActivityNotesByTask")
+  @Roles(coreRoles)
+  async findManyByTask(@Args("taskGuid") taskGuid: string) {
+    try {
+      return await this.activityNoteService.findManyByTaskGuid(taskGuid);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching data from Activity Note schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
   @Mutation("saveActivityNote")
   @Roles(coreRoles)
   async save(@Args("input") input: ActivityNoteInput) {

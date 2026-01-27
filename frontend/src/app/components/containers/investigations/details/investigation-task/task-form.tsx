@@ -464,6 +464,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     const savePromises = taskActions.map(async (values) => {
       const input: ActivityNoteInput = {
         investigationGuid: investigationGuid,
+        taskGuid: taskGuid,
         activityNoteGuid: null,
         activityNoteCode: "TASKACT",
         contentJson: values?.contentJson,

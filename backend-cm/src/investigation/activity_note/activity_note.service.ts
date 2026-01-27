@@ -66,6 +66,29 @@ export class ActivityNoteService {
     }
   }
 
+  async findManyByTaskGuid(taskGuid: string) {
+    const prismaActivityNotes = await this.prisma.activity_note.findMany({
+      where: {
+        task_guid: taskGuid,
+        active_ind: true,
+      },
+      orderBy: {
+        actioned_utc_timestamp: "desc",
+      },
+    });
+
+    try {
+      return this.mapper.mapArray<activity_note, ActivityNote>(
+        prismaActivityNotes as Array<activity_note>,
+        "activity_note",
+        "ActivityNote",
+      );
+    } catch (error) {
+      this.logger.error("Error mapping ActivityNote:", error);
+      throw error;
+    }
+  }
+
   async save(input: ActivityNoteInput): Promise<ActivityNote> {
     let result;
     if (input.activityNoteGuid) {
@@ -89,6 +112,7 @@ export class ActivityNoteService {
         result = await this.prisma.activity_note.create({
           data: {
             investigation_guid: input.investigationGuid,
+            task_guid: input.taskGuid,
             activity_note_code: input.activityNoteCode,
             content_json: JSON.parse(input.contentJson),
             content_text: input.contentText,
