@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO_BRANCH: CE-1935
   GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
   GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
   GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
@@ -159,6 +159,14 @@ jobs:
           PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
           echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
 
+      - name: Get PR Creation timestamp
+        id: get-pr-creation-timestamp
+        shell: bash
+        run: |
+          created="${{ github.event.pull_request.created_at }}"
+          formatted=$(date -d "$created" +"%Y%m%d-%H%M%S")
+          echo "PR_CREATION_TIMESTAMP=$formatted" >> "$GITHUB_OUTPUT"
+
       - name: Configure git
         # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
         run: |
@@ -169,13 +177,14 @@ jobs:
       - name: Update dev environment tag and enable it for deployment
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }} ${{ github.event.pull_request.head.sha }}
 
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
+          ./.github/scripts/gitops.sh reserve dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
 
       # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
       # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
@@ -193,6 +202,8 @@ jobs:
       - name: Commit and push update
         shell: bash
         run: |
-          DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
-          git push origin ${{ env.GITOPS_REPO_BRANCH }}
+          echo "TEMP DEBUG OUTPUT"
+          git diff
+        # DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+        # ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
+        # git push origin ${{ env.GITOPS_REPO_BRANCH }}
