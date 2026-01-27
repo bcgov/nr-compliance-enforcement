@@ -38,7 +38,7 @@ jobs:
 
   validate:
     name: Validate PR
-    needs: [get-deployment-number]
+    needs: [get-deployment-number, get-pr-creation-timestamp]
     if: (! github.event.pull_request.draft)
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.9.0
     with:
@@ -47,7 +47,7 @@ jobs:
         - [GitOps App](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite)
         - [GitOps E2E Logs](https://gitops-shared.apps.emerald.devops.gov.bc.ca/applications/f208ae-tools/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite?resource=&node=batch/Job/f208ae-dev/f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-e2e-playwright/0&tab=logs) 
         - [E2E Reports](https://f208ae-dev-${{ needs.get-deployment-number.outputs.deployment-number }}-natsuite-e2e.apps.emerald.devops.gov.bc.ca/playwright/)
-        - [Developer Branch for Infrastructure Changes](https://github.com/bcgov-c/tenant-gitops-f208ae/tree/dev-${{ needs.get-deployment-number.outputs.deployment-number }}-${{ needs.get-deployment-number.outputs.pr-creation-timestamp }})
+        - [Developer Branch for Infrastructure Changes](https://github.com/bcgov-c/tenant-gitops-f208ae/tree/dev-${{ needs.get-deployment-number.outputs.deployment-number }}-${{ needs.get-pr-creation-timestamp.outputs.pr-creation-timestamp }})
 
   results:
     name: Validate Results
