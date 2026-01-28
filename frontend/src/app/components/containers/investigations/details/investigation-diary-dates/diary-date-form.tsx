@@ -124,6 +124,7 @@ export const DiaryDateForm = ({
               classNamePrefix="comp-details-edit-calendar-input"
               className="comp-details-input full-width"
               id={`diary-date-${index}`}
+              maxDate={new Date()}
               onChange={(date: Date) => {
                 field.handleChange(date);
               }}
