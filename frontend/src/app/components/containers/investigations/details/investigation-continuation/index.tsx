@@ -15,7 +15,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid } from "@/app/store/reducers/app";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
+import { ActivityNoteEditor } from "@/app/components/common/activity-note";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -144,6 +144,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       };
 
       await saveReportMutation.mutateAsync({ input });
+      setShowContinuationReportErrors(false);
       resetForm();
     }
   };
@@ -182,7 +183,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ActivityNoteWrapper
+        <ActivityNoteEditor
           index={0} // Only ever one
           onValidationChange={handleContinuationReportValidationChange}
           onValuesChange={handleContinuationReportValuesChange}

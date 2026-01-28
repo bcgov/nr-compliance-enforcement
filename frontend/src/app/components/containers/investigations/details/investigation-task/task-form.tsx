@@ -38,12 +38,12 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { parse } from "date-fns";
-import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
 import {
   DELETE_ACTIVITY_NOTE,
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE_MUTATION,
 } from "@/app/components/containers/investigations/details/investigation-continuation";
+import { ActivityNoteEditor } from "@/app/components/common/activity-note";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -877,7 +877,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
                 </Button>
               </Card.Header>
               <Card.Body>
-                <ActivityNoteWrapper
+                <ActivityNoteEditor
                   index={index}
                   onValidationChange={handleTaskActionValidationChange}
                   onValuesChange={handleTaskActionValuesChange}
