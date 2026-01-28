@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
-  maxDate: Date;
+  maxDate?: Date;
   minDate?: Date;
   onChange: (date: Date) => void;
   id: string;
