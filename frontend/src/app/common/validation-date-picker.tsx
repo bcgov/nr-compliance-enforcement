@@ -19,7 +19,7 @@ interface ValidationDatePickerProps {
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   className,
   selectedDate,
-  maxDate = new Date(2099, 11, 31),
+  maxDate,
   minDate,
   onChange,
   id,
@@ -62,7 +62,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={id}
             dateFormat="yyyy-MM-dd"
-            maxDate={maxDate}
+            {...(maxDate && { maxDate })}
             minDate={minDate}
             autoComplete="false"
             monthsShown={2}
