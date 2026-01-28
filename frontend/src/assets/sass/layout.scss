@@ -1005,3 +1005,31 @@ td.actions-col {
 #comp-task-action .mt-1 {
   margin-top: 0 !important;
 }
+
+.comp-task-form-section {
+  display: flex;
+  flex-direction: column;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+
+  .card-body {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .comp-add-drug-btn {
+    order: 2;
+    align-self: flex-start;
+  }
+
+  + .comp-drug-form {
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  &:last-of-type {
+    margin-bottom: 16px;
+  }
+}

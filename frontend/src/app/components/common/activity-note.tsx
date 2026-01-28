@@ -11,6 +11,7 @@ import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/stor
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
+import { gql } from "graphql-request";
 
 interface ActivityNoteProps {
   index?: number;
@@ -20,6 +21,43 @@ interface ActivityNoteProps {
   shouldReset?: boolean;
   showErrors: boolean;
 }
+
+export const GET_ACTIVITY_NOTES_BY_TASK = gql`
+  query GetActivityNotesByTask($taskGuid: String!) {
+    getActivityNotesByTask(taskGuid: $taskGuid) {
+      activityNoteGuid
+      activityNoteCode
+      investigationGuid
+      contentJson
+      contentText
+      actionedTimestamp
+      reportedTimestamp
+      actionedAppUserGuidRef
+      reportedAppUserGuidRef
+    }
+  }
+`;
+
+export const DELETE_ACTIVITY_NOTE = gql`
+  mutation DeleteActivityNote($activityNoteGuid: String!) {
+    deleteActivityNote(activityNoteGuid: $activityNoteGuid)
+  }
+`;
+
+export const SAVE_ACTIVITY_NOTE = gql`
+  mutation SaveActivityNote($input: ActivityNoteInput!) {
+    saveActivityNote(input: $input) {
+      activityNoteGuid
+      activityNoteCode
+      investigationGuid
+      contentJson
+      actionedTimestamp
+      reportedTimestamp
+      actionedAppUserGuidRef
+      reportedAppUserGuidRef
+    }
+  }
+`;
 
 export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   index,

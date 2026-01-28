@@ -39,11 +39,11 @@ import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import { parse } from "date-fns";
 import {
+  ActivityNoteEditor,
   DELETE_ACTIVITY_NOTE,
   GET_ACTIVITY_NOTES_BY_TASK,
-  SAVE_ACTIVITY_NOTE_MUTATION,
-} from "@/app/components/containers/investigations/details/investigation-continuation";
-import { ActivityNoteEditor } from "@/app/components/common/activity-note";
+  SAVE_ACTIVITY_NOTE,
+} from "@/app/components/common/activity-note";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -264,38 +264,52 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
   };
 
-  // TODO better toast management
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
     onSuccess: (data) => {
       const handleSuccess = async () => {
-        try {
-          // Diary Dates
-          if (diaryDates.length > 0) {
+        let diaryDatesFailed = false;
+        let taskActionsFailed = false;
+
+        // Diary Dates
+        if (diaryDates.length > 0) {
+          try {
             await saveDiaryDates(data.createTask.taskIdentifier);
+          } catch (error) {
+            console.error("Error saving diary dates:", error);
+            diaryDatesFailed = true;
           }
-          ToggleSuccess("Task added successfully");
+        }
 
-          // Attachments
+        // Attachments (asynchronous)
+        persistTaskAttachments(data.createTask.taskIdentifier);
 
-          persistTaskAttachments(data.createTask.taskIdentifier);
-
-          // Actions
-          if (taskActions.length > 0) {
+        // Actions
+        if (taskActions.length > 0) {
+          try {
             await saveTaskActions(data.createTask.taskIdentifier);
+          } catch (error) {
+            console.error("Error saving task actions:", error);
+            taskActionsFailed = true;
           }
+        }
 
-          // Cleanup
+        // Cleanup
+        form.reset();
+        setDiaryDates([]);
+        setDiaryDateValidation({});
+        onClose({
+          ...data.createTask,
+        } as Task);
 
-          form.reset();
-          setDiaryDates([]);
-          setDiaryDateValidation({});
-          onClose({
-            ...data.createTask,
-          } as Task);
-        } catch (error) {
-          console.error("Error saving diary dates:", error);
-          ToggleWarning("Task added but some diary dates failed to save");
-          return;
+        // Show appropriate toast based on what failed
+        if (!diaryDatesFailed && !taskActionsFailed) {
+          ToggleSuccess("Task added successfully");
+        } else if (diaryDatesFailed && taskActionsFailed) {
+          ToggleWarning("Task added but diary dates and task actions failed to save");
+        } else if (diaryDatesFailed) {
+          ToggleWarning("Task added but diary dates failed to save");
+        } else if (taskActionsFailed) {
+          ToggleWarning("Task added but task actions failed to save");
         }
       };
 
@@ -310,6 +324,9 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const editTaskMutation = useGraphQLMutation(EDIT_TASK, {
     onSuccess: () => {
       const handleSuccess = async () => {
+        let diaryDatesFailed = false;
+        let taskActionsFailed = false;
+
         try {
           // First delete any marked diary dates
           if (deletedDiaryDateGuids.length > 0) {
@@ -318,9 +335,14 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           if (diaryDates.length > 0) {
             await saveDiaryDates(task?.taskIdentifier);
           }
-          ToggleSuccess("Task edited successfully");
-          void persistTaskAttachments(task!.taskIdentifier);
+        } catch (error) {
+          console.error("Error editing task:", error);
+          diaryDatesFailed = true;
+        }
 
+        void persistTaskAttachments(task!.taskIdentifier);
+
+        try {
           // First delete any marked task Actions
           if (deletedTaskActionGuids.length > 0) {
             await deleteTrackedTaskActions();
@@ -328,15 +350,25 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           if (taskActions.length > 0) {
             await saveTaskActions(task!.taskIdentifier);
           }
-
-          form.reset();
-          setDiaryDates([]);
-          setDiaryDateValidation({});
-          setDeletedDiaryDateGuids([]);
-          onClose();
         } catch (error) {
           console.error("Error editing task:", error);
-          ToggleWarning("Task updated but some diary dates failed to save");
+          taskActionsFailed = true;
+        }
+
+        form.reset();
+        setDiaryDates([]);
+        setDiaryDateValidation({});
+        setDeletedDiaryDateGuids([]);
+        onClose();
+
+        if (!diaryDatesFailed && !taskActionsFailed) {
+          ToggleSuccess("Task edited successfully");
+        } else if (diaryDatesFailed && taskActionsFailed) {
+          ToggleWarning("Task edited but diary dates and task actions failed to save");
+        } else if (diaryDatesFailed) {
+          ToggleWarning("Task edited but diary dates failed to save");
+        } else if (taskActionsFailed) {
+          ToggleWarning("Task edited but task actions failed to save");
         }
       };
 
@@ -351,14 +383,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const saveDiaryDateMutation = useGraphQLMutation(SAVE_DIARY_DATE, {
     onError: (error: any) => {
       console.error("Error saving diary date:", error);
-      ToggleError("Failed to save diary date");
     },
   });
 
   const deleteDiaryDateMutation = useGraphQLMutation(DELETE_DIARY_DATE, {
     onError: (error: any) => {
       console.error("Error deleting diary date:", error);
-      ToggleError("Failed to delete diary date");
     },
   });
 
@@ -501,17 +531,15 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
   };
 
-  const saveActivityNoteMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE_MUTATION, {
+  const saveActivityNoteMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE, {
     onError: (error: any) => {
       console.error("Error saving activity note:", error);
-      ToggleError("Failed to save activity note");
     },
   });
 
   const deleteActivityNoteMutation = useGraphQLMutation(DELETE_ACTIVITY_NOTE, {
     onError: (error: any) => {
       console.error("Error deleting diary date:", error);
-      ToggleError("Failed to delete diary date");
     },
   });
 
@@ -859,7 +887,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           {taskActions.map((taskAction, index: number) => (
             <Card
               key={taskAction?.activityNoteGuid || index}
-              className="comp-drug-form" // TODO rename this
+              className="comp-task-form-section"
               style={{ borderTop: "none" }}
             >
               <Card.Header className="comp-card-header px-0">

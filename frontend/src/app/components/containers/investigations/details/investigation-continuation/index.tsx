@@ -15,49 +15,11 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid } from "@/app/store/reducers/app";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { ActivityNoteEditor } from "@/app/components/common/activity-note";
+import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
     getActivityNotes(investigationGuid: $investigationGuid, activityNoteCode: $activityNoteCode) {
-      activityNoteGuid
-      activityNoteCode
-      investigationGuid
-      contentJson
-      actionedTimestamp
-      reportedTimestamp
-      actionedAppUserGuidRef
-      reportedAppUserGuidRef
-    }
-  }
-`;
-
-// TODO move all these
-export const GET_ACTIVITY_NOTES_BY_TASK = gql`
-  query GetActivityNotesByTask($taskGuid: String!) {
-    getActivityNotesByTask(taskGuid: $taskGuid) {
-      activityNoteGuid
-      activityNoteCode
-      investigationGuid
-      contentJson
-      contentText
-      actionedTimestamp
-      reportedTimestamp
-      actionedAppUserGuidRef
-      reportedAppUserGuidRef
-    }
-  }
-`;
-
-export const DELETE_ACTIVITY_NOTE = gql`
-  mutation DeleteActivityNote($activityNoteGuid: String!) {
-    deleteActivityNote(activityNoteGuid: $activityNoteGuid)
-  }
-`;
-
-export const SAVE_ACTIVITY_NOTE_MUTATION = gql`
-  mutation SaveActivityNote($input: ActivityNoteInput!) {
-    saveActivityNote(input: $input) {
       activityNoteGuid
       activityNoteCode
       investigationGuid
@@ -94,7 +56,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
     enabled: !!investigationGuid,
   });
 
-  const saveReportMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE_MUTATION, {
+  const saveReportMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE, {
     onSuccess: () => {
       ToggleSuccess("Report saved successfully");
       refetch();
