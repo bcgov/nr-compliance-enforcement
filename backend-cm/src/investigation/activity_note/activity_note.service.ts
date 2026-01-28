@@ -73,7 +73,7 @@ export class ActivityNoteService {
         active_ind: true,
       },
       orderBy: {
-        actioned_utc_timestamp: "desc",
+        actioned_utc_timestamp: "asc",
       },
     });
 
@@ -143,6 +143,24 @@ export class ActivityNoteService {
       return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping Activity Note:", error);
+      throw error;
+    }
+  }
+
+  async delete(activityNoteGuid: string): Promise<boolean> {
+    try {
+      // Soft delete by setting active_ind to false
+      await this.prisma.activity_note.update({
+        where: { activity_note_guid: activityNoteGuid },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+      return true;
+    } catch (error) {
+      this.logger.error("Error deleting Activity Note:", error);
       throw error;
     }
   }

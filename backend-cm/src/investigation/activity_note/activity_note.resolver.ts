@@ -71,4 +71,17 @@ export class ActivityNoteResolver {
       });
     }
   }
+
+  @Mutation("deleteActivityNote")
+  @Roles(coreRoles)
+  async delete(@Args("activityNoteGuid") activityNoteGuid: string) {
+    try {
+      return await this.activityNoteService.delete(activityNoteGuid);
+    } catch (error) {
+      this.logger.error("Delete Activity Note error:", error);
+      throw new GraphQLError("Error deleting activity note", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
 }

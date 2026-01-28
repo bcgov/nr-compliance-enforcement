@@ -40,6 +40,7 @@ import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events"
 import { parse } from "date-fns";
 import { ActivityNoteWrapper } from "@/app/components/containers/layout/activity-note";
 import {
+  DELETE_ACTIVITY_NOTE,
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE_MUTATION,
 } from "@/app/components/containers/investigations/details/investigation-continuation";
@@ -141,6 +142,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [taskActions, setTaskActions] = useState<Partial<ActivityNoteInput[]>>([]);
   const [showTaskActionErrors, setShowTaskActionErrors] = useState(false);
   const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
+  const [deletedTaskActionGuids, setDeletedTaskActionGuids] = useState<string[]>([]);
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
@@ -262,16 +264,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
   };
 
+  // TODO better toast management
   const addTaskMutation = useGraphQLMutation(ADD_TASK, {
     onSuccess: (data) => {
       const handleSuccess = async () => {
         try {
           // Diary Dates
-
-          // First delete any marked diary dates
-          if (deletedDiaryDateGuids.length > 0) {
-            await deleteTrackedDiaryDates();
-          }
           if (diaryDates.length > 0) {
             await saveDiaryDates(data.createTask.taskIdentifier);
           }
@@ -323,6 +321,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           ToggleSuccess("Task edited successfully");
           void persistTaskAttachments(task!.taskIdentifier);
 
+          // First delete any marked task Actions
+          if (deletedTaskActionGuids.length > 0) {
+            await deleteTrackedTaskActions();
+          }
           if (taskActions.length > 0) {
             await saveTaskActions(task!.taskIdentifier);
           }
@@ -506,6 +508,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     },
   });
 
+  const deleteActivityNoteMutation = useGraphQLMutation(DELETE_ACTIVITY_NOTE, {
+    onError: (error: any) => {
+      console.error("Error deleting diary date:", error);
+      ToggleError("Failed to delete diary date");
+    },
+  });
+
   const saveTaskActions = async (taskGuid: string) => {
     const savePromises = taskActions.map(async (values) => {
       const input: ActivityNoteInput = {
@@ -524,6 +533,47 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
 
     await Promise.all(savePromises);
+  };
+
+  const deleteTrackedTaskActions = async () => {
+    try {
+      const deletePromises = deletedTaskActionGuids.map(async (guid) => {
+        return deleteActivityNoteMutation.mutateAsync({ activityNoteGuid: guid });
+      });
+
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error deleting task actions:", error);
+      throw error;
+    }
+  };
+
+  const deleteTaskAction = async (index: number) => {
+    const taskActionToDelete = taskActions[index];
+
+    // If it's an existing task action (has activityNoteGuid), track it for deletion
+    if (taskActionToDelete?.activityNoteGuid) {
+      setDeletedTaskActionGuids([...deletedTaskActionGuids, taskActionToDelete.activityNoteGuid]);
+    }
+
+    //Remove from local state
+    const newTaskActions = taskActions.filter((_, i) => i !== index);
+    setTaskActions(newTaskActions);
+
+    // Update validation state
+    const newValidation = { ...taskActionValidation };
+    delete newValidation[index];
+    // Reindex the validation state
+    const reindexedValidation: Record<number, boolean> = {};
+    Object.keys(newValidation).forEach((key) => {
+      const numKey = Number.parseInt(key);
+      if (numKey > index) {
+        reindexedValidation[numKey - 1] = newValidation[numKey];
+      } else {
+        reindexedValidation[numKey] = newValidation[numKey];
+      }
+    });
+    setTaskActionValidation(reindexedValidation);
   };
 
   const taskSubCategoryOptions = taskSubCategories
@@ -807,14 +857,35 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           </div>
           {/* Render Task Action Forms */}
           {taskActions.map((taskAction, index: number) => (
-            <ActivityNoteWrapper
+            <Card
               key={taskAction?.activityNoteGuid || index}
-              index={index}
-              onValidationChange={handleTaskActionValidationChange}
-              onValuesChange={handleTaskActionValuesChange}
-              initialData={taskAction}
-              showErrors={showTaskActionErrors}
-            />
+              className="comp-drug-form" // TODO rename this
+              style={{ borderTop: "none" }}
+            >
+              <Card.Header className="comp-card-header px-0">
+                <div className="comp-card-header-title">
+                  <h5>Add task action {index + 1}</h5>
+                </div>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  aria-label="Delete diary date"
+                  onClick={() => deleteTaskAction(index)}
+                >
+                  <i className="bi bi-trash3"></i>
+                  <span>Delete</span>
+                </Button>
+              </Card.Header>
+              <Card.Body>
+                <ActivityNoteWrapper
+                  index={index}
+                  onValidationChange={handleTaskActionValidationChange}
+                  onValuesChange={handleTaskActionValuesChange}
+                  initialData={taskAction}
+                  showErrors={showTaskActionErrors}
+                />
+              </Card.Body>
+            </Card>
           ))}
           <Button
             className="comp-add-task-action"

@@ -49,6 +49,12 @@ export const GET_ACTIVITY_NOTES_BY_TASK = gql`
   }
 `;
 
+export const DELETE_ACTIVITY_NOTE = gql`
+  mutation DeleteActivityNote($activityNoteGuid: String!) {
+    deleteActivityNote(activityNoteGuid: $activityNoteGuid)
+  }
+`;
+
 export const SAVE_ACTIVITY_NOTE_MUTATION = gql`
   mutation SaveActivityNote($input: ActivityNoteInput!) {
     saveActivityNote(input: $input) {
