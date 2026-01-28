@@ -4,7 +4,7 @@ import DatePicker from "react-datepicker";
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
-  maxDate: Date;
+  maxDate?: Date;
   minDate?: Date;
   onChange: (date: Date) => void;
   id: string;
@@ -62,7 +62,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={id}
             dateFormat="yyyy-MM-dd"
-            maxDate={maxDate}
+            {...(maxDate && { maxDate })}
             minDate={minDate}
             autoComplete="false"
             monthsShown={2}
