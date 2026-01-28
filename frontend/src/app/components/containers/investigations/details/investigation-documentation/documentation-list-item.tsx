@@ -4,7 +4,7 @@ import { formatDateTime } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
-import { getDisplayFilename } from "@common/coms-api";
+import { getDisplayFilename } from "@common/attachment-utils";
 import config from "@/config";
 import { Attachment } from "./hooks/use-investigation-attachments";
 

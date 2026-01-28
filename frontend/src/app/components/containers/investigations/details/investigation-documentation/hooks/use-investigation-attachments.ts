@@ -1,6 +1,11 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { searchAttachments, fetchObjectsMetadata, ParsedObjectMetadata, getDisplayFilename } from "@common/coms-api";
+import {
+  searchAttachments,
+  fetchObjectsMetadata,
+  ParsedObjectMetadata,
+  getDisplayFilename,
+} from "@common/attachment-utils";
 import { COMSObject } from "@apptypes/coms/object";
 import { Task } from "@/generated/graphql";
 import AttachmentEnum from "@constants/attachment-enum";

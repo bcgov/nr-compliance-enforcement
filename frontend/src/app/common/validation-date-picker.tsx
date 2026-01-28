@@ -19,7 +19,7 @@ interface ValidationDatePickerProps {
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   className,
   selectedDate,
-  maxDate,
+  maxDate = new Date(2099, 11, 31),
   minDate,
   onChange,
   id,
