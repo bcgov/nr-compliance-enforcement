@@ -19,8 +19,8 @@ import {
   DELETE_DIARY_DATES_BY_TASK,
 } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { useLocation } from "react-router-dom";
-import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
+import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
 
 interface TaskItemProps {
   task: Task;
