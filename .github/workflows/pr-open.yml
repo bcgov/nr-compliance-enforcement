@@ -181,13 +181,14 @@ jobs:
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
           PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }} ${{ github.event.pull_request.head.sha }}
 
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh reserve dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
+
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }} ${{ github.event.pull_request.head.sha }}
 
       # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
       # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
