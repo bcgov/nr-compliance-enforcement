@@ -656,7 +656,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     >
       <Card.Header className="comp-card-header">
         <div className="comp-card-header-title">
-          <h4>{isEditMode ? `Edit task ${task?.taskNumber}` : "Add task"}</h4>
+          <h4>{isEditMode ? `Edit Task ${task?.taskNumber}` : "Add task"}</h4>
         </div>
       </Card.Header>
 
@@ -850,7 +850,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
           <hr className="m-0"></hr>
           <div className="d-flex my-3 gap-2 align-items-center">
             <i className="bi bi-calendar3-week"></i>
-            <h5 className="fw-bold m-0">Diary Dates</h5>
+            <h5 className="fw-bold m-0">Diary dates</h5>
           </div>
           {/* Render Diary Date Forms */}
           {diaryDates.map((diaryDate, index: number) => (
