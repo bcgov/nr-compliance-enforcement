@@ -208,6 +208,7 @@ jobs:
         run: |
           echo "TEMP DEBUG OUTPUT"
           git diff
+
         # DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
         # ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
         # git push origin ${{ env.GITOPS_REPO_BRANCH }}
