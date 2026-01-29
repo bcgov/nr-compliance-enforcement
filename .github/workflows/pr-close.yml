@@ -32,6 +32,7 @@ jobs:
           repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
+          fetch-depth: 0
 
       - name: Calculate Deployment Number
         id: get-deployment-number
@@ -40,6 +41,14 @@ jobs:
           PR_NUMBER=$(echo ${{ github.event.number }})
           PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
           echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
+
+      - name: Get PR Creation timestamp
+        id: get-pr-creation-timestamp
+        shell: bash
+        run: |
+          created="${{ github.event.pull_request.created_at }}"
+          formatted=$(date -d "$created" +"%Y%m%d-%H%M%S")
+          echo "PR_CREATION_TIMESTAMP=$formatted" >> "$GITHUB_OUTPUT"
 
       - name: Configure git
         # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
@@ -54,12 +63,22 @@ jobs:
         #
         # why do this instead of promoting the tag out of the PR? In the event we have 10+
         # PRs open after the last release merge, we could promote an invalid build #
+        #
+        # We only update the base if NO developer custom changes exist on the branch
+        # this way we dont accidently include partial / incomplete work into main
+        # those changes should be manually merged via PR in the gitops repo
         if: ${{ github.event.pull_request.merged == true }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh updatebase dev-$DEPLOYMENT_NUMBER
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
+
+          if ! ./.github/scripts/gitops.sh detectchanges "dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP"; then
+            VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+            OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+            ./.github/scripts/gitops.sh updatebase dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
+          else
+            echo "Developer Infrastructure changes detected! Skipping base update..."
+          fi
 
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
@@ -77,7 +96,7 @@ jobs:
       - name: Unset / No-op Crunchy development DB cleanup
         run: |
           ./.github/scripts/crunchy.sh u
-    
+
       - name: Commit and push update
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
