@@ -206,5 +206,8 @@ jobs:
         shell: bash
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
+
           ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
           git push origin ${{ env.GITOPS_REPO_BRANCH }}
+          git push origin dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
