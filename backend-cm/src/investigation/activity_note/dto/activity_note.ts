@@ -1,12 +1,14 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 
-import { continuation_report } from "../../../../prisma/investigation/generated/continuation_report";
+import { activity_note } from "../../../../prisma/investigation/generated/activity_note";
 import { Field, InputType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 
-export class ContinuationReport {
-  continuationReportGuid: string;
+export class ActivityNote {
+  activityNoteGuid: string;
+  taskGuid: string;
   investigationGuid: string;
+  activityNoteCode: string;
   contentJson: string;
   contentText: string;
   actionedTimestamp: Date;
@@ -16,13 +18,20 @@ export class ContinuationReport {
 }
 
 @InputType()
-export class ContinuationReportInput {
+export class ActivityNoteInput {
   @Field(() => String)
   investigationGuid: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  continuationReportGuid?: string;
+  activityNoteGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  taskGuid?: string;
+
+  @Field(() => String)
+  activityNoteCode: string;
 
   @Field(() => String)
   contentJson: string;
@@ -43,18 +52,26 @@ export class ContinuationReportInput {
   reportedAppUserGuidRef: string;
 }
 
-export const mapPrismaContinuationReportToContinuationReport = (mapper: Mapper) => {
-  createMap<continuation_report, ContinuationReport>(
+export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
+  createMap<activity_note, ActivityNote>(
     mapper,
-    "continuation_report",
-    "ContinuationReport",
+    "activity_note",
+    "ActivityNote",
     forMember(
-      (dest) => dest.continuationReportGuid,
-      mapFrom((src) => src.continuation_report_guid),
+      (dest) => dest.activityNoteGuid,
+      mapFrom((src) => src.activity_note_guid),
     ),
     forMember(
       (dest) => dest.investigationGuid,
       mapFrom((src) => src.investigation_guid),
+    ),
+    forMember(
+      (dest) => dest.taskGuid,
+      mapFrom((src) => src.task_guid),
+    ),
+    forMember(
+      (dest) => dest.activityNoteCode,
+      mapFrom((src) => src.activity_note_code),
     ),
     forMember(
       (dest) => dest.contentJson,

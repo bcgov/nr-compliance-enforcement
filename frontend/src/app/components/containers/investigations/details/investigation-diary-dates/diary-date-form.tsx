@@ -56,7 +56,7 @@ export const DiaryDateForm = ({
 
   return (
     <Card
-      className="comp-drug-form"
+      className="comp-task-form-section"
       style={{ borderTop: "none" }}
     >
       <Card.Header className="comp-card-header px-0">

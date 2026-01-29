@@ -171,7 +171,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
             <tbody>
               {diaryDates.map((diaryDate) => {
                 const taskNumber = tasks
-                  ? tasks.findIndex((task) => task?.taskIdentifier === diaryDate.taskGuid)
+                  ? tasks.find((task) => task?.taskIdentifier === diaryDate.taskGuid)?.taskNumber
                   : null;
                 return (
                   <DiaryDateRow
@@ -179,7 +179,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
                     diaryDate={diaryDate}
                     onEdit={handleEditClick}
                     onDelete={handleDeleteClick}
-                    taskNumber={taskNumber !== null && taskNumber !== -1 ? taskNumber + 1 : null}
+                    taskNumber={taskNumber ?? null}
                   />
                 );
               })}
