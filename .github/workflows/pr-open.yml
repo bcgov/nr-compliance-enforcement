@@ -141,8 +141,7 @@ jobs:
   ### Emerald Jobs ###
   deploy-emerald:
     name: Deploy Workloads To Emerald
-    # needs: [builds, build-playwright, validate-flyway-migrations]
-    needs: [builds, validate-flyway-migrations]
+    needs: [builds, build-playwright, validate-flyway-migrations]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout CD repo
