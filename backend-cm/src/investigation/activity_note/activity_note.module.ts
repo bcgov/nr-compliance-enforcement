@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
-import { ContinuationReportService } from "./continuation_report.service";
-import { ContinuationReportResolver } from "./continuation_report.resolver";
+import { ActivityNoteService } from "./activity_note.service";
+import { ActivityNoteResolver } from "./activity_note.resolver";
 import { PrismaModuleInvestigation } from "src/prisma/investigation/prisma.investigation.module";
 import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
 import { AutomapperModule } from "@automapper/nestjs";
@@ -9,7 +9,7 @@ import { InvestigationModule } from "src/investigation/investigation/investigati
 
 @Module({
   imports: [PrismaModuleInvestigation, PrismaModuleShared, InvestigationModule, AutomapperModule, UserModule],
-  providers: [ContinuationReportResolver, ContinuationReportService],
-  exports: [ContinuationReportService],
+  providers: [ActivityNoteResolver, ActivityNoteService],
+  exports: [ActivityNoteService],
 })
-export class ContinuationReportModule {}
+export class ActivityNoteModule {}
