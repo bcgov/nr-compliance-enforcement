@@ -747,10 +747,9 @@ export const createReview =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid },
-      complaints: {
-        complaint: { ownedBy },
-      },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     let reviewInput = {
       reviewInput: {
         complaintId: complaintId,
@@ -787,10 +786,9 @@ export const updateReview =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid, reviewComplete },
-      complaints: {
-        complaint: { ownedBy },
-      },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     let reviewInput = {
       reviewInput: {
         complaintId,
@@ -867,10 +865,9 @@ export const upsertEquipment =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid },
-      complaints: {
-        complaint: { ownedBy },
-      },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     // equipment does not exist, let's create it
     if (complaintIdentifier && !equipment.id) {
       let createEquipmentInput = {
@@ -932,10 +929,9 @@ export const createAnimalOutcome =
         profile: { idir_username: idir },
       },
       complaintOutcomes: { complaintOutcomeGuid },
-      complaints: {
-        complaint: { ownedBy },
-      },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
 
     const {
       species,
@@ -987,7 +983,7 @@ export const createAnimalOutcome =
 
     const input: CreateAnimalOutcomeInput = {
       complaintId,
-      outcomeAgencyCode: ownedBy,
+      outcomeAgencyCode: ownedBy ?? "",
       createUserId: idir,
       wildlife: {
         species,
