@@ -36,9 +36,32 @@ export class PartyService {
           },
         },
         business: {
-          select: {
-            business_guid: true,
-            name: true,
+          include: {
+            alias: {
+              select: {
+                alias_guid: true,
+                name: true,
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+            business_identifier: {
+              select: {
+                business_identifier_guid: true,
+                business_guid: true,
+                identifier_value: true,
+                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
+                  select: {
+                    business_identifier_code: true,
+                    short_description: true,
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
         person: {
@@ -80,9 +103,32 @@ export class PartyService {
           },
         },
         business: {
-          select: {
-            business_guid: true,
-            name: true,
+          include: {
+            alias: {
+              select: {
+                alias_guid: true,
+                name: true,
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+            business_identifier: {
+              select: {
+                business_identifier_guid: true,
+                business_guid: true,
+                identifier_value: true,
+                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
+                  select: {
+                    business_identifier_code: true,
+                    short_description: true,
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
         party_type_code: {

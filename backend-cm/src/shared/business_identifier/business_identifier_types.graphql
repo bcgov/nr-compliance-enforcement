@@ -1,0 +1,4 @@
+type BusinessIdentifier {
+  identifierValue: String
+  identifierCode: BusinessIdentifierCode
+}

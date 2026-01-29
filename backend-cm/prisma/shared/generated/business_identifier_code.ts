@@ -1,15 +1,21 @@
-import { alias } from "./alias";
-import { party } from "./party";
 import { business_identifier } from "./business_identifier";
-import { contact_method } from "./contact_method";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class business {
+export class business_identifier_code {
   @ApiProperty({ type: String })
-  business_guid: string;
+  business_identifier_code: string;
 
   @ApiProperty({ type: String })
-  name: string;
+  short_description: string;
+
+  @ApiPropertyOptional({ type: String })
+  long_description?: string;
+
+  @ApiProperty({ type: Number })
+  display_order: number;
+
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean;
 
   @ApiProperty({ type: String })
   create_user_id: string;
@@ -23,18 +29,6 @@ export class business {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: String })
-  party_guid?: string;
-
-  @ApiProperty({ isArray: true, type: () => alias })
-  alias: alias[];
-
-  @ApiPropertyOptional({ type: () => party })
-  party?: party;
-
   @ApiProperty({ isArray: true, type: () => business_identifier })
-  business_identifier: business_identifier[];
-
-  @ApiProperty({ isArray: true, type: () => contact_method })
-  contact_method: contact_method[];
+  business_identifier_business_identifier_business_identifier_codeTobusiness_identifier_code: business_identifier[];
 }

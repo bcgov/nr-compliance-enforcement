@@ -1,0 +1,5 @@
+input BusinessIdentifierInput {
+  businessGuid: String!
+  identifier: String!
+  identifierCode: String!
+}
