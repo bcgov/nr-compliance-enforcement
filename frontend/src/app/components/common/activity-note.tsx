@@ -181,6 +181,10 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     }
   }, [shouldReset]);
 
+  const handleEditorClick = () => {
+    editor?.commands.focus();
+  };
+
   return (
     <div className="lg:col-span-2 space-y-4 border rounded p-3 mb-3">
       <MenuBarEditor editor={editor} />
@@ -188,6 +192,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
         <EditorContent
           editor={editor}
           className="tiptap-editor"
+          onClick={handleEditorClick}
         />
         {contentError && <div className="error-message">{contentError}</div>}
       </div>
