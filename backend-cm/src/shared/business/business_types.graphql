@@ -1,4 +1,8 @@
 type Business {
   businessGuid: String
   name: String
+  aliases: [Alias]
+  identifiers: [BusinessIdentifier]
+  contacts: [Person]
+  contactMethods: [ContactMethod]
 }
