@@ -45,6 +45,7 @@ import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/d
 import { mapPrismaAliasToAlias } from "src/shared/alias/dto/alias";
 import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "src/shared/business_identifier_code/dto/business_identifier_code";
 import { mapPrismaBusinessIdentifierToIdentifier } from "src/shared/business_identifier/dto/business_identifier";
+import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -69,6 +70,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAliasToAlias(mapper);
   mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode(mapper);
   mapPrismaBusinessIdentifierToIdentifier(mapper);
+  mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

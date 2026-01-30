@@ -47,6 +47,9 @@ import { business_identifier as _business_identifier } from "./business_identifi
 import { business_identifier_code as _business_identifier_code } from "./business_identifier_code";
 import { business_identifier_h as _business_identifier_h } from "./business_identifier_h";
 import { sex_code as _sex_code } from "./sex_code";
+import { business_person_xref as _business_person_xref } from "./business_person_xref";
+import { business_person_xref_code as _business_person_xref_code } from "./business_person_xref_code";
+import { business_person_xref_h as _business_person_xref_h } from "./business_person_xref_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -98,6 +101,9 @@ export namespace PrismaModel {
   export class business_identifier_code extends _business_identifier_code {}
   export class business_identifier_h extends _business_identifier_h {}
   export class sex_code extends _sex_code {}
+  export class business_person_xref extends _business_person_xref {}
+  export class business_person_xref_code extends _business_person_xref_code {}
+  export class business_person_xref_h extends _business_person_xref_h {}
 
   export const extraModels = [
     agency_code,
@@ -149,5 +155,8 @@ export namespace PrismaModel {
     business_identifier_code,
     business_identifier_h,
     sex_code,
+    business_person_xref,
+    business_person_xref_code,
+    business_person_xref_h,
   ];
 }

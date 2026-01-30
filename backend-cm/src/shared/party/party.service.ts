@@ -62,6 +62,28 @@ export class PartyService {
                 active_ind: true,
               },
             },
+            contact_method: {
+              select: {
+                contact_method_type: true,
+                contact_value: true,
+                is_primary: true,
+              },
+            },
+            business_person_xref: {
+              include: {
+                person: {
+                  select: {
+                    person_guid: true,
+                    first_name: true,
+                    last_name: true,
+                    contact_method: true,
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
         person: {
@@ -122,6 +144,28 @@ export class PartyService {
                   select: {
                     business_identifier_code: true,
                     short_description: true,
+                  },
+                },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+            contact_method: {
+              select: {
+                contact_method_type: true,
+                contact_value: true,
+                is_primary: true,
+              },
+            },
+            business_person_xref: {
+              include: {
+                person: {
+                  select: {
+                    person_guid: true,
+                    first_name: true,
+                    last_name: true,
+                    contact_method: true,
                   },
                 },
               },

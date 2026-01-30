@@ -1,8 +1,10 @@
 import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
 import { business } from "../../../../prisma/shared/generated/business";
 import { BusinessDto } from "../../../common/party";
-import { Alias } from "src/shared/alias/dto/alias";
-import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
+import { Alias } from "../../alias/dto/alias";
+import { BusinessIdentifier } from "../../business_identifier/dto/business_identifier";
+import { ContactMethod } from "../../contact_method/dto/contact_method";
+import { Person } from "../../person/dto/person";
 
 export class Business implements BusinessDto {
   businessGuid: string;
@@ -10,6 +12,8 @@ export class Business implements BusinessDto {
   name: string;
   aliases: Alias[];
   identifiers: BusinessIdentifier[];
+  contactMethods: ContactMethod[];
+  contactPeople: Person[];
 }
 
 export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {
@@ -33,6 +37,16 @@ export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {
       (dest) => dest.identifiers,
       mapWithArguments((src) =>
         mapper.mapArray(src.business_identifier ?? [], "business_identifier", "BusinessIdentifier"),
+      ),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
+    ),
+    forMember(
+      (dest) => dest.contactPeople,
+      mapWithArguments((src) =>
+        mapper.mapArray(src.business_person_xref?.map((xref) => xref.person) ?? [], "person", "Person"),
       ),
     ),
   );
