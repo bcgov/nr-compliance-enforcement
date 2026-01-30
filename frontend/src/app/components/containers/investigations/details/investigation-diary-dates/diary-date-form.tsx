@@ -56,7 +56,7 @@ export const DiaryDateForm = ({
 
   return (
     <Card
-      className="comp-drug-form"
+      className="comp-task-form-section"
       style={{ borderTop: "none" }}
     >
       <Card.Header className="comp-card-header px-0">
@@ -124,7 +124,6 @@ export const DiaryDateForm = ({
               classNamePrefix="comp-details-edit-calendar-input"
               className="comp-details-input full-width"
               id={`diary-date-${index}`}
-              maxDate={new Date()}
               onChange={(date: Date) => {
                 field.handleChange(date);
               }}

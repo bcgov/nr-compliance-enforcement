@@ -3,7 +3,7 @@ import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { CaseFile, Investigation } from "@/generated/graphql";
+import { CaseFile, Investigation, Task } from "@/generated/graphql";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
@@ -134,7 +134,12 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "documents":
-        return <InvestigationDocumentation />;
+        return (
+          <InvestigationDocumentation
+            investigationGuid={investigationGuid}
+            tasks={(investigationData?.tasks as Task[]) ?? []}
+          />
+        );
       case "continuation":
         return <InvestigationContinuation investigationData={investigationData} />;
       case "admin":
@@ -155,11 +160,17 @@ export const InvestigationDetails: FC = () => {
     );
   }
 
+  const isListView = currentTab === "documents";
+  const containerClass = isListView
+    ? "comp-complaint-details comp-complaint-details--list-view"
+    : "comp-complaint-details";
+  const detailsBodyClass = isListView ? "comp-details-body comp-details-body--list-view" : "comp-details-body";
+
   return (
-    <div className="comp-complaint-details">
+    <div className={containerClass}>
       <InvestigationHeader investigation={investigationData} />
 
-      <div className="comp-details-body">{renderTabContent()}</div>
+      <div className={detailsBodyClass}>{renderTabContent()}</div>
     </div>
   );
 };
