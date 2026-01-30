@@ -65,6 +65,7 @@ export class PartyService {
             contact_method: {
               select: {
                 contact_method_type: true,
+                contact_method_type_code: true,
                 contact_value: true,
                 is_primary: true,
               },
@@ -76,7 +77,14 @@ export class PartyService {
                     person_guid: true,
                     first_name: true,
                     last_name: true,
-                    contact_method: true,
+                    contact_method: {
+                      select: {
+                        contact_method_type: true,
+                        contact_method_type_code: true,
+                        contact_value: true,
+                        is_primary: true,
+                      },
+                    },
                   },
                 },
               },
@@ -154,6 +162,7 @@ export class PartyService {
             contact_method: {
               select: {
                 contact_method_type: true,
+                contact_method_type_code: true,
                 contact_value: true,
                 is_primary: true,
               },
@@ -165,7 +174,14 @@ export class PartyService {
                     person_guid: true,
                     first_name: true,
                     last_name: true,
-                    contact_method: true,
+                    contact_method: {
+                      select: {
+                        contact_method_type: true,
+                        contact_method_type_code: true,
+                        contact_value: true,
+                        is_primary: true,
+                      },
+                    },
                   },
                 },
               },

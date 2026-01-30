@@ -12,6 +12,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -43,8 +44,34 @@ const GET_PARTY = gql`
         lastName
       }
       business {
-        businessGuid
         name
+        businessGuid
+        aliases {
+          name
+        }
+        identifiers {
+          identifierValue
+          identifierCode {
+            businessIdentifierCode
+            shortDescription
+          }
+        }
+        contactMethods {
+          typeCode
+          typeDescription
+          value
+          isPrimary
+        }
+        contactPeople {
+          firstName
+          lastName
+          contactMethods {
+            typeCode
+            typeDescription
+            value
+            isPrimary
+          }
+        }
       }
     }
   }
@@ -347,8 +374,18 @@ export const PartyView: FC = () => {
               </div>
               <div className="party-details-summary-info">
                 <h3>{displayName()}</h3>
-                <p>Description</p>
-                <p>Id</p>
+                {partyData?.business?.identifiers && (
+                  <>
+                    {partyData.business.identifiers.map((identifier) => {
+                      return (
+                        <p key={identifier?.identifierValue}>
+                          <b>{identifier?.identifierCode?.shortDescription}: </b>
+                          {identifier?.identifierValue}
+                        </p>
+                      );
+                    })}
+                  </>
+                )}
               </div>
               <div className="comp-details-section-header-actions party-details-summary-actions">
                 <Button
@@ -369,6 +406,18 @@ export const PartyView: FC = () => {
                 <b>Name: </b>
                 {displayName()}
               </p>
+              {partyData?.business?.aliases && (
+                <>
+                  {partyData.business.aliases.map((alias) => {
+                    return (
+                      <p key={alias?.name}>
+                        <b>Alias: </b>
+                        {alias?.name}
+                      </p>
+                    );
+                  })}
+                </>
+              )}
               {partyData?.person && (
                 <p>
                   <b>Date of birth:</b>
@@ -428,13 +477,54 @@ export const PartyView: FC = () => {
             )}
             <br />
             <h4>Contact information</h4>
+
             <div className="party-details-item">
-              <p>
-                <b>TextLabel:</b>&nbsp;abc
-              </p>
-              <p>
-                <b>TextLabel:</b>&nbsp;abc
-              </p>
+              {partyData?.business?.contactMethods && (
+                <>
+                  {partyData.business.contactMethods.map((contactMethod) => {
+                    return (
+                      <p key={contactMethod?.value}>
+                        <b>{contactMethod?.typeDescription}: </b>
+                        {contactMethod?.typeCode === "PHONE"
+                          ? formatPhoneNumber(contactMethod?.value ?? "")
+                          : contactMethod?.value}
+                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Preferred contact method</Badge>}
+                      </p>
+                    );
+                  })}
+                </>
+              )}
+              {partyData?.business?.contactPeople && (
+                <>
+                  <h4>Business contacts</h4>
+                  {partyData.business.contactPeople.map((contactPerson, index) => {
+                    return (
+                      <>
+                        <p key={contactPerson?.personGuid}>
+                          <b>Name: </b>
+                          {contactPerson?.lastName}, {contactPerson?.firstName}
+                        </p>
+                        <>
+                          {contactPerson?.contactMethods?.map((contactMethod) => {
+                            return (
+                              <p key={contactMethod?.value}>
+                                <b>{contactMethod?.typeDescription}: </b>
+                                {contactMethod?.typeCode === "PHONE"
+                                  ? formatPhoneNumber(contactMethod?.value ?? "")
+                                  : contactMethod?.value}
+                                {contactMethod?.isPrimary && (
+                                  <Badge className="ms-1 badge">Preferred contact method</Badge>
+                                )}
+                              </p>
+                            );
+                          })}
+                          {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
+                        </>
+                      </>
+                    );
+                  })}
+                </>
+              )}
             </div>
             <br />
             <h4>C&E history</h4>
