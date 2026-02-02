@@ -732,15 +732,15 @@ model team_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model alias {
-  alias_guid           String   @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid        String   @db.Uuid
-  name                 String   @db.VarChar(512)
-  active_ind           Boolean? @default(true)
-  create_user_id       String   @db.VarChar(32)
-  create_utc_timestamp DateTime @db.Timestamp(6)
-  update_user_id       String   @db.VarChar(32)
-  update_utc_timestamp DateTime @db.Timestamp(6)
-  business             business @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
+  alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid        String    @db.Uuid
+  name                 String    @db.VarChar(512)
+  active_ind           Boolean   @default(true)
+  create_user_id       String    @db.VarChar(32)
+  create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id       String?   @db.VarChar(32)
+  update_utc_timestamp DateTime? @db.Timestamp(6)
+  business             business  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
 
   @@schema("shared")
 }
@@ -763,11 +763,11 @@ model business_identifier {
   business_guid                                                                                   String                   @db.Uuid
   business_identifier_code                                                                        String                   @db.VarChar(16)
   identifier_value                                                                                String                   @db.VarChar(256)
-  active_ind                                                                                      Boolean?                 @default(true)
+  active_ind                                                                                      Boolean                  @default(true)
   create_user_id                                                                                  String                   @db.VarChar(32)
-  create_utc_timestamp                                                                            DateTime                 @db.Timestamp(6)
-  update_user_id                                                                                  String                   @db.VarChar(32)
-  update_utc_timestamp                                                                            DateTime                 @db.Timestamp(6)
+  create_utc_timestamp                                                                            DateTime                 @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                  String?                  @db.VarChar(32)
+  update_utc_timestamp                                                                            DateTime?                @db.Timestamp(6)
   business                                                                                        business                 @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_business_fk")
   business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code business_identifier_code @relation("business_identifier_business_identifier_codeTobusiness_identifier_code", fields: [business_identifier_code], references: [business_identifier_code], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_code_fk")
 
@@ -780,9 +780,9 @@ model business_identifier_code {
   short_description                                                                          String                @db.VarChar(64)
   long_description                                                                           String?               @db.VarChar(256)
   display_order                                                                              Int
-  active_ind                                                                                 Boolean
+  active_ind                                                                                 Boolean               @default(true)
   create_user_id                                                                             String                @db.VarChar(32)
-  create_utc_timestamp                                                                       DateTime              @db.Timestamp(6)
+  create_utc_timestamp                                                                       DateTime              @default(now()) @db.Timestamp(6)
   update_user_id                                                                             String?               @db.VarChar(32)
   update_utc_timestamp                                                                       DateTime?             @db.Timestamp(6)
   business_identifier_business_identifier_business_identifier_codeTobusiness_identifier_code business_identifier[] @relation("business_identifier_business_identifier_codeTobusiness_identifier_code")
@@ -824,11 +824,11 @@ model business_person_xref {
   business_guid                                                                                       String                    @db.Uuid
   person_guid                                                                                         String                    @db.Uuid
   business_person_xref_code                                                                           String                    @db.VarChar(16)
-  active_ind                                                                                          Boolean?                  @default(true)
+  active_ind                                                                                          Boolean                   @default(true)
   create_user_id                                                                                      String                    @db.VarChar(32)
-  create_utc_timestamp                                                                                DateTime                  @db.Timestamp(6)
-  update_user_id                                                                                      String                    @db.VarChar(32)
-  update_utc_timestamp                                                                                DateTime                  @db.Timestamp(6)
+  create_utc_timestamp                                                                                DateTime                  @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                      String?                   @db.VarChar(32)
+  update_utc_timestamp                                                                                DateTime?                 @db.Timestamp(6)
   business                                                                                            business                  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_business_fk")
   business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref_code @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code", fields: [business_person_xref_code], references: [business_person_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_code_fk")
   person                                                                                              person                    @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_person_fk")
@@ -842,9 +842,9 @@ model business_person_xref_code {
   short_description                                                                              String                 @db.VarChar(64)
   long_description                                                                               String?                @db.VarChar(256)
   display_order                                                                                  Int
-  active_ind                                                                                     Boolean
+  active_ind                                                                                     Boolean                @default(true)
   create_user_id                                                                                 String                 @db.VarChar(32)
-  create_utc_timestamp                                                                           DateTime               @db.Timestamp(6)
+  create_utc_timestamp                                                                           DateTime               @default(now()) @db.Timestamp(6)
   update_user_id                                                                                 String?                @db.VarChar(32)
   update_utc_timestamp                                                                           DateTime?              @db.Timestamp(6)
   business_person_xref_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref[] @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code")

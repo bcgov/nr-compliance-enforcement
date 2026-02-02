@@ -15,7 +15,7 @@ export class business_identifier_code {
   display_order: number;
 
   @ApiProperty({ type: Boolean })
-  active_ind: boolean;
+  active_ind: boolean = true;
 
   @ApiProperty({ type: String })
   create_user_id: string;

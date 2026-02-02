@@ -5,8 +5,3 @@ input PersonInput {
   lastName: String!
   contactMethods: [ContactMethodInput]
 }
-
-input ContactMethodInput {
-  typeCode: String!
-  value: String!
-}

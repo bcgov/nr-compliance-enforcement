@@ -1,4 +1,4 @@
 input AliasInput {
-  businessGuid: String!
+  businessGuid: String
   name: String!
 }

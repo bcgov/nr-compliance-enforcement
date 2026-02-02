@@ -7,6 +7,7 @@ import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } 
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { PageInfo } from "../case_file/dto/case_file";
+import { Person } from "src/shared/person/dto/person";
 
 @Injectable()
 export class PartyService {
@@ -209,34 +210,122 @@ export class PartyService {
     }
   }
 
+  private async createContactPeople(contactPeople: Person[]): Promise<string[]> {
+    const contactPersonGuids: string[] = [];
+
+    for (const person of contactPeople) {
+      const personInput: PartyCreateInput = {
+        partyTypeCode: "PRS",
+        person: person,
+      };
+      const createdParty = await this.create(personInput);
+      contactPersonGuids.push(createdParty.person.personGuid);
+    }
+
+    return contactPersonGuids;
+  }
+
   async create(input: PartyCreateInput): Promise<Party> {
-    const prismaParty = await this.prisma.party.create({
-      data: {
+    let data: any;
+    let contactPersonGuids = [];
+
+    if (input.business?.contactPeople) {
+      contactPersonGuids = await this.createContactPeople(input.business.contactPeople);
+    }
+
+    if (input.partyTypeCode === "PRS") {
+      data = {
         party_type: input.partyTypeCode,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
-        // Conditionally insert data into person or business table
-        ...(input.partyTypeCode === "PRS"
-          ? {
-              person: {
-                create: {
-                  first_name: input.person?.firstName,
-                  last_name: input.person?.lastName,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                },
-              },
-            }
-          : {
-              business: {
-                create: {
-                  name: input.business?.name,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                },
-              },
-            }),
-      },
+
+        person: {
+          create: {
+            first_name: input.person?.firstName,
+            last_name: input.person?.lastName,
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+            ...(input.person?.contactMethods?.length
+              ? {
+                  contact_method: {
+                    create: input.person.contactMethods.map((c) => ({
+                      contact_method_type: c.typeCode,
+                      contact_value: c.value,
+                      is_primary: c.isPrimary,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
+                  },
+                }
+              : {}),
+          },
+        },
+      };
+    } else {
+      data = {
+        party_type: input.partyTypeCode,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+        business: {
+          create: {
+            name: input.business?.name,
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+            ...(input.business?.aliases?.length
+              ? {
+                  alias: {
+                    create: input.business.aliases.map((a) => ({
+                      name: a.name,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
+                  },
+                }
+              : {}),
+            ...(input.business?.identifiers?.length
+              ? {
+                  business_identifier: {
+                    create: input.business.identifiers.map((i) => ({
+                      business_identifier_code: i.identifierCode,
+                      identifier_value: i.identifierValue,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
+                  },
+                }
+              : {}),
+            ...(input.business?.contactMethods?.length
+              ? {
+                  contact_method: {
+                    create: input.business.contactMethods.map((c) => ({
+                      contact_method_type: c.typeCode,
+                      contact_value: c.value,
+                      is_primary: c.isPrimary,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
+                  },
+                }
+              : {}),
+            ...(contactPersonGuids?.length
+              ? {
+                  business_person_xref: {
+                    create: contactPersonGuids.map((g) => ({
+                      person_guid: g,
+                      business_person_xref_code: "CONT",
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
+                  },
+                }
+              : {}),
+          },
+        },
+      };
+    }
+
+    const prismaParty = await this.prisma.party.create({
+      data,
       include: {
         party_type_code: true,
         person: true,
