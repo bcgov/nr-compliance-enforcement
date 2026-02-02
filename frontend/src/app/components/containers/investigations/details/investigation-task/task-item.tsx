@@ -204,7 +204,17 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
 
             <Card.Body className="task-details">
               <dl>
-                <div onClick={() => setActiveKey(task.taskNumber?.toString())}>
+                <div
+                  onClick={() => setActiveKey(task.taskNumber?.toString())}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowDown") {
+                      setActiveKey(task.taskNumber?.toString());
+                      e.preventDefault();
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
                   <dt>Task description</dt>
                   <dd>
                     <div
