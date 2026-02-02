@@ -204,7 +204,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
 
             <Card.Body className="task-details">
               <dl>
-                <div
+                <button
                   onClick={() => setActiveKey(task.taskNumber?.toString())}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowDown") {
@@ -212,8 +212,9 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                       e.preventDefault();
                     }
                   }}
-                  role="button"
                   tabIndex={0}
+                  className="d-flex flex-row gap-3"
+                  style={{ all: "unset", display: "flex" }}
                 >
                   <dt>Task description</dt>
                   <dd>
@@ -232,7 +233,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                       <pre id="comp-task-description">{task?.description}</pre>
                     </div>
                   </dd>
-                </div>
+                </button>
                 <div>
                   <dt>Officer assigned</dt>
                   <dd>
