@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { TaskItem } from "@/app/components/containers/investigations/details/investigation-task/task-item";
 import { TaskForm } from "@/app/components/containers/investigations/details/investigation-task/task-form";
@@ -13,6 +13,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
   // State
   const [showAddCard, setshowAddCard] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
 
   // Data
   const tasks = investigationData?.tasks;
@@ -27,11 +28,31 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
     setEditingTaskId(taskId);
   };
 
+  useEffect(() => {
+    if (showAddCard && targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [showAddCard]);
+
   return (
     <div className="comp-details-view">
-      <div className="row">
-        <div className="col-12">
+      <div className="row my-2">
+        <div className="col-auto">
           <h3>Tasks</h3>
+        </div>
+        <div className="col-auto">
+          <Button
+            id="add-task-button"
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              setshowAddCard(true);
+              targetRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <i className="bi bi-plus-circle me-1" /> {/**/}
+            Add task
+          </Button>
         </div>
       </div>
 
@@ -55,26 +76,16 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
           </div>
         ))}
       </div>
-
-      {showAddCard && (
-        <TaskForm
-          investigationGuid={investigationGuid}
-          onClose={handleCloseForm}
-        />
-      )}
-
-      <div className="row">
-        <div className="col-12">
-          <Button
-            id="add-task-button"
-            variant="primary"
-            size="sm"
-            onClick={() => setshowAddCard(true)}
-          >
-            <i className="bi bi-plus-circle me-1" /> {/**/}
-            Add task
-          </Button>
-        </div>
+      <div
+        ref={targetRef}
+        style={{ scrollMarginTop: "8em" }}
+      >
+        {showAddCard && (
+          <TaskForm
+            investigationGuid={investigationGuid}
+            onClose={handleCloseForm}
+          />
+        )}
       </div>
     </div>
   );
