@@ -212,7 +212,6 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                       e.preventDefault();
                     }
                   }}
-                  tabIndex={0}
                   className="d-flex flex-row gap-3"
                   style={{ all: "unset", display: "flex" }}
                 >
