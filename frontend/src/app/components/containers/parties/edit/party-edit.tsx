@@ -16,6 +16,7 @@ import { Alias, ContactMethod, PartyCreateInput, PartyUpdateInput, Person } from
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { Button } from "react-bootstrap";
+import { PhoneNumberField } from "@/app/components/containers/parties/edit/phone-number";
 
 const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -106,6 +107,7 @@ const CREATE_PARTY_MUTATION = gql`
     }
   }
 `;
+
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -128,6 +130,7 @@ const PartyEdit: FC = () => {
         label: code.label,
       };
     });
+
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
     onError: (error: any) => {
       console.error("Error creating party:", error);
@@ -391,6 +394,40 @@ const PartyEdit: FC = () => {
     [form],
   );
 
+  const handleSetPrimaryPhoneNumber = useCallback(
+    (index: number) => {
+      const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+      const updatedPhones = currentPhoneNumbers.map((p: any, i: number) => ({
+        ...p,
+        isPrimary: i === index,
+      }));
+      form.setFieldValue("phoneNumbers", updatedPhones);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryContactPhone = useCallback(
+    (contactIndex: number, originalIndex: number) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+      const updatedContacts = currentContacts.map((c: Person, cIndex: number) => {
+        if (cIndex === contactIndex) {
+          return {
+            ...c,
+            contactMethods: (c.contactMethods || []).map((cm, cmIdx) => {
+              if (cm?.typeCode === "PHONE") {
+                return { ...cm, isPrimary: cmIdx === originalIndex };
+              }
+              return cm;
+            }),
+          };
+        }
+        return c;
+      });
+      form.setFieldValue("contacts", updatedContacts);
+    },
+    [form],
+  );
+
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
 
@@ -506,7 +543,7 @@ const PartyEdit: FC = () => {
                 />
                 {aliasesValue?.map((alias: Alias, index: number) => (
                   <FormField
-                    key={alias.name}
+                    key={index}
                     form={form}
                     name={`aliases[${index}]` as any}
                     label={index === 0 ? "Alias" : ""}
@@ -594,60 +631,18 @@ const PartyEdit: FC = () => {
                   )}
                 />
                 {phoneNumberValue?.map((phoneNumber: any, index: number) => (
-                  <FormField
+                  <PhoneNumberField
                     key={index}
+                    phoneNumber={phoneNumber}
+                    displayIndex={index}
                     form={form}
-                    name={`phoneNumbers[${index}].value` as any}
-                    label={index === 0 ? "Phone number" : ""}
-                    render={(field) => (
-                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                        {index === 0 && (
-                          <div style={{ width: "60px", fontWeight: "500", fontSize: "14px" }}>Primary</div>
-                        )}
-                        {index > 0 && <div style={{ width: "60px" }}></div>}
-
-                        <input
-                          type="radio"
-                          id={`phone-primary-${index}`}
-                          name="primaryPhoneNumber"
-                          checked={phoneNumber.isPrimary || false}
-                          onChange={() => {
-                            const updatedPhones = phoneNumberValue.map((p: any, i: number) => ({
-                              ...p,
-                              isPrimary: i === index,
-                            }));
-                            form.setFieldValue("phoneNumbers", updatedPhones);
-                          }}
-                          disabled={isDisabled}
-                        />
-
-                        <div style={{ flex: 1 }}>
-                          <CompInput
-                            id={`phone-number-${index}`}
-                            divid=""
-                            type="input"
-                            inputClass="comp-form-control comp-details-input"
-                            value={phoneNumber.value}
-                            error={field.state.meta.errors?.[0]?.message || ""}
-                            maxLength={512}
-                            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                            disabled={isDisabled}
-                          />
-                        </div>
-
-                        <div style={{ width: "100px" }}>
-                          <Button
-                            variant="outline-dark"
-                            size="sm"
-                            onClick={() => handleRemovePhoneNumber(index)}
-                            type="button"
-                          >
-                            <i className="bi bi-trash" /> {/**/}
-                            Remove
-                          </Button>
-                        </div>
-                      </div>
-                    )}
+                    isDisabled={isDisabled}
+                    onSetPrimary={() => handleSetPrimaryPhoneNumber(index)}
+                    onRemove={() => handleRemovePhoneNumber(index)}
+                    fieldName={`phoneNumbers[${index}].value`}
+                    radioName="primaryPhoneNumber"
+                    radioId={`phone-primary-${index}`}
+                    inputId={`phone-number-${index}`}
                   />
                 ))}
                 <FormField
@@ -669,7 +664,7 @@ const PartyEdit: FC = () => {
                 />
                 {emailAddressValue?.map((email: ContactMethod, index: number) => (
                   <FormField
-                    key={email.value}
+                    key={index}
                     form={form}
                     name={`emailAddresses[${index}]` as any}
                     label={index === 0 ? "Email" : ""}
@@ -694,7 +689,8 @@ const PartyEdit: FC = () => {
                           onClick={() => handleRemoveEmail(index)}
                           type="button"
                         >
-                          <i className="bi bi-trash" /> {/**/}
+                          <i className="bi bi-trash" />
+                          {/**/}
                           Remove
                         </Button>
                       </div>
@@ -720,7 +716,7 @@ const PartyEdit: FC = () => {
                 />
                 {contactValue?.map((contact: Person, contactIndex: number) => (
                   <FormField
-                    key={contact.personGuid}
+                    key={contactIndex}
                     form={form}
                     name={`contact-${contactIndex}`}
                     label={contactIndex === 0 ? "Contact" : ""}
@@ -786,70 +782,23 @@ const PartyEdit: FC = () => {
                         {/* Phone numbers for this contact */}
                         {contact.contactMethods
                           ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
-                          .filter(({ method }) => method?.typeCode === "PHONE")
+                          .filter(
+                            (item): item is { method: ContactMethod; originalIndex: number } =>
+                              item.method !== null && item.method.typeCode === "PHONE",
+                          )
                           .map(({ method, originalIndex }, displayIndex) => (
-                            <FormField
+                            <PhoneNumberField
                               key={originalIndex}
+                              phoneNumber={method}
+                              displayIndex={displayIndex}
                               form={form}
-                              name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value` as any}
-                              label={displayIndex === 0 ? "Phone number" : ""}
-                              render={(field) => (
-                                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                                  {displayIndex === 0 && (
-                                    <div style={{ width: "60px", fontWeight: "500", fontSize: "14px" }}>Primary</div>
-                                  )}
-                                  {displayIndex > 0 && <div style={{ width: "60px" }}></div>}
-
-                                  <input
-                                    type="radio"
-                                    id={`contact-phone-primary-${contactIndex}-${originalIndex}`}
-                                    name={`primaryContactPhone-${contactIndex}`}
-                                    checked={method?.isPrimary || false}
-                                    onChange={() => {
-                                      const currentContacts = form.getFieldValue("contacts") || [];
-                                      const updatedContacts = currentContacts.map((c: Person, cIndex: number) => {
-                                        if (cIndex === contactIndex) {
-                                          return {
-                                            ...c,
-                                            contactMethods: (c.contactMethods || []).map((cm, cmIdx) => {
-                                              if (cm?.typeCode === "PHONE") {
-                                                return { ...cm, isPrimary: cmIdx === originalIndex };
-                                              }
-                                              return cm;
-                                            }),
-                                          };
-                                        }
-                                        return c;
-                                      });
-                                      form.setFieldValue("contacts", updatedContacts);
-                                    }}
-                                    disabled={isDisabled}
-                                  />
-
-                                  <div style={{ flex: 1 }}>
-                                    <CompInput
-                                      id={`contact-phone-${contactIndex}-${originalIndex}`}
-                                      divid=""
-                                      type="input"
-                                      inputClass="comp-form-control comp-details-input"
-                                      value={field.state.value}
-                                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                                      disabled={isDisabled}
-                                    />
-                                  </div>
-
-                                  <div style={{ width: "100px" }}>
-                                    <Button
-                                      variant="outline-dark"
-                                      size="sm"
-                                      onClick={() => handleRemoveContactMethod(contactIndex, originalIndex)}
-                                      type="button"
-                                    >
-                                      <i className="bi bi-trash" /> Remove
-                                    </Button>
-                                  </div>
-                                </div>
-                              )}
+                              isDisabled={isDisabled}
+                              onSetPrimary={() => handleSetPrimaryContactPhone(contactIndex, originalIndex)}
+                              onRemove={() => handleRemoveContactMethod(contactIndex, originalIndex)}
+                              fieldName={`contacts[${contactIndex}].contactMethods[${originalIndex}].value`}
+                              radioName={`primaryContactPhone-${contactIndex}`}
+                              radioId={`contact-phone-primary-${contactIndex}-${originalIndex}`}
+                              inputId={`contact-phone-${contactIndex}-${originalIndex}`}
                             />
                           ))}
 
