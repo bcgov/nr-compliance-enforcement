@@ -1,7 +1,7 @@
-import { CompInput } from "@/app/components/common/comp-input";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { FormField } from "@/app/components/common/form-field";
 import { ContactMethod } from "@/generated/graphql";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Button } from "react-bootstrap";
 
 interface PhoneNumberFieldProps {
@@ -49,16 +49,14 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
           />
 
           <div style={{ flex: 1 }}>
-            <CompInput
-              id={inputId}
-              divid=""
-              type="input"
-              inputClass="comp-form-control comp-details-input"
+            <ValidationPhoneInput
+              className="comp-details-input"
               value={phoneNumber.value ?? ""}
-              error={field.state.meta.errors?.[0]?.message || ""}
-              maxLength={512}
-              onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-              disabled={isDisabled}
+              onChange={(value: string) => field.handleChange(value || "")}
+              maxLength={14}
+              international={false}
+              id={inputId}
+              errMsg={field.state.meta.errors?.[0]?.message || ""}
             />
           </div>
 

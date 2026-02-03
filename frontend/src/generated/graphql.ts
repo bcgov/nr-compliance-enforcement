@@ -47,7 +47,7 @@ export type Alias = {
 };
 
 export type AliasInput = {
-  businessGuid: Scalars['String']['input'];
+  businessGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -140,15 +140,15 @@ export type BusinessIdentifierCode = {
 };
 
 export type BusinessIdentifierInput = {
-  businessGuid: Scalars['String']['input'];
-  identifier: Scalars['String']['input'];
+  businessGuid?: InputMaybe<Scalars['String']['input']>;
   identifierCode: Scalars['String']['input'];
+  identifierValue: Scalars['String']['input'];
 };
 
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  contacts?: InputMaybe<Array<InputMaybe<PersonInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   name: Scalars['String']['input'];
 };
@@ -302,6 +302,7 @@ export type ContactMethod = {
 };
 
 export type ContactMethodInput = {
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
 };
