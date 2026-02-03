@@ -1,4 +1,4 @@
-import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
+import { Resolver, Query, Args, Mutation, ResolveField, Parent } from "@nestjs/graphql";
 import { PersonService } from "./person.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Logger, UseGuards } from "@nestjs/common";
@@ -7,12 +7,25 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { GraphQLError } from "graphql";
 import { Person } from "src/shared/person/dto/person";
 import { PersonInput } from "src/shared/person/dto/person.input";
+import { ContactMethod } from "../contact_method/dto/contact_method";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("Person")
 export class PersonResolver {
   constructor(private readonly personService: PersonService) {}
   private readonly logger = new Logger(PersonResolver.name);
+
+  @ResolveField("contactMethods")
+  async contactMethods(@Parent() person: Person): Promise<ContactMethod[] | undefined> {
+    if (Array.isArray(person.contactMethods)) {
+      return person.contactMethods;
+    }
+    if (!person.personGuid) {
+      return [];
+    }
+    const full = await this.personService.findOne(person.personGuid);
+    return full?.contactMethods ?? [];
+  }
 
   @Query("people")
   @Roles(coreRoles)

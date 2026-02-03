@@ -1,7 +1,7 @@
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { FormField } from "@/app/components/common/form-field";
 import { ContactMethod } from "@/generated/graphql";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface PhoneNumberFieldProps {
@@ -51,7 +51,7 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
           <div style={{ flex: 1 }}>
             <ValidationPhoneInput
               className="comp-details-input"
-              value={phoneNumber.value ?? ""}
+              defaultValue={field.state.value ?? phoneNumber.value ?? ""}
               onChange={(value: string) => field.handleChange(value || "")}
               maxLength={14}
               international={false}
@@ -67,9 +67,7 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
               onClick={onRemove}
               type="button"
             >
-              <i className="bi bi-trash" />
-              {/**/}
-              Remove
+              <i className="bi bi-trash" /> Remove
             </Button>
           </div>
         </div>

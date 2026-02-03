@@ -282,12 +282,14 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
   typeCode?: Maybe<Scalars['String']['output']>;
   typeDescription?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
 
 export type ContactMethodInput = {
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
 };

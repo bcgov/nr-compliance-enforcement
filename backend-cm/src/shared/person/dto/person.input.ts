@@ -7,6 +7,9 @@ export class ContactMethodInput {
 
   @Field(() => String)
   value: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isPrimary?: boolean;
 }
 
 @InputType()

@@ -13,4 +13,5 @@ input PersonInput {
 input ContactMethodInput {
   typeCode: String!
   value: String!
+  isPrimary: Boolean
 }

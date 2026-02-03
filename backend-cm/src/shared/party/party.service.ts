@@ -52,6 +52,11 @@ export class PartyService {
             drivers_license_number: true,
             drivers_license_jurisdiction: true,
             sex_code: true,
+            contact_method: {
+              include: {
+                contact_method_type_code: true,
+              },
+            },
           },
         },
       },
@@ -89,6 +94,11 @@ export class PartyService {
             drivers_license_number: true,
             drivers_license_jurisdiction: true,
             sex_code: true,
+            contact_method: {
+              include: {
+                contact_method_type_code: true,
+              },
+            },
           },
         },
         business: {
@@ -138,6 +148,21 @@ export class PartyService {
                   sex_code: input.person?.sexCode?.trim() ? input.person.sexCode.trim() : null,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
+                  ...(input.person?.contactMethods?.length
+                    ? {
+                        contact_method: {
+                          create: input.person.contactMethods.map(
+                            (cm: { typeCode: string; value: string; isPrimary?: boolean },
+                            index: number) => ({
+                              contact_value: cm.value,
+                              contact_method_type: cm.typeCode,
+                              is_primary: cm.isPrimary ?? index === 0,
+                              create_user_id: this.user.getIdirUsername(),
+                            }),
+                          ),
+                        },
+                      }
+                    : {}),
                 },
               },
             }
@@ -153,7 +178,15 @@ export class PartyService {
       },
       include: {
         party_type_code: true,
-        person: true,
+        person: {
+          include: {
+            contact_method: {
+              include: {
+                contact_method_type_code: true,
+              },
+            },
+          },
+        },
         business: true,
       },
     });
@@ -195,6 +228,22 @@ export class PartyService {
                   sex_code: input.person?.sexCode?.trim() ? input.person.sexCode.trim() : null,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
+                  ...(input.person?.contactMethods
+                    ? {
+                        contact_method: {
+                          deleteMany: {},
+                          create: input.person.contactMethods.map(
+                            (cm: { typeCode: string; value: string; isPrimary?: boolean },
+                            index: number) => ({
+                              contact_value: cm.value,
+                              contact_method_type: cm.typeCode,
+                              is_primary: cm.isPrimary ?? index === 0,
+                              create_user_id: this.user.getIdirUsername(),
+                            }),
+                          ),
+                        },
+                      }
+                    : {}),
                 },
               },
             }
@@ -210,7 +259,15 @@ export class PartyService {
       },
       include: {
         party_type_code: true,
-        person: true,
+        person: {
+          include: {
+            contact_method: {
+              include: {
+                contact_method_type_code: true,
+              },
+            },
+          },
+        },
         business: true,
       },
     });

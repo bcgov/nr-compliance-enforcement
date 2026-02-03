@@ -1,5 +1,5 @@
 import { ContactMethod } from "../../contact_method/dto/contact_method";
-import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
+import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { person } from "../../../../prisma/shared/generated/person";
 import { PersonDto } from "../../../common/party";
 
@@ -44,7 +44,7 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.dateOfBirth,
-      mapFrom((src) => src.date_of_birth ? src.date_of_birth.toISOString().split('T')[0] : undefined),
+      mapFrom((src) => src.date_of_birth ? src.date_of_birth.toISOString().split("T")[0] : undefined),
     ),
     forMember(
       (dest) => dest.driversLicenseNumber,
@@ -60,7 +60,7 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.contactMethods,
-      mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
+      mapFrom((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
     ),
   );
 };

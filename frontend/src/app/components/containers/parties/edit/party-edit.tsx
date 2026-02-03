@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -12,11 +12,27 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { PartyCreateInput, PartyUpdateInput } from "@/generated/graphql";
+import { ContactMethod, PartyCreateInput, PartyUpdateInput } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
+import { PhoneNumberField } from "@/app/components/containers/parties/edit/phone-number";
+import { Button } from "react-bootstrap";
+
+export type PartyFormValues = {
+  partyType: string | null;
+  firstName: string;
+  middleName: string;
+  middleName2: string;
+  lastName: string;
+  dateOfBirth: string;
+  driversLicenseNumber: string;
+  driversLicenseJurisdiction: string;
+  sexCode: string;
+  businessName: string;
+  phoneNumbers: { value: string; isPrimary: boolean }[];
+};
 
 const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -37,6 +53,11 @@ const GET_PARTY = gql`
         driversLicenseNumber
         driversLicenseJurisdiction
         sexCode
+        contactMethods {
+          typeCode
+          value
+          isPrimary
+        }
       }
       business {
         businessGuid
@@ -145,22 +166,8 @@ const PartyEdit: FC = () => {
     },
   });
 
-  const defaultValues = useMemo(() => {
-    if (isEditMode && partyData?.party) {
-      return {
-        partyType: partyData.party.partyTypeCode || "",
-        firstName: partyData.party.person?.firstName || "",
-        middleName: partyData.party.person?.middleName || "",
-        middleName2: partyData.party.person?.middleName2 || "",
-        lastName: partyData.party.person?.lastName || "",
-        dateOfBirth: partyData.party.person?.dateOfBirth || "",
-        driversLicenseNumber: partyData.party.person?.driversLicenseNumber || "",
-        driversLicenseJurisdiction: partyData.party.person?.driversLicenseJurisdiction || "",
-        sexCode: partyData.party.person?.sexCode || "",
-        businessName: partyData.party.business?.name || "",
-      };
-    }
-    return {
+  const emptyDefaultValues: PartyFormValues = useMemo(
+    () => ({
       partyType: null,
       firstName: "",
       middleName: "",
@@ -171,15 +178,105 @@ const PartyEdit: FC = () => {
       driversLicenseJurisdiction: "",
       sexCode: "",
       businessName: "",
-    };
-  }, [isEditMode, partyData]);
+      phoneNumbers: [],
+    }),
+    [],
+  );
 
+  const [initialFormValues, setInitialFormValues] = useState<PartyFormValues | null>(() =>
+    isEditMode ? null : emptyDefaultValues,
+  );
+
+  useEffect(() => {
+    if (!isEditMode) {
+      setInitialFormValues(emptyDefaultValues);
+      return;
+    }
+    if (!partyData?.party || partyData.party.partyIdentifier !== id) {
+      setInitialFormValues(null);
+      return;
+    }
+    const party = partyData.party;
+    const contactMethods = party.person?.contactMethods ?? [];
+    const phoneNumbers = contactMethods
+      .filter((c: ContactMethod) => c?.typeCode === "PHONE")
+      .map((c: ContactMethod, index: number) => ({
+        value: c?.value ?? "",
+        isPrimary: c?.isPrimary ?? index === 0,
+      }));
+    setInitialFormValues({
+      partyType: party.partyTypeCode || "",
+      firstName: party.person?.firstName || "",
+      middleName: party.person?.middleName || "",
+      middleName2: party.person?.middleName2 || "",
+      lastName: party.person?.lastName || "",
+      dateOfBirth: party.person?.dateOfBirth || "",
+      driversLicenseNumber: party.person?.driversLicenseNumber || "",
+      driversLicenseJurisdiction: party.person?.driversLicenseJurisdiction || "",
+      sexCode: party.person?.sexCode || "",
+      businessName: party.business?.name || "",
+      phoneNumbers: [...phoneNumbers],
+    });
+  }, [isEditMode, partyData, id, emptyDefaultValues]);
+
+  if (isEditMode && (isLoading || !partyData?.party || initialFormValues === null)) {
+    return (
+      <div className="comp-complaint-details">
+        <div className="comp-details-body comp-details-form comp-container">
+          <p className="text-muted">Loading party...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <PartyEditForm
+      key={id ?? "create"}
+      defaultValues={initialFormValues ?? emptyDefaultValues}
+      isEditMode={isEditMode}
+      partyIdentifier={id}
+      partyTypeCodes={partyTypeCodes}
+      sexCodes={sexCodes}
+      createPartyMutation={createPartyMutation}
+      updatePartyMutation={updatePartyMutation}
+      isLoading={isLoading}
+      dispatch={dispatch}
+      navigate={navigate}
+    />
+  );
+};
+
+type PartyEditFormProps = {
+  defaultValues: PartyFormValues;
+  isEditMode: boolean;
+  partyIdentifier: string | undefined;
+  partyTypeCodes: { value: string; label: string }[] | undefined;
+  sexCodes: { value: string; label: string }[] | undefined;
+  createPartyMutation: ReturnType<typeof useGraphQLMutation>;
+  updatePartyMutation: ReturnType<typeof useGraphQLMutation>;
+  isLoading: boolean;
+  dispatch: ReturnType<typeof useAppDispatch>;
+  navigate: ReturnType<typeof useNavigate>;
+};
+
+const PartyEditForm: FC<PartyEditFormProps> = ({
+  defaultValues,
+  isEditMode,
+  partyIdentifier: id,
+  partyTypeCodes,
+  sexCodes,
+  createPartyMutation,
+  updatePartyMutation,
+  isLoading,
+  dispatch,
+  navigate,
+}) => {
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
-          partyTypeCode: value.partyType,
+          partyTypeCode: value.partyType as string,
           business: value.partyType === "CMP" ? { name: value.businessName } : null,
           person: (
             value.partyType === "PRS"
@@ -192,6 +289,15 @@ const PartyEdit: FC = () => {
                   driversLicenseNumber: value.driversLicenseNumber,
                   driversLicenseJurisdiction: value.driversLicenseJurisdiction,
                   sexCode: value.sexCode,
+                  contactMethods: value.phoneNumbers?.filter((p: { value?: string }) => p.value?.trim()).length
+                    ? value.phoneNumbers
+                        .filter((p: { value?: string }) => p.value?.trim())
+                        .map((p: { value: string; isPrimary: boolean }, i: number) => ({
+                          typeCode: "PHONE",
+                          value: p.value.trim(),
+                          isPrimary: p.isPrimary ?? i === 0,
+                        }))
+                    : undefined,
                 }
               : null
           ) as any,
@@ -203,7 +309,7 @@ const PartyEdit: FC = () => {
         });
       } else {
         const createInput: PartyCreateInput = {
-          partyTypeCode: value.partyType,
+          partyTypeCode: value.partyType as string,
           business: value.partyType === "CMP" ? { name: value.businessName } : null,
           person: (
             value.partyType === "PRS"
@@ -216,6 +322,15 @@ const PartyEdit: FC = () => {
                   driversLicenseNumber: value.driversLicenseNumber,
                   driversLicenseJurisdiction: value.driversLicenseJurisdiction,
                   sexCode: value.sexCode,
+                  contactMethods: value.phoneNumbers?.filter((p: { value?: string }) => p.value?.trim()).length
+                    ? value.phoneNumbers
+                        .filter((p: { value?: string }) => p.value?.trim())
+                        .map((p: { value: string; isPrimary: boolean }, i: number) => ({
+                          typeCode: "PHONE",
+                          value: p.value.trim(),
+                          isPrimary: p.isPrimary ?? i === 0,
+                        }))
+                    : undefined,
                 }
               : null
           ) as any,
@@ -227,10 +342,58 @@ const PartyEdit: FC = () => {
   });
 
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
+  const phoneNumberValue = useStore(form.store, (state) => state.values.phoneNumbers);
 
   const navigateToPartyList = () => {
-    navigate(`/parties`);
+    navigate("/parties");
   };
+
+  const focusFieldById = useCallback((fieldId: string) => {
+    setTimeout(() => {
+      const field = document.getElementById(fieldId);
+      field?.focus();
+    }, 0);
+  }, []);
+
+  const handleAddPhoneNumber = useCallback(() => {
+    const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+    const newPhoneNumbers = [
+      ...currentPhoneNumbers,
+      {
+        value: "",
+        isPrimary: currentPhoneNumbers.length === 0,
+      },
+    ];
+    form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    focusFieldById(`person-phone-number-${currentPhoneNumbers.length}`);
+  }, [form, focusFieldById]);
+
+  const handleRemovePhoneNumber = useCallback(
+    (indexToRemove: number) => {
+      const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+      const removingPrimary = currentPhoneNumbers[indexToRemove]?.isPrimary;
+      const newPhoneNumbers = currentPhoneNumbers.filter((_: unknown, index: number) => index !== indexToRemove);
+
+      if (removingPrimary && newPhoneNumbers.length > 0) {
+        newPhoneNumbers[0].isPrimary = true;
+      }
+
+      form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryPhoneNumber = useCallback(
+    (index: number) => {
+      const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+      const updatedPhones = currentPhoneNumbers.map((p: { value: string; isPrimary: boolean }, i: number) => ({
+        ...p,
+        isPrimary: i === index,
+      }));
+      form.setFieldValue("phoneNumbers", updatedPhones);
+    },
+    [form],
+  );
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
@@ -467,6 +630,37 @@ const PartyEdit: FC = () => {
                       errorMessage={field.state.meta.errors?.[0]?.message || ""}
                       isDisabled={isDisabled}
                     />
+                  )}
+                />
+                {phoneNumberValue?.map((phoneNumber: { value: string; isPrimary: boolean }, index: number) => (
+                  <PhoneNumberField
+                    key={index}
+                    phoneNumber={phoneNumber}
+                    displayIndex={index}
+                    form={form}
+                    isDisabled={isDisabled}
+                    onSetPrimary={() => handleSetPrimaryPhoneNumber(index)}
+                    onRemove={() => handleRemovePhoneNumber(index)}
+                    fieldName={`phoneNumbers[${index}].value`}
+                    radioName="personPrimaryPhoneNumber"
+                    radioId={`person-phone-primary-${index}`}
+                    inputId={`person-phone-number-${index}`}
+                  />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-phone-number-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-person-phone-number-button"
+                      variant="primary"
+                      size="sm"
+                      onClick={handleAddPhoneNumber}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle" /> Add phone number
+                    </Button>
                   )}
                 />
               </>

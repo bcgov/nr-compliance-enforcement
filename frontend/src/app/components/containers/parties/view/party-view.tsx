@@ -47,6 +47,12 @@ const GET_PARTY = gql`
         driversLicenseNumber
         driversLicenseJurisdiction
         sexCode
+        contactMethods {
+          typeCode
+          typeDescription
+          value
+          isPrimary
+        }
       }
       business {
         businessGuid
@@ -482,12 +488,24 @@ export const PartyView: FC = () => {
             <br />
             <h4>Contact information</h4>
             <div className="party-details-item">
-              <p>
-                <b>TextLabel:</b>&nbsp;abc
-              </p>
-              <p>
-                <b>TextLabel:</b>&nbsp;abc
-              </p>
+              {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 ? (
+                partyData.person.contactMethods
+                  .filter((cm): cm is NonNullable<typeof cm> => cm != null)
+                  .map((cm, index) => (
+                    <p key={index}>
+                      <b>{cm.typeDescription ?? cm.typeCode ?? "Contact"}:</b> {cm.value ?? "—"}
+                      {cm.isPrimary && (
+                        <span className="ms-2">
+                          <Badge bg="primary">Primary</Badge>
+                        </span>
+                      )}
+                    </p>
+                  ))
+              ) : (
+                <p>
+                  <i>No contact methods on file.</i>
+                </p>
+              )}
             </div>
             <br />
             <h4>C&E history</h4>
