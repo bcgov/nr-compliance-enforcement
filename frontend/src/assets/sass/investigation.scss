@@ -1,0 +1,27 @@
+.comp-contravention {
+  dt {
+    font-weight: 100;
+    color: $gray-600;
+  }
+}
+.scroll-target {
+  scroll-margin-top: 8em;
+}
+.text-style-button {
+  all: unset;
+  display: flex;
+  cursor: default !important;
+}
+
+.content-fade {
+  max-height: 150px;
+  -webkit-mask-image: linear-gradient(to bottom, black 80px, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 80px, transparent 100%);
+}
+
+.task-item-body {
+  width: 40em;
+}
+.gray-text {
+  color: #7a7a7a;
+}

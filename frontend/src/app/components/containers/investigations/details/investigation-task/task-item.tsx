@@ -212,23 +212,11 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                       e.preventDefault();
                     }
                   }}
-                  className="d-flex flex-row gap-3"
-                  style={{ all: "unset", display: "flex" }}
+                  className="d-flex flex-row gap-3 text-style-button"
                 >
                   <dt>Task description</dt>
                   <dd>
-                    <div
-                      className="overflow-hidden"
-                      style={
-                        isExpanded
-                          ? {}
-                          : {
-                              maxHeight: "150px",
-                              WebkitMaskImage: "linear-gradient(to bottom, black 80px, transparent 100%)",
-                              maskImage: "linear-gradient(to bottom, black 80px, transparent 100%)",
-                            }
-                      }
-                    >
+                    <div className={(isExpanded ? "" : "content-fade") + " overflow-hidden"}>
                       <pre id="comp-task-description">{task?.description}</pre>
                     </div>
                   </dd>
@@ -243,7 +231,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
               <Accordion.Body className="comp-details-section px-0">
                 <dl>
                   <hr className="m-0"></hr>
-                  <div style={{ gap: "8px", alignItems: "center" }}>
+                  <div className="gap-2 align-items-center">
                     <i className="bi bi-calendar3-week"></i>
                     <h5 className="fw-bold m-0">Diary dates</h5>
                   </div>
@@ -264,9 +252,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                                 <strong>{formatDate(diaryDate.dueDate)}</strong>
                                 <span className="m-3">{diaryDate.description}</span>
                               </div>
-                              <div
-                                style={{ fontSize: "14px", color: "#7a7a7a" }}
-                              >{`Added on ${formatDate(diaryDate.addedTimestamp)} by ${diaryDateCreatedOfficer?.last_name}, ${diaryDateCreatedOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
+                              <div className="small gray-text">{`Added on ${formatDate(diaryDate.addedTimestamp)} by ${diaryDateCreatedOfficer?.last_name}, ${diaryDateCreatedOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
                             </div>
                           );
                         })}
@@ -275,7 +261,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                   </div>
 
                   <hr className="m-0"></hr>
-                  <div style={{ gap: "8px", alignItems: "center" }}>
+                  <div className="gap-2 align-items-center">
                     <i className="bi bi-file-text"></i>
                     <h5 className="fw-bold m-0">Task actions</h5>
                   </div>
@@ -313,7 +299,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                                   {`${taskActionActionedOfficer?.last_name}, ${taskActionActionedOfficer?.first_name}`}
                                 </pre>
 
-                                <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
+                                <div className="small gray-text">
                                   {`Added on ${formatDate(taskAction.reportedTimestamp)} by ${taskActionCreatedOfficer?.last_name}, ${taskActionCreatedOfficer?.first_name} (${taskActionCreatedOfficer?.agency_code?.shortDescription})`}
                                 </div>
                               </dd>
@@ -325,7 +311,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                   </div>
 
                   <hr className="m-0"></hr>
-                  <div style={{ gap: "8px", alignItems: "center" }}>
+                  <div className="gap-2 align-items-center">
                     <i className="bi bi-file-image"></i>
                     <h5 className="fw-bold m-0">Attachments</h5>
                   </div>
@@ -368,14 +354,11 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                 <i className="bi bi-chevron-up fs-1"></i>
               ) : (
                 <>
-                  <div
-                    className="d-flex justify-content-between align-items-center mx-3"
-                    style={{ width: "40em" }}
-                  >
+                  <div className="d-flex justify-content-between align-items-center mx-3 task-item-body">
                     <div className="d-flex align-items-center gap-2 text-nowrap">
                       <i className="bi bi-table fs-5"></i>
                       <small>Diary dates: {diaryDates.length}</small>
-                      <small style={{ color: "red" }}>
+                      <small className="text-danger">
                         <b></b>
                       </small>
                     </div>
@@ -383,7 +366,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                     <div className="d-flex align-items-center gap-2 text-nowrap">
                       <i className="bi bi-file-text fs-5"></i>
                       <small>Task Actions: {taskActions.length} </small>
-                      <small style={{ color: "red" }}>
+                      <small className="text-danger">
                         <b></b>
                       </small>
                     </div>
@@ -391,7 +374,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                     <div className="d-flex align-items-center gap-2 text-nowrap">
                       <i className="bi bi-file-image fs-5"></i>
                       <small>Attachments: {attachmentCount}</small>
-                      <small style={{ color: "red" }}>
+                      <small className="text-danger">
                         <b></b>
                       </small>
                     </div>
@@ -403,9 +386,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
           </Card>
         </Accordion.Item>
       </Accordion>
-      <div
-        style={{ fontSize: "14px", color: "#7a7a7a", marginBottom: "0.7em" }}
-      >{`Created on ${formatDateTime(task.createdDate)} by ${createdOfficer?.last_name}, ${createdOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
+      <div className="mb-3 small gray-text">{`Created on ${formatDateTime(task.createdDate)} by ${createdOfficer?.last_name}, ${createdOfficer?.first_name} (${createdOfficer?.agency_code?.shortDescription})`}</div>
     </section>
   );
 };

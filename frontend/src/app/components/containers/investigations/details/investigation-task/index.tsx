@@ -78,7 +78,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
       </div>
       <div
         ref={targetRef}
-        style={{ scrollMarginTop: "8em" }}
+        className="scroll-target"
       >
         {showAddCard && (
           <TaskForm
