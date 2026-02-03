@@ -136,7 +136,7 @@ export const PartyView: FC = () => {
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const sexOptions = useAppSelector(selectSexDropdown);
+  const sexCodeOptions = useAppSelector(selectSexDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -177,7 +177,7 @@ export const PartyView: FC = () => {
   };
 
   const getSexCodeLabel = (code: string | null | undefined) =>
-    code ? sexOptions.find((opt: { value: string }) => opt.value === code)?.label ?? code : null;
+    code ? sexCodeOptions.find((opt: { value: string }) => opt.value === code)?.label ?? code : null;
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
@@ -490,10 +490,10 @@ export const PartyView: FC = () => {
             <div className="party-details-item">
               {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 ? (
                 partyData.person.contactMethods
-                  .filter((cm): cm is NonNullable<typeof cm> => cm != null)
+                  .filter((cm) => cm != null)
                   .map((cm, index) => (
                     <p key={index}>
-                      <b>{cm.typeDescription ?? cm.typeCode ?? "Contact"}:</b> {cm.value ?? "—"}
+                      <b>{cm.typeDescription}:</b> {cm.value ?? "—"}
                       {cm.isPrimary && (
                         <span className="ms-2">
                           <Badge bg="primary">Primary</Badge>

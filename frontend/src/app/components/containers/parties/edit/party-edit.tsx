@@ -196,27 +196,30 @@ const PartyEdit: FC = () => {
       setInitialFormValues(null);
       return;
     }
+
     const party = partyData.party;
-    const contactMethods = party.person?.contactMethods ?? [];
-    const phoneNumbers = contactMethods
-      .filter((c: ContactMethod) => c?.typeCode === "PHONE")
-      .map((c: ContactMethod, index: number) => ({
-        value: c?.value ?? "",
-        isPrimary: c?.isPrimary ?? index === 0,
-      }));
-    setInitialFormValues({
-      partyType: party.partyTypeCode || "",
-      firstName: party.person?.firstName || "",
-      middleName: party.person?.middleName || "",
-      middleName2: party.person?.middleName2 || "",
-      lastName: party.person?.lastName || "",
-      dateOfBirth: party.person?.dateOfBirth || "",
-      driversLicenseNumber: party.person?.driversLicenseNumber || "",
-      driversLicenseJurisdiction: party.person?.driversLicenseJurisdiction || "",
-      sexCode: party.person?.sexCode || "",
-      businessName: party.business?.name || "",
-      phoneNumbers: [...phoneNumbers],
-    });
+    if (party.partyTypeCode === "PRS") {
+      const contactMethods = party.person?.contactMethods ?? [];
+      const phoneNumbers = contactMethods
+        .filter((c: ContactMethod) => c?.typeCode === "PHONE")
+        .map((c: ContactMethod, index: number) => ({
+          value: c?.value ?? "",
+          isPrimary: c?.isPrimary ?? index === 0,
+        }));
+      setInitialFormValues({
+        partyType: party.partyTypeCode || "",
+        firstName: party.person?.firstName || "",
+        middleName: party.person?.middleName || "",
+        middleName2: party.person?.middleName2 || "",
+        lastName: party.person?.lastName || "",
+        dateOfBirth: party.person?.dateOfBirth || "",
+        driversLicenseNumber: party.person?.driversLicenseNumber || "",
+        driversLicenseJurisdiction: party.person?.driversLicenseJurisdiction || "",
+        sexCode: party.person?.sexCode || "",
+        businessName: party.business?.name || "",
+        phoneNumbers: [...phoneNumbers],
+      });
+    }
   }, [isEditMode, partyData, id, emptyDefaultValues]);
 
   if (isEditMode && (isLoading || !partyData?.party || initialFormValues === null)) {
