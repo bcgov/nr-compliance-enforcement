@@ -69,7 +69,7 @@ model investigation {
   primary_investigator_guid_ref      String?                      @db.Uuid
   file_coordinator_guid_ref          String?                      @db.Uuid
   discovery_date                     DateTime                     @default(now()) @db.Timestamp(6)
-  continuation_report                continuation_report[]
+  activity_note                      activity_note[]
   contravention                      contravention[]
   diary_date                         diary_date[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
@@ -304,6 +304,7 @@ model task {
   create_utc_timestamp                                     DateTime         @default(now()) @db.Timestamp(6)
   update_user_id                                           String?          @db.VarChar(32)
   update_utc_timestamp                                     DateTime?        @db.Timestamp(6)
+  activity_note                                            activity_note[]
   diary_date                                               diary_date[]
   investigation                                            investigation    @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   task_status_code_task_task_status_codeTotask_status_code task_status_code @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
@@ -398,21 +399,41 @@ model diary_date {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model continuation_report {
-  continuation_report_guid   String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid         String        @db.Uuid
-  content_json               Json
-  content_text               String?
-  actioned_utc_timestamp     DateTime?     @db.Timestamp(6)
-  actioned_app_user_guid_ref String?       @db.Uuid
-  reported_utc_timestamp     DateTime?     @db.Timestamp(6)
-  reported_app_user_guid_ref String?       @db.Uuid
-  active_ind                 Boolean       @default(true)
-  create_user_id             String        @db.VarChar(32)
-  create_utc_timestamp       DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id             String?       @db.VarChar(32)
-  update_utc_timestamp       DateTime?     @db.Timestamp(6)
-  investigation              investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+model activity_note {
+  activity_note_guid                                                      String             @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid                                                      String             @db.Uuid
+  content_json                                                            Json
+  content_text                                                            String?
+  actioned_utc_timestamp                                                  DateTime?          @db.Timestamp(6)
+  actioned_app_user_guid_ref                                              String?            @db.Uuid
+  reported_utc_timestamp                                                  DateTime?          @db.Timestamp(6)
+  reported_app_user_guid_ref                                              String?            @db.Uuid
+  active_ind                                                              Boolean            @default(true)
+  create_user_id                                                          String             @db.VarChar(32)
+  create_utc_timestamp                                                    DateTime           @default(now()) @db.Timestamp(6)
+  update_user_id                                                          String?            @db.VarChar(32)
+  update_utc_timestamp                                                    DateTime?          @db.Timestamp(6)
+  task_guid                                                               String?            @db.Uuid
+  activity_note_code                                                      String             @db.VarChar(16)
+  activity_note_code_activity_note_activity_note_codeToactivity_note_code activity_note_code @relation("activity_note_activity_note_codeToactivity_note_code", fields: [activity_note_code], references: [activity_note_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_code")
+  task                                                                    task?              @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_task")
+  investigation                                                           investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model activity_note_code {
+  activity_note_code                                                 String          @id @db.VarChar(16)
+  short_description                                                  String          @db.VarChar(64)
+  long_description                                                   String?         @db.VarChar(256)
+  display_order                                                      Int?
+  active_ind                                                         Boolean         @default(true)
+  create_user_id                                                     String          @db.VarChar(32)
+  create_utc_timestamp                                               DateTime        @default(now()) @db.Timestamp(6)
+  update_user_id                                                     String?         @db.VarChar(32)
+  update_utc_timestamp                                               DateTime?       @db.Timestamp(6)
+  activity_note_activity_note_activity_note_codeToactivity_note_code activity_note[] @relation("activity_note_activity_note_codeToactivity_note_code")
 
   @@schema("investigation")
 }

@@ -20,7 +20,6 @@ export type Scalars = {
   JSON: { input: any; output: any; }
   JSONObject: { input: any; output: any; }
   Point: { input: any; output: any; }
-<<<<<<< Updated upstream
 };
 
 export type ActivityNote = {
@@ -47,8 +46,6 @@ export type ActivityNoteInput = {
   reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
   reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
   taskGuid?: InputMaybe<Scalars['String']['input']>;
-=======
->>>>>>> Stashed changes
 };
 
 export type AgeCode = {
@@ -293,31 +290,6 @@ export type ContactMethod = {
 export type ContactMethodInput = {
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
-<<<<<<< Updated upstream
-=======
-};
-
-export type ContinuationReport = {
-  __typename?: 'ContinuationReport';
-  actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  contentJson?: Maybe<Scalars['String']['output']>;
-  continuationReportGuid?: Maybe<Scalars['String']['output']>;
-  investigationGuid?: Maybe<Scalars['String']['output']>;
-  reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type ContinuationReportInput = {
-  actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
-  contentJson?: InputMaybe<Scalars['String']['input']>;
-  contentText?: InputMaybe<Scalars['String']['input']>;
-  continuationReportGuid?: InputMaybe<Scalars['String']['input']>;
-  investigationGuid?: InputMaybe<Scalars['String']['input']>;
-  reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
->>>>>>> Stashed changes
 };
 
 export type Contravention = {
@@ -1099,6 +1071,7 @@ export type Mutation = {
   createReview: ComplaintOutcome;
   createTask: Task;
   createWildlife: ComplaintOutcome;
+  deleteActivityNote: Scalars['Boolean']['output'];
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteDiaryDate: Scalars['Boolean']['output'];
@@ -1117,11 +1090,7 @@ export type Mutation = {
   removePartyFromInvestigation: Investigation;
   removeTask: Task;
   resetLegislationSource: Scalars['Boolean']['output'];
-<<<<<<< Updated upstream
   saveActivityNote: ActivityNote;
-=======
-  saveContinuationReport: ContinuationReport;
->>>>>>> Stashed changes
   saveDiaryDate: DiaryDate;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
@@ -1274,6 +1243,11 @@ export type MutationcreateWildlifeArgs = {
 };
 
 
+export type MutationdeleteActivityNoteArgs = {
+  activityNoteGuid: Scalars['String']['input'];
+};
+
+
 export type MutationdeleteAppUserTeamXrefArgs = {
   appUserTeamXrefGuid: Scalars['String']['input'];
 };
@@ -1364,7 +1338,6 @@ export type MutationremoveTaskArgs = {
 
 export type MutationresetLegislationSourceArgs = {
   legislationSourceGuid: Scalars['String']['input'];
-<<<<<<< Updated upstream
 };
 
 
@@ -1373,16 +1346,6 @@ export type MutationsaveActivityNoteArgs = {
 };
 
 
-=======
-};
-
-
-export type MutationsaveContinuationReportArgs = {
-  input: ContinuationReportInput;
-};
-
-
->>>>>>> Stashed changes
 export type MutationsaveDiaryDateArgs = {
   input: DiaryDateInput;
 };
@@ -1650,39 +1613,27 @@ export type PermitSiteInput = {
 export type Person = {
   __typename?: 'Person';
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
-<<<<<<< Updated upstream
-=======
   dateOfBirth?: Maybe<Scalars['String']['output']>;
   driversLicenseJurisdiction?: Maybe<Scalars['String']['output']>;
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
->>>>>>> Stashed changes
   firstName?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   middleName?: Maybe<Scalars['String']['output']>;
   middleName2?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
-<<<<<<< Updated upstream
-=======
   sexCode?: Maybe<Scalars['String']['output']>;
->>>>>>> Stashed changes
 };
 
 export type PersonInput = {
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-<<<<<<< Updated upstream
-=======
   dateOfBirth?: InputMaybe<Scalars['String']['input']>;
   driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
->>>>>>> Stashed changes
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
   middleName2?: InputMaybe<Scalars['String']['input']>;
-<<<<<<< Updated upstream
-=======
   sexCode?: InputMaybe<Scalars['String']['input']>;
->>>>>>> Stashed changes
 };
 
 export type Prevention = {
@@ -1892,7 +1843,6 @@ export type QuerydiaryDatesByTaskArgs = {
 };
 
 
-<<<<<<< Updated upstream
 export type QuerygetActivityNoteArgs = {
   activityNoteGuid: Scalars['String']['input'];
 };
@@ -1909,8 +1859,6 @@ export type QuerygetActivityNotesByTaskArgs = {
 };
 
 
-=======
->>>>>>> Stashed changes
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -1930,19 +1878,6 @@ export type QuerygetComplaintOutcomesBySearchStringArgs = {
   complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
 };
-
-<<<<<<< Updated upstream
-=======
-
-export type QuerygetContinuationReportArgs = {
-  continuationReportGuid: Scalars['String']['input'];
-};
-
-
-export type QuerygetContinuationReportsArgs = {
-  investigationGuid: Scalars['String']['input'];
-};
->>>>>>> Stashed changes
 
 
 export type QuerygetInspectionArgs = {
@@ -2075,7 +2010,6 @@ export type QuerypersonArgs = {
 };
 
 
-<<<<<<< Updated upstream
 export type QuerysearchActivityNotesArgs = {
   searchString: Scalars['String']['input'];
 };
@@ -2086,26 +2020,11 @@ export type QuerysearchAppUsersArgs = {
 };
 
 
-=======
-export type QuerysearchAppUsersArgs = {
-  searchTerm: Scalars['String']['input'];
-};
-
-
->>>>>>> Stashed changes
 export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
-
-<<<<<<< Updated upstream
-=======
-
-export type QuerysearchContinuationReportsArgs = {
-  searchString: Scalars['String']['input'];
-};
->>>>>>> Stashed changes
 
 
 export type QuerysearchCosGeoOrgUnitsByNamesArgs = {

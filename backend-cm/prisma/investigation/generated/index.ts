@@ -21,7 +21,8 @@ import { task_status_code as _task_status_code } from "./task_status_code";
 import { task_type_code as _task_type_code } from "./task_type_code";
 import { task_category_type_code as _task_category_type_code } from "./task_category_type_code";
 import { diary_date as _diary_date } from "./diary_date";
-import { continuation_report as _continuation_report } from "./continuation_report";
+import { activity_note as _activity_note } from "./activity_note";
+import { activity_note_code as _activity_note_code } from "./activity_note_code";
 
 export namespace PrismaModel {
   export class contravention extends _contravention {}
@@ -47,7 +48,8 @@ export namespace PrismaModel {
   export class task_type_code extends _task_type_code {}
   export class task_category_type_code extends _task_category_type_code {}
   export class diary_date extends _diary_date {}
-  export class continuation_report extends _continuation_report {}
+  export class activity_note extends _activity_note {}
+  export class activity_note_code extends _activity_note_code {}
 
   export const extraModels = [
     contravention,
@@ -73,6 +75,7 @@ export namespace PrismaModel {
     task_type_code,
     task_category_type_code,
     diary_date,
-    continuation_report,
+    activity_note,
+    activity_note_code,
   ];
 }
