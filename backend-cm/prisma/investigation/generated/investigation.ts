@@ -1,4 +1,4 @@
-import { activity_note } from "./activity_note";
+import { continuation_report } from "./continuation_report";
 import { contravention } from "./contravention";
 import { diary_date } from "./diary_date";
 import { investigation_status_code } from "./investigation_status_code";
@@ -59,8 +59,8 @@ export class investigation {
   @ApiProperty({ type: Date })
   discovery_date: Date;
 
-  @ApiProperty({ isArray: true, type: () => activity_note })
-  activity_note: activity_note[];
+  @ApiProperty({ isArray: true, type: () => continuation_report })
+  continuation_report: continuation_report[];
 
   @ApiProperty({ isArray: true, type: () => contravention })
   contravention: contravention[];

@@ -1,4 +1,3 @@
-import { activity_note } from "./activity_note";
 import { diary_date } from "./diary_date";
 import { investigation } from "./investigation";
 import { task_status_code } from "./task_status_code";
@@ -53,9 +52,6 @@ export class task {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
-
-  @ApiProperty({ isArray: true, type: () => activity_note })
-  activity_note: activity_note[];
 
   @ApiProperty({ isArray: true, type: () => diary_date })
   diary_date: diary_date[];

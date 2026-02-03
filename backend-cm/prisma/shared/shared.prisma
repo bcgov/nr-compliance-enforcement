@@ -240,7 +240,6 @@ model contact_method {
   person                   person                   @relation(fields: [person_guid], references: [person_guid], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact_method_person")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
-  @@unique([person_guid, contact_method_type, is_primary])
   @@schema("shared")
 }
 
