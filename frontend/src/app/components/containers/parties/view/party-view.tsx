@@ -7,7 +7,7 @@ import { Party, Investigation, Inspection, CaseFile, InspectionParty, Investigat
 import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
-import { selectAgencyDropdown, selectCodeTable } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCodeTable, selectSexDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
@@ -40,7 +40,13 @@ const GET_PARTY = gql`
       person {
         personGuid
         firstName
+        middleName
+        middleName2
         lastName
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -124,6 +130,7 @@ export const PartyView: FC = () => {
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+  const sexOptions = useAppSelector(selectSexDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -149,12 +156,22 @@ export const PartyView: FC = () => {
 
   const displayName = () => {
     let result = "";
-    if (partyData?.person) result = `${partyData.person?.firstName} ${partyData.person?.lastName}`;
-    else if (partyData?.business) {
+    if (partyData?.person) {
+      const names = [
+        partyData.person?.firstName,
+        partyData.person?.middleName,
+        partyData.person?.middleName2,
+        partyData.person?.lastName,
+      ].filter(Boolean);
+      result = names.join(" ");
+    } else if (partyData?.business) {
       result = `${partyData.business?.name}`;
     }
     return result;
   };
+
+  const getSexCodeLabel = (code: string | null | undefined) =>
+    code ? sexOptions.find((opt: { value: string }) => opt.value === code)?.label ?? code : null;
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
@@ -365,14 +382,50 @@ export const PartyView: FC = () => {
             <br />
             <h4>Identifying information</h4>
             <div className="party-details-item">
-              <p>
-                <b>Name: </b>
-                {displayName()}
-              </p>
-              {partyData?.person && (
+              {partyData?.person ? (
+                <>
+                  <p>
+                    <b>First name:</b> {partyData.person.firstName ?? "—"}
+                  </p>
+                  <p>
+                    <b>Middle name:</b> {partyData.person.middleName ?? "—"}
+                  </p>
+                  <p>
+                    <b>Middle name 2:</b> {partyData.person.middleName2 ?? "—"}
+                  </p>
+                  <p>
+                    <b>Last name:</b> {partyData.person.lastName ?? "—"}
+                  </p>
+                </>
+              ) : partyData?.business ? (
                 <p>
-                  <b>Date of birth:</b>
+                  <b>Name:</b> {partyData.business?.name ?? "—"}
                 </p>
+              ) : null}
+              {partyData?.person && (
+                <>
+                  {partyData.person.dateOfBirth != null && partyData.person.dateOfBirth !== "" && (
+                    <p>
+                      <b>Date of birth:</b> {partyData.person.dateOfBirth}
+                    </p>
+                  )}
+                  {partyData.person.driversLicenseNumber != null && partyData.person.driversLicenseNumber !== "" && (
+                    <p>
+                      <b>Driver&apos;s licence number:</b> {partyData.person.driversLicenseNumber}
+                    </p>
+                  )}
+                  {partyData.person.driversLicenseJurisdiction != null &&
+                    partyData.person.driversLicenseJurisdiction !== "" && (
+                      <p>
+                        <b>Driver&apos;s licence jurisdiction:</b> {partyData.person.driversLicenseJurisdiction}
+                      </p>
+                    )}
+                  {getSexCodeLabel(partyData.person.sexCode) != null && (
+                    <p>
+                      <b>Sex:</b> {getSexCodeLabel(partyData.person.sexCode)}
+                    </p>
+                  )}
+                </>
               )}
             </div>
             {partyRelations && partyRelations.length > 0 && (

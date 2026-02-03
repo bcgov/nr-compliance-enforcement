@@ -16,6 +16,7 @@ import { mapPrismaInspectionStatusCodeToInspectionStatusCode } from "../inspecti
 import { mapPrismaPartyToParty } from "../shared/party/dto/party";
 import { mapPrismaBusinessToBusiness } from "../shared/business/dto/business";
 import { mapPrismaPartyTypeCodeToPartyTypeCode } from "../shared/party_type_code/dto/party_type_code";
+import { mapPrismaSexCodeToSexCode } from "../shared/sex_code/dto/sex_code";
 import { mapPrismaEventToEvent } from "../shared/event/dto/event";
 import { mapPrismaEventVerbTypeCodeToEventVerbTypeCode } from "../shared/event_verb_type_code/dto/event_verb_type_code";
 import { mapPrismaEventEntityTypeCodeToEventEntityTypeCode } from "../shared/event_entity_type_code/dto/event_entity_type_code";
@@ -61,6 +62,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToBusiness(mapper);
   mapPrismaPartyToParty(mapper);
   mapPrismaPartyTypeCodeToPartyTypeCode(mapper);
+  mapPrismaSexCodeToSexCode(mapper);
   mapPrismaEventVerbTypeCodeToEventVerbTypeCode(mapper);
   mapPrismaEventEntityTypeCodeToEventEntityTypeCode(mapper);
   mapPrismaEventToEvent(mapper);

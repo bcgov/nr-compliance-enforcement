@@ -6,7 +6,7 @@ interface ValidationDatePickerProps {
   selectedDate: Date | undefined | null;
   maxDate?: Date;
   minDate?: Date;
-  onChange: (date: Date) => void;
+  onChange: (date: Date | null) => void;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -14,6 +14,7 @@ interface ValidationDatePickerProps {
   showPreviousMonths?: boolean;
   showTimePicker?: boolean;
   vertical?: boolean;
+  showYearDropdown?: boolean; // When true, shows a year dropdown for year selection
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -29,8 +30,9 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showPreviousMonths = true,
   showTimePicker = false,
   vertical = false,
+  showYearDropdown = false,
 }) => {
-  const handleDateChange = (date: Date) => {
+  const handleDateChange = (date: Date | null) => {
     onChange(date);
   };
 
@@ -69,6 +71,8 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             disabled={isDisabled}
             showIcon={false}
             showPreviousMonths={showPreviousMonths}
+            showYearDropdown={showYearDropdown}
+            scrollableYearDropdown={showYearDropdown}
           />
         </div>
 

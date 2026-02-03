@@ -23,6 +23,10 @@ export class PersonService {
         middle_name: true,
         middle_name_2: true,
         last_name: true,
+        date_of_birth: true,
+        drivers_license_number: true,
+        drivers_license_jurisdiction: true,
+        sex_code: true,
         contact_method: {
           select: {
             contact_value: true,
@@ -69,6 +73,10 @@ export class PersonService {
         middle_name: input.middleName,
         middle_name_2: input.middleName2,
         last_name: input.lastName,
+        date_of_birth: input.dateOfBirth ? new Date(input.dateOfBirth) : undefined,
+        drivers_license_number: input.driversLicenseNumber,
+        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
+        sex_code: input.sexCode,
         create_user_id: "system",
         contact_method: input.contactMethods
           ? {
@@ -107,6 +115,10 @@ export class PersonService {
         middle_name: input.middleName,
         middle_name_2: input.middleName2,
         last_name: input.lastName,
+        date_of_birth: input.dateOfBirth ? new Date(input.dateOfBirth) : undefined,
+        drivers_license_number: input.driversLicenseNumber,
+        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
+        sex_code: input.sexCode,
       },
       include: {
         contact_method: {

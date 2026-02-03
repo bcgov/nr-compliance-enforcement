@@ -50,8 +50,9 @@ COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of wh
 
 -- Only allow one record of a given contact_method_type to be the primary for a person
 -- e.g. one primary phone number, one primary email address, etc.
-ALTER TABLE shared.contact_method
-    ADD UNIQUE (person_guid, contact_method_type, is_primary);
+CREATE UNIQUE INDEX contact_method_primary_unique
+    ON shared.contact_method (person_guid, contact_method_type)
+    WHERE is_primary = true;
 
 -- Set any existing records with a contact_method_type of PRIMPHONE to is_primary = true
 UPDATE shared.contact_method

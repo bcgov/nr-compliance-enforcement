@@ -11,6 +11,10 @@ export class InspectionPerson implements PersonDto {
   middleName?: string;
   middleName2?: string;
   lastName: string;
+  dateOfBirth?: string;
+  driversLicenseNumber?: string;
+  driversLicenseJurisdiction?: string;
+  sexCode?: string;
   isActive: boolean;
 }
 

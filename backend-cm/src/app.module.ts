@@ -54,6 +54,7 @@ import { PartyModule } from "./shared/party/party.module";
 import { InspectionModule } from "./inspection/inspection/inspection.module";
 import { PrismaModuleInspection } from "./prisma/inspection/prisma.inspection.module";
 import { PartyTypeCodeModule } from "./shared/party_type_code/party_type_code.module";
+import { SexCodeModule as SharedSexCodeModule } from "./shared/sex_code/sex_code.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
 import { EventModule } from "./shared/event/event.module";
 import { EventPublisherModule } from "./event_publisher/event_publisher.module";
@@ -129,6 +130,7 @@ import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
     PartyModule,
     InspectionModule,
     PartyTypeCodeModule,
+    SharedSexCodeModule,
     CaseActivityModule,
     EventModule,
     EventPublisherModule,

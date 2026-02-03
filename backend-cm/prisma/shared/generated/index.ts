@@ -41,6 +41,7 @@ import { person_h as _person_h } from "./person_h";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { sex_code as _sex_code } from "./sex_code";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -86,6 +87,7 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class sex_code extends _sex_code {}
 
   export const extraModels = [
     agency_code,
@@ -131,5 +133,6 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    sex_code,
   ];
 }

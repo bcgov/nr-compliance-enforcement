@@ -14,7 +14,9 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { PartyCreateInput, PartyUpdateInput } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
+import { selectSexDropdown } from "@/app/store/reducers/code-table";
 
 const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -29,6 +31,12 @@ const GET_PARTY = gql`
         personGuid
         firstName
         lastName
+        middleName
+        middleName2
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -50,6 +58,12 @@ const UPDATE_PARTY_MUTATION = gql`
         personGuid
         firstName
         lastName
+        middleName
+        middleName2
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -71,6 +85,12 @@ const CREATE_PARTY_MUTATION = gql`
         personGuid
         firstName
         lastName
+        middleName
+        middleName2
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -86,6 +106,7 @@ const PartyEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
+  const sexCodes = useAppSelector(selectSexDropdown);
 
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
@@ -129,14 +150,26 @@ const PartyEdit: FC = () => {
       return {
         partyType: partyData.party.partyTypeCode || "",
         firstName: partyData.party.person?.firstName || "",
+        middleName: partyData.party.person?.middleName || "",
+        middleName2: partyData.party.person?.middleName2 || "",
         lastName: partyData.party.person?.lastName || "",
+        dateOfBirth: partyData.party.person?.dateOfBirth || "",
+        driversLicenseNumber: partyData.party.person?.driversLicenseNumber || "",
+        driversLicenseJurisdiction: partyData.party.person?.driversLicenseJurisdiction || "",
+        sexCode: partyData.party.person?.sexCode || "",
         businessName: partyData.party.business?.name || "",
       };
     }
     return {
       partyType: null,
       firstName: "",
+      middleName: "",
+      middleName2: "",
       lastName: "",
+      dateOfBirth: "",
+      driversLicenseNumber: "",
+      driversLicenseJurisdiction: "",
+      sexCode: "",
       businessName: "",
     };
   }, [isEditMode, partyData]);
@@ -148,7 +181,20 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? { name: value.businessName } : null,
-          person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
+          person: (
+            value.partyType === "PRS"
+              ? {
+                  firstName: value.firstName,
+                  middleName: value.middleName,
+                  middleName2: value.middleName2,
+                  lastName: value.lastName,
+                  dateOfBirth: value.dateOfBirth,
+                  driversLicenseNumber: value.driversLicenseNumber,
+                  driversLicenseJurisdiction: value.driversLicenseJurisdiction,
+                  sexCode: value.sexCode,
+                }
+              : null
+          ) as any,
         };
 
         updatePartyMutation.mutate({
@@ -159,7 +205,20 @@ const PartyEdit: FC = () => {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? { name: value.businessName } : null,
-          person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
+          person: (
+            value.partyType === "PRS"
+              ? {
+                  firstName: value.firstName,
+                  middleName: value.middleName,
+                  middleName2: value.middleName2,
+                  lastName: value.lastName,
+                  dateOfBirth: value.dateOfBirth,
+                  driversLicenseNumber: value.driversLicenseNumber,
+                  driversLicenseJurisdiction: value.driversLicenseJurisdiction,
+                  sexCode: value.sexCode,
+                }
+              : null
+          ) as any,
         };
 
         createPartyMutation.mutate({ input: createInput });
@@ -268,6 +327,44 @@ const PartyEdit: FC = () => {
                 />
                 <FormField
                   form={form}
+                  name="middleName"
+                  label="Middle name"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="middleName2"
+                  label="Middle name 2"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName2"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name 2..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
                   name="lastName"
                   label="Last name"
                   required
@@ -284,6 +381,91 @@ const PartyEdit: FC = () => {
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter last name..."
                       disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="dateOfBirth"
+                  label="Date of birth"
+                  render={(field) => {
+                    const value = field.state.value;
+                    const selectedDate =
+                      value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(value) : null;
+                    return (
+                      <ValidationDatePicker
+                        id="DateOfBirth"
+                        className="comp-details-input full-width"
+                        classNamePrefix="comp-details-edit-calendar-input"
+                        selectedDate={selectedDate ?? undefined}
+                        maxDate={new Date()}
+                        minDate={new Date(new Date().getFullYear() - 120, 0, 1)}
+                        errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                        isDisabled={isDisabled}
+                        showYearDropdown
+                        onChange={(date) =>
+                          field.handleChange(date ? date.toISOString().split("T")[0] : "")
+                        }
+                      />
+                    );
+                  }}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseNumber"
+                  label="Driver's licence number"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseNumber"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={64}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence number..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseJurisdiction"
+                  label="Driver's licence jurisdiction"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseJurisdiction"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={64}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence jurisdiction..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="sexCode"
+                  label="Sex"
+                  render={(field) => (
+                    <CompSelect
+                      id="sex-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={sexCodes}
+                      value={sexCodes?.find((opt: any) => opt.value === field.state.value)}
+                      onChange={(option) => field.handleChange(option?.value || "")}
+                      placeholder="Select sex"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={false}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled}
                     />
                   )}
                 />

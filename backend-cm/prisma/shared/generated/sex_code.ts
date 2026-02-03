@@ -1,19 +1,21 @@
 import { person } from "./person";
-import { contact_method_type_code } from "./contact_method_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class contact_method {
+export class sex_code {
   @ApiProperty({ type: String })
-  contact_method_guid: string;
+  sex_code: string;
 
   @ApiProperty({ type: String })
-  person_guid: string;
-
-  @ApiProperty({ type: String })
-  contact_method_type: string;
+  short_description: string;
 
   @ApiPropertyOptional({ type: String })
-  contact_value?: string;
+  long_description?: string;
+
+  @ApiProperty({ type: Number })
+  display_order: number;
+
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean;
 
   @ApiProperty({ type: String })
   create_user_id: string;
@@ -27,12 +29,6 @@ export class contact_method {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiProperty({ type: Boolean })
-  is_primary: boolean;
-
-  @ApiProperty({ type: () => person })
-  person: person;
-
-  @ApiProperty({ type: () => contact_method_type_code })
-  contact_method_type_code: contact_method_type_code;
+  @ApiProperty({ isArray: true, type: () => person })
+  person_person_sex_codeTosex_code: person[];
 }
