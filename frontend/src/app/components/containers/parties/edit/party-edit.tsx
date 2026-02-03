@@ -403,7 +403,7 @@ const PartyEdit: FC = () => {
                         errMsg={field.state.meta.errors?.[0]?.message ?? ""}
                         isDisabled={isDisabled}
                         showYearDropdown
-                        onChange={(date) =>
+                        onChange={(date: Date | null | undefined) =>
                           field.handleChange(date ? date.toISOString().split("T")[0] : "")
                         }
                       />

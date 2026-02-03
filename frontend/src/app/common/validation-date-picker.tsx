@@ -1,12 +1,19 @@
 import { FC } from "react";
 import DatePicker from "react-datepicker";
 
+// Accepts callbacks that take Date, Date | undefined, or Date | null. We always invoke with Date | undefined
+// null gets normalized to undefined below.
+export type ValidationDatePickerOnChange =
+  | ((date: Date) => void)
+  | ((date: Date | undefined) => void)
+  | ((date: Date | null) => void);
+
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
   maxDate?: Date;
   minDate?: Date;
-  onChange: (date: Date | null) => void;
+  onChange: ValidationDatePickerOnChange;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -33,7 +40,8 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showYearDropdown = false,
 }) => {
   const handleDateChange = (date: Date | null) => {
-    onChange(date);
+    // Normalize null to undefined
+    (onChange as (date: Date | undefined) => void)(date ?? undefined);
   };
 
   const calculatedClass = errMsg === "" ? "" : "error-message";
