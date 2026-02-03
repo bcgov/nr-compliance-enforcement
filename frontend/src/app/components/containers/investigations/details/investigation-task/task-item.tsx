@@ -1,4 +1,4 @@
-import { applyStatusClass, formatDate, formatTime, formatDateTime } from "@/app/common/methods";
+import { applyStatusClass, formatDate, formatDateTime, formatTime } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Attachments } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
