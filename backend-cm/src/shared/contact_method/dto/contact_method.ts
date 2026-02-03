@@ -6,6 +6,7 @@ export class ContactMethod {
   typeShortDescription: string;
   typeDescription: string;
   value: string;
+  isPrimary: boolean;
 }
 
 export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
@@ -28,6 +29,10 @@ export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
     forMember(
       (dest) => dest.value,
       mapFrom((src) => src.contact_value),
+    ),
+    forMember(
+      (dest) => dest.isPrimary,
+      mapFrom((src) => src.is_primary),
     ),
   );
 };
