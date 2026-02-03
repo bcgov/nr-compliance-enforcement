@@ -5,3 +5,11 @@ input BusinessInput {
   contactPeople: [PersonInput]
   contactMethods: [ContactMethodInput]
 }
+
+input BusinessUpdateInput {
+  name: String!
+  aliases: [AliasUpdateInput]
+  identifiers: [BusinessIdentifierUpdateInput]
+  contactPeople: [PersonInput]
+  contactMethods: [ContactMethodInput]
+}

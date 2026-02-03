@@ -43,11 +43,17 @@ export type AgencyCode = {
 
 export type Alias = {
   __typename?: 'Alias';
+  aliasGuid?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
 };
 
 export type AliasInput = {
   businessGuid?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
+export type AliasUpdateInput = {
+  aliasGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
@@ -145,11 +151,26 @@ export type BusinessIdentifierInput = {
   identifierValue: Scalars['String']['input'];
 };
 
+export type BusinessIdentifierUpdateInput = {
+  businessGuid?: InputMaybe<Scalars['String']['input']>;
+  businessIdentifierGuid?: InputMaybe<Scalars['String']['input']>;
+  identifierCode: Scalars['String']['input'];
+  identifierValue: Scalars['String']['input'];
+};
+
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
+  name: Scalars['String']['input'];
+};
+
+export type BusinessUpdateInput = {
+  aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
+  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name: Scalars['String']['input'];
 };
 
@@ -1621,7 +1642,7 @@ export type PartyTypeCode = {
 };
 
 export type PartyUpdateInput = {
-  business?: InputMaybe<BusinessInput>;
+  business?: InputMaybe<BusinessUpdateInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonInput>;

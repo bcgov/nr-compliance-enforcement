@@ -8,6 +8,10 @@ import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { PageInfo } from "../case_file/dto/case_file";
 import { Person } from "src/shared/person/dto/person";
+import { Alias } from "src/shared/alias/dto/alias";
+import { alias } from "prisma/shared/generated/alias";
+import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
+import { business_identifier } from "prisma/shared/generated/business_identifier";
 
 @Injectable()
 export class PartyService {
@@ -341,40 +345,156 @@ export class PartyService {
     }
   }
 
+  private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Partial<alias>[]): any {
+    const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid);
+    const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid);
+    const aliasesToDelete = existingAliases.filter(
+      (a) => !new Set(incomingAliases.map((a) => a.aliasGuid)).has(a.alias_guid),
+    );
+
+    const operations: any = {};
+
+    if (aliasesToCreate.length) {
+      operations.create = aliasesToCreate.map((a) => ({
+        name: a.name,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (aliasesToUpdate.length || aliasesToDelete.length) {
+      operations.update = [
+        ...aliasesToUpdate.map((a) => ({
+          where: { alias_guid: a.aliasGuid },
+          data: {
+            name: a.name,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...aliasesToDelete.map((a) => ({
+          where: { alias_guid: a.alias_guid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _buildBusinessIdentifierOperations(
+    incomingIdentifiers: BusinessIdentifier[],
+    existingIdentifiers: Partial<business_identifier>[],
+  ): any {
+    const identifiersToCreate = incomingIdentifiers.filter((i) => !i.businessIdentifierGuid);
+    const identifiersToUpdate = incomingIdentifiers.filter((i) => i.businessIdentifierGuid);
+    const identifiersToDelete = existingIdentifiers.filter(
+      (i) => !new Set(incomingIdentifiers.map((ei) => ei.businessIdentifierGuid)).has(i.business_identifier_guid),
+    );
+
+    const operations: any = {};
+
+    if (identifiersToCreate.length) {
+      operations.create = identifiersToCreate.map((i) => ({
+        business_identifier_code: i.identifierCode,
+        identifier_value: i.identifierValue,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (identifiersToUpdate.length || identifiersToDelete.length) {
+      operations.update = [
+        ...identifiersToUpdate.map((i) => ({
+          where: { business_identifier_guid: i.businessIdentifierGuid },
+          data: {
+            business_identifier_code: i.identifierCode,
+            identifier_value: i.identifierValue,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...identifiersToDelete.map((i) => ({
+          where: { business_identifier_guid: i.business_identifier_guid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
+      include: {
+        business: {
+          include: {
+            alias: true,
+            business_identifier: true,
+          },
+        },
+      },
       where: { party_guid: partyIdentifier },
     });
     if (!existingParty) throw new Error("Party not found");
 
-    const prismaParty = await this.prisma.party.update({
-      where: { party_guid: partyIdentifier },
-      data: {
+    let data: any;
+
+    const aliasOperations = this._buildAliasOperations(
+      input.business?.aliases ?? [],
+      existingParty.business?.alias ?? [],
+    );
+
+    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
+      input.business?.identifiers ?? [],
+      existingParty.business?.business_identifier ?? [],
+    );
+
+    if (input.partyTypeCode === "PRS") {
+      data = {
         party_type: input.partyTypeCode,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
-        // Conditionally update data in person or business table
-        ...(input.partyTypeCode === "PRS"
-          ? {
-              person: {
-                update: {
-                  first_name: input.person?.firstName,
-                  last_name: input.person?.lastName,
-                  update_user_id: this.user.getIdirUsername(),
-                  update_utc_timestamp: new Date(),
-                },
-              },
-            }
-          : {
-              business: {
-                update: {
-                  name: input.business?.name,
-                  update_user_id: this.user.getIdirUsername(),
-                  update_utc_timestamp: new Date(),
-                },
-              },
-            }),
-      },
+        person: {
+          update: {
+            first_name: input.person?.firstName,
+            last_name: input.person?.lastName,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        },
+      };
+    } else {
+      data = {
+        business: {
+          update: {
+            name: input.business?.name,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+            ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+            ...(Object.keys(businessIdentifierOperations).length
+              ? { business_identifier: businessIdentifierOperations }
+              : {}),
+          },
+        },
+      };
+    }
+
+    const prismaParty = await this.prisma.party.update({
+      where: { party_guid: partyIdentifier },
+      data: data,
       include: {
         party_type_code: true,
         person: true,

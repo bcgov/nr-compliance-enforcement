@@ -175,7 +175,7 @@ const PartyEdit: FC = () => {
           partyData.party.business?.identifiers?.find(
             (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "WSBC",
           )?.identifierValue || "",
-        aliases: partyData.party.business?.aliases?.map((a: Alias) => a.name) || [],
+        aliases: partyData.party.business?.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
         phoneNumbers:
           partyData.party.business?.contactMethods
             ?.filter((c: ContactMethod) => c.typeCode === "PHONE")
@@ -237,7 +237,54 @@ const PartyEdit: FC = () => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
-          business: value.partyType === "CMP" ? { name: value.businessName } : null,
+          business:
+            value.partyType === "CMP"
+              ? {
+                  name: value.businessName,
+                  aliases: [
+                    ...(value.aliases?.map((a: Alias) => ({
+                      name: a.name,
+                    })) || []),
+                  ],
+                  identifiers: [
+                    ...(value.businessNumber
+                      ? [
+                          {
+                            identifierCode: "BNUM",
+                            identifierValue: value.businessNumber,
+                          },
+                        ]
+                      : []),
+                    ...(value.worksafeBCNumber
+                      ? [
+                          {
+                            identifierCode: "WSBC",
+                            identifierValue: value.worksafeBCNumber,
+                          },
+                        ]
+                      : []),
+                  ],
+                  contactMethods: [
+                    ...(value.phoneNumbers?.map((p: ContactMethod) => ({
+                      typeCode: "PHONE",
+                      value: p.value,
+                      isPrimary: p.isPrimary,
+                    })) || []),
+                    ...(value.emailAddresses?.map((e: ContactMethod) => ({
+                      typeCode: "EMAILADDR",
+                      value: e.value,
+                      isPrimary: e.isPrimary,
+                    })) || []),
+                  ],
+                  contactPeople: value.contacts?.length
+                    ? value.contacts.map((c: Person) => ({
+                        firstName: c.firstName,
+                        lastName: c.lastName,
+                        contactMethods: c.contactMethods || [],
+                      }))
+                    : undefined,
+                }
+              : null,
           person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
         };
 
@@ -252,7 +299,11 @@ const PartyEdit: FC = () => {
             value.partyType === "CMP"
               ? {
                   name: value.businessName,
-                  aliases: value.aliases?.length ? value.aliases.map((name: string) => ({ name })) : undefined,
+                  aliases: [
+                    ...(value.aliases?.map((a: Alias) => ({
+                      name: a.name,
+                    })) || []),
+                  ],
                   identifiers: [
                     ...(value.businessNumber
                       ? [
@@ -300,9 +351,6 @@ const PartyEdit: FC = () => {
                 }
               : null,
         };
-
-        console.dir(createInput, { depth: null });
-
         createPartyMutation.mutate({ input: createInput });
       }
     },
@@ -355,7 +403,7 @@ const PartyEdit: FC = () => {
 
   const handleAddAlias = useCallback(() => {
     const currentAliases = form.getFieldValue("aliases") || [];
-    const newAliases = [...currentAliases, ""];
+    const newAliases = [...currentAliases, { aliasGuid: crypto.randomUUID(), name: "" }];
     form.setFieldValue("aliases", newAliases);
     focusFieldById(`alias-${currentAliases.length}`);
   }, [form]);
@@ -680,9 +728,9 @@ const PartyEdit: FC = () => {
                 />
                 {aliasesValue?.map((alias: Alias, index: number) => (
                   <FormField
-                    key={index}
+                    key={alias.aliasGuid}
                     form={form}
-                    name={`aliases[${index}]` as any}
+                    name={`aliases[${index}].name` as any}
                     label={index === 0 ? "Alias" : ""}
                     render={(field) => (
                       <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>

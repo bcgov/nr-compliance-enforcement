@@ -3,3 +3,10 @@ input BusinessIdentifierInput {
   identifierValue: String!
   identifierCode: String!
 }
+
+input BusinessIdentifierUpdateInput {
+  businessGuid: String
+  businessIdentifierGuid: String
+  identifierValue: String!
+  identifierCode: String!
+}

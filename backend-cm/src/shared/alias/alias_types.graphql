@@ -1,3 +1,4 @@
 type Alias {
+  aliasGuid: String
   name: String
 }
