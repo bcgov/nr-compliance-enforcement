@@ -318,6 +318,13 @@ const PartyEdit: FC = () => {
     navigate(`/parties`);
   };
 
+  const focusFieldById = useCallback((fieldId: string) => {
+    setTimeout(() => {
+      const field = document.getElementById(fieldId);
+      field?.focus();
+    }, 0);
+  }, []);
+
   const confirmCancelChanges = useCallback(() => {
     form.reset();
 
@@ -350,6 +357,7 @@ const PartyEdit: FC = () => {
     const currentAliases = form.getFieldValue("aliases") || [];
     const newAliases = [...currentAliases, ""];
     form.setFieldValue("aliases", newAliases);
+    focusFieldById(`alias-${currentAliases.length}`);
   }, [form]);
 
   const handleRemoveAlias = useCallback(
@@ -371,6 +379,7 @@ const PartyEdit: FC = () => {
       },
     ];
     form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    focusFieldById(`phone-number-${currentPhoneNumbers.length}`);
   }, [form]);
 
   const handleRemovePhoneNumber = useCallback(
@@ -400,6 +409,7 @@ const PartyEdit: FC = () => {
       },
     ];
     form.setFieldValue("emailAddresses", newEmails);
+    focusFieldById(`email-${currentEmails.length}`);
   }, [form]);
 
   const handleRemoveEmail = useCallback(
@@ -428,6 +438,7 @@ const PartyEdit: FC = () => {
       contactMethods: [],
     };
     form.setFieldValue("contacts", [...currentContacts, newContact]);
+    focusFieldById(`contact-firstName-${currentContacts.length}`);
   }, [form]);
 
   const handleRemoveContact = useCallback(
@@ -464,6 +475,12 @@ const PartyEdit: FC = () => {
       });
 
       form.setFieldValue("contacts", updatedContacts);
+
+      const fieldId =
+        typeCode === "PHONE"
+          ? `contact-phone-${contactIndex}-${existingMethodsOfType.length}`
+          : `contact-email-${contactIndex}-${existingMethodsOfType.length}`;
+      focusFieldById(fieldId);
     },
     [form],
   );
@@ -806,7 +823,7 @@ const PartyEdit: FC = () => {
 
                         <div style={{ flex: 1 }}>
                           <CompInput
-                            id={`phone-number-${index}`}
+                            id={`email-${index}`}
                             divid=""
                             type="input"
                             inputClass="comp-form-control comp-details-input"
@@ -972,7 +989,7 @@ const PartyEdit: FC = () => {
                                   <input
                                     type="radio"
                                     id={`email-primary-${displayIndex}`}
-                                    name={`contact-email-primary-${contactIndex}-${originalIndex}`}
+                                    name={`primaryContactEmail-${contactIndex}`}
                                     checked={method?.isPrimary || false}
                                     onChange={() => handleSetPrimaryContact(contactIndex, originalIndex, "EMAILADDR")}
                                     disabled={isDisabled}

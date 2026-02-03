@@ -488,7 +488,7 @@ export const PartyView: FC = () => {
                         {contactMethod?.typeCode === "PHONE"
                           ? formatPhoneNumber(contactMethod?.value ?? "")
                           : contactMethod?.value}
-                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Preferred contact method</Badge>}
+                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
                       </p>
                     );
                   })}
@@ -512,9 +512,7 @@ export const PartyView: FC = () => {
                                 {contactMethod?.typeCode === "PHONE"
                                   ? formatPhoneNumber(contactMethod?.value ?? "")
                                   : contactMethod?.value}
-                                {contactMethod?.isPrimary && (
-                                  <Badge className="ms-1 badge">Preferred contact method</Badge>
-                                )}
+                                {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
                               </p>
                             );
                           })}
