@@ -42,9 +42,9 @@ COMMENT ON COLUMN shared.person.drivers_license_jurisdiction IS 'The jurisdictio
 COMMENT ON COLUMN shared.person.middle_name IS 'The middle name of the pereson.';
 COMMENT ON COLUMN shared.person.sex_code IS 'A reference to the sex code of the pereson.';
 
--- Add is_primary field to the shared.contact_method table that defaults to false
 ALTER TABLE shared.contact_method
-    ADD COLUMN is_primary boolean NOT NULL DEFAULT FALSE;
+    ADD COLUMN is_primary boolean NOT NULL DEFAULT FALSE,
+    ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE;
 
 COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of whether a contact method is the primary of that type for a person.';
 
