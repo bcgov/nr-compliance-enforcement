@@ -282,6 +282,8 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
+  contactMethodGuid?: Maybe<Scalars['String']['output']>;
+  isActive?: Maybe<Scalars['Boolean']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   typeCode?: Maybe<Scalars['String']['output']>;
   typeDescription?: Maybe<Scalars['String']['output']>;
@@ -289,6 +291,8 @@ export type ContactMethod = {
 };
 
 export type ContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
+  isActive?: InputMaybe<Scalars['Boolean']['input']>;
   isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];

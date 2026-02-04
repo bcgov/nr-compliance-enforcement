@@ -30,6 +30,9 @@ export class contact_method {
   @ApiProperty({ type: Boolean })
   is_primary: boolean;
 
+  @ApiProperty({ type: Boolean })
+  is_active: boolean = true;
+
   @ApiProperty({ type: () => person })
   person: person;
 
