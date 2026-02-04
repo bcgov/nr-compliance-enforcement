@@ -22,6 +22,32 @@ export type Scalars = {
   Point: { input: any; output: any; }
 };
 
+export type ActivityNote = {
+  __typename?: 'ActivityNote';
+  actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  activityNoteCode?: Maybe<Scalars['String']['output']>;
+  activityNoteGuid?: Maybe<Scalars['String']['output']>;
+  contentJson?: Maybe<Scalars['String']['output']>;
+  contentText?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ActivityNoteInput = {
+  actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  activityNoteCode?: InputMaybe<Scalars['String']['input']>;
+  activityNoteGuid?: InputMaybe<Scalars['String']['input']>;
+  contentJson?: InputMaybe<Scalars['String']['input']>;
+  contentText?: InputMaybe<Scalars['String']['input']>;
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
+  reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  taskGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AgeCode = {
   __typename?: 'AgeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -39,22 +65,6 @@ export type AgencyCode = {
   externalAgencyIndicator?: Maybe<Scalars['Boolean']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type Alias = {
-  __typename?: 'Alias';
-  aliasGuid?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-};
-
-export type AliasInput = {
-  businessGuid?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-};
-
-export type AliasUpdateInput = {
-  aliasGuid?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
 };
 
 export type AppUser = {
@@ -122,55 +132,11 @@ export type AssessmentInput = {
 
 export type Business = {
   __typename?: 'Business';
-  aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
-  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
-  contactPeople?: Maybe<Array<Maybe<Person>>>;
-  identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
 };
 
-export type BusinessIdentifier = {
-  __typename?: 'BusinessIdentifier';
-  identifierCode?: Maybe<BusinessIdentifierCode>;
-  identifierValue?: Maybe<Scalars['String']['output']>;
-};
-
-export type BusinessIdentifierCode = {
-  __typename?: 'BusinessIdentifierCode';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  businessIdentifierCode?: Maybe<Scalars['String']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type BusinessIdentifierInput = {
-  businessGuid?: InputMaybe<Scalars['String']['input']>;
-  identifierCode: Scalars['String']['input'];
-  identifierValue: Scalars['String']['input'];
-};
-
-export type BusinessIdentifierUpdateInput = {
-  businessGuid?: InputMaybe<Scalars['String']['input']>;
-  businessIdentifierGuid?: InputMaybe<Scalars['String']['input']>;
-  identifierCode: Scalars['String']['input'];
-  identifierValue: Scalars['String']['input'];
-};
-
 export type BusinessInput = {
-  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
-  name: Scalars['String']['input'];
-};
-
-export type BusinessUpdateInput = {
-  aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name: Scalars['String']['input'];
 };
 
@@ -316,38 +282,14 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
-  isPrimary?: Maybe<Scalars['Boolean']['output']>;
   typeCode?: Maybe<Scalars['String']['output']>;
   typeDescription?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
 };
 
 export type ContactMethodInput = {
-  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
-};
-
-export type ContinuationReport = {
-  __typename?: 'ContinuationReport';
-  actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  contentJson?: Maybe<Scalars['String']['output']>;
-  continuationReportGuid?: Maybe<Scalars['String']['output']>;
-  investigationGuid?: Maybe<Scalars['String']['output']>;
-  reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type ContinuationReportInput = {
-  actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
-  contentJson?: InputMaybe<Scalars['String']['input']>;
-  contentText?: InputMaybe<Scalars['String']['input']>;
-  continuationReportGuid?: InputMaybe<Scalars['String']['input']>;
-  investigationGuid?: InputMaybe<Scalars['String']['input']>;
-  reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type Contravention = {
@@ -1147,7 +1089,7 @@ export type Mutation = {
   removePartyFromInvestigation: Investigation;
   removeTask: Task;
   resetLegislationSource: Scalars['Boolean']['output'];
-  saveContinuationReport: ContinuationReport;
+  saveActivityNote: ActivityNote;
   saveDiaryDate: DiaryDate;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
@@ -1393,8 +1335,8 @@ export type MutationresetLegislationSourceArgs = {
 };
 
 
-export type MutationsaveContinuationReportArgs = {
-  input: ContinuationReportInput;
+export type MutationsaveActivityNoteArgs = {
+  input: ActivityNoteInput;
 };
 
 
@@ -1642,7 +1584,7 @@ export type PartyTypeCode = {
 };
 
 export type PartyUpdateInput = {
-  business?: InputMaybe<BusinessUpdateInput>;
+  business?: InputMaybe<BusinessInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonInput>;
@@ -1734,12 +1676,13 @@ export type Query = {
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
   geoOrgUnitTypeCodes: Array<Maybe<GeoOrgUnitTypeCode>>;
   geoOrganizationUnitCodes: Array<Maybe<GeoOrganizationUnitCode>>;
+  getActivityNote?: Maybe<ActivityNote>;
+  getActivityNotes?: Maybe<Array<ActivityNote>>;
+  getActivityNotesByTask?: Maybe<Array<ActivityNote>>;
   getComplaintOutcome?: Maybe<ComplaintOutcome>;
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
-  getContinuationReport?: Maybe<ContinuationReport>;
-  getContinuationReports?: Maybe<Array<ContinuationReport>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
@@ -1776,9 +1719,9 @@ export type Query = {
   person?: Maybe<Person>;
   scheduleCodes: Array<Maybe<ScheduleCode>>;
   scheduleSectorXrefs: Array<Maybe<ScheduleSectorXref>>;
+  searchActivityNotes?: Maybe<Array<ActivityNote>>;
   searchAppUsers: Array<Maybe<AppUser>>;
   searchCaseFiles: CaseFileResult;
-  searchContinuationReports?: Maybe<Array<ContinuationReport>>;
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
@@ -1886,6 +1829,22 @@ export type QuerydiaryDatesByTaskArgs = {
 };
 
 
+export type QuerygetActivityNoteArgs = {
+  activityNoteGuid: Scalars['String']['input'];
+};
+
+
+export type QuerygetActivityNotesArgs = {
+  activityNoteCode?: InputMaybe<Scalars['String']['input']>;
+  investigationGuid: Scalars['String']['input'];
+};
+
+
+export type QuerygetActivityNotesByTaskArgs = {
+  taskGuid: Scalars['String']['input'];
+};
+
+
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -1906,15 +1865,6 @@ export type QuerygetComplaintOutcomesBySearchStringArgs = {
   searchString: Scalars['String']['input'];
 };
 
-
-export type QuerygetContinuationReportArgs = {
-  continuationReportGuid: Scalars['String']['input'];
-};
-
-
-export type QuerygetContinuationReportsArgs = {
-  investigationGuid: Scalars['String']['input'];
-};
 
 
 export type QuerygetInspectionArgs = {
@@ -2047,6 +1997,11 @@ export type QuerypersonArgs = {
 };
 
 
+export type QuerysearchActivityNotesArgs = {
+  searchString: Scalars['String']['input'];
+};
+
+
 export type QuerysearchAppUsersArgs = {
   searchTerm: Scalars['String']['input'];
 };
@@ -2058,10 +2013,6 @@ export type QuerysearchCaseFilesArgs = {
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };
 
-
-export type QuerysearchContinuationReportsArgs = {
-  searchString: Scalars['String']['input'];
-};
 
 
 export type QuerysearchCosGeoOrgUnitsByNamesArgs = {

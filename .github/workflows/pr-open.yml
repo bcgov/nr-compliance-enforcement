@@ -150,6 +150,7 @@ jobs:
           repository: ${{ env.GITOPS_REPO }}
           ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
+          fetch-depth: 0
 
       - name: Calculate Deployment Number
         id: get-deployment-number
@@ -159,23 +160,34 @@ jobs:
           PR_NUMBER_MOD_TEN=$(($PR_NUMBER % 10))
           echo "DEPLOYMENT_NUMBER=$(($PR_NUMBER_MOD_TEN))" >> $GITHUB_OUTPUT
 
+      - name: Get PR Creation timestamp
+        id: get-pr-creation-timestamp
+        shell: bash
+        run: |
+          created="${{ github.event.pull_request.created_at }}"
+          formatted=$(date -d "$created" +"%Y%m%d-%H%M%S")
+          echo "PR_CREATION_TIMESTAMP=$formatted" >> "$GITHUB_OUTPUT"
+
       - name: Configure git
         # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
         run: |
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch
 
       - name: Update dev environment tag and enable it for deployment
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
-          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
-          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }} ${{ github.event.pull_request.head.sha }}
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
 
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
-          ./.github/scripts/gitops.sh enable dev-$DEPLOYMENT_NUMBER
+          ./.github/scripts/gitops.sh reserve dev-$DEPLOYMENT_NUMBER dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP
+
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh tag dev-$DEPLOYMENT_NUMBER ${{ needs.builds.outputs.sha }} ${{ github.event.pull_request.head.sha }}
 
       # We always run this to avoid deleting developer databases on commit pushes after a PR is opened
       # there is a small edge case where a cleanup could be interrupted by this if 2 PRs open closely together
@@ -194,5 +206,8 @@ jobs:
         shell: bash
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
+          PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
+
           ./.github/scripts/gitops.sh commitall "Updating dev-$DEPLOYMENT_NUMBER for PR ${{ github.event.number }}"
           git push origin ${{ env.GITOPS_REPO_BRANCH }}
+          git push origin dev-$DEPLOYMENT_NUMBER-$PR_CREATION_TIMESTAMP

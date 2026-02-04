@@ -747,13 +747,15 @@ export const createReview =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     let reviewInput = {
       reviewInput: {
         complaintId: complaintId,
         complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
-        outcomeAgencyCode: "COS",
+        outcomeAgencyCode: ownedBy,
         isReviewRequired,
       } as ReviewInput,
     };
@@ -784,13 +786,15 @@ export const updateReview =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid, reviewComplete },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     let reviewInput = {
       reviewInput: {
         complaintId,
         complaintOutcomeGuid: complaintOutcomeGuid,
         userId: profile.idir_username,
-        outcomeAgencyCode: "COS",
+        outcomeAgencyCode: ownedBy,
         isReviewRequired,
       } as ReviewInput,
     };
@@ -861,14 +865,16 @@ export const upsertEquipment =
     const {
       app: { profile },
       complaintOutcomes: { complaintOutcomeGuid },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
     // equipment does not exist, let's create it
     if (complaintIdentifier && !equipment.id) {
       let createEquipmentInput = {
         createEquipmentInput: {
           complaintId: complaintIdentifier,
           createUserId: profile.idir_username,
-          outcomeAgencyCode: "COS",
+          outcomeAgencyCode: ownedBy,
           equipment: [equipment],
         },
       } as CreateEquipmentInput;
@@ -891,7 +897,7 @@ export const upsertEquipment =
         updateEquipmentInput: {
           complaintId: complaintIdentifier,
           updateUserId: profile.idir_username,
-          outcomeAgencyCode: "COS",
+          outcomeAgencyCode: ownedBy,
           equipment: [equipment],
         },
       } as UpdateEquipmentInput;
@@ -923,7 +929,9 @@ export const createAnimalOutcome =
         profile: { idir_username: idir },
       },
       complaintOutcomes: { complaintOutcomeGuid },
+      complaints: { complaint },
     } = getState();
+    const ownedBy = complaint?.ownedBy;
 
     const {
       species,
@@ -975,7 +983,7 @@ export const createAnimalOutcome =
 
     const input: CreateAnimalOutcomeInput = {
       complaintId,
-      outcomeAgencyCode: "COS",
+      outcomeAgencyCode: ownedBy ?? "",
       createUserId: idir,
       wildlife: {
         species,

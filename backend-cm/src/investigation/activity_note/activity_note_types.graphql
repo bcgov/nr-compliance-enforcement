@@ -1,18 +1,22 @@
 scalar Point
 
-type ContinuationReport {
-  continuationReportGuid: String
+type ActivityNote {
+  activityNoteGuid: String
   investigationGuid: String
+  activityNoteCode: String
   contentJson: String
+  contentText: String
   actionedTimestamp: DateTime
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
 }
 
-input ContinuationReportInput {
+input ActivityNoteInput {
   investigationGuid: String
-  continuationReportGuid: String
+  activityNoteGuid: String
+  taskGuid: String
+  activityNoteCode: String
   contentJson: String
   contentText: String
   actionedTimestamp: DateTime
