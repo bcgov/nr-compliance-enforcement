@@ -1,5 +1,7 @@
 input ContactMethodInput {
+  contactMethodGuid: String
   typeCode: String!
   value: String!
   isPrimary: Boolean!
+  isActive: Boolean
 }

@@ -1,6 +1,8 @@
 type ContactMethod {
+  contactMethodGuid: String
   typeCode: String
   typeDescription: String
   value: String
   isPrimary: Boolean
+  isActive: Boolean
 }
