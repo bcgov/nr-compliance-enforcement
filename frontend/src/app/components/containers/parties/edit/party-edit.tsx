@@ -167,14 +167,12 @@ const PartyEdit: FC = () => {
         firstName: partyData.party.person?.firstName || "",
         lastName: partyData.party.person?.lastName || "",
         businessName: partyData.party.business?.name || "",
-        businessNumber:
-          partyData.party.business?.identifiers?.find(
-            (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "BNUM",
-          )?.identifierValue || "",
-        worksafeBCNumber:
-          partyData.party.business?.identifiers?.find(
-            (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "WSBC",
-          )?.identifierValue || "",
+        businessNumber: partyData.party.business?.identifiers?.find(
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "BNUM",
+        ),
+        worksafeBCNumber: partyData.party.business?.identifiers?.find(
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "WSBC",
+        ),
         aliases: partyData.party.business?.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
         phoneNumbers:
           partyData.party.business?.contactMethods
@@ -222,8 +220,8 @@ const PartyEdit: FC = () => {
       firstName: "",
       lastName: "",
       businessName: "",
-      businessNumber: "",
-      worksafeBCNumber: "",
+      businessNumber: {},
+      worksafeBCNumber: {},
       aliases: [],
       phoneNumbers: [],
       emailAddresses: [],
@@ -250,16 +248,18 @@ const PartyEdit: FC = () => {
                     ...(value.businessNumber
                       ? [
                           {
+                            businessIdentifierGuid: value.businessNumber.identifierGuid,
                             identifierCode: "BNUM",
-                            identifierValue: value.businessNumber,
+                            identifierValue: value.businessNumber.identifierValue,
                           },
                         ]
                       : []),
                     ...(value.worksafeBCNumber
                       ? [
                           {
+                            businessIdentifierGuid: value.worksafeBCNumber.identifierGuid,
                             identifierCode: "WSBC",
-                            identifierValue: value.worksafeBCNumber,
+                            identifierValue: value.worksafeBCNumber.identifierValue,
                           },
                         ]
                       : []),
@@ -309,7 +309,7 @@ const PartyEdit: FC = () => {
                       ? [
                           {
                             identifierCode: "BNUM",
-                            identifierValue: value.businessNumber,
+                            identifierValue: value.businessNumber.identifierValue,
                           },
                         ]
                       : []),
@@ -317,7 +317,7 @@ const PartyEdit: FC = () => {
                       ? [
                           {
                             identifierCode: "WSBC",
-                            identifierValue: value.worksafeBCNumber,
+                            identifierValue: value.worksafeBCNumber.identifierValue,
                           },
                         ]
                       : []),
@@ -781,7 +781,7 @@ const PartyEdit: FC = () => {
                 />
                 <FormField
                   form={form}
-                  name="businessNumber"
+                  name="businessNumber.identifierValue"
                   label="Business number"
                   render={(field) => (
                     <CompInput
@@ -799,7 +799,7 @@ const PartyEdit: FC = () => {
                 />
                 <FormField
                   form={form}
-                  name="worksafeBCNumber"
+                  name="worksafeBCNumber.identifierValue"
                   label="WorkSafeBC number"
                   render={(field) => (
                     <CompInput

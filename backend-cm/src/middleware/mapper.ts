@@ -86,7 +86,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
   mapPrismaAppUserToAppUser(mapper);
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
-  mapPrismaContinuationReportToContinuationReport(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
