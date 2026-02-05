@@ -325,6 +325,52 @@
   }
 }
 
+// DOCUMENTATION LIST TABLE
+#documentation-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  thead {
+    th + th {
+      border-left: 1px solid $gray-300;
+    }
+  }
+
+  tbody {
+    td:nth-child(2) {
+      border-left: 1px solid $gray-300;
+    }
+  }
+}
+
+.comp-complaint-details--list-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+
+  .comp-details-body--list-view {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: hidden;
+    padding: 0;
+
+    .comp-details-section--list-view {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      overflow: hidden;
+      padding: 24px;
+
+      .comp-data-container {
+        margin-top: 16px;
+      }
+    }
+  }
+}
+
 // COMPLAINT TABLE - HUMAN WILDLIFE COMPLAINTS
 .hwc-table {
   &-date-cell {
