@@ -569,6 +569,7 @@ const PartyEditForm: FC<PartyEditFormProps> = ({
                         errMsg={field.state.meta.errors?.[0]?.message ?? ""}
                         isDisabled={isDisabled}
                         showYearDropdown
+                        yearDropdownItemNumber={120}
                         onChange={(date: Date | null | undefined) =>
                           field.handleChange(date ? date.toISOString().split("T")[0] : "")
                         }

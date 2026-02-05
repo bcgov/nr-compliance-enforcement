@@ -22,6 +22,7 @@ interface ValidationDatePickerProps {
   showTimePicker?: boolean;
   vertical?: boolean;
   showYearDropdown?: boolean; // When true, shows a year dropdown for year selection
+  yearDropdownItemNumber?: number; // Number of years to show in year dropdown
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -38,6 +39,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showTimePicker = false,
   vertical = false,
   showYearDropdown = false,
+  yearDropdownItemNumber,
 }) => {
   const handleDateChange = (date: Date | null) => {
     // Normalize null to undefined
@@ -81,6 +83,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             showPreviousMonths={showPreviousMonths}
             showYearDropdown={showYearDropdown}
             scrollableYearDropdown={showYearDropdown}
+            {...(yearDropdownItemNumber != null && { yearDropdownItemNumber })}
           />
         </div>
 
