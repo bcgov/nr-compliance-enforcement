@@ -1,5 +1,5 @@
 import { AppThunk } from "@store/store";
-import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
+import { deleteMethod, generateApiParameters, get, patch, post, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
@@ -9,10 +9,11 @@ import {
   injectIdentifierToThumbFilename,
   isImage,
 } from "@common/methods";
-import { ToggleError, ToggleSuccess } from "@common/toast";
+import { DismissToast, ToggleError, ToggleSuccess } from "@common/toast";
 import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
 import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
+import { AUTH_TOKEN } from "@/app/service/user-service";
 
 interface SaveAttachmentParams {
   dispatch: any;
@@ -334,3 +335,135 @@ const handleError = (attachment: File, error: any) => {
     ToggleError(`Attachment "${attachment.name}" could not be saved.`);
   }
 };
+
+export const bulkDownload =
+  (taskId: string, taskNumber: number, attachments: COMSObject[]): AppThunk =>
+  async (dispatch) => {
+    // Track if download is in progress
+    if ((window as any).__bulkDownloadInProgress) {
+      ToggleError("A download is already in progress. Please wait.");
+      return;
+    }
+
+    try {
+      (window as any).__bulkDownloadInProgress = true;
+
+      const authToken = localStorage.getItem(AUTH_TOKEN);
+      if (!authToken) {
+        ToggleError("Authentication required");
+        return;
+      }
+
+      const timestamp = Date.now();
+      const url = `${config.API_BASE_URL}/v1/document/tasks/bulk-download?t=${timestamp}`;
+
+      console.log("Starting bulk download request...");
+
+      // Use XMLHttpRequest for better blob handling and timeout control
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = "blob";
+        let progressToast: any;
+
+        xhr.onload = () => {
+          if (progressToast) {
+            DismissToast(progressToast);
+          }
+          console.log("Download complete, status:", xhr.status);
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            const blob = xhr.response as Blob;
+
+            console.log("Blob size:", (blob.size / (1024 * 1024)).toFixed(2), "MB");
+
+            if (blob.size === 0) {
+              ToggleError("Download failed: Received empty file");
+              reject(new Error("Empty file"));
+              return;
+            }
+
+            // Trigger download
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = `Task_${taskNumber}_Attachments.zip`;
+            link.style.display = "none";
+
+            document.body.appendChild(link);
+            link.click();
+
+            setTimeout(() => {
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(downloadUrl);
+            }, 1000);
+
+            ToggleSuccess(`Downloaded ${attachments.length} files as Task_${taskNumber}_Attachments.zip`);
+            resolve();
+          } else {
+            // Handle HTTP errors
+            console.error("HTTP error:", xhr.status, xhr.statusText);
+
+            if (xhr.status === 413) {
+              ToggleError("Files too large to download");
+            } else if (xhr.status === 401) {
+              ToggleError("Authentication failed. Please log in again.");
+            } else {
+              ToggleError(`Download failed: ${xhr.status} ${xhr.statusText}`);
+            }
+            reject(new Error(`HTTP ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = () => {
+          console.error("Network error");
+          ToggleError("Network error occurred. Please check your connection and try again.");
+          reject(new Error("Network error"));
+        };
+
+        xhr.onabort = () => {
+          console.error("Download aborted");
+          ToggleError("Download was aborted");
+          reject(new Error("Aborted"));
+        };
+
+        xhr.ontimeout = () => {
+          console.error("Download timeout");
+          ToggleError("Download timed out. The file may be too large. Please try again or contact support.");
+          reject(new Error("Timeout"));
+        };
+
+        // Open request
+        xhr.open("POST", url, true);
+
+        // Set headers
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("Pragma", "no-cache");
+
+        // Set 60 mins timeout
+        xhr.timeout = 3600000; // 60 minutes
+
+        // Send request
+        xhr.send(
+          JSON.stringify({
+            taskId,
+            taskNumber,
+            attachments: attachments.map((a) => ({
+              id: a.id,
+              name: a.name,
+            })),
+          }),
+        );
+      });
+    } catch (error) {
+      console.error("Bulk download error:", error);
+      if (error instanceof Error) {
+        ToggleError(`Failed to download: ${error.message}`);
+      } else {
+        ToggleError("Failed to download attachments. Please try again.");
+      }
+    } finally {
+      (window as any).__bulkDownloadInProgress = false;
+    }
+  };

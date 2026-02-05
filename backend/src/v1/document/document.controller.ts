@@ -1,4 +1,4 @@
-import { Body, Controller, Logger, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Logger, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { Response } from "express";
 import { DocumentService } from "./document.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -42,5 +42,11 @@ export class DocumentController {
       this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       res.status(500).send(`exception: unable to export document for complaint: ${escape(id)}`);
     }
+  }
+
+  @Post("/tasks/bulk-download")
+  @Roles(coreRoles)
+  async taskBulkDownload(@Req() req, @Res() res, @Token() token): Promise<any> {
+    return await this.service.taskBulkDownload(req, res, token);
   }
 }
