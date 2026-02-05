@@ -44,7 +44,7 @@ COMMENT ON COLUMN shared.person.sex_code IS 'A reference to the sex code of the 
 
 ALTER TABLE shared.contact_method
     ADD COLUMN is_primary boolean NOT NULL DEFAULT FALSE,
-    ADD COLUMN is_active boolean NOT NULL DEFAULT TRUE;
+    ADD COLUMN active_ind boolean NOT NULL DEFAULT TRUE;
 
 COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of whether a contact method is the primary of that type for a person.';
 

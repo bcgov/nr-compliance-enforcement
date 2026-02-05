@@ -237,7 +237,7 @@ model contact_method {
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
   is_primary               Boolean                  @default(false)
-  is_active                Boolean                  @default(true)
+  active_ind               Boolean                  @default(true)
   person                   person                   @relation(fields: [person_guid], references: [person_guid], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact_method_person")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 

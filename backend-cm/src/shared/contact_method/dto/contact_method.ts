@@ -42,7 +42,7 @@ export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.isActive,
-      mapFrom((src) => src.is_active),
+      mapFrom((src) => src.active_ind),
     ),
   );
 };
