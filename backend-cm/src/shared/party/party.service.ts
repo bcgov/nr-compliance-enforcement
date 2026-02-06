@@ -8,11 +8,10 @@ import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { PageInfo } from "../case_file/dto/case_file";
 import { Alias } from "src/shared/alias/dto/alias";
-import { alias } from "prisma/shared/generated/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
-import { business_identifier } from "prisma/shared/generated/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { PARTY_TYPES } from "src/common/party";
 
 @Injectable()
 export class PartyService {
@@ -138,6 +137,9 @@ export class PartyService {
         party_guid: {
           in: ids,
         },
+        party_type: {
+          in: [PARTY_TYPES.Person, PARTY_TYPES.Company],
+        },
       },
       select: {
         party_guid: true,
@@ -232,7 +234,7 @@ export class PartyService {
 
     for (const person of contactPeople) {
       const personInput: PartyCreateInput = {
-        partyTypeCode: "PRS",
+        partyTypeCode: PARTY_TYPES.Contact,
         person: person.person,
       };
       const createdParty = await this.create(personInput);
@@ -250,7 +252,7 @@ export class PartyService {
       contactPersonGuids = await this.createContactPeople(input.business.contactPeople);
     }
 
-    if (input.partyTypeCode === "PRS") {
+    if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
       data = {
         party_type: input.partyTypeCode,
         create_user_id: this.user.getIdirUsername(),
@@ -340,20 +342,19 @@ export class PartyService {
         },
       };
     }
-
-    const prismaParty = await this.prisma.party.create({
-      data,
-      include: {
-        party_type_code: true,
-        person: true,
-        business: true,
-      },
-    });
-
     try {
+      const prismaParty = await this.prisma.party.create({
+        data,
+        include: {
+          party_type_code: true,
+          person: true,
+          business: true,
+        },
+      });
+
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
-      this.logger.error("Error creating party:", error);
+      this.logger.error("Error creating party:", error.message);
       throw error;
     }
   }
@@ -594,88 +595,87 @@ export class PartyService {
   }
 
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
-    try {
-      const existingParty = await this.prisma.party.findUnique({
-        include: {
-          business: {
-            include: {
-              alias: true,
-              business_identifier: true,
-              contact_method: true,
-              business_person_xref: {
-                include: {
-                  person: {
-                    include: {
-                      contact_method: true,
-                    },
+    const existingParty = await this.prisma.party.findUnique({
+      include: {
+        business: {
+          include: {
+            alias: true,
+            business_identifier: true,
+            contact_method: true,
+            business_person_xref: {
+              include: {
+                person: {
+                  include: {
+                    contact_method: true,
                   },
                 },
               },
             },
           },
         },
-        where: { party_guid: partyIdentifier },
-      });
-      if (!existingParty) throw new Error("Party not found");
+      },
+      where: { party_guid: partyIdentifier },
+    });
+    if (!existingParty) throw new Error("Party not found");
 
-      const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
+    const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
-      let data: any;
+    let data: any;
 
-      const aliasOperations = this._buildAliasOperations(
-        input.business?.aliases ?? [],
-        existingPartyDto.business.aliases ?? [],
-      );
+    const aliasOperations = this._buildAliasOperations(
+      input.business?.aliases ?? [],
+      existingPartyDto.business.aliases ?? [],
+    );
 
-      const contactMethodOperations = this._buildContactMethodOperations(
-        input.business?.contactMethods ?? [],
-        existingPartyDto.business.contactMethods ?? [],
-      );
+    const contactMethodOperations = this._buildContactMethodOperations(
+      input.business?.contactMethods ?? [],
+      existingPartyDto.business.contactMethods ?? [],
+    );
 
-      const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
-        input.business?.identifiers ?? [],
-        existingPartyDto.business.identifiers ?? [],
-      );
+    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
+      input.business?.identifiers ?? [],
+      existingPartyDto.business.identifiers ?? [],
+    );
 
-      const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
-        input.business?.contactPeople ?? [],
-        existingPartyDto.business.contactPeople ?? [],
-      );
+    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+      input.business?.contactPeople ?? [],
+      existingPartyDto.business.contactPeople ?? [],
+    );
 
-      if (input.partyTypeCode === "PRS") {
-        data = {
-          party_type: input.partyTypeCode,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-          person: {
-            update: {
-              first_name: input.person?.firstName,
-              last_name: input.person?.lastName,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
+    if (input.partyTypeCode === PARTY_TYPES.Person) {
+      data = {
+        party_type: input.partyTypeCode,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+        person: {
+          update: {
+            first_name: input.person?.firstName,
+            last_name: input.person?.lastName,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
           },
-        };
-      } else {
-        data = {
-          business: {
-            update: {
-              name: input.business?.name,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-              ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-              ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
-              ...(Object.keys(businessIdentifierOperations).length
-                ? { business_identifier: businessIdentifierOperations }
-                : {}),
-              ...(Object.keys(businessPersonXrefOperations).length
-                ? { business_person_xref: businessPersonXrefOperations }
-                : {}),
-            },
+        },
+      };
+    } else {
+      data = {
+        business: {
+          update: {
+            name: input.business?.name,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+            ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+            ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
+            ...(Object.keys(businessIdentifierOperations).length
+              ? { business_identifier: businessIdentifierOperations }
+              : {}),
+            ...(Object.keys(businessPersonXrefOperations).length
+              ? { business_person_xref: businessPersonXrefOperations }
+              : {}),
           },
-        };
-      }
-
+        },
+      };
+    }
+    try {
       const prismaParty = await this.prisma.party.update({
         where: { party_guid: partyIdentifier },
         data: data,
@@ -694,7 +694,11 @@ export class PartyService {
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: PartyFilters): Promise<PartyResult> {
-    const where: any = {};
+    const where: any = {
+      party_type: {
+        in: [PARTY_TYPES.Person, PARTY_TYPES.Company],
+      },
+    };
 
     if (filters?.search) {
       if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(filters.search)) {
@@ -710,9 +714,10 @@ export class PartyService {
     }
 
     if (filters?.partyTypeCode) {
-      where.party_type = filters.partyTypeCode;
+      where.party_type = {
+        in: [filters.partyTypeCode],
+      };
     }
-
     const sortFieldMap: Record<string, string> = {
       partyIdentifier: "party_guid",
       partyType: "party_type",
