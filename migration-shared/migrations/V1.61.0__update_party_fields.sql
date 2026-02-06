@@ -52,7 +52,8 @@ COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of wh
 -- e.g. one primary phone number, one primary email address, etc.
 CREATE UNIQUE INDEX contact_method_primary_unique
     ON shared.contact_method (person_guid, contact_method_type)
-    WHERE is_primary = true;
+    WHERE is_primary = true
+    AND active_ind = true;
 
 -- Set any existing records with a contact_method_type of PRIMPHONE to is_primary = true
 UPDATE shared.contact_method

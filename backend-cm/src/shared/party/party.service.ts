@@ -53,6 +53,7 @@ export class PartyService {
             drivers_license_jurisdiction: true,
             sex_code: true,
             contact_method: {
+              where: { active_ind: true },
               include: {
                 contact_method_type_code: true,
               },
@@ -95,6 +96,7 @@ export class PartyService {
             drivers_license_jurisdiction: true,
             sex_code: true,
             contact_method: {
+              where: { active_ind: true },
               include: {
                 contact_method_type_code: true,
               },

@@ -2,6 +2,9 @@ import { InputType, Field } from "@nestjs/graphql";
 
 @InputType()
 export class ContactMethodInput {
+  @Field(() => String, { nullable: true })
+  contactMethodGuid?: string;
+
   @Field(() => String)
   typeCode: string;
 
@@ -10,6 +13,9 @@ export class ContactMethodInput {
 
   @Field(() => Boolean, { nullable: true })
   isPrimary?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  isActive?: boolean;
 }
 
 @InputType()
