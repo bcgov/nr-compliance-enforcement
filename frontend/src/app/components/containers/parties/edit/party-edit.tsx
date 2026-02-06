@@ -115,7 +115,6 @@ const PartyEdit: FC = () => {
   });
 
   const defaultValues = useMemo(() => {
-    console.log(partyData);
     if (isEditMode && partyData?.party) {
       return {
         partyType: partyData.party.partyTypeCode || "",
@@ -133,6 +132,7 @@ const PartyEdit: FC = () => {
           partyData.party.business?.contactMethods
             ?.filter((c: ContactMethod) => c.typeCode === "PHONE")
             .map((c: ContactMethod, index: number) => ({
+              contactMethodGuid: c.contactMethodGuid,
               value: c.value,
               isPrimary: c.isPrimary ?? index === 0, // First phone is primary if not set
             })) || [],
@@ -140,6 +140,7 @@ const PartyEdit: FC = () => {
           partyData.party.business?.contactMethods
             ?.filter((c: ContactMethod) => c.typeCode === "EMAILADDR")
             .map((c: ContactMethod, index: number) => ({
+              contactMethodGuid: c.contactMethodGuid,
               value: c.value,
               isPrimary: c.isPrimary ?? index === 0, // First email is primary if not set
             })) || [],
@@ -232,11 +233,13 @@ const PartyEdit: FC = () => {
                   ],
                   contactMethods: [
                     ...(value.phoneNumbers?.map((p: ContactMethod) => ({
+                      contactMethodGuid: p.contactMethodGuid,
                       typeCode: "PHONE",
                       value: p.value,
                       isPrimary: p.isPrimary,
                     })) || []),
                     ...(value.emailAddresses?.map((e: ContactMethod) => ({
+                      contactMethodGuid: e.contactMethodGuid,
                       typeCode: "EMAILADDR",
                       value: e.value,
                       isPrimary: e.isPrimary,
@@ -260,7 +263,6 @@ const PartyEdit: FC = () => {
               : null,
           person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
         };
-        console.dir(updateInput, { depth: null });
         updatePartyMutation.mutate({
           partyIdentifier: id,
           input: updateInput,

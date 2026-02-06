@@ -601,6 +601,7 @@ export class PartyService {
             include: {
               alias: true,
               business_identifier: true,
+              contact_method: true,
               business_person_xref: {
                 include: {
                   person: {
@@ -616,6 +617,7 @@ export class PartyService {
         where: { party_guid: partyIdentifier },
       });
       if (!existingParty) throw new Error("Party not found");
+
       const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
       let data: any;
@@ -623,6 +625,11 @@ export class PartyService {
       const aliasOperations = this._buildAliasOperations(
         input.business?.aliases ?? [],
         existingPartyDto.business.aliases ?? [],
+      );
+
+      const contactMethodOperations = this._buildContactMethodOperations(
+        input.business?.contactMethods ?? [],
+        existingPartyDto.business.contactMethods ?? [],
       );
 
       const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
@@ -657,6 +664,7 @@ export class PartyService {
               update_user_id: this.user.getIdirUsername(),
               update_utc_timestamp: new Date(),
               ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+              ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
               ...(Object.keys(businessIdentifierOperations).length
                 ? { business_identifier: businessIdentifierOperations }
                 : {}),
@@ -667,8 +675,6 @@ export class PartyService {
           },
         };
       }
-
-      console.dir(data, { depth: null });
 
       const prismaParty = await this.prisma.party.update({
         where: { party_guid: partyIdentifier },
@@ -682,11 +688,7 @@ export class PartyService {
 
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
-      console.error("Full Prisma error:", error);
-      console.error("Error message:", error.message);
-      if (error.meta) {
-        console.error("Error meta:", error.meta);
-      }
+      this.logger.error("Error creating party:", error.message);
       throw error;
     }
   }
