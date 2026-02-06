@@ -31,6 +31,9 @@ export class contact_method {
   @ApiProperty({ type: Boolean })
   is_primary: boolean;
 
+  @ApiProperty({ type: Boolean })
+  active_ind: boolean = true;
+
   @ApiPropertyOptional({ type: String })
   business_guid?: string;
 

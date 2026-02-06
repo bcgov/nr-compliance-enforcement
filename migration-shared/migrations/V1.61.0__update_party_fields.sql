@@ -44,15 +44,18 @@ COMMENT ON COLUMN shared.person.sex_code IS 'A reference to the sex code of the 
 
 -- Add is_primary field to the shared.contact_method table that defaults to false
 ALTER TABLE shared.contact_method
-    ADD COLUMN is_primary boolean NOT NULL DEFAULT FALSE;
+    ADD COLUMN is_primary boolean NOT NULL DEFAULT FALSE,
+    ADD COLUMN active_ind boolean NOT NULL DEFAULT TRUE;
 
 COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of whether a contact method is the primary of that type for a person.';
+COMMENT ON COLUMN shared.contact_method.is_primary IS 'A boolean indicator of whether a contact method is active.';
 
 -- Only allow one record of a given contact_method_type to be the primary for a person
 -- e.g. one primary phone number, one primary email address, etc.
-CREATE UNIQUE INDEX contact_method_primary_unique 
-    ON shared.contact_method (person_guid, contact_method_type) 
-    WHERE is_primary = true;
+CREATE UNIQUE INDEX contact_method_primary_unique
+    ON shared.contact_method (person_guid, contact_method_type)
+    WHERE is_primary = true
+    AND active_ind = true;
 
 -- Set any existing records with a contact_method_type of PRIMPHONE to is_primary = true
 UPDATE shared.contact_method

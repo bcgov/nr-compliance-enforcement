@@ -7,11 +7,12 @@ import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } 
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { PageInfo } from "../case_file/dto/case_file";
-import { Person } from "src/shared/person/dto/person";
 import { Alias } from "src/shared/alias/dto/alias";
 import { alias } from "prisma/shared/generated/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { business_identifier } from "prisma/shared/generated/business_identifier";
+import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 
 @Injectable()
 export class PartyService {
@@ -74,9 +75,17 @@ export class PartyService {
                 contact_value: true,
                 is_primary: true,
               },
+              where: {
+                active_ind: true,
+              },
             },
             business_person_xref: {
               include: {
+                business: {
+                  select: {
+                    business_guid: true,
+                  },
+                },
                 person: {
                   select: {
                     person_guid: true,
@@ -84,10 +93,14 @@ export class PartyService {
                     last_name: true,
                     contact_method: {
                       select: {
+                        contact_method_guid: true,
                         contact_method_type: true,
                         contact_method_type_code: true,
                         contact_value: true,
                         is_primary: true,
+                      },
+                      where: {
+                        active_ind: true,
                       },
                     },
                   },
@@ -214,13 +227,13 @@ export class PartyService {
     }
   }
 
-  private async createContactPeople(contactPeople: Person[]): Promise<string[]> {
+  private async createContactPeople(contactPeople: BusinessPersonXref[]): Promise<string[]> {
     const contactPersonGuids: string[] = [];
 
     for (const person of contactPeople) {
       const personInput: PartyCreateInput = {
         partyTypeCode: "PRS",
-        person: person,
+        person: person.person,
       };
       const createdParty = await this.create(personInput);
       contactPersonGuids.push(createdParty.person.personGuid);
@@ -345,11 +358,11 @@ export class PartyService {
     }
   }
 
-  private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Partial<alias>[]): any {
+  private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
     const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid);
     const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid);
     const aliasesToDelete = existingAliases.filter(
-      (a) => !new Set(incomingAliases.map((a) => a.aliasGuid)).has(a.alias_guid),
+      (a) => !new Set(incomingAliases.map((a) => a.aliasGuid)).has(a.aliasGuid),
     );
 
     const operations: any = {};
@@ -375,7 +388,7 @@ export class PartyService {
           },
         })),
         ...aliasesToDelete.map((a) => ({
-          where: { alias_guid: a.alias_guid },
+          where: { alias_guid: a.aliasGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -390,12 +403,12 @@ export class PartyService {
 
   private _buildBusinessIdentifierOperations(
     incomingIdentifiers: BusinessIdentifier[],
-    existingIdentifiers: Partial<business_identifier>[],
+    existingIdentifiers: BusinessIdentifier[],
   ): any {
     const identifiersToCreate = incomingIdentifiers.filter((i) => !i.businessIdentifierGuid);
     const identifiersToUpdate = incomingIdentifiers.filter((i) => i.businessIdentifierGuid);
     const identifiersToDelete = existingIdentifiers.filter(
-      (i) => !new Set(incomingIdentifiers.map((ei) => ei.businessIdentifierGuid)).has(i.business_identifier_guid),
+      (i) => !new Set(incomingIdentifiers.map((ei) => ei.businessIdentifierGuid)).has(i.businessIdentifierGuid),
     );
 
     const operations: any = {};
@@ -423,7 +436,151 @@ export class PartyService {
           },
         })),
         ...identifiersToDelete.map((i) => ({
-          where: { business_identifier_guid: i.business_identifier_guid },
+          where: { business_identifier_guid: i.businessIdentifierGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _buildContactMethodOperations(incomingMethods: ContactMethod[], existingMethods: ContactMethod[]): any {
+    const methodsToCreate = incomingMethods.filter((cm) => !cm.contactMethodGuid);
+    const methodsToUpdate = incomingMethods.filter((cm) => cm.contactMethodGuid);
+    const methodsToDelete = existingMethods.filter(
+      (cm) => !new Set(incomingMethods.map((im) => im.contactMethodGuid)).has(cm.contactMethodGuid),
+    );
+    const operations: any = {};
+
+    if (methodsToCreate.length) {
+      operations.create = methodsToCreate.map((cm) => ({
+        contact_method_type_code: {
+          connect: {
+            contact_method_type_code: cm.typeCode,
+          },
+        },
+        contact_value: cm.value,
+        is_primary: cm.isPrimary,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (methodsToUpdate.length || methodsToDelete.length) {
+      operations.update = [
+        ...methodsToDelete.map((cm) => ({
+          where: { contact_method_guid: cm.contactMethodGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...methodsToUpdate.map((cm) => ({
+          where: { contact_method_guid: cm.contactMethodGuid },
+          data: {
+            contact_value: cm.value,
+            is_primary: cm.isPrimary,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _buildBusinessPersonXrefOperations(
+    incomingXrefs: BusinessPersonXref[],
+    existingXrefs: BusinessPersonXref[],
+  ): any {
+    const xrefsToCreate = incomingXrefs.filter((bpx) => !bpx.businessPersonXrefGuid);
+    const xrefsToUpdate = incomingXrefs.filter((bpx) => bpx.businessPersonXrefGuid);
+    const xrefsToDelete = existingXrefs.filter(
+      (bpx) => !new Set(incomingXrefs.map((ei) => ei.businessPersonXrefGuid)).has(bpx.businessPersonXrefGuid),
+    );
+    const operations: any = {};
+
+    if (xrefsToCreate.length) {
+      operations.create = xrefsToCreate.map((bpx) => ({
+        business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code: {
+          connect: {
+            business_person_xref_code: "CONT",
+          },
+        },
+        person: {
+          create: {
+            first_name: bpx.person.firstName,
+            last_name: bpx.person.lastName,
+            create_user_id: this.user.getIdirUsername(),
+            create_utc_timestamp: new Date(),
+            ...(bpx.person.contactMethods?.length && {
+              contact_method: {
+                create: bpx.person.contactMethods.map((cm) => ({
+                  contact_method_type_code: {
+                    connect: {
+                      contact_method_type_code: cm.typeCode,
+                    },
+                  },
+                  contact_value: cm.value,
+                  is_primary: cm.isPrimary,
+                  active_ind: true,
+                  create_user_id: this.user.getIdirUsername(),
+                  create_utc_timestamp: new Date(),
+                })),
+              },
+            }),
+          },
+        },
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (xrefsToUpdate.length || xrefsToDelete.length) {
+      operations.update = [
+        ...xrefsToUpdate.map((bpx) => {
+          // Find the corresponding existing xref to get existing contact methods
+          const existingXref = existingXrefs.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
+          const existingContactMethods = existingXref?.person?.contactMethods || [];
+
+          // Build contact method operations if there are any
+          const contactMethodOps =
+            bpx.person.contactMethods?.length || existingContactMethods.length
+              ? this._buildContactMethodOperations(bpx.person.contactMethods || [], existingContactMethods)
+              : undefined;
+
+          return {
+            where: { business_person_xref_guid: bpx.businessPersonXrefGuid },
+            data: {
+              person: {
+                update: {
+                  first_name: bpx.person.firstName,
+                  last_name: bpx.person.lastName,
+                  update_user_id: this.user.getIdirUsername(),
+                  update_utc_timestamp: new Date(),
+                  ...(contactMethodOps && {
+                    contact_method: contactMethodOps,
+                  }),
+                },
+              },
+              active_ind: true,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          };
+        }),
+        ...xrefsToDelete.map((bpx) => ({
+          where: { business_person_xref_guid: bpx.businessPersonXrefGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -437,75 +594,99 @@ export class PartyService {
   }
 
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
-    const existingParty = await this.prisma.party.findUnique({
-      include: {
-        business: {
-          include: {
-            alias: true,
-            business_identifier: true,
-          },
-        },
-      },
-      where: { party_guid: partyIdentifier },
-    });
-    if (!existingParty) throw new Error("Party not found");
-
-    let data: any;
-
-    const aliasOperations = this._buildAliasOperations(
-      input.business?.aliases ?? [],
-      existingParty.business?.alias ?? [],
-    );
-
-    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
-      input.business?.identifiers ?? [],
-      existingParty.business?.business_identifier ?? [],
-    );
-
-    if (input.partyTypeCode === "PRS") {
-      data = {
-        party_type: input.partyTypeCode,
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-        person: {
-          update: {
-            first_name: input.person?.firstName,
-            last_name: input.person?.lastName,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        },
-      };
-    } else {
-      data = {
-        business: {
-          update: {
-            name: input.business?.name,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-            ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-            ...(Object.keys(businessIdentifierOperations).length
-              ? { business_identifier: businessIdentifierOperations }
-              : {}),
-          },
-        },
-      };
-    }
-
-    const prismaParty = await this.prisma.party.update({
-      where: { party_guid: partyIdentifier },
-      data: data,
-      include: {
-        party_type_code: true,
-        person: true,
-        business: true,
-      },
-    });
-
     try {
+      const existingParty = await this.prisma.party.findUnique({
+        include: {
+          business: {
+            include: {
+              alias: true,
+              business_identifier: true,
+              business_person_xref: {
+                include: {
+                  person: {
+                    include: {
+                      contact_method: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        where: { party_guid: partyIdentifier },
+      });
+      if (!existingParty) throw new Error("Party not found");
+      const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
+
+      let data: any;
+
+      const aliasOperations = this._buildAliasOperations(
+        input.business?.aliases ?? [],
+        existingPartyDto.business.aliases ?? [],
+      );
+
+      const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
+        input.business?.identifiers ?? [],
+        existingPartyDto.business.identifiers ?? [],
+      );
+
+      const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+        input.business?.contactPeople ?? [],
+        existingPartyDto.business.contactPeople ?? [],
+      );
+
+      if (input.partyTypeCode === "PRS") {
+        data = {
+          party_type: input.partyTypeCode,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+          person: {
+            update: {
+              first_name: input.person?.firstName,
+              last_name: input.person?.lastName,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          },
+        };
+      } else {
+        data = {
+          business: {
+            update: {
+              name: input.business?.name,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+              ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+              ...(Object.keys(businessIdentifierOperations).length
+                ? { business_identifier: businessIdentifierOperations }
+                : {}),
+              ...(Object.keys(businessPersonXrefOperations).length
+                ? { business_person_xref: businessPersonXrefOperations }
+                : {}),
+            },
+          },
+        };
+      }
+
+      console.dir(data, { depth: null });
+
+      const prismaParty = await this.prisma.party.update({
+        where: { party_guid: partyIdentifier },
+        data: data,
+        include: {
+          party_type_code: true,
+          person: true,
+          business: true,
+        },
+      });
+
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
-      this.logger.error("Error updating party:", error);
+      console.error("Full Prisma error:", error);
+      console.error("Error message:", error.message);
+      if (error.meta) {
+        console.error("Error meta:", error.meta);
+      }
       throw error;
     }
   }

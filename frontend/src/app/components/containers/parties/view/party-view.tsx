@@ -29,7 +29,7 @@ type PartyActivity = {
   role?: string | null;
 };
 
-const GET_PARTY = gql`
+export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
     party(partyIdentifier: $partyIdentifier) {
       __typename
@@ -57,19 +57,28 @@ const GET_PARTY = gql`
           }
         }
         contactMethods {
+          contactMethodGuid
           typeCode
           typeDescription
           value
           isPrimary
         }
         contactPeople {
-          firstName
-          lastName
-          contactMethods {
-            typeCode
-            typeDescription
-            value
-            isPrimary
+          businessPersonXrefGuid
+          business {
+            businessGuid
+          }
+          person {
+            personGuid
+            firstName
+            lastName
+            contactMethods {
+              contactMethodGuid
+              typeCode
+              typeDescription
+              value
+              isPrimary
+            }
           }
         }
       }
@@ -500,12 +509,12 @@ export const PartyView: FC = () => {
                   {partyData.business.contactPeople.map((contactPerson, index) => {
                     return (
                       <>
-                        <p key={contactPerson?.personGuid}>
+                        <p key={contactPerson?.person?.personGuid}>
                           <b>Name: </b>
-                          {contactPerson?.lastName}, {contactPerson?.firstName}
+                          {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                         </p>
                         <>
-                          {contactPerson?.contactMethods?.map((contactMethod) => {
+                          {contactPerson?.person?.contactMethods?.map((contactMethod) => {
                             return (
                               <p key={contactMethod?.value}>
                                 <b>{contactMethod?.typeDescription}: </b>

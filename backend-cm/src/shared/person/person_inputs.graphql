@@ -5,3 +5,12 @@ input PersonInput {
   lastName: String!
   contactMethods: [ContactMethodInput]
 }
+
+input PersonUpdateInput {
+  personGuid: String!
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  contactMethods: [ContactMethodInput]
+}

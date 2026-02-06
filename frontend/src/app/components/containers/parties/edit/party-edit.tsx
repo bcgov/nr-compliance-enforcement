@@ -15,6 +15,7 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import {
   Alias,
   BusinessIdentifier,
+  BusinessPerson,
   ContactMethod,
   PartyCreateInput,
   PartyUpdateInput,
@@ -24,54 +25,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { Button } from "react-bootstrap";
 import { PhoneNumberField } from "@/app/components/containers/parties/edit/phone-number";
-
-const GET_PARTY = gql`
-  query GetParty($partyIdentifier: String!) {
-    party(partyIdentifier: $partyIdentifier) {
-      __typename
-      partyIdentifier
-      partyTypeCode
-      shortDescription
-      longDescription
-      createdDateTime
-      person {
-        personGuid
-        firstName
-        lastName
-      }
-      business {
-        name
-        businessGuid
-        aliases {
-          name
-        }
-        identifiers {
-          identifierValue
-          identifierCode {
-            businessIdentifierCode
-            shortDescription
-          }
-        }
-        contactMethods {
-          typeCode
-          typeDescription
-          value
-          isPrimary
-        }
-        contactPeople {
-          firstName
-          lastName
-          contactMethods {
-            typeCode
-            typeDescription
-            value
-            isPrimary
-          }
-        }
-      }
-    }
-  }
-`;
+import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 
 const UPDATE_PARTY_MUTATION = gql`
   mutation UpdateParty($partyIdentifier: String!, $input: PartyUpdateInput!) {
@@ -161,6 +115,7 @@ const PartyEdit: FC = () => {
   });
 
   const defaultValues = useMemo(() => {
+    console.log(partyData);
     if (isEditMode && partyData?.party) {
       return {
         partyType: partyData.party.partyTypeCode || "",
@@ -189,29 +144,40 @@ const PartyEdit: FC = () => {
               isPrimary: c.isPrimary ?? index === 0, // First email is primary if not set
             })) || [],
         contacts:
-          partyData.party.business?.contactPeople?.map((p: Person) => ({
-            personGuid: p.personGuid,
-            firstName: p.firstName,
-            lastName: p.lastName,
-            contactMethods:
-              p.contactMethods
-                ?.filter((cm): cm is ContactMethod => cm != null)
-                .map((cm: ContactMethod, index: number) => {
-                  // Find if this is the first phone or first email
-                  const phoneIndex =
-                    p.contactMethods?.filter((c): c is ContactMethod => c?.typeCode === "PHONE").indexOf(cm) ?? -1;
-                  const emailIndex =
-                    p.contactMethods?.filter((c): c is ContactMethod => c?.typeCode === "EMAILADDR").indexOf(cm) ?? -1;
+          partyData.party.business?.contactPeople?.map((p: BusinessPerson) => ({
+            businessPersonXrefGuid: p.businessPersonXrefGuid,
+            business: {
+              businessGuid: p.business?.businessGuid,
+            },
+            person: {
+              personGuid: p.person?.personGuid,
+              firstName: p.person?.firstName,
+              lastName: p.person?.lastName,
+              contactMethods:
+                p.person?.contactMethods
+                  ?.filter((cm): cm is ContactMethod => cm != null)
+                  .map((cm: ContactMethod, index: number) => {
+                    // Find if this is the first phone or first email
+                    const phoneIndex =
+                      p.person?.contactMethods
+                        ?.filter((c): c is ContactMethod => c?.typeCode === "PHONE")
+                        .indexOf(cm) ?? -1;
+                    const emailIndex =
+                      p.person?.contactMethods
+                        ?.filter((c): c is ContactMethod => c?.typeCode === "EMAILADDR")
+                        .indexOf(cm) ?? -1;
 
-                  return {
-                    typeCode: cm.typeCode,
-                    value: cm.value,
-                    isPrimary:
-                      cm.isPrimary ??
-                      ((cm.typeCode === "PHONE" && phoneIndex === 0) ||
-                        (cm.typeCode === "EMAILADDR" && emailIndex === 0)),
-                  };
-                }) || [],
+                    return {
+                      contactMethodGuid: cm.contactMethodGuid,
+                      typeCode: cm.typeCode,
+                      value: cm.value,
+                      isPrimary:
+                        cm.isPrimary ??
+                        ((cm.typeCode === "PHONE" && phoneIndex === 0) ||
+                          (cm.typeCode === "EMAILADDR" && emailIndex === 0)),
+                    };
+                  }) || [],
+            },
           })) || [],
       };
     }
@@ -245,7 +211,7 @@ const PartyEdit: FC = () => {
                     })) || []),
                   ],
                   identifiers: [
-                    ...(value.businessNumber
+                    ...(value.businessNumber?.identifierValue
                       ? [
                           {
                             businessIdentifierGuid: value.businessNumber.identifierGuid,
@@ -254,7 +220,7 @@ const PartyEdit: FC = () => {
                           },
                         ]
                       : []),
-                    ...(value.worksafeBCNumber
+                    ...(value.worksafeBCNumber?.identifierValue
                       ? [
                           {
                             businessIdentifierGuid: value.worksafeBCNumber.identifierGuid,
@@ -277,17 +243,24 @@ const PartyEdit: FC = () => {
                     })) || []),
                   ],
                   contactPeople: value.contacts?.length
-                    ? value.contacts.map((c: Person) => ({
-                        firstName: c.firstName,
-                        lastName: c.lastName,
-                        contactMethods: c.contactMethods || [],
+                    ? value.contacts.map((c: BusinessPerson) => ({
+                        businessPersonXrefGuid: c.businessPersonXrefGuid,
+                        business: {
+                          businessGuid: c.business?.businessGuid,
+                        },
+                        person: {
+                          personGuid: c.person?.personGuid,
+                          firstName: c.person?.firstName,
+                          lastName: c.person?.lastName,
+                          contactMethods: c.person?.contactMethods,
+                        },
                       }))
                     : undefined,
                 }
               : null,
           person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
         };
-
+        console.dir(updateInput, { depth: null });
         updatePartyMutation.mutate({
           partyIdentifier: id,
           input: updateInput,
@@ -305,7 +278,7 @@ const PartyEdit: FC = () => {
                     })) || []),
                   ],
                   identifiers: [
-                    ...(value.businessNumber
+                    ...(value.businessNumber?.identifierValue
                       ? [
                           {
                             identifierCode: "BNUM",
@@ -313,7 +286,7 @@ const PartyEdit: FC = () => {
                           },
                         ]
                       : []),
-                    ...(value.worksafeBCNumber
+                    ...(value.worksafeBCNumber?.identifierValue
                       ? [
                           {
                             identifierCode: "WSBC",
@@ -335,10 +308,20 @@ const PartyEdit: FC = () => {
                     })) || []),
                   ],
                   contactPeople: value.contacts?.length
-                    ? value.contacts.map((c: Person) => ({
-                        firstName: c.firstName,
-                        lastName: c.lastName,
-                        contactMethods: c.contactMethods || [],
+                    ? value.contacts.map((c: BusinessPerson) => ({
+                        person: {
+                          firstName: c.person?.firstName,
+                          lastName: c.person?.lastName,
+                          contactMethods: c.person?.contactMethods?.length
+                            ? c.person.contactMethods
+                                .filter((cm): cm is ContactMethod => cm != null)
+                                .map((cm: ContactMethod) => ({
+                                  typeCode: cm.typeCode,
+                                  value: cm.value,
+                                  isPrimary: cm.isPrimary,
+                                }))
+                            : undefined,
+                        },
                       }))
                     : undefined,
                 }
@@ -480,10 +463,15 @@ const PartyEdit: FC = () => {
   const handleAddContact = useCallback(() => {
     const currentContacts = form.getFieldValue("contacts") || [];
     const newContact = {
-      personGuid: "",
-      firstName: "",
-      lastName: "",
-      contactMethods: [],
+      business: {
+        businessGuid: partyData?.party?.business?.businessGuid || "",
+      },
+      person: {
+        personGuid: "",
+        firstName: "",
+        lastName: "",
+        contactMethods: [],
+      },
     };
     form.setFieldValue("contacts", [...currentContacts, newContact]);
     focusFieldById(`contact-firstName-${currentContacts.length}`);
@@ -504,7 +492,9 @@ const PartyEdit: FC = () => {
 
       // Check if this will be the first contact method of this type for this contact
       const existingMethodsOfType =
-        currentContacts[contactIndex]?.contactMethods?.filter((cm: ContactMethod) => cm?.typeCode === typeCode) || [];
+        currentContacts[contactIndex]?.person?.contactMethods?.filter(
+          (cm: ContactMethod) => cm?.typeCode === typeCode,
+        ) || [];
 
       const newContactMethod = {
         typeCode: typeCode,
@@ -512,11 +502,14 @@ const PartyEdit: FC = () => {
         isPrimary: existingMethodsOfType.length === 0, // First one is primary
       };
 
-      const updatedContacts = currentContacts.map((contact: Person, index: number) => {
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
         if (index === contactIndex) {
           return {
             ...contact,
-            contactMethods: [...(contact.contactMethods || []), newContactMethod],
+            person: {
+              ...contact.person,
+              contactMethods: [...(contact.person?.contactMethods || []), newContactMethod],
+            },
           };
         }
         return contact;
@@ -537,9 +530,10 @@ const PartyEdit: FC = () => {
     (contactIndex: number, methodIndex: number) => {
       const currentContacts = form.getFieldValue("contacts") || [];
 
-      const updatedContacts = currentContacts.map((contact: Person, index: number) => {
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
         if (index === contactIndex) {
-          const contactMethods = contact.contactMethods || [];
+          const contactMethods = contact.person?.contactMethods || [];
+
           const methodToRemove = contactMethods[methodIndex];
           const removingPrimary = methodToRemove?.isPrimary || false;
           const removingTypeCode = methodToRemove?.typeCode;
@@ -556,7 +550,10 @@ const PartyEdit: FC = () => {
 
           return {
             ...contact,
-            contactMethods: newContactMethods,
+            person: {
+              ...contact.person,
+              contactMethods: newContactMethods,
+            },
           };
         }
         return contact;
@@ -594,16 +591,19 @@ const PartyEdit: FC = () => {
   const handleSetPrimaryContact = useCallback(
     (contactIndex: number, contactMethodIndex: number, contactMethodType: string) => {
       const currentContacts = form.getFieldValue("contacts") || [];
-      const updatedContacts = currentContacts.map((c: Person, cIndex: number) => {
+      const updatedContacts = currentContacts.map((c: BusinessPerson, cIndex: number) => {
         if (cIndex === contactIndex) {
           return {
             ...c,
-            contactMethods: (c.contactMethods || []).map((cm, cmIdx) => {
-              if (cm?.typeCode === contactMethodType) {
-                return { ...cm, isPrimary: cmIdx === contactMethodIndex };
-              }
-              return cm;
-            }),
+            person: {
+              ...c.person,
+              contactMethods: (c.person?.contactMethods || []).map((cm, cmIdx) => {
+                if (cm?.typeCode === contactMethodType) {
+                  return { ...cm, isPrimary: cmIdx === contactMethodIndex };
+                }
+                return cm;
+              }),
+            },
           };
         }
         return c;
@@ -849,7 +849,7 @@ const PartyEdit: FC = () => {
                 />
                 {emailAddressValue?.map((email: ContactMethod, index: number) => (
                   <FormField
-                    key={index}
+                    key={email.contactMethodGuid}
                     form={form}
                     name={`emailAddresses[${index}].value` as any}
                     label={index === 0 ? "Email" : ""}
@@ -913,15 +913,15 @@ const PartyEdit: FC = () => {
                     </Button>
                   )}
                 />
-                {contactValue?.map((contact: Person, contactIndex: number) => (
+                {contactValue?.map((contact: BusinessPerson, contactIndex: number) => (
                   <FormField
-                    key={contactIndex}
+                    key={contact.businessPersonXrefGuid}
                     form={form}
-                    name={`contact-${contactIndex}`}
+                    name={`contact-${contactIndex}.person`}
                     label={contactIndex === 0 ? "Contact" : ""}
                     render={() => (
                       <div
-                        key={contact.personGuid}
+                        key={contact.person?.personGuid}
                         className="party-details-item"
                       >
                         <div
@@ -945,7 +945,7 @@ const PartyEdit: FC = () => {
 
                         <FormField
                           form={form}
-                          name={`contacts[${contactIndex}].firstName` as any}
+                          name={`contacts[${contactIndex}].person.firstName` as any}
                           label="First name"
                           render={(field) => (
                             <CompInput
@@ -963,7 +963,7 @@ const PartyEdit: FC = () => {
 
                         <FormField
                           form={form}
-                          name={`contacts[${contactIndex}].lastName` as any}
+                          name={`contacts[${contactIndex}].person.lastName` as any}
                           label="Last name"
                           render={(field) => (
                             <CompInput
@@ -979,7 +979,7 @@ const PartyEdit: FC = () => {
                           )}
                         />
                         {/* Phone numbers for this contact */}
-                        {contact.contactMethods
+                        {contact.person?.contactMethods
                           ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
                           .filter(
                             (item): item is { method: ContactMethod; originalIndex: number } =>
@@ -994,7 +994,7 @@ const PartyEdit: FC = () => {
                               isDisabled={isDisabled}
                               onSetPrimary={() => handleSetPrimaryContact(contactIndex, originalIndex, "PHONE")}
                               onRemove={() => handleRemoveContactMethod(contactIndex, originalIndex)}
-                              fieldName={`contacts[${contactIndex}].contactMethods[${originalIndex}].value`}
+                              fieldName={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value`}
                               radioName={`primaryContactPhone-${contactIndex}`}
                               radioId={`contact-phone-primary-${contactIndex}-${originalIndex}`}
                               inputId={`contact-phone-${contactIndex}-${originalIndex}`}
@@ -1018,14 +1018,14 @@ const PartyEdit: FC = () => {
                         />
 
                         {/* Email Address for this contact */}
-                        {contact.contactMethods
+                        {contact.person?.contactMethods
                           ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
                           .filter(({ method }) => method?.typeCode === "EMAILADDR")
                           .map(({ method, originalIndex }, displayIndex) => (
                             <FormField
                               key={originalIndex}
                               form={form}
-                              name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value` as any}
+                              name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value` as any}
                               label={displayIndex === 0 ? "Email" : ""}
                               render={(field) => (
                                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>

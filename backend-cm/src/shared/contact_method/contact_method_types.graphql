@@ -1,4 +1,5 @@
 type ContactMethod {
+  contactMethodGuid: String
   typeCode: String
   typeDescription: String
   value: String

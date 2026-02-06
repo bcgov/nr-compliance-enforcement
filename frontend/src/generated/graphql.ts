@@ -151,7 +151,7 @@ export type Business = {
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
-  contactPeople?: Maybe<Array<Maybe<Person>>>;
+  contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
   identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
 };
@@ -188,17 +188,37 @@ export type BusinessIdentifierUpdateInput = {
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   name: Scalars['String']['input'];
 };
 
+export type BusinessPerson = {
+  __typename?: 'BusinessPerson';
+  business?: Maybe<Business>;
+  businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
+  person?: Maybe<Person>;
+};
+
+export type BusinessPersonInput = {
+  business?: InputMaybe<BusinessInput>;
+  businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
+  person?: InputMaybe<PersonInput>;
+};
+
+export type BusinessPersonUpdateInput = {
+  business?: InputMaybe<BusinessUpdateInput>;
+  businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
+  person?: InputMaybe<PersonUpdateInput>;
+};
+
 export type BusinessUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
+  businessGuid?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  contactPeople?: InputMaybe<Array<InputMaybe<PersonInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CaseActivity = {
@@ -343,6 +363,7 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
+  contactMethodGuid?: Maybe<Scalars['String']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   typeCode?: Maybe<Scalars['String']['output']>;
   typeDescription?: Maybe<Scalars['String']['output']>;
@@ -1689,6 +1710,15 @@ export type PersonInput = {
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
   middleName2?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PersonUpdateInput = {
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  middleName?: InputMaybe<Scalars['String']['input']>;
+  middleName2?: InputMaybe<Scalars['String']['input']>;
+  personGuid: Scalars['String']['input'];
 };
 
 export type Prevention = {

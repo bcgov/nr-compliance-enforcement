@@ -2,6 +2,7 @@ import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { contact_method } from "../../../../prisma/shared/generated/contact_method";
 
 export class ContactMethod {
+  contactMethodGuid: string;
   typeCode: string;
   typeShortDescription: string;
   typeDescription: string;
@@ -14,6 +15,10 @@ export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
     mapper,
     "contact_method",
     "ContactMethod",
+    forMember(
+      (dest) => dest.contactMethodGuid,
+      mapFrom((src) => src.contact_method_guid),
+    ),
     forMember(
       (dest) => dest.typeCode,
       mapFrom((src) => src.contact_method_type),

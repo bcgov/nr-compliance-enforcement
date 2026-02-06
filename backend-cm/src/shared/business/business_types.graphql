@@ -3,6 +3,6 @@ type Business {
   name: String
   aliases: [Alias]
   identifiers: [BusinessIdentifier]
-  contactPeople: [Person]
+  contactPeople: [BusinessPerson]
   contactMethods: [ContactMethod]
 }

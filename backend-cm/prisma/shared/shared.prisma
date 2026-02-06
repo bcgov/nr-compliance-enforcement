@@ -241,12 +241,12 @@ model contact_method {
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
   is_primary               Boolean                  @default(false)
+  active_ind               Boolean                  @default(true)
   business_guid            String?                  @db.Uuid
   business                 business?                @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_business_fk")
   person                   person?                  @relation(fields: [person_guid], references: [person_guid], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact_method_person")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
-  @@unique([person_guid, contact_method_type, is_primary])
   @@schema("shared")
 }
 
