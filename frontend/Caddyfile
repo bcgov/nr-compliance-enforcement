@@ -41,9 +41,14 @@
   rewrite @spa_router {http.matchers.file.relative}
   # Proxy requests to API service
   reverse_proxy /api/* {$BACKEND_URL} {
-    header_up Host {http.reverse_proxy.upstream.hostport}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
+      header_up Host {http.reverse_proxy.upstream.hostport}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+      flush_interval -1
+      transport http {
+          response_header_timeout 300s
+          read_timeout 300s
+      }
   }
   # Proxy requests to GraphQL service
   reverse_proxy /graphql* {$GRAPHQL_URL} {
