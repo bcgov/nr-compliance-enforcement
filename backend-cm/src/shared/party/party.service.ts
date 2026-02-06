@@ -233,7 +233,6 @@ export class PartyService {
                   ...(input.person?.contactMethods
                     ? {
                         contact_method: {
-                          deleteMany: {},
                           create: input.person.contactMethods.map(
                             (cm: { typeCode: string; value: string; isPrimary?: boolean },
                             index: number) => ({

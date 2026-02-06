@@ -48,6 +48,7 @@ const GET_PARTY = gql`
         driversLicenseJurisdiction
         sexCode
         contactMethods {
+          contactMethodGuid
           typeCode
           typeDescription
           value
@@ -177,7 +178,7 @@ export const PartyView: FC = () => {
   };
 
   const getSexCodeLabel = (code: string | null | undefined) =>
-    code ? sexCodeOptions.find((opt: { value: string }) => opt.value === code)?.label ?? code : null;
+    code ? (sexCodeOptions.find((opt: { value: string }) => opt.value === code)?.label ?? code) : null;
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
