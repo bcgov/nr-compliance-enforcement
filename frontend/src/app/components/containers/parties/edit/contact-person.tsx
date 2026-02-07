@@ -40,10 +40,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       .filter(({ method }) => method?.typeCode === "EMAILADDR") || [];
 
   return (
-    <div
-      key={contact.person?.personGuid}
-      className="party-details-item"
-    >
+    <div className="party-details-item">
       <div
         style={{
           display: "flex",
@@ -102,7 +99,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       {/* Phone numbers */}
       {phoneNumbers.map(({ method, originalIndex }, displayIndex) => (
         <PhoneNumberField
-          key={originalIndex}
+          key={method.contactMethodGuid || `contact-phone-${displayIndex}`}
           phoneNumber={method}
           displayIndex={displayIndex}
           form={form}
@@ -135,7 +132,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       {/* Emails */}
       {emails.map(({ method, originalIndex }, displayIndex) => (
         <FormField
-          key={originalIndex}
+          key={method?.contactMethodGuid || `contact-email-${displayIndex}`}
           form={form}
           name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value` as any}
           label={displayIndex === 0 ? "Email" : ""}

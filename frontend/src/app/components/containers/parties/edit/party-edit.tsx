@@ -835,7 +835,7 @@ const PartyEdit: FC = () => {
                 />
                 {aliasesValue?.map((alias: Alias, index: number) => (
                   <FormField
-                    key={alias.aliasGuid}
+                    key={alias.aliasGuid || `alias-${index}`}
                     form={form}
                     name={`aliases[${index}].name` as any}
                     label={index === 0 ? "Alias" : ""}
@@ -924,7 +924,7 @@ const PartyEdit: FC = () => {
                 />
                 {phoneNumberValue?.map((phoneNumber: ContactMethod, index: number) => (
                   <PhoneNumberField
-                    key={phoneNumber.contactMethodGuid}
+                    key={phoneNumber.contactMethodGuid || `phone-${index}`}
                     phoneNumber={phoneNumber}
                     displayIndex={index}
                     form={form}
@@ -956,7 +956,7 @@ const PartyEdit: FC = () => {
                 />
                 {emailAddressValue?.map((email: ContactMethod, index: number) => (
                   <FormField
-                    key={email.contactMethodGuid}
+                    key={email.contactMethodGuid || `email-${index}`}
                     form={form}
                     name={`emailAddresses[${index}].value` as any}
                     label={index === 0 ? "Email" : ""}
@@ -1022,7 +1022,7 @@ const PartyEdit: FC = () => {
                 />
                 {contactValue?.map((contact: BusinessPerson, contactIndex: number) => (
                   <FormField
-                    key={contact.businessPersonXrefGuid}
+                    key={contact.businessPersonXrefGuid || `contact-${contactIndex}`}
                     form={form}
                     name={`contact-${contactIndex}.person`}
                     label={contactIndex === 0 ? "Contact" : ""}
