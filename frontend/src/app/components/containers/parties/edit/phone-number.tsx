@@ -1,7 +1,7 @@
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { FormField } from "@/app/components/common/form-field";
 import { ContactMethod } from "@/generated/graphql";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface PhoneNumberFieldProps {
@@ -32,7 +32,7 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
   return (
     <FormField
       form={form}
-      name={fieldName as any}
+      name={fieldName}
       label={displayIndex === 0 ? "Phone number" : ""}
       render={(field) => (
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
