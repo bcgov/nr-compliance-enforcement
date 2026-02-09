@@ -371,6 +371,7 @@ export type ContactMethod = {
 };
 
 export type ContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -1810,7 +1811,6 @@ export type Query = {
   parkArea?: Maybe<ParkArea>;
   parkAreas: Array<Maybe<ParkArea>>;
   parks?: Maybe<Array<Maybe<Park>>>;
-  parties: Array<Party>;
   party?: Maybe<Party>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
@@ -2077,11 +2077,6 @@ export type QueryparksArgs = {
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QuerypartiesArgs = {
-  partyIdentifiers: Array<Scalars['String']['input']>;
 };
 
 
