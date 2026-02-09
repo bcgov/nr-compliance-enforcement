@@ -128,120 +128,97 @@ export class PartyService {
     }
   }
 
-  private async createContactPeople(contactPeople: BusinessPersonXref[]): Promise<string[]> {
-    const contactPersonGuids: string[] = [];
-
-    for (const person of contactPeople) {
-      const personInput: PartyCreateInput = {
-        partyTypeCode: PARTY_TYPES.Contact,
-        person: person.person,
-      };
-      const createdParty = await this.create(personInput);
-      contactPersonGuids.push(createdParty.person.personGuid);
-    }
-
-    return contactPersonGuids;
-  }
-
   async create(input: PartyCreateInput): Promise<Party> {
     let data: any;
-    let contactPersonGuids = [];
 
-    if (input.business?.contactPeople) {
-      contactPersonGuids = await this.createContactPeople(input.business.contactPeople);
-    }
-
-    if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-      data = {
-        party_type: input.partyTypeCode,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-
-        person: {
-          create: {
-            first_name: input.person?.firstName,
-            last_name: input.person?.lastName,
-            create_user_id: this.user.getIdirUsername(),
-            create_utc_timestamp: new Date(),
-            ...(input.person?.contactMethods?.length
-              ? {
-                  contact_method: {
-                    create: input.person.contactMethods.map((c) => ({
-                      contact_method_type: c.typeCode,
-                      contact_value: c.value,
-                      is_primary: c.isPrimary,
-                      create_user_id: this.user.getIdirUsername(),
-                      create_utc_timestamp: new Date(),
-                    })),
-                  },
-                }
-              : {}),
-          },
-        },
-      };
-    } else {
-      data = {
-        party_type: input.partyTypeCode,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-        business: {
-          create: {
-            name: input.business?.name,
-            create_user_id: this.user.getIdirUsername(),
-            create_utc_timestamp: new Date(),
-            ...(input.business?.aliases?.length
-              ? {
-                  alias: {
-                    create: input.business.aliases.map((a) => ({
-                      name: a.name,
-                      create_user_id: this.user.getIdirUsername(),
-                      create_utc_timestamp: new Date(),
-                    })),
-                  },
-                }
-              : {}),
-            ...(input.business?.identifiers?.length
-              ? {
-                  business_identifier: {
-                    create: input.business.identifiers.map((i) => ({
-                      business_identifier_code: i.identifierCode,
-                      identifier_value: i.identifierValue,
-                      create_user_id: this.user.getIdirUsername(),
-                      create_utc_timestamp: new Date(),
-                    })),
-                  },
-                }
-              : {}),
-            ...(input.business?.contactMethods?.length
-              ? {
-                  contact_method: {
-                    create: input.business.contactMethods.map((c) => ({
-                      contact_method_type: c.typeCode,
-                      contact_value: c.value,
-                      is_primary: c.isPrimary,
-                      create_user_id: this.user.getIdirUsername(),
-                      create_utc_timestamp: new Date(),
-                    })),
-                  },
-                }
-              : {}),
-            ...(contactPersonGuids?.length
-              ? {
-                  business_person_xref: {
-                    create: contactPersonGuids.map((g) => ({
-                      person_guid: g,
-                      business_person_xref_code: "CONT",
-                      create_user_id: this.user.getIdirUsername(),
-                      create_utc_timestamp: new Date(),
-                    })),
-                  },
-                }
-              : {}),
-          },
-        },
-      };
-    }
     try {
+      const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+        input.business?.contactPeople ?? [],
+        null,
+      );
+
+      if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
+        data = {
+          party_type: input.partyTypeCode,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+
+          person: {
+            create: {
+              first_name: input.person?.firstName,
+              last_name: input.person?.lastName,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+              ...(input.person?.contactMethods?.length
+                ? {
+                    contact_method: {
+                      create: input.person.contactMethods.map((c) => ({
+                        contact_method_type: c.typeCode,
+                        contact_value: c.value,
+                        is_primary: c.isPrimary,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
+            },
+          },
+        };
+      } else {
+        data = {
+          party_type: input.partyTypeCode,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          business: {
+            create: {
+              name: input.business?.name,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+              ...(input.business?.aliases?.length
+                ? {
+                    alias: {
+                      create: input.business.aliases.map((a) => ({
+                        name: a.name,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
+              ...(input.business?.identifiers?.length
+                ? {
+                    business_identifier: {
+                      create: input.business.identifiers.map((i) => ({
+                        business_identifier_code: i.identifierCode,
+                        identifier_value: i.identifierValue,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
+              ...(input.business?.contactMethods?.length
+                ? {
+                    contact_method: {
+                      create: input.business.contactMethods.map((c) => ({
+                        contact_method_type: c.typeCode,
+                        contact_value: c.value,
+                        is_primary: c.isPrimary,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
+              ...(Object.keys(businessPersonXrefOperations).length
+                ? { business_person_xref: businessPersonXrefOperations }
+                : {}),
+            },
+          },
+        };
+      }
+
       const prismaParty = await this.prisma.party.create({
         data,
         include: {
@@ -404,7 +381,7 @@ export class PartyService {
   ): any {
     const xrefsToCreate = incomingXrefs.filter((bpx) => !bpx.businessPersonXrefGuid);
     const xrefsToUpdate = incomingXrefs.filter((bpx) => bpx.businessPersonXrefGuid);
-    const xrefsToDelete = existingXrefs.filter(
+    const xrefsToDelete = existingXrefs?.filter(
       (bpx) => !new Set(incomingXrefs.map((ei) => ei.businessPersonXrefGuid)).has(bpx.businessPersonXrefGuid),
     );
     const operations: any = {};
@@ -446,11 +423,11 @@ export class PartyService {
       }));
     }
 
-    if (xrefsToUpdate.length || xrefsToDelete.length) {
+    if (xrefsToUpdate?.length || xrefsToDelete?.length) {
       operations.update = [
         ...xrefsToUpdate.map((bpx) => {
           // Find the corresponding existing xref to get existing contact methods
-          const existingXref = existingXrefs.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
+          const existingXref = existingXrefs?.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
           const existingContactMethods = existingXref?.person?.contactMethods || [];
 
           // Build contact method operations if there are any
