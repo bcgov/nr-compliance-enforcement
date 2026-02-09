@@ -72,12 +72,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessIdentifierToIdentifier(mapper);
   mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
   mapPrismaLegislationToLegislation(mapper);
-
-  // Investigation Mappings
-  mapPrismaInvestigationToInvestigation(mapper);
-  mapPrismaInvestigationStatusCodeToInvestigationStatusCode(mapper);
-  mapPrismaPersonToInvestigationPerson(mapper);
-  mapPrismaPartyToInvestigationParty(mapper);
   mapPrismaOfficeToOffice(mapper);
   mapPrismaTeamCodeToTeamCode(mapper);
   mapPrismaTeamToTeam(mapper);
@@ -87,6 +81,14 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAppUserToAppUser(mapper);
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
+  mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
+  
+
+  // Investigation Mappings
+  mapPrismaInvestigationToInvestigation(mapper);
+  mapPrismaInvestigationStatusCodeToInvestigationStatusCode(mapper);
+  mapPrismaPersonToInvestigationPerson(mapper);
+  mapPrismaPartyToInvestigationParty(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
   mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
