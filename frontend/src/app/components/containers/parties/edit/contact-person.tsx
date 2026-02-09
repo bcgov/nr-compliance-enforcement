@@ -41,14 +41,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
 
   return (
     <div className="party-details-item">
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px",
-        }}
-      >
+      <div className="party-contact-header mb-3">
         <h4>Contact {contactIndex + 1}</h4>
         <Button
           variant="outline-dark"
@@ -137,9 +130,9 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value` as any}
           label={displayIndex === 0 ? "Email" : ""}
           render={(field) => (
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              {displayIndex === 0 && <div style={{ width: "60px", fontWeight: "500", fontSize: "14px" }}>Primary</div>}
-              {displayIndex > 0 && <div style={{ width: "60px" }}></div>}
+            <div className="party-contact-method">
+              {displayIndex === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+              {displayIndex > 0 && <div className="party-primary-contact-spacer"></div>}
 
               <input
                 type="radio"
@@ -150,7 +143,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
                 disabled={isDisabled}
               />
 
-              <div style={{ flex: 1 }}>
+              <div className="party-multiple-value-container">
                 <CompInput
                   id={`contact-email-${contactIndex}-${originalIndex}`}
                   divid=""

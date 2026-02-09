@@ -35,9 +35,9 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
       name={fieldName}
       label={displayIndex === 0 ? "Phone number" : ""}
       render={(field) => (
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          {displayIndex === 0 && <div style={{ width: "60px", fontWeight: "500", fontSize: "14px" }}>Primary</div>}
-          {displayIndex > 0 && <div style={{ width: "60px" }}></div>}
+        <div className="party-contact-method">
+          {displayIndex === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+          {displayIndex > 0 && <div className="party-primary-contact-spacer"></div>}
 
           <input
             type="radio"
@@ -48,7 +48,7 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
             disabled={isDisabled}
           />
 
-          <div style={{ flex: 1 }}>
+          <div className="party-multiple-value-container">
             <ValidationPhoneInput
               className="comp-details-input"
               value={phoneNumber.value ?? ""}
@@ -60,18 +60,16 @@ export const PhoneNumberField: FC<PhoneNumberFieldProps> = ({
             />
           </div>
 
-          <div style={{ width: "100px" }}>
-            <Button
-              variant="outline-dark"
-              size="sm"
-              onClick={onRemove}
-              type="button"
-            >
-              <i className="bi bi-trash" />
-              {/**/}
-              Remove
-            </Button>
-          </div>
+          <Button
+            variant="outline-dark"
+            size="sm"
+            onClick={onRemove}
+            type="button"
+          >
+            <i className="bi bi-trash" />
+            {/**/}
+            Remove
+          </Button>
         </div>
       )}
     />

@@ -840,8 +840,8 @@ const PartyEdit: FC = () => {
                     name={`aliases[${index}].name` as any}
                     label={index === 0 ? "Alias" : ""}
                     render={(field) => (
-                      <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                        <div style={{ flex: 1 }}>
+                      <div className="party-alias-container">
+                        <div className="party-multiple-value-container">
                           <CompInput
                             id={`alias-${index}`}
                             divid=""
@@ -961,11 +961,9 @@ const PartyEdit: FC = () => {
                     name={`emailAddresses[${index}].value` as any}
                     label={index === 0 ? "Email" : ""}
                     render={(field) => (
-                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                        {index === 0 && (
-                          <div style={{ width: "60px", fontWeight: "500", fontSize: "14px" }}>Primary</div>
-                        )}
-                        {index > 0 && <div style={{ width: "60px" }}></div>}
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
 
                         <input
                           type="radio"
@@ -976,7 +974,7 @@ const PartyEdit: FC = () => {
                           disabled={isDisabled}
                         />
 
-                        <div style={{ flex: 1 }}>
+                        <div className="party-multiple-value-container">
                           <CompInput
                             id={`email-${index}`}
                             divid=""
