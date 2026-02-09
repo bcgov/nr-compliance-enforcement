@@ -25,6 +25,7 @@ interface EditingSource {
   sourceUrl: string;
   regulationsSourceUrl: string;
   agencyCode: string;
+  sourceType: string;
   activeInd: boolean;
   importedInd: boolean;
 }
@@ -35,9 +36,15 @@ const emptySource: EditingSource = {
   sourceUrl: "",
   regulationsSourceUrl: "",
   agencyCode: "",
+  sourceType: "BCLAWS",
   activeInd: true,
   importedInd: false,
 };
+
+const sourceTypeOptions: Option[] = [
+  { value: "BCLAWS", label: "BC Laws" },
+  { value: "FEDERAL", label: "Federal" },
+];
 
 export const LegislationSourceManagement: FC = () => {
   const { data: sources, isLoading, refetch } = useLegislationSources();
@@ -126,6 +133,7 @@ export const LegislationSourceManagement: FC = () => {
       sourceUrl: source.sourceUrl,
       regulationsSourceUrl: source.regulationsSourceUrl ?? "",
       agencyCode: source.agencyCode,
+      sourceType: source.sourceType ?? "BCLAWS",
       activeInd: source.activeInd,
       importedInd: source.importedInd,
     });
@@ -151,7 +159,7 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -162,8 +170,9 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
+        sourceType: editingSource.sourceType,
       };
       createMutation.mutate({ input });
     }
@@ -201,7 +210,7 @@ export const LegislationSourceManagement: FC = () => {
       return (
         <tr>
           <td
-            colSpan={7}
+            colSpan={8}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center">
@@ -219,7 +228,7 @@ export const LegislationSourceManagement: FC = () => {
       return (
         <tr>
           <td
-            colSpan={7}
+            colSpan={8}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center">
@@ -233,11 +242,12 @@ export const LegislationSourceManagement: FC = () => {
 
     return filteredSources.map((source, i) => (
       <tr key={source.legislationSourceGuid}>
-        <td style={{ textAlign: "center" }}>{i + 1}</td>
+        <td className="text-center">{i + 1}</td>
         <td>
           {source.shortDescription}
           {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
         </td>
+        <td>{sourceTypeOptions.find((o) => o.value === source.sourceType)?.label ?? source.sourceType}</td>
         <td>{getAgencyLabel(source.agencyCode)}</td>
         <td>
           <div>
@@ -269,9 +279,9 @@ export const LegislationSourceManagement: FC = () => {
             </div>
           )}
         </td>
-        <td style={{ textAlign: "center" }}>{getStatusBadge(source)}</td>
+        <td className="text-center">{getStatusBadge(source)}</td>
         <td>{formatDateTime(source.lastImportTimestamp ?? undefined)}</td>
-        <td style={{ textAlign: "center" }}>
+        <td className="text-center">
           <Dropdown
             id={`source-action-button-${source.legislationSourceGuid}`}
             drop="start"
@@ -289,7 +299,10 @@ export const LegislationSourceManagement: FC = () => {
                 modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
               }}
             >
-              <Dropdown.Item onClick={() => handleOpenEdit(source)}>
+              <Dropdown.Item
+                onClick={() => handleOpenEdit(source)}
+                disabled={source.importedInd || source.importStatus === "SUCCESS"}
+              >
                 <i className="bi bi-pencil" /> Edit
               </Dropdown.Item>
               {source.lastImportLog && (
@@ -322,13 +335,12 @@ export const LegislationSourceManagement: FC = () => {
         <div className="comp-page-title-container">
           <h1>Legislation Sources</h1>
         </div>
-        <p>BC Laws XML document sources for import into the legislation tables.</p>
+        <p>Legislation document sources for import into the legislation tables.</p>
 
         <div className="d-flex justify-content-between align-items-center mb-3">
           <input
             type="text"
-            className="form-control"
-            style={{ maxWidth: "400px" }}
+            className="form-control comp-filter-input"
             placeholder="Search by description, URL, or agency..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -348,13 +360,14 @@ export const LegislationSourceManagement: FC = () => {
           >
             <thead>
               <tr>
-                <th style={{ width: "50px" }}>#</th>
+                <th className="comp-cell-width-50">#</th>
                 <th>Description</th>
-                <th style={{ width: "130px" }}>Agency</th>
+                <th className="comp-cell-width-100">Type</th>
+                <th className="comp-cell-width-130">Agency</th>
                 <th>Source URLs</th>
-                <th style={{ width: "100px", textAlign: "center" }}>Status</th>
-                <th style={{ width: "160px" }}>Last Import</th>
-                <th style={{ width: "90px", textAlign: "center" }}>Actions</th>
+                <th className="comp-cell-width-100 text-center">Status</th>
+                <th className="comp-cell-width-160">Last Import</th>
+                <th className="comp-cell-width-90 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>{renderTableBody()}</tbody>
@@ -423,17 +436,41 @@ export const LegislationSourceManagement: FC = () => {
               </div>
             </div>
 
+            {editingSource.sourceType !== "FEDERAL" && (
+              <div className="comp-details-form-row">
+                <label htmlFor="regulations-url-input">Regulations URL</label>
+                <div className="comp-details-edit-input">
+                  <CompInput
+                    id="regulations-url-input"
+                    divid="regulations-url-div"
+                    type="input"
+                    inputClass="comp-form-control"
+                    placeholder="Optional URL for the regulations folder XML document"
+                    value={editingSource.regulationsSourceUrl}
+                    onChange={(e: any) => setEditingSource({ ...editingSource, regulationsSourceUrl: e.target.value })}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="comp-details-form-row">
-              <label htmlFor="regulations-url-input">Regulations URL</label>
+              <label htmlFor="source-type-select">
+                Source Type<span className="required-ind">*</span>
+              </label>
               <div className="comp-details-edit-input">
-                <CompInput
-                  id="regulations-url-input"
-                  divid="regulations-url-div"
-                  type="input"
-                  inputClass="comp-form-control"
-                  placeholder="Optional URL for the regulations folder XML document"
-                  value={editingSource.regulationsSourceUrl}
-                  onChange={(e: any) => setEditingSource({ ...editingSource, regulationsSourceUrl: e.target.value })}
+                <CompSelect
+                  id="source-type-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={sourceTypeOptions}
+                  value={sourceTypeOptions.find((o) => o.value === editingSource.sourceType) || sourceTypeOptions[0]}
+                  onChange={(option: Option | null) =>
+                    setEditingSource({ ...editingSource, sourceType: option?.value || "BCLAWS" })
+                  }
+                  placeholder="Select a source type..."
+                  showInactive={false}
+                  enableValidation={false}
+                  isClearable={false}
                 />
               </div>
             </div>
@@ -575,10 +612,7 @@ export const LegislationSourceManagement: FC = () => {
           </div>
           <div>
             <strong>Log:</strong>
-            <pre
-              className="mt-2 p-3 bg-light border rounded"
-              style={{ maxHeight: "400px", overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-            >
+            <pre className="mt-2 p-3 bg-light border rounded overflow-auto text-break comp-log-viewer">
               {viewLogSource?.lastImportLog || "No log available"}
             </pre>
           </div>

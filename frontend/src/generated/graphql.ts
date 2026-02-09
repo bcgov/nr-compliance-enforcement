@@ -292,6 +292,28 @@ export type ContactMethodInput = {
   value: Scalars['String']['input'];
 };
 
+export type ContinuationReport = {
+  __typename?: 'ContinuationReport';
+  actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  contentJson?: Maybe<Scalars['String']['output']>;
+  continuationReportGuid?: Maybe<Scalars['String']['output']>;
+  investigationGuid?: Maybe<Scalars['String']['output']>;
+  reportedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
+  reportedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ContinuationReportInput = {
+  actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  contentJson?: InputMaybe<Scalars['String']['input']>;
+  contentText?: InputMaybe<Scalars['String']['input']>;
+  continuationReportGuid?: InputMaybe<Scalars['String']['input']>;
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
+  reportedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  reportedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type Contravention = {
   __typename?: 'Contravention';
   contraventionIdentifier: Scalars['String']['output'];
@@ -567,7 +589,7 @@ export type DiaryDate = {
 };
 
 export type DiaryDateInput = {
-  description?: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
   diaryDateGuid?: InputMaybe<Scalars['String']['input']>;
   dueDate: Scalars['DateTime']['input'];
   investigationGuid: Scalars['String']['input'];
@@ -1071,6 +1093,7 @@ export type Mutation = {
   createReview: ComplaintOutcome;
   createTask: Task;
   createWildlife: ComplaintOutcome;
+  deleteActivityNote: Scalars['Boolean']['output'];
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteDiaryDate: Scalars['Boolean']['output'];
@@ -1090,6 +1113,7 @@ export type Mutation = {
   removeTask: Task;
   resetLegislationSource: Scalars['Boolean']['output'];
   saveActivityNote: ActivityNote;
+  saveContinuationReport: ContinuationReport;
   saveDiaryDate: DiaryDate;
   updateAppUser?: Maybe<AppUser>;
   updateAppUserTeamXref?: Maybe<AppUserTeamXref>;
@@ -1242,6 +1266,11 @@ export type MutationcreateWildlifeArgs = {
 };
 
 
+export type MutationdeleteActivityNoteArgs = {
+  activityNoteGuid: Scalars['String']['input'];
+};
+
+
 export type MutationdeleteAppUserTeamXrefArgs = {
   appUserTeamXrefGuid: Scalars['String']['input'];
 };
@@ -1337,6 +1366,11 @@ export type MutationresetLegislationSourceArgs = {
 
 export type MutationsaveActivityNoteArgs = {
   input: ActivityNoteInput;
+};
+
+
+export type MutationsaveContinuationReportArgs = {
+  input: ContinuationReportInput;
 };
 
 
@@ -1683,6 +1717,8 @@ export type Query = {
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getContinuationReport?: Maybe<ContinuationReport>;
+  getContinuationReports?: Maybe<Array<ContinuationReport>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
@@ -1722,6 +1758,7 @@ export type Query = {
   searchActivityNotes?: Maybe<Array<ActivityNote>>;
   searchAppUsers: Array<Maybe<AppUser>>;
   searchCaseFiles: CaseFileResult;
+  searchContinuationReports?: Maybe<Array<ContinuationReport>>;
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
   searchInspections: InspectionResult;
@@ -1863,6 +1900,16 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
   complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetContinuationReportArgs = {
+  continuationReportGuid: Scalars['String']['input'];
+};
+
+
+export type QuerygetContinuationReportsArgs = {
+  investigationGuid: Scalars['String']['input'];
 };
 
 
@@ -2010,6 +2057,11 @@ export type QuerysearchCaseFilesArgs = {
   filters?: InputMaybe<CaseFileFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchContinuationReportsArgs = {
+  searchString: Scalars['String']['input'];
 };
 
 

@@ -458,6 +458,7 @@ model legislation_source {
   import_status                                           String?       @default("PENDING") @db.VarChar(16)
   last_import_log                                         String?
   regulations_source_url                                  String?       @db.VarChar(512)
+  source_type                                             String        @default("BCLAWS") @db.VarChar(16)
   legislation                                             legislation[] @relation("legislationTolegislation_source")
   agency_code_legislation_source_agency_codeToagency_code agency_code   @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
 

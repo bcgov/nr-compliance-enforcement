@@ -32,6 +32,7 @@ export class LegislationSourceResolver {
       sourceUrl: string;
       regulationsSourceUrl?: string;
       agencyCode: string;
+      sourceType?: string;
     },
     @Context() context: any,
   ) {
