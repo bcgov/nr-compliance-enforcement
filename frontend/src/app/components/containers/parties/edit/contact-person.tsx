@@ -2,8 +2,8 @@ import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
-import { PhoneNumberField } from "@/app/components/containers/parties/edit/phone-number";
 import { BusinessPerson, ContactMethod } from "@/generated/graphql";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 
 interface ContactPersonFieldsProps {
   contact: BusinessPerson;
@@ -91,18 +91,49 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
 
       {/* Phone numbers */}
       {phoneNumbers.map(({ method, originalIndex }, displayIndex) => (
-        <PhoneNumberField
+        <FormField
           key={method.contactMethodGuid || `contact-phone-${displayIndex}`}
-          phoneNumber={method}
-          displayIndex={displayIndex}
           form={form}
-          isDisabled={isDisabled}
-          onSetPrimary={() => onSetPrimaryContact(contactIndex, originalIndex, "PHONE")}
-          onRemove={() => onRemoveContactMethod(contactIndex, originalIndex)}
-          fieldName={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value`}
-          radioName={`primaryContactPhone-${contactIndex}`}
-          radioId={`contact-phone-primary-${contactIndex}-${originalIndex}`}
-          inputId={`contact-phone-${contactIndex}-${originalIndex}`}
+          name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value`}
+          label={displayIndex === 0 ? "Phone number" : ""}
+          render={(field) => (
+            <div className="party-contact-method">
+              {displayIndex === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+              {displayIndex > 0 && <div className="party-primary-contact-spacer"></div>}
+
+              <input
+                type="radio"
+                id={`contact-phone-primary-${contactIndex}-${originalIndex}`}
+                name={`primaryContactPhone-${contactIndex}`}
+                checked={method.isPrimary || false}
+                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, "PHONE")}
+                disabled={isDisabled}
+              />
+
+              <div className="party-multiple-value-container">
+                <ValidationPhoneInput
+                  className="comp-details-input"
+                  value={method.value ?? ""}
+                  onChange={(value: string) => field.handleChange(value || "")}
+                  maxLength={14}
+                  international={false}
+                  id={`contact-phone-${contactIndex}-${originalIndex}`}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                />
+              </div>
+
+              <Button
+                variant="outline-dark"
+                size="sm"
+                onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
+                type="button"
+              >
+                <i className="bi bi-trash" />
+                {/**/}
+                Remove
+              </Button>
+            </div>
+          )}
         />
       ))}
 

@@ -23,9 +23,9 @@ import {
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { Button } from "react-bootstrap";
-import { PhoneNumberField } from "@/app/components/containers/parties/edit/phone-number";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 
 const UPDATE_PARTY_MUTATION = gql`
   mutation UpdateParty($partyIdentifier: String!, $input: PartyUpdateInput!) {
@@ -923,18 +923,49 @@ const PartyEdit: FC = () => {
                   )}
                 />
                 {phoneNumberValue?.map((phoneNumber: ContactMethod, index: number) => (
-                  <PhoneNumberField
+                  <FormField
                     key={phoneNumber.contactMethodGuid || `phone-${index}`}
-                    phoneNumber={phoneNumber}
-                    displayIndex={index}
                     form={form}
-                    isDisabled={isDisabled}
-                    onSetPrimary={() => handleSetPrimaryPhoneNumber(index)}
-                    onRemove={() => handleRemovePhoneNumber(index)}
-                    fieldName={`phoneNumbers[${index}].value`}
-                    radioName="primaryPhoneNumber"
-                    radioId={`phone-primary-${index}`}
-                    inputId={`phone-number-${index}`}
+                    name={`phoneNumbers[${index}].value`}
+                    label={index === 0 ? "Phone number" : ""}
+                    render={(field) => (
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+                        <input
+                          type="radio"
+                          id={`phone-primary-${index}`}
+                          name="primaryPhoneNumber"
+                          checked={phoneNumber.isPrimary || false}
+                          onChange={() => handleSetPrimaryPhoneNumber(index)}
+                          disabled={isDisabled}
+                        />
+
+                        <div className="party-multiple-value-container">
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={phoneNumber.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
+                            id={`phone-number-${index}`}
+                            errMsg={field.state.meta.errors?.[0]?.message || ""}
+                          />
+                        </div>
+
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemovePhoneNumber(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" />
+                          {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
                   />
                 ))}
                 <FormField
