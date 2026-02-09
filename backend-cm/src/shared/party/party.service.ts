@@ -530,22 +530,22 @@ export class PartyService {
 
     const aliasOperations = this._buildAliasOperations(
       input.business?.aliases ?? [],
-      existingPartyDto.business.aliases ?? [],
+      existingPartyDto.business?.aliases ?? [],
     );
 
     const contactMethodOperations = this._buildContactMethodOperations(
       input.business?.contactMethods ?? [],
-      existingPartyDto.business.contactMethods ?? [],
+      existingPartyDto.business?.contactMethods ?? [],
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
       input.business?.identifiers ?? [],
-      existingPartyDto.business.identifiers ?? [],
+      existingPartyDto.business?.identifiers ?? [],
     );
 
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
-      existingPartyDto.business.contactPeople ?? [],
+      existingPartyDto.business?.contactPeople ?? [],
     );
 
     if (input.partyTypeCode === PARTY_TYPES.Person) {

@@ -7,7 +7,7 @@ import { Party, Investigation, Inspection, CaseFile, InspectionParty, Investigat
 import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
-import { selectAgencyDropdown, selectCodeTable } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCodeTable, selectSexDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
@@ -41,7 +41,20 @@ export const GET_PARTY = gql`
       person {
         personGuid
         firstName
+        middleName
+        middleName2
         lastName
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
+        contactMethods {
+          contactMethodGuid
+          typeCode
+          typeDescription
+          value
+          isPrimary
+        }
       }
       business {
         name
@@ -162,6 +175,7 @@ export const PartyView: FC = () => {
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+  const sexOptions = useAppSelector(selectSexDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -187,11 +201,24 @@ export const PartyView: FC = () => {
 
   const displayName = () => {
     let result = "";
-    if (partyData?.person) result = `${partyData.person?.firstName} ${partyData.person?.lastName}`;
-    else if (partyData?.business) {
+    if (partyData?.person) {
+      const parts = [
+        partyData.person?.firstName,
+        partyData.person?.middleName,
+        partyData.person?.middleName2,
+        partyData.person?.lastName,
+      ].filter(Boolean);
+      result = parts.join(" ");
+    } else if (partyData?.business) {
       result = `${partyData.business?.name}`;
     }
     return result;
+  };
+
+  const formatDateOfBirth = (date: string | undefined | null) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return d.toISOString().split("T")[0];
   };
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
@@ -430,9 +457,33 @@ export const PartyView: FC = () => {
                 </>
               )}
               {partyData?.person && (
-                <p>
-                  <b>Date of birth:</b>
-                </p>
+                <>
+                  {partyData.person.dateOfBirth != null && (
+                    <p>
+                      <b>Date of birth: </b>
+                      {formatDateOfBirth(partyData.person.dateOfBirth)}
+                    </p>
+                  )}
+                  {partyData.person.driversLicenseNumber && (
+                    <p>
+                      <b>Driver's licence number: </b>
+                      {partyData.person.driversLicenseNumber}
+                    </p>
+                  )}
+                  {partyData.person.driversLicenseJurisdiction && (
+                    <p>
+                      <b>Driver's licence jurisdiction: </b>
+                      {partyData.person.driversLicenseJurisdiction}
+                    </p>
+                  )}
+                  {partyData.person.sexCode && (
+                    <p>
+                      <b>Sex: </b>
+                      {sexOptions?.find((opt: { value: string }) => opt.value === partyData.person?.sexCode)?.label ??
+                        partyData.person.sexCode}
+                    </p>
+                  )}
+                </>
               )}
             </div>
             {partyRelations && partyRelations.length > 0 && (
@@ -490,6 +541,21 @@ export const PartyView: FC = () => {
             <h4>Contact information</h4>
 
             <div className="party-details-item">
+              {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
+                <>
+                  {partyData.person.contactMethods.map((contactMethod) => {
+                    return (
+                      <p key={contactMethod?.contactMethodGuid}>
+                        <b>{contactMethod?.typeDescription}: </b>
+                        {contactMethod?.typeCode === "PHONE"
+                          ? formatPhoneNumber(contactMethod?.value ?? "")
+                          : contactMethod?.value}
+                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+                      </p>
+                    );
+                  })}
+                </>
+              )}
               {partyData?.business?.contactMethods && (
                 <>
                   {partyData.business.contactMethods.map((contactMethod) => {

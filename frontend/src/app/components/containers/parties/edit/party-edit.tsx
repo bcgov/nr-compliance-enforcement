@@ -26,6 +26,8 @@ import { Button } from "react-bootstrap";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { selectSexDropdown } from "@/app/store/reducers/code-table";
 
 const UPDATE_PARTY_MUTATION = gql`
   mutation UpdateParty($partyIdentifier: String!, $input: PartyUpdateInput!) {
@@ -38,7 +40,13 @@ const UPDATE_PARTY_MUTATION = gql`
       person {
         personGuid
         firstName
+        middleName
+        middleName2
         lastName
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -59,7 +67,13 @@ const CREATE_PARTY_MUTATION = gql`
       person {
         personGuid
         firstName
+        middleName
+        middleName2
         lastName
+        dateOfBirth
+        driversLicenseNumber
+        driversLicenseJurisdiction
+        sexCode
       }
       business {
         businessGuid
@@ -245,7 +259,17 @@ const buildBusinessCreate = (value: any) => {
 const buildPerson = (value: any) => {
   return {
     firstName: value.firstName,
+    middleName: value.middleName || undefined,
+    middleName2: value.middleName2 || undefined,
     lastName: value.lastName,
+    dateOfBirth: value.dateOfBirth
+      ? value.dateOfBirth instanceof Date
+        ? value.dateOfBirth
+        : new Date(value.dateOfBirth)
+      : undefined,
+    driversLicenseNumber: value.driversLicenseNumber || undefined,
+    driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
+    sexCode: value.sexCode || undefined,
   };
 };
 
@@ -256,6 +280,7 @@ const PartyEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
+  const sexCodeOptions = useAppSelector(selectSexDropdown);
 
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
@@ -271,6 +296,10 @@ const PartyEdit: FC = () => {
         label: code.label,
       };
     });
+
+  const sexCodeDropdownOptions = sexCodeOptions
+    ?.filter((opt: { isActive?: boolean }) => opt.isActive !== false)
+    .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
 
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
     onError: (error: any) => {
@@ -296,10 +325,17 @@ const PartyEdit: FC = () => {
 
   const defaultValues = useMemo(() => {
     if (isEditMode && partyData?.party) {
+      const person = partyData.party.person;
       return {
         partyType: partyData.party.partyTypeCode || "",
-        firstName: partyData.party.person?.firstName || "",
-        lastName: partyData.party.person?.lastName || "",
+        firstName: person?.firstName || "",
+        middleName: person?.middleName || "",
+        middleName2: person?.middleName2 || "",
+        lastName: person?.lastName || "",
+        dateOfBirth: person?.dateOfBirth ? new Date(person.dateOfBirth) : undefined,
+        driversLicenseNumber: person?.driversLicenseNumber || "",
+        driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
+        sexCode: person?.sexCode || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "BNUM",
@@ -320,7 +356,13 @@ const PartyEdit: FC = () => {
     return {
       partyType: null,
       firstName: "",
+      middleName: "",
+      middleName2: "",
       lastName: "",
+      dateOfBirth: undefined,
+      driversLicenseNumber: "",
+      driversLicenseJurisdiction: "",
+      sexCode: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
@@ -803,6 +845,121 @@ const PartyEdit: FC = () => {
                       onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                       placeholder="Enter last name..."
                       disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="middleName"
+                  label="Middle name"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="middleName2"
+                  label="Middle name 2"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName2"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name 2..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="dateOfBirth"
+                  label="Date of birth"
+                  render={(field) => (
+                    <ValidationDatePicker
+                      id="DateOfBirth"
+                      classNamePrefix="comp-details-input"
+                      className="comp-form-control comp-details-input"
+                      selectedDate={field.state.value}
+                      onChange={(date: Date | undefined) => field.handleChange(date ?? undefined)}
+                      errMsg={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled}
+                      showYearDropdown={true}
+                      yearDropdownItemNumber={100}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseNumber"
+                  label="Driver's licence number"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseNumber"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence number..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseJurisdiction"
+                  label="Driver's licence jurisdiction"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseJurisdiction"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence jurisdiction..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="sexCode"
+                  label="Sex"
+                  render={(field) => (
+                    <CompSelect
+                      id="sex-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={sexCodeDropdownOptions}
+                      value={sexCodeDropdownOptions?.find((opt: any) => opt.value === field.state.value)}
+                      onChange={(option) => field.handleChange(option?.value ?? "")}
+                      placeholder="Select sex"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled}
                     />
                   )}
                 />
