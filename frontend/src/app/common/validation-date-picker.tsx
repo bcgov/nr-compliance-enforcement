@@ -4,9 +4,10 @@ import DatePicker from "react-datepicker";
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
+  selectedTime?: string | null;
   maxDate?: Date;
   minDate?: Date;
-  onChange: (date: Date) => void;
+  onChange: (date: Date, time: string | null) => void;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -16,9 +17,27 @@ interface ValidationDatePickerProps {
   vertical?: boolean;
 }
 
+// const formatTime = (date: Date): string => {
+//   const hh = date.getHours().toString().padStart(2, "0");
+//   const mm = date.getMinutes().toString().padStart(2, "0");
+//   return `${hh}:${mm}`;
+// };
+
+const dateWithTime = (date: Date, time: string | null): Date => {
+  const result = new Date(date);
+  if (time) {
+    const [hh, mm] = time.split(":").map(Number);
+    result.setHours(hh, mm, 0, 0);
+  } else {
+    result.setHours(0, 0, 0, 0);
+  }
+  return result;
+};
+
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   className,
   selectedDate,
+  selectedTime = null,
   maxDate,
   minDate,
   onChange,
@@ -30,8 +49,29 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showTimePicker = false,
   vertical = false,
 }) => {
-  const handleDateChange = (date: Date) => {
-    onChange(date);
+  const handleDateTimeChange = (date: Date, time: string | null) => {
+    onChange(date, time);
+  };
+  const displayDate = selectedDate ? dateWithTime(selectedDate, selectedTime) : undefined;
+
+  // This allows the user to type dates like '2025 02 02' and have it parse out to the standard
+  // date format of '2025-02-02'
+  const parseDateInput = (raw: string): Date | null => {
+    const stripped = raw.replace(/[\s\-\/\.]/g, "");
+    if (stripped.length !== 8 || !/^\d{8}$/.test(stripped)) {
+      return null;
+    }
+    const year = Number.parseInt(stripped.substring(0, 4), 10);
+    const month = Number.parseInt(stripped.substring(4, 6), 10);
+    const day = Number.parseInt(stripped.substring(6, 8), 10);
+    if (month < 1 || month > 12 || day < 1 || day > 31) {
+      return null;
+    }
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return null;
+    }
+    return date;
   };
 
   const calculatedClass = errMsg === "" ? "" : "error-message";
@@ -46,21 +86,26 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
         >
           <i className="bi bi-calendar" />
           <DatePicker
-            selected={selectedDate ? new Date(selectedDate) : undefined}
+            selected={displayDate}
             onChange={(date) => {
               if (date) {
-                handleDateChange(date);
+                handleDateTimeChange(date, selectedTime);
               }
             }}
             onBlur={(event) => {
               const rawValue = event.target.value;
               if (rawValue === "" && selectedDate) {
-                handleDateChange(null as any);
+                handleDateTimeChange(null as any, null);
+              } else if (rawValue) {
+                const parsed = parseDateInput(rawValue);
+                if (parsed) {
+                  handleDateTimeChange(parsed, selectedTime);
+                }
               }
             }}
             placeholderText="yyyy-mm-dd"
             className={`${calculatedBorderClass} ${classNamePrefix}`}
-            id={id}
+            id={`${id}-date`}
             dateFormat="yyyy-MM-dd"
             {...(maxDate && { maxDate })}
             minDate={minDate}
@@ -74,32 +119,60 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
 
         {showTimePicker && (
           <div
-            className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
-            style={{ maxWidth: "180px" }}
+            className={`d-flex comp-date-time-picker comp-date-time-picker-split align-items-center ${calculatedBorderClass}`}
           >
             <i className="bi bi-clock" />
             <DatePicker
-              id={`${id}-timepicker`}
-              selected={selectedDate ? new Date(selectedDate) : undefined}
+              id={`${id}-hour`}
+              selected={displayDate}
               onChange={(date) => {
-                if (date) {
-                  handleDateChange(date);
+                if (date && selectedDate) {
+                  const currentMin = selectedTime ? selectedTime.split(":")[1] : "00";
+                  const newHour = date.getHours().toString().padStart(2, "0");
+                  handleDateTimeChange(selectedDate, `${newHour}:${currentMin}`);
                 }
               }}
               onChangeRaw={(event) => {
                 const rawValue = event.target.value;
                 if (rawValue === "" && selectedDate) {
-                  selectedDate.setHours(0, 0, 0, 0);
-                  handleDateChange(selectedDate);
+                  handleDateTimeChange(selectedDate, null);
                 }
               }}
               showTimeSelect
               showTimeSelectOnly
-              timeIntervals={1}
-              timeCaption="Time"
-              timeFormat="HH:mm"
-              dateFormat="HH:mm"
-              placeholderText="hh:mm"
+              timeIntervals={60}
+              timeCaption="Hour"
+              timeFormat="HH"
+              dateFormat="HH"
+              placeholderText="HH"
+            />
+            <span>:</span>
+            <DatePicker
+              id={`${id}-minute`}
+              selected={displayDate}
+              onChange={(date) => {
+                if (date && selectedDate) {
+                  const currentHour = selectedTime ? selectedTime.split(":")[0] : "00";
+                  const newMin = date.getMinutes().toString().padStart(2, "0");
+                  handleDateTimeChange(selectedDate, `${currentHour}:${newMin}`);
+                }
+              }}
+              onChangeRaw={(event) => {
+                const rawValue = event.target.value;
+                if (rawValue === "" && selectedDate) {
+                  handleDateTimeChange(selectedDate, null);
+                }
+              }}
+              showTimeSelect
+              showTimeSelectOnly
+              // Note that we have to use custom css to hide the rest of the repeating minutes due to a lib limitation
+              timeIntervals={5}
+              timeCaption="Min"
+              timeFormat="mm"
+              dateFormat="mm"
+              placeholderText="mm"
+              minTime={new Date(0, 0, 0, 0, 0)}
+              maxTime={new Date(0, 0, 0, 0, 55)}
             />
           </div>
         )}

@@ -27,6 +27,7 @@ export class Investigation {
   primaryInvestigatorGuid: string;
   fileCoordinatorGuid?: string;
   discoveryDate: Date;
+  discoveryTime: Date;
   parties: [InvestigationParty];
   contraventions: [Contravention];
   tasks: [Task];
@@ -108,6 +109,9 @@ export class CreateInvestigationInput {
 
   @Field(() => Date)
   discoveryDate: Date;
+
+  @Field(() => Date)
+  discoveryTime: Date;
 }
 
 @InputType()
@@ -149,6 +153,8 @@ export class UpdateInvestigationInput {
 
   @Field(() => Date)
   discoveryDate: Date;
+  @Field(() => Date)
+  discoveryTime: Date;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -212,7 +218,11 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.discoveryDate,
-      mapFrom((src) => src.discovery_date),
+      mapFrom((src) => src.discovery_date_utc_date),
+    ),
+    forMember(
+      (dest) => dest.discoveryTime,
+      mapFrom((src) => src.discovery_date_utc_time),
     ),
     forMember(
       (dest) => dest.parties,

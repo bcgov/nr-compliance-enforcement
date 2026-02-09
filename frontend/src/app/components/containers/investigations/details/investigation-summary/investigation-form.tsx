@@ -38,9 +38,16 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
 
 export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
+  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
     discoveryDate ? new Date(discoveryDate) : null,
   );
+  const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
+    if (!discoveryDate) return null;
+    const d = new Date(discoveryDate);
+    const hh = d.getHours().toString().padStart(2, "0");
+    const mm = d.getMinutes().toString().padStart(2, "0");
+    return `${hh}:${mm}`;
+  });
 
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -54,10 +61,16 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
         }))
       : [];
 
-  const handleDiscoveryDateTimeChange = (date: Date | null) => {
-    setSelectedDiscoveryDateTime(date);
+  const handleDiscoveryDateTimeChange = (date: Date | null, time: string | null) => {
+    setSelectedDiscoveryDate(date);
+    setSelectedDiscoveryTime(time);
     if (date) {
-      form.setFieldValue("discoveryDate", new Date(date).toISOString());
+      const discoveryDate = new Date(date);
+      if (time) {
+        const [hh, mm] = time.split(":").map(Number);
+        discoveryDate.setHours(hh, mm, 0, 0);
+      }
+      form.setFieldValue("discoveryDate", discoveryDate.toISOString());
     } else {
       form.setFieldValue("discoveryDate", "");
     }
@@ -244,15 +257,16 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
             }}
             render={(field) => {
               // Flush state to rendered comp if it's available so no-edit saves work
-              if (!field.state.value && selectedDiscoveryDateTime) {
-                field.handleChange(selectedDiscoveryDateTime.toISOString());
+              if (!field.state.value && selectedDiscoveryDate) {
+                field.handleChange(selectedDiscoveryDate.toISOString());
               }
               return (
                 <ValidationDatePicker
                   id="investigation-discovery-date"
-                  selectedDate={selectedDiscoveryDateTime}
-                  onChange={(date: Date) => {
-                    handleDiscoveryDateTimeChange(date);
+                  selectedDate={selectedDiscoveryDate}
+                  selectedTime={selectedDiscoveryTime}
+                  onChange={(date: Date, time: string | null) => {
+                    handleDiscoveryDateTimeChange(date, time);
                     field.handleChange(date ? date.toISOString() : "");
                   }}
                   className="comp-details-edit-calendar-input"

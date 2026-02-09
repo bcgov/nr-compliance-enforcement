@@ -1071,6 +1071,7 @@ export type Mutation = {
   createReview: ComplaintOutcome;
   createTask: Task;
   createWildlife: ComplaintOutcome;
+  deleteActivityNote: Scalars['Boolean']['output'];
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
   deleteDiaryDate: Scalars['Boolean']['output'];
@@ -1239,6 +1240,11 @@ export type MutationcreateTaskArgs = {
 
 export type MutationcreateWildlifeArgs = {
   input: CreateWildlifeInput;
+};
+
+
+export type MutationdeleteActivityNoteArgs = {
+  activityNoteGuid: Scalars['String']['input'];
 };
 
 

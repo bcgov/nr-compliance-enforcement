@@ -124,7 +124,7 @@ export const DiaryDateForm = ({
               classNamePrefix="comp-details-edit-calendar-input"
               className="comp-details-input full-width"
               id={`diary-date-${index}`}
-              onChange={(date: Date) => {
+              onChange={(date: Date, _time: string | null) => {
                 field.handleChange(date);
               }}
               selectedDate={field.state.value}
