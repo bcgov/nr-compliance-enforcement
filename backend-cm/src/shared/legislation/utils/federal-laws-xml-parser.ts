@@ -21,7 +21,7 @@ const stripXmlTags = (raw: string): string => {
     return raw
       .replaceAll(/<br\s*\/?>/gi, " ")
       .replaceAll(/<DefinedTermEn>([^<]*)<\/DefinedTermEn>/g, '"$1"')
-      .replaceAll(/<[^>]+>/g, "")
+      .replaceAll(/<[^>]+>/g, "") // NOSONAR no backtracking per warning because of negated class [^] with fixed delimiters
       .replaceAll(/\s+/g, " ")
       .trim();
   }
@@ -136,7 +136,12 @@ parsers["Definition"] = (el, order) => {
   const children = parseChildren(el, ["Paragraph"]);
   for (const cont of toArray(el?.ContinuedDefinition))
     children.push(createNode("TEXT", children.length + 1, { legislationText: getTextContent(cont) }));
-  return createNode("DEF", order, { citation: term, sectionTitle: term, legislationText: getTextContent(el), children });
+  return createNode("DEF", order, {
+    citation: term,
+    sectionTitle: term,
+    legislationText: getTextContent(el),
+    children,
+  });
 };
 
 parsers["Provision"] = (el, order) => {
@@ -197,7 +202,11 @@ function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
 function parseSchedule(schedule: any, displayOrder: number): ParsedLegislationNode {
   const h = schedule?.ScheduleFormHeading;
   const label = h?.Label ? extractText(h.Label).trim() : null;
-  const titleStr = h ? toArray(h.TitleText).map((t: any) => extractText(t).trim()).join(" - ") || null : null;
+  const titleStr = h
+    ? toArray(h.TitleText)
+        .map((t: any) => extractText(t).trim())
+        .join(" - ") || null
+    : null;
   const match = label ? /SCHEDULE\s+(.*)/i.exec(label) : null;
   const citation = match ? match[1].trim() : label;
   const title = [label, titleStr].filter(Boolean).join(" - ") || null;
@@ -265,10 +274,24 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
     stopNodes: ["*.Text"],
     isArray: (tagName: string) =>
       [
-        "Heading", "Section", "Subsection", "Paragraph", "Subparagraph",
-        "Clause", "Subclause", "Definition", "ContinuedDefinition", "Schedule",
-        "Text", "TitleText", "Provision", "FormGroup", "RelatedOrNotInForce",
-        "TableGroup", "Group", "HistoricalNoteSubItem",
+        "Heading",
+        "Section",
+        "Subsection",
+        "Paragraph",
+        "Subparagraph",
+        "Clause",
+        "Subclause",
+        "Definition",
+        "ContinuedDefinition",
+        "Schedule",
+        "Text",
+        "TitleText",
+        "Provision",
+        "FormGroup",
+        "RelatedOrNotInForce",
+        "TableGroup",
+        "Group",
+        "HistoricalNoteSubItem",
       ].includes(tagName),
   });
 
@@ -278,10 +301,12 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
 
   const id = statute?.Identification;
   const shortTitle = extractText(id?.ShortTitle).trim();
-  const longTitle = id?.LongTitle ? toArray(id.LongTitle).map((lt: any) => extractText(lt).trim()).join(" ") : null;
-  const consolidatedNumber = id?.Chapter?.ConsolidatedNumber
-    ? extractText(id.Chapter.ConsolidatedNumber).trim()
+  const longTitle = id?.LongTitle
+    ? toArray(id.LongTitle)
+        .map((lt: any) => extractText(lt).trim())
+        .join(" ")
     : null;
+  const consolidatedNumber = id?.Chapter?.ConsolidatedNumber ? extractText(id.Chapter.ConsolidatedNumber).trim() : null;
 
   const metadata: FederalLawsMetadata = {
     title: shortTitle || longTitle || "Unknown Federal Statute",
