@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { getFederalLawsXml } from "../../external_api/federal-laws-service";
+import { fetchXml } from "../../external_api/laws-service";
 import { parseFederalLawsXml, ParsedFederalLawsDocument } from "../../shared/legislation/utils/federal-laws-xml-parser";
 import {
   InsertLegislationContext,
@@ -25,7 +25,7 @@ async function importLegislationSourceDocument(
 
   try {
     // Fetch the XML
-    const xmlString = await getFederalLawsXml(source.sourceUrl);
+    const xmlString = await fetchXml(source.sourceUrl, "Federal Laws API");
     logger.log(`Received XML document (${xmlString.length} characters)`);
 
     // Parse the XML

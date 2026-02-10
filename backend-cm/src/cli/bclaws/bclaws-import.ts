@@ -2,11 +2,8 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/bc-laws-service";
-import {
-  parseBcLawsXml,
-  ParsedBcLawsDocument,
-} from "../../shared/legislation/utils/bc-laws-xml-parser";
+import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/laws-service";
+import { parseBcLawsXml, ParsedBcLawsDocument } from "../../shared/legislation/utils/bc-laws-xml-parser";
 import {
   InsertLegislationContext,
   insertLegislationTree,
