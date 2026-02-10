@@ -28,6 +28,7 @@ import { ContactPersonFields } from "@/app/components/containers/parties/edit/co
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
+import { parse } from "date-fns";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -255,6 +256,9 @@ const buildBusinessCreate = (value: any) => {
   };
 };
 
+// Parse date-only (YYYY-MM-DD) as local calendar date, same as diary dates
+const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
+
 // Helper to build person object
 const buildPerson = (value: any, isUpdate: boolean = false) => {
   return {
@@ -264,7 +268,13 @@ const buildPerson = (value: any, isUpdate: boolean = false) => {
     lastName: value.lastName,
     dateOfBirth: value.dateOfBirth
       ? value.dateOfBirth instanceof Date
-        ? value.dateOfBirth
+        ? new Date(
+            Date.UTC(
+              value.dateOfBirth.getFullYear(),
+              value.dateOfBirth.getMonth(),
+              value.dateOfBirth.getDate(),
+            ),
+          )
         : new Date(value.dateOfBirth)
       : undefined,
     driversLicenseNumber: value.driversLicenseNumber || undefined,
@@ -333,7 +343,7 @@ const PartyEdit: FC = () => {
         middleName: person?.middleName || "",
         middleName2: person?.middleName2 || "",
         lastName: person?.lastName || "",
-        dateOfBirth: person?.dateOfBirth ? new Date(person.dateOfBirth) : undefined,
+        dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
         driversLicenseNumber: person?.driversLicenseNumber || "",
         driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
         sexCode: person?.sexCode || "",

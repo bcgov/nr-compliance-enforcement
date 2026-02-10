@@ -13,6 +13,7 @@ import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
+import { formatDate } from "@common/methods";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -215,10 +216,11 @@ export const PartyView: FC = () => {
     return result;
   };
 
+  // Use date-only (YYYY-MM-DD) for display so stored calendar date is shown without timezone shift
   const formatDateOfBirth = (date: string | undefined | null) => {
-    if (!date) return "";
-    const d = new Date(date);
-    return d.toISOString().split("T")[0];
+    if (date == null) return "";
+    const dateOnly = String(date).slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(date);
   };
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
