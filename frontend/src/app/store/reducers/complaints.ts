@@ -1068,14 +1068,29 @@ export const selectComplaintDetails = createSelector(
         details,
         locationSummary: location,
         locationDetail: locationDescription,
-        incidentDateTime,
+        incidentDate,
+        incidentTime,
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
         parkGuid,
       } = complaint as Complaint;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, parkGuid };
+      // Recombine time into the date so UTC→local conversion lands on the correct day
+      const incidentDateWithTime = incidentDate && incidentTime
+        ? `${String(incidentDate).split("T")[0]}T${incidentTime}Z`
+        : incidentDate;
+
+      // Convert UTC time to local for display
+      let localIncidentTime = incidentTime;
+      if (incidentDate && incidentTime) {
+        const d = new Date(incidentDateWithTime);
+        const localHH = d.getHours().toString().padStart(2, "0");
+        const localMM = d.getMinutes().toString().padStart(2, "0");
+        localIncidentTime = `${localHH}:${localMM}`;
+      }
+
+      result = { ...result, details, location, locationDescription, incidentDate: incidentDateWithTime, incidentTime: localIncidentTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaint;

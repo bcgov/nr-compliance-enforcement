@@ -30,7 +30,13 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   const discoveryDate = investigationData?.discoveryDate
-    ? new Date(investigationData.discoveryDate).toString()
+    ? (() => {
+        const dateStr = String(investigationData.discoveryDate).split("T")[0];
+        const timeStr = investigationData.discoveryTime
+          ? String(investigationData.discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
+          : "00:00:00";
+        return new Date(`${dateStr}T${timeStr}Z`).toString();
+      })()
     : undefined;
   const dateLogged = investigationData?.openedTimestamp
     ? new Date(investigationData.openedTimestamp).toString()
@@ -89,10 +95,12 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                     <i className="bi bi-calendar"></i>
                     {formatDate(discoveryDate)}
                   </div>
-                  <div>
-                    <i className="bi bi-clock"></i>
-                    {formatTime(discoveryDate)}
-                  </div>
+                  {investigationData?.discoveryTime && (
+                    <div>
+                      <i className="bi bi-clock"></i>
+                      {formatTime(discoveryDate)}
+                    </div>
+                  )}
                 </>
               )}
               {!discoveryDate && <>N/A</>}

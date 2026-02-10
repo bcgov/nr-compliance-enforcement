@@ -3099,11 +3099,17 @@ export class ComplaintService {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }
 
-      //-- incidentDateTime may not be set, if there's no date
+      //-- incidentDate/Time may not be set, if there's no date
       //-- don't try and apply the incident date
-      if (data.incidentDateTime) {
-        data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
+      if (data.incidentDate) {
+        data.incidentDate = _applyTimezone(data.incidentDate, tz, "date");
       }
+      if (data.incidentTime) {
+        data.incidentTime = _applyTimezone(data.incidentTime, tz, "time");
+      }
+      data.incidentDateTime = data.incidentDate
+        ? `${data.incidentDate}${data.incidentTime ? " " + data.incidentTime : ""}`
+        : "";
       // Using short names like "cAtts" and "oAtts" to fit them in CDOGS template table cells
       data.cAtts = attachments
         .filter((item) => item.type === AttachmentType.COMPLAINT_ATTACHMENT)

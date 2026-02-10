@@ -136,6 +136,7 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [selectedIncidentTime, setSelectedIncidentTime] = useState<string | null>(null);
   const [incidentDateTimeErrorMsg, setIncidentDateTimeErrorMsg] = useState<string>("");
   const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown);
   const { complaintMethodReceivedCode } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
@@ -547,14 +548,26 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(complaint);
   };
 
-  const handleIncidentDateTimeChange = (date: Date) => {
+  const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
     setSelectedIncidentDateTime(date);
+    setSelectedIncidentTime(time);
     if (date > new Date()) {
       setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
     } else {
       setIncidentDateTimeErrorMsg("");
     }
-    const complaint = { ...complaintData, incidentDateTime: date } as Complaint;
+    let utcTime = time;
+    let utcDate: Date = date;
+    if (date && time) {
+      const combined = new Date(date);
+      const [hh, mm] = time.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      const utcHH = combined.getUTCHours().toString().padStart(2, "0");
+      const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
+      utcTime = `${utcHH}:${utcMM}`;
+      utcDate = new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate()));
+    }
+    const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
     applyComplaintData(complaint);
   };
 
@@ -930,12 +943,15 @@ export const CreateComplaint: FC = () => {
               <ValidationDatePicker
                 id="complaint-incident-time"
                 selectedDate={selectedIncidentDateTime || null}
+                selectedTime={selectedIncidentTime}
                 onChange={handleIncidentDateTimeChange}
                 className="comp-details-edit-calendar-input"
                 classNamePrefix="comp-select"
                 errMsg={incidentDateTimeErrorMsg}
                 maxDate={new Date()}
                 showTimePicker={true}
+                nullableTime={true}
+                onTimeWithoutDate={() => setIncidentDateTimeErrorMsg("Select a date before entering a time")}
               />
             </div>
           </div>

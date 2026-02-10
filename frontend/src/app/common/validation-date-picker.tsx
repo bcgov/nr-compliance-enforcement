@@ -1,5 +1,6 @@
 import { FC } from "react";
 import DatePicker from "react-datepicker";
+import { enGB } from "date-fns/locale";
 
 interface ValidationDatePickerProps {
   className: string;
@@ -14,6 +15,8 @@ interface ValidationDatePickerProps {
   isDisabled?: boolean;
   showPreviousMonths?: boolean;
   showTimePicker?: boolean;
+  nullableTime?: boolean;
+  onTimeWithoutDate?: () => void;
   vertical?: boolean;
 }
 
@@ -47,12 +50,15 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   isDisabled,
   showPreviousMonths = true,
   showTimePicker = false,
+  nullableTime = false,
+  onTimeWithoutDate,
   vertical = false,
 }) => {
   const handleDateTimeChange = (date: Date, time: string | null) => {
     onChange(date, time);
   };
   const displayDate = selectedDate ? dateWithTime(selectedDate, selectedTime) : undefined;
+  const displayTime = nullableTime && !selectedTime ? undefined : displayDate;
 
   // This allows the user to type dates like '2025 02 02' and have it parse out to the standard
   // date format of '2025-02-02'
@@ -124,9 +130,16 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             <i className="bi bi-clock" />
             <DatePicker
               id={`${id}-hour`}
-              selected={displayDate}
+              selected={displayTime}
+              onFocus={() => {
+                if (!selectedDate && onTimeWithoutDate) onTimeWithoutDate();
+              }}
               onChange={(date) => {
-                if (date && selectedDate) {
+                if (!selectedDate) {
+                  if (onTimeWithoutDate) onTimeWithoutDate();
+                  return;
+                }
+                if (date) {
                   const currentMin = selectedTime ? selectedTime.split(":")[1] : "00";
                   const newHour = date.getHours().toString().padStart(2, "0");
                   handleDateTimeChange(selectedDate, `${newHour}:${currentMin}`);
@@ -145,13 +158,21 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
               timeFormat="HH"
               dateFormat="HH"
               placeholderText="HH"
+              locale={enGB}
             />
             <span>:</span>
             <DatePicker
               id={`${id}-minute`}
-              selected={displayDate}
+              selected={displayTime}
+              onFocus={() => {
+                if (!selectedDate && onTimeWithoutDate) onTimeWithoutDate();
+              }}
               onChange={(date) => {
-                if (date && selectedDate) {
+                if (!selectedDate) {
+                  if (onTimeWithoutDate) onTimeWithoutDate();
+                  return;
+                }
+                if (date) {
                   const currentHour = selectedTime ? selectedTime.split(":")[0] : "00";
                   const newMin = date.getMinutes().toString().padStart(2, "0");
                   handleDateTimeChange(selectedDate, `${currentHour}:${newMin}`);
@@ -166,6 +187,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
               showTimeSelect
               showTimeSelectOnly
               // Note that we have to use custom css to hide the rest of the repeating minutes due to a lib limitation
+              calendarClassName="minute-picker"
               timeIntervals={5}
               timeCaption="Min"
               timeFormat="mm"

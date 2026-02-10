@@ -24,6 +24,7 @@ interface InvestigationFormProps {
   isDisabled: boolean;
   id?: string;
   discoveryDate?: string;
+  discoveryTime?: string;
 }
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
@@ -36,14 +37,23 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   }
 `;
 
-export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: InvestigationFormProps) => {
+export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discoveryTime }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
-    discoveryDate ? new Date(discoveryDate) : null,
-  );
+  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() => {
+    if (!discoveryDate) return null;
+    const dateStr = String(discoveryDate).split("T")[0];
+    const timeStr = discoveryTime
+      ? String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
+      : "00:00:00";
+    return new Date(`${dateStr}T${timeStr}Z`);
+  });
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
     if (!discoveryDate) return null;
-    const d = new Date(discoveryDate);
+    const dateStr = String(discoveryDate).split("T")[0];
+    const timeStr = discoveryTime
+      ? String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
+      : "00:00:00";
+    const d = new Date(`${dateStr}T${timeStr}Z`);
     const hh = d.getHours().toString().padStart(2, "0");
     const mm = d.getMinutes().toString().padStart(2, "0");
     return `${hh}:${mm}`;
@@ -71,8 +81,10 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
         discoveryDate.setHours(hh, mm, 0, 0);
       }
       form.setFieldValue("discoveryDate", discoveryDate.toISOString());
+      form.setFieldValue("discoveryTime", time ? discoveryDate.toISOString() : null);
     } else {
       form.setFieldValue("discoveryDate", "");
+      form.setFieldValue("discoveryTime", null);
     }
   };
 
@@ -267,13 +279,17 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
                   selectedTime={selectedDiscoveryTime}
                   onChange={(date: Date, time: string | null) => {
                     handleDiscoveryDateTimeChange(date, time);
-                    field.handleChange(date ? date.toISOString() : "");
+                    if (date) {
+                      field.setMeta({ errorMap: {} });
+                    }
                   }}
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                   errMsg={field.state.meta.errors?.[0] || ""}
                   maxDate={new Date()}
                   showTimePicker={true}
+                  nullableTime={true}
+                  onTimeWithoutDate={() => field.setMeta({ errorMap: { onChange: "Select a date before entering a time" } })}
                 />
               );
             }}

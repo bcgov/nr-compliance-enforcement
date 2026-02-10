@@ -24,7 +24,8 @@ const GET_REPORTS = gql`
       activityNoteCode
       investigationGuid
       contentJson
-      actionedTimestamp
+      actionedDate
+      actionedTime
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
@@ -99,7 +100,8 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         activityNoteCode: "CONTREP",
         contentJson: values.contentJson,
         contentText: values.contentText,
-        actionedTimestamp: values.actionedTimestamp || new Date(),
+        actionedDate: values.actionedDate || new Date(),
+        actionedTime: values.actionedTime || new Date(),
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values.actionedAppUserGuidRef,
         reportedAppUserGuidRef: reportedUserGuid,
@@ -116,9 +118,17 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
-      const dateKey = startOfDay(report.actionedTimestamp).toISOString();
-      if (!acc[dateKey]) acc[dateKey] = { date: report.actionedTimestamp, reports: [] };
-      acc[dateKey].reports.push(report);
+      const actionedDateTime = (() => {
+        if (!report.actionedDate) return new Date();
+        const dateStr = String(report.actionedDate).split("T")[0];
+        const timeStr = report.actionedTime
+          ? String(report.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00"
+          : "00:00:00";
+        return new Date(`${dateStr}T${timeStr}Z`);
+      })();
+      const dateKey = startOfDay(actionedDateTime).toISOString();
+      if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
+      acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
       return acc;
     }, {});
 
@@ -241,10 +251,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                             : "Unknown"}
                                         </strong>
                                       </div>
-                                      <div>
-                                        <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                        {formatTime(report.actionedTimestamp.toString())}
-                                      </div>
+                                      {report.actionedTime && (
+                                        <div>
+                                          <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                                          {formatTime(report._actionedDateTime?.toString())}
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="prose prose-sm max-w-none">
                                       <ReportRenderer

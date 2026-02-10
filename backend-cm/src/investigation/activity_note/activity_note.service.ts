@@ -46,10 +46,10 @@ export class ActivityNoteService {
         activity_note_code: activityNoteCode,
         active_ind: true,
       },
-      orderBy: {
-        actioned_utc_date: "desc",
-        actioned_utc_time: "desc",
-      },
+      orderBy: [
+        { actioned_utc_date: "desc" },
+        { actioned_utc_time: "desc" },
+      ],
     });
     if (!prismaActivityNotes) {
       throw new Error(`Activity notes of investigation ${investigationGuid} with code ${activityNoteCode} not found`);
@@ -73,10 +73,10 @@ export class ActivityNoteService {
         task_guid: taskGuid,
         active_ind: true,
       },
-      orderBy: {
-        actioned_utc_date: "asc",
-        actioned_utc_time: "asc",
-      },
+      orderBy: [
+        { actioned_utc_date: "asc" },
+        { actioned_utc_time: "asc" },
+      ],
     });
 
     try {

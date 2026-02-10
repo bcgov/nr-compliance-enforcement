@@ -264,8 +264,8 @@ export class InvestigationService {
             primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
             supervisor_guid_ref: input.supervisorGuid || null,
             file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
-            discovery_date: input.discoveryDate,
-            discovery_time: input.discoveryTime,
+            discovery_date_utc_date: input.discoveryDate,
+            discovery_date_utc_time: input.discoveryTime,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -373,10 +373,10 @@ export class InvestigationService {
         }
 
         if (input.discoveryDate !== undefined) {
-          updateData.discovery_date = input.discoveryDate;
+          updateData.discovery_date_utc_date = input.discoveryDate;
         }
         if (input.discoveryTime !== undefined) {
-          updateData.discovery_time = input.discoveryTime;
+          updateData.discovery_date_utc_time = input.discoveryTime;
         }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({
