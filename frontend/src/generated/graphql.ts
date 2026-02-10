@@ -1725,19 +1725,6 @@ export type PersonInput = {
 
 export type PersonUpdateInput = {
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
-  driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
-  driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  middleName?: InputMaybe<Scalars['String']['input']>;
-  middleName2?: InputMaybe<Scalars['String']['input']>;
-  personGuid: Scalars['String']['input'];
-  sexCode?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type PersonUpdateInput = {
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
