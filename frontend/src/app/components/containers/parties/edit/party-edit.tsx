@@ -29,7 +29,22 @@ import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
 
+const PARTY_PERSON_FRAGMENT = gql`
+  fragment PartyPersonFields on Person {
+    personGuid
+    firstName
+    middleName
+    middleName2
+    lastName
+    dateOfBirth
+    driversLicenseNumber
+    driversLicenseJurisdiction
+    sexCode
+  }
+`;
+
 const UPDATE_PARTY_MUTATION = gql`
+  ${PARTY_PERSON_FRAGMENT}
   mutation UpdateParty($partyIdentifier: String!, $input: PartyUpdateInput!) {
     updateParty(partyIdentifier: $partyIdentifier, input: $input) {
       partyIdentifier
@@ -38,15 +53,7 @@ const UPDATE_PARTY_MUTATION = gql`
       longDescription
       createdDateTime
       person {
-        personGuid
-        firstName
-        middleName
-        middleName2
-        lastName
-        dateOfBirth
-        driversLicenseNumber
-        driversLicenseJurisdiction
-        sexCode
+        ...PartyPersonFields
       }
       business {
         businessGuid
@@ -57,6 +64,7 @@ const UPDATE_PARTY_MUTATION = gql`
 `;
 
 const CREATE_PARTY_MUTATION = gql`
+  ${PARTY_PERSON_FRAGMENT}
   mutation CreateParty($input: PartyCreateInput!) {
     createParty(input: $input) {
       partyIdentifier
@@ -65,15 +73,7 @@ const CREATE_PARTY_MUTATION = gql`
       longDescription
       createdDateTime
       person {
-        personGuid
-        firstName
-        middleName
-        middleName2
-        lastName
-        dateOfBirth
-        driversLicenseNumber
-        driversLicenseJurisdiction
-        sexCode
+        ...PartyPersonFields
       }
       business {
         businessGuid
