@@ -522,6 +522,7 @@ export type CreateLegislationSourceInput = {
   longDescription?: InputMaybe<Scalars['String']['input']>;
   regulationsSourceUrl?: InputMaybe<Scalars['String']['input']>;
   shortDescription: Scalars['String']['input'];
+  sourceType?: InputMaybe<Scalars['String']['input']>;
   sourceUrl: Scalars['String']['input'];
 };
 
@@ -1117,6 +1118,7 @@ export type LegislationSource = {
   longDescription?: Maybe<Scalars['String']['output']>;
   regulationsSourceUrl?: Maybe<Scalars['String']['output']>;
   shortDescription: Scalars['String']['output'];
+  sourceType: Scalars['String']['output'];
   sourceUrl: Scalars['String']['output'];
 };
 
@@ -1732,6 +1734,15 @@ export type PersonUpdateInput = {
   middleName2?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
   sexCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PersonUpdateInput = {
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  firstName: Scalars['String']['input'];
+  lastName: Scalars['String']['input'];
+  middleName?: InputMaybe<Scalars['String']['input']>;
+  middleName2?: InputMaybe<Scalars['String']['input']>;
+  personGuid: Scalars['String']['input'];
 };
 
 export type Prevention = {

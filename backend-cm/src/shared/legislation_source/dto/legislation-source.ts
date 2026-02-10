@@ -7,6 +7,7 @@ export interface LegislationSource {
   sourceUrl: string;
   regulationsSourceUrl: string | null;
   agencyCode: string;
+  sourceType: string;
   activeInd: boolean;
   importedInd: boolean;
   importStatus: ImportStatus | null;
@@ -22,6 +23,7 @@ export interface CreateLegislationSourceInput {
   sourceUrl: string;
   regulationsSourceUrl?: string | null;
   agencyCode: string;
+  sourceType?: string;
   createUserId: string;
 }
 

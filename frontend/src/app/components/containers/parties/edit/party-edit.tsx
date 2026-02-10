@@ -256,7 +256,6 @@ const buildBusinessCreate = (value: any) => {
   };
 };
 
-// Parse date-only (YYYY-MM-DD) as local calendar date, same as diary dates
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
 // Helper to build person object

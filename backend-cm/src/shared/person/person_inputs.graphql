@@ -16,9 +16,5 @@ input PersonUpdateInput {
   middleName: String
   middleName2: String
   lastName: String!
-  dateOfBirth: DateTime
-  driversLicenseNumber: String
-  driversLicenseJurisdiction: String
-  sexCode: String
   contactMethods: [ContactMethodInput]
 }

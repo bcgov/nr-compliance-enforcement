@@ -5,6 +5,7 @@ type LegislationSource {
   sourceUrl: String!
   regulationsSourceUrl: String
   agencyCode: String!
+  sourceType: String!
   activeInd: Boolean!
   importedInd: Boolean!
   importStatus: String
@@ -20,6 +21,7 @@ input CreateLegislationSourceInput {
   sourceUrl: String!
   regulationsSourceUrl: String
   agencyCode: String!
+  sourceType: String
 }
 
 input UpdateLegislationSourceInput {
