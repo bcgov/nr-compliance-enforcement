@@ -219,12 +219,6 @@ export type BusinessUpdateInput = {
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name?: InputMaybe<Scalars['String']['input']>;
-  businessGuid?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-};
-
-export type BusinessInput = {
-  name: Scalars['String']['input'];
 };
 
 export type CaseActivity = {
@@ -1437,19 +1431,6 @@ export type MutationsaveActivityNoteArgs = {
 };
 
 
-};
-
-
-export type MutationresetLegislationSourceArgs = {
-  legislationSourceGuid: Scalars['String']['input'];
-};
-
-
-export type MutationsaveActivityNoteArgs = {
-  input: ActivityNoteInput;
-};
-
-
 export type MutationsaveDiaryDateArgs = {
   input: DiaryDateInput;
 };
@@ -1695,7 +1676,6 @@ export type PartyTypeCode = {
 
 export type PartyUpdateInput = {
   business?: InputMaybe<BusinessUpdateInput>;
-  business?: InputMaybe<BusinessInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonInput>;
@@ -1976,14 +1956,6 @@ export type QuerygetActivityNotesByTaskArgs = {
 };
 
 
-};
-
-
-export type QuerygetActivityNotesByTaskArgs = {
-  taskGuid: Scalars['String']['input'];
-};
-
-
 export type QuerygetComplaintOutcomeArgs = {
   complaintOutcomeGuid: Scalars['String']['input'];
 };
@@ -2117,11 +2089,6 @@ export type QueryparksArgs = {
   search?: InputMaybe<Scalars['String']['input']>;
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QuerypartiesArgs = {
-  partyIdentifiers: Array<Scalars['String']['input']>;
 };
 
 
