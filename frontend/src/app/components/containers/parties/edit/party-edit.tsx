@@ -256,7 +256,7 @@ const buildBusinessCreate = (value: any) => {
 };
 
 // Helper to build person object
-const buildPerson = (value: any) => {
+const buildPerson = (value: any, isUpdate: boolean = false) => {
   return {
     firstName: value.firstName,
     middleName: value.middleName || undefined,
@@ -270,6 +270,7 @@ const buildPerson = (value: any) => {
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
     sexCode: value.sexCode || undefined,
+    contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
 };
 
@@ -348,7 +349,9 @@ const PartyEdit: FC = () => {
             aliasGuid: a.aliasGuid,
             name: a.name,
           })) || [],
-        phoneNumbers: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "PHONE"),
+        phoneNumbers: partyData.party.business
+          ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, "PHONE")
+          : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, "PHONE"),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "EMAILADDR"),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
       };
@@ -380,14 +383,14 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value) : null,
+          person: value.partyType === "PRS" ? buildPerson(value, true) : null,
         };
         updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value) : null,
+          person: value.partyType === "PRS" ? buildPerson(value, false) : null,
         };
         createPartyMutation.mutate({ input: createInput });
       }
@@ -961,6 +964,69 @@ const PartyEdit: FC = () => {
                       errorMessage={field.state.meta.errors?.[0]?.message || ""}
                       isDisabled={isDisabled}
                     />
+                  )}
+                />
+                {phoneNumberValue?.map((phoneNumber: ContactMethod, index: number) => (
+                  <FormField
+                    key={phoneNumber.contactMethodGuid || `phone-${index}`}
+                    form={form}
+                    name={`phoneNumbers[${index}].value`}
+                    label={index === 0 ? "Phone number" : ""}
+                    render={(field) => (
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+                        <input
+                          type="radio"
+                          id={`person-phone-primary-${index}`}
+                          name="primaryPhoneNumber"
+                          checked={phoneNumber.isPrimary || false}
+                          onChange={() => handleSetPrimaryPhoneNumber(index)}
+                          disabled={isDisabled}
+                        />
+
+                        <div className="party-multiple-value-container">
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={phoneNumber.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
+                            id={`person-phone-number-${index}`}
+                            errMsg={field.state.meta.errors?.[0]?.message || ""}
+                          />
+                        </div>
+
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemovePhoneNumber(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" />
+                          {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-person-phone-number-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-person-phone-number-button"
+                      variant="outline-dark"
+                      size="sm"
+                      onClick={handleAddPhoneNumber}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add phone number
+                    </Button>
                   )}
                 />
               </>

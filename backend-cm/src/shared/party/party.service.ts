@@ -128,6 +128,18 @@ export class PartyService {
             drivers_license_number: true,
             drivers_license_jurisdiction: true,
             sex_code: true,
+            contact_method: {
+              select: {
+                contact_method_guid: true,
+                contact_method_type: true,
+                contact_method_type_code: true,
+                contact_value: true,
+                is_primary: true,
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
       },
@@ -503,6 +515,11 @@ export class PartyService {
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
       include: {
+        person: {
+          include: {
+            contact_method: true,
+          },
+        },
         business: {
           include: {
             alias: true,
@@ -548,6 +565,11 @@ export class PartyService {
       existingPartyDto.business?.contactPeople ?? [],
     );
 
+    const personContactMethodOperations = this._buildContactMethodOperations(
+      input.person?.contactMethods ?? [],
+      existingPartyDto.person?.contactMethods ?? [],
+    );
+
     if (input.partyTypeCode === PARTY_TYPES.Person) {
       data = {
         party_type: input.partyTypeCode,
@@ -565,6 +587,9 @@ export class PartyService {
             sex_code: input.person?.sexCode,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
+            ...(Object.keys(personContactMethodOperations).length
+              ? { contact_method: personContactMethodOperations }
+              : {}),
           },
         },
       };
