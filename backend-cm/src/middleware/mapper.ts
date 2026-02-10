@@ -87,6 +87,12 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAppUserToAppUser(mapper);
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
+  mapPrismaBusinessToInspectionBusiness(mapper);
+  mapPrismaPersonToInspectionPerson(mapper);
+  mapPrismaPartyToInspectionParty(mapper);
+  mapPrismaActivityNoteToActivityNote(mapper);
+  mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
+  mapPrismaLegislationToLegislation(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
   mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
