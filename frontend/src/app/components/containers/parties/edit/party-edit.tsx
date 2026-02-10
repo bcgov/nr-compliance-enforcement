@@ -259,8 +259,8 @@ const buildBusinessCreate = (value: any) => {
 const buildPerson = (value: any, isUpdate: boolean = false) => {
   return {
     firstName: value.firstName,
-    middleName: value.middleName || undefined,
-    middleName2: value.middleName2 || undefined,
+    middleName: value.middleName?.trim() || null,
+    middleName2: value.middleName2?.trim() || null,
     lastName: value.lastName,
     dateOfBirth: value.dateOfBirth
       ? value.dateOfBirth instanceof Date
