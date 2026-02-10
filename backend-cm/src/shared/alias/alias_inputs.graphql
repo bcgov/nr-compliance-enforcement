@@ -1,0 +1,9 @@
+input AliasInput {
+  businessGuid: String
+  name: String!
+}
+
+input AliasUpdateInput {
+  aliasGuid: String
+  name: String!
+}

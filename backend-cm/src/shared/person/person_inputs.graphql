@@ -6,7 +6,11 @@ input PersonInput {
   contactMethods: [ContactMethodInput]
 }
 
-input ContactMethodInput {
-  typeCode: String!
-  value: String!
+input PersonUpdateInput {
+  personGuid: String!
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  contactMethods: [ContactMethodInput]
 }

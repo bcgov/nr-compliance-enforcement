@@ -1,0 +1,11 @@
+input BusinessPersonInput {
+  businessPersonXrefGuid: String
+  person: PersonInput
+  business: BusinessInput
+}
+
+input BusinessPersonUpdateInput {
+  businessPersonXrefGuid: String
+  person: PersonUpdateInput
+  business: BusinessUpdateInput
+}

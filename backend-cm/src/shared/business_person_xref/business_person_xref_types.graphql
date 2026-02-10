@@ -1,0 +1,5 @@
+type BusinessPerson {
+  businessPersonXrefGuid: String
+  person: Person
+  business: Business
+}

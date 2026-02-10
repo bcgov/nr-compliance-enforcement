@@ -20,3 +20,9 @@ export interface PartyDto {
   business?: BusinessDto;
   partyAssociationRole?: string;
 }
+
+export const PARTY_TYPES = {
+  Person: "PRS",
+  Company: "CMP",
+  Contact: "CNT",
+};
