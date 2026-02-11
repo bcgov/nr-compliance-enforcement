@@ -399,6 +399,35 @@ export const PartyView: FC = () => {
     );
   }
 
+  const PersonIdentifyingInfo = ({ person }: { person: NonNullable<Party["person"]> }) => (
+    <>
+      {person.dateOfBirth != null && (
+        <p>
+          <b>Date of birth: </b>
+          {formatDateOfBirth(person.dateOfBirth)}
+        </p>
+      )}
+      {person.driversLicenseNumber && (
+        <p>
+          <b>Driver's licence number: </b>
+          {person.driversLicenseNumber}
+        </p>
+      )}
+      {person.driversLicenseJurisdiction && (
+        <p>
+          <b>Driver's licence jurisdiction: </b>
+          {person.driversLicenseJurisdiction}
+        </p>
+      )}
+      {person.sexCode && (
+        <p>
+          <b>Sex: </b>
+          {sexOptions?.find((opt: { value: string }) => opt.value === person?.sexCode)?.label ?? person.sexCode}
+        </p>
+      )}
+    </>
+  );
+
   return (
     <>
       {!partyData && <div className="case-not-found">No data found for ID: {id}</div>}
@@ -458,35 +487,7 @@ export const PartyView: FC = () => {
                   })}
                 </>
               )}
-              {partyData?.person && (
-                <>
-                  {partyData.person.dateOfBirth != null && (
-                    <p>
-                      <b>Date of birth: </b>
-                      {formatDateOfBirth(partyData.person.dateOfBirth)}
-                    </p>
-                  )}
-                  {partyData.person.driversLicenseNumber && (
-                    <p>
-                      <b>Driver's licence number: </b>
-                      {partyData.person.driversLicenseNumber}
-                    </p>
-                  )}
-                  {partyData.person.driversLicenseJurisdiction && (
-                    <p>
-                      <b>Driver's licence jurisdiction: </b>
-                      {partyData.person.driversLicenseJurisdiction}
-                    </p>
-                  )}
-                  {partyData.person.sexCode && (
-                    <p>
-                      <b>Sex: </b>
-                      {sexOptions?.find((opt: { value: string }) => opt.value === partyData.person?.sexCode)?.label ??
-                        partyData.person.sexCode}
-                    </p>
-                  )}
-                </>
-              )}
+              {partyData?.person && <PersonIdentifyingInfo person={partyData.person} />}
             </div>
             {partyRelations && partyRelations.length > 0 && (
               <>
