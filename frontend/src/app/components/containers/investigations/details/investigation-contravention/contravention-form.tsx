@@ -28,6 +28,8 @@ import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
+import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { Url } from "url";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -106,6 +108,10 @@ export const ContraventionForm = ({
   const [selectedSection, setSelectedSection] = useState<string>();
   const [selectedParties, setSelectedParties] = useState<Option[]>([]);
   const [validationError, setValidationError] = useState<string>("");
+  const [actLink, setActLink] = useState<URL | null>(null);
+
+  // Fetch legislation sources
+  const { data: legislationSources } = useLegislationSources();
 
   // Hooks
   const dispatch = useAppDispatch();
@@ -299,6 +305,22 @@ export const ContraventionForm = ({
     setSelectedParties(options);
   };
 
+  const handleActLinkChange = (actGuid: string | null) => {
+    const source = legislationSources?.find((source) => source.legislationSourceGuid === actGuid);
+    const importUrl = source?.sourceUrl ?? null;
+    debugger;
+    if (!actGuid || !importUrl) {
+      setActLink(null);
+      return;
+    }
+    if (source?.sourceType === "BCLAWS" && importUrl.endsWith("/xml")) {
+      debugger;
+      const sourceLink = new URL(source.sourceUrl.slice(0, importUrl.length - 4));
+      setActLink(sourceLink);
+      return;
+    }
+  };
+
   return (
     <Card className="mb-3">
       <Card.Header className="comp-card-header">
@@ -333,6 +355,7 @@ export const ContraventionForm = ({
                   const value = option?.value || "";
                   field.handleChange(value);
                   setAct(value);
+                  handleActLinkChange(value);
                   // Reset dependent fields when act changes
                   setRegulation("");
                   setSection("");
@@ -346,6 +369,14 @@ export const ContraventionForm = ({
               />
             )}
           />
+          {actLink && (
+            <a
+              href={actLink.href}
+              target="_blank"
+            >
+              Act Source
+            </a>
+          )}
 
           {act && (
             <>
