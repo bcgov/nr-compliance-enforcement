@@ -105,7 +105,7 @@ model app_user_team_xref_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business {
-  business_guid        String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid        String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   name                 String                 @db.VarChar(128)
   create_user_id       String                 @db.VarChar(32)
   create_utc_timestamp DateTime               @default(now()) @db.Timestamp(6)
@@ -232,7 +232,7 @@ model case_status_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method {
-  contact_method_guid      String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  contact_method_guid      String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   person_guid              String?                  @db.Uuid
   contact_method_type      String                   @db.VarChar(10)
   contact_value            String?                  @db.VarChar(512)
@@ -651,7 +651,7 @@ model party_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person {
-  person_guid                        String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  person_guid                        String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   first_name                         String                 @db.VarChar(128)
   middle_name                        String?                @db.VarChar(128)
   middle_name_2                      String?                @db.VarChar(128)
@@ -733,7 +733,7 @@ model team_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model alias {
-  alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   business_guid        String    @db.Uuid
   name                 String    @db.VarChar(512)
   active_ind           Boolean   @default(true)
@@ -748,7 +748,7 @@ model alias {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model alias_h {
-  h_alias_guid                  String   @id(map: "pk_h_alias") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_alias_guid                  String   @id(map: "pk_h_alias") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -760,7 +760,7 @@ model alias_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_identifier {
-  business_identifier_guid                                                                        String                   @id(map: "business_identifier_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_identifier_guid                                                                        String                   @id(map: "business_identifier_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   business_guid                                                                                   String                   @db.Uuid
   business_identifier_code                                                                        String                   @db.VarChar(16)
   identifier_value                                                                                String                   @db.VarChar(256)
@@ -793,7 +793,7 @@ model business_identifier_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_identifier_h {
-  h_business_identifier_guid    String   @id(map: "pk_h_business_identifier") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_business_identifier_guid    String   @id(map: "pk_h_business_identifier") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -821,7 +821,7 @@ model sex_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_person_xref {
-  business_person_xref_guid                                                                           String                    @id(map: "business_person_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_person_xref_guid                                                                           String                    @id(map: "business_person_xref_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   business_guid                                                                                       String                    @db.Uuid
   person_guid                                                                                         String                    @db.Uuid
   business_person_xref_code                                                                           String                    @db.VarChar(16)
@@ -855,7 +855,7 @@ model business_person_xref_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_person_xref_h {
-  h_business_person_xref_guid   String   @id(map: "pk_h_business_person_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_business_person_xref_guid   String   @id(map: "pk_h_business_person_xref") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)

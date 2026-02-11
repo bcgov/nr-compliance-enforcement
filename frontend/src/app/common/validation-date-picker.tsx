@@ -20,11 +20,7 @@ interface ValidationDatePickerProps {
   vertical?: boolean;
 }
 
-// const formatTime = (date: Date): string => {
-//   const hh = date.getHours().toString().padStart(2, "0");
-//   const mm = date.getMinutes().toString().padStart(2, "0");
-//   return `${hh}:${mm}`;
-// };
+type TimeSegment = "hour" | "minute";
 
 const dateWithTime = (date: Date, time: string | null): Date => {
   const result = new Date(date);
@@ -35,6 +31,68 @@ const dateWithTime = (date: Date, time: string | null): Date => {
     result.setHours(0, 0, 0, 0);
   }
   return result;
+};
+
+// Allows the user to type dates like '2025 02 02' and have it parse out to the standard
+// date format of '2025-02-02'
+const parseDateInput = (raw: string): Date | null => {
+  const stripped = raw.replace(/[\s\-\/\.]/g, "");
+  if (stripped.length !== 8 || !/^\d{8}$/.test(stripped)) {
+    return null;
+  }
+  const year = Number.parseInt(stripped.substring(0, 4), 10);
+  const month = Number.parseInt(stripped.substring(4, 6), 10);
+  const day = Number.parseInt(stripped.substring(6, 8), 10);
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+  return date;
+};
+
+const buildTimeFromPickerDate = (
+  date: Date,
+  currentTime: string | null,
+  segment: TimeSegment,
+): string => {
+  const [currentHour, currentMin] = (currentTime ?? "00:00").split(":");
+  if (segment === "hour") {
+    return `${date.getHours().toString().padStart(2, "0")}:${currentMin}`;
+  }
+  return `${currentHour}:${date.getMinutes().toString().padStart(2, "0")}`;
+};
+
+const handleTimeRawInput = (
+  event: React.FocusEvent<HTMLInputElement>,
+  selectedDate: Date | undefined | null,
+  selectedTime: string | null,
+  segment: TimeSegment,
+  onChange: (date: Date, time: string | null) => void,
+): void => {
+  const rawValue = event.target.value;
+  if (rawValue === "" && selectedDate) {
+    onChange(selectedDate, null);
+    return;
+  }
+  const digits = rawValue.replace(/\D/g, "");
+  if (digits.length > 2) {
+    event.preventDefault();
+    const truncated = digits.slice(-2);
+    event.target.value = truncated;
+    const value = parseInt(truncated, 10);
+    const max = segment === "hour" ? 23 : 59;
+    if (selectedDate && value >= 0 && value <= max) {
+      const [h, m] = (selectedTime ?? "00:00").split(":");
+      const newTime =
+        segment === "hour"
+          ? `${truncated.padStart(2, "0")}:${m}`
+          : `${h}:${truncated.padStart(2, "0")}`;
+      onChange(selectedDate, newTime);
+    }
+  }
 };
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -54,30 +112,19 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   onTimeWithoutDate,
   vertical = false,
 }) => {
-  const handleDateTimeChange = (date: Date, time: string | null) => {
-    onChange(date, time);
-  };
   const displayDate = selectedDate ? dateWithTime(selectedDate, selectedTime) : undefined;
   const displayTime = nullableTime && !selectedTime ? undefined : displayDate;
 
-  // This allows the user to type dates like '2025 02 02' and have it parse out to the standard
-  // date format of '2025-02-02'
-  const parseDateInput = (raw: string): Date | null => {
-    const stripped = raw.replace(/[\s\-\/\.]/g, "");
-    if (stripped.length !== 8 || !/^\d{8}$/.test(stripped)) {
-      return null;
+  const handleDatePickerBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const rawValue = event.target.value;
+    if (rawValue === "" && selectedDate) {
+      onChange(null as any, null);
+    } else if (rawValue) {
+      const parsed = parseDateInput(rawValue);
+      if (parsed) {
+        onChange(parsed, selectedTime);
+      }
     }
-    const year = Number.parseInt(stripped.substring(0, 4), 10);
-    const month = Number.parseInt(stripped.substring(4, 6), 10);
-    const day = Number.parseInt(stripped.substring(6, 8), 10);
-    if (month < 1 || month > 12 || day < 1 || day > 31) {
-      return null;
-    }
-    const date = new Date(year, month - 1, day);
-    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-      return null;
-    }
-    return date;
   };
 
   const calculatedClass = errMsg === "" ? "" : "error-message";
@@ -95,20 +142,10 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             selected={displayDate}
             onChange={(date) => {
               if (date) {
-                handleDateTimeChange(date, selectedTime);
+                onChange(date, selectedTime);
               }
             }}
-            onBlur={(event) => {
-              const rawValue = event.target.value;
-              if (rawValue === "" && selectedDate) {
-                handleDateTimeChange(null as any, null);
-              } else if (rawValue) {
-                const parsed = parseDateInput(rawValue);
-                if (parsed) {
-                  handleDateTimeChange(parsed, selectedTime);
-                }
-              }
-            }}
+            onBlur={handleDatePickerBlur}
             placeholderText="yyyy-mm-dd"
             className={`${calculatedBorderClass} ${classNamePrefix}`}
             id={`${id}-date`}
@@ -140,16 +177,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
                   return;
                 }
                 if (date) {
-                  const currentMin = selectedTime ? selectedTime.split(":")[1] : "00";
-                  const newHour = date.getHours().toString().padStart(2, "0");
-                  handleDateTimeChange(selectedDate, `${newHour}:${currentMin}`);
+                  onChange(selectedDate, buildTimeFromPickerDate(date, selectedTime, "hour"));
                 }
               }}
               onChangeRaw={(event) => {
-                const rawValue = event.target.value;
-                if (rawValue === "" && selectedDate) {
-                  handleDateTimeChange(selectedDate, null);
-                }
+                handleTimeRawInput(event, selectedDate, selectedTime, "hour", onChange);
               }}
               showTimeSelect
               showTimeSelectOnly
@@ -173,16 +205,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
                   return;
                 }
                 if (date) {
-                  const currentHour = selectedTime ? selectedTime.split(":")[0] : "00";
-                  const newMin = date.getMinutes().toString().padStart(2, "0");
-                  handleDateTimeChange(selectedDate, `${currentHour}:${newMin}`);
+                  onChange(selectedDate, buildTimeFromPickerDate(date, selectedTime, "minute"));
                 }
               }}
               onChangeRaw={(event) => {
-                const rawValue = event.target.value;
-                if (rawValue === "" && selectedDate) {
-                  handleDateTimeChange(selectedDate, null);
-                }
+                handleTimeRawInput(event, selectedDate, selectedTime, "minute", onChange);
               }}
               showTimeSelect
               showTimeSelectOnly

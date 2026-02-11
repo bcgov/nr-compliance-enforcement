@@ -254,7 +254,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       {report.actionedTime && (
                                         <div>
                                           <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                          {formatTime(report._actionedDateTime?.toString())}
+                                          {formatTime(report.actionedTime?.toString())}
                                         </div>
                                       )}
                                     </div>
