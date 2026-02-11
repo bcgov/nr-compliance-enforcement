@@ -37,7 +37,7 @@ input PartyUpdateInput {
   longDescription: String
   shortDescription: String
   person: PersonInput
-  business: BusinessInput
+  business: BusinessUpdateInput
 }
 
 input PartyFilters {

@@ -158,6 +158,8 @@ export const ContraventionForm = ({
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [
+      Legislation.SCHEDULE,
+      Legislation.DIVISION,
       Legislation.SECTION,
       Legislation.SUBSECTION,
       Legislation.PARAGRAPH,
@@ -181,9 +183,11 @@ export const ContraventionForm = ({
   // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 
-  // Only filter to items with text, and DO NOT re-sort. Sorting by displayOrder
+  // Only filter to items with text or a section title, and DO NOT re-sort. Sorting by displayOrder
   // will group all items with the same displayOrder regardless of parent.
-  const legislationText = legislationTextQuery.data?.legislations?.filter((item) => !!item.legislationText);
+  const legislationText = legislationTextQuery.data?.legislations?.filter(
+    (item) => !!item.legislationText || !!item.sectionTitle,
+  );
 
   const partyOptions: Option[] =
     parties
@@ -241,25 +245,20 @@ export const ContraventionForm = ({
     const ancestors = legislation?.ancestors;
     const contraventionId = contravention?.legislationIdentifierRef;
 
-    // Exit early until all required data is available
-    if (!legislation || !ancestors || !contraventionId) {
-      return;
-    }
+    if (!legislation || !ancestors || !contraventionId) return;
 
-    // Find the ACT and REG ancestors (if present)
-    const actGuid = ancestors.find((a) => a?.legislationTypeCode === "ACT")?.legislationGuid;
+    const findAncestor = (type: string) => ancestors.find((a) => a?.legislationTypeCode === type)?.legislationGuid;
 
-    const regGuid = ancestors.find((a) => a?.legislationTypeCode === "REG")?.legislationGuid;
+    const actGuid = findAncestor("ACT");
+    const regGuid = findAncestor("REG");
 
-    // Section handling:
-    // - If the current legislation *is* a section, use the contravention's reference
-    // - Otherwise, look up the SEC ancestor
+    // If the legislation itself is a schedule/section use it directly, otherwise find the ancestor
     const sectionGuid =
-      legislation.legislationTypeCode === "SEC"
-        ? contraventionId
-        : ancestors.find((a) => a?.legislationTypeCode === "SEC")?.legislationGuid;
+      (legislation.legislationTypeCode === "SCHED" ? contraventionId : null) ??
+      findAncestor("SCHED") ??
+      (legislation.legislationTypeCode === "SEC" ? contraventionId : null) ??
+      findAncestor("SEC");
 
-    // Update State
     if (actGuid) setAct(actGuid);
     if (regGuid) setRegulation(regGuid);
     if (sectionGuid) setSection(sectionGuid);
@@ -416,6 +415,23 @@ export const ContraventionForm = ({
               {legislationText.map((section) => {
                 const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
 
+                // Schedules and Divisions render as non-clickable headers
+                if (
+                  section.legislationTypeCode === Legislation.SCHEDULE ||
+                  section.legislationTypeCode === Legislation.DIVISION
+                ) {
+                  return (
+                    <div
+                      key={section.legislationGuid}
+                      className="contravention-text-segment"
+                    >
+                      <p className={`mb-2 ${indentClass}`}>
+                        <strong>{section.sectionTitle}</strong>
+                      </p>
+                    </div>
+                  );
+                }
+
                 if (section.legislationTypeCode === Legislation.TEXT) {
                   return (
                     <div
@@ -459,7 +475,7 @@ export const ContraventionForm = ({
                         {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
-                        <LegislationText>{section.legislationText}</LegislationText>
+                        <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
                       </p>
                       {section.alternateText && (
                         <div className="contravention-alternate-text">{section.alternateText}</div>

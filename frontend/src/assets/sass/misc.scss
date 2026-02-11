@@ -521,6 +521,15 @@
   border-bottom: 1px solid var(--bs-border-color);
 }
 
+.comp-filter-input {
+  max-width: 400px;
+}
+
+.comp-log-viewer {
+  max-height: 400px;
+  white-space: pre-wrap;
+}
+
 // Keep form rows stacked vertically inside modals
 .modal .comp-details-form-row {
   flex-direction: column;

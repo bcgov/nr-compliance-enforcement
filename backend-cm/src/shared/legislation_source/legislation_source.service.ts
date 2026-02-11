@@ -34,10 +34,15 @@ export class LegislationSourceService {
   }
 
   async getPending(): Promise<LegislationSource[]> {
+    return this.getPendingBySourceType("BCLAWS");
+  }
+
+  async getPendingBySourceType(sourceType: string): Promise<LegislationSource[]> {
     const sources = await this.prisma.legislation_source.findMany({
       where: {
         active_ind: true,
         imported_ind: false,
+        source_type: sourceType,
       },
       orderBy: {
         short_description: "asc",
@@ -55,6 +60,7 @@ export class LegislationSourceService {
         source_url: input.sourceUrl,
         regulations_source_url: input.regulationsSourceUrl ?? null,
         agency_code: input.agencyCode,
+        source_type: input.sourceType ?? "BCLAWS",
         active_ind: true,
         imported_ind: false,
         import_status: "PENDING",
@@ -218,6 +224,7 @@ export class LegislationSourceService {
       sourceUrl: source.source_url,
       regulationsSourceUrl: source.regulations_source_url ?? null,
       agencyCode: source.agency_code,
+      sourceType: source.source_type ?? "BCLAWS",
       activeInd: source.active_ind,
       importedInd: source.imported_ind,
       importStatus: source.import_status as ImportStatus | null,
