@@ -9,9 +9,13 @@ export interface Regulation {
   status: string | null;
 }
 
-const httpsProxyAgent = process.env.HTTPS_PROXY
-  ? new HttpsProxyAgent(process.env.HTTPS_PROXY, { rejectUnauthorized: false })
-  : undefined;
+class InsecureProxyAgent extends HttpsProxyAgent<string> {
+  connect(req: any, opts: any) {
+    return super.connect(req, { ...opts, rejectUnauthorized: false });
+  }
+}
+
+const httpsProxyAgent = process.env.HTTPS_PROXY ? new InsecureProxyAgent(process.env.HTTPS_PROXY) : undefined;
 
 /**
  * Fetches an XML document from the given URL
@@ -22,7 +26,7 @@ const httpsProxyAgent = process.env.HTTPS_PROXY
 export const fetchXml = async (url: string, apiName: string): Promise<string> => {
   let config: AxiosRequestConfig = {};
 
-  if (process.env.HTTPS_PROXY) {
+  if (httpsProxyAgent) {
     config = {
       ...config,
       proxy: false,
