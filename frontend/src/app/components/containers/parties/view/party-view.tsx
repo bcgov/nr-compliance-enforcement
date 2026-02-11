@@ -489,7 +489,11 @@ export const PartyView: FC = () => {
     </>
   );
 
-  const ContactMethodsList = ({ contactMethods }: { contactMethods: ContactMethod[] }) => (
+  const ContactMethodsList = ({
+    contactMethods,
+  }: {
+    contactMethods: ReadonlyArray<ContactMethod | null | undefined>;
+  }) => (
     <>
       {contactMethods.map((contactMethod) => {
         return (
