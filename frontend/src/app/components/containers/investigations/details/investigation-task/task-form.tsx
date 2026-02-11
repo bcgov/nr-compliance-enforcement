@@ -215,7 +215,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         contentJson: ta.contentJson,
         contentText: ta.contentText,
         actionedDate: ta.actionedDate || new Date(),
-        actionedTime: ta.actionedTime || new Date(),
+        actionedTime: ta.actionedTime || null,
         actionedAppUserGuidRef: ta?.actionedAppUserGuidRef,
       }));
 
@@ -554,7 +554,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         contentJson: values?.contentJson,
         contentText: values?.contentText,
         actionedDate: values?.actionedDate || new Date(),
-        actionedTime: values?.actionedTime || new Date(),
+        actionedTime: values?.actionedTime || null,
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values?.actionedAppUserGuidRef,
         reportedAppUserGuidRef: idir,

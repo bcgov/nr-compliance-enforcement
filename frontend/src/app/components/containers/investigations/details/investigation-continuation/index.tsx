@@ -101,7 +101,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         contentJson: values.contentJson,
         contentText: values.contentText,
         actionedDate: values.actionedDate || new Date(),
-        actionedTime: values.actionedTime || new Date(),
+        actionedTime: values.actionedTime || null,
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values.actionedAppUserGuidRef,
         reportedAppUserGuidRef: reportedUserGuid,

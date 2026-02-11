@@ -144,16 +144,20 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
     let actionedTime: Date | undefined = undefined;
+    let actionedDate: Date | undefined = selectedActionedDateTime;
     if (selectedActionedDateTime && selectedActionedTime) {
       const [hh, mm] = selectedActionedTime.split(":").map(Number);
-      actionedTime = new Date(selectedActionedDateTime);
-      actionedTime.setHours(hh, mm, 0, 0);
+      const combined = new Date(selectedActionedDateTime);
+      combined.setHours(hh, mm, 0, 0);
+      actionedTime = combined;
+      // Use UTC date from combined so date rolls over correctly across midnight
+      actionedDate = new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate()));
     }
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
       contentJson: editor ? JSON.stringify(editor.getJSON()) : "",
       contentText: editor ? editor.getText() : "",
-      actionedDate: selectedActionedDateTime,
+      actionedDate,
       actionedTime,
       actionedAppUserGuidRef: selectedOfficer?.value || "",
     };
