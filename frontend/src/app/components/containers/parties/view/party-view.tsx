@@ -180,6 +180,108 @@ export type PartyParams = {
   id: string;
 };
 
+// Use date-only (YYYY-MM-DD) for display so stored calendar date is shown without timezone shift
+const formatDateOfBirth = (date: string | undefined | null) => {
+  if (date == null) return "";
+  const dateOnly = String(date).slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(date);
+};
+
+const PersonIdentifyingInfo: FC<{ person: Person; sexOptions: ReadonlyArray<Option> }> = ({ person, sexOptions }) => (
+  <>
+    {person.dateOfBirth !== null && (
+      <p>
+        <b>Date of birth: </b>
+        {formatDateOfBirth(person.dateOfBirth)}
+      </p>
+    )}
+    {person.driversLicenseNumber && (
+      <p>
+        <b>Driver's licence number: </b>
+        {person.driversLicenseNumber}
+      </p>
+    )}
+    {person.driversLicenseJurisdiction && (
+      <p>
+        <b>Driver's licence jurisdiction: </b>
+        {person.driversLicenseJurisdiction}
+      </p>
+    )}
+    {person.sexCode && (
+      <p>
+        <b>Sex: </b>
+        {sexOptions?.find((opt) => opt.value === person?.sexCode)?.label ?? person.sexCode}
+      </p>
+    )}
+  </>
+);
+
+const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({ partyRelations }) => (
+  <>
+    <br />
+    <h4>Associated cases and activities</h4>
+    <div className="party-details-item">
+      {partyRelations
+        .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
+        .map((partyRelation) => (
+          <div key={partyRelation.caseId}>
+            <p>
+              <b>
+                Case:&nbsp;&nbsp;
+                <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
+              </b>
+              <span style={{ marginLeft: "0.8em" }}></span>
+              <i className="bi-building bi"></i>
+              <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
+            </p>
+            {partyRelation.activities
+              ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
+              .map((activity) => (
+                <p key={activity.id}>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
+                  &nbsp;&nbsp;
+                  <Link
+                    to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
+                  >
+                    {activity.name}
+                  </Link>
+                  <span style={{ marginLeft: "0.4em" }}></span>
+                  <span>|</span>
+                  <i
+                    style={{ marginLeft: "0.3em" }}
+                    className="bi bi-building"
+                  ></i>
+                  <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
+                  <span style={{ marginLeft: "0.1em" }}>|</span>
+                  <Badge
+                    style={{ marginLeft: "0.3em" }}
+                    bg="species-badge comp-species-badge"
+                  >
+                    {activity.role}
+                  </Badge>
+                </p>
+              ))}
+          </div>
+        ))}
+    </div>
+  </>
+);
+
+const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> = ({ contactMethods }) => (
+  <>
+    {contactMethods.map((contactMethod) => {
+      return (
+        <p key={contactMethod?.contactMethodGuid}>
+          <b>{contactMethod?.typeDescription}: </b>
+          {contactMethod?.typeCode === "PHONE" ? formatPhoneNumber(contactMethod?.value ?? "") : contactMethod?.value}
+          {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+        </p>
+      );
+    })}
+  </>
+);
+
 export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
   const navigate = useNavigate();
@@ -223,13 +325,6 @@ export const PartyView: FC = () => {
       result = `${partyData.business?.name}`;
     }
     return result;
-  };
-
-  // Use date-only (YYYY-MM-DD) for display so stored calendar date is shown without timezone shift
-  const formatDateOfBirth = (date: string | undefined | null) => {
-    if (date == null) return "";
-    const dateOnly = String(date).slice(0, 10);
-    return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(date);
   };
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
@@ -408,105 +503,6 @@ export const PartyView: FC = () => {
     );
   }
 
-  const PersonIdentifyingInfo = ({ person }: { person: Person }) => (
-    <>
-      {person.dateOfBirth !== null && (
-        <p>
-          <b>Date of birth: </b>
-          {formatDateOfBirth(person.dateOfBirth)}
-        </p>
-      )}
-      {person.driversLicenseNumber && (
-        <p>
-          <b>Driver's licence number: </b>
-          {person.driversLicenseNumber}
-        </p>
-      )}
-      {person.driversLicenseJurisdiction && (
-        <p>
-          <b>Driver's licence jurisdiction: </b>
-          {person.driversLicenseJurisdiction}
-        </p>
-      )}
-      {person.sexCode && (
-        <p>
-          <b>Sex: </b>
-          {sexOptions?.find((opt: { value: string }) => opt.value === person?.sexCode)?.label ?? person.sexCode}
-        </p>
-      )}
-    </>
-  );
-
-  const AssociatedCasesAndActivities = ({ partyRelations }: { partyRelations: PartyRelation[] }) => (
-    <>
-      <br />
-      <h4>Associated cases and activities</h4>
-      <div className="party-details-item">
-        {partyRelations
-          .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
-          .map((partyRelation) => (
-            <div key={partyRelation.caseId}>
-              <p>
-                <b>
-                  Case:&nbsp;&nbsp;
-                  <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
-                </b>
-                <span style={{ marginLeft: "0.8em" }}></span>
-                <i className="bi-building bi"></i>
-                <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
-              </p>
-              {partyRelation.activities
-                ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
-                .map((activity) => (
-                  <p key={activity.id}>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
-                    &nbsp;&nbsp;
-                    <Link
-                      to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
-                    >
-                      {activity.name}
-                    </Link>
-                    <span style={{ marginLeft: "0.4em" }}></span>
-                    <span>|</span>
-                    <i
-                      style={{ marginLeft: "0.3em" }}
-                      className="bi bi-building"
-                    ></i>
-                    <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
-                    <span style={{ marginLeft: "0.1em" }}>|</span>
-                    <Badge
-                      style={{ marginLeft: "0.3em" }}
-                      bg="species-badge comp-species-badge"
-                    >
-                      {activity.role}
-                    </Badge>
-                  </p>
-                ))}
-            </div>
-          ))}
-      </div>
-    </>
-  );
-
-  const ContactMethodsList = ({
-    contactMethods,
-  }: {
-    contactMethods: ReadonlyArray<ContactMethod | null | undefined>;
-  }) => (
-    <>
-      {contactMethods.map((contactMethod) => {
-        return (
-          <p key={contactMethod?.contactMethodGuid}>
-            <b>{contactMethod?.typeDescription}: </b>
-            {contactMethod?.typeCode === "PHONE" ? formatPhoneNumber(contactMethod?.value ?? "") : contactMethod?.value}
-            {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-          </p>
-        );
-      })}
-    </>
-  );
-
   return (
     <>
       {!partyData && <div className="case-not-found">No data found for ID: {id}</div>}
@@ -566,7 +562,12 @@ export const PartyView: FC = () => {
                   })}
                 </>
               )}
-              {partyData?.person && <PersonIdentifyingInfo person={partyData.person} />}
+              {partyData?.person && (
+                <PersonIdentifyingInfo
+                  person={partyData.person}
+                  sexOptions={sexOptions}
+                />
+              )}
             </div>
             {partyRelations && partyRelations.length > 0 && (
               <AssociatedCasesAndActivities partyRelations={partyRelations} />
@@ -576,10 +577,12 @@ export const PartyView: FC = () => {
 
             <div className="party-details-item">
               {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                <ContactMethodsList contactMethods={partyData.person.contactMethods} />
+                <ContactMethodsList contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>} />
               )}
               {partyData?.business?.contactMethods && (
-                <ContactMethodsList contactMethods={partyData.business.contactMethods} />
+                <ContactMethodsList
+                  contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
+                />
               )}
               {partyData?.business?.contactPeople && (
                 <>
@@ -592,7 +595,9 @@ export const PartyView: FC = () => {
                           {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                         </p>
                         {contactPerson?.person?.contactMethods && (
-                          <ContactMethodsList contactMethods={contactPerson.person.contactMethods} />
+                          <ContactMethodsList
+                            contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
+                          />
                         )}
                         {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
                       </div>

@@ -260,22 +260,22 @@ const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-
 
 // Helper to build person object
 const buildPerson = (value: any, isUpdate: boolean = false) => {
+  let dob = undefined;
+  if (value.dateOfBirth) {
+    if (value.dateOfBirth instanceof Date) {
+      dob = new Date(
+        Date.UTC(value.dateOfBirth.getFullYear(), value.dateOfBirth.getMonth(), value.dateOfBirth.getDate()),
+      );
+    } else {
+      dob = new Date(value.dateOfBirth);
+    }
+  }
   return {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
     middleName2: value.middleName2?.trim() || null,
     lastName: value.lastName,
-    dateOfBirth: value.dateOfBirth
-      ? value.dateOfBirth instanceof Date
-        ? new Date(
-            Date.UTC(
-              value.dateOfBirth.getFullYear(),
-              value.dateOfBirth.getMonth(),
-              value.dateOfBirth.getDate(),
-            ),
-          )
-        : new Date(value.dateOfBirth)
-      : undefined,
+    dateOfBirth: dob,
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
     sexCode: value.sexCode || undefined,
