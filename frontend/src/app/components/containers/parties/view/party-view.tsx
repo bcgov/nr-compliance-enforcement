@@ -3,7 +3,16 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { Party, Investigation, Inspection, CaseFile, InspectionParty, InvestigationParty } from "@/generated/graphql";
+import {
+  Party,
+  Investigation,
+  Inspection,
+  CaseFile,
+  InspectionParty,
+  InvestigationParty,
+  Person,
+  ContactMethod,
+} from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
@@ -399,9 +408,9 @@ export const PartyView: FC = () => {
     );
   }
 
-  const PersonIdentifyingInfo = ({ person }: { person: NonNullable<Party["person"]> }) => (
+  const PersonIdentifyingInfo = ({ person }: { person: Person }) => (
     <>
-      {person.dateOfBirth != null && (
+      {person.dateOfBirth !== null && (
         <p>
           <b>Date of birth: </b>
           {formatDateOfBirth(person.dateOfBirth)}
@@ -425,6 +434,72 @@ export const PartyView: FC = () => {
           {sexOptions?.find((opt: { value: string }) => opt.value === person?.sexCode)?.label ?? person.sexCode}
         </p>
       )}
+    </>
+  );
+
+  const AssociatedCasesAndActivities = ({ partyRelations }: { partyRelations: PartyRelation[] }) => (
+    <>
+      <br />
+      <h4>Associated cases and activities</h4>
+      <div className="party-details-item">
+        {partyRelations
+          .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
+          .map((partyRelation) => (
+            <div key={partyRelation.caseId}>
+              <p>
+                <b>
+                  Case:&nbsp;&nbsp;
+                  <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
+                </b>
+                <span style={{ marginLeft: "0.8em" }}></span>
+                <i className="bi-building bi"></i>
+                <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
+              </p>
+              {partyRelation.activities
+                ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
+                .map((activity) => (
+                  <p key={activity.id}>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
+                    &nbsp;&nbsp;
+                    <Link
+                      to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
+                    >
+                      {activity.name}
+                    </Link>
+                    <span style={{ marginLeft: "0.4em" }}></span>
+                    <span>|</span>
+                    <i
+                      style={{ marginLeft: "0.3em" }}
+                      className="bi bi-building"
+                    ></i>
+                    <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
+                    <span style={{ marginLeft: "0.1em" }}>|</span>
+                    <Badge
+                      style={{ marginLeft: "0.3em" }}
+                      bg="species-badge comp-species-badge"
+                    >
+                      {activity.role}
+                    </Badge>
+                  </p>
+                ))}
+            </div>
+          ))}
+      </div>
+    </>
+  );
+
+  const ContactMethodsList = ({ contactMethods }: { contactMethods: ContactMethod[] }) => (
+    <>
+      {contactMethods.map((contactMethod) => {
+        return (
+          <p key={contactMethod?.contactMethodGuid}>
+            <b>{contactMethod?.typeDescription}: </b>
+            {contactMethod?.typeCode === "PHONE" ? formatPhoneNumber(contactMethod?.value ?? "") : contactMethod?.value}
+            {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+          </p>
+        );
+      })}
     </>
   );
 
@@ -490,89 +565,17 @@ export const PartyView: FC = () => {
               {partyData?.person && <PersonIdentifyingInfo person={partyData.person} />}
             </div>
             {partyRelations && partyRelations.length > 0 && (
-              <>
-                <br />
-                <h4>Associated cases and activities</h4>
-                <div className="party-details-item">
-                  {partyRelations
-                    .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
-                    .map((partyRelation) => (
-                      <div key={partyRelation.caseId}>
-                        <p>
-                          <b>
-                            Case:&nbsp;&nbsp;
-                            <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
-                          </b>
-                          <span style={{ marginLeft: "0.8em" }}></span>
-                          <i className="bi-building bi"></i>
-                          <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
-                        </p>
-                        {partyRelation.activities
-                          ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
-                          .map((activity) => (
-                            <p key={activity.id}>
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                              {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}
-                              : &nbsp;&nbsp;
-                              <Link
-                                to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
-                              >
-                                {activity.name}
-                              </Link>
-                              <span style={{ marginLeft: "0.4em" }}></span>
-                              <span>|</span>
-                              <i
-                                style={{ marginLeft: "0.3em" }}
-                                className="bi bi-building"
-                              ></i>
-                              <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
-                              <span style={{ marginLeft: "0.1em" }}>|</span>
-                              <Badge
-                                style={{ marginLeft: "0.3em" }}
-                                bg="species-badge comp-species-badge"
-                              >
-                                {activity.role}
-                              </Badge>
-                            </p>
-                          ))}
-                      </div>
-                    ))}
-                </div>
-              </>
+              <AssociatedCasesAndActivities partyRelations={partyRelations} />
             )}
             <br />
             <h4>Contact information</h4>
 
             <div className="party-details-item">
               {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                <>
-                  {partyData.person.contactMethods.map((contactMethod) => {
-                    return (
-                      <p key={contactMethod?.contactMethodGuid}>
-                        <b>{contactMethod?.typeDescription}: </b>
-                        {contactMethod?.typeCode === "PHONE"
-                          ? formatPhoneNumber(contactMethod?.value ?? "")
-                          : contactMethod?.value}
-                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                      </p>
-                    );
-                  })}
-                </>
+                <ContactMethodsList contactMethods={partyData.person.contactMethods} />
               )}
               {partyData?.business?.contactMethods && (
-                <>
-                  {partyData.business.contactMethods.map((contactMethod) => {
-                    return (
-                      <p key={contactMethod?.contactMethodGuid}>
-                        <b>{contactMethod?.typeDescription}: </b>
-                        {contactMethod?.typeCode === "PHONE"
-                          ? formatPhoneNumber(contactMethod?.value ?? "")
-                          : contactMethod?.value}
-                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                      </p>
-                    );
-                  })}
-                </>
+                <ContactMethodsList contactMethods={partyData.business.contactMethods} />
               )}
               {partyData?.business?.contactPeople && (
                 <>
@@ -584,17 +587,9 @@ export const PartyView: FC = () => {
                           <b>Name: </b>
                           {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                         </p>
-                        {contactPerson?.person?.contactMethods?.map((contactMethod) => {
-                          return (
-                            <p key={contactMethod?.contactMethodGuid}>
-                              <b>{contactMethod?.typeDescription}: </b>
-                              {contactMethod?.typeCode === "PHONE"
-                                ? formatPhoneNumber(contactMethod?.value ?? "")
-                                : contactMethod?.value}
-                              {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                            </p>
-                          );
-                        })}
+                        {contactPerson?.person?.contactMethods && (
+                          <ContactMethodsList contactMethods={contactPerson.person.contactMethods} />
+                        )}
                         {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
                       </div>
                     );
