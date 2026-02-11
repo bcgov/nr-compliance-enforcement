@@ -10,7 +10,7 @@ export interface Regulation {
 }
 
 const httpsProxyAgent = process.env.HTTPS_PROXY
-  ? new HttpsProxyAgent(process.env.HTTPS_PROXY, { rejectUnauthorized: false, requestCert: false })
+  ? new HttpsProxyAgent(process.env.HTTPS_PROXY, { rejectUnauthorized: false })
   : undefined;
 
 /**
