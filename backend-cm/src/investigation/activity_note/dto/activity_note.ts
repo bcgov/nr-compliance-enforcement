@@ -40,8 +40,9 @@ export class ActivityNoteInput {
   @Field(() => String)
   contentText: string;
 
-  @Field(() => Date)
-  actionedTime: Date;
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  actionedTime?: Date;
 
   @Field(() => Date)
   actionedDate: Date;
