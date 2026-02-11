@@ -9,7 +9,9 @@ export interface Regulation {
   status: string | null;
 }
 
-const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
+const httpsProxyAgent = process.env.HTTPS_PROXY
+  ? new HttpsProxyAgent(process.env.HTTPS_PROXY, { rejectUnauthorized: false, requestCert: false })
+  : undefined;
 
 /**
  * Fetches an XML document from the given URL
