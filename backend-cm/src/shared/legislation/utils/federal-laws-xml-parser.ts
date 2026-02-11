@@ -297,7 +297,7 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
 
   const parsed = parser.parse(xmlString);
   const statute = parsed?.Statute;
-  if (!statute) throw new Error("No <Statute> root element found in federal laws XML");
+  if (!statute) throw new Error("No <Statute> root element found in federal laws XML " + xmlString.slice(0, 2000));
 
   const id = statute?.Identification;
   const shortTitle = extractText(id?.ShortTitle).trim();
