@@ -108,6 +108,7 @@ export const ContraventionForm = ({
   const [selectedParties, setSelectedParties] = useState<Option[]>([]);
   const [validationError, setValidationError] = useState<string>("");
   const [actLink, setActLink] = useState<URL | null>(null);
+  const [regulationLink, setRegulationLink] = useState<URL | null>(null);
 
   // Fetch legislation sources
   const { data: legislationSources } = useLegislationSources();
@@ -300,6 +301,52 @@ export const ContraventionForm = ({
     }
   }, [contravention, act, section]);
 
+  // Sync act link when act/sources load (for when entering edit mode)
+  useEffect(() => {
+    if (!act || !legislationSources || !actsQuery.data?.legislations) {
+      if (!act) setActLink(null);
+      return;
+    }
+    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === act);
+    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    const sourceUrl = source?.sourceUrl ?? null;
+    if (!sourceUrl) {
+      setActLink(null);
+      return;
+    }
+    if (source?.sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
+      setActLink(new URL(sourceUrl.slice(0, sourceUrl.length - 4)));
+    } else {
+      setActLink(new URL(sourceUrl));
+    }
+  }, [act, legislationSources, actsQuery.data?.legislations]);
+
+  // Sync regulation link when regulation/sources load (for when entering edit mode)
+  useEffect(() => {
+    if (!regulation || !legislationSources || !regulationsQuery.data?.legislations) {
+      if (!regulation) setRegulationLink(null);
+      return;
+    }
+    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulation);
+    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    const sourceUrl = source?.sourceUrl ?? null;
+    if (!sourceUrl) {
+      setRegulationLink(null);
+      return;
+    }
+    if (source?.sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
+      setRegulationLink(new URL(sourceUrl.slice(0, sourceUrl.length - 4)));
+    } else {
+      setRegulationLink(new URL(sourceUrl));
+    }
+  }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
+
   const handlePartyChange = async (options: Option[]) => {
     setSelectedParties(options);
   };
@@ -324,6 +371,28 @@ export const ContraventionForm = ({
       return;
     }
     setActLink(new URL(sourceUrl));
+  };
+
+  const handleRegulationLinkChange = (regulationGuid: string | null) => {
+    if (!regulationGuid) {
+      setRegulationLink(null);
+      return;
+    }
+    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulationGuid);
+    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    const sourceUrl = source?.sourceUrl ?? null;
+    if (!sourceUrl) {
+      setRegulationLink(null);
+      return;
+    }
+    if (source?.sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
+      setRegulationLink(new URL(sourceUrl.slice(0, sourceUrl.length - 4)));
+      return;
+    }
+    setRegulationLink(new URL(sourceUrl));
   };
 
   return (
@@ -365,6 +434,7 @@ export const ContraventionForm = ({
                   setRegulation("");
                   setSection("");
                   setSelectedSection("");
+                  setRegulationLink(null);
                 }}
                 placeholder="Select act"
                 isClearable={true}
@@ -378,6 +448,7 @@ export const ContraventionForm = ({
             <a
               href={actLink.href}
               target="_blank"
+              rel="noopener noreferrer"
             >
               Act Source
             </a>
@@ -400,6 +471,7 @@ export const ContraventionForm = ({
                       const value = option?.value || "";
                       field.handleChange(value);
                       setRegulation(value);
+                      handleRegulationLinkChange(value || null);
                       // Reset section when regulation changes
                       setSection("");
                       setSelectedSection("");
@@ -412,6 +484,15 @@ export const ContraventionForm = ({
                   />
                 )}
               />
+              {regulationLink && (
+                <a
+                  href={regulationLink.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Regulation Source
+                </a>
+              )}
 
               <FormField
                 form={form}
