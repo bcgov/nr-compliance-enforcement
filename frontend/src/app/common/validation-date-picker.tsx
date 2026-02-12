@@ -36,7 +36,7 @@ const dateWithTime = (date: Date, time: string | null): Date => {
 // Allows the user to type dates like '2025 02 02' and have it parse out to the standard
 // date format of '2025-02-02'
 const parseDateInput = (raw: string): Date | null => {
-  const stripped = raw.replace(/[\s\-\/\.]/g, "");
+  const stripped = raw.replaceAll(/[\s\-/.]/g, "");
   if (stripped.length !== 8 || !/^\d{8}$/.test(stripped)) {
     return null;
   }
@@ -77,12 +77,12 @@ const handleTimeRawInput = (
     onChange(selectedDate, null);
     return;
   }
-  const digits = rawValue.replace(/\D/g, "");
+  const digits = rawValue.replaceAll(/\D/g, "");
   if (digits.length > 2) {
     event.preventDefault();
     const truncated = digits.slice(-2);
     event.target.value = truncated;
-    const value = parseInt(truncated, 10);
+    const value = Number.parseInt(truncated, 10);
     const max = segment === "hour" ? 23 : 59;
     if (selectedDate && value >= 0 && value <= max) {
       const [h, m] = (selectedTime ?? "00:00").split(":");

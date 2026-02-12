@@ -3107,9 +3107,7 @@ export class ComplaintService {
       if (data.incidentTime) {
         data.incidentTime = _applyTimezone(data.incidentTime, tz, "time");
       }
-      data.incidentDateTime = data.incidentDate
-        ? `${data.incidentDate}${data.incidentTime ? " " + data.incidentTime : ""}`
-        : "";
+      data.incidentDateTime = [data.incidentDate, data.incidentTime].filter(Boolean).join(" ");
       // Using short names like "cAtts" and "oAtts" to fit them in CDOGS template table cells
       data.cAtts = attachments
         .filter((item) => item.type === AttachmentType.COMPLAINT_ATTACHMENT)
