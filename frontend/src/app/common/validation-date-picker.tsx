@@ -2,6 +2,13 @@ import { FC } from "react";
 import DatePicker from "react-datepicker";
 import { enGB } from "date-fns/locale";
 
+// Accepts callbacks that take Date, Date | undefined, or Date | null. We always invoke with Date | undefined
+// null gets normalized to undefined below.
+export type ValidationDatePickerOnChange =
+  | ((date: Date) => void)
+  | ((date: Date | undefined) => void)
+  | ((date: Date | null) => void);
+
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
@@ -18,6 +25,8 @@ interface ValidationDatePickerProps {
   nullableTime?: boolean;
   onTimeWithoutDate?: () => void;
   vertical?: boolean;
+  showYearDropdown?: boolean; // When true, shows a year dropdown for year selection
+  yearDropdownItemNumber?: number; // Number of years to show in year dropdown
 }
 
 type TimeSegment = "hour" | "minute";
@@ -111,6 +120,8 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   nullableTime = false,
   onTimeWithoutDate,
   vertical = false,
+  showYearDropdown = false,
+  yearDropdownItemNumber = null,
 }) => {
   const displayDate = selectedDate ? dateWithTime(selectedDate, selectedTime) : undefined;
   const displayTime = nullableTime && !selectedTime ? undefined : displayDate;
@@ -157,6 +168,9 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             disabled={isDisabled}
             showIcon={false}
             showPreviousMonths={showPreviousMonths}
+            showYearDropdown={showYearDropdown}
+            scrollableYearDropdown={showYearDropdown}
+            {...(yearDropdownItemNumber != null && { yearDropdownItemNumber })}
           />
         </div>
 
