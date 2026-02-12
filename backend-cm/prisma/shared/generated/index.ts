@@ -41,6 +41,7 @@ import { person_h as _person_h } from "./person_h";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { legislation_configuration as _legislation_configuration } from "./legislation_configuration";
 import { alias as _alias } from "./alias";
 import { alias_h as _alias_h } from "./alias_h";
 import { business_identifier as _business_identifier } from "./business_identifier";
@@ -95,6 +96,7 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class legislation_configuration extends _legislation_configuration {}
   export class alias extends _alias {}
   export class alias_h extends _alias_h {}
   export class business_identifier extends _business_identifier {}
@@ -149,6 +151,7 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    legislation_configuration,
     alias,
     alias_h,
     business_identifier,

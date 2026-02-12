@@ -17,6 +17,7 @@ import {
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { Link } from "react-router-dom";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -304,6 +305,12 @@ export const LegislationSourceManagement: FC = () => {
                 disabled={source.importedInd || source.importStatus === "SUCCESS"}
               >
                 <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+              <Dropdown.Item
+                as={Link}
+                to={`/admin/law/${source.legislationSourceGuid}`}
+              >
+                <i className="bi bi-gear" /> Configure
               </Dropdown.Item>
               {source.lastImportLog && (
                 <Dropdown.Item onClick={() => setViewLogSource(source)}>
