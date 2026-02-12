@@ -29,7 +29,6 @@ import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
-import { Url } from "url";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -306,19 +305,25 @@ export const ContraventionForm = ({
   };
 
   const handleActLinkChange = (actGuid: string | null) => {
-    const source = legislationSources?.find((source) => source.legislationSourceGuid === actGuid);
-    const importUrl = source?.sourceUrl ?? null;
-    debugger;
-    if (!actGuid || !importUrl) {
+    if (!actGuid) {
       setActLink(null);
       return;
     }
-    if (source?.sourceType === "BCLAWS" && importUrl.endsWith("/xml")) {
-      debugger;
-      const sourceLink = new URL(source.sourceUrl.slice(0, importUrl.length - 4));
-      setActLink(sourceLink);
+    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === actGuid);
+    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    const sourceUrl = source?.sourceUrl ?? null;
+    if (!sourceUrl) {
+      setActLink(null);
       return;
     }
+    if (source?.sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
+      setActLink(new URL(sourceUrl.slice(0, sourceUrl.length - 4)));
+      return;
+    }
+    setActLink(new URL(sourceUrl));
   };
 
   return (

@@ -38,6 +38,7 @@ const SEARCH_LEGISLATION = gql`
       excludeRegulations: $excludeRegulations
     ) {
       legislationGuid
+      legislationSourceGuid
       legislationText
       sectionTitle
       alternateText

@@ -1098,6 +1098,7 @@ export type Legislation = {
   displayOrder?: Maybe<Scalars['Int']['output']>;
   fullCitation?: Maybe<Scalars['String']['output']>;
   legislationGuid?: Maybe<Scalars['String']['output']>;
+  legislationSourceGuid?: Maybe<Scalars['String']['output']>;
   legislationText?: Maybe<Scalars['String']['output']>;
   legislationTypeCode?: Maybe<Scalars['String']['output']>;
   parentGuid?: Maybe<Scalars['String']['output']>;

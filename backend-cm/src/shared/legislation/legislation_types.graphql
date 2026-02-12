@@ -2,6 +2,7 @@ type Legislation {
   legislationGuid: String
   legislationTypeCode: String
   parentGuid: String
+  legislationSourceGuid: String
   citation: String
   fullCitation: String
   sectionTitle: String
