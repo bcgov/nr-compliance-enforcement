@@ -12,7 +12,7 @@ import { Button } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
 
 const UPDATE_LEGISLATION = gql`
-  mutation UpdateLegislationConfiguration($input: UpdateLegislationConfigurationInput!) {
+  mutation UpdateLegislationConfiguration($input: [UpdateLegislationConfigurationInput!]!) {
     updateLegislationConfiguration(input: $input)
   }
 `;
@@ -33,7 +33,7 @@ export const LegislationManagement: FC = () => {
 
   const updateLegislation = useGraphQLMutation(UPDATE_LEGISLATION, {
     onSuccess: () => {
-      //ToggleSuccess("Legislation updated successfully");
+      ToggleSuccess("Legislation updated successfully");
     },
     onError: (error: any) => {
       console.error("Error updating legislation:", error);
@@ -244,8 +244,7 @@ export const LegislationManagement: FC = () => {
       }
     });
 
-    Promise.all(changes.map((change) => updateLegislation.mutateAsync({ input: change })));
-    ToggleSuccess("Legislation updated successfully");
+    updateLegislation.mutateAsync({ input: changes });
   };
 
   // Toggles all items in an Act or Regulation

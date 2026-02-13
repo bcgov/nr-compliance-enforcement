@@ -14,12 +14,12 @@ export class LegislationConfigurationResolver {
   @Roles(adminRoles)
   async updateLegislationSource(
     @Args("input")
-    input: {
+    input: Array<{
       legislationGuid: string;
       agencyCode: string;
       isEnabled?: boolean;
       overrideText?: string;
-    },
+    }>,
     @Context() context: any,
   ) {
     const userId = context.req?.user?.idir_username || "system";
