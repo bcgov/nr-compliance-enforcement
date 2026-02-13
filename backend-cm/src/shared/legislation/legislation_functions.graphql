@@ -3,6 +3,7 @@ type Query {
     agencyCode: String!
     legislationTypeCodes: [String]
     ancestorGuid: String
+    legislationSourceGuid: String
     excludeRegulations: Boolean
   ): [Legislation]!
   legislation(legislationGuid: String!, includeAncestors: Boolean): Legislation

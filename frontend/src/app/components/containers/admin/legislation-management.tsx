@@ -4,33 +4,41 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import { indentByType } from "@/app/types/app/legislation";
+import { useParams } from "react-router-dom";
 
 export const LegislationManagement: FC = () => {
   const userAgency = getUserAgency();
 
-  // TODO: This will eventually come from fetching the root node
-  const rootNodeGuid = "680e499e-8c22-4ceb-b911-733bebe15399";
-  const rootNodeTitle = "Land Act";
+  const { legislationSourceGuid } = useParams<{ legislationSourceGuid: string }>();
 
   const { data, isLoading } = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [], // Get all types now
-    ancestorGuid: rootNodeGuid,
     excludeRegulations: false,
-    enabled: !!rootNodeGuid,
+    legislationSourceGuid: legislationSourceGuid,
+    enabled: !!legislationSourceGuid,
   });
 
   const [contraventionNodes, setContraventionNodes] = useState<Set<string>>(new Set());
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["act"])); // Start with act expanded
 
+  // Get the root node
+  const rootNode = useMemo(() => {
+    return data?.legislations?.find((item) => item.parentGuid === null);
+  }, [data]);
+
+  const rootNodeTitle = rootNode?.sectionTitle || rootNode?.legislationText || "Legislation";
+  const rootNodeGuid = rootNode?.legislationGuid;
+
   // Group legislation by source (Act vs individual Regulations)
   const groupedLegislation = useMemo(() => {
     if (!data?.legislations) return { act: [], regulations: [] };
 
-    const act: Legislation[] = [];
-    const regulationMap = new Map<string, { title: string; items: Legislation[] }>();
+    const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
+      (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
+      (Number.parseFloat(a.citation ?? "") || 9999) - (Number.parseFloat(b.citation ?? "") || 9999);
 
-    // Helper function to check if an item is a descendant of a regulation
+    // Helper to check if item is descendant of a regulation
     const getRegulationAncestor = (item: Legislation): string | null => {
       let current = item;
       const visited = new Set<string>();
@@ -49,70 +57,93 @@ export const LegislationManagement: FC = () => {
       return null;
     };
 
-    const createSectionHeader = (item: Legislation): Legislation =>
-      ({
-        displayOrder: item.displayOrder,
-        citation: item.citation,
-        legislationText: item.sectionTitle,
-        legislationTypeCode: "SECHEAD",
-        parentGuid: item.parentGuid,
-        legislationGuid: `${item.legislationGuid}_header`,
-      }) as Legislation;
-
-    const shouldAddItem = (item: Legislation): boolean => {
-      return !!(item.legislationText || item.legislationTypeCode !== "SEC");
-    };
-
-    const addItemToRegulation = (item: Legislation, reg: { title: string; items: Legislation[] }) => {
-      if (item.legislationTypeCode === "SEC") {
-        reg.items.push(createSectionHeader(item));
-      }
-      if (shouldAddItem(item)) {
-        reg.items.push(item);
-      }
-    };
-
-    const addItemToAct = (item: Legislation, act: Legislation[]) => {
-      if (item.legislationTypeCode === "SEC") {
-        act.push(createSectionHeader(item));
-      }
-      if (shouldAddItem(item)) {
-        act.push(item);
-      }
-    };
+    // Separate items by act vs regulations first
+    const actItems: Legislation[] = [];
+    const regItemsMap = new Map<string, Legislation[]>();
+    const regulationHeaders = new Map<string, { title: string }>();
 
     data.legislations
       .filter((item) => item.legislationGuid !== rootNodeGuid)
       .forEach((item) => {
         if (item.legislationTypeCode === "REG") {
-          if (!regulationMap.has(item.legislationGuid!)) {
-            regulationMap.set(item.legislationGuid!, {
-              title: item.sectionTitle || item.legislationText || "Regulation",
-              items: [],
-            });
-          }
+          regulationHeaders.set(item.legislationGuid!, {
+            title: item.sectionTitle || item.legislationText || "Regulation",
+          });
           return;
         }
 
         const regAncestor = getRegulationAncestor(item);
 
         if (regAncestor) {
-          const reg = regulationMap.get(regAncestor);
-          if (reg) {
-            addItemToRegulation(item, reg);
+          if (!regItemsMap.has(regAncestor)) {
+            regItemsMap.set(regAncestor, []);
           }
+          regItemsMap.get(regAncestor)!.push(item);
         } else {
-          addItemToAct(item, act);
+          actItems.push(item);
         }
       });
 
-    return {
-      act,
-      regulations: Array.from(regulationMap.entries()).map(([guid, data]) => ({
-        guid,
-        ...data,
-      })),
+    // Now sort hierarchically for act
+    const sortHierarchically = (items: Legislation[], rootParentGuid?: string) => {
+      // Group by parent
+      const childrenByParent = new Map<string, Legislation[]>();
+
+      items.forEach((item) => {
+        const parentKey = item.parentGuid || "ROOT";
+        if (!childrenByParent.has(parentKey)) {
+          childrenByParent.set(parentKey, []);
+        }
+        childrenByParent.get(parentKey)!.push(item);
+      });
+
+      // Sort each group
+      childrenByParent.forEach((children) => {
+        children.sort(sortByDisplayOrderAndCitation);
+      });
+
+      // Flatten recursively
+      const flatten = (parentGuid: string = "ROOT"): Legislation[] => {
+        const children = childrenByParent.get(parentGuid) || [];
+
+        return children.flatMap((child) => {
+          const result: Legislation[] = [];
+
+          // Add SECHEAD if SEC has both title and text
+          if (child.legislationTypeCode === "SEC" && child.sectionTitle && child.legislationText) {
+            result.push({
+              displayOrder: child.displayOrder,
+              citation: child.citation,
+              legislationText: child.sectionTitle,
+              legislationTypeCode: "SECHEAD",
+              parentGuid: child.parentGuid,
+              legislationGuid: `${child.legislationGuid}_header`,
+            } as Legislation);
+          }
+
+          return [...result, child, ...flatten(child.legislationGuid ?? undefined)];
+        });
+      };
+
+      return flatten(rootParentGuid);
     };
+
+    const act = sortHierarchically(actItems, rootNodeGuid ?? undefined);
+
+    const regulations = Array.from(regItemsMap.entries()).map(([guid, items]) => ({
+      guid,
+      title: regulationHeaders.get(guid)?.title || "Regulation",
+      items: sortHierarchically(items, guid),
+    }));
+
+    console.log("=== ACT ORDER AFTER HIERARCHICAL SORT (first 30) ===");
+    act.slice(0, 30).forEach((item, idx) => {
+      console.log(
+        `${idx}: order=${item.displayOrder} type=${item.legislationTypeCode} citation=${item.citation} parent=${item.parentGuid?.substring(0, 8)}`,
+      );
+    });
+
+    return { act, regulations };
   }, [data, rootNodeGuid]);
 
   // Helper function to get all descendants recursively
@@ -293,6 +324,22 @@ export const LegislationManagement: FC = () => {
           <LegislationTable html={section.legislationText} />
         </div>,
       );
+    }
+
+    if (section.legislationTypeCode === "SEC") {
+      if (section.legislationText) {
+        // SEC with text - just show the text (header was already shown via SECHEAD)
+        return baseWrapper(<p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>);
+      } else {
+        // SEC with only title - show as header
+        return baseWrapper(
+          <p className={`mb-2 ${indentClass}`}>
+            <strong>
+              {section.citation} {section.sectionTitle}
+            </strong>
+          </p>,
+        );
+      }
     }
 
     const displayCitation = section.citation || (section.legislationTypeCode === "SUBSEC" ? "1" : null);

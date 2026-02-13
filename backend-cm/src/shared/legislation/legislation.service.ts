@@ -53,6 +53,7 @@ export class LegislationService {
     legislationTypeCodes?: string[],
     ancestorGuid?: string,
     excludeRegulations?: boolean,
+    legislationSourceGuid?: string,
   ) {
     const today = new Date().toISOString().split("T")[0];
 
@@ -71,13 +72,25 @@ export class LegislationService {
         LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
         WHERE
           (
-            -- When ancestorGuid is provided, match it directly
+            -- When ancestorGuid is provided, match it directly (ignore legislationSourceGuid)
             (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
           OR
-            -- When no ancestorGuid, find root nodes filtered by agency
-            (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
+            -- When legislationSourceGuid is provided (no ancestorGuid), find that specific source's root
+            (
+              COALESCE(${ancestorGuid}, '') = '' 
+              AND COALESCE(${legislationSourceGuid}, '') <> ''
+              AND l.parent_legislation_guid IS NULL 
+              AND l.legislation_source_guid = ${legislationSourceGuid}::uuid
+            )
+          OR
+            -- When neither is provided, find all root nodes for the agency
+            (
+              COALESCE(${ancestorGuid}, '') = '' 
+              AND COALESCE(${legislationSourceGuid}, '') = ''
+              AND l.parent_legislation_guid IS NULL 
+              AND ls.agency_code = ${agencyCode}
+            )
           )
-
         UNION ALL
 
         SELECT -- Child nodes
