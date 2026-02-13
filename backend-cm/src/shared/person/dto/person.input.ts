@@ -23,6 +23,18 @@ export class PersonInput {
   @Field(() => String)
   lastName: string;
 
+  @Field(() => Date, { nullable: true })
+  dateOfBirth?: Date;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseNumber?: string;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseJurisdiction?: string;
+
+  @Field(() => String, { nullable: true })
+  sexCode?: string;
+
   @Field(() => [ContactMethodInput], { nullable: true })
   contactMethods?: ContactMethodInput[];
 }
