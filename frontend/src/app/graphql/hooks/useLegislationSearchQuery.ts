@@ -5,6 +5,7 @@ import Option from "@apptypes/app/option";
 
 export interface LegislationSearchParams {
   agencyCode: string;
+  onlyActive?: boolean;
   legislationTypeCodes: string[];
   ancestorGuid?: string;
   excludeRegulations?: boolean;
@@ -28,6 +29,7 @@ export interface LegislationDirectChildrenParams {
 const SEARCH_LEGISLATION = gql`
   query Legislations(
     $agencyCode: String!
+    $onlyActive: Boolean
     $legislationTypeCodes: [String]
     $ancestorGuid: String
     $excludeRegulations: Boolean
@@ -35,6 +37,7 @@ const SEARCH_LEGISLATION = gql`
   ) {
     legislations(
       agencyCode: $agencyCode
+      onlyActive: $onlyActive
       legislationTypeCodes: $legislationTypeCodes
       ancestorGuid: $ancestorGuid
       excludeRegulations: $excludeRegulations
@@ -109,6 +112,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
     queryKey: [
       "legislations",
       searchParams.agencyCode,
+      searchParams.onlyActive,
       searchParams.legislationTypeCodes,
       searchParams.ancestorGuid,
       searchParams.excludeRegulations,
@@ -116,6 +120,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
     ],
     variables: {
       agencyCode: searchParams.agencyCode,
+      onlyActive: searchParams.onlyActive,
       legislationTypeCodes: searchParams.legislationTypeCodes,
       ancestorGuid: searchParams.ancestorGuid,
       excludeRegulations: searchParams.excludeRegulations,

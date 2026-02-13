@@ -4,7 +4,18 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import { indentByType } from "@/app/types/app/legislation";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { Button } from "react-bootstrap";
+import { LegislationText } from "@/app/components/common/legislation-text";
+
+const UPDATE_LEGISLATION = gql`
+  mutation UpdateLegislationConfiguration($input: UpdateLegislationConfigurationInput!) {
+    updateLegislationConfiguration(input: $input)
+  }
+`;
 
 export const LegislationManagement: FC = () => {
   const userAgency = getUserAgency();
@@ -13,13 +24,25 @@ export const LegislationManagement: FC = () => {
 
   const { data, isLoading } = useLegislationSearchQuery({
     agencyCode: userAgency,
+    onlyActive: false,
     legislationTypeCodes: [], // Get all types now
     excludeRegulations: false,
     legislationSourceGuid: legislationSourceGuid,
     enabled: !!legislationSourceGuid,
   });
 
+  const updateLegislation = useGraphQLMutation(UPDATE_LEGISLATION, {
+    onSuccess: () => {
+      //ToggleSuccess("Legislation updated successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error updating legislation:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update legislation");
+    },
+  });
+
   const [contraventionNodes, setContraventionNodes] = useState<Set<string>>(new Set());
+  const [originalContraventionNodes, setOriginalContraventionNodes] = useState<Set<string>>(new Set());
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["act"])); // Start with act expanded
 
   // Get the root node
@@ -139,21 +162,18 @@ export const LegislationManagement: FC = () => {
     return { act, regulations };
   }, [data, rootNodeGuid]);
 
-  const initialEnabledNodes = useMemo(() => {
-    if (!data?.legislations) return new Set<string>();
-
-    const enabled = new Set<string>();
-    data.legislations.forEach((item) => {
-      if (item.legislationGuid && item.isEnabled) {
-        enabled.add(item.legislationGuid);
-      }
-    });
-    return enabled;
-  }, [data]);
-
   useEffect(() => {
-    setContraventionNodes(initialEnabledNodes);
-  }, [initialEnabledNodes]);
+    if (data?.legislations) {
+      const enabledNodes = new Set<string>();
+      data.legislations.forEach((item) => {
+        if (item.legislationGuid && item.isEnabled) {
+          enabledNodes.add(item.legislationGuid);
+        }
+      });
+      setContraventionNodes(enabledNodes);
+      setOriginalContraventionNodes(new Set(enabledNodes)); // Save original state
+    }
+  }, [data]);
 
   // Helper function to get all descendants recursively
   const getAllDescendants = (parentGuid: string): string[] => {
@@ -206,16 +226,42 @@ export const LegislationManagement: FC = () => {
     });
   };
 
+  // Toggles a single item + descendants
+  const handleSave = () => {
+    const changes: Array<{ legislationGuid: string; agencyCode: string; isEnabled: boolean }> = [];
+
+    // Find items that are now enabled but weren't originally
+    contraventionNodes.forEach((guid) => {
+      if (!originalContraventionNodes.has(guid)) {
+        changes.push({ legislationGuid: guid, agencyCode: userAgency, isEnabled: true });
+      }
+    });
+
+    // Find items that were enabled but aren't now
+    originalContraventionNodes.forEach((guid) => {
+      if (!contraventionNodes.has(guid)) {
+        changes.push({ legislationGuid: guid, agencyCode: userAgency, isEnabled: false });
+      }
+    });
+
+    Promise.all(changes.map((change) => updateLegislation.mutateAsync({ input: change })));
+    ToggleSuccess("Legislation updated successfully");
+  };
+
   // Toggles all items in an Act or Regulation
-  const toggleAllInSection = (sectionId: string, checked: boolean) => {
+  const toggleAllChecksInSection = (sectionId: string, checked: boolean, recursive: boolean) => {
     setContraventionNodes((prev) => {
       const next = new Set(prev);
 
-      const itemsToToggle =
-        sectionId === "act"
-          ? [...groupedLegislation.act, ...groupedLegislation.regulations.flatMap((r) => r.items)]
-          : groupedLegislation.regulations.find((r) => r.guid === sectionId)?.items || [];
+      let itemsToToggle;
 
+      if (sectionId === "act") {
+        itemsToToggle = recursive
+          ? [...groupedLegislation.act, ...groupedLegislation.regulations.flatMap((r) => r.items)]
+          : groupedLegislation.act;
+      } else {
+        itemsToToggle = groupedLegislation.regulations.find((r) => r.guid === sectionId)?.items || [];
+      }
       const guids = itemsToToggle.map((item) => item.legislationGuid).filter((guid): guid is string => !!guid);
 
       updateContraventionSet(next, guids, checked);
@@ -243,7 +289,7 @@ export const LegislationManagement: FC = () => {
   const getActualGuid = (guid: string) => guid.replace("_header", "");
 
   // Helper function that determines if an Act or Regulation is enabled
-  const areAllEnabled = (sectionId: string): boolean => {
+  const areAllEnabled = (sectionId: string, recursive: boolean): boolean => {
     if (sectionId === "act") {
       // Check act items
       const allActEnabled = groupedLegislation.act.every((item) => {
@@ -252,14 +298,17 @@ export const LegislationManagement: FC = () => {
         return contraventionNodes.has(actualGuid);
       });
 
-      // Check all regulations
-      const allRegsEnabled = groupedLegislation.regulations.every((reg) =>
-        reg.items.every((item) => {
-          if (!item.legislationGuid) return true;
-          const actualGuid = item.legislationGuid.replace("_header", "");
-          return contraventionNodes.has(actualGuid);
-        }),
-      );
+      let allRegsEnabled = true;
+      if (recursive) {
+        // Check all regulations
+        allRegsEnabled = groupedLegislation.regulations.every((reg) =>
+          reg.items.every((item) => {
+            if (!item.legislationGuid) return true;
+            const actualGuid = item.legislationGuid.replace("_header", "");
+            return contraventionNodes.has(actualGuid);
+          }),
+        );
+      }
 
       return allActEnabled && allRegsEnabled;
     } else {
@@ -324,7 +373,11 @@ export const LegislationManagement: FC = () => {
     }
 
     if (section.legislationTypeCode === "TEXT") {
-      return baseWrapper(<p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>);
+      return baseWrapper(
+        <p className={`mb-2 ${indentClass}`}>
+          <LegislationText>{section.legislationText}</LegislationText>
+        </p>,
+      );
     }
 
     if (section.legislationTypeCode === "TABLE" && section.legislationText) {
@@ -370,84 +423,117 @@ export const LegislationManagement: FC = () => {
   };
 
   return (
-    <div className="comp-page-container">
-      <div className="comp-page-header">
-        <div className="comp-page-title-container">
-          <h1>Configure legislation</h1>
+    <div className="comp-main-content">
+      <div className="comp-details-header">
+        <div className="comp-container">
+          <div className="comp-complaint-breadcrumb">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item comp-nav-item-name-inverted">
+                  <Link to={`/admin/laws`}>Manage legislation</Link>
+                </li>
+                <li
+                  className="breadcrumb-item"
+                  aria-current="page"
+                >
+                  Configure legislation
+                </li>
+              </ol>
+            </nav>
+          </div>
+          <div className="comp-header-actions">
+            <Button
+              id="details-screen-update-status-button"
+              title="Update status"
+              variant="outline-light"
+              onClick={handleSave}
+            >
+              <i className="bi bi-check-circle"></i>
+              <span>Save</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Act Table */}
-      <div className="mb-5">
-        <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
-          <button
-            onClick={() => toggleSection("act")}
-            className="btn btn-link text-decoration-none p-0 text-start h3"
-            style={{ border: "none", background: "none", color: "inherit" }}
-          >
-            <h3 className="d-flex align-items-center mb-0">
-              <i className={`bi bi-chevron-${expandedSections.has("act") ? "down" : "right"} me-2`}></i>
-              {rootNodeTitle}
-            </h3>
-          </button>
-          <button
-            className="btn btn-sm btn-outline-primary flex-shrink-0"
-            onClick={() => toggleAllInSection("act", !areAllEnabled("act"))}
-          >
-            {areAllEnabled("act") ? "Disable All" : "Enable All"}
-          </button>
-        </div>
-
-        {expandedSections.has("act") && (
-          <>
-            {/* Header row */}
-            <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
-              <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
-            </div>
-
-            <div className="legislation-list">{groupedLegislation.act.map(renderSectionRow)}</div>
-          </>
-        )}
-      </div>
-
-      {/* Regulation Tables */}
-      {groupedLegislation.regulations.map((reg) => (
-        <div
-          key={reg.guid}
-          className="mb-5"
-        >
+      <div className="comp-container">
+        {/* Act Table */}
+        <div className="mb-5">
           <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
             <button
-              onClick={() => toggleSection(reg.guid)}
+              onClick={() => toggleSection("act")}
               className="btn btn-link text-decoration-none p-0 text-start h3"
               style={{ border: "none", background: "none", color: "inherit" }}
             >
               <h3 className="d-flex align-items-center mb-0">
-                <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
-                {reg.title}
+                <i className={`bi bi-chevron-${expandedSections.has("act") ? "down" : "right"} me-2`}></i>
+                {rootNodeTitle}
               </h3>
             </button>
-
             <button
-              className="btn btn-sm btn-outline-primary"
-              onClick={() => toggleAllInSection(reg.guid, !areAllEnabled(reg.guid))}
+              className="btn btn-sm btn-outline-primary flex-shrink-0"
+              onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", false), false)}
             >
-              {areAllEnabled(reg.guid) ? "Disable All" : "Enable All"}
+              {areAllEnabled("act", false) ? "Disable all (act only)" : "Enable all (act only)"}
+            </button>
+            <button
+              className="btn btn-sm btn-outline-primary flex-shrink-0"
+              onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", true), true)}
+            >
+              {areAllEnabled("act", true) ? "Disable all (acts and regs)" : "Enable all (acts and regs)"}
             </button>
           </div>
-          {expandedSections.has(reg.guid) && (
+
+          {expandedSections.has("act") && (
             <>
               {/* Header row */}
               <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
                 <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
-                <div style={{ flex: 1, paddingLeft: "10px" }}>Legislation</div>
               </div>
 
-              <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
+              <div className="legislation-list">{groupedLegislation.act.map(renderSectionRow)}</div>
             </>
           )}
         </div>
-      ))}
+
+        {/* Regulation Tables */}
+        {groupedLegislation.regulations.map((reg) => (
+          <div
+            key={reg.guid}
+            className="mb-5"
+          >
+            <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
+              <button
+                onClick={() => toggleSection(reg.guid)}
+                className="btn btn-link text-decoration-none p-0 text-start h3"
+                style={{ border: "none", background: "none", color: "inherit" }}
+              >
+                <h3 className="d-flex align-items-center mb-0">
+                  <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
+                  {reg.title}
+                </h3>
+              </button>
+
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => toggleAllChecksInSection(reg.guid, !areAllEnabled(reg.guid, true), false)}
+              >
+                {areAllEnabled(reg.guid, true) ? "Disable All" : "Enable All"}
+              </button>
+            </div>
+            {expandedSections.has(reg.guid) && (
+              <>
+                {/* Header row */}
+                <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
+                  <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
+                  <div style={{ flex: 1, paddingLeft: "10px" }}>Legislation</div>
+                </div>
+
+                <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

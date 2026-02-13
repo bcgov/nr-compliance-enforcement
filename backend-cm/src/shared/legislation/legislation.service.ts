@@ -4,6 +4,7 @@ import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
+import { Prisma } from "@prisma/client";
 
 export interface LegislationRow {
   legislation_guid: string;
@@ -50,6 +51,7 @@ export class LegislationService {
 
   async findMany(
     agencyCode: string,
+    onlyActive: boolean = true,
     legislationTypeCodes?: string[],
     ancestorGuid?: string,
     excludeRegulations?: boolean,
@@ -127,6 +129,7 @@ export class LegislationService {
         AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
         -- When excludeRegulations is true, exclude nodes that have a REG ancestor
         AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
+        AND (${onlyActive} = false OR lc.enabled_ind = true)
       ORDER BY d.sort_path;
       `;
 
