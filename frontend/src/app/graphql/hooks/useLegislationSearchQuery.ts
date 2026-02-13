@@ -48,6 +48,7 @@ const SEARCH_LEGISLATION = gql`
       legislationTypeCode
       parentGuid
       displayOrder
+      isEnabled
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import { useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
@@ -136,15 +136,24 @@ export const LegislationManagement: FC = () => {
       items: sortHierarchically(items, guid),
     }));
 
-    console.log("=== ACT ORDER AFTER HIERARCHICAL SORT (first 30) ===");
-    act.slice(0, 30).forEach((item, idx) => {
-      console.log(
-        `${idx}: order=${item.displayOrder} type=${item.legislationTypeCode} citation=${item.citation} parent=${item.parentGuid?.substring(0, 8)}`,
-      );
-    });
-
     return { act, regulations };
   }, [data, rootNodeGuid]);
+
+  const initialEnabledNodes = useMemo(() => {
+    if (!data?.legislations) return new Set<string>();
+
+    const enabled = new Set<string>();
+    data.legislations.forEach((item) => {
+      if (item.legislationGuid && item.isEnabled) {
+        enabled.add(item.legislationGuid);
+      }
+    });
+    return enabled;
+  }, [data]);
+
+  useEffect(() => {
+    setContraventionNodes(initialEnabledNodes);
+  }, [initialEnabledNodes]);
 
   // Helper function to get all descendants recursively
   const getAllDescendants = (parentGuid: string): string[] => {

@@ -113,9 +113,11 @@ export class LegislationService {
         l.section_title,
         l.legislation_text,
         l.alternate_text,
-        l.display_order
+        l.display_order,
+        lc.enabled_ind
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
+      LEFT JOIN legislation_configuration lc ON l.legislation_guid = lc.legislation_guid
       WHERE
         (
           ${legislationTypeCodes ?? []} = '{}'::text[]
@@ -127,6 +129,7 @@ export class LegislationService {
         AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
       ORDER BY d.sort_path;
       `;
+
     try {
       return this.mapper.mapArray<legislation, Legislation>(prismaLegislation, "legislation", "Legislation");
     } catch (error) {
