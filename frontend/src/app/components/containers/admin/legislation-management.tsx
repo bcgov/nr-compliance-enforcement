@@ -128,13 +128,14 @@ export const LegislationManagement: FC = () => {
       // Flatten recursively
       const flatten = (parentGuid: string = "ROOT"): Legislation[] => {
         const children = childrenByParent.get(parentGuid) || [];
+        const result: Legislation[] = [];
 
-        return children.flatMap((child) => {
-          const result: Legislation[] = [];
+        for (const child of children) {
+          const itemsToAdd: Legislation[] = [];
 
           // Add SECHEAD if SEC has both title and text
           if (child.legislationTypeCode === "SEC" && child.sectionTitle && child.legislationText) {
-            result.push({
+            itemsToAdd.push({
               displayOrder: child.displayOrder,
               citation: child.citation,
               legislationText: child.sectionTitle,
@@ -144,8 +145,10 @@ export const LegislationManagement: FC = () => {
             } as Legislation);
           }
 
-          return [...result, child, ...flatten(child.legislationGuid ?? undefined)];
-        });
+          result.push(...itemsToAdd, child, ...flatten(child.legislationGuid ?? undefined));
+        }
+
+        return result;
       };
 
       return flatten(rootParentGuid);
