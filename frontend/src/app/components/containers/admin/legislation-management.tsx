@@ -271,10 +271,6 @@ export const LegislationManagement: FC = () => {
     });
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   // Expands or collapses Acts or Regulations
   const toggleSection = (sectionId: string) => {
     setExpandedSections((prev) => {
@@ -344,10 +340,7 @@ export const LegislationManagement: FC = () => {
         key={section.legislationGuid}
         className="d-flex align-items-start py-2 border-bottom"
       >
-        <div
-          style={{ width: "60px", flexShrink: 0 }}
-          className="d-flex justify-content-center"
-        >
+        <div className="d-flex justify-content-center leg-admin-checkbox-column">
           <input
             type="checkbox"
             className="form-check-input"
@@ -356,7 +349,7 @@ export const LegislationManagement: FC = () => {
           />
         </div>
 
-        <div style={{ flex: 1 }}>{content}</div>
+        <div>{content}</div>
       </div>
     );
 
@@ -365,10 +358,17 @@ export const LegislationManagement: FC = () => {
       section.legislationTypeCode === "DIV" ||
       section.legislationTypeCode === "PART"
     ) {
+      let typeLabel = "Part";
+      if (section.legislationTypeCode === "SCHED") {
+        typeLabel = "Schedule";
+      } else if (section.legislationTypeCode === "DIV") {
+        typeLabel = "Division";
+      }
+
       return baseWrapper(
         <p className={`mb-2 ${indentClass}`}>
           <strong>
-            Part {section.citation} {section.sectionTitle}
+            {typeLabel} {section.citation} {section.sectionTitle}
           </strong>
         </p>,
       );
@@ -426,115 +426,120 @@ export const LegislationManagement: FC = () => {
 
   return (
     <div className="comp-main-content">
-      <div className="comp-details-header">
-        <div className="comp-container">
-          <div className="comp-complaint-breadcrumb">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb">
-                <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to={`/admin/laws`}>Manage legislation</Link>
-                </li>
-                <li
-                  className="breadcrumb-item"
-                  aria-current="page"
-                >
-                  Configure legislation
-                </li>
-              </ol>
-            </nav>
-          </div>
-          <div className="comp-header-actions">
-            <Button
-              id="details-screen-update-status-button"
-              title="Update status"
-              variant="outline-light"
-              onClick={handleSave}
-            >
-              <i className="bi bi-check-circle"></i>
-              <span>Save</span>
-            </Button>
+      <div className="comp-complaint-details">
+        <div className="comp-details-header">
+          <div className="comp-container">
+            <div className="comp-complaint-breadcrumb">
+              <nav aria-label="breadcrumb">
+                <ol className="breadcrumb">
+                  <li className="breadcrumb-item comp-nav-item-name-inverted">
+                    <Link to={`/admin/laws`}>Manage legislation</Link>
+                  </li>
+                  <li
+                    className="breadcrumb-item"
+                    aria-current="page"
+                  >
+                    Configure legislation
+                  </li>
+                </ol>
+              </nav>
+            </div>
+            <div className="comp-header-actions">
+              <Button
+                id="details-screen-update-status-button"
+                title="Update status"
+                variant="outline-light"
+                onClick={handleSave}
+              >
+                <i className="bi bi-check-circle"></i>
+                <span>Save</span>
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="comp-container">
-        {/* Act Table */}
-        <div className="mb-5">
-          <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
-            <button
-              onClick={() => toggleSection("act")}
-              className="btn btn-link text-decoration-none p-0 text-start h3"
-              style={{ border: "none", background: "none", color: "inherit" }}
-            >
-              <h3 className="d-flex align-items-center mb-0">
-                <i className={`bi bi-chevron-${expandedSections.has("act") ? "down" : "right"} me-2`}></i>
-                {rootNodeTitle}
-              </h3>
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary flex-shrink-0"
-              onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", false), false)}
-            >
-              {areAllEnabled("act", false) ? "Disable all (act only)" : "Enable all (act only)"}
-            </button>
-            <button
-              className="btn btn-sm btn-outline-primary flex-shrink-0"
-              onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", true), true)}
-            >
-              {areAllEnabled("act", true) ? "Disable all (acts and regs)" : "Enable all (acts and regs)"}
-            </button>
-          </div>
-
-          {expandedSections.has("act") && (
+        <div className="comp-container">
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
             <>
-              {/* Header row */}
-              <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
-                <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
+              {/* Act Table */}
+              <div className="mb-5">
+                <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
+                  <Button
+                    onClick={() => toggleSection("act")}
+                    className="btn btn-link h3 leg-admin-title"
+                  >
+                    <h3 className="d-flex align-items-center mb-0">
+                      <i className={`bi bi-chevron-${expandedSections.has("act") ? "down" : "right"} me-2`}></i>
+                      {rootNodeTitle}
+                    </h3>
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", false), false)}
+                  >
+                    {areAllEnabled("act", false) ? "Disable all (act only)" : "Enable all (act only)"}
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", true), true)}
+                  >
+                    {areAllEnabled("act", true) ? "Disable all (acts and regs)" : "Enable all (acts and regs)"}
+                  </Button>
+                </div>
+
+                {expandedSections.has("act") && (
+                  <>
+                    {/* Header row */}
+                    <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
+                      <div className="leg-admin-checkbox-column">Enabled</div>
+                    </div>
+
+                    <div className="legislation-list">{groupedLegislation.act.map(renderSectionRow)}</div>
+                  </>
+                )}
               </div>
 
-              <div className="legislation-list">{groupedLegislation.act.map(renderSectionRow)}</div>
+              {/* Regulation Tables */}
+              {groupedLegislation.regulations.map((reg) => (
+                <div
+                  key={reg.guid}
+                  className="mb-5"
+                >
+                  <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
+                    <Button
+                      onClick={() => toggleSection(reg.guid)}
+                      className="btn btn-link h3 leg-admin-title"
+                    >
+                      <h3 className="d-flex align-items-center mb-0">
+                        <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
+                        {reg.title}
+                      </h3>
+                    </Button>
+
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => toggleAllChecksInSection(reg.guid, !areAllEnabled(reg.guid, true), false)}
+                    >
+                      {areAllEnabled(reg.guid, true) ? "Disable All" : "Enable All"}
+                    </Button>
+                  </div>
+                  {expandedSections.has(reg.guid) && (
+                    <>
+                      {/* Header row */}
+                      <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
+                        <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
+                      </div>
+
+                      <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
+                    </>
+                  )}
+                </div>
+              ))}
             </>
           )}
         </div>
-
-        {/* Regulation Tables */}
-        {groupedLegislation.regulations.map((reg) => (
-          <div
-            key={reg.guid}
-            className="mb-5"
-          >
-            <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
-              <button
-                onClick={() => toggleSection(reg.guid)}
-                className="btn btn-link text-decoration-none p-0 text-start h3"
-                style={{ border: "none", background: "none", color: "inherit" }}
-              >
-                <h3 className="d-flex align-items-center mb-0">
-                  <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
-                  {reg.title}
-                </h3>
-              </button>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => toggleAllChecksInSection(reg.guid, !areAllEnabled(reg.guid, true), false)}
-              >
-                {areAllEnabled(reg.guid, true) ? "Disable All" : "Enable All"}
-              </button>
-            </div>
-            {expandedSections.has(reg.guid) && (
-              <>
-                {/* Header row */}
-                <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
-                  <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
-                  <div style={{ flex: 1, paddingLeft: "10px" }}>Legislation</div>
-                </div>
-
-                <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
-              </>
-            )}
-          </div>
-        ))}
       </div>
     </div>
   );
