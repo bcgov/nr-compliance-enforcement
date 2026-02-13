@@ -94,17 +94,17 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(() => {
     if (!initialData?.actionedDate) return undefined;
     const dateStr = String(initialData.actionedDate).split("T")[0];
-    const timeStr = initialData.actionedTime
-      ? String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-      : "00:00:00";
+    if (!initialData.actionedTime) {
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+    const timeStr = String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
     return new Date(`${dateStr}T${timeStr}Z`);
   });
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    if (!initialData?.actionedDate) return null;
+    if (!initialData?.actionedDate || !initialData?.actionedTime) return null;
     const dateStr = String(initialData.actionedDate).split("T")[0];
-    const timeStr = initialData.actionedTime
-      ? String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-      : "00:00:00";
+    const timeStr = String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
     const d = new Date(`${dateStr}T${timeStr}Z`);
     const hh = d.getHours().toString().padStart(2, "0");
     const mm = d.getMinutes().toString().padStart(2, "0");

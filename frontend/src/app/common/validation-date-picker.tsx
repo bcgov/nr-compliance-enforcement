@@ -31,14 +31,16 @@ interface ValidationDatePickerProps {
 
 type TimeSegment = "hour" | "minute";
 
-const dateWithTime = (date: Date, time: string | null): Date => {
-  const result = new Date(date);
-  if (time) {
-    const [hh, mm] = time.split(":").map(Number);
-    result.setHours(hh, mm, 0, 0);
-  } else {
-    result.setHours(0, 0, 0, 0);
+const dateWithTime = (date: Date | string, time: string | null): Date => {
+  if (!time) {
+    // Date-only: parse as local so UTC midnight doesn't roll back a day west of UTC
+    const dateStr = typeof date === "string" ? date.split("T")[0] : date.toISOString().split("T")[0];
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d);
   }
+  const result = new Date(date);
+  const [hh, mm] = time.split(":").map(Number);
+  result.setHours(hh, mm, 0, 0);
   return result;
 };
 

@@ -121,9 +121,11 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       const actionedDateTime = (() => {
         if (!report.actionedDate) return new Date();
         const dateStr = String(report.actionedDate).split("T")[0];
-        const timeStr = report.actionedTime
-          ? String(report.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-          : "00:00:00";
+        if (!report.actionedTime) {
+          const [y, m, d] = dateStr.split("-").map(Number);
+          return new Date(y, m - 1, d);
+        }
+        const timeStr = String(report.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
         return new Date(`${dateStr}T${timeStr}Z`);
       })();
       const dateKey = startOfDay(actionedDateTime).toISOString();

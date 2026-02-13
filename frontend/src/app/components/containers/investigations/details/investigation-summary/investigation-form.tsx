@@ -42,17 +42,18 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discove
   const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() => {
     if (!discoveryDate) return null;
     const dateStr = String(discoveryDate).split("T")[0];
-    const timeStr = discoveryTime
-      ? String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-      : "00:00:00";
+    if (!discoveryTime) {
+      // Date-only: parse as local so it doesn't roll back a day during UTC→local display
+      const [y, m, d] = dateStr.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+    const timeStr = String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00";
     return new Date(`${dateStr}T${timeStr}Z`);
   });
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
-    if (!discoveryDate) return null;
+    if (!discoveryDate || !discoveryTime) return null;
     const dateStr = String(discoveryDate).split("T")[0];
-    const timeStr = discoveryTime
-      ? String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-      : "00:00:00";
+    const timeStr = String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00";
     const d = new Date(`${dateStr}T${timeStr}Z`);
     const hh = d.getHours().toString().padStart(2, "0");
     const mm = d.getMinutes().toString().padStart(2, "0");

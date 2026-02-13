@@ -3099,13 +3099,17 @@ export class ComplaintService {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }
 
-      //-- incidentDate/Time may not be set, if there's no date
-      //-- don't try and apply the incident date
+      // incidentDate/Time may not be set, if there's no date
+      // don't try and apply the incident date.
+      // The DB stores date (DATE) and time (TIME) as separate columns; recombine
+      // into a timestamp so _applyTimezone can convert from UTC to the user's tz,
+      // then re-split into display strings.
       if (data.incidentDate) {
-        data.incidentDate = _applyTimezone(data.incidentDate, tz, "date");
-      }
-      if (data.incidentTime) {
-        data.incidentTime = _applyTimezone(data.incidentTime, tz, "time");
+        const isoDate = new Date(data.incidentDate).toISOString().split("T")[0];
+        const isoTime = data.incidentTime ? String(data.incidentTime) : "00:00:00";
+        const combined = new Date(`${isoDate}T${isoTime}Z`);
+        data.incidentDate = _applyTimezone(combined, tz, "date");
+        data.incidentTime = data.incidentTime ? _applyTimezone(combined, tz, "time") : null;
       }
       data.incidentDateTime = [data.incidentDate, data.incidentTime].filter(Boolean).join(" ");
       // Using short names like "cAtts" and "oAtts" to fit them in CDOGS template table cells

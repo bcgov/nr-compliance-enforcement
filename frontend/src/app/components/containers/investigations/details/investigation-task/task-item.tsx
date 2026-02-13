@@ -294,13 +294,10 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                                   {(() => {
                                     if (!taskAction.actionedDate) return "";
                                     const dateStr = String(taskAction.actionedDate).split("T")[0];
-                                    const timeStr = taskAction.actionedTime
-                                      ? String(taskAction.actionedTime).split("T")[1]?.replace("Z", "") || null
-                                      : null;
-                                    const combined = new Date(`${dateStr}T${timeStr || "00:00:00"}Z`).toString();
-                                    return timeStr
-                                      ? `${formatDate(combined)} ${formatTime(combined)}`
-                                      : formatDate(combined);
+                                    if (!taskAction.actionedTime) return formatDate(dateStr);
+                                    const timeStr = String(taskAction.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
+                                    const combined = new Date(`${dateStr}T${timeStr}Z`).toString();
+                                    return `${formatDate(combined)} ${formatTime(combined)}`;
                                   })()}
                                 </pre>
                                 <pre id="comp-task-action">
