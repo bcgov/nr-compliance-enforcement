@@ -231,21 +231,41 @@ export const LegislationManagement: FC = () => {
     });
   };
 
-  // Toggles a single item + descendants
+  // Saves what the user did
   const handleSave = () => {
     const changes: Array<{ legislationGuid: string; agencyCode: string; isEnabled: boolean }> = [];
 
-    // Find items that are now enabled but weren't originally
-    contraventionNodes.forEach((guid) => {
-      if (!originalContraventionNodes.has(guid)) {
-        changes.push({ legislationGuid: guid, agencyCode: legislationAgency, isEnabled: true });
-      }
-    });
+    // Helper to check if an item has any enabled descendants
+    const hasEnabledDescendants = (guid: string): boolean => {
+      const descendants = getAllDescendants(guid);
+      return descendants.some((d) => contraventionNodes.has(d));
+    };
 
-    // Find items that were enabled but aren't now
-    originalContraventionNodes.forEach((guid) => {
-      if (!contraventionNodes.has(guid)) {
-        changes.push({ legislationGuid: guid, agencyCode: legislationAgency, isEnabled: false });
+    // Process all items
+    data?.legislations?.forEach((item) => {
+      if (!item.legislationGuid) return;
+
+      const isParentType = ["ACT", "REG", "PART", "DIV", "SCHED", "SEC"].includes(item.legislationTypeCode ?? "");
+
+      let shouldBeEnabled: boolean;
+
+      if (isParentType) {
+        // Parent types: enabled if ANY descendants are enabled
+        shouldBeEnabled = hasEnabledDescendants(item.legislationGuid);
+      } else {
+        // Leaf items: enabled if in the set
+        shouldBeEnabled = contraventionNodes.has(item.legislationGuid);
+      }
+
+      const wasEnabled = originalContraventionNodes.has(item.legislationGuid);
+
+      // Only add to changes if state changed
+      if (shouldBeEnabled !== wasEnabled) {
+        changes.push({
+          legislationGuid: item.legislationGuid,
+          agencyCode: legislationAgency,
+          isEnabled: shouldBeEnabled,
+        });
       }
     });
 
