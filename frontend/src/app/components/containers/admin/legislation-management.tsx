@@ -231,21 +231,33 @@ export const LegislationManagement: FC = () => {
     });
   };
 
-  // Saves what the user did
+  // Helper to check if an item has any enabled descendants
+  const hasEnabledDescendants = (guid: string): boolean => {
+    const descendants = getAllDescendants(guid);
+    return descendants.some((d) => {
+      const item = data?.legislations?.find((leg) => leg.legislationGuid === d);
+      const isParent = ["ACT", "REG", "PART", "DIV", "SCHED"].includes(item?.legislationTypeCode ?? "");
+      // Only count non-parent items
+      return !isParent && contraventionNodes.has(d);
+    });
+  };
+
+  // Toggles a single item + descendants
   const handleSave = () => {
     const changes: Array<{ legislationGuid: string; agencyCode: string; isEnabled: boolean }> = [];
-
-    // Helper to check if an item has any enabled descendants
-    const hasEnabledDescendants = (guid: string): boolean => {
-      const descendants = getAllDescendants(guid);
-      return descendants.some((d) => contraventionNodes.has(d));
-    };
 
     // Process all items
     data?.legislations?.forEach((item) => {
       if (!item.legislationGuid) return;
 
-      const isParentType = ["ACT", "REG", "PART", "DIV", "SCHED", "SEC"].includes(item.legislationTypeCode ?? "");
+      const baseParentTypes = ["ACT", "REG", "PART", "DIV", "SCHED"];
+      let isParentType = baseParentTypes.includes(item.legislationTypeCode ?? "");
+
+      // For SEC, check if it actually has children
+      if (item.legislationTypeCode === "SEC") {
+        const descendants = getAllDescendants(item.legislationGuid);
+        isParentType = descendants.length > 0;
+      }
 
       let shouldBeEnabled: boolean;
 
@@ -532,41 +544,43 @@ export const LegislationManagement: FC = () => {
               </div>
 
               {/* Regulation Tables */}
-              {groupedLegislation.regulations.map((reg) => (
-                <div
-                  key={reg.guid}
-                  className="mb-5"
-                >
-                  <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
-                    <Button
-                      onClick={() => toggleSection(reg.guid)}
-                      className="btn btn-link h3 leg-admin-title"
-                    >
-                      <h3 className="d-flex align-items-center mb-0">
-                        <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
-                        {reg.title}
-                      </h3>
-                    </Button>
+              {groupedLegislation.regulations
+                .toSorted((a, b) => a.title.localeCompare(b.title))
+                .map((reg) => (
+                  <div
+                    key={reg.guid}
+                    className="mb-5"
+                  >
+                    <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
+                      <Button
+                        onClick={() => toggleSection(reg.guid)}
+                        className="btn btn-link h3 leg-admin-title"
+                      >
+                        <h3 className="d-flex align-items-center mb-0">
+                          <i className={`bi bi-chevron-${expandedSections.has(reg.guid) ? "down" : "right"} me-2`}></i>
+                          {reg.title}
+                        </h3>
+                      </Button>
 
-                    <Button
-                      variant="outline-primary"
-                      onClick={() => toggleAllChecksInSection(reg.guid, !areAllEnabled(reg.guid, true), false)}
-                    >
-                      {areAllEnabled(reg.guid, true) ? "Disable All" : "Enable All"}
-                    </Button>
+                      <Button
+                        variant="outline-primary"
+                        onClick={() => toggleAllChecksInSection(reg.guid, !areAllEnabled(reg.guid, true), false)}
+                      >
+                        {areAllEnabled(reg.guid, true) ? "Disable All" : "Enable All"}
+                      </Button>
+                    </div>
+                    {expandedSections.has(reg.guid) && (
+                      <>
+                        {/* Header row */}
+                        <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
+                          <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
+                        </div>
+
+                        <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
+                      </>
+                    )}
                   </div>
-                  {expandedSections.has(reg.guid) && (
-                    <>
-                      {/* Header row */}
-                      <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">
-                        <div style={{ width: "60px", textAlign: "center" }}>Enabled</div>
-                      </div>
-
-                      <div className="legislation-list">{reg.items.map(renderSectionRow)}</div>
-                    </>
-                  )}
-                </div>
-              ))}
+                ))}
             </>
           )}
         </div>
