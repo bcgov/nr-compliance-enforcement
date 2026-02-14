@@ -310,7 +310,7 @@ export const LegislationSourceManagement: FC = () => {
               </Dropdown.Item>
               <Dropdown.Item
                 as={Link}
-                to={`/admin/law/${source.legislationSourceGuid}`}
+                to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
                 disabled={!source.importedInd}
               >
                 <i className="bi bi-gear" /> Configure

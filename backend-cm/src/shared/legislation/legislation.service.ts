@@ -4,7 +4,6 @@ import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
-import { Prisma } from "@prisma/client";
 
 export interface LegislationRow {
   legislation_guid: string;
@@ -38,6 +37,7 @@ export interface CreateLegislationInput {
   effectiveDate?: Date | null;
   expiryDate?: Date | null;
   createUserId: string;
+  agencyCode?: string | null;
 }
 
 @Injectable()
@@ -246,6 +246,14 @@ export class LegislationService {
         expiry_date: input.expiryDate ?? null,
         create_user_id: input.createUserId,
         create_utc_timestamp: new Date(),
+        legislation_configuration: {
+          create: {
+            agency_code: input.agencyCode,
+            enabled_ind: true,
+            create_user_id: input.createUserId,
+            create_utc_timestamp: new Date(),
+          },
+        },
       },
     });
   }

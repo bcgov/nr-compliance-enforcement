@@ -4,7 +4,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import { indentByType } from "@/app/types/app/legislation";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -21,9 +21,11 @@ export const LegislationManagement: FC = () => {
   const userAgency = getUserAgency();
 
   const { legislationSourceGuid } = useParams<{ legislationSourceGuid: string }>();
+  const [searchParams] = useSearchParams();
+  const legislationAgency = searchParams.get("agencyCode") ?? "";
 
   const { data, isLoading } = useLegislationSearchQuery({
-    agencyCode: userAgency,
+    agencyCode: legislationAgency,
     onlyActive: false,
     legislationTypeCodes: [], // Get all types now
     excludeRegulations: false,
@@ -236,14 +238,14 @@ export const LegislationManagement: FC = () => {
     // Find items that are now enabled but weren't originally
     contraventionNodes.forEach((guid) => {
       if (!originalContraventionNodes.has(guid)) {
-        changes.push({ legislationGuid: guid, agencyCode: userAgency, isEnabled: true });
+        changes.push({ legislationGuid: guid, agencyCode: legislationAgency, isEnabled: true });
       }
     });
 
     // Find items that were enabled but aren't now
     originalContraventionNodes.forEach((guid) => {
       if (!contraventionNodes.has(guid)) {
-        changes.push({ legislationGuid: guid, agencyCode: userAgency, isEnabled: false });
+        changes.push({ legislationGuid: guid, agencyCode: legislationAgency, isEnabled: false });
       }
     });
 
@@ -393,7 +395,11 @@ export const LegislationManagement: FC = () => {
     if (section.legislationTypeCode === "SEC") {
       if (section.legislationText) {
         // SEC with text - just show the text (header was already shown via SECHEAD)
-        return baseWrapper(<p className={`mb-2 ${indentClass}`}>{section.legislationText}</p>);
+        return baseWrapper(
+          <p className={`mb-2 ${indentClass}`}>
+            <LegislationText>{section.legislationText}</LegislationText>
+          </p>,
+        );
       } else {
         // SEC with only title - show as header
         return baseWrapper(
@@ -412,17 +418,21 @@ export const LegislationManagement: FC = () => {
       <p className={`mb-2 ${indentClass}`}>
         {section.legislationTypeCode === "SECHEAD" ? (
           <strong>
-            {section.citation} {section.legislationText}
+            {section.citation} <LegislationText>{section.legislationText}</LegislationText>
           </strong>
         ) : (
           <>
             {section.legislationTypeCode !== "SEC" && displayCitation && <>({displayCitation}) </>}
-            {section.legislationText || section.sectionTitle}
+            <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
           </>
         )}
       </p>,
     );
   };
+
+  if (userAgency !== legislationAgency) {
+    return <Navigate to="/not-authorized" />;
+  }
 
   return (
     <div className="comp-main-content">
