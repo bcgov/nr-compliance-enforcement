@@ -45,3 +45,21 @@ COMMENT ON COLUMN legislation_configuration.update_user_id IS
 
 COMMENT ON COLUMN legislation_configuration.update_utc_timestamp IS
 'The timestamp when this record was last updated. Stored in UTC with no offset.';
+
+-- Populate Table for already imported legislation (test and prod)
+INSERT INTO legislation_configuration (
+    legislation_guid,
+    agency_code,
+    enabled_ind,
+    override_text,
+    create_user_id,
+    create_utc_timestamp
+)
+SELECT DISTINCT
+    l.legislation_guid,
+    'COS' as agency_code
+    TRUE AS enabled_ind,
+    NULL AS override_text,
+    'SYSTEM' AS create_user_id,
+    NOW() AS create_utc_timestamp
+FROM legislation l
