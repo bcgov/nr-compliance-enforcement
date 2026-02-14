@@ -3,7 +3,7 @@ import { useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSea
 import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
-import { indentByType } from "@/app/types/app/legislation";
+import { indentByType, LegislationType } from "@/app/types/app/legislation";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -45,7 +45,7 @@ export const LegislationManagement: FC = () => {
 
   const [contraventionNodes, setContraventionNodes] = useState<Set<string>>(new Set());
   const [originalContraventionNodes, setOriginalContraventionNodes] = useState<Set<string>>(new Set());
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["act"])); // Start with act expanded
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set([LegislationType.ACT])); // Start with act expanded
 
   // Get the root node
   const rootNode = useMemo(() => {
@@ -73,7 +73,7 @@ export const LegislationManagement: FC = () => {
         const parent = data.legislations.find((l) => l.legislationGuid === current.parentGuid);
         if (!parent) break;
 
-        if (parent.legislationTypeCode === "REG") {
+        if (parent.legislationTypeCode === LegislationType.REGULATION) {
           return parent.legislationGuid!;
         }
         current = parent;
@@ -90,7 +90,7 @@ export const LegislationManagement: FC = () => {
     data.legislations
       .filter((item) => item.legislationGuid !== rootNodeGuid)
       .forEach((item) => {
-        if (item.legislationTypeCode === "REG") {
+        if (item.legislationTypeCode === LegislationType.REGULATION) {
           regulationHeaders.set(item.legislationGuid!, {
             title: item.sectionTitle || item.legislationText || "Regulation",
           });
@@ -136,7 +136,7 @@ export const LegislationManagement: FC = () => {
           const itemsToAdd: Legislation[] = [];
 
           // Add SECHEAD if SEC has both title and text
-          if (child.legislationTypeCode === "SEC" && child.sectionTitle && child.legislationText) {
+          if (child.legislationTypeCode === LegislationType.SECTION && child.sectionTitle && child.legislationText) {
             itemsToAdd.push({
               displayOrder: child.displayOrder,
               citation: child.citation,
@@ -236,7 +236,13 @@ export const LegislationManagement: FC = () => {
     const descendants = getAllDescendants(guid);
     return descendants.some((d) => {
       const item = data?.legislations?.find((leg) => leg.legislationGuid === d);
-      const isParent = ["ACT", "REG", "PART", "DIV", "SCHED"].includes(item?.legislationTypeCode ?? "");
+      const isParent = [
+        LegislationType.ACT,
+        LegislationType.REGULATION,
+        LegislationType.PART,
+        LegislationType.DIVISION,
+        LegislationType.SCHEDULE,
+      ].includes(item?.legislationTypeCode as LegislationType);
       // Only count non-parent items
       return !isParent && contraventionNodes.has(d);
     });
@@ -250,11 +256,17 @@ export const LegislationManagement: FC = () => {
     data?.legislations?.forEach((item) => {
       if (!item.legislationGuid) return;
 
-      const baseParentTypes = ["ACT", "REG", "PART", "DIV", "SCHED"];
-      let isParentType = baseParentTypes.includes(item.legislationTypeCode ?? "");
+      const baseParentTypes = [
+        LegislationType.ACT,
+        LegislationType.REGULATION,
+        LegislationType.PART,
+        LegislationType.DIVISION,
+        LegislationType.SCHEDULE,
+      ];
+      let isParentType = baseParentTypes.includes(item.legislationTypeCode as LegislationType);
 
       // For SEC, check if it actually has children
-      if (item.legislationTypeCode === "SEC") {
+      if (item.legislationTypeCode === LegislationType.SECTION) {
         const descendants = getAllDescendants(item.legislationGuid);
         isParentType = descendants.length > 0;
       }
@@ -291,7 +303,7 @@ export const LegislationManagement: FC = () => {
 
       let itemsToToggle;
 
-      if (sectionId === "act") {
+      if (sectionId === LegislationType.ACT) {
         itemsToToggle = recursive
           ? [...groupedLegislation.act, ...groupedLegislation.regulations.flatMap((r) => r.items)]
           : groupedLegislation.act;
@@ -322,7 +334,7 @@ export const LegislationManagement: FC = () => {
 
   // Helper function that determines if an Act or Regulation is enabled
   const areAllEnabled = (sectionId: string, recursive: boolean): boolean => {
-    if (sectionId === "act") {
+    if (sectionId === "LegislationType.ACT") {
       // Check act items
       const allActEnabled = groupedLegislation.act.every((item) => {
         if (!item.legislationGuid) return true;
@@ -388,14 +400,14 @@ export const LegislationManagement: FC = () => {
     );
 
     if (
-      section.legislationTypeCode === "SCHED" ||
-      section.legislationTypeCode === "DIV" ||
-      section.legislationTypeCode === "PART"
+      section.legislationTypeCode === LegislationType.SCHEDULE ||
+      section.legislationTypeCode === LegislationType.DIVISION ||
+      section.legislationTypeCode === LegislationType.PART
     ) {
       let typeLabel = "Part";
-      if (section.legislationTypeCode === "SCHED") {
+      if (section.legislationTypeCode === LegislationType.SCHEDULE) {
         typeLabel = "Schedule";
-      } else if (section.legislationTypeCode === "DIV") {
+      } else if (section.legislationTypeCode === LegislationType.DIVISION) {
         typeLabel = "Division";
       }
 
@@ -408,7 +420,7 @@ export const LegislationManagement: FC = () => {
       );
     }
 
-    if (section.legislationTypeCode === "TEXT") {
+    if (section.legislationTypeCode === LegislationType.TEXT) {
       return baseWrapper(
         <p className={`mb-2 ${indentClass}`}>
           <LegislationText>{section.legislationText}</LegislationText>
@@ -416,7 +428,7 @@ export const LegislationManagement: FC = () => {
       );
     }
 
-    if (section.legislationTypeCode === "TABLE" && section.legislationText) {
+    if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
       return baseWrapper(
         <div className={indentClass}>
           <LegislationTable html={section.legislationText} />
@@ -424,7 +436,7 @@ export const LegislationManagement: FC = () => {
       );
     }
 
-    if (section.legislationTypeCode === "SEC") {
+    if (section.legislationTypeCode === LegislationType.SECTION) {
       if (section.legislationText) {
         // SEC with text - just show the text (header was already shown via SECHEAD)
         return baseWrapper(
@@ -444,7 +456,8 @@ export const LegislationManagement: FC = () => {
       }
     }
 
-    const displayCitation = section.citation || (section.legislationTypeCode === "SUBSEC" ? "1" : null);
+    const displayCitation =
+      section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
 
     return baseWrapper(
       <p className={`mb-2 ${indentClass}`}>
@@ -454,7 +467,7 @@ export const LegislationManagement: FC = () => {
           </strong>
         ) : (
           <>
-            {section.legislationTypeCode !== "SEC" && displayCitation && <>({displayCitation}) </>}
+            {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && <>({displayCitation}) </>}
             <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
           </>
         )}
@@ -509,29 +522,37 @@ export const LegislationManagement: FC = () => {
               <div className="mb-5">
                 <div className="d-flex align-items-center mb-2 flex-nowrap gap-3">
                   <Button
-                    onClick={() => toggleSection("act")}
+                    onClick={() => toggleSection(LegislationType.ACT)}
                     className="btn btn-link h3 leg-admin-title"
                   >
                     <h3 className="d-flex align-items-center mb-0">
-                      <i className={`bi bi-chevron-${expandedSections.has("act") ? "down" : "right"} me-2`}></i>
+                      <i
+                        className={`bi bi-chevron-${expandedSections.has(LegislationType.ACT) ? "down" : "right"} me-2`}
+                      ></i>
                       {rootNodeTitle}
                     </h3>
                   </Button>
                   <Button
                     variant="outline-primary"
-                    onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", false), false)}
+                    onClick={() =>
+                      toggleAllChecksInSection(LegislationType.ACT, !areAllEnabled(LegislationType.ACT, false), false)
+                    }
                   >
-                    {areAllEnabled("act", false) ? "Disable all (act only)" : "Enable all (act only)"}
+                    {areAllEnabled(LegislationType.ACT, false) ? "Disable all (act only)" : "Enable all (act only)"}
                   </Button>
                   <Button
                     variant="outline-primary"
-                    onClick={() => toggleAllChecksInSection("act", !areAllEnabled("act", true), true)}
+                    onClick={() =>
+                      toggleAllChecksInSection(LegislationType.ACT, !areAllEnabled(LegislationType.ACT, true), true)
+                    }
                   >
-                    {areAllEnabled("act", true) ? "Disable all (acts and regs)" : "Enable all (acts and regs)"}
+                    {areAllEnabled(LegislationType.ACT, true)
+                      ? "Disable all (acts and regs)"
+                      : "Enable all (acts and regs)"}
                   </Button>
                 </div>
 
-                {expandedSections.has("act") && (
+                {expandedSections.has(LegislationType.ACT) && (
                   <>
                     {/* Header row */}
                     <div className="d-flex align-items-center mb-2 fw-bold border-bottom pb-2">

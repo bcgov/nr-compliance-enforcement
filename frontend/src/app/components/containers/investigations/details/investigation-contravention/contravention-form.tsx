@@ -17,7 +17,7 @@ import {
   useLegislation,
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
-import { indentByType, Legislation } from "@/app/types/app/legislation";
+import { indentByType, LegislationType } from "@/app/types/app/legislation";
 import { Button, Card } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -135,20 +135,25 @@ export const ContraventionForm = ({
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.ACT],
+    legislationTypeCodes: [LegislationType.ACT],
     enabled: true,
   });
 
   const regulationsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.REGULATION],
+    legislationTypeCodes: [LegislationType.REGULATION],
     ancestorGuid: act || "",
     enabled: !!act,
   });
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SCHEDULE, Legislation.SECTION],
+    legislationTypeCodes: [
+      LegislationType.PART,
+      LegislationType.DIVISION,
+      LegislationType.SCHEDULE,
+      LegislationType.SECTION,
+    ],
     ancestorGuid: regulation || act,
     // When Act is selected but no regulation, exclude sections from child regulations
     excludeRegulations: !!act && !regulation,
@@ -158,17 +163,17 @@ export const ContraventionForm = ({
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [
-      Legislation.SCHEDULE,
-      Legislation.DIVISION,
-      Legislation.SECTION,
-      Legislation.SUBSECTION,
-      Legislation.PARAGRAPH,
-      Legislation.SUBPARAGRAPH,
-      Legislation.CLAUSE,
-      Legislation.SUBCLAUSE,
-      Legislation.DEFINITION,
-      Legislation.TEXT,
-      Legislation.TABLE,
+      LegislationType.SCHEDULE,
+      LegislationType.DIVISION,
+      LegislationType.SECTION,
+      LegislationType.SUBSECTION,
+      LegislationType.PARAGRAPH,
+      LegislationType.SUBPARAGRAPH,
+      LegislationType.CLAUSE,
+      LegislationType.SUBCLAUSE,
+      LegislationType.DEFINITION,
+      LegislationType.TEXT,
+      LegislationType.TABLE,
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -417,8 +422,8 @@ export const ContraventionForm = ({
 
                 // Schedules and Divisions render as non-clickable headers
                 if (
-                  section.legislationTypeCode === Legislation.SCHEDULE ||
-                  section.legislationTypeCode === Legislation.DIVISION
+                  section.legislationTypeCode === LegislationType.SCHEDULE ||
+                  section.legislationTypeCode === LegislationType.DIVISION
                 ) {
                   return (
                     <div
@@ -432,7 +437,7 @@ export const ContraventionForm = ({
                   );
                 }
 
-                if (section.legislationTypeCode === Legislation.TEXT) {
+                if (section.legislationTypeCode === LegislationType.TEXT) {
                   return (
                     <div
                       key={section.legislationGuid}
@@ -445,7 +450,7 @@ export const ContraventionForm = ({
                   );
                 }
 
-                if (section.legislationTypeCode === Legislation.TABLE && section.legislationText) {
+                if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
                   return (
                     <div
                       key={section.legislationGuid}
@@ -458,7 +463,7 @@ export const ContraventionForm = ({
 
                 // For subsections without explicit citation, show (1)
                 const displayCitation =
-                  section.citation || (section.legislationTypeCode === Legislation.SUBSECTION ? "1" : null);
+                  section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
 
                 return (
                   <button
@@ -472,7 +477,7 @@ export const ContraventionForm = ({
                   >
                     <div>
                       <p className={`mb-2 ${indentClass}`}>
-                        {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
+                        {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
                         <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
