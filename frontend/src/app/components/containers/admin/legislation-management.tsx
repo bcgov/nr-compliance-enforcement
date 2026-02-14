@@ -8,7 +8,7 @@ import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { Button, Spinner } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { toggleLoading } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
@@ -98,8 +98,9 @@ export const LegislationManagement: FC = () => {
     data.legislations
       .filter((item) => item.legislationGuid !== rootNodeGuid)
       .forEach((item) => {
+        if (!item.legislationGuid) return;
         if (item.legislationTypeCode === LegislationType.REGULATION) {
-          regulationHeaders.set(item.legislationGuid!, {
+          regulationHeaders.set(item.legislationGuid, {
             title: item.sectionTitle || item.legislationText || "Regulation",
           });
           return;

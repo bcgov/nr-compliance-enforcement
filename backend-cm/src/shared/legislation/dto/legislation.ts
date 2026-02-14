@@ -58,7 +58,7 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.isEnabled,
-      mapFrom((src) => (src as any).enabled_ind), // casting as any due to complexity of recursive query
+      mapFrom((src) => (src as legislation & { enabled_ind: boolean }).enabled_ind),
     ),
   );
 };
