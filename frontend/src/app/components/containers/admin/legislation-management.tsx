@@ -8,8 +8,10 @@ import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
+import { toggleLoading } from "@/app/store/reducers/app";
+import { useAppDispatch } from "@/app/hooks/hooks";
 
 const UPDATE_LEGISLATION = gql`
   mutation UpdateLegislationConfiguration($input: [UpdateLegislationConfigurationInput!]!) {
@@ -23,6 +25,7 @@ export const LegislationManagement: FC = () => {
   const { legislationSourceGuid } = useParams<{ legislationSourceGuid: string }>();
   const [searchParams] = useSearchParams();
   const legislationAgency = searchParams.get("agencyCode") ?? "";
+  const dispatch = useAppDispatch();
 
   const { data, isLoading } = useLegislationSearchQuery({
     agencyCode: legislationAgency,
@@ -39,7 +42,7 @@ export const LegislationManagement: FC = () => {
     },
     onError: (error: any) => {
       console.error("Error updating legislation:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update legislation");
+      ToggleError("Failed to update legislation");
     },
   });
 
@@ -57,11 +60,16 @@ export const LegislationManagement: FC = () => {
 
   // Group legislation by source (Act vs individual Regulations)
   const groupedLegislation = useMemo(() => {
-    if (!data?.legislations) return { act: [], regulations: [] };
+    if (!data?.legislations) {
+      return { act: [], regulations: [] };
+    }
 
     const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
       (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
       (Number.parseFloat(a.citation ?? "") || 9999) - (Number.parseFloat(b.citation ?? "") || 9999);
+
+    // Pre-build lookup map for O(1) access instead of O(n) find
+    const itemsByGuid = new Map(data.legislations.map((item) => [item.legislationGuid, item]));
 
     // Helper to check if item is descendant of a regulation
     const getRegulationAncestor = (item: Legislation): string | null => {
@@ -70,7 +78,7 @@ export const LegislationManagement: FC = () => {
 
       while (current.parentGuid && !visited.has(current.parentGuid)) {
         visited.add(current.parentGuid);
-        const parent = data.legislations.find((l) => l.legislationGuid === current.parentGuid);
+        const parent = itemsByGuid.get(current.parentGuid); // O(1) instead of O(n)
         if (!parent) break;
 
         if (parent.legislationTypeCode === LegislationType.REGULATION) {
@@ -109,7 +117,7 @@ export const LegislationManagement: FC = () => {
         }
       });
 
-    // Now sort hierarchically for act
+    // Now sort hierarchically
     const sortHierarchically = (items: Legislation[], rootParentGuid?: string) => {
       // Group by parent
       const childrenByParent = new Map<string, Legislation[]>();
@@ -129,15 +137,15 @@ export const LegislationManagement: FC = () => {
 
       // Flatten recursively
       const flatten = (parentGuid: string = "ROOT"): Legislation[] => {
-        const children = childrenByParent.get(parentGuid) || [];
+        const children = childrenByParent.get(parentGuid);
+        if (!children) return [];
+
         const result: Legislation[] = [];
 
         for (const child of children) {
-          const itemsToAdd: Legislation[] = [];
-
           // Add SECHEAD if SEC has both title and text
           if (child.legislationTypeCode === LegislationType.SECTION && child.sectionTitle && child.legislationText) {
-            itemsToAdd.push({
+            result.push({
               displayOrder: child.displayOrder,
               citation: child.citation,
               legislationText: child.sectionTitle,
@@ -147,7 +155,12 @@ export const LegislationManagement: FC = () => {
             } as Legislation);
           }
 
-          result.push(...itemsToAdd, child, ...flatten(child.legislationGuid ?? undefined));
+          result.push(child);
+
+          const childResults = flatten(child.legislationGuid ?? undefined);
+          if (childResults.length > 0) {
+            result.push(...childResults);
+          }
         }
 
         return result;
@@ -249,7 +262,10 @@ export const LegislationManagement: FC = () => {
   };
 
   // Toggles a single item + descendants
-  const handleSave = () => {
+  const handleSave = async () => {
+    dispatch(toggleLoading(true));
+    // Force a render cycle so the spinner appears
+    await new Promise((resolve) => setTimeout(resolve, 0));
     const changes: Array<{ legislationGuid: string; agencyCode: string; isEnabled: boolean }> = [];
 
     // Process all items
@@ -294,10 +310,14 @@ export const LegislationManagement: FC = () => {
     });
 
     updateLegislation.mutateAsync({ input: changes });
+    dispatch(toggleLoading(false));
   };
 
   // Toggles all items in an Act or Regulation
-  const toggleAllChecksInSection = (sectionId: string, checked: boolean, recursive: boolean) => {
+  const toggleAllChecksInSection = async (sectionId: string, checked: boolean, recursive: boolean) => {
+    dispatch(toggleLoading(true));
+    // Force a render cycle so the spinner appears
+    await new Promise((resolve) => setTimeout(resolve, 0));
     setContraventionNodes((prev) => {
       const next = new Set(prev);
 
@@ -315,6 +335,7 @@ export const LegislationManagement: FC = () => {
       updateContraventionSet(next, guids, checked);
       return next;
     });
+    dispatch(toggleLoading(false));
   };
 
   // Expands or collapses Acts or Regulations
@@ -334,7 +355,7 @@ export const LegislationManagement: FC = () => {
 
   // Helper function that determines if an Act or Regulation is enabled
   const areAllEnabled = (sectionId: string, recursive: boolean): boolean => {
-    if (sectionId === "LegislationType.ACT") {
+    if (sectionId === LegislationType.ACT) {
       // Check act items
       const allActEnabled = groupedLegislation.act.every((item) => {
         if (!item.legislationGuid) return true;
@@ -353,13 +374,11 @@ export const LegislationManagement: FC = () => {
           }),
         );
       }
-
       return allActEnabled && allRegsEnabled;
     } else {
       // Check specific regulation
       const reg = groupedLegislation.regulations.find((r) => r.guid === sectionId);
       if (!reg) return false;
-
       return reg.items.every((item) => {
         if (!item.legislationGuid) return true;
         const actualGuid = item.legislationGuid.replace("_header", "");
