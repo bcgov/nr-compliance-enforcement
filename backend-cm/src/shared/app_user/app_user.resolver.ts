@@ -2,7 +2,7 @@ import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { AppUserService } from "./app_user.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
-import { coreRoles, Role } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { CreateAppUserInput, UpdateAppUserInput } from "./dto/app_user";
 import { UserService } from "../../common/user.service";
@@ -38,13 +38,13 @@ export class AppUserResolver {
   }
 
   @Mutation("createAppUser")
-  @Roles(Role.GLOBAL_ADMINISTRATOR)
+  @Roles(adminRoles)
   async create(@Args("input") input: CreateAppUserInput) {
     return await this.appUserService.create(input);
   }
 
   @Mutation("updateAppUser")
-  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
+  @Roles(coreRoles, adminRoles)
   async update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserInput) {
     return await this.appUserService.update(appUserGuid, input);
   }

@@ -2,7 +2,7 @@ import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { OfficeService } from "./office.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { UseGuards } from "@nestjs/common";
-import { coreRoles, Role } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { CreateOfficeInput, UpdateOfficeInput } from "./dto/office";
 
@@ -31,13 +31,13 @@ export class OfficeResolver {
   }
 
   @Mutation("createOffice")
-  @Roles(Role.GLOBAL_ADMINISTRATOR)
+  @Roles(adminRoles)
   async create(@Args("input") input: CreateOfficeInput) {
     return await this.officeService.create(input);
   }
 
   @Mutation("updateOffice")
-  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
+  @Roles(coreRoles, adminRoles)
   async update(@Args("officeGuid") officeGuid: string, @Args("input") input: UpdateOfficeInput) {
     return await this.officeService.update(officeGuid, input);
   }
