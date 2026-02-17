@@ -42,8 +42,13 @@ import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
 import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investigation/task_category_type_code/dto/task_category_type_code";
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
+import { mapPrismaAliasToAlias } from "src/shared/alias/dto/alias";
+import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "src/shared/business_identifier_code/dto/business_identifier_code";
+import { mapPrismaBusinessIdentifierToIdentifier } from "src/shared/business_identifier/dto/business_identifier";
+import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 
 export const initializeMappings = (mapper: Mapper) => {
+  // Shared Mappings
   mapPrismaContactMethodToContactMethod(mapper);
   mapPrismaPersonToPerson(mapper);
   mapPrismaParkToPark(mapper);
@@ -54,10 +59,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCaseActivityTypeCodeToCaseActivityTypeCode(mapper);
   mapPrismaCaseActivityToCaseActivity(mapper);
   mapPrismaCaseFileToCaseFile(mapper);
-  mapPrismaInvestigationToInvestigation(mapper);
-  mapPrismaInvestigationStatusCodeToInvestigationStatusCode(mapper);
-  mapPrismaInspectionToInspection(mapper);
-  mapPrismaInspectionStatusCodeToInspectionStatusCode(mapper);
   mapPrismaBusinessToBusiness(mapper);
   mapPrismaPartyToParty(mapper);
   mapPrismaPartyTypeCodeToPartyTypeCode(mapper);
@@ -65,8 +66,12 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaEventEntityTypeCodeToEventEntityTypeCode(mapper);
   mapPrismaEventToEvent(mapper);
   mapPrismaBusinessToInvestigationBusiness(mapper);
-  mapPrismaPersonToInvestigationPerson(mapper);
-  mapPrismaPartyToInvestigationParty(mapper);
+  mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
+  mapPrismaAliasToAlias(mapper);
+  mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode(mapper);
+  mapPrismaBusinessIdentifierToIdentifier(mapper);
+  mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
+  mapPrismaLegislationToLegislation(mapper);
   mapPrismaOfficeToOffice(mapper);
   mapPrismaTeamCodeToTeamCode(mapper);
   mapPrismaTeamToTeam(mapper);
@@ -75,16 +80,26 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCosGeoOrgUnitFlatMvwToCosGeoOrgUnit(mapper);
   mapPrismaAppUserToAppUser(mapper);
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
-  mapPrismaBusinessToInspectionBusiness(mapper);
-  mapPrismaPersonToInspectionPerson(mapper);
-  mapPrismaPartyToInspectionParty(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
-  mapPrismaLegislationToLegislation(mapper);
+  
+
+  // Investigation Mappings
+  mapPrismaInvestigationToInvestigation(mapper);
+  mapPrismaInvestigationStatusCodeToInvestigationStatusCode(mapper);
+  mapPrismaPersonToInvestigationPerson(mapper);
+  mapPrismaPartyToInvestigationParty(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
   mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
   mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
   mapPrismaTaskToTask(mapper);
   mapPrismaDiaryDateToDiaryDate(mapper);
+
+  // Inspection Mappings
+  mapPrismaInspectionToInspection(mapper);
+  mapPrismaInspectionStatusCodeToInspectionStatusCode(mapper);
+  mapPrismaBusinessToInspectionBusiness(mapper);
+  mapPrismaPersonToInspectionPerson(mapper);
+  mapPrismaPartyToInspectionParty(mapper);
 };

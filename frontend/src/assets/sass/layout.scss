@@ -1033,3 +1033,35 @@ td.actions-col {
     margin-bottom: 16px;
   }
 }
+
+.party-contact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.party-contact-method {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.party-primary-contact-method-label {
+  width: 60px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.party-primary-contact-spacer {
+  width: 60px;
+}
+
+.party-multiple-value-container {
+  flex: 1;
+}
+
+.party-alias-container {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}

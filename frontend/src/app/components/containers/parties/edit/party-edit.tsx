@@ -12,33 +12,40 @@ import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { PartyCreateInput, PartyUpdateInput } from "@/generated/graphql";
+import {
+  Alias,
+  BusinessIdentifier,
+  BusinessPerson,
+  ContactMethod,
+  PartyCreateInput,
+  PartyUpdateInput,
+} from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
+import { Button } from "react-bootstrap";
+import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
+import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { selectSexDropdown } from "@/app/store/reducers/code-table";
+import { parse } from "date-fns";
 
-const GET_PARTY = gql`
-  query GetParty($partyIdentifier: String!) {
-    party(partyIdentifier: $partyIdentifier) {
-      __typename
-      partyIdentifier
-      partyTypeCode
-      shortDescription
-      longDescription
-      createdDateTime
-      person {
-        personGuid
-        firstName
-        lastName
-      }
-      business {
-        businessGuid
-        name
-      }
-    }
+const PARTY_PERSON_FRAGMENT = gql`
+  fragment PartyPersonFields on Person {
+    personGuid
+    firstName
+    middleName
+    middleName2
+    lastName
+    dateOfBirth
+    driversLicenseNumber
+    driversLicenseJurisdiction
+    sexCode
   }
 `;
 
 const UPDATE_PARTY_MUTATION = gql`
+  ${PARTY_PERSON_FRAGMENT}
   mutation UpdateParty($partyIdentifier: String!, $input: PartyUpdateInput!) {
     updateParty(partyIdentifier: $partyIdentifier, input: $input) {
       partyIdentifier
@@ -47,9 +54,7 @@ const UPDATE_PARTY_MUTATION = gql`
       longDescription
       createdDateTime
       person {
-        personGuid
-        firstName
-        lastName
+        ...PartyPersonFields
       }
       business {
         businessGuid
@@ -60,6 +65,7 @@ const UPDATE_PARTY_MUTATION = gql`
 `;
 
 const CREATE_PARTY_MUTATION = gql`
+  ${PARTY_PERSON_FRAGMENT}
   mutation CreateParty($input: PartyCreateInput!) {
     createParty(input: $input) {
       partyIdentifier
@@ -68,9 +74,7 @@ const CREATE_PARTY_MUTATION = gql`
       longDescription
       createdDateTime
       person {
-        personGuid
-        firstName
-        lastName
+        ...PartyPersonFields
       }
       business {
         businessGuid
@@ -79,6 +83,206 @@ const CREATE_PARTY_MUTATION = gql`
     }
   }
 `;
+
+// Helper Functions for working with the data
+
+// Helper function to map contact methods from party data
+const mapContactMethodsFromPartyData = (contactMethods: ContactMethod[] | undefined, typeCode: string) => {
+  return (
+    contactMethods
+      ?.filter((c: ContactMethod) => c.typeCode === typeCode)
+      .map((c: ContactMethod, index: number) => ({
+        contactMethodGuid: c.contactMethodGuid,
+        value: c.value,
+        isPrimary: c.isPrimary ?? index === 0,
+      })) || []
+  );
+};
+
+// Helper function to determine if contact method is primary
+const determineContactMethodPrimary = (
+  contactMethod: ContactMethod,
+  allContactMethods: (ContactMethod | null | undefined)[],
+  typeCode: string,
+): boolean => {
+  if (contactMethod.isPrimary !== null && contactMethod.isPrimary !== undefined) {
+    return contactMethod.isPrimary;
+  }
+
+  const methodsOfType = allContactMethods.filter((c): c is ContactMethod => c?.typeCode === typeCode);
+  const index = methodsOfType.indexOf(contactMethod);
+  return index === 0;
+};
+
+// Helper function to map contacts from party data
+const mapContactsFromPartyData = (contactPeople: BusinessPerson[] | undefined) => {
+  return (
+    contactPeople?.map((p: BusinessPerson) => ({
+      businessPersonXrefGuid: p.businessPersonXrefGuid,
+      business: {
+        businessGuid: p.business?.businessGuid,
+      },
+      person: {
+        personGuid: p.person?.personGuid,
+        firstName: p.person?.firstName,
+        lastName: p.person?.lastName,
+        contactMethods:
+          p.person?.contactMethods
+            ?.filter((cm): cm is ContactMethod => cm != null)
+            .map((cm: ContactMethod) => ({
+              contactMethodGuid: cm.contactMethodGuid,
+              typeCode: cm.typeCode,
+              value: cm.value,
+              isPrimary: determineContactMethodPrimary(cm, p.person?.contactMethods || [], cm.typeCode || ""),
+            })) || [],
+      },
+    })) || []
+  );
+};
+
+// Helper to build contact people for updates
+const buildContactPeopleForUpdate = (contacts: BusinessPerson[]) => {
+  return contacts.map((c: BusinessPerson) => ({
+    businessPersonXrefGuid: c.businessPersonXrefGuid,
+    business: {
+      businessGuid: c.business?.businessGuid,
+    },
+    person: {
+      personGuid: c.person?.personGuid ?? "",
+      firstName: c.person?.firstName ?? "",
+      lastName: c.person?.lastName ?? "",
+      contactMethods: c.person?.contactMethods
+        ?.filter((cm): cm is ContactMethod => cm != null)
+        .map((cm: ContactMethod) => ({
+          contactMethodGuid: cm.contactMethodGuid,
+          typeCode: cm.typeCode ?? "",
+          value: cm.value ?? "",
+          isPrimary: cm.isPrimary ?? false,
+        })),
+    },
+  }));
+};
+
+// Helper to build contact people for creates
+const buildContactPeopleForCreate = (contacts: BusinessPerson[]) => {
+  return contacts.map((c: BusinessPerson) => ({
+    person: {
+      firstName: c.person?.firstName ?? "",
+      lastName: c.person?.lastName ?? "",
+      contactMethods: c.person?.contactMethods?.length
+        ? c.person.contactMethods
+            .filter((cm): cm is ContactMethod => cm != null)
+            .map((cm: ContactMethod) => ({
+              typeCode: cm.typeCode ?? "",
+              value: cm.value ?? "",
+              isPrimary: cm.isPrimary ?? false,
+            }))
+        : undefined,
+    },
+  }));
+};
+
+// Helper to build identifiers array
+const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: boolean) => {
+  const identifiers = [];
+
+  if (businessNumber?.identifierValue) {
+    identifiers.push({
+      ...(isUpdate && { businessIdentifierGuid: businessNumber.identifierGuid }),
+      identifierCode: "BNUM",
+      identifierValue: businessNumber.identifierValue,
+    });
+  }
+
+  if (worksafeBCNumber?.identifierValue) {
+    identifiers.push({
+      ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.identifierGuid }),
+      identifierCode: "WSBC",
+      identifierValue: worksafeBCNumber.identifierValue,
+    });
+  }
+
+  return identifiers;
+};
+
+// Helper to build contact methods array
+const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: ContactMethod[], includeGuid: boolean) => {
+  const methods = [];
+
+  if (phoneNumbers) {
+    methods.push(
+      ...phoneNumbers.map((p: ContactMethod) => ({
+        ...(includeGuid && { contactMethodGuid: p.contactMethodGuid }),
+        typeCode: "PHONE",
+        value: p.value ?? "",
+        isPrimary: p.isPrimary ?? false,
+      })),
+    );
+  }
+
+  if (emailAddresses) {
+    methods.push(
+      ...emailAddresses.map((e: ContactMethod) => ({
+        ...(includeGuid && { contactMethodGuid: e.contactMethodGuid }),
+        typeCode: "EMAILADDR",
+        value: e.value ?? "",
+        isPrimary: e.isPrimary ?? false,
+      })),
+    );
+  }
+
+  return methods;
+};
+
+// Helper to build business object for updates
+const buildBusinessUpdate = (value: any) => {
+  return {
+    name: value.businessName,
+    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+    identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
+    contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+    contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,
+  };
+};
+
+// Helper to build business object for creates
+const buildBusinessCreate = (value: any) => {
+  return {
+    name: value.businessName,
+    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+    identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, false),
+    contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
+    contactPeople: value.contacts?.length ? buildContactPeopleForCreate(value.contacts) : undefined,
+  };
+};
+
+const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
+
+// Helper to build person object
+const buildPerson = (value: any, isUpdate: boolean = false) => {
+  let dob = undefined;
+  if (value.dateOfBirth) {
+    if (value.dateOfBirth instanceof Date) {
+      dob = new Date(
+        Date.UTC(value.dateOfBirth.getFullYear(), value.dateOfBirth.getMonth(), value.dateOfBirth.getDate()),
+      );
+    } else {
+      dob = new Date(value.dateOfBirth);
+    }
+  }
+  return {
+    firstName: value.firstName,
+    middleName: value.middleName?.trim() || null,
+    middleName2: value.middleName2?.trim() || null,
+    lastName: value.lastName,
+    dateOfBirth: dob,
+    driversLicenseNumber: value.driversLicenseNumber || undefined,
+    driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
+    sexCode: value.sexCode || undefined,
+    contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
+  };
+};
+
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -86,6 +290,7 @@ const PartyEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
+  const sexCodeOptions = useAppSelector(selectSexDropdown);
 
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
@@ -94,13 +299,17 @@ const PartyEdit: FC = () => {
   });
 
   const partyTypeCodes = partyTypes
-    ?.sort((left: any, right: any) => left.displayOrder - right.displayOrder)
+    ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
     .map((code: any) => {
       return {
         value: code.value,
         label: code.label,
       };
     });
+
+  const sexCodeDropdownOptions = sexCodeOptions
+    ?.filter((opt: { isActive?: boolean }) => opt.isActive !== false)
+    .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
 
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
     onError: (error: any) => {
@@ -126,18 +335,53 @@ const PartyEdit: FC = () => {
 
   const defaultValues = useMemo(() => {
     if (isEditMode && partyData?.party) {
+      const person = partyData.party.person;
       return {
         partyType: partyData.party.partyTypeCode || "",
-        firstName: partyData.party.person?.firstName || "",
-        lastName: partyData.party.person?.lastName || "",
+        firstName: person?.firstName || "",
+        middleName: person?.middleName || "",
+        middleName2: person?.middleName2 || "",
+        lastName: person?.lastName || "",
+        dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
+        driversLicenseNumber: person?.driversLicenseNumber || "",
+        driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
+        sexCode: person?.sexCode || "",
         businessName: partyData.party.business?.name || "",
+        businessNumber: partyData.party.business?.identifiers?.find(
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "BNUM",
+        ),
+        worksafeBCNumber: partyData.party.business?.identifiers?.find(
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "WSBC",
+        ),
+        aliases:
+          partyData.party.business?.aliases?.map((a: Alias) => ({
+            aliasGuid: a.aliasGuid,
+            name: a.name,
+          })) || [],
+        phoneNumbers: partyData.party.business
+          ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, "PHONE")
+          : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, "PHONE"),
+        emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "EMAILADDR"),
+        contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
       };
     }
     return {
       partyType: null,
       firstName: "",
+      middleName: "",
+      middleName2: "",
       lastName: "",
+      dateOfBirth: undefined,
+      driversLicenseNumber: "",
+      driversLicenseJurisdiction: "",
+      sexCode: "",
       businessName: "",
+      businessNumber: {},
+      worksafeBCNumber: {},
+      aliases: [],
+      phoneNumbers: [],
+      emailAddresses: [],
+      contacts: [],
     };
   }, [isEditMode, partyData]);
 
@@ -147,31 +391,37 @@ const PartyEdit: FC = () => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
-          business: value.partyType === "CMP" ? { name: value.businessName } : null,
-          person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
+          business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
+          person: value.partyType === "PRS" ? buildPerson(value, true) : null,
         };
-
-        updatePartyMutation.mutate({
-          partyIdentifier: id,
-          input: updateInput,
-        });
+        updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
-          business: value.partyType === "CMP" ? { name: value.businessName } : null,
-          person: value.partyType === "PRS" ? { firstName: value.firstName, lastName: value.lastName } : null,
+          business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
+          person: value.partyType === "PRS" ? buildPerson(value, false) : null,
         };
-
         createPartyMutation.mutate({ input: createInput });
       }
     },
   });
 
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
+  const aliasesValue = useStore(form.store, (state) => state.values.aliases);
+  const phoneNumberValue = useStore(form.store, (state) => state.values.phoneNumbers);
+  const emailAddressValue = useStore(form.store, (state) => state.values.emailAddresses);
+  const contactValue = useStore(form.store, (state) => state.values.contacts);
 
   const navigateToPartyList = () => {
     navigate(`/parties`);
   };
+
+  const focusFieldById = useCallback((fieldId: string) => {
+    setTimeout(() => {
+      const field = document.getElementById(fieldId);
+      field?.focus();
+    }, 0);
+  }, []);
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
@@ -200,6 +450,329 @@ const PartyEdit: FC = () => {
   const saveButtonClick = useCallback(() => {
     form.handleSubmit();
   }, [form]);
+
+  const handleAddAlias = useCallback(() => {
+    const currentAliases = form.getFieldValue("aliases") || [];
+    const newAliases = [...currentAliases, { aliasGuid: crypto.randomUUID(), name: "" }];
+    form.setFieldValue("aliases", newAliases);
+    focusFieldById(`alias-${currentAliases.length}`);
+  }, [form]);
+
+  const handleRemoveAlias = useCallback(
+    (indexToRemove: number) => {
+      const currentAliases = form.getFieldValue("aliases") || [];
+      const newAliases = currentAliases.filter((_: Alias, index: number) => index !== indexToRemove);
+      form.setFieldValue("aliases", newAliases);
+    },
+    [form],
+  );
+
+  const handleAddPhoneNumber = useCallback(() => {
+    const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+    const newPhoneNumbers = [
+      ...currentPhoneNumbers,
+      {
+        contactMethodGuid: "",
+        value: "",
+        isPrimary: currentPhoneNumbers.length === 0, // First one is primary
+      },
+    ];
+    form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    focusFieldById(`phone-number-${currentPhoneNumbers.length}`);
+  }, [form]);
+
+  const handleRemovePhoneNumber = useCallback(
+    (indexToRemove: number) => {
+      const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+      const removingPrimary = currentPhoneNumbers[indexToRemove]?.isPrimary;
+      const newPhoneNumbers = currentPhoneNumbers.filter((_: any, index: number) => index !== indexToRemove);
+
+      // If we removed the primary phone and there are still phone numbers left,
+      // make the first one primary
+      if (removingPrimary && newPhoneNumbers.length > 0) {
+        newPhoneNumbers[0].isPrimary = true;
+      }
+
+      form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    },
+    [form],
+  );
+
+  const handleAddEmail = useCallback(() => {
+    const currentEmails = form.getFieldValue("emailAddresses") || [];
+    const newEmails = [
+      ...currentEmails,
+      {
+        contactMethodGuid: "",
+        value: "",
+        isPrimary: currentEmails.length === 0, // First one is primary
+      },
+    ];
+    form.setFieldValue("emailAddresses", newEmails);
+    focusFieldById(`email-${currentEmails.length}`);
+  }, [form]);
+
+  const handleRemoveEmail = useCallback(
+    (indexToRemove: number) => {
+      const currentEmails = form.getFieldValue("emailAddresses") || [];
+      const removingPrimary = currentEmails[indexToRemove]?.isPrimary;
+      const newEmails = currentEmails.filter((_: any, index: number) => index !== indexToRemove);
+
+      // If we removed the primary phone and there are still phone numbers left,
+      // make the first one primary
+      if (removingPrimary && newEmails.length > 0) {
+        newEmails[0].isPrimary = true;
+      }
+
+      form.setFieldValue("emailAddresses", newEmails);
+    },
+    [form],
+  );
+
+  const handleAddContact = useCallback(() => {
+    const currentContacts = form.getFieldValue("contacts") || [];
+    const newContact = {
+      businessPersonXrefGuid: undefined,
+      business: {
+        businessGuid: partyData?.party?.business?.businessGuid || "",
+      },
+      person: {
+        personGuid: "",
+        firstName: "",
+        lastName: "",
+        contactMethods: [],
+      },
+    };
+    form.setFieldValue("contacts", [...currentContacts, newContact]);
+    focusFieldById(`contact-firstName-${currentContacts.length}`);
+  }, [form]);
+
+  const handleRemoveContact = useCallback(
+    (indexToRemove: number) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+      const newContacts = currentContacts.filter((_: BusinessPerson, index: number) => index !== indexToRemove);
+      form.setFieldValue("contacts", newContacts);
+    },
+    [form],
+  );
+
+  const handleAddContactMethod = useCallback(
+    (contactIndex: number, typeCode: string) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+
+      // Check if this will be the first contact method of this type for this contact
+      const existingMethodsOfType =
+        currentContacts[contactIndex]?.person?.contactMethods?.filter(
+          (cm: ContactMethod) => cm?.typeCode === typeCode,
+        ) || [];
+
+      const newContactMethod = {
+        contactMethodGuid: undefined, // ← Should be undefined, not empty string
+        typeCode: typeCode,
+        value: "",
+        isPrimary: existingMethodsOfType.length === 0, // First one is primary
+      };
+
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
+        if (index === contactIndex) {
+          return {
+            businessPersonXrefGuid: contact.businessPersonXrefGuid,
+            business: { businessGuid: contact.business?.businessGuid },
+            person: {
+              personGuid: contact.person?.personGuid,
+              firstName: contact.person?.firstName,
+              lastName: contact.person?.lastName,
+              contactMethods: [
+                ...(contact.person?.contactMethods || [])
+                  .filter((cm): cm is ContactMethod => cm != null)
+                  .map((cm) => ({
+                    contactMethodGuid: cm.contactMethodGuid,
+                    typeCode: cm.typeCode,
+                    value: cm.value,
+                    isPrimary: cm.isPrimary ?? false,
+                  })),
+                newContactMethod,
+              ],
+            },
+          };
+        }
+        return {
+          businessPersonXrefGuid: contact.businessPersonXrefGuid,
+          business: { businessGuid: contact.business?.businessGuid },
+          person: {
+            personGuid: contact.person?.personGuid,
+            firstName: contact.person?.firstName,
+            lastName: contact.person?.lastName,
+            contactMethods: (contact.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false,
+              })),
+          },
+        };
+      });
+
+      form.setFieldValue("contacts", updatedContacts);
+
+      const fieldId =
+        typeCode === "PHONE"
+          ? `contact-phone-${contactIndex}-${existingMethodsOfType.length}`
+          : `contact-email-${contactIndex}-${existingMethodsOfType.length}`;
+      focusFieldById(fieldId);
+    },
+    [form],
+  );
+
+  const handleRemoveContactMethod = useCallback(
+    (contactIndex: number, methodIndex: number) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
+        if (index === contactIndex) {
+          const contactMethods = (contact.person?.contactMethods || []).filter((cm): cm is ContactMethod => cm != null);
+
+          const methodToRemove = contactMethods[methodIndex];
+          const removingPrimary = methodToRemove?.isPrimary || false;
+          const removingTypeCode = methodToRemove?.typeCode;
+          let newContactMethods = contactMethods
+            .filter((_, i) => i !== methodIndex)
+            .map((cm) => ({
+              contactMethodGuid: cm.contactMethodGuid,
+              typeCode: cm.typeCode,
+              value: cm.value,
+              isPrimary: cm.isPrimary ?? false,
+            }));
+
+          // If we removed the primary method and there are still methods of the same type left,
+          // make the first one of that type primary
+          if (removingPrimary && removingTypeCode && newContactMethods.length > 0) {
+            const firstOfSameType = newContactMethods.findIndex((cm) => cm?.typeCode === removingTypeCode);
+            if (firstOfSameType !== -1) {
+              newContactMethods[firstOfSameType] = {
+                ...newContactMethods[firstOfSameType],
+                isPrimary: true,
+              };
+            }
+          }
+
+          return {
+            businessPersonXrefGuid: contact.businessPersonXrefGuid,
+            business: { businessGuid: contact.business?.businessGuid },
+            person: {
+              personGuid: contact.person?.personGuid,
+              firstName: contact.person?.firstName,
+              lastName: contact.person?.lastName,
+              contactMethods: newContactMethods,
+            },
+          };
+        }
+        return {
+          businessPersonXrefGuid: contact.businessPersonXrefGuid,
+          business: { businessGuid: contact.business?.businessGuid },
+          person: {
+            personGuid: contact.person?.personGuid,
+            firstName: contact.person?.firstName,
+            lastName: contact.person?.lastName,
+            contactMethods: (contact.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false,
+              })),
+          },
+        };
+      });
+
+      form.setFieldValue("contacts", updatedContacts);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryPhoneNumber = useCallback(
+    (index: number) => {
+      const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
+      const updatedPhones = currentPhoneNumbers.map((p: any, i: number) => ({
+        ...p,
+        isPrimary: i === index,
+      }));
+      form.setFieldValue("phoneNumbers", updatedPhones);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryEmail = useCallback(
+    (index: number) => {
+      const currentEmailAddresses = form.getFieldValue("emailAddresses") || [];
+      const updatedEmailAddresses = currentEmailAddresses.map((p: any, i: number) => ({
+        ...p,
+        isPrimary: i === index,
+      }));
+      form.setFieldValue("emailAddresses", updatedEmailAddresses);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryContact = useCallback(
+    (contactIndex: number, contactMethodIndex: number, contactMethodType: string) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+      const updatedContacts = currentContacts.map((c: BusinessPerson, cIndex: number) => {
+        if (cIndex === contactIndex) {
+          return {
+            businessPersonXrefGuid: c.businessPersonXrefGuid,
+            business: { businessGuid: c.business?.businessGuid },
+            person: {
+              personGuid: c.person?.personGuid,
+              firstName: c.person?.firstName,
+              lastName: c.person?.lastName,
+              contactMethods: (c.person?.contactMethods || [])
+                .filter((cm): cm is ContactMethod => cm != null)
+                .map((cm, cmIdx) => {
+                  if (cm?.typeCode === contactMethodType) {
+                    return {
+                      contactMethodGuid: cm.contactMethodGuid,
+                      typeCode: cm.typeCode,
+                      value: cm.value,
+                      isPrimary: cmIdx === contactMethodIndex,
+                    };
+                  }
+                  return {
+                    contactMethodGuid: cm.contactMethodGuid,
+                    typeCode: cm.typeCode,
+                    value: cm.value,
+                    isPrimary: cm.isPrimary ?? false, // ← Add default
+                  };
+                }),
+            },
+          };
+        }
+        // Transform the unchanged contact too
+        return {
+          businessPersonXrefGuid: c.businessPersonXrefGuid,
+          business: { businessGuid: c.business?.businessGuid },
+          person: {
+            personGuid: c.person?.personGuid,
+            firstName: c.person?.firstName,
+            lastName: c.person?.lastName,
+            contactMethods: (c.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false, // ← Add default
+              })),
+          },
+        };
+      });
+      form.setFieldValue("contacts", updatedContacts);
+    },
+    [form],
+  );
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
@@ -287,32 +860,464 @@ const PartyEdit: FC = () => {
                     />
                   )}
                 />
+                <FormField
+                  form={form}
+                  name="middleName"
+                  label="Middle name"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="middleName2"
+                  label="Middle name 2"
+                  render={(field) => (
+                    <CompInput
+                      id="MiddleName2"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter middle name 2..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="dateOfBirth"
+                  label="Date of birth"
+                  render={(field) => (
+                    <ValidationDatePicker
+                      id="DateOfBirth"
+                      classNamePrefix="comp-details-input"
+                      className="comp-form-control comp-details-input"
+                      selectedDate={field.state.value}
+                      onChange={(date: Date | undefined) => field.handleChange(date ?? undefined)}
+                      errMsg={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled}
+                      showYearDropdown={true}
+                      yearDropdownItemNumber={100}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseNumber"
+                  label="Driver's licence number"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseNumber"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence number..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="driversLicenseJurisdiction"
+                  label="Driver's licence jurisdiction"
+                  render={(field) => (
+                    <CompInput
+                      id="DriversLicenseJurisdiction"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      defaultValue={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter driver's licence jurisdiction..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="sexCode"
+                  label="Sex"
+                  render={(field) => (
+                    <CompSelect
+                      id="sex-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={sexCodeDropdownOptions}
+                      value={sexCodeDropdownOptions?.find((opt: any) => opt.value === field.state.value)}
+                      onChange={(option) => field.handleChange(option?.value ?? "")}
+                      placeholder="Select sex"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                      isDisabled={isDisabled}
+                    />
+                  )}
+                />
+                {phoneNumberValue?.map((phoneNumber: ContactMethod, index: number) => (
+                  <FormField
+                    key={phoneNumber.contactMethodGuid || `phone-${index}`}
+                    form={form}
+                    name={`phoneNumbers[${index}].value`}
+                    label={index === 0 ? "Phone number" : ""}
+                    render={(field) => (
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+                        <input
+                          type="radio"
+                          id={`person-phone-primary-${index}`}
+                          name="primaryPhoneNumber"
+                          checked={phoneNumber.isPrimary || false}
+                          onChange={() => handleSetPrimaryPhoneNumber(index)}
+                          disabled={isDisabled}
+                        />
+
+                        <div className="party-multiple-value-container">
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={phoneNumber.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
+                            id={`person-phone-number-${index}`}
+                            errMsg={field.state.meta.errors?.[0]?.message || ""}
+                          />
+                        </div>
+
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemovePhoneNumber(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" />
+                          {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-person-phone-number-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-person-phone-number-button"
+                      variant="outline-dark"
+                      size="sm"
+                      onClick={handleAddPhoneNumber}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add phone number
+                    </Button>
+                  )}
+                />
               </>
             )}
             {partyTypeValue === "CMP" && (
-              <FormField
-                form={form}
-                name="businessName"
-                label="Name"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Name is required"),
-                }}
-                render={(field) => (
-                  <CompInput
-                    id="businessName"
-                    divid=""
-                    type="input"
-                    inputClass="comp-form-control comp-details-input"
-                    value={field.state.value}
-                    error={field.state.meta.errors?.[0]?.message || ""}
-                    maxLength={50}
-                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                    placeholder="Enter name..."
-                    disabled={isDisabled}
+              <>
+                <FormField
+                  form={form}
+                  name="businessName"
+                  label="Name"
+                  required
+                  validators={{
+                    onChange: z.string().min(1, "Name is required"),
+                  }}
+                  render={(field) => (
+                    <CompInput
+                      id="businessName"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      value={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={50}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      placeholder="Enter name..."
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                {aliasesValue?.map((alias: Alias, index: number) => (
+                  <FormField
+                    key={alias.aliasGuid || `alias-${index}`}
+                    form={form}
+                    name={`aliases[${index}].name` as any}
+                    label={index === 0 ? "Alias" : ""}
+                    render={(field) => (
+                      <div className="party-alias-container">
+                        <div className="party-multiple-value-container">
+                          <CompInput
+                            id={`alias-${index}`}
+                            divid=""
+                            type="input"
+                            inputClass="comp-form-control comp-details-input"
+                            value={field.state.value}
+                            error={field.state.meta.errors?.[0]?.message || ""}
+                            maxLength={512}
+                            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                            placeholder="Enter alias..."
+                            disabled={isDisabled}
+                          />
+                        </div>
+
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemoveAlias(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" /> {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
                   />
-                )}
-              />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-alias-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-task-button"
+                      variant="outline-dark"
+                      size="sm"
+                      onClick={handleAddAlias}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add alias
+                    </Button>
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="businessNumber.identifierValue"
+                  label="Business number"
+                  render={(field) => (
+                    <CompInput
+                      id="businessNumber"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      value={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={16}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                <FormField
+                  form={form}
+                  name="worksafeBCNumber.identifierValue"
+                  label="WorkSafeBC number"
+                  render={(field) => (
+                    <CompInput
+                      id="worksafeBCNumber"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input"
+                      value={field.state.value}
+                      error={field.state.meta.errors?.[0]?.message || ""}
+                      maxLength={16}
+                      onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                      disabled={isDisabled}
+                    />
+                  )}
+                />
+                {phoneNumberValue?.map((phoneNumber: ContactMethod, index: number) => (
+                  <FormField
+                    key={phoneNumber.contactMethodGuid || `phone-${index}`}
+                    form={form}
+                    name={`phoneNumbers[${index}].value`}
+                    label={index === 0 ? "Phone number" : ""}
+                    render={(field) => (
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+                        <input
+                          type="radio"
+                          id={`phone-primary-${index}`}
+                          name="primaryPhoneNumber"
+                          checked={phoneNumber.isPrimary || false}
+                          onChange={() => handleSetPrimaryPhoneNumber(index)}
+                          disabled={isDisabled}
+                        />
+
+                        <div className="party-multiple-value-container">
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={phoneNumber.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
+                            id={`phone-number-${index}`}
+                            errMsg={field.state.meta.errors?.[0]?.message || ""}
+                          />
+                        </div>
+
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemovePhoneNumber(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" />
+                          {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-phone-number-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-phone-number-button"
+                      variant="outline-dark"
+                      size="sm"
+                      onClick={handleAddPhoneNumber}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add phone number
+                    </Button>
+                  )}
+                />
+                {emailAddressValue?.map((email: ContactMethod, index: number) => (
+                  <FormField
+                    key={email.contactMethodGuid || `email-${index}`}
+                    form={form}
+                    name={`emailAddresses[${index}].value` as any}
+                    label={index === 0 ? "Email" : ""}
+                    render={(field) => (
+                      <div className="party-contact-method">
+                        {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+                        {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+                        <input
+                          type="radio"
+                          id={`email-primary-${index}`}
+                          name="primaryEmail"
+                          checked={email.isPrimary || false}
+                          onChange={() => handleSetPrimaryEmail(index)}
+                          disabled={isDisabled}
+                        />
+
+                        <div className="party-multiple-value-container">
+                          <CompInput
+                            id={`email-${index}`}
+                            divid=""
+                            type="input"
+                            inputClass="comp-form-control comp-details-input"
+                            value={field.state.value}
+                            error={field.state.meta.errors?.[0]?.message || ""}
+                            maxLength={512}
+                            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                            disabled={isDisabled}
+                          />
+                        </div>
+                        <Button
+                          variant="outline-dark"
+                          size="sm"
+                          onClick={() => handleRemoveEmail(index)}
+                          type="button"
+                        >
+                          <i className="bi bi-trash" />
+                          {/**/}
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  />
+                ))}
+                <FormField
+                  form={form}
+                  name="add-email-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      id="add-email-button"
+                      variant="outline-dark"
+                      size="sm"
+                      onClick={handleAddEmail}
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> {/**/}
+                      Add email
+                    </Button>
+                  )}
+                />
+                {contactValue?.map((contact: BusinessPerson, contactIndex: number) => (
+                  <FormField
+                    key={contact.businessPersonXrefGuid || `contact-${contactIndex}`}
+                    form={form}
+                    name={`contact-${contactIndex}.person`}
+                    label={contactIndex === 0 ? "Contact" : ""}
+                    render={() => (
+                      <ContactPersonFields
+                        contact={contact}
+                        contactIndex={contactIndex}
+                        form={form}
+                        isDisabled={isDisabled}
+                        onRemoveContact={handleRemoveContact}
+                        onAddContactMethod={handleAddContactMethod}
+                        onRemoveContactMethod={handleRemoveContactMethod}
+                        onSetPrimaryContact={handleSetPrimaryContact}
+                      />
+                    )}
+                  />
+                ))}
+
+                <FormField
+                  form={form}
+                  name="add-email-placeholder"
+                  label=""
+                  render={() => (
+                    <Button
+                      variant="outline-dark"
+                      onClick={handleAddContact}
+                      size="sm"
+                      type="button"
+                    >
+                      <i className="bi bi-plus-circle me-1" /> Add contact
+                    </Button>
+                  )}
+                />
+              </>
             )}
           </fieldset>
         </form>

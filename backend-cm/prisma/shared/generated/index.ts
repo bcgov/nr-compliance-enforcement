@@ -41,6 +41,15 @@ import { person_h as _person_h } from "./person_h";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { alias as _alias } from "./alias";
+import { alias_h as _alias_h } from "./alias_h";
+import { business_identifier as _business_identifier } from "./business_identifier";
+import { business_identifier_code as _business_identifier_code } from "./business_identifier_code";
+import { business_identifier_h as _business_identifier_h } from "./business_identifier_h";
+import { sex_code as _sex_code } from "./sex_code";
+import { business_person_xref as _business_person_xref } from "./business_person_xref";
+import { business_person_xref_code as _business_person_xref_code } from "./business_person_xref_code";
+import { business_person_xref_h as _business_person_xref_h } from "./business_person_xref_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -86,6 +95,15 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class alias extends _alias {}
+  export class alias_h extends _alias_h {}
+  export class business_identifier extends _business_identifier {}
+  export class business_identifier_code extends _business_identifier_code {}
+  export class business_identifier_h extends _business_identifier_h {}
+  export class sex_code extends _sex_code {}
+  export class business_person_xref extends _business_person_xref {}
+  export class business_person_xref_code extends _business_person_xref_code {}
+  export class business_person_xref_h extends _business_person_xref_h {}
 
   export const extraModels = [
     agency_code,
@@ -131,5 +149,14 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    alias,
+    alias_h,
+    business_identifier,
+    business_identifier_code,
+    business_identifier_h,
+    sex_code,
+    business_person_xref,
+    business_person_xref_code,
+    business_person_xref_h,
   ];
 }
