@@ -356,16 +356,26 @@ export class PartyService {
     return operations;
   }
 
+  /**
+   * Sort contact methods so that the primary contact methods are last to preven updates
+   * from violating the unique constraint in the database.
+   */
+  private _sortContactMethodsPrimaryLast(contactMethods: ContactMethod[]): ContactMethod[] {
+    const nonPrimary = contactMethods.filter((m) => !m.isPrimary);
+    const primary = contactMethods.filter((m) => m.isPrimary);
+    return [...nonPrimary, ...primary];
+  }
+
   private _buildContactMethodOperations(incomingMethods: ContactMethod[], existingMethods: ContactMethod[]): any {
     const methodsToCreate = incomingMethods.filter((cm) => !cm.contactMethodGuid);
-    const methodsToUpdate = incomingMethods.filter((cm) => cm.contactMethodGuid);
+    const methodsToUpdate = this._sortContactMethodsPrimaryLast(incomingMethods.filter((cm) => cm.contactMethodGuid));
     const methodsToDelete = existingMethods.filter(
       (cm) => !new Set(incomingMethods.map((im) => im.contactMethodGuid)).has(cm.contactMethodGuid),
     );
     const operations: any = {};
 
     if (methodsToCreate.length) {
-      operations.create = methodsToCreate.map((cm) => ({
+      operations.create = this._sortContactMethodsPrimaryLast(methodsToCreate).map((cm) => ({
         contact_method_type_code: {
           connect: {
             contact_method_type_code: cm.typeCode,

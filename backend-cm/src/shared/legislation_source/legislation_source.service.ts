@@ -72,6 +72,29 @@ export class LegislationSourceService {
     return this.mapToDto(source);
   }
 
+  async createRegulationSource(
+    agencyCode: string,
+    shortDescription: string,
+    sourceUrl: string,
+  ): Promise<LegislationSource> {
+    const source = await this.prisma.legislation_source.create({
+      data: {
+        short_description: shortDescription,
+        long_description: null,
+        source_url: sourceUrl,
+        regulations_source_url: null,
+        agency_code: agencyCode,
+        source_type: "BCLAWS",
+        active_ind: true,
+        imported_ind: true,
+        import_status: "SUCCESS",
+        create_user_id: "system",
+        create_utc_timestamp: new Date(),
+      },
+    });
+    return this.mapToDto(source);
+  }
+
   async update(input: UpdateLegislationSourceInput): Promise<LegislationSource> {
     const source = await this.prisma.legislation_source.update({
       where: { legislation_source_guid: input.legislationSourceGuid },

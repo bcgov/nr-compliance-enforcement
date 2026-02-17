@@ -1,6 +1,7 @@
 import { app_user } from "./app_user";
 import { case_file } from "./case_file";
 import { geo_org_unit_structure } from "./geo_org_unit_structure";
+import { legislation_configuration } from "./legislation_configuration";
 import { legislation_source } from "./legislation_source";
 import { office } from "./office";
 import { team } from "./team";
@@ -45,6 +46,9 @@ export class agency_code {
 
   @ApiProperty({ isArray: true, type: () => geo_org_unit_structure })
   geo_org_unit_structure: geo_org_unit_structure[];
+
+  @ApiProperty({ isArray: true, type: () => legislation_configuration })
+  legislation_configuration_legislation_configuration_agency_codeToagency_code: legislation_configuration[];
 
   @ApiProperty({ isArray: true, type: () => legislation_source })
   legislation_source_legislation_source_agency_codeToagency_code: legislation_source[];
