@@ -13,6 +13,7 @@ export class Legislation {
   alternateText: string;
   displayOrder: number;
   ancestors: Legislation[];
+  isEnabled: boolean;
 }
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
@@ -59,6 +60,10 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.displayOrder,
       mapFrom((src) => src.display_order),
+    ),
+    forMember(
+      (dest) => dest.isEnabled,
+      mapFrom((src) => (src as legislation & { enabled_ind: boolean }).enabled_ind),
     ),
   );
 };

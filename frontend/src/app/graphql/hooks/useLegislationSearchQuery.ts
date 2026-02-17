@@ -5,9 +5,11 @@ import Option from "@apptypes/app/option";
 
 export interface LegislationSearchParams {
   agencyCode: string;
+  onlyActive?: boolean;
   legislationTypeCodes: string[];
   ancestorGuid?: string;
   excludeRegulations?: boolean;
+  legislationSourceGuid?: string;
   enabled: boolean;
 }
 
@@ -27,15 +29,19 @@ export interface LegislationDirectChildrenParams {
 const SEARCH_LEGISLATION = gql`
   query Legislations(
     $agencyCode: String!
+    $onlyActive: Boolean
     $legislationTypeCodes: [String]
     $ancestorGuid: String
     $excludeRegulations: Boolean
+    $legislationSourceGuid: String
   ) {
     legislations(
       agencyCode: $agencyCode
+      onlyActive: $onlyActive
       legislationTypeCodes: $legislationTypeCodes
       ancestorGuid: $ancestorGuid
       excludeRegulations: $excludeRegulations
+      legislationSourceGuid: $legislationSourceGuid
     ) {
       legislationGuid
       legislationSourceGuid
@@ -46,6 +52,7 @@ const SEARCH_LEGISLATION = gql`
       legislationTypeCode
       parentGuid
       displayOrder
+      isEnabled
     }
   }
 `;
@@ -106,15 +113,19 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
     queryKey: [
       "legislations",
       searchParams.agencyCode,
+      searchParams.onlyActive,
       searchParams.legislationTypeCodes,
       searchParams.ancestorGuid,
       searchParams.excludeRegulations,
+      searchParams.legislationSourceGuid,
     ],
     variables: {
       agencyCode: searchParams.agencyCode,
+      onlyActive: searchParams.onlyActive,
       legislationTypeCodes: searchParams.legislationTypeCodes,
       ancestorGuid: searchParams.ancestorGuid,
       excludeRegulations: searchParams.excludeRegulations,
+      legislationSourceGuid: searchParams.legislationSourceGuid,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,

@@ -1097,6 +1097,7 @@ export type Legislation = {
   citation?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   fullCitation?: Maybe<Scalars['String']['output']>;
+  isEnabled: Scalars['Boolean']['output'];
   legislationGuid?: Maybe<Scalars['String']['output']>;
   legislationSourceGuid?: Maybe<Scalars['String']['output']>;
   legislationText?: Maybe<Scalars['String']['output']>;
@@ -2056,6 +2057,7 @@ export type QuerylegislationsArgs = {
   agencyCode: Scalars['String']['input'];
   ancestorGuid?: InputMaybe<Scalars['String']['input']>;
   excludeRegulations?: InputMaybe<Scalars['Boolean']['input']>;
+  legislationSourceGuid?: InputMaybe<Scalars['String']['input']>;
   legislationTypeCodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 

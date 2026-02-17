@@ -59,11 +59,10 @@ async function importRegulations(
       const recordCount = await importSingleRegulation(
         reg,
         actRootGuid,
-        source,
         legislationService,
-        legislationSourceService,
         logger,
         errors,
+        source.agencyCode,
       );
       if (recordCount > 0) {
         result.successfulRegs++;
@@ -100,6 +99,7 @@ async function importSingleRegulation(
   legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
+  agencyCode: string,
 ): Promise<number> {
   logger.log(`  Importing: ${reg.title}`);
 
@@ -126,6 +126,7 @@ async function importSingleRegulation(
     const count = await insertLegislationTree(
       parsedDocument.root,
       context,
+      agencyCode,
       null,
       null,
       regSource.legislationSourceGuid,
@@ -184,6 +185,7 @@ async function importLegislationSourceDocument(
     let insertedCount = await insertLegislationTree(
       parsedDocument.root,
       context,
+      source.agencyCode,
       null, // No parent for root
       null, // parentFullCitation
       source.legislationSourceGuid, // Link root node to source

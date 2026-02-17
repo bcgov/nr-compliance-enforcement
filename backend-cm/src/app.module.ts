@@ -77,6 +77,7 @@ import { TaskCategoryTypeCodeModule } from "./investigation/task_category_type_c
 import { TaskModule } from "./investigation/task/task.module";
 import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
 import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
+import { LegislationConfigurationModule } from "./shared/legislation_configuration/legislation_configuration.module";
 
 @Module({
   imports: [
@@ -146,6 +147,7 @@ import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
     PartyAssociationRoleCodeModule,
     LegislationModule,
     LegislationSourceModule,
+    LegislationConfigurationModule,
     ContraventionModule,
     TaskStatusCodeModule,
     TaskTypeCodeModule,
