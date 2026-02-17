@@ -1191,6 +1191,7 @@ export type Mutation = {
   updateEquipment: ComplaintOutcome;
   updateInspection: Inspection;
   updateInvestigation: Investigation;
+  updateLegislationConfiguration: Scalars['Boolean']['output'];
   updateLegislationSource: LegislationSource;
   updateNote: ComplaintOutcome;
   updateOffice?: Maybe<Office>;
@@ -1493,6 +1494,11 @@ export type MutationupdateInspectionArgs = {
 export type MutationupdateInvestigationArgs = {
   input: UpdateInvestigationInput;
   investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationupdateLegislationConfigurationArgs = {
+  input: Array<UpdateLegislationConfigurationInput>;
 };
 
 
@@ -2059,6 +2065,7 @@ export type QuerylegislationsArgs = {
   excludeRegulations?: InputMaybe<Scalars['Boolean']['input']>;
   legislationSourceGuid?: InputMaybe<Scalars['String']['input']>;
   legislationTypeCodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -2391,6 +2398,13 @@ export type UpdateInvestigationInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLegislationConfigurationInput = {
+  agencyCode: Scalars['String']['input'];
+  isEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  legislationGuid: Scalars['String']['input'];
+  overrideText?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateLegislationSourceInput = {

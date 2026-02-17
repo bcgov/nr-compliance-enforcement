@@ -59,7 +59,9 @@ async function importRegulations(
       const recordCount = await importSingleRegulation(
         reg,
         actRootGuid,
+        source,
         legislationService,
+        legislationSourceService,
         logger,
         errors,
         source.agencyCode,
