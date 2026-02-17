@@ -94,6 +94,7 @@ export function buildFullCitation(
 export async function insertLegislationTree(
   node: ParsedLegislationNode,
   context: InsertLegislationContext,
+  agencyCode: string,
   parentGuid: string | null = null,
   parentFullCitation: string | null = null,
   legislationSourceGuid: string | null = null,
@@ -126,6 +127,7 @@ export async function insertLegislationTree(
       displayOrder: node.displayOrder,
       effectiveDate: effectiveDate,
       createUserId: "system",
+      agencyCode: agencyCode,
     });
 
     count++;
@@ -136,7 +138,7 @@ export async function insertLegislationTree(
 
     // Recursively insert children (don't pass legislationSourceGuid - only for root)
     for (const child of node.children) {
-      count += await insertLegislationTree(child, context, created.legislation_guid, fullCitation, null);
+      count += await insertLegislationTree(child, context, agencyCode, created.legislation_guid, fullCitation, null);
     }
   } catch (error) {
     const errorMsg = `${node.typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;

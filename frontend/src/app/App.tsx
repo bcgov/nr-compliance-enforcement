@@ -50,6 +50,7 @@ import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
 import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
+import { LegislationManagement } from "@/app/components/containers/admin/legislation-management";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -223,6 +224,12 @@ const App: FC = () => {
                 <Route
                   path="/admin/laws"
                   element={<LegislationSourceManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+                <Route
+                  path="/admin/law/:legislationSourceGuid"
+                  element={<LegislationManagement />}
                 />
               </Route>
               <Route

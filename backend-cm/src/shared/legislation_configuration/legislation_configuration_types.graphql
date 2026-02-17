@@ -1,0 +1,6 @@
+input UpdateLegislationConfigurationInput {
+  legislationGuid: String!
+  agencyCode: String!
+  isEnabled: Boolean
+  overrideText: String
+}
