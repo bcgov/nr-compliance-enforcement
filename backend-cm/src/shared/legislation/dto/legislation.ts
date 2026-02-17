@@ -5,6 +5,7 @@ export class Legislation {
   legislationGuid: string;
   legislationTypeCode: string;
   parentGuid: string;
+  legislationSourceGuid: string | null;
   citation: string;
   fullCitation: string;
   sectionTitle: string;
@@ -31,6 +32,10 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parentGuid,
       mapFrom((src) => src.parent_legislation_guid),
+    ),
+    forMember(
+      (dest) => dest.legislationSourceGuid,
+      mapFrom((src) => src.legislation_source_guid),
     ),
     forMember(
       (dest) => dest.citation,

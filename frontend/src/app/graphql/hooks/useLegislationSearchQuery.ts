@@ -44,6 +44,7 @@ const SEARCH_LEGISLATION = gql`
       legislationSourceGuid: $legislationSourceGuid
     ) {
       legislationGuid
+      legislationSourceGuid
       legislationText
       sectionTitle
       alternateText
