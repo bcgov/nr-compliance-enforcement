@@ -18,6 +18,8 @@ import {
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { Link } from "react-router-dom";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -107,17 +109,34 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const agencyList = agencies?.filter((agency) => (isGlobalAdmin ? true : agency.value === userAgency));
+
   const filteredSources = useMemo(() => {
     if (!sources) return [];
-    if (!searchQuery) return sources;
-    const query = searchQuery.toLowerCase();
-    return sources.filter(
-      (source) =>
-        source.shortDescription.toLowerCase().includes(query) ||
-        source.longDescription?.toLowerCase().includes(query) ||
-        source.sourceUrl.toLowerCase().includes(query) ||
-        source.agencyCode.toLowerCase().includes(query),
-    );
+
+    let result = sources;
+
+    // Restrict by agency if not global admin
+    if (!isGlobalAdmin) {
+      result = result.filter((source) => source.agencyCode === userAgency);
+    }
+
+    // Apply search filter if present
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+
+      result = result.filter(
+        (source) =>
+          source.shortDescription.toLowerCase().includes(query) ||
+          source.longDescription?.toLowerCase().includes(query) ||
+          source.sourceUrl.toLowerCase().includes(query) ||
+          source.agencyCode.toLowerCase().includes(query),
+      );
+    }
+
+    return result;
   }, [sources, searchQuery]);
 
   const handleOpenCreate = () => {
@@ -494,8 +513,8 @@ export const LegislationSourceManagement: FC = () => {
                   id="agency-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={agencies}
-                  value={agencies.find((a: Option) => a.value === editingSource.agencyCode) || null}
+                  options={agencyList}
+                  value={agencyList.find((a: Option) => a.value === editingSource.agencyCode) || null}
                   onChange={(option: Option | null) =>
                     setEditingSource({ ...editingSource, agencyCode: option?.value || "" })
                   }
