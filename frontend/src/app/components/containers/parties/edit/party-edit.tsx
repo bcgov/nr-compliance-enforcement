@@ -19,6 +19,8 @@ import {
   ContactMethod,
   PartyCreateInput,
   PartyUpdateInput,
+  PersonInput,
+  PersonUpdateInput,
 } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -266,7 +268,7 @@ const toDateOfBirth = (value: any): Date | undefined => {
 };
 
 // Helper to build person object for create or update mutation.
-const buildPerson = (value: any, isUpdate: boolean = false) => {
+const buildPerson = (value: any, isUpdate: boolean = false): PersonInput | PersonUpdateInput => {
   const base = {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
