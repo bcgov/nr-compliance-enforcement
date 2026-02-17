@@ -54,7 +54,7 @@ export const SideBar: FC = () => {
       name: "User administration",
       icon: "bi bi-people",
       route: "/admin/user",
-      requiredRoles: [Roles.TEMPORARY_TEST_ADMIN],
+      requiredRoles: [Roles.GLOBAL_ADMINISTRATOR],
     },
     {
       id: "parties-link",

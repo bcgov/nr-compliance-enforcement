@@ -5,7 +5,7 @@ export enum Role {
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",
   CEEB_SECTION_HEAD = "CEEB Section Head",
-  TEMPORARY_TEST_ADMIN = "TEMPORARY_TEST_ADMIN",
+  GLOBAL_ADMINISTRATOR = "Global Administrator",
   READ_ONLY = "READ ONLY",
   PARKS = "PARKS",
   SECTOR = "SECTOR",

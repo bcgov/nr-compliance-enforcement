@@ -208,25 +208,25 @@ const App: FC = () => {
                   element={<CreateComplaint />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={[Roles.GLOBAL_ADMINISTRATOR]} />}>
                 <Route
                   path="/admin/user"
                   element={<UserManagement />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={[Roles.GLOBAL_ADMINISTRATOR]} />}>
                 <Route
                   path="/admin/feature"
                   element={<FeatureManagement />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={[Roles.GLOBAL_ADMINISTRATOR]} />}>
                 <Route
                   path="/admin/laws"
                   element={<LegislationSourceManagement />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={[Roles.GLOBAL_ADMINISTRATOR]} />}>
                 <Route
                   path="/admin/law/:legislationSourceGuid"
                   element={<LegislationManagement />}

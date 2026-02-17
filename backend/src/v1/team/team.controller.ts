@@ -18,19 +18,19 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get("find-user")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   findUserIdir(@Query("firstName") firstName: string, @Query("lastName") lastName: string) {
     return this.teamService.findUserIdir(firstName, lastName);
   }
 
   @Get("current")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   async findCurrentTeam(@Query("appUserGuid") appUserGuid: UUID, @Token() token: string) {
     return await this.teamService.findUserCurrentTeam(appUserGuid, token);
   }
 
   @Patch("update/:app_user_guid")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   update(@Param("app_user_guid") appUserGuid: UUID, @Body() updateTeamData: TeamUpdate, @Token() token: string) {
     return this.teamService.update(appUserGuid, updateTeamData, token);
   }

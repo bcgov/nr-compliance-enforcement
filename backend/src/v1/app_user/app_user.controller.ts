@@ -20,7 +20,7 @@ export class AppUserController {
   constructor(private readonly appUserService: AppUserService) {}
 
   @Post()
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   create(@Body() createAppUserDto: CreateAppUserDto, @Token() token: string) {
     return this.appUserService.create(createAppUserDto, token);
   }
@@ -62,7 +62,7 @@ export class AppUserController {
   }
 
   @Patch(":id")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   update(@Param("id") id: UUID, @Body() updateAppUserDto: UpdateAppUserDto, @Token() token: string) {
     return this.appUserService.update(id, updateAppUserDto, token);
   }

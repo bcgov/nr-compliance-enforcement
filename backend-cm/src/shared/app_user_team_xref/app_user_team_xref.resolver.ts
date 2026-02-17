@@ -24,19 +24,19 @@ export class AppUserTeamXrefResolver {
   }
 
   @Mutation("createAppUserTeamXref")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   async create(@Args("input") input: CreateAppUserTeamXrefInput) {
     return await this.appUserTeamXrefService.create(input);
   }
 
   @Mutation("updateAppUserTeamXref")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   async update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserTeamXrefInput) {
     return await this.appUserTeamXrefService.update(appUserGuid, input);
   }
 
   @Mutation("deleteAppUserTeamXref")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   async delete(@Args("appUserTeamXrefGuid") appUserTeamXrefGuid: string) {
     return await this.appUserTeamXrefService.delete(appUserTeamXrefGuid);
   }

@@ -31,13 +31,13 @@ export class OfficeResolver {
   }
 
   @Mutation("createOffice")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   async create(@Args("input") input: CreateOfficeInput) {
     return await this.officeService.create(input);
   }
 
   @Mutation("updateOffice")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   async update(@Args("officeGuid") officeGuid: string, @Args("input") input: UpdateOfficeInput) {
     return await this.officeService.update(officeGuid, input);
   }

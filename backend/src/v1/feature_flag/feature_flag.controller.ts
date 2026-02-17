@@ -17,19 +17,19 @@ export class FeatureFlagController {
   constructor(private readonly featureFlagService: FeatureFlagService) {}
 
   @Get("/all")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   findAll() {
     return this.featureFlagService.findAll();
   }
 
   @Get("features-by-agency/:agencyCode")
-  @Roles(Role.TEMPORARY_TEST_ADMIN, coreRoles)
+  @Roles(Role.GLOBAL_ADMINISTRATOR, coreRoles)
   async findByAgency(@Param("agencyCode") agencyCode: string) {
     return await this.featureFlagService.findByAgency(agencyCode);
   }
 
   @Patch(":id")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   update(@Param("id") id: UUID, @Body() updateAttractantHwcrXrefDto: UpdateFeatureAgencyXrefDto) {
     return this.featureFlagService.update(id, updateAttractantHwcrXrefDto);
   }

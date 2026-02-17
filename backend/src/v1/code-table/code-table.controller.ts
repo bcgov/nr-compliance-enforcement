@@ -22,7 +22,7 @@ export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
   @Get(":table")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();

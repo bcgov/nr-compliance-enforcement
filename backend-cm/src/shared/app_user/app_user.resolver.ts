@@ -38,13 +38,13 @@ export class AppUserResolver {
   }
 
   @Mutation("createAppUser")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(Role.GLOBAL_ADMINISTRATOR)
   async create(@Args("input") input: CreateAppUserInput) {
     return await this.appUserService.create(input);
   }
 
   @Mutation("updateAppUser")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, Role.GLOBAL_ADMINISTRATOR)
   async update(@Args("appUserGuid") appUserGuid: string, @Args("input") input: UpdateAppUserInput) {
     return await this.appUserService.update(appUserGuid, input);
   }

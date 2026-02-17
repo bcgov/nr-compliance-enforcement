@@ -6,7 +6,7 @@ enum Roles {
   SYSTEM_ADMINISTRATOR = "System Administrator",
   COS_ADMINISTRATOR = "COS Administrator",
   COS = "COS",
-  TEMPORARY_TEST_ADMIN = "TEMPORARY_TEST_ADMIN",
+  GLOBAL_ADMINISTRATOR = "Global Administrator",
   READ_ONLY = "READ ONLY",
   INSPECTOR = "Inspector",
   PROVINCE_WIDE = "Province-wide",
