@@ -17,6 +17,7 @@ import {
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { Link } from "react-router-dom";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -159,7 +160,8 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -170,7 +172,8 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         sourceType: editingSource.sourceType,
       };
@@ -304,6 +307,13 @@ export const LegislationSourceManagement: FC = () => {
                 disabled={source.importedInd || source.importStatus === "SUCCESS"}
               >
                 <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+              <Dropdown.Item
+                as={Link}
+                to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
+                disabled={!source.importedInd}
+              >
+                <i className="bi bi-gear" /> Configure
               </Dropdown.Item>
               {source.lastImportLog && (
                 <Dropdown.Item onClick={() => setViewLogSource(source)}>

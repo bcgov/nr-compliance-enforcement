@@ -37,6 +37,7 @@ export interface CreateLegislationInput {
   effectiveDate?: Date | null;
   expiryDate?: Date | null;
   createUserId: string;
+  agencyCode?: string | null;
 }
 
 @Injectable()
@@ -50,9 +51,11 @@ export class LegislationService {
 
   async findMany(
     agencyCode: string,
+    onlyActive: boolean = true,
     legislationTypeCodes?: string[],
     ancestorGuid?: string,
     excludeRegulations?: boolean,
+    legislationSourceGuid?: string,
   ) {
     const today = new Date().toISOString().split("T")[0];
 
@@ -71,13 +74,25 @@ export class LegislationService {
         LEFT JOIN legislation_source ls ON l.legislation_source_guid = ls.legislation_source_guid
         WHERE
           (
-            -- When ancestorGuid is provided, match it directly
+            -- When ancestorGuid is provided, match it directly (ignore legislationSourceGuid)
             (COALESCE(${ancestorGuid}, '') <> '' AND l.legislation_guid = ${ancestorGuid}::uuid)
           OR
-            -- When no ancestorGuid, find root nodes filtered by agency
-            (COALESCE(${ancestorGuid}, '') = '' AND l.parent_legislation_guid IS NULL AND ls.agency_code = ${agencyCode})
+            -- When legislationSourceGuid is provided (no ancestorGuid), find that specific source's root
+            (
+              COALESCE(${ancestorGuid}, '') = '' 
+              AND COALESCE(${legislationSourceGuid}, '') <> ''
+              AND l.parent_legislation_guid IS NULL 
+              AND l.legislation_source_guid = ${legislationSourceGuid}::uuid
+            )
+          OR
+            -- When neither is provided, find all root nodes for the agency
+            (
+              COALESCE(${ancestorGuid}, '') = '' 
+              AND COALESCE(${legislationSourceGuid}, '') = ''
+              AND l.parent_legislation_guid IS NULL 
+              AND ls.agency_code = ${agencyCode}
+            )
           )
-
         UNION ALL
 
         SELECT -- Child nodes
@@ -100,9 +115,11 @@ export class LegislationService {
         l.section_title,
         l.legislation_text,
         l.alternate_text,
-        l.display_order
+        l.display_order,
+        lc.enabled_ind
       FROM legislation l
       INNER JOIN descendants d ON l.legislation_guid = d.legislation_guid
+      LEFT JOIN legislation_configuration lc ON l.legislation_guid = lc.legislation_guid
       WHERE
         (
           ${legislationTypeCodes ?? []} = '{}'::text[]
@@ -112,8 +129,10 @@ export class LegislationService {
         AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
         -- When excludeRegulations is true, exclude nodes that have a REG ancestor
         AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
+        AND (${onlyActive} = false OR lc.enabled_ind = true)
       ORDER BY d.sort_path;
       `;
+
     try {
       return this.mapper.mapArray<legislation, Legislation>(prismaLegislation, "legislation", "Legislation");
     } catch (error) {
@@ -227,6 +246,14 @@ export class LegislationService {
         expiry_date: input.expiryDate ?? null,
         create_user_id: input.createUserId,
         create_utc_timestamp: new Date(),
+        legislation_configuration: {
+          create: {
+            agency_code: input.agencyCode,
+            enabled_ind: true,
+            create_user_id: input.createUserId,
+            create_utc_timestamp: new Date(),
+          },
+        },
       },
     });
   }

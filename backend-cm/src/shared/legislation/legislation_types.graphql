@@ -9,6 +9,7 @@ type Legislation {
   alternateText: String
   displayOrder: Int
   ancestors: [Legislation]
+  isEnabled: Boolean!
 }
 
 type LegislationType {
