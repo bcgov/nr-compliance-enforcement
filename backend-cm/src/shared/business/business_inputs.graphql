@@ -1,3 +1,16 @@
 input BusinessInput {
   name: String!
+  aliases: [AliasInput]
+  identifiers: [BusinessIdentifierInput]
+  contactPeople: [BusinessPersonInput]
+  contactMethods: [ContactMethodInput]
+}
+
+input BusinessUpdateInput {
+  businessGuid: String
+  name: String
+  aliases: [AliasUpdateInput]
+  identifiers: [BusinessIdentifierUpdateInput]
+  contactPeople: [BusinessPersonUpdateInput]
+  contactMethods: [ContactMethodInput]
 }
