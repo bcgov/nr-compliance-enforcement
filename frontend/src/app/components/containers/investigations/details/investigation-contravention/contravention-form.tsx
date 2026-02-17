@@ -60,10 +60,11 @@ const getLegislationViewUrl = (source: LegislationSource | null, sourceUrl: stri
   if (!source) return new URL(sourceUrl);
   const { sourceType } = source;
   if (sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
-    return new URL(sourceUrl.slice(0, sourceUrl.length - 4));
+    return new URL(sourceUrl.slice(0, -4));
   }
   if (sourceType === "FEDERAL") {
-    const match = sourceUrl.match(/^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9\-]+)\.xml$/);
+    const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9-]+)\.xml$/;
+    const match = regexPattern.exec(sourceUrl);
     if (match) {
       const code = match[1].toLowerCase();
       return new URL(`https://laws-lois.justice.gc.ca/eng/acts/${code}/`);
