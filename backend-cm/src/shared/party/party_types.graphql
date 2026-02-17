@@ -36,7 +36,7 @@ input PartyUpdateInput {
   partyTypeCode: String!
   longDescription: String
   shortDescription: String
-  person: PersonInput
+  person: PersonUpdateInput
   business: BusinessUpdateInput
 }
 
