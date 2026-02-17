@@ -28,21 +28,6 @@ export class PartyResolver {
     }
   }
 
-  @Query("parties")
-  @Roles(coreRoles)
-  async findMany(@Args("partyIdentifiers", { type: () => [String] }) ids: string[]) {
-    try {
-      return await this.partyService.findMany(ids);
-    } catch (error) {
-      this.logger.error(error);
-      throw new GraphQLError("Error fetching parties by IDs from Shared schema", {
-        extensions: {
-          code: "INTERNAL_SERVER_ERROR",
-        },
-      });
-    }
-  }
-
   @Query("searchParties")
   @Roles(coreRoles)
   async search(

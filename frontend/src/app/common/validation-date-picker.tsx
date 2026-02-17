@@ -1,12 +1,19 @@
 import { FC } from "react";
 import DatePicker from "react-datepicker";
 
+// Accepts callbacks that take Date, Date | undefined, or Date | null. We always invoke with Date | undefined
+// null gets normalized to undefined below.
+export type ValidationDatePickerOnChange =
+  | ((date: Date) => void)
+  | ((date: Date | undefined) => void)
+  | ((date: Date | null) => void);
+
 interface ValidationDatePickerProps {
   className: string;
   selectedDate: Date | undefined | null;
   maxDate?: Date;
   minDate?: Date;
-  onChange: (date: Date) => void;
+  onChange: ValidationDatePickerOnChange;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -14,6 +21,8 @@ interface ValidationDatePickerProps {
   showPreviousMonths?: boolean;
   showTimePicker?: boolean;
   vertical?: boolean;
+  showYearDropdown?: boolean; // When true, shows a year dropdown for year selection
+  yearDropdownItemNumber?: number; // Number of years to show in year dropdown
 }
 
 export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
@@ -29,9 +38,12 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showPreviousMonths = true,
   showTimePicker = false,
   vertical = false,
+  showYearDropdown = false,
+  yearDropdownItemNumber = null,
 }) => {
-  const handleDateChange = (date: Date) => {
-    onChange(date);
+  const handleDateChange = (date: Date | null) => {
+    // Normalize null to undefined
+    (onChange as (date: Date | undefined) => void)(date ?? undefined);
   };
 
   const calculatedClass = errMsg === "" ? "" : "error-message";
@@ -69,6 +81,9 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             disabled={isDisabled}
             showIcon={false}
             showPreviousMonths={showPreviousMonths}
+            showYearDropdown={showYearDropdown}
+            scrollableYearDropdown={showYearDropdown}
+            {...(yearDropdownItemNumber != null && { yearDropdownItemNumber })}
           />
         </div>
 
