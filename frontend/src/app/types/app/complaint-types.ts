@@ -52,7 +52,6 @@ export const complaintTypeForRole = (roleType: string) => {
     case Roles.CEEB_COMPLIANCE_COORDINATOR:
     case Roles.CEEB_SECTION_HEAD:
       return CEEB_TYPES;
-    case Roles.COS_ADMINISTRATOR:
     case Roles.COS:
     case Roles.GLOBAL_ADMINISTRATOR:
     case Roles.AGENCY_ADMINISTRATOR:
