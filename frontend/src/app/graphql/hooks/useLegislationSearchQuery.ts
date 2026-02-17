@@ -163,6 +163,7 @@ export const convertLegislationToOption = (legislation: Legislation[] | undefine
 /**
  * Converts legislation items to hierarchical options for section dropdowns.
  * Parts/Divisions are disabled group headers; Sections show "citation title".
+ * Child Sections of Schedules are excluded.
  */
 export const convertLegislationToHierarchicalOptions = (
   legislation: Legislation[] | undefined,
@@ -170,19 +171,40 @@ export const convertLegislationToHierarchicalOptions = (
 ): Option[] => {
   if (!legislation?.length) return [];
 
-  const itemGuids = new Set(legislation.map((i) => i.legislationGuid).filter(Boolean));
+  // Get children of Schedules to exclude from the Section dropdown
+  const childrenByParent = legislation
+    .filter((item) => item.parentGuid && item.legislationGuid)
+    .reduce<Record<string, string[]>>((map, item) => {
+      map[item.parentGuid!] = map[item.parentGuid!] ?? [];
+      map[item.parentGuid!].push(item.legislationGuid!);
+      return map;
+    }, {});
+
+  const getChildGuids = (guid: string): string[] =>
+    (childrenByParent[guid] ?? []).flatMap((child) => [child, ...getChildGuids(child)]);
+
+  const scheduleChildGuids = new Set(
+    legislation
+      .filter((item) => item.legislationTypeCode === "SCHED" && item.legislationGuid)
+      .flatMap((item) => getChildGuids(item.legislationGuid!)),
+  );
+
+  // Filter out schedule descendants
+  const displayItems = legislation.filter((item) => !scheduleChildGuids.has(item.legislationGuid ?? ""));
+
+  const itemGuids = new Set(displayItems.map((i) => i.legislationGuid).filter(Boolean));
   const getParentKey = (item: Legislation): string => {
     if (item.parentGuid === rootGuid) return rootGuid ?? "root";
     if (item.parentGuid && itemGuids.has(item.parentGuid)) return item.parentGuid;
     return rootGuid ?? "root";
   };
 
-  // Sort comparator: by displayOrder, then by numeric citation
+  // Sort by displayOrder then by citation number
   const sortByDisplayOrderAndCitation = (a: Legislation, b: Legislation) =>
     (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
     (Number.parseFloat(a.citation ?? "") || 9999) - (Number.parseFloat(b.citation ?? "") || 9999);
 
-  // Group by parent, then sort each group
+  // Group by parent then sort
   const childrenMap = new Map<string, Legislation[]>();
   for (const item of legislation) {
     const key = getParentKey(item);
@@ -193,7 +215,7 @@ export const convertLegislationToHierarchicalOptions = (
     childrenMap.set(key, children.toSorted(sortByDisplayOrderAndCitation));
   });
 
-  // Flatten tree recursively
+  // Flatten tree
   const flatten = (parentGuid?: string): Legislation[] =>
     (childrenMap.get(parentGuid ?? "root") ?? []).flatMap((child) => [
       child,
@@ -212,7 +234,6 @@ export const convertLegislationToHierarchicalOptions = (
       return item.sectionTitle ? `${base} - ${item.sectionTitle}` : base;
     }
     if (type === "SCHED") {
-      // Schedules use sectionTitle for their name (e.g., "Schedule A")
       return item.sectionTitle ?? (item.citation ? `Schedule ${item.citation}` : "Schedule");
     }
     if (type === "SEC" && item.citation) return `${item.citation} ${item.sectionTitle ?? item.legislationText ?? ""}`;

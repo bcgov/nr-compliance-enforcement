@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.176",
+  "version": "2.0.181",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -78,7 +78,7 @@
     "leaflet.markercluster": "^1.5.3",
     "linq-to-typescript": "^11.0.0",
     "lodash": "^4.17.21",
-    "make-fetch-happen": "11.1.1",
+    "make-fetch-happen": "15.0.3",
     "mapbox-gl-leaflet": "^0.0.16",
     "node": "^21.6.1",
     "npm": "^11.6.4",

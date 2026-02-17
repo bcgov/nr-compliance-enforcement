@@ -6,6 +6,7 @@ import { LegislationService } from "./shared/legislation/legislation.service";
 import { LegislationSourceService } from "./shared/legislation_source/legislation_source.service";
 import { runParksImport } from "./cli/parks/parks-import";
 import { runBcLawsImport } from "./cli/bclaws/bclaws-import";
+import { runFederalLawsImport } from "./cli/federallaws/federallaws-import";
 
 interface ImportCommandOptions {
   job?: string;
@@ -39,7 +40,7 @@ export class ImportCommand extends CommandRunner {
 
   async run(params: string[], options?: ImportCommandOptions): Promise<void> {
     if (!options?.job) {
-      this.logger.log("No job specified. Use --job <name> (e.g., --job parks or --job parks,bclaws)");
+      this.logger.log("No job specified. Use --job <name> (e.g., --job parks or --job parks,bclaws,federallaws)");
       return;
     }
 
@@ -80,14 +81,17 @@ export class ImportCommand extends CommandRunner {
       case "bclaws":
         await runBcLawsImport(this._legislationService, this._legislationSourceService, this.logger);
         break;
+      case "federallaws":
+        await runFederalLawsImport(this._legislationService, this._legislationSourceService, this.logger);
+        break;
       default:
-        throw new Error(`Unknown job: ${job}. Valid jobs: parks, bclaws`);
+        throw new Error(`Unknown job: ${job}. Valid jobs: parks, bclaws, federallaws`);
     }
   }
 
   @Option({
     flags: "-j, --job <jobNames>",
-    description: "Job name(s) to run, comma-delimited (e.g., parks,bclaws)",
+    description: "Job name(s) to run, comma-delimited (e.g., parks,bclaws,federallaws)",
   })
   parseJob(val: string): string {
     return val;

@@ -105,14 +105,18 @@ model app_user_team_xref_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business {
-  business_guid        String    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  name                 String    @db.VarChar(128)
-  create_user_id       String    @db.VarChar(32)
-  create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
-  update_user_id       String?   @db.VarChar(32)
-  update_utc_timestamp DateTime? @db.Timestamp(6)
-  party_guid           String?   @unique(map: "UQ_business_party_guid") @db.Uuid
-  party                party?    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
+  business_guid        String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  name                 String                 @db.VarChar(128)
+  create_user_id       String                 @db.VarChar(32)
+  create_utc_timestamp DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id       String?                @db.VarChar(32)
+  update_utc_timestamp DateTime?              @db.Timestamp(6)
+  party_guid           String?                @unique(map: "UQ_business_party_guid") @db.Uuid
+  alias                alias[]
+  party                party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
+  business_identifier  business_identifier[]
+  business_person_xref business_person_xref[]
+  contact_method       contact_method[]
 
   @@schema("shared")
 }
@@ -229,14 +233,18 @@ model case_status_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method {
   contact_method_guid      String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  person_guid              String                   @db.Uuid
+  person_guid              String?                  @db.Uuid
   contact_method_type      String                   @db.VarChar(10)
   contact_value            String?                  @db.VarChar(512)
   create_user_id           String                   @db.VarChar(32)
   create_utc_timestamp     DateTime                 @default(now()) @db.Timestamp(6)
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
-  person                   person                   @relation(fields: [person_guid], references: [person_guid], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact_method_person")
+  is_primary               Boolean                  @default(false)
+  active_ind               Boolean                  @default(true)
+  business_guid            String?                  @db.Uuid
+  business                 business?                @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_business_fk")
+  person                   person?                  @relation(fields: [person_guid], references: [person_guid], onDelete: Cascade, onUpdate: NoAction, map: "fk_contact_method_person")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
   @@schema("shared")
@@ -458,6 +466,7 @@ model legislation_source {
   import_status                                           String?       @default("PENDING") @db.VarChar(16)
   last_import_log                                         String?
   regulations_source_url                                  String?       @db.VarChar(512)
+  source_type                                             String        @default("BCLAWS") @db.VarChar(16)
   legislation                                             legislation[] @relation("legislationTolegislation_source")
   agency_code_legislation_source_agency_codeToagency_code agency_code   @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
 
@@ -642,18 +651,24 @@ model party_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person {
-  person_guid          String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  first_name           String           @db.VarChar(128)
-  middle_name          String?          @db.VarChar(128)
-  middle_name_2        String?          @db.VarChar(128)
-  last_name            String           @db.VarChar(128)
-  create_user_id       String           @db.VarChar(32)
-  create_utc_timestamp DateTime         @default(now()) @db.Timestamp(6)
-  update_user_id       String?          @db.VarChar(32)
-  update_utc_timestamp DateTime?        @db.Timestamp(6)
-  party_guid           String?          @unique(map: "UQ_person_party_guid") @db.Uuid
-  contact_method       contact_method[]
-  party                party?           @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
+  person_guid                        String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  first_name                         String                 @db.VarChar(128)
+  middle_name                        String?                @db.VarChar(128)
+  middle_name_2                      String?                @db.VarChar(128)
+  last_name                          String                 @db.VarChar(128)
+  create_user_id                     String                 @db.VarChar(32)
+  create_utc_timestamp               DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                     String?                @db.VarChar(32)
+  update_utc_timestamp               DateTime?              @db.Timestamp(6)
+  party_guid                         String?                @unique(map: "UQ_person_party_guid") @db.Uuid
+  date_of_birth                      DateTime?              @db.Date
+  drivers_license_number             String?                @db.VarChar(64)
+  drivers_license_jurisdiction       String?                @db.VarChar(64)
+  sex_code                           String?                @db.VarChar(16)
+  business_person_xref               business_person_xref[]
+  contact_method                     contact_method[]
+  party                              party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
+  sex_code_person_sex_codeTosex_code sex_code?              @relation("person_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__sex_code")
 
   @@schema("shared")
 }
@@ -707,6 +722,140 @@ model team_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model team_h {
   h_team_guid                   String   @id(map: "PK_h_team") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model alias {
+  alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid        String    @db.Uuid
+  name                 String    @db.VarChar(512)
+  active_ind           Boolean   @default(true)
+  create_user_id       String    @db.VarChar(32)
+  create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id       String?   @db.VarChar(32)
+  update_utc_timestamp DateTime? @db.Timestamp(6)
+  business             business  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model alias_h {
+  h_alias_guid                  String   @id(map: "pk_h_alias") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_identifier {
+  business_identifier_guid                                                                        String                   @id(map: "business_identifier_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid                                                                                   String                   @db.Uuid
+  business_identifier_code                                                                        String                   @db.VarChar(16)
+  identifier_value                                                                                String                   @db.VarChar(256)
+  active_ind                                                                                      Boolean                  @default(true)
+  create_user_id                                                                                  String                   @db.VarChar(32)
+  create_utc_timestamp                                                                            DateTime                 @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                  String?                  @db.VarChar(32)
+  update_utc_timestamp                                                                            DateTime?                @db.Timestamp(6)
+  business                                                                                        business                 @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_business_fk")
+  business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code business_identifier_code @relation("business_identifier_business_identifier_codeTobusiness_identifier_code", fields: [business_identifier_code], references: [business_identifier_code], onDelete: NoAction, onUpdate: NoAction, map: "business_identifier_code_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_identifier_code {
+  business_identifier_code                                                                   String                @id(map: "business_identifier_code_pk") @db.VarChar(16)
+  short_description                                                                          String                @db.VarChar(64)
+  long_description                                                                           String?               @db.VarChar(256)
+  display_order                                                                              Int
+  active_ind                                                                                 Boolean               @default(true)
+  create_user_id                                                                             String                @db.VarChar(32)
+  create_utc_timestamp                                                                       DateTime              @default(now()) @db.Timestamp(6)
+  update_user_id                                                                             String?               @db.VarChar(32)
+  update_utc_timestamp                                                                       DateTime?             @db.Timestamp(6)
+  business_identifier_business_identifier_business_identifier_codeTobusiness_identifier_code business_identifier[] @relation("business_identifier_business_identifier_codeTobusiness_identifier_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_identifier_h {
+  h_business_identifier_guid    String   @id(map: "pk_h_business_identifier") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sex_code {
+  sex_code                         String    @id(map: "PK_sex_code") @db.VarChar(10)
+  short_description                String    @db.VarChar(50)
+  long_description                 String?   @db.VarChar(250)
+  display_order                    Int
+  active_ind                       Boolean
+  create_user_id                   String    @db.VarChar(32)
+  create_utc_timestamp             DateTime  @db.Timestamp(6)
+  update_user_id                   String?   @db.VarChar(32)
+  update_utc_timestamp             DateTime? @db.Timestamp(6)
+  person_person_sex_codeTosex_code person[]  @relation("person_sex_codeTosex_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_person_xref {
+  business_person_xref_guid                                                                           String                    @id(map: "business_person_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid                                                                                       String                    @db.Uuid
+  person_guid                                                                                         String                    @db.Uuid
+  business_person_xref_code                                                                           String                    @db.VarChar(16)
+  active_ind                                                                                          Boolean                   @default(true)
+  create_user_id                                                                                      String                    @db.VarChar(32)
+  create_utc_timestamp                                                                                DateTime                  @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                      String?                   @db.VarChar(32)
+  update_utc_timestamp                                                                                DateTime?                 @db.Timestamp(6)
+  business                                                                                            business                  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_business_fk")
+  business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref_code @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code", fields: [business_person_xref_code], references: [business_person_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_code_fk")
+  person                                                                                              person                    @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_person_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_person_xref_code {
+  business_person_xref_code                                                                      String                 @id(map: "business_person_xref_code_pk") @db.VarChar(16)
+  short_description                                                                              String                 @db.VarChar(64)
+  long_description                                                                               String?                @db.VarChar(256)
+  display_order                                                                                  Int
+  active_ind                                                                                     Boolean                @default(true)
+  create_user_id                                                                                 String                 @db.VarChar(32)
+  create_utc_timestamp                                                                           DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                 String?                @db.VarChar(32)
+  update_utc_timestamp                                                                           DateTime?              @db.Timestamp(6)
+  business_person_xref_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref[] @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_person_xref_h {
+  h_business_person_xref_guid   String   @id(map: "pk_h_business_person_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
