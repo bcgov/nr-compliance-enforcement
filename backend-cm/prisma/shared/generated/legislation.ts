@@ -1,5 +1,6 @@
 import { legislation_source } from "./legislation_source";
 import { legislation_type_code } from "./legislation_type_code";
+import { legislation_configuration } from "./legislation_configuration";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class legislation {
@@ -62,4 +63,7 @@ export class legislation {
 
   @ApiProperty({ isArray: true, type: () => legislation })
   other_legislation: legislation[];
+
+  @ApiProperty({ isArray: true, type: () => legislation_configuration })
+  legislation_configuration: legislation_configuration[];
 }
