@@ -11,22 +11,14 @@ export interface Regulation {
 
 const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
 
-axios.interceptors.response.use(undefined, (error: AxiosError) => {
-  return Promise.reject(error as Error);
-});
-
 /**
- * Fetches BC Laws XML document from the BC Laws API
- * @param url - The full URL to the BC Laws XML document
+ * Fetches an XML document from the given URL
+ * @param url - The full URL to the XML document
+ * @param apiName - Name of the API for error messages
  * @returns The raw XML string
  */
-export const getBcLawsXml = async (url: string): Promise<string> => {
-  let config: AxiosRequestConfig = {
-    headers: {
-      Accept: "application/xml",
-    },
-    responseType: "text",
-  };
+export const fetchXml = async (url: string, apiName: string): Promise<string> => {
+  let config: AxiosRequestConfig = {};
 
   if (process.env.HTTPS_PROXY) {
     config = {
@@ -43,13 +35,22 @@ export const getBcLawsXml = async (url: string): Promise<string> => {
     })
     .catch((error: AxiosError) => {
       if (error.response) {
-        throw new Error(`BC Laws API Request Failed: ${url}, ${error.message}`);
+        throw new Error(`${apiName} Request Failed: ${url}, ${error.message}`);
       } else if (error.request) {
-        throw new Error(`No response received from BC Laws API: ${url}, ${error.message}`);
+        throw new Error(`No response received from ${apiName}: ${url}, ${error.message}`);
       } else {
-        throw new Error(`BC Laws API Error: ${error.message}`);
+        throw new Error(`${apiName} Error: ${error.message}`);
       }
     });
+};
+
+/**
+ * Fetches BC Laws XML document from the BC Laws API
+ * @param url - The full URL to the BC Laws XML document
+ * @returns The raw XML string
+ */
+export const getBcLawsXml = async (url: string): Promise<string> => {
+  return fetchXml(url, "BC Laws API");
 };
 
 const toArray = (value: any): any[] => {

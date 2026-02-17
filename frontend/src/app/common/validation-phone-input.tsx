@@ -6,6 +6,7 @@ interface ValidationPhoneInputProps {
   id: string;
   onChange: Function;
   errMsg: string;
+  value?: string;
   defaultValue?: string;
   maxLength?: number;
   international?: boolean;
@@ -13,6 +14,7 @@ interface ValidationPhoneInputProps {
 
 export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
   className,
+  value,
   defaultValue,
   id,
   onChange,
@@ -29,7 +31,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
           id={id}
           country="CA"
           className={calulatedClass}
-          value={defaultValue}
+          value={value ?? defaultValue}
           onChange={(e) => onChange(e)}
           maxLength={maxLength} //phone input counts () - space, so this is actually a 10 character number
           international={international}

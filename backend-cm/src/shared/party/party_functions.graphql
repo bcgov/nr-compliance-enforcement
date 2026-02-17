@@ -1,6 +1,5 @@
 type Query {
   party(partyIdentifier: String!): Party
-  parties(partyIdentifiers: [String!]!): [Party!]!
   searchParties(page: Int = 1, pageSize: Int = 25, filters: PartyFilters): PartyResult!
 }
 
