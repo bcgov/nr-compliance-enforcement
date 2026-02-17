@@ -20,8 +20,7 @@ const UPDATE_LEGISLATION = gql`
 `;
 
 export const LegislationManagement: FC = () => {
-  const userAgency = getUserAgency();
-
+  // Hooks
   const { legislationSourceGuid } = useParams<{ legislationSourceGuid: string }>();
   const [searchParams] = useSearchParams();
   const legislationAgency = searchParams.get("agencyCode") ?? "";
@@ -46,11 +45,14 @@ export const LegislationManagement: FC = () => {
     },
   });
 
+  // State
   const [contraventionNodes, setContraventionNodes] = useState<Set<string>>(new Set());
   const [originalContraventionNodes, setOriginalContraventionNodes] = useState<Set<string>>(new Set());
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set([LegislationType.ACT])); // Start with act expanded
 
-  // Get the root node
+  // Data
+  const userAgency = getUserAgency();
+
   const rootNode = useMemo(() => {
     return data?.legislations?.find((item) => item.parentGuid === null);
   }, [data]);
@@ -68,7 +70,6 @@ export const LegislationManagement: FC = () => {
       (a.displayOrder ?? 9999) - (b.displayOrder ?? 9999) ||
       (Number.parseFloat(a.citation ?? "") || 9999) - (Number.parseFloat(b.citation ?? "") || 9999);
 
-    // Pre-build lookup map for O(1) access instead of O(n) find
     const itemsByGuid = new Map(data.legislations.map((item) => [item.legislationGuid, item]));
 
     // Helper to check if item is descendant of a regulation
@@ -78,7 +79,7 @@ export const LegislationManagement: FC = () => {
 
       while (current.parentGuid && !visited.has(current.parentGuid)) {
         visited.add(current.parentGuid);
-        const parent = itemsByGuid.get(current.parentGuid); // O(1) instead of O(n)
+        const parent = itemsByGuid.get(current.parentGuid);
         if (!parent) break;
 
         if (parent.legislationTypeCode === LegislationType.REGULATION) {
@@ -145,6 +146,7 @@ export const LegislationManagement: FC = () => {
 
         for (const child of children) {
           // Add SECHEAD if SEC has both title and text
+          // This is a fake type to provide formatting
           if (child.legislationTypeCode === LegislationType.SECTION && child.sectionTitle && child.legislationText) {
             result.push({
               displayOrder: child.displayOrder,
@@ -181,6 +183,9 @@ export const LegislationManagement: FC = () => {
     return { act, regulations };
   }, [data, rootNodeGuid]);
 
+  // Use Effects
+
+  // Initialize tracking arrays
   useEffect(() => {
     if (data?.legislations) {
       const enabledNodes = new Set<string>();
@@ -495,6 +500,7 @@ export const LegislationManagement: FC = () => {
     );
   };
 
+  // Guard to prevent someone from changing the URL parameter
   if (userAgency !== legislationAgency) {
     return <Navigate to="/not-authorized" />;
   }
