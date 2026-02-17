@@ -5,6 +5,10 @@ export interface PersonDto {
   middleName?: string;
   middleName2?: string;
   lastName: string;
+  dateOfBirth?: Date;
+  driversLicenseNumber?: string;
+  driversLicenseJurisdiction?: string;
+  sexCode?: string;
 }
 
 export interface BusinessDto {

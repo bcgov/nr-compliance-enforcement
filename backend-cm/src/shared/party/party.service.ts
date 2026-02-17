@@ -89,7 +89,13 @@ export class PartyService {
                   select: {
                     person_guid: true,
                     first_name: true,
+                    middle_name: true,
+                    middle_name_2: true,
                     last_name: true,
+                    date_of_birth: true,
+                    drivers_license_number: true,
+                    drivers_license_jurisdiction: true,
+                    sex_code: true,
                     contact_method: {
                       select: {
                         contact_method_guid: true,
@@ -115,7 +121,25 @@ export class PartyService {
           select: {
             person_guid: true,
             first_name: true,
+            middle_name: true,
+            middle_name_2: true,
             last_name: true,
+            date_of_birth: true,
+            drivers_license_number: true,
+            drivers_license_jurisdiction: true,
+            sex_code: true,
+            contact_method: {
+              select: {
+                contact_method_guid: true,
+                contact_method_type: true,
+                contact_method_type_code: true,
+                contact_value: true,
+                is_primary: true,
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
       },
@@ -146,7 +170,13 @@ export class PartyService {
           person: {
             create: {
               first_name: input.person?.firstName,
+              middle_name: input.person?.middleName,
+              middle_name_2: input.person?.middleName2,
               last_name: input.person?.lastName,
+              date_of_birth: input.person?.dateOfBirth,
+              drivers_license_number: input.person?.driversLicenseNumber,
+              drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+              sex_code: input.person?.sexCode,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
               ...(input.person?.contactMethods?.length
@@ -396,7 +426,13 @@ export class PartyService {
         person: {
           create: {
             first_name: bpx.person.firstName,
+            middle_name: bpx.person.middleName,
+            middle_name_2: bpx.person.middleName2,
             last_name: bpx.person.lastName,
+            date_of_birth: bpx.person.dateOfBirth,
+            drivers_license_number: bpx.person.driversLicenseNumber,
+            drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
+            sex_code: bpx.person.sexCode,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
             ...(bpx.person.contactMethods?.length && {
@@ -442,7 +478,13 @@ export class PartyService {
               person: {
                 update: {
                   first_name: bpx.person.firstName,
+                  middle_name: bpx.person.middleName,
+                  middle_name_2: bpx.person.middleName2,
                   last_name: bpx.person.lastName,
+                  date_of_birth: bpx.person.dateOfBirth,
+                  drivers_license_number: bpx.person.driversLicenseNumber,
+                  drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
+                  sex_code: bpx.person.sexCode,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
                   ...(contactMethodOps && {
@@ -473,6 +515,11 @@ export class PartyService {
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
       include: {
+        person: {
+          include: {
+            contact_method: true,
+          },
+        },
         business: {
           include: {
             alias: true,
@@ -500,22 +547,27 @@ export class PartyService {
 
     const aliasOperations = this._buildAliasOperations(
       input.business?.aliases ?? [],
-      existingPartyDto.business.aliases ?? [],
+      existingPartyDto.business?.aliases ?? [],
     );
 
     const contactMethodOperations = this._buildContactMethodOperations(
       input.business?.contactMethods ?? [],
-      existingPartyDto.business.contactMethods ?? [],
+      existingPartyDto.business?.contactMethods ?? [],
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
       input.business?.identifiers ?? [],
-      existingPartyDto.business.identifiers ?? [],
+      existingPartyDto.business?.identifiers ?? [],
     );
 
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
-      existingPartyDto.business.contactPeople ?? [],
+      existingPartyDto.business?.contactPeople ?? [],
+    );
+
+    const personContactMethodOperations = this._buildContactMethodOperations(
+      input.person?.contactMethods ?? [],
+      existingPartyDto.person?.contactMethods ?? [],
     );
 
     if (input.partyTypeCode === PARTY_TYPES.Person) {
@@ -526,9 +578,18 @@ export class PartyService {
         person: {
           update: {
             first_name: input.person?.firstName,
+            middle_name: input.person?.middleName,
+            middle_name_2: input.person?.middleName2,
             last_name: input.person?.lastName,
+            date_of_birth: input.person?.dateOfBirth,
+            drivers_license_number: input.person?.driversLicenseNumber,
+            drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+            sex_code: input.person?.sexCode,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
+            ...(Object.keys(personContactMethodOperations).length
+              ? { contact_method: personContactMethodOperations }
+              : {}),
           },
         },
       };
@@ -654,7 +715,13 @@ export class PartyService {
             select: {
               person_guid: true,
               first_name: true,
+              middle_name: true,
+              middle_name_2: true,
               last_name: true,
+              date_of_birth: true,
+              drivers_license_number: true,
+              drivers_license_jurisdiction: true,
+              sex_code: true,
             },
           },
         },
