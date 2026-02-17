@@ -7,7 +7,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import { AgencyBanner } from "./agency-banner";
 import UserService from "@service/user-service";
-import { Roles } from "@apptypes/app/roles";
+import { adminRoles, Roles } from "@apptypes/app/roles";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 export const SideBar: FC = () => {
@@ -54,7 +54,7 @@ export const SideBar: FC = () => {
       name: "User administration",
       icon: "bi bi-people",
       route: "/admin/user",
-      requiredRoles: [Roles.GLOBAL_ADMINISTRATOR],
+      requiredRoles: adminRoles,
     },
     {
       id: "parties-link",

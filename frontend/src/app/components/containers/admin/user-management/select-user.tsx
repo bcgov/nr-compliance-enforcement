@@ -6,6 +6,9 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import "@assets/sass/user-management.scss";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface SelectUserProps {
   officer: any;
@@ -24,17 +27,20 @@ export const SelectUser: FC<SelectUserProps> = ({
   officerError,
   handleEdit,
 }) => {
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+
   const officers = useAppSelector(selectOfficers);
-  const officerList = officers?.map((officer: AppUser) => {
-    const {
-      app_user_guid: id, first_name, last_name,
-      deactivate_ind,
-    } = officer;
-    return {
-      value: id,
-      label: `${last_name}, ${first_name} ${deactivate_ind ? "(deactivated user)" : ""}`,
-    };
-  });
+  const officerList = officers
+    ?.filter((officer) => (isGlobalAdmin ? true : allowedAgencies.has(officer.agency_code_ref)))
+    .map((officer: AppUser) => {
+      const { app_user_guid: id, first_name, last_name, deactivate_ind } = officer;
+      return {
+        value: id,
+        label: `${last_name}, ${first_name} ${deactivate_ind ? "(deactivated user)" : ""}`,
+      };
+    });
 
   const handleOfficerChange = async (input: any) => {
     setOfficerError("");

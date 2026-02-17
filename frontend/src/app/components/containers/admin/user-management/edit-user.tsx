@@ -38,6 +38,8 @@ import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
 
 interface EditUserProps {
   officer: Option;
@@ -82,6 +84,13 @@ export const EditUser: FC<EditUserProps> = ({
 
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
+
+  // Filter agencies
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+
+  const agencyList = agency?.filter((agency) => (isGlobalAdmin ? true : allowedAgencies.has(agency.value)));
 
   //Load offices on mount
   useEffect(() => {
@@ -134,7 +143,7 @@ export const EditUser: FC<EditUserProps> = ({
       let currentAgency;
 
       if (hasCEEBRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agencyList);
 
         const currentTeam = await getUserCurrentTeam(officerData.app_user_guid);
         if (currentTeam?.team_guid) {
@@ -147,7 +156,7 @@ export const EditUser: FC<EditUserProps> = ({
       }
 
       if (hasCOSRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.COS, agencyList);
 
         if (officerData.office_guid) {
           const officeGuid =
@@ -166,16 +175,16 @@ export const EditUser: FC<EditUserProps> = ({
           setSelectedParkArea(currentParkArea);
         }
 
-        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agencyList);
         setCurrentAgency(currentAgency);
         return;
       }
 
       // Fallback to NRS if no matching role
-      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agency);
+      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agencyList);
       setCurrentAgency(currentAgency);
     })();
-  }, [officerData, offices, selectedAgency, agency, teams, dispatch, parkAreasList]);
+  }, [officerData, offices, selectedAgency, agencyList, teams, dispatch, parkAreasList]);
 
   useEffect(() => {
     if (newUser && !officerData) {
@@ -539,7 +548,7 @@ export const EditUser: FC<EditUserProps> = ({
               classNames={{
                 menu: () => "top-layer-select",
               }}
-              options={agency}
+              options={agencyList}
               placeholder="Select"
               enableValidation={true}
               value={currentAgency ?? selectedAgency}

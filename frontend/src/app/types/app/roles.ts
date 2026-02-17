@@ -3,10 +3,10 @@ enum Roles {
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",
   CEEB_SECTION_HEAD = "CEEB Section Head",
-  SYSTEM_ADMINISTRATOR = "System Administrator",
   COS_ADMINISTRATOR = "COS Administrator",
   COS = "COS",
   GLOBAL_ADMINISTRATOR = "Global Administrator",
+  AGENCY_ADMINISTRATOR = "Agency Administrator",
   READ_ONLY = "READ ONLY",
   INSPECTOR = "Inspector",
   PROVINCE_WIDE = "Province-wide",
@@ -17,4 +17,6 @@ enum Roles {
 
 const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.SECTOR];
 
-export { Roles, coreRoles };
+const adminRoles: Roles[] = [Roles.GLOBAL_ADMINISTRATOR, Roles.AGENCY_ADMINISTRATOR];
+
+export { Roles, coreRoles, adminRoles };
