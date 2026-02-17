@@ -4,7 +4,7 @@
  * - http://www.bclaws.ca/standards/regulation.xsd
  * - http://www.bclaws.ca/standards/bylaw.xsd
  */
-export enum Legislation {
+export enum LegislationType {
   // Top-level document types
   ACT = "ACT",
   REGULATION = "REG",
@@ -31,7 +31,7 @@ export enum Legislation {
 /**
  * Top-level legislation types (root documents)
  */
-export const RootLegislationTypes = [Legislation.ACT, Legislation.REGULATION, Legislation.BYLAW];
+export const RootLegislationTypes = [LegislationType.ACT, LegislationType.REGULATION, LegislationType.BYLAW];
 
 /**
  * CSS indent classes for displaying legislation hierarchy
