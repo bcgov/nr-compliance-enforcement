@@ -1680,7 +1680,7 @@ export type PartyUpdateInput = {
   business?: InputMaybe<BusinessUpdateInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
-  person?: InputMaybe<PersonInput>;
+  person?: InputMaybe<PersonUpdateInput>;
   shortDescription?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1725,11 +1725,15 @@ export type PersonInput = {
 
 export type PersonUpdateInput = {
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
+  driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
   middleName2?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
+  sexCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Prevention = {

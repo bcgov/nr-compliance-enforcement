@@ -258,29 +258,30 @@ const buildBusinessCreate = (value: any) => {
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
-// Helper to build person object
+// Normalize to UTC date-only
+const toDateOfBirth = (value: any): Date | undefined => {
+  const d = value?.dateOfBirth;
+  if (!(d instanceof Date)) return undefined;
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+};
+
+// Helper to build person object for create or update mutation.
 const buildPerson = (value: any, isUpdate: boolean = false) => {
-  let dob = undefined;
-  if (value.dateOfBirth) {
-    if (value.dateOfBirth instanceof Date) {
-      dob = new Date(
-        Date.UTC(value.dateOfBirth.getFullYear(), value.dateOfBirth.getMonth(), value.dateOfBirth.getDate()),
-      );
-    } else {
-      dob = new Date(value.dateOfBirth);
-    }
-  }
-  return {
+  const base = {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
     middleName2: value.middleName2?.trim() || null,
     lastName: value.lastName,
-    dateOfBirth: dob,
+    dateOfBirth: toDateOfBirth(value),
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
     sexCode: value.sexCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
+  if (isUpdate) {
+    return { personGuid: value.personGuid, ...base };
+  }
+  return base;
 };
 
 const PartyEdit: FC = () => {
@@ -338,6 +339,7 @@ const PartyEdit: FC = () => {
       const person = partyData.party.person;
       return {
         partyType: partyData.party.partyTypeCode || "",
+        personGuid: person?.personGuid || "",
         firstName: person?.firstName || "",
         middleName: person?.middleName || "",
         middleName2: person?.middleName2 || "",
@@ -367,6 +369,7 @@ const PartyEdit: FC = () => {
     }
     return {
       partyType: null,
+      personGuid: "",
       firstName: "",
       middleName: "",
       middleName2: "",
