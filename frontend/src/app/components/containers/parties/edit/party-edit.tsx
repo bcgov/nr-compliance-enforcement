@@ -268,7 +268,9 @@ const toDateOfBirth = (value: any): Date | undefined => {
 };
 
 // Helper to build person object for create or update mutation.
-const buildPerson = (value: any, isUpdate: boolean = false): PersonInput | PersonUpdateInput => {
+function buildPerson(value: any, isUpdate: true): PersonUpdateInput;
+function buildPerson(value: any, isUpdate?: false): PersonInput;
+function buildPerson(value: any, isUpdate: boolean = false): PersonInput | PersonUpdateInput {
   const base = {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
@@ -281,10 +283,10 @@ const buildPerson = (value: any, isUpdate: boolean = false): PersonInput | Perso
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
   if (isUpdate) {
-    return { personGuid: value.personGuid, ...base };
+    return { personGuid: value.personGuid, ...base } as PersonUpdateInput;
   }
-  return base;
-};
+  return base as PersonInput;
+}
 
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
