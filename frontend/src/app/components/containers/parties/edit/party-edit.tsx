@@ -267,11 +267,9 @@ const toDateOfBirth = (value: any): Date | undefined => {
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
 };
 
-// Helper to build person object for create or update mutation.
-function buildPerson(value: any, isUpdate: true): PersonUpdateInput;
-function buildPerson(value: any, isUpdate?: false): PersonInput;
-function buildPerson(value: any, isUpdate: boolean = false): PersonInput | PersonUpdateInput {
-  const base = {
+// Shared base fields for person create/update.
+function buildPersonBase(value: any, isUpdate: boolean) {
+  return {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
     middleName2: value.middleName2?.trim() || null,
@@ -282,10 +280,14 @@ function buildPerson(value: any, isUpdate: boolean = false): PersonInput | Perso
     sexCode: value.sexCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
-  if (isUpdate) {
-    return { personGuid: value.personGuid, ...base } as PersonUpdateInput;
-  }
-  return base as PersonInput;
+}
+
+function buildPersonForCreate(value: any): PersonInput {
+  return buildPersonBase(value, false);
+}
+
+function buildPersonForUpdate(value: any): PersonUpdateInput {
+  return { personGuid: value.personGuid, ...buildPersonBase(value, true) };
 }
 
 const PartyEdit: FC = () => {
@@ -399,14 +401,14 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value, true) : null,
+          person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
         updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value, false) : null,
+          person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };
         createPartyMutation.mutate({ input: createInput });
       }
