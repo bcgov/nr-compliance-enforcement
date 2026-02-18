@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
-import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
+import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import {
   clearNotification,
@@ -18,7 +18,6 @@ import {
   openModal,
   appUserGuid,
   selectNotification,
-  setActiveTab,
   userId,
 } from "@store/reducers/app";
 import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
@@ -90,7 +89,10 @@ export const EditUser: FC<EditUserProps> = ({
   const userAgency = UserService.getUserAgency();
   const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
 
-  const agencyList = agency?.filter((agency) => (isGlobalAdmin ? true : allowedAgencies.has(agency.value)));
+  const agencyList = useMemo(
+    () => agency?.filter((a) => (isGlobalAdmin ? true : allowedAgencies.has(a.value))),
+    [agency, isGlobalAdmin, userAgency],
+  );
 
   //Load offices on mount
   useEffect(() => {
@@ -219,9 +221,11 @@ export const EditUser: FC<EditUserProps> = ({
   const mapRolesDropdown = (userRoles: any): Option[] => {
     let result: Option[] = [];
     ROLE_OPTIONS.forEach((roleOption) => {
-      const found = userRoles.some((role: any) => role === roleOption.value);
+      const found = userRoles.includes(roleOption.value);
+
       if (found) result.push(roleOption);
     });
+
     return result;
   };
 
@@ -377,7 +381,7 @@ export const EditUser: FC<EditUserProps> = ({
       default: {
         const officerId = officer?.value ? officer.value : "";
         const officeId = selectedOffice?.value ? selectedOffice.value : "";
-        await dispatch(assignOfficerToOffice(officerId, officeId));
+        dispatch(assignOfficerToOffice(officerId, officeId));
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.app_user_guid,

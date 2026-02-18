@@ -106,7 +106,7 @@ export const SelectUser: FC<SelectUserProps> = ({
             <Button
               variant="primary"
               onClick={handleEdit}
-              disabled={officer && officer.value === ""}
+              disabled={officer?.value === ""}
             >
               Edit
             </Button>
