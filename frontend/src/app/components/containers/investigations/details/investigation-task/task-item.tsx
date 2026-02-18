@@ -21,6 +21,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
+import { BulkDownloadButton } from "@/app/components/common/attachment-download-button";
 
 interface TaskItemProps {
   task: Task;
@@ -314,6 +315,15 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                   <div className="gap-2 align-items-center">
                     <i className="bi bi-file-image"></i>
                     <h5 className="fw-bold m-0">Attachments</h5>
+                    <div className="d-flex align-items-center gap-3">
+                      {task?.taskIdentifier && attachmentCount > 0 && (
+                        <BulkDownloadButton
+                          taskId={task.taskIdentifier}
+                          taskNumber={task.taskNumber}
+                          investigationGuid={investigationData?.investigationGuid ?? ""}
+                        />
+                      )}
+                    </div>
                   </div>
                   <div className="mt-3">
                     <fieldset className="comp-carousel-fieldset-no-preview">
@@ -336,7 +346,7 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
               className={`d-flex align-items-center w-100 ${
                 isExpanded ? "justify-content-center" : "justify-content-between"
               }`}
-              ref={(el) => {
+              ref={(el: any) => {
                 if (el) {
                   const button = el.querySelector(".accordion-button") as HTMLElement;
                   if (button) {
