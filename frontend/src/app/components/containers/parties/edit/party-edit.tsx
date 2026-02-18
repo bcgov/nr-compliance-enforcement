@@ -1017,7 +1017,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-danger"
+                          variant="outline-primary"
                           size="sm"
                           onClick={() => handleRemovePhoneNumber(index)}
                           type="button"
@@ -1098,7 +1098,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-danger"
+                          variant="outline-primary"
                           size="sm"
                           onClick={() => handleRemoveAlias(index)}
                           type="button"
@@ -1196,7 +1196,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-danger"
+                          variant="outline-primary"
                           size="sm"
                           onClick={() => handleRemovePhoneNumber(index)}
                           type="button"
@@ -1260,7 +1260,7 @@ const PartyEdit: FC = () => {
                           />
                         </div>
                         <Button
-                          variant="outline-danger"
+                          variant="outline-primary"
                           size="sm"
                           onClick={() => handleRemoveEmail(index)}
                           type="button"
