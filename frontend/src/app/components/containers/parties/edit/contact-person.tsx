@@ -44,7 +44,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       <div className="party-contact-header mb-3">
         <h4>Contact {contactIndex + 1}</h4>
         <Button
-          variant="outline-dark"
+          variant="outline-primary"
           size="sm"
           onClick={() => onRemoveContact(contactIndex)}
           type="button"
@@ -123,7 +123,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
               </div>
 
               <Button
-                variant="outline-dark"
+                variant="outline-primary"
                 size="sm"
                 onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
                 type="button"
@@ -143,7 +143,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label=""
         render={() => (
           <Button
-            variant="outline-dark"
+            variant="outline-primary"
             size="sm"
             onClick={() => onAddContactMethod(contactIndex, "PHONE")}
             type="button"
@@ -186,7 +186,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
                 />
               </div>
               <Button
-                variant="outline-dark"
+                variant="outline-primary"
                 size="sm"
                 onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
                 type="button"
@@ -204,7 +204,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label=""
         render={() => (
           <Button
-            variant="outline-dark"
+            variant="outline-primary"
             size="sm"
             onClick={() => onAddContactMethod(contactIndex, "EMAILADDR")}
             type="button"
