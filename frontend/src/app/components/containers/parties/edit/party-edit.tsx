@@ -19,6 +19,8 @@ import {
   ContactMethod,
   PartyCreateInput,
   PartyUpdateInput,
+  PersonInput,
+  PersonUpdateInput,
 } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -258,30 +260,35 @@ const buildBusinessCreate = (value: any) => {
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
-// Helper to build person object
-const buildPerson = (value: any, isUpdate: boolean = false) => {
-  let dob = undefined;
-  if (value.dateOfBirth) {
-    if (value.dateOfBirth instanceof Date) {
-      dob = new Date(
-        Date.UTC(value.dateOfBirth.getFullYear(), value.dateOfBirth.getMonth(), value.dateOfBirth.getDate()),
-      );
-    } else {
-      dob = new Date(value.dateOfBirth);
-    }
-  }
+// Normalize to UTC date-only
+const toDateOfBirth = (value: any): Date | undefined => {
+  const d = value?.dateOfBirth;
+  if (!(d instanceof Date)) return undefined;
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+};
+
+// Shared base fields for person create/update.
+function buildPersonBase(value: any, isUpdate: boolean) {
   return {
     firstName: value.firstName,
     middleName: value.middleName?.trim() || null,
     middleName2: value.middleName2?.trim() || null,
     lastName: value.lastName,
-    dateOfBirth: dob,
+    dateOfBirth: toDateOfBirth(value),
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
     sexCode: value.sexCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
-};
+}
+
+function buildPersonForCreate(value: any): PersonInput {
+  return buildPersonBase(value, false);
+}
+
+function buildPersonForUpdate(value: any): PersonUpdateInput {
+  return { personGuid: value.personGuid, ...buildPersonBase(value, true) };
+}
 
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -338,6 +345,7 @@ const PartyEdit: FC = () => {
       const person = partyData.party.person;
       return {
         partyType: partyData.party.partyTypeCode || "",
+        personGuid: person?.personGuid || "",
         firstName: person?.firstName || "",
         middleName: person?.middleName || "",
         middleName2: person?.middleName2 || "",
@@ -367,6 +375,7 @@ const PartyEdit: FC = () => {
     }
     return {
       partyType: null,
+      personGuid: "",
       firstName: "",
       middleName: "",
       middleName2: "",
@@ -392,14 +401,14 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value, true) : null,
+          person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
         updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
-          person: value.partyType === "PRS" ? buildPerson(value, false) : null,
+          person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };
         createPartyMutation.mutate({ input: createInput });
       }

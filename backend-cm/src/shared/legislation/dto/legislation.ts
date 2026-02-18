@@ -5,6 +5,7 @@ export class Legislation {
   legislationGuid: string;
   legislationTypeCode: string;
   parentGuid: string;
+  legislationSourceGuid: string | null;
   citation: string;
   fullCitation: string;
   sectionTitle: string;
@@ -12,6 +13,7 @@ export class Legislation {
   alternateText: string;
   displayOrder: number;
   ancestors: Legislation[];
+  isEnabled: boolean;
 }
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
@@ -30,6 +32,10 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parentGuid,
       mapFrom((src) => src.parent_legislation_guid),
+    ),
+    forMember(
+      (dest) => dest.legislationSourceGuid,
+      mapFrom((src) => src.legislation_source_guid),
     ),
     forMember(
       (dest) => dest.citation,
@@ -54,6 +60,10 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.displayOrder,
       mapFrom((src) => src.display_order),
+    ),
+    forMember(
+      (dest) => dest.isEnabled,
+      mapFrom((src) => (src as legislation & { enabled_ind: boolean }).enabled_ind),
     ),
   );
 };
