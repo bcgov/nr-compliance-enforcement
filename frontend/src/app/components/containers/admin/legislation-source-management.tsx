@@ -107,18 +107,23 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
-  const filteredSources = useMemo(() => {
+  // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
+  const actSources = useMemo(() => {
     if (!sources) return [];
-    if (!searchQuery) return sources;
+    return sources.filter((source) => source.createUserId !== "system");
+  }, [sources]);
+
+  const filteredSources = useMemo(() => {
+    if (!searchQuery) return actSources;
     const query = searchQuery.toLowerCase();
-    return sources.filter(
+    return actSources.filter(
       (source) =>
         source.shortDescription.toLowerCase().includes(query) ||
         source.longDescription?.toLowerCase().includes(query) ||
         source.sourceUrl.toLowerCase().includes(query) ||
         source.agencyCode.toLowerCase().includes(query),
     );
-  }, [sources, searchQuery]);
+  }, [actSources, searchQuery]);
 
   const handleOpenCreate = () => {
     setEditingSource(emptySource);
