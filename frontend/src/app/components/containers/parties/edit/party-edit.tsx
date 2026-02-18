@@ -1017,7 +1017,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-dark"
+                          variant="outline-danger"
                           size="sm"
                           onClick={() => handleRemovePhoneNumber(index)}
                           type="button"
@@ -1037,7 +1037,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-person-phone-number-button"
-                      variant="outline-dark"
+                      variant="outline-primary"
                       size="sm"
                       onClick={handleAddPhoneNumber}
                       type="button"
@@ -1098,7 +1098,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-dark"
+                          variant="outline-danger"
                           size="sm"
                           onClick={() => handleRemoveAlias(index)}
                           type="button"
@@ -1117,7 +1117,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-task-button"
-                      variant="outline-dark"
+                      variant="outline-primary"
                       size="sm"
                       onClick={handleAddAlias}
                       type="button"
@@ -1196,7 +1196,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-                          variant="outline-dark"
+                          variant="outline-danger"
                           size="sm"
                           onClick={() => handleRemovePhoneNumber(index)}
                           type="button"
@@ -1216,7 +1216,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-phone-number-button"
-                      variant="outline-dark"
+                      variant="outline-primary"
                       size="sm"
                       onClick={handleAddPhoneNumber}
                       type="button"
@@ -1260,7 +1260,7 @@ const PartyEdit: FC = () => {
                           />
                         </div>
                         <Button
-                          variant="outline-dark"
+                          variant="outline-danger"
                           size="sm"
                           onClick={() => handleRemoveEmail(index)}
                           type="button"
@@ -1280,7 +1280,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-email-button"
-                      variant="outline-dark"
+                      variant="outline-primary"
                       size="sm"
                       onClick={handleAddEmail}
                       type="button"
@@ -1317,7 +1317,7 @@ const PartyEdit: FC = () => {
                   label=""
                   render={() => (
                     <Button
-                      variant="outline-dark"
+                      variant="outline-primary"
                       onClick={handleAddContact}
                       size="sm"
                       type="button"
