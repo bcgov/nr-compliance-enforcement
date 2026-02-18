@@ -23,7 +23,11 @@ export const LegislationText = ({ children }: LegislationTextProps) => {
   return (
     <>
       {parts.map((part, index) => {
-        const marker = MARKUP.find((m) => m.pattern.test(part));
+        const marker = MARKUP.find((m) => {
+          m.pattern.lastIndex = 0;
+          return m.pattern.test(part);
+        });
+
         return <Fragment key={`${part.slice(0, 10)}-${index}`}>{marker ? marker.render() : part}</Fragment>;
       })}
     </>

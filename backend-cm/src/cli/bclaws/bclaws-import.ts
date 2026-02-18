@@ -2,155 +2,13 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/bc-laws-service";
+import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/laws-service";
+import { parseBcLawsXml, ParsedBcLawsDocument } from "../../shared/legislation/utils/bc-laws-xml-parser";
 import {
-  parseBcLawsXml,
-  ParsedLegislationNode,
-  ParsedBcLawsDocument,
-} from "../../shared/legislation/utils/bc-laws-xml-parser";
-
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
-/**
- * Context for inserting legislation tree
- */
-interface InsertLegislationContext {
-  actTitle: string;
-  effectiveDate: Date | null;
-  legislationService: LegislationService;
-  logger: Logger;
-  errors: string[];
-  rootLegislationGuid?: string;
-}
-
-/**
- * Parses the assented date string (e.g., "October 23, 2003") to a Date
- */
-function parseAssentedDate(assentedTo: string | null): Date | null {
-  if (!assentedTo) {
-    return null;
-  }
-  try {
-    const parsed = new Date(assentedTo);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Builds the full citation string for a legislation node
- */
-function buildFullCitation(actTitle: string, node: ParsedLegislationNode, parentFullCitation: string | null): string {
-  if (node.typeCode === "ACT" || node.typeCode === "REG" || node.typeCode === "BYLAW") {
-    return actTitle;
-  }
-
-  const parts: string[] = [];
-  if (parentFullCitation && parentFullCitation !== actTitle) {
-    parts.push(parentFullCitation);
-  } else {
-    parts.push(actTitle);
-  }
-
-  // Add section/subsection/paragraph citation
-  if (node.citation) {
-    switch (node.typeCode) {
-      case "PART":
-        parts.push(`Part ${node.citation}`);
-        break;
-      case "DIV":
-        parts.push(`Division ${node.citation}`);
-        break;
-      case "SCHED":
-        parts.push(`Schedule ${node.citation}`);
-        break;
-      case "RULE":
-        parts.push(`Rule ${node.citation}`);
-        break;
-      case "SEC":
-        parts.push(`s. ${node.citation}`);
-        break;
-      case "SUBSEC":
-        parts.push(`(${node.citation})`);
-        break;
-      case "PAR":
-      case "SUBPAR":
-        parts.push(`(${node.citation})`);
-        break;
-      case "DEF":
-        if (node.sectionTitle) {
-          parts.push(`"${node.sectionTitle}"`);
-        }
-        break;
-    }
-  }
-
-  return parts.join(" ");
-}
-
-/**
- * Recursively inserts legislation nodes into the database
- * @param legislationSourceGuid - Only set on the root node to link back to the import source
- * @param actGuid - For regulation documents, the parent Act's legislation_guid
- */
-async function insertLegislationTree(
-  node: ParsedLegislationNode,
-  context: InsertLegislationContext,
-  parentGuid: string | null = null,
-  parentFullCitation: string | null = null,
-  legislationSourceGuid: string | null = null,
-  actGuid: string | null = null,
-): Promise<number> {
-  const { actTitle, effectiveDate, legislationService, logger } = context;
-  let count = 0;
-
-  // Build full citation for this node
-  const fullCitation = buildFullCitation(actTitle, node, parentFullCitation);
-
-  // Only set legislationSourceGuid on root node (when parentGuid is null)
-  const sourceGuidForThisNode = parentGuid === null ? legislationSourceGuid : null;
-
-  // For regulation root nodes, link to parent Act if provided
-  const parentLegislationGuid = parentGuid === null && node.typeCode === "REG" && actGuid ? actGuid : parentGuid;
-
-  try {
-    logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
-    await sleep(25); // Rate limiting
-
-    // Upsert the legislation record
-    const created = await legislationService.upsert({
-      legislationTypeCode: node.typeCode,
-      parentLegislationGuid: parentLegislationGuid,
-      legislationSourceGuid: sourceGuidForThisNode,
-      citation: node.citation ?? null,
-      fullCitation: fullCitation,
-      sectionTitle: node.sectionTitle ?? null,
-      legislationText: node.legislationText,
-      displayOrder: node.displayOrder,
-      effectiveDate: effectiveDate,
-      createUserId: "system",
-    });
-
-    count++;
-
-    if (parentGuid === null) {
-      context.rootLegislationGuid = created.legislation_guid;
-    }
-
-    // Recursively insert children (don't pass legislationSourceGuid - only for root)
-    for (const child of node.children) {
-      count += await insertLegislationTree(child, context, created.legislation_guid, fullCitation, null);
-    }
-  } catch (error) {
-    const errorMsg = `${node.typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;
-    logger.error(`Error inserting legislation: ${errorMsg}`);
-    context.errors.push(errorMsg);
-    // Continue with other nodes even if one fails
-  }
-
-  return count;
-}
+  InsertLegislationContext,
+  insertLegislationTree,
+  parseEffectiveDate,
+} from "../shared/legislation-import-utils";
 
 interface RegulationImportResult {
   totalRecords: number;
@@ -167,6 +25,7 @@ async function importRegulations(
   source: LegislationSource,
   actRootGuid: string,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
 ): Promise<RegulationImportResult> {
@@ -197,7 +56,16 @@ async function importRegulations(
         continue;
       }
 
-      const recordCount = await importSingleRegulation(reg, actRootGuid, legislationService, logger, errors);
+      const recordCount = await importSingleRegulation(
+        reg,
+        actRootGuid,
+        source,
+        legislationService,
+        legislationSourceService,
+        logger,
+        errors,
+        source.agencyCode,
+      );
       if (recordCount > 0) {
         result.successfulRegs++;
         result.totalRecords += recordCount;
@@ -228,9 +96,12 @@ async function importRegulations(
 async function importSingleRegulation(
   reg: Regulation,
   actRootGuid: string,
+  actSource: LegislationSource,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
+  agencyCode: string,
 ): Promise<number> {
   logger.log(`  Importing: ${reg.title}`);
 
@@ -238,7 +109,13 @@ async function importSingleRegulation(
     logger.log(`  URL: ${reg.url}`);
     const xmlString = await getBcLawsXml(reg.url);
     const parsedDocument = parseBcLawsXml(xmlString);
-    const effectiveDate = parseAssentedDate(parsedDocument.metadata.assentedTo);
+    const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
+
+    const regSource = await legislationSourceService.createRegulationSource(
+      actSource.agencyCode,
+      parsedDocument.metadata.title,
+      reg.url,
+    );
 
     const context: InsertLegislationContext = {
       actTitle: parsedDocument.metadata.title,
@@ -251,9 +128,10 @@ async function importSingleRegulation(
     const count = await insertLegislationTree(
       parsedDocument.root,
       context,
+      agencyCode,
       null,
       null,
-      null,
+      regSource.legislationSourceGuid,
       actRootGuid, // Link regulation to parent Act
     );
 
@@ -293,7 +171,7 @@ async function importLegislationSourceDocument(
     logger.log(`Chapter: ${parsedDocument.metadata.chapter}, Year: ${parsedDocument.metadata.yearEnacted}`);
 
     // Calculate effective date from assentedTo
-    const effectiveDate = parseAssentedDate(parsedDocument.metadata.assentedTo);
+    const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
 
     // Build full citation prefix
     const actTitle = parsedDocument.metadata.title;
@@ -309,6 +187,7 @@ async function importLegislationSourceDocument(
     let insertedCount = await insertLegislationTree(
       parsedDocument.root,
       context,
+      source.agencyCode,
       null, // No parent for root
       null, // parentFullCitation
       source.legislationSourceGuid, // Link root node to source
@@ -321,6 +200,7 @@ async function importLegislationSourceDocument(
         source,
         context.rootLegislationGuid,
         legislationService,
+        legislationSourceService,
         logger,
         context.errors,
       );
@@ -388,8 +268,8 @@ export async function runBcLawsImport(
   logger.log("Fetching pending legislation sources from database...");
 
   try {
-    // Get pending legislation sources (active but not yet imported)
-    const sources = await legislationSourceService.getPending();
+    // Get pending BC Laws legislation sources (active but not yet imported)
+    const sources = await legislationSourceService.getPendingBySourceType("BCLAWS");
 
     if (sources.length === 0) {
       logger.log("No pending legislation sources to import. All sources have already been imported.");

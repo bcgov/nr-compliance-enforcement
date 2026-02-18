@@ -83,11 +83,6 @@ export const OutcomeAttachments: FC = () => {
   };
 
   const cancelConfirmed = () => {
-    if (!hasAttachments) {
-      setComponentState(EDIT_STATE);
-      return;
-    }
-
     setAttachmentsToAdd([]);
     setAttachmentsToDelete([]);
     setIsPendingUpload(true);

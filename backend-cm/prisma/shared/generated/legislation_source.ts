@@ -48,6 +48,9 @@ export class legislation_source {
   @ApiPropertyOptional({ type: String })
   regulations_source_url?: string;
 
+  @ApiProperty({ type: String })
+  source_type: string = "BCLAWS";
+
   @ApiProperty({ isArray: true, type: () => legislation })
   legislation: legislation[];
 

@@ -36,8 +36,8 @@ input PartyUpdateInput {
   partyTypeCode: String!
   longDescription: String
   shortDescription: String
-  person: PersonInput
-  business: BusinessInput
+  person: PersonUpdateInput
+  business: BusinessUpdateInput
 }
 
 input PartyFilters {

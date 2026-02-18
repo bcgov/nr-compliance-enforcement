@@ -85,12 +85,12 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
 
     forMember(
       (dest) => dest.shortDescription,
-      mapFrom((src) => src.party_type_code.short_description),
+      mapFrom((src) => src.party_type_code?.short_description),
     ),
 
     forMember(
       (dest) => dest.longDescription,
-      mapFrom((src) => src.party_type_code.long_description),
+      mapFrom((src) => src.party_type_code?.long_description),
     ),
 
     forMember(

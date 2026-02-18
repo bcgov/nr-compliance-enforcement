@@ -3,10 +3,22 @@ input PersonInput {
   middleName: String
   middleName2: String
   lastName: String!
+  dateOfBirth: DateTime
+  driversLicenseNumber: String
+  driversLicenseJurisdiction: String
+  sexCode: String
   contactMethods: [ContactMethodInput]
 }
 
-input ContactMethodInput {
-  typeCode: String!
-  value: String!
+input PersonUpdateInput {
+  personGuid: String!
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  dateOfBirth: DateTime
+  driversLicenseNumber: String
+  driversLicenseJurisdiction: String
+  sexCode: String
+  contactMethods: [ContactMethodInput]
 }

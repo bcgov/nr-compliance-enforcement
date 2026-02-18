@@ -34,10 +34,15 @@ export class LegislationSourceService {
   }
 
   async getPending(): Promise<LegislationSource[]> {
+    return this.getPendingBySourceType("BCLAWS");
+  }
+
+  async getPendingBySourceType(sourceType: string): Promise<LegislationSource[]> {
     const sources = await this.prisma.legislation_source.findMany({
       where: {
         active_ind: true,
         imported_ind: false,
+        source_type: sourceType,
       },
       orderBy: {
         short_description: "asc",
@@ -55,6 +60,7 @@ export class LegislationSourceService {
         source_url: input.sourceUrl,
         regulations_source_url: input.regulationsSourceUrl ?? null,
         agency_code: input.agencyCode,
+        source_type: input.sourceType ?? "BCLAWS",
         active_ind: true,
         imported_ind: false,
         import_status: "PENDING",
@@ -63,6 +69,29 @@ export class LegislationSourceService {
       },
     });
 
+    return this.mapToDto(source);
+  }
+
+  async createRegulationSource(
+    agencyCode: string,
+    shortDescription: string,
+    sourceUrl: string,
+  ): Promise<LegislationSource> {
+    const source = await this.prisma.legislation_source.create({
+      data: {
+        short_description: shortDescription.slice(0, 64),
+        long_description: null,
+        source_url: sourceUrl,
+        regulations_source_url: null,
+        agency_code: agencyCode,
+        source_type: "BCLAWS",
+        active_ind: true,
+        imported_ind: true,
+        import_status: "SUCCESS",
+        create_user_id: "system",
+        create_utc_timestamp: new Date(),
+      },
+    });
     return this.mapToDto(source);
   }
 
@@ -100,6 +129,11 @@ export class LegislationSourceService {
             tx,
             rootLegislation.map((l) => l.legislation_guid),
           );
+
+          // delete legislation_configuration records
+          await tx.legislation_configuration.deleteMany({
+            where: { legislation_guid: { in: allLegislationGuids } },
+          });
 
           // delete legislation records
           await tx.legislation.deleteMany({
@@ -183,10 +217,34 @@ export class LegislationSourceService {
             rootLegislation.map((l) => l.legislation_guid),
           );
 
+          // find regulation legislation_source records created to store the URL
+          const regulationSources = await tx.legislation.findMany({
+            where: {
+              legislation_guid: { in: allLegislationGuids },
+              legislation_source_guid: { not: legislationSourceGuid },
+            },
+            select: { legislation_source_guid: true },
+          });
+          const regulationSourceGuids = [
+            ...new Set(regulationSources.map((r) => r.legislation_source_guid).filter(Boolean)),
+          ];
+
+          // delete legislation_configuration records
+          await tx.legislation_configuration.deleteMany({
+            where: { legislation_guid: { in: allLegislationGuids } },
+          });
+
           // delete legislation records
           await tx.legislation.deleteMany({
             where: { legislation_guid: { in: allLegislationGuids } },
           });
+
+          // delete regulation legislation_source records (not the act itself)
+          if (regulationSourceGuids.length > 0) {
+            await tx.legislation_source.deleteMany({
+              where: { legislation_source_guid: { in: regulationSourceGuids } },
+            });
+          }
         }
 
         // reset legislation_source record
@@ -218,6 +276,7 @@ export class LegislationSourceService {
       sourceUrl: source.source_url,
       regulationsSourceUrl: source.regulations_source_url ?? null,
       agencyCode: source.agency_code,
+      sourceType: source.source_type ?? "BCLAWS",
       activeInd: source.active_ind,
       importedInd: source.imported_ind,
       importStatus: source.import_status as ImportStatus | null,

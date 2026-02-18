@@ -5,6 +5,10 @@ export interface PersonDto {
   middleName?: string;
   middleName2?: string;
   lastName: string;
+  dateOfBirth?: Date;
+  driversLicenseNumber?: string;
+  driversLicenseJurisdiction?: string;
+  sexCode?: string;
 }
 
 export interface BusinessDto {
@@ -20,3 +24,9 @@ export interface PartyDto {
   business?: BusinessDto;
   partyAssociationRole?: string;
 }
+
+export const PARTY_TYPES = {
+  Person: "PRS",
+  Company: "CMP",
+  Contact: "CNT",
+};
