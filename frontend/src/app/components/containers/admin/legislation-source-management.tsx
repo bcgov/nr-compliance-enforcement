@@ -119,13 +119,11 @@ export const LegislationSourceManagement: FC = () => {
   const actSources = useMemo(() => {
     if (!sources) return [];
 
-    let result = sources;
+    let result = sources.filter((source) => source.createUserId !== "system");
 
     // Restrict by agency if not global admin
     if (!isGlobalAdmin) {
-      result = result
-        .filter((source) => allowedAgencies.has(source.agencyCode))
-        .filter((source) => source.createUserId !== "system");
+      result = result.filter((source) => allowedAgencies.has(source.agencyCode));
     }
 
     return result;
