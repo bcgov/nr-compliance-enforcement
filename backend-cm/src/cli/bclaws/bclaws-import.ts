@@ -25,6 +25,7 @@ async function importRegulations(
   source: LegislationSource,
   actRootGuid: string,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
 ): Promise<RegulationImportResult> {
@@ -55,7 +56,16 @@ async function importRegulations(
         continue;
       }
 
-      const recordCount = await importSingleRegulation(reg, actRootGuid, legislationService, logger, errors);
+      const recordCount = await importSingleRegulation(
+        reg,
+        actRootGuid,
+        source,
+        legislationService,
+        legislationSourceService,
+        logger,
+        errors,
+        source.agencyCode,
+      );
       if (recordCount > 0) {
         result.successfulRegs++;
         result.totalRecords += recordCount;
@@ -86,9 +96,12 @@ async function importRegulations(
 async function importSingleRegulation(
   reg: Regulation,
   actRootGuid: string,
+  actSource: LegislationSource,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
+  agencyCode: string,
 ): Promise<number> {
   logger.log(`  Importing: ${reg.title}`);
 
@@ -97,6 +110,12 @@ async function importSingleRegulation(
     const xmlString = await getBcLawsXml(reg.url);
     const parsedDocument = parseBcLawsXml(xmlString);
     const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
+
+    const regSource = await legislationSourceService.createRegulationSource(
+      actSource.agencyCode,
+      parsedDocument.metadata.title,
+      reg.url,
+    );
 
     const context: InsertLegislationContext = {
       actTitle: parsedDocument.metadata.title,
@@ -109,9 +128,10 @@ async function importSingleRegulation(
     const count = await insertLegislationTree(
       parsedDocument.root,
       context,
+      agencyCode,
       null,
       null,
-      null,
+      regSource.legislationSourceGuid,
       actRootGuid, // Link regulation to parent Act
     );
 
@@ -167,6 +187,7 @@ async function importLegislationSourceDocument(
     let insertedCount = await insertLegislationTree(
       parsedDocument.root,
       context,
+      source.agencyCode,
       null, // No parent for root
       null, // parentFullCitation
       source.legislationSourceGuid, // Link root node to source
@@ -179,6 +200,7 @@ async function importLegislationSourceDocument(
         source,
         context.rootLegislationGuid,
         legislationService,
+        legislationSourceService,
         logger,
         context.errors,
       );

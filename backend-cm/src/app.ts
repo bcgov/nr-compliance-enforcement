@@ -5,6 +5,7 @@ import { customLogger } from "./common/logger.config";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import helmet from "helmet";
 import { VersioningType } from "@nestjs/common";
+import { json, urlencoded } from "express";
 
 export async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -21,6 +22,8 @@ export async function bootstrap() {
   );
   app.enableCors();
   app.set("trust proxy", 1);
+  app.use(json({ limit: "3mb" })); // To support large legislation updates
+  app.use(urlencoded({ extended: true, limit: "3mb" })); // To support large legislation updates
   app.enableShutdownHooks();
   app.setGlobalPrefix("api");
   app.enableVersioning({

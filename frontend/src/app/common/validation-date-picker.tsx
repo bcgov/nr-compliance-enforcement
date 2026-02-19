@@ -15,7 +15,7 @@ interface ValidationDatePickerProps {
   selectedTime?: string | null;
   maxDate?: Date;
   minDate?: Date;
-  onChange: (date: Date, time: string | null) => void;
+  onChange: ((date: Date, time: string | null) => void) | ValidationDatePickerOnChange;
   id: string;
   classNamePrefix: string;
   errMsg: string;
@@ -125,17 +125,22 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   showYearDropdown = false,
   yearDropdownItemNumber = null,
 }) => {
+  // Internal emit: when showTimePicker is enabled, callers pass (date, time).
+  // Date-only callers use the simpler (date) => void signature; extra args are ignored at runtime.
+  const emit = onChange as (date: Date, time: string | null) => void;
+  const emitClear = () => (onChange as (date: Date | undefined) => void)(undefined);
+
   const displayDate = selectedDate ? dateWithTime(selectedDate, selectedTime) : undefined;
   const displayTime = nullableTime && !selectedTime ? undefined : displayDate;
 
   const handleDatePickerBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const rawValue = event.target.value;
     if (rawValue === "" && selectedDate) {
-      onChange(null as any, null);
+      emitClear();
     } else if (rawValue) {
       const parsed = parseDateInput(rawValue);
       if (parsed) {
-        onChange(parsed, selectedTime);
+        emit(parsed, selectedTime);
       }
     }
   };
@@ -155,7 +160,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             selected={displayDate}
             onChange={(date) => {
               if (date) {
-                onChange(date, selectedTime);
+                emit(date, selectedTime);
               }
             }}
             onBlur={handleDatePickerBlur}
@@ -193,11 +198,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
                   return;
                 }
                 if (date) {
-                  onChange(selectedDate, buildTimeFromPickerDate(date, selectedTime, "hour"));
+                  emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "hour"));
                 }
               }}
               onChangeRaw={(event) => {
-                handleTimeRawInput(event, selectedDate, selectedTime, "hour", onChange);
+                handleTimeRawInput(event, selectedDate, selectedTime, "hour", emit);
               }}
               showTimeSelect
               showTimeSelectOnly
@@ -221,11 +226,11 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
                   return;
                 }
                 if (date) {
-                  onChange(selectedDate, buildTimeFromPickerDate(date, selectedTime, "minute"));
+                  emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "minute"));
                 }
               }}
               onChangeRaw={(event) => {
-                handleTimeRawInput(event, selectedDate, selectedTime, "minute", onChange);
+                handleTimeRawInput(event, selectedDate, selectedTime, "minute", emit);
               }}
               showTimeSelect
               showTimeSelectOnly
