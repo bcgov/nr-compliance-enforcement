@@ -17,6 +17,7 @@ import {
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { Link } from "react-router-dom";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -106,18 +107,23 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
-  const filteredSources = useMemo(() => {
+  // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
+  const actSources = useMemo(() => {
     if (!sources) return [];
-    if (!searchQuery) return sources;
+    return sources.filter((source) => source.createUserId !== "system");
+  }, [sources]);
+
+  const filteredSources = useMemo(() => {
+    if (!searchQuery) return actSources;
     const query = searchQuery.toLowerCase();
-    return sources.filter(
+    return actSources.filter(
       (source) =>
         source.shortDescription.toLowerCase().includes(query) ||
         source.longDescription?.toLowerCase().includes(query) ||
         source.sourceUrl.toLowerCase().includes(query) ||
         source.agencyCode.toLowerCase().includes(query),
     );
-  }, [sources, searchQuery]);
+  }, [actSources, searchQuery]);
 
   const handleOpenCreate = () => {
     setEditingSource(emptySource);
@@ -159,7 +165,8 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -170,7 +177,8 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
-        regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         sourceType: editingSource.sourceType,
       };
@@ -304,6 +312,13 @@ export const LegislationSourceManagement: FC = () => {
                 disabled={source.importedInd || source.importStatus === "SUCCESS"}
               >
                 <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+              <Dropdown.Item
+                as={Link}
+                to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
+                disabled={!source.importedInd}
+              >
+                <i className="bi bi-gear" /> Configure
               </Dropdown.Item>
               {source.lastImportLog && (
                 <Dropdown.Item onClick={() => setViewLogSource(source)}>

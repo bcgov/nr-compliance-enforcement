@@ -17,7 +17,7 @@ export const LegislationTable = ({ html }: LegislationTableProps) => {
 
   const renderRows = (rows: Element[][], prefix: string) =>
     rows.map((cells, rowIdx) => (
-      <tr key={`${prefix}-${cells[0]?.textContent?.slice(0, 20) ?? rowIdx}`}>
+      <tr key={`${prefix}-${rowIdx}`}>
         {cells.map((cell, cellIdx) => {
           const Tag = cell.tagName.toLowerCase() as "th" | "td";
           return (
