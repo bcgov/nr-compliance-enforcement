@@ -25,6 +25,7 @@ async function importRegulations(
   source: LegislationSource,
   actRootGuid: string,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
 ): Promise<RegulationImportResult> {
@@ -58,7 +59,9 @@ async function importRegulations(
       const recordCount = await importSingleRegulation(
         reg,
         actRootGuid,
+        source,
         legislationService,
+        legislationSourceService,
         logger,
         errors,
         source.agencyCode,
@@ -93,7 +96,9 @@ async function importRegulations(
 async function importSingleRegulation(
   reg: Regulation,
   actRootGuid: string,
+  actSource: LegislationSource,
   legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
   logger: Logger,
   errors: string[],
   agencyCode: string,
@@ -105,6 +110,12 @@ async function importSingleRegulation(
     const xmlString = await getBcLawsXml(reg.url);
     const parsedDocument = parseBcLawsXml(xmlString);
     const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
+
+    const regSource = await legislationSourceService.createRegulationSource(
+      actSource.agencyCode,
+      parsedDocument.metadata.title,
+      reg.url,
+    );
 
     const context: InsertLegislationContext = {
       actTitle: parsedDocument.metadata.title,
@@ -120,7 +131,7 @@ async function importSingleRegulation(
       agencyCode,
       null,
       null,
-      null,
+      regSource.legislationSourceGuid,
       actRootGuid, // Link regulation to parent Act
     );
 
@@ -189,6 +200,7 @@ async function importLegislationSourceDocument(
         source,
         context.rootLegislationGuid,
         legislationService,
+        legislationSourceService,
         logger,
         context.errors,
       );
