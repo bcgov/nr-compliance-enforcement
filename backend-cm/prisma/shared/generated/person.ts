@@ -1,5 +1,7 @@
+import { business_person_xref } from "./business_person_xref";
 import { contact_method } from "./contact_method";
 import { party } from "./party";
+import { sex_code } from "./sex_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class person {
@@ -33,9 +35,27 @@ export class person {
   @ApiPropertyOptional({ type: String })
   party_guid?: string;
 
+  @ApiPropertyOptional({ type: Date })
+  date_of_birth?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_number?: string;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_jurisdiction?: string;
+
+  @ApiPropertyOptional({ type: String })
+  sex_code?: string;
+
+  @ApiProperty({ isArray: true, type: () => business_person_xref })
+  business_person_xref: business_person_xref[];
+
   @ApiProperty({ isArray: true, type: () => contact_method })
   contact_method: contact_method[];
 
   @ApiPropertyOptional({ type: () => party })
   party?: party;
+
+  @ApiPropertyOptional({ type: () => sex_code })
+  sex_code_person_sex_codeTosex_code?: sex_code;
 }

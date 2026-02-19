@@ -32,6 +32,7 @@ export class LegislationSourceResolver {
       sourceUrl: string;
       regulationsSourceUrl?: string;
       agencyCode: string;
+      sourceType?: string;
     },
     @Context() context: any,
   ) {
@@ -73,10 +74,7 @@ export class LegislationSourceResolver {
 
   @Mutation("resetLegislationSource")
   @Roles(adminRoles)
-  async resetLegislationSource(
-    @Args("legislationSourceGuid") legislationSourceGuid: string,
-    @Context() context: any,
-  ) {
+  async resetLegislationSource(@Args("legislationSourceGuid") legislationSourceGuid: string, @Context() context: any) {
     const userId = context.req?.user?.idir_username || "system";
     return await this.legislationSourceService.resetImport(legislationSourceGuid, userId);
   }

@@ -32,12 +32,13 @@
     "test:cov": "jest --coverage --detectOpenHandles --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "import:all": "nest start --entryFile=./src/cli.js -- import -j parks,bclaws",
+    "import:all": "nest start --entryFile=./src/cli.js -- import -j parks,bclaws,federallaws",
     "import:parks": "nest start --entryFile=./src/cli.js -- import -j parks",
-    "import:bclaws": "nest start --entryFile=./src/cli.js -- import -j bclaws"
+    "import:bclaws": "nest start --entryFile=./src/cli.js -- import -j bclaws",
+    "import:federallaws": "nest start --entryFile=./src/cli.js -- import -j federallaws"
   },
   "dependencies": {
-    "@apollo/server": "^4.10.0",
+    "@apollo/server": "^4.13.0",
     "@automapper/core": "^8.8.1",
     "@automapper/nestjs": "^8.8.1",
     "@automapper/pojos": "^8.8.1",
@@ -55,11 +56,11 @@
     "@nestjs/testing": "^10.4.4",
     "@prisma/client": "^6.6.0",
     "apollo-server-express": "^3.13.0",
-    "axios": "^1.7.7",
+    "axios": "^1.13.5",
     "class-validator": "^0.14.3",
     "copyfiles": "^2.4.1",
     "dotenv": "^16.0.1",
-    "fast-xml-parser": "^5.3.2",
+    "fast-xml-parser": "^5.3.6",
     "geojson": "^0.5.0",
     "graphql": "^16.8.1",
     "graphql-type-json": "^0.3.2",
@@ -154,5 +155,5 @@
       "glob": "^7.2.3"
     }
   },
-  "version": "2.0.176"
+  "version": "2.0.189"
 }

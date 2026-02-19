@@ -11,6 +11,7 @@ export interface LegislationSource {
   sourceUrl: string;
   regulationsSourceUrl: string | null;
   agencyCode: string;
+  sourceType: string;
   activeInd: boolean;
   importedInd: boolean;
   importStatus: ImportStatus | null;
@@ -26,6 +27,7 @@ export interface CreateLegislationSourceInput {
   sourceUrl: string;
   regulationsSourceUrl?: string;
   agencyCode: string;
+  sourceType?: string;
 }
 
 export interface UpdateLegislationSourceInput {
@@ -48,11 +50,13 @@ const GET_LEGISLATION_SOURCES = gql`
       sourceUrl
       regulationsSourceUrl
       agencyCode
+      sourceType
       activeInd
       importedInd
       importStatus
       lastImportTimestamp
       lastImportLog
+      createUserId
     }
   }
 `;
@@ -66,6 +70,7 @@ const GET_LEGISLATION_SOURCE = gql`
       sourceUrl
       regulationsSourceUrl
       agencyCode
+      sourceType
       activeInd
       importedInd
       importStatus
@@ -84,6 +89,7 @@ const CREATE_LEGISLATION_SOURCE = gql`
       sourceUrl
       regulationsSourceUrl
       agencyCode
+      sourceType
       activeInd
       importedInd
     }
@@ -99,6 +105,7 @@ const UPDATE_LEGISLATION_SOURCE = gql`
       sourceUrl
       regulationsSourceUrl
       agencyCode
+      sourceType
       activeInd
       importedInd
     }
