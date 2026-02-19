@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate, formatLocalTime, formatLocalDateTimeToUTC, parseUTCDateTimeToLocal } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
@@ -289,12 +289,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     if (incidentDate) {
-      const d = new Date(incidentDate);
-      setSelectedIncidentDate(d);
-      if (incidentTime) {
-        const localHH = d.getHours().toString().padStart(2, "0");
-        const localMM = d.getMinutes().toString().padStart(2, "0");
-        setSelectedIncidentTime(`${localHH}:${localMM}`);
+      const d = parseUTCDateTimeToLocal(incidentDate, incidentTime);
+      if (d) {
+        setSelectedIncidentDate(d);
+        if (incidentTime) {
+          setSelectedIncidentTime(formatLocalTime(d));
+        }
       }
     }
   }, [incidentDate, incidentTime]);
@@ -647,17 +647,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setIncidentDateTimeErrorMsg("");
     }
-    let utcTime = time;
-    let utcDate: Date = date;
-    if (date && time) {
-      const combined = new Date(date);
-      const [hh, mm] = time.split(":").map(Number);
-      combined.setHours(hh, mm, 0, 0);
-      const utcHH = combined.getUTCHours().toString().padStart(2, "0");
-      const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
-      utcTime = `${utcHH}:${utcMM}`;
-      utcDate = new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate()));
-    }
+    const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
     const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };

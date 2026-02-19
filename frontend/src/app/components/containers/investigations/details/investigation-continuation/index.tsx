@@ -6,7 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { formatDate, formatDateTime, formatTime } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTime } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -118,16 +118,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
-      const actionedDateTime = (() => {
-        if (!report.actionedDate) return new Date();
-        const dateStr = String(report.actionedDate).split("T")[0];
-        if (!report.actionedTime) {
-          const [y, m, d] = dateStr.split("-").map(Number);
-          return new Date(y, m - 1, d);
-        }
-        const timeStr = String(report.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
-        return new Date(`${dateStr}T${timeStr}Z`);
-      })();
+      const actionedDateTime = parseUTCDateTimeToLocal(report.actionedDate, report.actionedTime) ?? new Date();
       const dateKey = startOfDay(actionedDateTime).toISOString();
       if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
       acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });

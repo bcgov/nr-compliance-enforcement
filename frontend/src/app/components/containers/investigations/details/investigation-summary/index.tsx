@@ -2,7 +2,7 @@ import { Investigation } from "@/generated/graphql";
 import { FC, useState } from "react";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
@@ -30,13 +30,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   const discoveryDate = investigationData?.discoveryDate
-    ? (() => {
-        const dateStr = String(investigationData.discoveryDate).split("T")[0];
-        const timeStr = investigationData.discoveryTime
-          ? String(investigationData.discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00"
-          : "00:00:00";
-        return new Date(`${dateStr}T${timeStr}Z`).toString();
-      })()
+    ? parseUTCDateTimeToLocal(investigationData.discoveryDate, investigationData.discoveryTime)?.toString()
     : undefined;
   const dateLogged = investigationData?.openedTimestamp
     ? new Date(investigationData.openedTimestamp).toString()

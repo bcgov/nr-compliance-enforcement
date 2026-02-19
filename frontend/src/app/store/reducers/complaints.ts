@@ -32,6 +32,8 @@ import {
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
   getIssueDescription,
+  parseUTCDateTimeToLocal,
+  formatLocalTime,
 } from "@common/methods";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
@@ -1076,21 +1078,11 @@ export const selectComplaintDetails = createSelector(
         parkGuid,
       } = complaint as Complaint;
 
-      // Recombine time into the date so UTC→local conversion lands on the correct day
-      const incidentDateWithTime = incidentDate && incidentTime
-        ? `${String(incidentDate).split("T")[0]}T${incidentTime}Z`
-        : incidentDate;
+      // Parse UTC date+time from backend into local Date, and extract local time string
+      const localDate = parseUTCDateTimeToLocal(incidentDate, incidentTime);
+      const localIncidentTime = localDate && incidentTime ? formatLocalTime(localDate) : incidentTime;
 
-      // Convert UTC time to local for display
-      let localIncidentTime = incidentTime;
-      if (incidentDate && incidentTime) {
-        const d = new Date(incidentDateWithTime);
-        const localHH = d.getHours().toString().padStart(2, "0");
-        const localMM = d.getMinutes().toString().padStart(2, "0");
-        localIncidentTime = `${localHH}:${localMM}`;
-      }
-
-      result = { ...result, details, location, locationDescription, incidentDate: incidentDateWithTime, incidentTime: localIncidentTime, coordinates, ownedBy, parkGuid };
+      result = { ...result, details, location, locationDescription, incidentDate: localDate ?? undefined, incidentTime: localIncidentTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaint;

@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatLocalTime } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompInput } from "@/app/components/common/comp-input";
@@ -39,25 +39,12 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
 
 export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discoveryTime }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() => {
-    if (!discoveryDate) return null;
-    const dateStr = String(discoveryDate).split("T")[0];
-    if (!discoveryTime) {
-      // Date-only: parse as local so it doesn't roll back a day during UTC→local display
-      const [y, m, d] = dateStr.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    }
-    const timeStr = String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00";
-    return new Date(`${dateStr}T${timeStr}Z`);
-  });
+  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
+    () => parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
+  );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
-    if (!discoveryDate || !discoveryTime) return null;
-    const dateStr = String(discoveryDate).split("T")[0];
-    const timeStr = String(discoveryTime).split("T")[1]?.replace("Z", "") || "00:00:00";
-    const d = new Date(`${dateStr}T${timeStr}Z`);
-    const hh = d.getHours().toString().padStart(2, "0");
-    const mm = d.getMinutes().toString().padStart(2, "0");
-    return `${hh}:${mm}`;
+    const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
+    return d && discoveryTime ? formatLocalTime(d) : null;
   });
 
   const leadAgency = getUserAgency();

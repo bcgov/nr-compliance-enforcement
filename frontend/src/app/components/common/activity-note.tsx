@@ -11,6 +11,7 @@ import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/stor
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
+import { parseUTCDateTimeToLocal, formatLocalTime, formatLocalDateTimeToUTC } from "@common/methods";
 import { gql } from "graphql-request";
 
 interface ActivityNoteProps {
@@ -91,24 +92,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
-  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(() => {
-    if (!initialData?.actionedDate) return undefined;
-    const dateStr = String(initialData.actionedDate).split("T")[0];
-    if (!initialData.actionedTime) {
-      const [y, m, d] = dateStr.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    }
-    const timeStr = String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
-    return new Date(`${dateStr}T${timeStr}Z`);
-  });
+  const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
+    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? undefined,
+  );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    if (!initialData?.actionedDate || !initialData?.actionedTime) return null;
-    const dateStr = String(initialData.actionedDate).split("T")[0];
-    const timeStr = String(initialData.actionedTime).split("T")[1]?.replace("Z", "") || "00:00:00";
-    const d = new Date(`${dateStr}T${timeStr}Z`);
-    const hh = d.getHours().toString().padStart(2, "0");
-    const mm = d.getMinutes().toString().padStart(2, "0");
-    return `${hh}:${mm}`;
+    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime);
+    return d && initialData?.actionedTime ? formatLocalTime(d) : null;
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
@@ -146,12 +135,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     let actionedTime: Date | undefined = undefined;
     let actionedDate: Date | undefined = selectedActionedDateTime;
     if (selectedActionedDateTime && selectedActionedTime) {
-      const [hh, mm] = selectedActionedTime.split(":").map(Number);
+      const { utcDate } = formatLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
       const combined = new Date(selectedActionedDateTime);
+      const [hh, mm] = selectedActionedTime.split(":").map(Number);
       combined.setHours(hh, mm, 0, 0);
       actionedTime = combined;
-      // Use UTC date from combined so date rolls over correctly across midnight
-      actionedDate = new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate()));
+      actionedDate = utcDate;
     }
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
