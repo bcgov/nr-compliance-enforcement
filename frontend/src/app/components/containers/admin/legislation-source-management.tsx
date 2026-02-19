@@ -123,7 +123,9 @@ export const LegislationSourceManagement: FC = () => {
 
     // Restrict by agency if not global admin
     if (!isGlobalAdmin) {
-      result = result.filter((source) => allowedAgencies.has(source.agencyCode));
+      result = result
+        .filter((source) => allowedAgencies.has(source.agencyCode))
+        .filter((source) => source.createUserId !== "system");
     }
 
     return result;
