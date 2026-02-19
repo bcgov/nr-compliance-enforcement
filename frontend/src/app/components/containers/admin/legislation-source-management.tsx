@@ -20,6 +20,7 @@ import {
 import { Link } from "react-router-dom";
 import UserService from "@/app/service/user-service";
 import { Roles } from "@/app/types/app/roles";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -112,32 +113,33 @@ export const LegislationSourceManagement: FC = () => {
   const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
   const userAgency = UserService.getUserAgency();
   const agencyList = agencies?.filter((agency) => (isGlobalAdmin ? true : agency.value === userAgency));
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
 
-  const filteredSources = useMemo(() => {
+  // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
+  const actSources = useMemo(() => {
     if (!sources) return [];
 
     let result = sources;
 
     // Restrict by agency if not global admin
     if (!isGlobalAdmin) {
-      result = result.filter((source) => source.agencyCode === userAgency);
-    }
-
-    // Apply search filter if present
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-
-      result = result.filter(
-        (source) =>
-          source.shortDescription.toLowerCase().includes(query) ||
-          source.longDescription?.toLowerCase().includes(query) ||
-          source.sourceUrl.toLowerCase().includes(query) ||
-          source.agencyCode.toLowerCase().includes(query),
-      );
+      result = result.filter((source) => allowedAgencies.has(source.agencyCode));
     }
 
     return result;
-  }, [sources, searchQuery]);
+  }, [sources]);
+
+  const filteredSources = useMemo(() => {
+    if (!searchQuery) return actSources;
+    const query = searchQuery.toLowerCase();
+    return actSources.filter(
+      (source) =>
+        source.shortDescription.toLowerCase().includes(query) ||
+        source.longDescription?.toLowerCase().includes(query) ||
+        source.sourceUrl.toLowerCase().includes(query) ||
+        source.agencyCode.toLowerCase().includes(query),
+    );
+  }, [actSources, searchQuery]);
 
   const handleOpenCreate = () => {
     setEditingSource(emptySource);
