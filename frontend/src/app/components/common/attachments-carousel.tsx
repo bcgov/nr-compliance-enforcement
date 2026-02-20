@@ -129,7 +129,7 @@ export const Attachments: FC<Props> = ({
       });
     } else {
       exisingFileNames = slides.map((attachment) => {
-        return removeIdentifierFromFilename(attachment.name, identifier ?? "", attachmentType);
+        return removeIdentifierFromFilename(decodeURIComponent(attachment.name), identifier ?? "", attachmentType);
       });
     }
 
