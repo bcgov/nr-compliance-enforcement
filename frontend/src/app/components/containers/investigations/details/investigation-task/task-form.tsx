@@ -17,7 +17,7 @@ import {
   DiaryDateInput,
   Task,
 } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -44,6 +44,7 @@ import {
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE,
 } from "@/app/components/common/activity-note";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -125,6 +126,11 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
+
   // State
   const idir = useAppSelector(appUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
@@ -157,13 +163,17 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const isEditMode = !!task;
 
-  if (!isEditMode) {
-    // Set defaults
-    form.setFieldValue("task-officer-assigned", form.getFieldValue("task-officer-assigned") || idir);
-    form.setFieldValue("task-status", form.getFieldValue("task-status") || "OPEN");
-  }
-
   // Use Effects
+
+  // Set defaults on first mount
+  useEffect(() => {
+    if (!isEditMode) {
+      form.setFieldValue("task-officer-assigned", form.getFieldValue("task-officer-assigned") || idir);
+      form.setFieldValue("task-status", form.getFieldValue("task-status") || "OPEN");
+      form.setFieldMeta("task-officer-assigned", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-status", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+  }, []);
 
   // Populate form when editing
   useEffect(() => {
@@ -182,6 +192,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       form.setFieldValue("task-officer-assigned", task.assignedUserIdentifier || "");
       form.setFieldValue("task-created-by", task.createdByUserIdentifier || "");
       form.setFieldValue("task-status", task.taskStatusCode || "");
+
+      form.setFieldMeta("task-category", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-sub-category", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-description", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-officer-assigned", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-created-by", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-status", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
   }, [task, taskSubCategories]);
 
