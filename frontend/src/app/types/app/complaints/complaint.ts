@@ -3,7 +3,7 @@ import { BaseComplaint } from "nrs-ce-common-types";
 
 export interface Complaint extends Omit<BaseComplaint, "incidentDateTime"> {
   incidentDate: Date;
-  incidentTime: string;
+  incidentTime: string | undefined;
   organization: {
     area: string;
     areaName?: string;
