@@ -8,7 +8,7 @@ import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
 import { openModal, selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
-import { getThumbnailDataURL, isImage } from "@common/methods";
+import { getThumbnailDataURL, isImage, removeIdentifierFromFilename } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { CANCEL_CONFIRM_FILE_UPDATE } from "@/app/types/modal/modal-types";
@@ -121,9 +121,18 @@ export const Attachments: FC<Props> = ({
   }
 
   const confirmFileUpdate = async (newFiles: FileList) => {
-    let exisingFileNames = slides.map((attachment) => {
-      return getDisplayFilename(attachment.name);
-    });
+    let exisingFileNames: string[] = [];
+
+    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT) {
+      exisingFileNames = slides.map((attachment) => {
+        return getDisplayFilename(attachment.name);
+      });
+    } else {
+      exisingFileNames = slides.map((attachment) => {
+        return removeIdentifierFromFilename(attachment.name, identifier ?? "", attachmentType);
+      });
+    }
+
     const exisingFileNamesSet = new Set(exisingFileNames);
     const newFileNamesArray = Array.from(newFiles).map((file) => file.name);
     const conflitingFileNames = newFileNamesArray.filter((item) => exisingFileNamesSet.has(item));
