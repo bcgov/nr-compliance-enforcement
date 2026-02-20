@@ -33,6 +33,11 @@ export class WebEocScheduler {
     this.sessionStart = null;
   }
 
+  private clearSession(): void {
+    this.cookie = null;
+    this.sessionStart = null;
+  }
+
   onModuleInit() {
     this.cronJob = new CronJob(this.getCronExpression(), async () => {
       //-- clean up old logs
@@ -253,6 +258,7 @@ export class WebEocScheduler {
       await this.logPollingActivity(operationType, timeStamp, counter);
     } catch (error) {
       this.logger.error(`Unable to fetch data from WebEOC`, error);
+      this.clearSession();
     }
   }
 
@@ -295,6 +301,7 @@ export class WebEocScheduler {
       return this.cookie;
     } catch (error) {
       this.logger.error(`Error ${action}ing WebEOC session:`, error);
+      this.clearSession();
       throw error;
     }
   }
