@@ -194,7 +194,7 @@ export const CreateComplaint: FC = () => {
         ownedBy: agency,
         reportedByOther: "",
         incidentDate: currentDate,
-        incidentTime: "",
+        incidentTime: null,
         reportedOn: currentDate,
         updatedOn: currentDate,
         organization: {
