@@ -212,7 +212,8 @@
     "nth-check": "^2.1.1",
     "resolve-url-loader": "^5.0.0",
     "sass-loader": "^16.0.3",
-    "glob": ">=10.5.0"
+    "glob": ">=10.5.0",
+    "minimatch": "^10.2.1"
   },
   "browser": {
     "fs": false,
