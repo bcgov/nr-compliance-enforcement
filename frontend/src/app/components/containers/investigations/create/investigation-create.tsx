@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
@@ -12,6 +12,7 @@ import { CreateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -92,6 +93,11 @@ const InvestigationCreate: FC = () => {
       ToggleError("Errors in form");
     },
   });
+
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();

@@ -1,12 +1,13 @@
 import { FC, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { parse } from "date-fns";
 import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface DiaryDateModalProps {
   show: boolean;
@@ -45,6 +46,11 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
+
   const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
 
   useEffect(() => {
@@ -56,6 +62,8 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
         form.setFieldValue("dueDate", null);
         form.setFieldValue("description", "");
       }
+      form.setFieldMeta("dueDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("description", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     } else {
       form.reset();
     }

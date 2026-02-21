@@ -1,11 +1,12 @@
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { FormField } from "@/app/components/common/form-field";
 import { Button, Card } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { useEffect } from "react";
 import z from "zod";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { DiaryDate } from "@/generated/graphql";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface DiaryDateFormProps {
   index: number;
@@ -30,6 +31,11 @@ export const DiaryDateForm = ({
       dueDate: initialData?.dueDate || null,
     },
   });
+
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
 
   // Check validation whenever form state changes
   useEffect(() => {

@@ -61,6 +61,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
     } else {
       form.setFieldValue("discoveryDate", "");
     }
+    form.setFieldMeta("discoveryDate", (meta: any) => ({ ...meta, isDirty: false, isTouched: false }));
   };
 
   return (

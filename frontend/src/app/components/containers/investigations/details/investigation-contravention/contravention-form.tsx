@@ -6,7 +6,7 @@ import {
   InvestigationParty,
   LegislationSource,
 } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useEffect, useState } from "react";
 import Option from "@apptypes/app/option";
@@ -30,6 +30,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -135,6 +136,11 @@ export const ContraventionForm = ({
       }
     },
   });
+
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
 
   // Selectors
   const userAgency = getUserAgency();
@@ -342,6 +348,8 @@ export const ContraventionForm = ({
       // Set all form values
       form.setFieldValue("act", act);
       form.setFieldValue("section", section);
+      form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
   }, [contravention, act, section]);
 

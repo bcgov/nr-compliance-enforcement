@@ -3,12 +3,13 @@ import { InvestigationForm } from "@/app/components/containers/investigations/de
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { getUserAgency } from "@/app/service/user-service";
 import { openModal } from "@/app/store/reducers/app";
 import { selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { UpdateInvestigationInput } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useMemo } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -155,6 +156,11 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
       ToggleError("Errors in form");
     },
   });
+
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+  useUnsavedChangesWarning(isDirty);
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
