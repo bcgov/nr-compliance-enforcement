@@ -24,6 +24,7 @@ interface InvestigationFormProps {
   isDisabled: boolean;
   id?: string;
   discoveryDate?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
@@ -36,7 +37,7 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   }
 `;
 
-export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: InvestigationFormProps) => {
+export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirtyChange }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
     discoveryDate ? new Date(discoveryDate) : null,
@@ -357,6 +358,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
                   validationRequired={false}
                   sourceXCoordinate={longitude}
                   sourceYCoordinate={latitude}
+                  onDirtyChange={onDirtyChange}
                 />
               );
             }}

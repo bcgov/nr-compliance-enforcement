@@ -8,6 +8,7 @@ import { useAppDispatch } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { MAP_MODAL } from "@apptypes/modal/modal-types";
 import utmObj from "utm-latlng";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id?: string;
@@ -22,6 +23,7 @@ type Props = {
   sourceXCoordinate?: string;
   sourceYCoordinate?: string;
   equipmentType?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 const COORDINATE_TYPES = {
@@ -38,6 +40,7 @@ export const CompCoordinateInput: FC<Props> = ({
   sourceXCoordinate,
   sourceYCoordinate,
   syncCoordinates,
+  onDirtyChange,
   throwError,
   enableCopyCoordinates,
   validationRequired,
@@ -56,12 +59,17 @@ export const CompCoordinateInput: FC<Props> = ({
   const [zoneCoordinate, setZoneCoordinate] = useState<Option | undefined | null>();
   const [zoneErrorMsg, setZoneErrorMsg] = useState<string | undefined>("");
 
+  // Dirty tracking
+  const { markDirty } = useFormDirtyState(onDirtyChange, 0);
+
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {
       // Prevent infinite renders in UseEffects when values haven't changed
       if (latitude === yCoordinate && longitude === xCoordinate) {
         return;
       }
+
+      markDirty();
 
       setYCoordinateErrorMsg("");
       setXCoordinateErrorMsg("");
@@ -128,6 +136,8 @@ export const CompCoordinateInput: FC<Props> = ({
         syncCoordinates("", "");
         return;
       }
+
+      markDirty();
 
       const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
       let hasErrors = false;

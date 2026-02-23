@@ -3,7 +3,7 @@ import { InvestigationForm } from "@/app/components/containers/investigations/de
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getUserAgency } from "@/app/service/user-service";
 import { openModal } from "@/app/store/reducers/app";
 import { selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
@@ -157,10 +157,12 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
     },
   });
 
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
-  useUnsavedChangesWarning(isDirty);
+  useUnsavedChangesWarning(isDirty || isAnyDirty);
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
@@ -197,6 +199,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
             form={form}
             isDisabled={isDisabled}
             discoveryDate={investigationData?.getInvestigation?.discoveryDate}
+            onDirtyChange={handleChildDirtyChange}
           />
         </Card.Body>
       </Card>
