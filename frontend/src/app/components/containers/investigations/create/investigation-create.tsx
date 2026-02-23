@@ -48,6 +48,7 @@ const InvestigationCreate: FC = () => {
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
+      allowNavigation();
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
     },
     onError: (error: any) => {
@@ -97,9 +98,10 @@ const InvestigationCreate: FC = () => {
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
-  useUnsavedChangesWarning(isDirty);
+  const { allowNavigation } = useUnsavedChangesWarning(isDirty);
 
   const confirmCancelChanges = useCallback(() => {
+    allowNavigation();
     form.reset();
 
     if (caseIdentifier) {
