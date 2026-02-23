@@ -12,6 +12,7 @@ import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/off
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { gql } from "graphql-request";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ActivityNoteProps {
   index?: number;
@@ -100,7 +101,9 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const [contentError, setContentError] = useState<string>("");
   const [dateTimeError, setDateTimeError] = useState<string>("");
   const [officerError, setOfficerError] = useState<string>("");
-  const [isDirty, setIsDirty] = useState<boolean>(false);
+
+  // Dirty tracking
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange, index ?? 0);
 
   // Editor setup
   const editor = useEditor({
@@ -114,7 +117,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     content: initialData?.contentJson ? JSON.parse(initialData.contentJson) : undefined,
     onUpdate: ({ editor }) => {
       setPlainText(editor.getText());
-      setIsDirty(true);
+      markDirty();
     },
   });
 
@@ -147,13 +150,8 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     setContentError("");
     setDateTimeError("");
     setOfficerError("");
-    setIsDirty(false);
+    markClean();
   };
-
-  // Bubble up the dirty flag to the parent
-  useEffect(() => {
-    onDirtyChange?.(index ?? 0, isDirty);
-  }, [isDirty, index]);
 
   // Validation - runs whenever dependencies change
   useEffect(() => {
@@ -218,7 +216,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
             selectedDate={selectedActionedDateTime}
             onChange={(value: Date) => {
               setSelectedActionedDateTime(value);
-              setIsDirty(true);
+              markDirty();
             }}
             className="comp-details-edit-calendar-input"
             classNamePrefix="comp-select"
@@ -246,7 +244,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           classNamePrefix="comp-select"
           onChange={(value: Option | null) => {
             setSelectedOfficer(value);
-            setIsDirty(true);
+            markDirty();
           }}
           className="comp-details-input w-100 max-w-370"
           options={assignableOfficers}
