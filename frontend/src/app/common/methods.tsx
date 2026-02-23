@@ -205,6 +205,32 @@ export const injectIdentifierToFilename = (
   return `${fileNameWithoutExtension}_${identifier}_${attachmentType}${fileExtension}`;
 };
 
+export const removeIdentifierFromFilename = (
+  formattedFilename: string,
+  identifier: string,
+  attachmentType: AttachmentEnum,
+): string => {
+  const suffix = `_${identifier}_${attachmentType}`;
+  const lastDotIndex = formattedFilename.lastIndexOf(".");
+
+  if (lastDotIndex === -1) {
+    if (formattedFilename.endsWith(suffix)) {
+      return formattedFilename.slice(0, -suffix.length);
+    }
+    return formattedFilename;
+  }
+
+  const fileNameWithoutExtension = formattedFilename.substring(0, lastDotIndex);
+  const fileExtension = formattedFilename.substring(lastDotIndex);
+
+  if (fileNameWithoutExtension.endsWith(suffix)) {
+    const cleanedName = fileNameWithoutExtension.slice(0, -suffix.length);
+    return `${cleanedName}${fileExtension}`;
+  }
+
+  return formattedFilename;
+};
+
 export const isImage = (filename: string): boolean => {
   return ["jpg", "jpeg", "png", "gif", "bmp", "webp", "abif", "svg"].includes(getFileExtension(filename));
 };
