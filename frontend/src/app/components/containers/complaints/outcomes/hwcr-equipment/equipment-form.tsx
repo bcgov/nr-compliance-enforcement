@@ -542,7 +542,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 <ValidationDatePicker
                   id="equipment-day-set"
                   maxDate={dateRemoved ?? new Date()}
-                  onChange={(date: Date | null) => date && setDateSet(date)}
+                  onChange={(date: Date | null, _time: string | null) => date && setDateSet(date)}
                   errMsg={dateSetErrorMsg}
                   selectedDate={dateSet}
                   className="comp-details-edit-calendar-input"
@@ -584,7 +584,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       id="equipment-date-removed"
                       maxDate={new Date()}
                       minDate={dateSet ?? null}
-                      onChange={(date: Date) => setDateRemoved(date)}
+                      onChange={(date: Date, _time: string | null) => setDateRemoved(date)}
                       errMsg={dateRemovedErrorMsg}
                       selectedDate={dateRemoved}
                       className="comp-details-edit-calendar-input"

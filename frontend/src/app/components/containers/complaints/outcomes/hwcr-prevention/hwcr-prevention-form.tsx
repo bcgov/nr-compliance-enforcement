@@ -112,7 +112,7 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
     setSelectedPreventionTypes(selectedItems);
   };
 
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Date | null, _time: string | null) => {
     setSelectedDate(date);
   };
 

@@ -56,8 +56,11 @@ export class investigation {
   @ApiPropertyOptional({ type: String })
   file_coordinator_guid_ref?: string;
 
-  @ApiProperty({ type: Date })
-  discovery_date: Date;
+  @ApiPropertyOptional({ type: Date })
+  discovery_date_utc_date?: Date;
+
+  @ApiPropertyOptional({ type: Date })
+  discovery_date_utc_time?: Date;
 
   @ApiProperty({ isArray: true, type: () => activity_note })
   activity_note: activity_note[];

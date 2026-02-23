@@ -548,3 +548,54 @@ export const displayBackendErrors = (message: string) => {
 export function getDropdownOption(matchValue: string | undefined | null, optionsList: Option[]): Option | undefined {
   return optionsList.find((item) => item.value === matchValue);
 }
+
+/**
+ * Reconstructs a single Date from separate date/time ISO-string fields.
+ * When only a date is provided (no time), constructs a local-midnight Date
+ * to avoid UTC-to-local day rollback (e.g. July 1 UTC becoming June 30 local).
+ */
+export const parseUTCDateTimeToLocal = (
+  date: string | Date | null | undefined,
+  time: string | Date | null | undefined,
+): Date | null => {
+  if (!date) return null;
+  const dateStr =
+    date instanceof Date
+      ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+      : String(date).split("T")[0];
+  if (!time) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const raw = String(time);
+  const timeStr = raw.includes("T") ? raw.split("T")[1]?.replace("Z", "") || "00:00:00" : raw.replace("Z", "");
+  return new Date(`${dateStr}T${timeStr}Z`);
+};
+
+/**
+ * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
+ */
+export const formatLocalDateTimeToUTC = (
+  date: Date,
+  time: string | null | undefined,
+): { utcDate: Date; utcTime: string | null } => {
+  if (!time) return { utcDate: date, utcTime: null };
+  const combined = new Date(date);
+  const [hh, mm] = time.split(":").map(Number);
+  combined.setHours(hh, mm, 0, 0);
+  const utcHH = combined.getUTCHours().toString().padStart(2, "0");
+  const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
+  return {
+    utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
+    utcTime: `${utcHH}:${utcMM}`,
+  };
+};
+
+/**
+ * Extracts local "HH:MM" from a Date object.
+ */
+export const formatLocalTime = (date: Date): string => {
+  const hh = date.getHours().toString().padStart(2, "0");
+  const mm = date.getMinutes().toString().padStart(2, "0");
+  return `${hh}:${mm}`;
+};

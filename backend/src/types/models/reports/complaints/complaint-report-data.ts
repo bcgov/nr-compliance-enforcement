@@ -13,7 +13,8 @@ export interface ComplaintReportData {
   ownedBy: string;
   officerAssigned: string;
   status: string;
-  incidentDateTime: Date | string;
+  incidentDate: Date | string;
+  incidentTime: string;
   location: string;
   latitude: string;
   longitude: string;
