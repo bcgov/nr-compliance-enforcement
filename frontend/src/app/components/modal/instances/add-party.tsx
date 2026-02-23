@@ -9,6 +9,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CompSelect } from "../../common/comp-select";
 import { selectPartyAssociationRoleDropdown } from "@/app/store/reducers/code-table-selectors";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -96,6 +97,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
   const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
+  const [isAnyDirty, setIsAnyDirty] = useState<boolean>(false);
   const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
     onSuccess: () => {
@@ -107,9 +109,12 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
     },
   });
 
+  useUnsavedChangesWarning(isAnyDirty);
+
   const handleSearchPartyChange = (selected: Party) => {
     setPartyErrorMessage("");
     setSelectedParty(selected);
+    setIsAnyDirty(true);
   };
 
   const handlePartyRoleChange = (partyRole: string) => {
