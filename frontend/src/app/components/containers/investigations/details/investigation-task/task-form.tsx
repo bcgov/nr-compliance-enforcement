@@ -44,7 +44,7 @@ import {
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE,
 } from "@/app/components/common/activity-note";
-import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskFormProps {
   investigationGuid: string;
@@ -140,23 +140,20 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [diaryDateValidation, setDiaryDateValidation] = useState<Record<number, boolean>>({});
   const [triggerDiaryValidation, setTriggerDiaryValidation] = useState(false);
   const [deletedDiaryDateGuids, setDeletedDiaryDateGuids] = useState<string[]>([]);
-  const [dirtyDiaryDates, setDirtyDiaryDates] = useState<Record<number, boolean>>({});
   const [taskActions, setTaskActions] = useState<Partial<ActivityNoteInput[]>>([]);
   const [showTaskActionErrors, setShowTaskActionErrors] = useState(false);
   const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
   const [deletedTaskActionGuids, setDeletedTaskActionGuids] = useState<string[]>([]);
-  const [dirtyTaskActions, setDirtyTaskActions] = useState<Record<number, boolean>>({});
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
-  const isDirty = useStore(form.baseStore, (state) =>
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
-  const isFormDirty =
-    isDirty || Object.values(dirtyDiaryDates).some(Boolean) || Object.values(dirtyTaskActions).some(Boolean);
-  useUnsavedChangesWarning(isFormDirty);
+  useUnsavedChangesWarning(isFormDirty || isAnyDirty);
 
   const taskCategoryOptions = taskCategories.map((option: any) => {
     return {
@@ -429,10 +426,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     await Promise.all(savePromises);
   };
 
-  const handleDiaryDateDirtyChange = (index: number, isDirty: boolean) => {
-    setDirtyDiaryDates((prev) => ({ ...prev, [index]: isDirty }));
-  };
-
   const deleteTrackedDiaryDates = async () => {
     try {
       const deletePromises = deletedDiaryDateGuids.map(async (guid) => {
@@ -539,10 +532,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   // Task Action Functions
   const addTaskAction = () => {
     setTaskActions([...taskActions, { contentJson: "" }]);
-  };
-
-  const handleTaskActionDirtyChange = (index: number, isDirty: boolean) => {
-    setDirtyTaskActions((prev) => ({ ...prev, [index]: isDirty }));
   };
 
   const handleTaskActionValidationChange = (isValid: boolean, index?: number) => {
@@ -888,7 +877,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}
-              onDirtyChange={handleDiaryDateDirtyChange}
+              onDirtyChange={handleChildDirtyChange}
               onValuesChange={handleDiaryDateValuesChange}
               initialData={diaryDate}
               triggerValidation={triggerDiaryValidation}
@@ -941,7 +930,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
                   onValuesChange={handleTaskActionValuesChange}
                   initialData={taskAction}
                   showErrors={showTaskActionErrors}
-                  onDirtyChange={handleTaskActionDirtyChange}
+                  onDirtyChange={handleChildDirtyChange}
                 />
               </Card.Body>
             </Card>

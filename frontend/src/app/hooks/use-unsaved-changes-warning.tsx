@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const useUnsavedChangesWarning = (isDirty: boolean) => {
   // Used to override hook behavior in cases where we want to be able to navigate (e.g. cancelling or saving changes then going to a new page)
@@ -61,6 +61,29 @@ const useUnsavedChangesWarning = (isDirty: boolean) => {
   }, [isDirty]);
 
   return { allowNavigation };
+};
+
+// Helper hook for managing form state
+export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boolean) => void, index: number = 0) => {
+  const [isDirty, setIsDirty] = useState(false);
+  const [dirtyChildren, setDirtyChildren] = useState<Record<number, boolean>>({});
+
+  // Bubble up to parent
+  useEffect(() => {
+    onDirtyChange?.(index, isDirty);
+  }, [isDirty, index]);
+
+  const markDirty = () => setIsDirty(true);
+  const markClean = () => setIsDirty(false);
+
+  // For parent components to track child dirty state
+  const handleChildDirtyChange = (childIndex: number, childIsDirty: boolean) => {
+    setDirtyChildren((prev) => ({ ...prev, [childIndex]: childIsDirty }));
+  };
+
+  const isAnyDirty = isDirty || Object.values(dirtyChildren).some(Boolean);
+
+  return { isDirty, isAnyDirty, markDirty, markClean, handleChildDirtyChange };
 };
 
 export default useUnsavedChangesWarning;
