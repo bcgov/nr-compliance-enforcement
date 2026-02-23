@@ -74,9 +74,10 @@ export const DELETE_DIARY_DATES_BY_TASK = gql`
 interface DiaryDatesProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData }) => {
+export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange }) => {
   const tasks = investigationData?.tasks || [];
 
   // State
@@ -205,6 +206,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
         investigationGuid={investigationGuid}
         diaryDate={editingDiaryDate}
         isSaving={saveMutation.isPending}
+        onDirtyChange={onDirtyChange}
       />
 
       <DeleteConfirmModal

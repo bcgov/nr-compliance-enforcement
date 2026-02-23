@@ -7,12 +7,12 @@ import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface DiaryDateModalProps {
   show: boolean;
   onHide: () => void;
   onSave: (input: DiaryDateInput) => Promise<void>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   investigationGuid: string;
   diaryDate: DiaryDate | null;
   isSaving: boolean;
@@ -22,6 +22,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
   show,
   onHide,
   onSave,
+  onDirtyChange,
   investigationGuid,
   diaryDate,
   isSaving,
@@ -49,7 +50,10 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
-  useUnsavedChangesWarning(isDirty);
+
+  useEffect(() => {
+    onDirtyChange?.(0, isDirty);
+  }, [isDirty]);
 
   const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
 
