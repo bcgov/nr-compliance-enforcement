@@ -27,6 +27,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     _location_summary_text  VARCHAR(120);
     _location_detailed_text VARCHAR(4000);
     _incident_utc_datetime timestamp;
+    _incident_utc_date DATE;
+    _incident_utc_time TIME;
     _create_utc_timestamp timestamp := (now() AT TIME zone 'UTC');
     _update_utc_timestamp timestamp := (now() AT TIME zone 'UTC');
     _create_userid              VARCHAR(200);
@@ -129,6 +131,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
     END;
     _location_detailed_text := complaint_data ->> 'cos_location_description';
     _incident_utc_datetime := ( complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
+    _incident_utc_date := _incident_utc_datetime::DATE;
+    _incident_utc_time := _incident_utc_datetime::TIME;
     _incident_reported_utc_timestmp := ( complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
 	_address_coordinates_lat := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_lat');
     _address_coordinates_long := complaint.validate_coordinate_field(complaint_data ->> 'address_coordinates_long');
@@ -180,7 +184,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             caller_phone_3,
                             location_summary_text,
                             location_detailed_text,
-                            incident_utc_datetime,
+                            incident_utc_date,
+                            incident_utc_time,
                             incident_reported_utc_timestmp,
                             create_user_id,
                             create_utc_timestamp,
@@ -207,7 +212,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
                             _caller_phone_3,
                             _location_summary_text,
                             _location_detailed_text,
-                            _incident_utc_datetime,
+                            _incident_utc_date,
+                            _incident_utc_time,
                             _incident_reported_utc_timestmp,
                             _create_userid,
                             _create_utc_timestamp,
