@@ -145,6 +145,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [showTaskActionErrors, setShowTaskActionErrors] = useState(false);
   const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
   const [deletedTaskActionGuids, setDeletedTaskActionGuids] = useState<string[]>([]);
+  const [dirtyTaskActions, setDirtyTaskActions] = useState<Record<number, boolean>>({});
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
@@ -153,7 +154,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
-  const isFormDirty = isDirty || Object.values(dirtyDiaryDates).some(Boolean);
+  const isFormDirty =
+    isDirty || Object.values(dirtyDiaryDates).some(Boolean) || Object.values(dirtyTaskActions).some(Boolean);
   useUnsavedChangesWarning(isFormDirty);
 
   const taskCategoryOptions = taskCategories.map((option: any) => {
@@ -537,6 +539,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   // Task Action Functions
   const addTaskAction = () => {
     setTaskActions([...taskActions, { contentJson: "" }]);
+  };
+
+  const handleTaskActionDirtyChange = (index: number, isDirty: boolean) => {
+    setDirtyTaskActions((prev) => ({ ...prev, [index]: isDirty }));
   };
 
   const handleTaskActionValidationChange = (isValid: boolean, index?: number) => {
@@ -935,6 +941,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
                   onValuesChange={handleTaskActionValuesChange}
                   initialData={taskAction}
                   showErrors={showTaskActionErrors}
+                  onDirtyChange={handleTaskActionDirtyChange}
                 />
               </Card.Body>
             </Card>

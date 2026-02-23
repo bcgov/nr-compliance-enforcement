@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import z from "zod";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { DiaryDate } from "@/generated/graphql";
-import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 interface DiaryDateFormProps {
   index: number;
@@ -40,7 +39,7 @@ export const DiaryDateForm = ({
 
   // Bubble up the dirty flag to the parent
   useEffect(() => {
-    onDirtyChange?.(index, isDirty);
+    onDirtyChange?.(index ?? 0, isDirty);
   }, [isDirty, index]);
 
   // Check validation whenever form state changes

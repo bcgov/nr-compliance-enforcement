@@ -17,6 +17,7 @@ interface ActivityNoteProps {
   index?: number;
   onValidationChange: (isValid: boolean, index?: number) => void;
   onValuesChange: (values: Partial<ActivityNoteInput>, index?: number) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   initialData?: ActivityNote;
   shouldReset?: boolean;
   showErrors: boolean;
@@ -63,6 +64,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   index,
   onValidationChange,
   onValuesChange,
+  onDirtyChange,
   initialData,
   showErrors,
   shouldReset,
@@ -98,6 +100,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const [contentError, setContentError] = useState<string>("");
   const [dateTimeError, setDateTimeError] = useState<string>("");
   const [officerError, setOfficerError] = useState<string>("");
+  const [isDirty, setIsDirty] = useState<boolean>(false);
 
   // Editor setup
   const editor = useEditor({
@@ -111,6 +114,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     content: initialData?.contentJson ? JSON.parse(initialData.contentJson) : undefined,
     onUpdate: ({ editor }) => {
       setPlainText(editor.getText());
+      setIsDirty(true);
     },
   });
 
@@ -143,7 +147,13 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     setContentError("");
     setDateTimeError("");
     setOfficerError("");
+    setIsDirty(false);
   };
+
+  // Bubble up the dirty flag to the parent
+  useEffect(() => {
+    onDirtyChange?.(index ?? 0, isDirty);
+  }, [isDirty, index]);
 
   // Validation - runs whenever dependencies change
   useEffect(() => {
@@ -206,7 +216,10 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           <ValidationDatePicker
             id="investigation-continuation-report-date-picker"
             selectedDate={selectedActionedDateTime}
-            onChange={setSelectedActionedDateTime}
+            onChange={(value: Date) => {
+              setSelectedActionedDateTime(value);
+              setIsDirty(true);
+            }}
             className="comp-details-edit-calendar-input"
             classNamePrefix="comp-select"
             errMsg={dateTimeError}
@@ -231,7 +244,10 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           id="officer-assigned-select-id"
           showInactive={false}
           classNamePrefix="comp-select"
-          onChange={setSelectedOfficer}
+          onChange={(value: Option | null) => {
+            setSelectedOfficer(value);
+            setIsDirty(true);
+          }}
           className="comp-details-input w-100 max-w-370"
           options={assignableOfficers}
           placeholder="Select"

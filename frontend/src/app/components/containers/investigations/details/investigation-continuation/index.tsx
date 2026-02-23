@@ -16,6 +16,7 @@ import { appUserGuid } from "@/app/store/reducers/app";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -48,6 +49,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   const [shouldReset, setShouldReset] = useState(false);
   const [showContinuationReportErrors, setShowContinuationReportErrors] = useState(false);
   const [continuationReport, setContinuationReport] = useState<Partial<ActivityNoteInput>>();
+  const [dirtyReports, setDirtyReports] = useState<Record<number, boolean>>({});
 
   // GraphQL queries and mutations
   const { data, refetch } = useGraphQLQuery(GET_REPORTS, {
@@ -66,6 +68,15 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       ToggleError("Failed to save report");
     },
   });
+
+  // dirty form Handler
+  const handleDirtyReportChange = (index: number, isDirty: boolean) => {
+    setDirtyReports((prev) => ({ ...prev, [index]: isDirty }));
+  };
+
+  const isFormDirty = Object.values(dirtyReports).some(Boolean);
+
+  useUnsavedChangesWarning(isFormDirty);
 
   // Validation handler
   const handleContinuationReportValidationChange = (isValid: boolean) => {
@@ -151,6 +162,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           onValuesChange={handleContinuationReportValuesChange}
           showErrors={showContinuationReportErrors}
           shouldReset={shouldReset}
+          onDirtyChange={handleDirtyReportChange}
         />
 
         <div className="comp-details-form-buttons">
