@@ -13,6 +13,7 @@ interface DiaryDateFormProps {
   onDelete: (index: number) => void;
   onValidationChange: (index: number, isValid: boolean) => void;
   onValuesChange: (index: number, values: { description: string; dueDate: Date | null }) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   triggerValidation?: boolean;
   initialData?: DiaryDate | null;
 }
@@ -22,6 +23,7 @@ export const DiaryDateForm = ({
   onDelete,
   onValidationChange,
   onValuesChange,
+  onDirtyChange,
   triggerValidation,
   initialData,
 }: DiaryDateFormProps) => {
@@ -35,7 +37,11 @@ export const DiaryDateForm = ({
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
-  useUnsavedChangesWarning(isDirty);
+
+  // Bubble up the dirty flag to the parent
+  useEffect(() => {
+    onDirtyChange?.(index, isDirty);
+  }, [isDirty, index]);
 
   // Check validation whenever form state changes
   useEffect(() => {

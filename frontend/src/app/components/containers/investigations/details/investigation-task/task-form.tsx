@@ -126,11 +126,6 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     },
   });
 
-  const isDirty = useStore(form.baseStore, (state) =>
-    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
-  );
-  useUnsavedChangesWarning(isDirty);
-
   // State
   const idir = useAppSelector(appUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
@@ -145,6 +140,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [diaryDateValidation, setDiaryDateValidation] = useState<Record<number, boolean>>({});
   const [triggerDiaryValidation, setTriggerDiaryValidation] = useState(false);
   const [deletedDiaryDateGuids, setDeletedDiaryDateGuids] = useState<string[]>([]);
+  const [dirtyDiaryDates, setDirtyDiaryDates] = useState<Record<number, boolean>>({});
   const [taskActions, setTaskActions] = useState<Partial<ActivityNoteInput[]>>([]);
   const [showTaskActionErrors, setShowTaskActionErrors] = useState(false);
   const [taskActionValidation, setTaskActionValidation] = useState<Record<number, boolean>>({});
@@ -154,6 +150,12 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+  const isFormDirty = isDirty || Object.values(dirtyDiaryDates).some(Boolean);
+  useUnsavedChangesWarning(isFormDirty);
+
   const taskCategoryOptions = taskCategories.map((option: any) => {
     return {
       value: option.value,
@@ -423,6 +425,10 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     });
 
     await Promise.all(savePromises);
+  };
+
+  const handleDiaryDateDirtyChange = (index: number, isDirty: boolean) => {
+    setDirtyDiaryDates((prev) => ({ ...prev, [index]: isDirty }));
   };
 
   const deleteTrackedDiaryDates = async () => {
@@ -876,6 +882,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}
+              onDirtyChange={handleDiaryDateDirtyChange}
               onValuesChange={handleDiaryDateValuesChange}
               initialData={diaryDate}
               triggerValidation={triggerDiaryValidation}
