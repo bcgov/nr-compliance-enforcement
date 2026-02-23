@@ -12,6 +12,8 @@ import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { Agency } from "@apptypes/app/code-tables/agency";
+import UserService from "@service/user-service";
+import { Roles } from "@apptypes/app/roles";
 import "@assets/sass/user-management.scss";
 
 interface SelectUserProps {
@@ -117,9 +119,31 @@ export const SelectUser: FC<SelectUserProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<string>(SORT_TYPES.ASC);
 
+  // Tabs the active user can see: GLOBAL_ADMINISTRATOR sees all
+  // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles
+  const visibleTabCodes = useMemo((): string[] => {
+    if (UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR)) {
+      return [...AGENCY_TAB_CODES];
+    }
+    if (UserService.hasRole(Roles.AGENCY_ADMINISTRATOR)) {
+      const tabs: string[] = [];
+      if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
+      if (UserService.hasRole(Roles.CEEB)) tabs.push(AgencyType.CEEB); // EPO
+      if (UserService.hasRole(Roles.PARKS)) tabs.push(AgencyType.PARKS);
+      return tabs;
+    }
+    return [];
+  }, []);
+
   useEffect(() => {
     dispatch(fetchOfficeAssignments());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (visibleTabCodes.length > 0 && !visibleTabCodes.includes(activeAgencyTab)) {
+      setActiveAgencyTab(visibleTabCodes[0]);
+    }
+  }, [visibleTabCodes, activeAgencyTab]);
 
   const handleSort = useCallback(
     (sortInput: string) => {
@@ -190,8 +214,8 @@ export const SelectUser: FC<SelectUserProps> = ({
       AGENCY_TAB_CODES.map((code) => ({
         code,
         label: getAgencyLabelByCode(code, agencyCodes) || code,
-      })),
-    [agencyCodes],
+      })).filter(({ code }) => visibleTabCodes.includes(code)),
+    [agencyCodes, visibleTabCodes],
   );
 
   const handleOfficerChange = (input: Option | null | undefined) => {
@@ -264,96 +288,98 @@ export const SelectUser: FC<SelectUserProps> = ({
         </div>
       </section>
 
-      <section className="comp-details-section mt-4">
-        <h4 className="mb-3">Users by agency</h4>
-        <Nav className="nav nav-tabs mb-3">
-          {agencyTabsWithLabels.map(({ code, label }) => (
-            <Nav.Item
-              className={`nav-item comp-tab comp-tab-${activeAgencyTab === code ? "active" : "inactive"}`}
-              key={`${code}-tab`}
-            >
-              <Nav.Link
-                className={`nav-link ${activeAgencyTab === code ? "active" : ""}`}
-                id={`${code}-tab`}
-                onClick={() => setActiveAgencyTab(code)}
+      {visibleTabCodes.length > 0 && (
+        <section className="comp-details-section mt-4">
+          <h4 className="mb-3">Users by agency</h4>
+          <Nav className="nav nav-tabs mb-3">
+            {agencyTabsWithLabels.map(({ code, label }) => (
+              <Nav.Item
+                className={`nav-item comp-tab comp-tab-${activeAgencyTab === code ? "active" : "inactive"}`}
+                key={`${code}-tab`}
               >
-                {label} ({officersByAgency[code as keyof typeof officersByAgency]?.length ?? 0})
-              </Nav.Link>
-            </Nav.Item>
-          ))}
-        </Nav>
-        <div className="comp-table-container">
-          <div className="comp-table-scroll-container">
-            <Table
-              className="comp-table"
-              id="user-list"
-            >
-              <thead className="sticky-table-header">
-                <tr>
-                  <SortableHeader
-                    title="Name (last, first)"
-                    sortFnc={handleSort}
-                    sortKey="name"
-                    currentSort={sortColumn}
-                    sortDirection={sortDirection}
-                  />
-                  <SortableHeader
-                    title="User ID"
-                    sortFnc={handleSort}
-                    sortKey="user_id"
-                    currentSort={sortColumn}
-                    sortDirection={sortDirection}
-                  />
-                  <SortableHeader
-                    title="Agency"
-                    sortFnc={handleSort}
-                    sortKey="agency"
-                    currentSort={sortColumn}
-                    sortDirection={sortDirection}
-                  />
-                  <SortableHeader
-                    title={AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? EMPTY}
-                    sortFnc={handleSort}
-                    sortKey="agency_detail"
-                    currentSort={sortColumn}
-                    sortDirection={sortDirection}
-                  />
-                  <SortableHeader
-                    title="Role"
-                    sortFnc={handleSort}
-                    sortKey="role"
-                    currentSort={sortColumn}
-                    sortDirection={sortDirection}
-                  />
-                </tr>
-              </thead>
-              <tbody>
-                {sortedOfficersForTab.length ? (
-                  sortedOfficersForTab.map((u) => (
-                    <tr key={u.app_user_guid}>
-                      <td>
-                        {u.last_name}, {u.first_name}
-                        {u.deactivate_ind ? " (deactivated)" : ""}
-                      </td>
-                      <td>{u.user_id ?? EMPTY}</td>
-                      <td>{getAgencyLabel(u)}</td>
-                      <td>{getAgencyDetailDisplay(u, offices, parkAreas)}</td>
-                      <td>{u.user_roles?.length ? u.user_roles.join(", ") : EMPTY}</td>
-                    </tr>
-                  ))
-                ) : (
+                <Nav.Link
+                  className={`nav-link ${activeAgencyTab === code ? "active" : ""}`}
+                  id={`${code}-tab`}
+                  onClick={() => setActiveAgencyTab(code)}
+                >
+                  {label} ({officersByAgency[code as keyof typeof officersByAgency]?.length ?? 0})
+                </Nav.Link>
+              </Nav.Item>
+            ))}
+          </Nav>
+          <div className="comp-table-container">
+            <div className="comp-table-scroll-container">
+              <Table
+                className="comp-table"
+                id="user-list"
+              >
+                <thead className="sticky-table-header">
                   <tr>
-                    <td colSpan={SORT_COLUMNS.length}>
-                      <i className="bi bi-info-circle-fill p-2"></i>
-                      <span>No users to display for this agency.</span>
-                    </td>
+                    <SortableHeader
+                      title="Name (last, first)"
+                      sortFnc={handleSort}
+                      sortKey="name"
+                      currentSort={sortColumn}
+                      sortDirection={sortDirection}
+                    />
+                    <SortableHeader
+                      title="User ID"
+                      sortFnc={handleSort}
+                      sortKey="user_id"
+                      currentSort={sortColumn}
+                      sortDirection={sortDirection}
+                    />
+                    <SortableHeader
+                      title="Agency"
+                      sortFnc={handleSort}
+                      sortKey="agency"
+                      currentSort={sortColumn}
+                      sortDirection={sortDirection}
+                    />
+                    <SortableHeader
+                      title={AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? EMPTY}
+                      sortFnc={handleSort}
+                      sortKey="agency_detail"
+                      currentSort={sortColumn}
+                      sortDirection={sortDirection}
+                    />
+                    <SortableHeader
+                      title="Role"
+                      sortFnc={handleSort}
+                      sortKey="role"
+                      currentSort={sortColumn}
+                      sortDirection={sortDirection}
+                    />
                   </tr>
-                )}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {sortedOfficersForTab.length ? (
+                    sortedOfficersForTab.map((u) => (
+                      <tr key={u.app_user_guid}>
+                        <td>
+                          {u.last_name}, {u.first_name}
+                          {u.deactivate_ind ? " (deactivated)" : ""}
+                        </td>
+                        <td>{u.user_id ?? EMPTY}</td>
+                        <td>{getAgencyLabel(u)}</td>
+                        <td>{getAgencyDetailDisplay(u, offices, parkAreas)}</td>
+                        <td>{u.user_roles?.length ? u.user_roles.join(", ") : EMPTY}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={SORT_COLUMNS.length}>
+                        <i className="bi bi-info-circle-fill p-2"></i>
+                        <span>No users to display for this agency.</span>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
