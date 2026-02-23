@@ -1,12 +1,17 @@
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { FC, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 type Props = {
   onFileSelect: (selectedFile: FileList) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   disabled?: boolean | null;
 };
 
-export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
+export const AttachmentUpload: FC<Props> = ({ onFileSelect, onDirtyChange, disabled }) => {
+  // Dirty tracking
+  const { markDirty } = useFormDirtyState(onDirtyChange, 0);
+
   // Function to handle files being dropped onto the component
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -15,6 +20,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
         dataTransfer.items.add(file);
       });
       onFileSelect(dataTransfer.files);
+      markDirty();
     },
     [onFileSelect],
   );
@@ -28,7 +34,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
     <div
       {...getRootProps()}
       className="comp-attachment-upload-btn"
-      style={disabled ?? false ? { cursor: "default" } : {}}
+      style={(disabled ?? false) ? { cursor: "default" } : {}}
     >
       <input {...getInputProps()} />
       <div className="upload-icon">

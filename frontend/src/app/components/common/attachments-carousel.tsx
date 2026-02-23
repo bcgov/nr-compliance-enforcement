@@ -10,6 +10,7 @@ import { selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
 import { getThumbnailDataURL, isImage } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -23,6 +24,7 @@ type Props = {
   onFileDeleted?: (attachments: COMSObject) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   disabled?: boolean | null;
   refreshKey?: number;
 };
@@ -39,6 +41,7 @@ export const Attachments: FC<Props> = ({
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
+  onDirtyChange,
   disabled,
   refreshKey,
 }) => {
@@ -250,6 +253,7 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
+                    onDirtyChange={onDirtyChange}
                   />
                 </div>
               )}
