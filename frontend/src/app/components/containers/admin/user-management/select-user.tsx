@@ -97,6 +97,7 @@ const SORT_COLUMNS: SortColumn[] = ["name", "user_id", "agency", "agency_detail"
 function compareStrings(a: string, b: string, dir: string): number {
   const aa = (a ?? "").toLowerCase();
   const bb = (b ?? "").toLowerCase();
+  // localeCompare is used here to handle accents in names
   const cmp = aa.localeCompare(bb, undefined, { sensitivity: "base" });
   return dir === SORT_TYPES.ASC ? cmp : -cmp;
 }
@@ -104,7 +105,7 @@ function compareStrings(a: string, b: string, dir: string): number {
 // Protect values with quotes, commas and new lines for CSV export
 function escapeCsvCell(value: string): string {
   const s = String(value ?? "");
-  if (/[",\r\n]/.test(s)) return `"${s.replaceAll(/"/g, '""')}"`;
+  if (/[",\r\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
   return s;
 }
 
@@ -353,8 +354,7 @@ export const SelectUser: FC<SelectUserProps> = ({
               disabled={sortedOfficersForTab.length === 0} // Disable if list is empty
               aria-label="Download table as CSV"
             >
-              <i className="bi bi-download me-1"></i>
-              Download CSV
+              <i className="bi bi-download me-1"></i> Download CSV
             </Button>
           </div>
           <Nav className="nav nav-tabs mb-3">
