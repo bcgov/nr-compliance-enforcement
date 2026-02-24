@@ -68,22 +68,24 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
   const [isDirty, setIsDirty] = useState(false);
   const [dirtyChildren, setDirtyChildren] = useState<Record<number, boolean>>({});
 
-  // Bubble up to parent
-  useEffect(() => {
-    onDirtyChange?.(index, isDirty);
-  }, [isDirty, index]);
-
   const markDirty = () => setIsDirty(true);
   const markClean = () => setIsDirty(false);
 
-  // For parent components to track child dirty state
+  // For parent components to track child dirty state.
+  // If there are multiple child components on the page it should be called with different index numbers.
+  // See create complaint for a working example.
   const handleChildDirtyChange = (childIndex: number, childIsDirty: boolean) => {
     setDirtyChildren((prev) => ({ ...prev, [childIndex]: childIsDirty }));
   };
 
   const isAnyDirty = isDirty || Object.values(dirtyChildren).some(Boolean);
 
-  return { isDirty, isAnyDirty, markDirty, markClean, handleChildDirtyChange };
+  // Bubble up dirty status to the parent
+  useEffect(() => {
+    onDirtyChange?.(index, isAnyDirty);
+  }, [isAnyDirty, index]);
+
+  return { isAnyDirty, markDirty, markClean, handleChildDirtyChange };
 };
 
 export default useUnsavedChangesWarning;

@@ -10,7 +10,6 @@ import { selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
 import { getThumbnailDataURL, isImage } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
-import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -232,6 +231,7 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
+                    onDirtyChange={onDirtyChange}
                   />
                 )}
                 {slides?.map((item, index) => (

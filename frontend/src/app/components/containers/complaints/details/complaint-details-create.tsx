@@ -56,10 +56,15 @@ import { AgencyType } from "@/app/types/app/agency-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 export const CreateComplaint: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // Dirty tracking
+  const { markDirty, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  useUnsavedChangesWarning(isAnyDirty);
 
   const userid = useAppSelector(userId);
   const agency = getUserAgency();
@@ -227,6 +232,7 @@ export const CreateComplaint: FC = () => {
 
   const handleComplaintChange = (selected: Option | null) => {
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       const { value } = selected;
 
       setComplaintTypeMsg("");
@@ -264,6 +270,7 @@ export const CreateComplaint: FC = () => {
   const handleNatureOfComplaintChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setNatureOfComplaintErrorMsg("");
     } else {
@@ -277,6 +284,7 @@ export const CreateComplaint: FC = () => {
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
     let value = null;
     if (selected) {
+      markDirty();
       value = selected.value;
     }
     const complaint = { ...complaintData, complaintMethodReceivedCode: value } as Complaint;
@@ -286,6 +294,7 @@ export const CreateComplaint: FC = () => {
   const handleSpeciesChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setSpeciesErrorMsg("");
     } else {
@@ -299,6 +308,7 @@ export const CreateComplaint: FC = () => {
   const handleViolationTypeChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setViolationTypeErrorMsg("");
     } else {
@@ -312,6 +322,7 @@ export const CreateComplaint: FC = () => {
   const handleGeneralIncidentTypeChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setGeneralIncidentTypeErrorMsg("");
     } else {
@@ -325,6 +336,7 @@ export const CreateComplaint: FC = () => {
   const handleAssignedOfficerChange = (selected: Option | null) => {
     const { delegates } = complaintData as Complaint;
     if (selected) {
+      markDirty();
       const { value } = selected;
 
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
@@ -380,6 +392,7 @@ export const CreateComplaint: FC = () => {
     if (value === "") {
       setComplaintDescriptionErrorMsg("Required");
     } else {
+      markDirty();
       setComplaintDescriptionErrorMsg("");
 
       const complaint = { ...complaintData, details: value?.trim() } as Complaint;
@@ -388,11 +401,13 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleLocationDescriptionChange = (value: string) => {
+    markDirty();
     const complaint = { ...complaintData, locationDetail: value?.trim() } as Complaint;
     applyComplaintData(complaint);
   };
 
   const handleParkChange = (value?: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintData, parkGuid: value } as Complaint;
     applyComplaintData(updatedComplaint);
   };
@@ -400,6 +415,7 @@ export const CreateComplaint: FC = () => {
   const handleViolationInProgessChange = (selected: Option | null) => {
     let value: string = "No";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
     }
     const complaint = { ...complaintData, isInProgress: value === "Yes" } as AllegationComplaint;
@@ -409,6 +425,7 @@ export const CreateComplaint: FC = () => {
   const handleViolationObservedChange = (selected: Option | null) => {
     let value: string = "No";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
     }
     const complaint = { ...complaintData, wasObserved: value === "Yes" } as AllegationComplaint;
@@ -418,6 +435,7 @@ export const CreateComplaint: FC = () => {
   const handlePrivacyRequestedChange = (selected: Option | null) => {
     let value: string = "U";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
     }
     const complaint = { ...complaintData, isPrivacyRequested: value } as Complaint;
@@ -425,6 +443,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleLocationChange = (value: string) => {
+    markDirty();
     const complaint = { ...complaintData, locationSummary: value?.trim() } as Complaint;
     applyComplaintData(complaint);
   };
@@ -433,6 +452,7 @@ export const CreateComplaint: FC = () => {
     if (!selectedItems) {
       return;
     }
+    markDirty();
     let updates: Array<AttractantXref> = [];
     selectedItems.forEach(({ value: selected }) => {
       const record: AttractantXref = { attractant: selected as string, isActive: true };
@@ -445,6 +465,7 @@ export const CreateComplaint: FC = () => {
   const handleCommunityChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setCommunityErrorMsg("");
     } else {
@@ -475,16 +496,19 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleNameChange = (value: string) => {
+    markDirty();
     const complaint = { ...complaintData, name: value?.trim() } as Complaint;
     applyComplaintData(complaint);
   };
 
   const handleAddressChange = (value: string) => {
+    markDirty();
     const complaint = { ...complaintData, address: value?.trim() } as Complaint;
     applyComplaintData(complaint);
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setPrimaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
@@ -497,6 +521,7 @@ export const CreateComplaint: FC = () => {
     }
   };
   const handleSecondaryPhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
@@ -510,6 +535,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleAlternatePhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
@@ -523,6 +549,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleEmailChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value !== "" && !isValidEmail(value)) {
       setEmailMsg("Please enter a vaild email");
     } else {
@@ -536,6 +563,7 @@ export const CreateComplaint: FC = () => {
   const handleReportedByChange = (selected: Option | null) => {
     let value = null;
     if (selected) {
+      markDirty();
       value = selected.value;
     }
     const complaint = { ...complaintData, reportedBy: value } as Complaint;
@@ -543,11 +571,13 @@ export const CreateComplaint: FC = () => {
   };
 
   const handleSuspectDetailsChange = (value: string) => {
+    markDirty();
     const complaint = { ...complaintData, violationDetails: value?.trim() } as AllegationComplaint;
     applyComplaintData(complaint);
   };
 
   const handleIncidentDateTimeChange = (date: Date) => {
+    markDirty();
     setSelectedIncidentDateTime(date);
     if (date > new Date()) {
       setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
@@ -1045,6 +1075,7 @@ export const CreateComplaint: FC = () => {
             validationRequired={false}
             sourceXCoordinate={longitude ?? "0"}
             sourceYCoordinate={latitude ?? "0"}
+            onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
           />
 
           <div
@@ -1353,6 +1384,7 @@ export const CreateComplaint: FC = () => {
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
             onSlideCountChange={handleSlideCountChange}
+            onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
             showPreview={true}
           />
         </fieldset>
