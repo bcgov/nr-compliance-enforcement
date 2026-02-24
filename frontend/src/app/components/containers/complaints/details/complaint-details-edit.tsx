@@ -84,6 +84,7 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_ASSOCIATED_CASE_FILES = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -113,6 +114,9 @@ export type ComplaintParams = {
 
 export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
+
+  const { markDirty, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  useUnsavedChangesWarning(isAnyDirty);
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
 
@@ -484,6 +488,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- general incident complaint updates
   const handleGirTypeChange = (selected: Option | null) => {
+    markDirty();
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
       value = selected.value;
@@ -499,6 +504,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleNatureOfComplaintChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setNatureOfComplaintError("");
     } else {
@@ -512,6 +518,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleSpeciesChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setSpeciesError("");
     } else {
@@ -526,6 +533,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleViolationTypeChange = (selected: Option | null) => {
     let value: string = "";
     if (selected?.value && selected?.value !== "") {
+      markDirty();
       value = selected.value;
       setViolationTypeErrorMsg("");
     } else {
@@ -538,6 +546,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const handleViolationInProgessChange = (selected: Option | null) => {
     if (selected) {
+      markDirty();
       const { value } = selected;
 
       const isInProgress = value?.toUpperCase() === "YES";
@@ -548,6 +557,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const handleViolationObservedChange = (selected: Option | null) => {
     if (selected) {
+      markDirty();
       const { value } = selected;
 
       const wasObserved = value?.toUpperCase() === "YES";
@@ -557,6 +567,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleSuspectDetailsChange = (value: string) => {
+    markDirty();
     let updatedComplaint = { ...complaintUpdate, violationDetails: value } as AllegationComplaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -564,6 +575,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleAssignedOfficerChange = (selected: Option | null) => {
     let { delegates } = complaintUpdate as Complaint;
     if (selected) {
+      markDirty();
       const { value } = selected;
       let existing = delegates.filter(({ type }) => type !== "ASSIGNEE");
       let updatedDelegates: Array<Delegate> = [];
@@ -616,6 +628,7 @@ export const ComplaintDetailsEdit: FC = () => {
     if (value === "") {
       setComplaintDescriptionError("Required");
     } else {
+      markDirty();
       setComplaintDescriptionError("");
 
       const updatedComplaint = { ...complaintUpdate, details: value } as Complaint;
@@ -630,6 +643,7 @@ export const ComplaintDetailsEdit: FC = () => {
     } else {
       setIncidentDateTimeErrorMsg("");
     }
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -639,6 +653,7 @@ export const ComplaintDetailsEdit: FC = () => {
     let updates: Array<AttractantXref> = [];
 
     if (options && options.length > 0) {
+      markDirty();
       attractants.forEach((item) => {
         const { attractant, xrefId } = item;
 
@@ -666,16 +681,19 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleLocationChange = (value: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, locationSummary: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleLocationDescriptionChange = (value: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, locationDetail: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   const handleParkChange = (value?: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, parkGuid: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -683,6 +701,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleCommunityChange = (selectedOption: Option | null) => {
     let value: string = "";
     if (selectedOption?.value && selectedOption?.value !== "") {
+      markDirty();
       value = selectedOption.value;
       setCommunityError("");
     } else {
@@ -696,6 +715,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleNameChange = (value: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, name: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
@@ -703,6 +723,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handlePrivacyRequestedChange = (selected: Option | null) => {
     let value = null;
     if (selected) {
+      markDirty();
       value = selected.value;
     }
     let updatedComplaint = {
@@ -713,19 +734,20 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handlePrimaryPhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setPrimaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
       setPrimaryPhoneMsg("Invalid Format");
     } else {
       setPrimaryPhoneMsg("");
-
       const updatedComplaint = { ...complaintUpdate, phone1: value ?? "" } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     }
   };
 
   const handleSecondaryPhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setSecondaryPhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
@@ -739,6 +761,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleAlternatePhoneChange = (value: string) => {
+    markDirty();
     if (value !== undefined && value.length !== 0 && value.length !== 12) {
       setAlternatePhoneMsg("Phone number must be 10 digits");
     } else if (value !== undefined && (value.startsWith("+11") || value.startsWith("+10"))) {
@@ -752,11 +775,13 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const handleAddressChange = (value: string) => {
+    markDirty();
     const updatedComplaint = { ...complaintUpdate, address: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
   function handleEmailChange(value: string) {
+    markDirty();
     if (value !== undefined && value !== "" && !isValidEmail(value)) {
       setEmailMsg("Please enter a vaild email");
     } else {
@@ -770,6 +795,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleReportedByChange = (selected: Option | null) => {
     let value = null;
     if (selected) {
+      markDirty();
       value = selected.value;
     }
     const updatedComplaint = { ...complaintUpdate, reportedBy: value } as Complaint;
@@ -779,6 +805,7 @@ export const ComplaintDetailsEdit: FC = () => {
   const handleComplaintReceivedMethodChange = (selected: Option | null) => {
     let value = null;
     if (selected) {
+      markDirty();
       value = selected.value;
     }
     const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as Complaint;
@@ -1220,6 +1247,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 validationRequired={false}
                 sourceXCoordinate={longitude}
                 sourceYCoordinate={latitude}
+                onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
               />
 
               <div
@@ -1548,6 +1576,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   onFileDeleted={onHandleDeleteAttachment}
                   onSlideCountChange={handleSlideCountChange}
                   showPreview={true}
+                  onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
                 />
               </div>
             </fieldset>

@@ -64,7 +64,7 @@ export const CreateComplaint: FC = () => {
 
   // Dirty tracking
   const { markDirty, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
-  useUnsavedChangesWarning(isAnyDirty);
+  const { allowNavigation } = useUnsavedChangesWarning(isAnyDirty);
 
   const userid = useAppSelector(userId);
   const agency = getUserAgency();
@@ -589,6 +589,7 @@ export const CreateComplaint: FC = () => {
   };
 
   const cancelConfirmed = () => {
+    allowNavigation();
     navigate(`/`);
   };
 
@@ -724,6 +725,7 @@ export const CreateComplaint: FC = () => {
   const handleHwcrComplaint = async (complaint: ComplaintAlias) => {
     const complaintId = await dispatch(createComplaint(complaintType, complaint));
     if (complaintId) {
+      allowNavigation();
       navigate(`/complaint/${complaintType}/${complaintId}`);
     }
     return complaintId;
