@@ -80,7 +80,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
 
   // Fill in the password and submit
   await slowExpect(page.locator('[name="passwd"]')).toBeVisible();
-  await page.fill('[name="passwd"]', process.env.KEYCLOAK_PASSWORD!);
+  await page.fill('[name="passwd"]', process.env.KEYCLOAK_PASSWORD || "");
   await page.click("[type='submit']");
 
   // Fill in the TOTP code and submit
