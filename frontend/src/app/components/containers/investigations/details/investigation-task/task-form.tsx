@@ -214,7 +214,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         activityNoteGuid: ta.activityNoteGuid,
         contentJson: ta.contentJson,
         contentText: ta.contentText,
-        actionedTimestamp: ta.actionedTimestamp || new Date(),
+        actionedDate: ta.actionedDate || new Date(),
+        actionedTime: ta.actionedTime || null,
         actionedAppUserGuidRef: ta?.actionedAppUserGuidRef,
       }));
 
@@ -552,7 +553,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         activityNoteCode: "TASKACT",
         contentJson: values?.contentJson,
         contentText: values?.contentText,
-        actionedTimestamp: values?.actionedTimestamp || new Date(),
+        actionedDate: values?.actionedDate || new Date(),
+        actionedTime: values?.actionedTime || null,
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values?.actionedAppUserGuidRef,
         reportedAppUserGuidRef: idir,

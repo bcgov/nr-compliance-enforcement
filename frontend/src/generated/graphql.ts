@@ -25,7 +25,8 @@ export type Scalars = {
 export type ActivityNote = {
   __typename?: 'ActivityNote';
   actionedAppUserGuidRef?: Maybe<Scalars['String']['output']>;
-  actionedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  actionedDate?: Maybe<Scalars['DateTime']['output']>;
+  actionedTime?: Maybe<Scalars['DateTime']['output']>;
   activityNoteCode?: Maybe<Scalars['String']['output']>;
   activityNoteGuid?: Maybe<Scalars['String']['output']>;
   contentJson?: Maybe<Scalars['String']['output']>;
@@ -37,7 +38,8 @@ export type ActivityNote = {
 
 export type ActivityNoteInput = {
   actionedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  actionedTimestamp?: InputMaybe<Scalars['DateTime']['input']>;
+  actionedDate?: InputMaybe<Scalars['DateTime']['input']>;
+  actionedTime?: InputMaybe<Scalars['DateTime']['input']>;
   activityNoteCode?: InputMaybe<Scalars['String']['input']>;
   activityNoteGuid?: InputMaybe<Scalars['String']['input']>;
   contentJson?: InputMaybe<Scalars['String']['input']>;
@@ -490,6 +492,7 @@ export type CreateInvestigationInput = {
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
+  discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -1003,6 +1006,7 @@ export type Investigation = {
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   discoveryDate?: Maybe<Scalars['DateTime']['output']>;
+  discoveryTime?: Maybe<Scalars['DateTime']['output']>;
   fileCoordinatorGuid?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
@@ -2389,6 +2393,7 @@ export type UpdateInspectionInput = {
 export type UpdateInvestigationInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
+  discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;

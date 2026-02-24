@@ -11,6 +11,7 @@ import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/stor
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
+import { parseUTCDateTimeToLocal, formatLocalTime, formatLocalDateTimeToUTC } from "@common/methods";
 import { gql } from "graphql-request";
 
 interface ActivityNoteProps {
@@ -30,7 +31,8 @@ export const GET_ACTIVITY_NOTES_BY_TASK = gql`
       investigationGuid
       contentJson
       contentText
-      actionedTimestamp
+      actionedDate
+      actionedTime
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
@@ -51,7 +53,8 @@ export const SAVE_ACTIVITY_NOTE = gql`
       activityNoteCode
       investigationGuid
       contentJson
-      actionedTimestamp
+      actionedDate
+      actionedTime
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
@@ -90,8 +93,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
-    initialData?.actionedTimestamp ?? undefined,
+    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? undefined,
   );
+  const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
+    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime);
+    return d && initialData?.actionedTime ? formatLocalTime(d) : null;
+  });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
   // Validation errors
@@ -125,11 +132,22 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
+    let actionedTime: Date | undefined = undefined;
+    let actionedDate: Date | undefined = selectedActionedDateTime;
+    if (selectedActionedDateTime && selectedActionedTime) {
+      const { utcDate } = formatLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
+      const combined = new Date(selectedActionedDateTime);
+      const [hh, mm] = selectedActionedTime.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      actionedTime = combined;
+      actionedDate = utcDate;
+    }
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
       contentJson: editor ? JSON.stringify(editor.getJSON()) : "",
       contentText: editor ? editor.getText() : "",
-      actionedTimestamp: selectedActionedDateTime,
+      actionedDate,
+      actionedTime,
       actionedAppUserGuidRef: selectedOfficer?.value || "",
     };
   };
@@ -139,6 +157,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     editor?.commands.clearContent();
     setPlainText("");
     setSelectedActionedDateTime(undefined);
+    setSelectedActionedTime(null);
     setSelectedOfficer(initialOfficer);
     setContentError("");
     setDateTimeError("");
@@ -172,7 +191,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   useEffect(() => {
     const values = getInputValues();
     onValuesChange(values, index);
-  }, [plainText, selectedActionedDateTime, selectedOfficer, index]);
+  }, [plainText, selectedActionedDateTime, selectedActionedTime, selectedOfficer, index]);
 
   // Reset form when requested
   useEffect(() => {
@@ -206,12 +225,18 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           <ValidationDatePicker
             id="investigation-continuation-report-date-picker"
             selectedDate={selectedActionedDateTime}
-            onChange={setSelectedActionedDateTime}
+            selectedTime={selectedActionedTime}
+            onChange={(date: Date, time: string | null) => {
+              setSelectedActionedDateTime(date);
+              setSelectedActionedTime(time);
+            }}
             className="comp-details-edit-calendar-input"
             classNamePrefix="comp-select"
             errMsg={dateTimeError}
             maxDate={new Date()}
             showTimePicker={true}
+            nullableTime={true}
+            onTimeWithoutDate={() => setDateTimeError("Select a date before entering a time")}
           />
         </div>
       </div>

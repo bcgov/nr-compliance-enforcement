@@ -32,17 +32,17 @@ select distinct
 	        ((cmp.incident_reported_utc_timestmp at time zone 'UTC') at time zone 'PST')  -- PST if outside DST
 	end as "Date Logged (PDT/PST)",
 	case -- This is a temporary solution as it isn't really scalable.
-	    when cmp.incident_utc_datetime at time zone 'UTC' at time zone 'America/Los_Angeles' 
-	         between 
+	    when (cmp.incident_utc_date + cmp.incident_utc_time) at time zone 'UTC' at time zone 'America/Los_Angeles'
+	         between
 	             '2025-03-08 02:00:00' and '2025-11-02 01:59:59' -- DST start and end for this year (2025)
 	         or
-	         cmp.incident_utc_datetime at time zone 'UTC' at time zone 'America/Los_Angeles' 
-	         between 
+	         (cmp.incident_utc_date + cmp.incident_utc_time) at time zone 'UTC' at time zone 'America/Los_Angeles'
+	         between
 	             '2024-03-10 02:00:00' and '2024-11-03 01:59:59' -- DST start and end for last year (2024)
 	    then
-	        ((cmp.incident_utc_datetime at time zone 'UTC') at time zone 'PDT')  -- PDT if within DST
+	        (((cmp.incident_utc_date + cmp.incident_utc_time) at time zone 'UTC') at time zone 'PDT')  -- PDT if within DST
 	    else
-	        ((cmp.incident_utc_datetime at time zone 'UTC') at time zone 'PST')  -- PST if outside DST
+	        (((cmp.incident_utc_date + cmp.incident_utc_time) at time zone 'UTC') at time zone 'PST')  -- PST if outside DST
 	end as "Incident Datetime (PDT/PST)",
 	cst.short_description as "Complaint Status",
 	coalesce (cup.update_count, 0) as "Number of Updates",

@@ -112,7 +112,13 @@ export class UpdateComplaintDto {
     example: "2023-11-22",
     description: "The date of the incident the complaint was filed about",
   })
-  incident_utc_datetime: Date;
+  incident_utc_date: Date;
+
+  @ApiProperty({
+    example: "14:30:00",
+    description: "The time of the incident the complaint was filed about",
+  })
+  incident_utc_time: string;
 
   @ApiProperty({
     example: "Referred to COS because of jurisdictional reaons",

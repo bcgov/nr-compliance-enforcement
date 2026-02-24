@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate, formatLocalTime, formatLocalDateTimeToUTC, parseUTCDateTimeToLocal } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
@@ -161,7 +161,8 @@ export const ComplaintDetailsEdit: FC = () => {
     details,
     location,
     locationDescription,
-    incidentDateTime,
+    incidentDate,
+    incidentTime,
     coordinates,
     area,
     region,
@@ -258,7 +259,8 @@ export const ComplaintDetailsEdit: FC = () => {
   const [primaryPhoneMsg, setPrimaryPhoneMsg] = useState<string>("");
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
-  const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [selectedIncidentDate, setSelectedIncidentDate] = useState<Date>();
+  const [selectedIncidentTime, setSelectedIncidentTime] = useState<string | null>(null);
   const [incidentDateTimeErrorMsg, setIncidentDateTimeErrorMsg] = useState<string>("");
   const [latitude, setLatitude] = useState<string>("0");
   const [longitude, setLongitude] = useState<string>("0");
@@ -286,11 +288,16 @@ export const ComplaintDetailsEdit: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const incidentDateTimeObject = incidentDateTime ? new Date(incidentDateTime) : null;
-    if (incidentDateTimeObject) {
-      setSelectedIncidentDateTime(incidentDateTimeObject);
+    if (incidentDate) {
+      const d = parseUTCDateTimeToLocal(incidentDate, incidentTime);
+      if (d) {
+        setSelectedIncidentDate(d);
+        if (incidentTime) {
+          setSelectedIncidentTime(formatLocalTime(d));
+        }
+      }
     }
-  }, [incidentDateTime]);
+  }, [incidentDate, incidentTime]);
 
   useEffect(() => {
     setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
@@ -314,7 +321,7 @@ export const ComplaintDetailsEdit: FC = () => {
   };
 
   const saveButtonClick = async () => {
-    if (selectedIncidentDateTime) handleIncidentDateTimeChange(selectedIncidentDateTime);
+    if (selectedIncidentDate) handleIncidentDateTimeChange(selectedIncidentDate, selectedIncidentTime);
     if (!complaintUpdate) {
       return;
     }
@@ -623,14 +630,25 @@ export const ComplaintDetailsEdit: FC = () => {
     }
   };
 
-  const handleIncidentDateTimeChange = (date: Date) => {
-    setSelectedIncidentDateTime(date);
-    if (date > new Date()) {
-      setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+  const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
+    setSelectedIncidentDate(date);
+    setSelectedIncidentTime(time);
+    if (date) {
+      const dateTimeToCompare = new Date(date);
+      if (time) {
+        const [hh, mm] = time.split(":").map(Number);
+        dateTimeToCompare.setHours(hh, mm, 0, 0);
+      }
+      if (dateTimeToCompare > new Date()) {
+        setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+      } else {
+        setIncidentDateTimeErrorMsg("");
+      }
     } else {
       setIncidentDateTimeErrorMsg("");
     }
-    const updatedComplaint = { ...complaintUpdate, incidentDateTime: date } as Complaint;
+    const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+    const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
 
@@ -795,8 +813,8 @@ export const ComplaintDetailsEdit: FC = () => {
       const location = {
         type: "point",
         coordinates: [
-          parseFloat(formatLatLongCoordinate(xCoordinate) ?? ""),
-          parseFloat(formatLatLongCoordinate(yCoordinate) ?? ""),
+          Number.parseFloat(formatLatLongCoordinate(xCoordinate) ?? ""),
+          Number.parseFloat(formatLatLongCoordinate(yCoordinate) ?? ""),
         ],
       };
 
@@ -1101,13 +1119,16 @@ export const ComplaintDetailsEdit: FC = () => {
                 <div className="comp-details-edit-input">
                   <ValidationDatePicker
                     id="complaint-incident-time"
-                    selectedDate={selectedIncidentDateTime || null}
+                    selectedDate={selectedIncidentDate || null}
+                    selectedTime={selectedIncidentTime || null}
                     onChange={handleIncidentDateTimeChange}
                     className="comp-details-edit-calendar-input"
                     classNamePrefix="comp-select"
                     errMsg={incidentDateTimeErrorMsg}
                     maxDate={new Date()}
                     showTimePicker={true}
+                    nullableTime={true}
+                    onTimeWithoutDate={() => setIncidentDateTimeErrorMsg("Select a date before entering a time")}
                   />
                 </div>
               </div>
