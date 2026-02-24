@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { test as setup, Page, expect } from "@playwright/test";
+import { generate, createGuardrails } from "otplib";
 import { STORAGE_STATE_BY_ROLE } from "./utils/authConfig";
 import { slowExpect } from "./utils/helpers";
 
@@ -36,10 +37,13 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   const clientId = process.env.REACT_APP_KEYCLOAK_CLIENT_ID!;
   const redirectUri = process.env.E2E_BASE_URL!;
   let account = process.env.PLAYWRIGHT_KEYCLOAK_USER!;
+  let totpSecret = process.env.PLAYWRIGHT_TOTP_SECRET!;
   if (role === "CEEB") {
     account = process.env.PLAYWRIGHT_KEYCLOAK_USER_02!;
+    totpSecret = process.env.PLAYWRIGHT_TOTP_SECRET_02!;
   } else if (role === "PARKS") {
     account = process.env.PLAYWRIGHT_KEYCLOAK_USER_03!;
+    totpSecret = process.env.PLAYWRIGHT_TOTP_SECRET_03!;
   }
   // Auth parameters
   const scope = "openid";
@@ -65,11 +69,29 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   // Navigate to auth URL, and prevent the automatic redirect
   await page.goto(authUrl.toString());
 
-  // Handle login form
-  await slowExpect(page.locator("#user")).toBeVisible();
-  await page.fill('[name="user"]', account);
-  await page.fill('[name="password"]', process.env.KEYCLOAK_PASSWORD!);
-  await page.click('[name="btnSubmit"]');
+  // Select IDIR MFA login
+  await slowExpect(page.locator("#kc-content")).toBeVisible();
+  await page.click("#social-azureidir");
+
+  // Fill in the username (email) and submit
+  await slowExpect(page.locator('[name="loginfmt"]')).toBeVisible();
+  await page.fill('[name="loginfmt"]', account);
+  await page.click("[type='submit']");
+
+  // Fill in the password and submit
+  await slowExpect(page.locator('[name="passwd"]')).toBeVisible();
+  await page.fill('[name="passwd"]', process.env.KEYCLOAK_PASSWORD!);
+  await page.click("[type='submit']");
+
+  // Fill in the TOTP code and submit
+  await slowExpect(page.locator("#idTxtBx_SAOTCC_OTC")).toBeVisible();
+  const token = await generate({ secret: totpSecret, guardrails: createGuardrails({ MIN_SECRET_BYTES: 1 }) });
+  await page.locator("#idTxtBx_SAOTCC_OTC").fill(token);
+  await page.click("#idSubmit_SAOTCC_Continue");
+
+  // Continue on prompt for "Stay signed in?"
+  await slowExpect(page.locator("text=Stay signed in?")).toBeVisible();
+  await page.click("[type='submit']");
 
   // Wait for redirect and app load
   await page.waitForLoadState("networkidle");
