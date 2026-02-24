@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
-import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
+import { bcUtmZoneNumbers, formatLatLongCoordinate, formatLocalDateTimeToUTC } from "@common/methods";
 import { ValidationTextArea } from "@common/validation-textarea";
 import Select from "react-select";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -136,6 +136,7 @@ export const CreateComplaint: FC = () => {
   const [secondaryPhoneMsg, setSecondaryPhoneMsg] = useState<string>("");
   const [alternatePhoneMsg, setAlternatePhoneMsg] = useState<string>("");
   const [selectedIncidentDateTime, setSelectedIncidentDateTime] = useState<Date>();
+  const [selectedIncidentTime, setSelectedIncidentTime] = useState<string | null>(null);
   const [incidentDateTimeErrorMsg, setIncidentDateTimeErrorMsg] = useState<string>("");
   const complaintMethodReceivedCodes = useSelector(selectComplaintReceivedMethodDropdown);
   const { complaintMethodReceivedCode } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
@@ -192,6 +193,8 @@ export const CreateComplaint: FC = () => {
         status: "OPEN",
         ownedBy: agency,
         reportedByOther: "",
+        incidentDate: currentDate,
+        incidentTime: undefined,
         reportedOn: currentDate,
         updatedOn: currentDate,
         organization: {
@@ -547,14 +550,16 @@ export const CreateComplaint: FC = () => {
     applyComplaintData(complaint);
   };
 
-  const handleIncidentDateTimeChange = (date: Date) => {
+  const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
     setSelectedIncidentDateTime(date);
+    setSelectedIncidentTime(time);
     if (date > new Date()) {
       setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
     } else {
       setIncidentDateTimeErrorMsg("");
     }
-    const complaint = { ...complaintData, incidentDateTime: date } as Complaint;
+    const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+    const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
     applyComplaintData(complaint);
   };
 
@@ -930,12 +935,15 @@ export const CreateComplaint: FC = () => {
               <ValidationDatePicker
                 id="complaint-incident-time"
                 selectedDate={selectedIncidentDateTime || null}
+                selectedTime={selectedIncidentTime}
                 onChange={handleIncidentDateTimeChange}
                 className="comp-details-edit-calendar-input"
                 classNamePrefix="comp-select"
                 errMsg={incidentDateTimeErrorMsg}
                 maxDate={new Date()}
                 showTimePicker={true}
+                nullableTime={true}
+                onTimeWithoutDate={() => setIncidentDateTimeErrorMsg("Select a date before entering a time")}
               />
             </div>
           </div>

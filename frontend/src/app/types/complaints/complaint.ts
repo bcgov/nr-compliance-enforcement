@@ -7,7 +7,8 @@ export interface Complaint {
   complaint_identifier: string;
   geo_organization_unit_code: GeoOrganizationUnitCode;
   location_geometry_point: LocationGeometryPoint;
-  incident_utc_datetime: Date | null;
+  incident_utc_date: Date | null;
+  incident_utc_time: string | null;
   incident_reported_utc_timestmp: string;
   location_summary_text: string;
   location_detailed_text: string;

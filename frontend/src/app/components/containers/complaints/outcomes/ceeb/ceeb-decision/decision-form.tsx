@@ -137,7 +137,7 @@ export const DecisionForm: FC<props> = ({
     updateModel("ipmAuthCategory", value);
   };
 
-  const handleDateChange = (date?: Date) => {
+  const handleDateChange = (date?: Date, _time?: string | null) => {
     updateModel("actionTakenDate", date);
   };
 
