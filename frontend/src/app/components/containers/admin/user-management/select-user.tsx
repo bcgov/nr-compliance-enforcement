@@ -2,8 +2,7 @@ import { Dispatch, FC, SetStateAction, useEffect, useMemo, useCallback, useState
 import { Button, Nav, Table } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
-import { fetchOfficeAssignments } from "@store/reducers/office";
-import { selectOffices } from "@store/reducers/office";
+import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { selectParkAreasDropdown } from "@store/reducers/code-table-selectors";
 import { CompSelect } from "@components/common/comp-select";
 import { SortableHeader } from "@components/common/sortable-header";
@@ -105,7 +104,7 @@ function compareStrings(a: string, b: string, dir: string): number {
 // Protect values with quotes, commas and new lines for CSV export
 function escapeCsvCell(value: string): string {
   const s = String(value ?? "");
-  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  if (/[",\r\n]/.test(s)) return `"${s.replaceAll(/"/g, '""')}"`;
   return s;
 }
 
@@ -278,7 +277,7 @@ export const SelectUser: FC<SelectUserProps> = ({
     const csv = buildTableCsv(sortedOfficersForTab, offices, parkAreas, agencyDetailLabel);
     const tabLabel = agencyTabsWithLabels.find((t) => t.code === activeAgencyTab)?.label ?? activeAgencyTab;
     // Replace spaces with hyphens for a safe filename
-    const safeLabel = tabLabel.replace(/\s+/g, "-").toLowerCase();
+    const safeLabel = tabLabel.replaceAll(/\s+/g, "-").toLowerCase();
     downloadCsv(csv, `users-${safeLabel}.csv`);
   }, [activeAgencyTab, sortedOfficersForTab, offices, parkAreas, agencyTabsWithLabels]);
 
@@ -354,10 +353,7 @@ export const SelectUser: FC<SelectUserProps> = ({
               disabled={sortedOfficersForTab.length === 0} // Disable if list is empty
               aria-label="Download table as CSV"
             >
-              <i
-                className="bi bi-download me-1"
-                aria-hidden
-              ></i>
+              <i className="bi bi-download me-1"></i>
               Download CSV
             </Button>
           </div>
