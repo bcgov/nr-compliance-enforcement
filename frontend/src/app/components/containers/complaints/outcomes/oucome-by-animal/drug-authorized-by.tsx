@@ -7,11 +7,13 @@ import { ValidationDatePicker } from "@common/validation-date-picker";
 import Option from "@apptypes/app/option";
 import { REQUIRED } from "@constants/general";
 import { getDropdownOption } from "@/app/common/methods";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   agency: string;
   drugAuthorization: DrugAuthorizationV2;
   update: Function;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 type refProps = {
@@ -22,9 +24,12 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
   const {
     update,
     drugAuthorization: { officer, date },
+    onDirtyChange,
   } = props;
 
   const officers = useAppSelector(selectOfficerAndCollaboratorListByAgency);
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   //-- errors
   const [officerError, setOfficerError] = useState("");
@@ -56,6 +61,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
   };
 
   const updateModel = (property: string, value: string | Date | null | undefined) => {
+    markDirty();
     const source = { officer, date };
     const authorization = { ...source, [property]: value };
 

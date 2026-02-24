@@ -25,15 +25,23 @@ import { selectComplaintAssignedBy, selectComplaintCallerInformation } from "@st
 import { upsertPrevention } from "@/app/store/reducers/complaint-outcome-thunks";
 import { ToggleError } from "@common/toast";
 import UserService from "@/app/service/user-service";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id: string;
   prevention?: Prevention;
   handleSave?: () => void;
   handleCancel?: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () => {}, handleCancel = () => {} }) => {
+export const HWCRPreventionForm: FC<Props> = ({
+  id,
+  prevention,
+  handleSave = () => {},
+  handleCancel = () => {},
+  onDirtyChange,
+}) => {
   const dispatch = useAppDispatch();
 
   const isInEdit = useAppSelector(selectIsInEdit);
@@ -49,6 +57,9 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
 
   const currentDate = new Date();
   const [preventionState] = useState<Prevention>(prevention ?? ({} as Prevention));
+
+  // Dirty tracking
+  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 0);
 
   // Errors
 
@@ -113,6 +124,7 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
   };
 
   const handleDateChange = (date: Date | null) => {
+    markDirty();
     setSelectedDate(date);
   };
 
@@ -213,6 +225,7 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
                 options={preventionTypeList}
                 onCheckboxChange={handlePreventionTypesChange}
                 checkedValues={selectedPreventionTypes}
+                onDirtyChange={handleChildDirtyChange}
               ></ValidationCheckboxGroup>
             </div>
           </div>
@@ -233,7 +246,10 @@ export const HWCRPreventionForm: FC<Props> = ({ id, prevention, handleSave = () 
                 errorMessage={officerErrorMessage}
                 value={selectedOfficer}
                 placeholder="Select "
-                onChange={(officer: any) => setSelectedOfficer(officer)}
+                onChange={(officer: any) => {
+                  setSelectedOfficer(officer);
+                  markDirty();
+                }}
                 isClearable={true}
               />
             </div>

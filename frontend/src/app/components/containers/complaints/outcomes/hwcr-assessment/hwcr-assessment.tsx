@@ -10,9 +10,15 @@ type props = {
   assessment?: Assessment;
   allowDuplicate?: boolean;
   allowCancel?: boolean;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false, allowCancel = true }) => {
+export const HWCRAssessment: FC<props> = ({
+  assessment,
+  allowDuplicate = false,
+  allowCancel = true,
+  onDirtyChange,
+}) => {
   const { id = "" } = useParams();
   const dispatch = useAppDispatch();
 
@@ -36,6 +42,7 @@ export const HWCRAssessment: FC<props> = ({ assessment, allowDuplicate = false, 
           }}
           handleSave={() => setShowInput(false)}
           allowDuplicate={allowDuplicate}
+          onDirtyChange={onDirtyChange}
         />
       ) : (
         assessment && (

@@ -1609,7 +1609,9 @@ export const ComplaintDetailsEdit: FC = () => {
       </section>
 
       {/* HWCR Outcome Report and File Linkage */}
-      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && <HWCROutcomeReport />}
+      {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
+        <HWCROutcomeReport onDirtyChange={handleChildDirtyChange} />
+      )}
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
@@ -1620,7 +1622,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {/* COS ERS File Linkage */}
       {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
-        <ExternalFileReference />
+        <ExternalFileReference onDirtyChange={handleChildDirtyChange} />
       )}
     </div>
   );

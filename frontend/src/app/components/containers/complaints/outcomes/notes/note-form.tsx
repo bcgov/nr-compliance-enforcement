@@ -13,6 +13,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import { ToggleError } from "@common/toast";
 import { Note } from "@/app/types/outcomes/note";
 import UserService from "@/app/service/user-service";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   id: string;
@@ -21,12 +22,15 @@ type props = {
   currentOfficer: AppUser | null;
   mode: "create" | "update";
   handleCancel: Function;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, mode, handleCancel }) => {
+export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, mode, handleCancel, onDirtyChange }) => {
   const currentDate = new Date();
 
   const dispatch = useAppDispatch();
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
@@ -45,6 +49,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
   }, [currentOfficer]);
 
   const handleNotesChange = (input: string) => {
+    markDirty();
     setNotesError("");
     setCurrentNote(input.trim());
   };

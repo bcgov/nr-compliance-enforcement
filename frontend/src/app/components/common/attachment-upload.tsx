@@ -4,14 +4,10 @@ import { useDropzone } from "react-dropzone";
 
 type Props = {
   onFileSelect: (selectedFile: FileList) => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
   disabled?: boolean | null;
 };
 
-export const AttachmentUpload: FC<Props> = ({ onFileSelect, onDirtyChange, disabled }) => {
-  // Dirty tracking
-  const { markDirty } = useFormDirtyState(onDirtyChange, 0);
-
+export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
   // Function to handle files being dropped onto the component
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -20,7 +16,6 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, onDirtyChange, disab
         dataTransfer.items.add(file);
       });
       onFileSelect(dataTransfer.files);
-      markDirty();
     },
     [onFileSelect],
   );

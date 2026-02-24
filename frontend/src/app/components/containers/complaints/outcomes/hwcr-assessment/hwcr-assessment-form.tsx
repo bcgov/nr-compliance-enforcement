@@ -45,7 +45,7 @@ import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
 import UserService from "@/app/service/user-service";
-import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id: string;
@@ -54,6 +54,7 @@ type Props = {
   handleCancel?: () => void;
   quickClose?: boolean;
   allowDuplicate?: boolean;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 export const HWCRAssessmentForm: FC<Props> = ({
@@ -63,12 +64,12 @@ export const HWCRAssessmentForm: FC<Props> = ({
   handleCancel = () => {},
   quickClose = false,
   allowDuplicate = false,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
 
   // Dirty tracking
-  const { markDirty, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
-  useUnsavedChangesWarning(isAnyDirty);
+  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 0);
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 

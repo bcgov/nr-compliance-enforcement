@@ -5,6 +5,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { useAppSelector } from "@hooks/hooks";
 import { selectEarDropdown } from "@store/reducers/code-table";
 import { REQUIRED } from "@constants/general";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   id: string;
@@ -13,18 +14,21 @@ type props = {
   order: number;
   update: Function;
   remove: Function;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
   const ears = useAppSelector(selectEarDropdown);
 
-  const { id, ear, identifier, order, update, remove } = props;
+  const { id, ear, identifier, order, update, remove, onDirtyChange } = props;
 
   const [sideError, setSideError] = useState("");
   const [identifierError, setIdentifierError] = useState("");
 
   const leftEar = ears.find((ear) => ear.value === "L");
   const rightEar = ears.find((ear) => ear.value === "R");
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   let selectedEar = null;
   if (ear === "L") {
@@ -33,6 +37,7 @@ export const EarTag = forwardRef<{ isValid: Function }, props>((props, ref) => {
     selectedEar = rightEar;
   }
   const updateModel = (property: string, value: string | undefined) => {
+    markDirty();
     const source = { id, ear, identifier, order };
     const updatedTag = { ...source, [property]: value };
     update(updatedTag, property);

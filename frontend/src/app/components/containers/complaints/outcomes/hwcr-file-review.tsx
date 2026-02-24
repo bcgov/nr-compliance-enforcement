@@ -11,8 +11,13 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createReview, updateReview } from "@/app/store/reducers/complaint-outcome-thunks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
-export const HWCRFileReview: FC = () => {
+interface HWCRFileReviewProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
   const REQUEST_REVIEW_STATE = 0;
   const EDIT_STATE = 1;
   const DISPLAY_STATE = 2;
@@ -34,6 +39,8 @@ export const HWCRFileReview: FC = () => {
   const showSectionErrors =
     (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) &&
     isInEdit.showSectionErrors;
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
     if (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) {
@@ -127,10 +134,12 @@ export const HWCRFileReview: FC = () => {
 
   const handleReviewRequiredClick = () => {
     setReviewRequired(!reviewRequired);
+    markDirty();
   };
 
   const handleReviewCompleteClick = () => {
     setReviewCompleted(!reviewCompleted);
+    markDirty();
   };
 
   return (

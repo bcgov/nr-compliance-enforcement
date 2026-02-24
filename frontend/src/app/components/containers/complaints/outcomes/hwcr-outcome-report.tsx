@@ -9,7 +9,11 @@ import { HWCROutcomeByAnimalv2 } from "./hwcr-outcome-by-animal-v2";
 import { resetCases } from "@/app/store/reducers/complaint-outcomes";
 import { HWCRPreventions } from "./hwcr-prevention/hwcr-preventions";
 
-export const HWCROutcomeReport: FC = () => {
+interface HWCROutcomeReportProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const HWCROutcomeReport: FC<HWCROutcomeReportProps> = ({ onDirtyChange }) => {
   const dispatch = useAppDispatch();
 
   // Clear case state when component unmounts
@@ -25,13 +29,13 @@ export const HWCROutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRAssessments />
-      <HWCRPreventions />
-      <HWCREquipment />
-      <HWCROutcomeByAnimalv2 />
-      <Notes />
-      <OutcomeAttachments />
-      <HWCRFileReview />
+      <HWCRAssessments onDirtyChange={onDirtyChange} />
+      <HWCRPreventions onDirtyChange={onDirtyChange} />
+      <HWCREquipment onDirtyChange={onDirtyChange} />
+      <HWCROutcomeByAnimalv2 onDirtyChange={onDirtyChange} />
+      <Notes onDirtyChange={onDirtyChange} />
+      <OutcomeAttachments onDirtyChange={onDirtyChange} />
+      <HWCRFileReview onDirtyChange={onDirtyChange} />
     </section>
   );
 };

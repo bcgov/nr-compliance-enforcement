@@ -30,6 +30,7 @@ import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
 import { getDropdownOption } from "@/app/common/methods";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   index: number;
@@ -39,6 +40,7 @@ type props = {
   save: Function;
   cancel: Function;
   outcomeRequired: boolean;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 //-- this object is used to create an empty outcome
@@ -71,6 +73,7 @@ export const CreateAnimalOutcome: FC<props> = ({
   save,
   cancel,
   outcomeRequired,
+  onDirtyChange,
 }) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
@@ -83,6 +86,9 @@ export const CreateAnimalOutcome: FC<props> = ({
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
+
+  // -- dirty tracking
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -115,6 +121,7 @@ export const CreateAnimalOutcome: FC<props> = ({
     property: string,
     value: string | Date | Array<AnimalTagV2 | DrugUsedData> | DrugAuthorization | null | undefined,
   ) => {
+    markDirty();
     let model = { ...data, [property]: value };
 
     if (property === "outcome" && (!value || !OUTCOMES_REQUIRING_ACTIONED_BY.includes(value as string))) {
@@ -147,6 +154,7 @@ export const CreateAnimalOutcome: FC<props> = ({
               update={updateEarTag}
               remove={removeEarTag}
               ref={(el) => (earTagRefs.current[idx] = el)}
+              onDirtyChange={onDirtyChange}
             />
           );
         });
@@ -228,6 +236,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   remove={removeDrugUsed}
                   key={id}
                   ref={(el) => (drugRefs.current[idx] = el)}
+                  onDirtyChange={onDirtyChange}
                 />
               );
             })}
@@ -237,6 +246,7 @@ export const CreateAnimalOutcome: FC<props> = ({
             agency={agency}
             update={updateModel}
             ref={authorizationRef}
+            onDirtyChange={onDirtyChange}
           />
         </>
       );
@@ -494,7 +504,9 @@ export const CreateAnimalOutcome: FC<props> = ({
                   rows={2}
                   errMsg={""}
                   maxLength={4000}
-                  onChange={(e: any) => updateModel("identifyingFeatures", e.trim())}
+                  onChange={(e: any) => {
+                    updateModel("identifyingFeatures", e.trim());
+                  }}
                 />
               </div>
             </div>
@@ -571,6 +583,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     enableValidation={false}
                     onChange={(evt) => {
                       handleOutcomeChange(evt);
+                      markDirty();
                     }}
                     isClearable={true}
                   />
@@ -592,6 +605,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                       value={getDropdownOption(data.outcomeActionedBy, outcomeActionedByOptions)}
                       onChange={(evt) => {
                         handleActionedByChange(evt);
+                        markDirty();
                       }}
                       isClearable={true}
                       errorMessage={outcomeActionedByError}
@@ -620,6 +634,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     enableValidation={true}
                     onChange={(evt) => {
                       handleOfficerChange(evt);
+                      markDirty();
                     }}
                     value={getDropdownOption(data.officer, officers)}
                     errorMessage={officerError}
@@ -640,6 +655,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                     maxDate={new Date()}
                     onChange={(input: Date) => {
                       handleOutcomeDateChange(input);
+                      markDirty();
                     }}
                     selectedDate={data?.date}
                     classNamePrefix="comp-details-edit-calendar-input"

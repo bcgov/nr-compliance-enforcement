@@ -10,6 +10,7 @@ import { selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
 import { getThumbnailDataURL, isImage } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -45,6 +46,7 @@ export const Attachments: FC<Props> = ({
   refreshKey,
 }) => {
   const dispatch = useAppDispatch();
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize);
@@ -130,6 +132,7 @@ export const Attachments: FC<Props> = ({
     removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
+    markDirty();
   };
 
   // don't upload files that are invalid
@@ -231,7 +234,6 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
-                    onDirtyChange={onDirtyChange}
                   />
                 )}
                 {slides?.map((item, index) => (
@@ -253,7 +255,6 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
-                    onDirtyChange={onDirtyChange}
                   />
                 </div>
               )}
