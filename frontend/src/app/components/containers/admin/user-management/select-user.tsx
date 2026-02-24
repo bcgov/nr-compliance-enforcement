@@ -25,7 +25,7 @@ interface SelectUserProps {
   handleAddNewUser: () => void;
 }
 
-// String used for an empty value (e.g. when a user has no office assigned)
+// Em dash used for an empty value (e.g. when a user has no office assigned)
 const EMPTY = "—";
 
 function getOfficerAgencyCode(officer: AppUser): string | undefined {
@@ -102,6 +102,51 @@ function compareStrings(a: string, b: string, dir: string): number {
   return dir === SORT_TYPES.ASC ? cmp : -cmp;
 }
 
+// Protect values with quotes, commas and new lines for CSV export
+function escapeCsvCell(value: string): string {
+  const s = String(value ?? "");
+  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+// Build the CSV
+function buildTableCsv(
+  officers: AppUser[],
+  offices: Array<{ id: string; name: string; agency: string }> | undefined,
+  parkAreas: Option[] | undefined,
+  agencyDetailLabel: string,
+): string {
+  const headers = ["Name (last, first)", "User ID", "Agency", agencyDetailLabel, "Role"];
+  const headerRow = headers.map(escapeCsvCell).join(",");
+  const rows = officers.map((u) => {
+    const name = `${u.last_name ?? ""}, ${u.first_name ?? ""}${u.deactivate_ind ? " (deactivated)" : ""}`;
+    return [
+      escapeCsvCell(name),
+      escapeCsvCell(u.user_id ?? EMPTY),
+      escapeCsvCell(getAgencyLabel(u)),
+      escapeCsvCell(getAgencyDetailDisplay(u, offices, parkAreas)),
+      escapeCsvCell(u.user_roles?.length ? u.user_roles.join(", ") : EMPTY),
+    ].join(",");
+  });
+  return [headerRow, ...rows].join("\r\n");
+}
+
+/**
+ * Download the CSV file
+ * Converts the CSV to a blob
+ * Creates a temporary object URL and anchor for it
+ * Clicks the anchor then removes the temp object URL
+ */
+function downloadCsv(content: string, filename: string) {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const SelectUser: FC<SelectUserProps> = ({
   setOfficer,
   setOfficerError,
@@ -120,7 +165,7 @@ export const SelectUser: FC<SelectUserProps> = ({
   const [sortDirection, setSortDirection] = useState<string>(SORT_TYPES.ASC);
 
   // Tabs the active user can see: GLOBAL_ADMINISTRATOR sees all
-  // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles
+  // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles, and NRS
   const visibleTabCodes = useMemo((): string[] => {
     if (UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR)) {
       return [...AGENCY_TAB_CODES];
@@ -130,6 +175,7 @@ export const SelectUser: FC<SelectUserProps> = ({
       if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
       if (UserService.hasRole(Roles.CEEB)) tabs.push(AgencyType.CEEB); // EPO
       if (UserService.hasRole(Roles.PARKS)) tabs.push(AgencyType.PARKS);
+      tabs.push(AgencyType.SECTOR); // Natural Resource Sector visible to all agency administrators
       return tabs;
     }
     return [];
@@ -227,6 +273,15 @@ export const SelectUser: FC<SelectUserProps> = ({
     setOfficer({ value: "", label: "" });
   };
 
+  const handleDownloadCsv = useCallback(() => {
+    const agencyDetailLabel = AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? "Agency detail";
+    const csv = buildTableCsv(sortedOfficersForTab, offices, parkAreas, agencyDetailLabel);
+    const tabLabel = agencyTabsWithLabels.find((t) => t.code === activeAgencyTab)?.label ?? activeAgencyTab;
+    // Replace spaces with hyphens for a safe filename
+    const safeLabel = tabLabel.replace(/\s+/g, "-").toLowerCase();
+    downloadCsv(csv, `users-${safeLabel}.csv`);
+  }, [activeAgencyTab, sortedOfficersForTab, offices, parkAreas, agencyTabsWithLabels]);
+
   return (
     <div className="comp-page-container user-management-container">
       <div className="comp-page-header">
@@ -291,6 +346,21 @@ export const SelectUser: FC<SelectUserProps> = ({
       {visibleTabCodes.length > 0 && (
         <section className="comp-details-section mt-4">
           <h4 className="mb-3">Users by agency</h4>
+          <div className="d-flex justify-content-end mb-2">
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={handleDownloadCsv}
+              disabled={sortedOfficersForTab.length === 0} // Disable if list is empty
+              aria-label="Download table as CSV"
+            >
+              <i
+                className="bi bi-download me-1"
+                aria-hidden
+              ></i>
+              Download CSV
+            </Button>
+          </div>
           <Nav className="nav nav-tabs mb-3">
             {agencyTabsWithLabels.map(({ code, label }) => (
               <Nav.Item
