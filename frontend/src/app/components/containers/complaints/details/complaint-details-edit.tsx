@@ -1615,10 +1615,10 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
-        <CeebOutcomeReport />
+        <CeebOutcomeReport onDirtyChange={handleChildDirtyChange} />
       )}
 
-      {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport />}
+      {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport onDirtyChange={handleChildDirtyChange} />}
 
       {/* COS ERS File Linkage */}
       {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (

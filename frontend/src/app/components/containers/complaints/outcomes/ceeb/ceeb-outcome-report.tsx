@@ -5,10 +5,14 @@ import { useAppDispatch } from "@hooks/hooks";
 import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
 import { OutcomeAttachments } from "@components/containers/complaints/outcomes/outcome-attachments";
-import { AuthoizationOutcome } from "./authorization-outcome/authorization-outcome";
+import { AuthorizationOutcome } from "./authorization-outcome/authorization-outcome";
 import { Notes } from "@/app/components/containers/complaints/outcomes/notes";
 
-export const CeebOutcomeReport: FC = () => {
+interface CEEBOutcomeReportProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const CeebOutcomeReport: FC<CEEBOutcomeReportProps> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -23,10 +27,10 @@ export const CeebOutcomeReport: FC = () => {
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <AuthoizationOutcome />
-      <CeebDecision />
-      <Notes />
-      <OutcomeAttachments />
+      <AuthorizationOutcome onDirtyChange={onDirtyChange} />
+      <CeebDecision onDirtyChange={onDirtyChange} />
+      <Notes onDirtyChange={onDirtyChange} />
+      <OutcomeAttachments onDirtyChange={onDirtyChange} />
     </section>
   );
 };
