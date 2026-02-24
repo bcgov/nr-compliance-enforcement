@@ -69,7 +69,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const dispatch = useAppDispatch();
 
   // Dirty tracking
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 0);
+  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 

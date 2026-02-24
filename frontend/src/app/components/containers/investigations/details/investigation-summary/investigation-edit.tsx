@@ -159,7 +159,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose, onDirtyChan
     },
   });
 
-  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 0);
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),

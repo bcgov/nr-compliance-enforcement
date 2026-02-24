@@ -64,16 +64,20 @@ const useUnsavedChangesWarning = (isDirty: boolean) => {
 };
 
 // Helper hook for managing form state
-export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boolean) => void, index: number = 0) => {
+export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boolean) => void) => {
   const [isDirty, setIsDirty] = useState(false);
   const [dirtyChildren, setDirtyChildren] = useState<Record<number, boolean>>({});
 
   const markDirty = () => setIsDirty(true);
   const markClean = () => setIsDirty(false);
 
-  // For parent components to track child dirty state.
-  // If there are multiple child components on the page it should be called with different index numbers.
-  // See create complaint for a working example.
+  // Hook for tracking dirty state in forms, supporting both local state and child component aggregation
+  // onDirtyChange - is a callback to bubble dirty state to parent. The index parameter is controlled
+  //        by the parent via a wrapper e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
+  //        See create complaint or complaint outcome report for a working example.
+  // Usage:
+  //   - Leaf components: use markDirty/markClean to track local state
+  //   - Parent components: use handleChildDirtyChange to aggregate child dirty states and pass isAnyDirty to useUnsavedChangesWarning
   const handleChildDirtyChange = (childIndex: number, childIsDirty: boolean) => {
     setDirtyChildren((prev) => ({ ...prev, [childIndex]: childIsDirty }));
   };
@@ -82,8 +86,10 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
 
   // Bubble up dirty status to the parent
   useEffect(() => {
-    onDirtyChange?.(index, isAnyDirty);
-  }, [isAnyDirty, index]);
+    // The index passed here is ignored by the parent since it controls
+    // the index via a wrapper e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
+    onDirtyChange?.(0, isAnyDirty);
+  }, [isAnyDirty]);
 
   return { isAnyDirty, markDirty, markClean, handleChildDirtyChange };
 };

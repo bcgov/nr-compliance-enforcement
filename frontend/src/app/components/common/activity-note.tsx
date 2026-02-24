@@ -103,7 +103,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const [officerError, setOfficerError] = useState<string>("");
 
   // Dirty tracking
-  const { markDirty, markClean } = useFormDirtyState(onDirtyChange, index ?? 0);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   // Editor setup
   const editor = useEditor({

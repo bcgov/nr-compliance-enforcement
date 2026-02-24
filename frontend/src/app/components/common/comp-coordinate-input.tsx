@@ -60,7 +60,7 @@ export const CompCoordinateInput: FC<Props> = ({
   const [zoneErrorMsg, setZoneErrorMsg] = useState<string | undefined>("");
 
   // Dirty tracking
-  const { markDirty } = useFormDirtyState(onDirtyChange, 0);
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {

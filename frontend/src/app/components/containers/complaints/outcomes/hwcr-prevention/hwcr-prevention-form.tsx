@@ -59,7 +59,7 @@ export const HWCRPreventionForm: FC<Props> = ({
   const [preventionState] = useState<Prevention>(prevention ?? ({} as Prevention));
 
   // Dirty tracking
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 0);
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // Errors
 
@@ -120,6 +120,7 @@ export const HWCRPreventionForm: FC<Props> = ({
   // Change handlers
 
   const handlePreventionTypesChange = (selectedItems: Option[]) => {
+    markDirty();
     setSelectedPreventionTypes(selectedItems);
   };
 
@@ -225,7 +226,6 @@ export const HWCRPreventionForm: FC<Props> = ({
                 options={preventionTypeList}
                 onCheckboxChange={handlePreventionTypesChange}
                 checkedValues={selectedPreventionTypes}
-                onDirtyChange={handleChildDirtyChange}
               ></ValidationCheckboxGroup>
             </div>
           </div>

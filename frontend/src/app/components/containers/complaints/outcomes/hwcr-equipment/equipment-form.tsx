@@ -90,7 +90,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const showSectionErrors = isInEdit.showSectionErrors;
 
   // Dirty tracking
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange, 2);
+  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   // Clear state on unmount
   useEffect(() => {

@@ -1,28 +1,23 @@
 import { FC } from "react";
 import Option from "@apptypes/app/option";
-import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ValidationCheckboxGroupProps {
   options: Option[];
   errMsg: string;
   onCheckboxChange: (checkedItems: Option[]) => void;
   checkedValues?: Option[];
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const ValidationCheckboxGroup: FC<ValidationCheckboxGroupProps> = ({
   options,
   errMsg,
   onCheckboxChange,
-  onDirtyChange,
   checkedValues = [],
 }) => {
-  const { markDirty } = useFormDirtyState(onDirtyChange, 0);
   const inputClassName = "form-check-input";
   const labelClassName = "form-check-label checkbox-label";
 
   const handleCheckboxChange = (value: Option) => {
-    markDirty();
     const updatedCheckedItems = checkedValues
       .map((item) => {
         return item.value;

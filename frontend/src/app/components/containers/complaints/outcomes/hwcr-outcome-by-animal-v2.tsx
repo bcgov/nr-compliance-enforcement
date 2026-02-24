@@ -20,7 +20,6 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
-import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = { onDirtyChange?: (index: number, isDirty: boolean) => void };
 
