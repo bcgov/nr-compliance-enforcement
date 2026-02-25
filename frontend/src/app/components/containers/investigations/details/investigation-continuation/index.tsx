@@ -16,7 +16,6 @@ import { appUserGuid } from "@/app/store/reducers/app";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
-import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -35,9 +34,10 @@ const GET_REPORTS = gql`
 
 interface InvestigationContinuationProps {
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData }) => {
+export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData, onDirtyChange }) => {
   const { investigationGuid = "" } = useParams<{ investigationGuid: string }>();
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -67,10 +67,6 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       ToggleError("Failed to save report");
     },
   });
-
-  // dirty form Handler
-  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
-  useUnsavedChangesWarning(isAnyDirty);
 
   // Validation handler
   const handleContinuationReportValidationChange = (isValid: boolean) => {
@@ -156,7 +152,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           onValuesChange={handleContinuationReportValuesChange}
           showErrors={showContinuationReportErrors}
           shouldReset={shouldReset}
-          onDirtyChange={handleChildDirtyChange}
+          onDirtyChange={onDirtyChange}
         />
 
         <div className="comp-details-form-buttons">

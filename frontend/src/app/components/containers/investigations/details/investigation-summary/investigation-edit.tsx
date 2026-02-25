@@ -159,7 +159,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose, onDirtyChan
     },
   });
 
-  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
+  const { isAnyDirty } = useFormDirtyState(onDirtyChange);
 
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
@@ -205,7 +205,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose, onDirtyChan
             form={form}
             isDisabled={isDisabled}
             discoveryDate={investigationData?.getInvestigation?.discoveryDate}
-            onDirtyChange={handleChildDirtyChange}
+            onDirtyChange={onDirtyChange}
           />
         </Card.Body>
       </Card>

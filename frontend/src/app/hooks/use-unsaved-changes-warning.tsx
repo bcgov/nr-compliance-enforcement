@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// This hook should only be used once at the top level of a component tree otherwise you might end up with duelling states
 const useUnsavedChangesWarning = (isDirty: boolean) => {
   // Used to override hook behavior in cases where we want to be able to navigate (e.g. cancelling or saving changes then going to a new page)
   const allowNavigationRef = useRef(false);
@@ -63,7 +64,8 @@ const useUnsavedChangesWarning = (isDirty: boolean) => {
   return { allowNavigation };
 };
 
-// Helper hook for managing form state
+// Helper hook for managing form state - can accept as a parameter a function passed in from a parent component
+// Multiple components in a component tree can have their own instance of this hook if they need to track state independently.
 export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boolean) => void) => {
   const [isDirty, setIsDirty] = useState(false);
   const [dirtyChildren, setDirtyChildren] = useState<Record<number, boolean>>({});
@@ -77,10 +79,12 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
   // Hook for tracking dirty state in forms, supporting both local state and child component aggregation
   // onDirtyChange - is a callback to bubble dirty state to parent. The index parameter is controlled
   //        by the parent via a wrapper e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
-  //        See create complaint or complaint outcome report for a working example.
+  //        See complaint outcome report for a working example.
   // Usage:
   //   - Leaf components: use markDirty/markClean to track local state
   //   - Parent components: use handleChildDirtyChange to aggregate child dirty states and pass isAnyDirty to useUnsavedChangesWarning
+  //
+  // tl;dr: if you have more than one 'handleChildDirtyChange' on a page think carefully about indexes
   const handleChildDirtyChange = (childIndex: number, childIsDirty: boolean) => {
     setDirtyChildren((prev) => ({ ...prev, [childIndex]: childIsDirty }));
   };
@@ -89,8 +93,8 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
 
   // Bubble up dirty status to the parent
   useEffect(() => {
-    // The index passed here is ignored by the parent since it controls
-    // the index via a wrapper e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
+    // The index passed here is ignored by the parent since it controls the index via a wrapper
+    //  e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
     onDirtyChange?.(0, isAnyDirty);
   }, [isAnyDirty]);
 

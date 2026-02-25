@@ -44,12 +44,13 @@ import {
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE,
 } from "@/app/components/common/activity-note";
-import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskFormProps {
   investigationGuid: string;
   onClose: (newTask?: Task) => void;
   task?: Task;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const ADD_TASK = gql`
@@ -68,7 +69,7 @@ const EDIT_TASK = gql`
   }
 `;
 
-export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
+export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: TaskFormProps) => {
   const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
     queryKey: ["diaryDatesByTask", task?.taskIdentifier],
     variables: { taskGuid: task?.taskIdentifier },
@@ -149,11 +150,17 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
-  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
-  useUnsavedChangesWarning(isFormDirty || isAnyDirty);
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   const taskCategoryOptions = taskCategories.map((option: any) => {
     return {
@@ -441,6 +448,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const handleSubmit = async () => {
     await form.handleSubmit();
+    markClean();
   };
 
   const handleCancel = async () => {
@@ -449,6 +457,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     setDiaryDateValidation({});
     form.reset();
     onClose();
+    markClean();
   };
 
   const cancelButtonClick = () => {
@@ -877,7 +886,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}
-              onDirtyChange={handleChildDirtyChange}
+              onDirtyChange={onDirtyChange}
               onValuesChange={handleDiaryDateValuesChange}
               initialData={diaryDate}
               triggerValidation={triggerDiaryValidation}
@@ -930,7 +939,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
                   onValuesChange={handleTaskActionValuesChange}
                   initialData={taskAction}
                   showErrors={showTaskActionErrors}
-                  onDirtyChange={handleChildDirtyChange}
+                  onDirtyChange={onDirtyChange}
                 />
               </Card.Body>
             </Card>
@@ -959,7 +968,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
-              onDirtyChange={handleChildDirtyChange}
+              onDirtyChange={onDirtyChange}
               showPreview={false}
             />
           </fieldset>

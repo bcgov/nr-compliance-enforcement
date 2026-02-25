@@ -1079,7 +1079,7 @@ export const CreateComplaint: FC = () => {
             validationRequired={false}
             sourceXCoordinate={longitude ?? "0"}
             sourceYCoordinate={latitude ?? "0"}
-            onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
+            onDirtyChange={handleChildDirtyChange}
           />
 
           <div
@@ -1388,7 +1388,7 @@ export const CreateComplaint: FC = () => {
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
             onSlideCountChange={handleSlideCountChange}
-            onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
+            onDirtyChange={handleChildDirtyChange}
             showPreview={true}
           />
         </fieldset>

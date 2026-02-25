@@ -7,11 +7,13 @@ import { Button } from "react-bootstrap";
 interface InvestigationContraventionProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
   investigationGuid,
   investigationData,
+  onDirtyChange,
 }) => {
   // State
   const [showAddCard, setshowAddCard] = useState(false);
@@ -47,6 +49,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 contravention={contravention}
                 parties={investigationData?.parties as InvestigationParty[]}
                 contraventionNumber={(index + 1).toString()}
+                onDirtyChange={onDirtyChange}
               />
             ) : (
               <ContraventionItem
@@ -66,6 +69,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           activityGuid={investigationGuid}
           onClose={handleCloseForm}
           parties={investigationData?.parties as InvestigationParty[]}
+          onDirtyChange={onDirtyChange}
         />
       )}
 

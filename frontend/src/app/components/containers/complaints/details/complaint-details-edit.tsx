@@ -115,8 +115,7 @@ export type ComplaintParams = {
 export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { markDirty, isAnyDirty, markClean, handleChildDirtyChange } = useFormDirtyState();
-  console.log(isAnyDirty);
+  const { markDirty, markClean, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
 
   useUnsavedChangesWarning(isAnyDirty);
 
@@ -1255,7 +1254,7 @@ export const ComplaintDetailsEdit: FC = () => {
                 validationRequired={false}
                 sourceXCoordinate={longitude}
                 sourceYCoordinate={latitude}
-                onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
+                onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} // Complaint Edit transaction (Index 0)
               />
 
               <div
@@ -1584,7 +1583,7 @@ export const ComplaintDetailsEdit: FC = () => {
                   onFileDeleted={onHandleDeleteAttachment}
                   onSlideCountChange={handleSlideCountChange}
                   showPreview={true}
-                  onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
+                  onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} // Complaint Edit transaction (Index 0)
                 />
               </div>
             </fieldset>
@@ -1618,21 +1617,21 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {/* HWCR Outcome Report and File Linkage */}
       {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
-        <HWCROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
+        <HWCROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
-        <CeebOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(3, isDirty)} />
+        <CeebOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
-        <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(4, isDirty)} />
+        <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
       {/* COS ERS File Linkage */}
       {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
-        <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(5, isDirty)} />
+        <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
       )}
     </div>
   );

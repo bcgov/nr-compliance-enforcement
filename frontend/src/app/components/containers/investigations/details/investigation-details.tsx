@@ -11,6 +11,7 @@ import { InvestigationAdministration } from "@/app/components/containers/investi
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
 import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-task";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -97,6 +98,10 @@ export const InvestigationDetails: FC = () => {
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
 
+  // dirty form Handler
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  useUnsavedChangesWarning(isAnyDirty);
+
   const investigationData = data?.getInvestigation;
   const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
   const caseName = data?.caseFilesByActivityIds?.[0]?.name;
@@ -110,6 +115,7 @@ export const InvestigationDetails: FC = () => {
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
             caseName={caseName ?? ""}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "tasks":
@@ -117,6 +123,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationTasks
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "parties":
@@ -131,6 +138,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationContraventions
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "documents":
@@ -141,7 +149,12 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "continuation":
-        return <InvestigationContinuation investigationData={investigationData} />;
+        return (
+          <InvestigationContinuation
+            investigationData={investigationData}
+            onDirtyChange={handleChildDirtyChange}
+          />
+        );
       case "admin":
         return <InvestigationAdministration />;
     }

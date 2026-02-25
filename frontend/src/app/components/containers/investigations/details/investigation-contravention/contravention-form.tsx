@@ -30,7 +30,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
-import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -38,6 +38,7 @@ interface ContraventionFormProps {
   contraventionNumber?: string;
   contravention?: Contravention;
   parties?: InvestigationParty[];
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const ADD_CONTRAVENTION = gql`
@@ -99,6 +100,7 @@ export const ContraventionForm = ({
   parties,
   activityGuid,
   onClose,
+  onDirtyChange,
   contraventionNumber,
 }: ContraventionFormProps) => {
   // Form Definition
@@ -137,10 +139,17 @@ export const ContraventionForm = ({
     },
   });
 
-  const isDirty = useStore(form.baseStore, (state) =>
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
-  useUnsavedChangesWarning(isDirty);
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   // Selectors
   const userAgency = getUserAgency();
@@ -267,11 +276,13 @@ export const ContraventionForm = ({
 
   // Manages save click
   const handleSubmit = async () => {
+    markClean();
     await form.handleSubmit();
   };
 
   // Manages cancel action after modal is confirmed
   const handleCancel = async () => {
+    markClean();
     form.reset();
     onClose();
   };

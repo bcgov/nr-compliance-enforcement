@@ -35,7 +35,11 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
   }
 `;
 
-export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
+export const InvestigationSummary: FC<InvestigationPartiesProps> = ({
+  investigationGuid,
+  investigationData,
+  onDirtyChange,
+}) => {
   const dispatch = useAppDispatch();
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {

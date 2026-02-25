@@ -11,13 +11,14 @@ import DiaryDates from "@/app/components/containers/investigations/details/inves
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
 import { InvestigationEditForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-edit";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
-import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
   investigationGuid: string;
   caseGuid: string;
   caseName?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
@@ -25,6 +26,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   investigationGuid,
   caseGuid,
   caseName,
+  onDirtyChange,
 }) => {
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
@@ -51,8 +53,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
   const [isEdit, setisEdit] = useState(false);
-  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
-  useUnsavedChangesWarning(isAnyDirty);
+  const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const editButtonClick = () => {
     setisEdit(true);
@@ -190,7 +191,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               caseIdentifier={caseGuid}
               id={investigationData.investigationGuid ?? ""}
               onClose={handleCloseForm}
-              onDirtyChange={handleChildDirtyChange}
+              onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
             ></InvestigationEditForm>
           )}
 

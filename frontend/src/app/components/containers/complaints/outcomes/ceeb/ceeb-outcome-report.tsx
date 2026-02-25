@@ -7,6 +7,7 @@ import { ComplaintParams } from "@components/containers/complaints/details/compl
 import { OutcomeAttachments } from "@components/containers/complaints/outcomes/outcome-attachments";
 import { AuthorizationOutcome } from "./authorization-outcome/authorization-outcome";
 import { Notes } from "@/app/components/containers/complaints/outcomes/notes";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface CEEBOutcomeReportProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -15,6 +16,8 @@ interface CEEBOutcomeReportProps {
 export const CeebOutcomeReport: FC<CEEBOutcomeReportProps> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
+
+  const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
     dispatch(getCaseFile(id));
@@ -27,10 +30,10 @@ export const CeebOutcomeReport: FC<CEEBOutcomeReportProps> = ({ onDirtyChange })
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <AuthorizationOutcome onDirtyChange={onDirtyChange} />
-      <CeebDecision onDirtyChange={onDirtyChange} />
-      <Notes onDirtyChange={onDirtyChange} />
-      <OutcomeAttachments onDirtyChange={onDirtyChange} />
+      <AuthorizationOutcome onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
+      <CeebDecision onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} />
+      <Notes onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
+      <OutcomeAttachments onDirtyChange={(_, isDirty) => handleChildDirtyChange(3, isDirty)} />
     </section>
   );
 };
