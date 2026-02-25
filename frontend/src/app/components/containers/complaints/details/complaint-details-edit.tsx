@@ -289,7 +289,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     if (incidentDate) {
-      setSelectedIncidentDate(incidentDate);
+      setSelectedIncidentDate(incidentDate instanceof Date ? incidentDate : new Date(incidentDate));
       if (incidentTime) {
         setSelectedIncidentTime(incidentTime);
       }
