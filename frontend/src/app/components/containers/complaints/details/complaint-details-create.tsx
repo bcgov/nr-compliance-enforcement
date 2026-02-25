@@ -193,7 +193,7 @@ export const CreateComplaint: FC = () => {
         status: "OPEN",
         ownedBy: agency,
         reportedByOther: "",
-        incidentDate: currentDate,
+        incidentDate: undefined,
         incidentTime: undefined,
         reportedOn: currentDate,
         updatedOn: currentDate,
