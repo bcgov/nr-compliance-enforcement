@@ -66,7 +66,7 @@ export const DecisionForm: FC<props> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
@@ -214,6 +214,7 @@ export const DecisionForm: FC<props> = ({
             if (id !== undefined) {
               toggleEdit(false);
             }
+            markClean();
           },
         },
       }),
@@ -246,6 +247,7 @@ export const DecisionForm: FC<props> = ({
         }
       });
     }
+    markClean();
   };
 
   const isValid = (): boolean => {

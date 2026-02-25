@@ -40,7 +40,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
     (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) &&
     isInEdit.showSectionErrors;
 
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
     if (componentState === EDIT_STATE || (componentState === REQUEST_REVIEW_STATE && reviewRequired)) {
@@ -110,6 +110,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
     if (componentState === EDIT_STATE && (reviewRequired || reviewCompleted)) {
       setComponentState(DISPLAY_STATE);
     }
+    markClean();
   };
 
   const handleFileReviewCancel = () => {
@@ -121,6 +122,7 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
           title: "Cancel changes?",
           description: "Your changes will be lost.",
           cancelConfirmed: () => {
+            markClean();
             setReviewRequired(isReviewRequired);
             if (componentState === EDIT_STATE) {
               reviewCompleteAction ? setReviewCompleted(true) : setReviewCompleted(false);

@@ -115,7 +115,9 @@ export type ComplaintParams = {
 export const ComplaintDetailsEdit: FC = () => {
   const dispatch = useAppDispatch();
 
-  const { markDirty, isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  const { markDirty, isAnyDirty, markClean, handleChildDirtyChange } = useFormDirtyState();
+  console.log(isAnyDirty);
+
   useUnsavedChangesWarning(isAnyDirty);
 
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
@@ -307,6 +309,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   //-- events
   const editButtonClick = () => {
+    // Special case where data could be lost if the user presses the edit button.
+    if (isAnyDirty) {
+      const confirmed = globalThis.confirm("You have unsaved changes. Are you sure you want to leave?");
+      if (!confirmed) return;
+      markClean();
+    }
     setReadOnly(false);
 
     //-- create the complaint update object
@@ -324,6 +332,7 @@ export const ComplaintDetailsEdit: FC = () => {
     }
     if (hasValidationErrors()) {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
+      markClean();
 
       dispatch(getComplaintById(id, complaintType));
       dispatch(getCaseFile(id));
@@ -398,6 +407,7 @@ export const ComplaintDetailsEdit: FC = () => {
           // Set these values back to the originally saved values as this is a 'cancel pending changes' action
           setLongitude(getEditableCoordinates(coordinates, Coordinates.Longitude));
           setLatitude(getEditableCoordinates(coordinates, Coordinates.Latitude));
+          markClean();
           window.scrollTo({ top: 0, behavior: "smooth" });
         },
       }),
@@ -811,8 +821,6 @@ export const ComplaintDetailsEdit: FC = () => {
     const updatedComplaint = { ...complaintUpdate, complaintMethodReceivedCode: value } as Complaint;
     applyComplaintUpdate(updatedComplaint);
   };
-
-  const maxDate = new Date();
 
   const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
     setLongitude(xCoordinate ?? "0");
@@ -1610,19 +1618,21 @@ export const ComplaintDetailsEdit: FC = () => {
 
       {/* HWCR Outcome Report and File Linkage */}
       {readOnly && complaintType === COMPLAINT_TYPES.HWCR && (
-        <HWCROutcomeReport onDirtyChange={handleChildDirtyChange} />
+        <HWCROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
       )}
 
       {/* CEEB ERS Outcome Report */}
       {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.CEEB && (
-        <CeebOutcomeReport onDirtyChange={handleChildDirtyChange} />
+        <CeebOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(3, isDirty)} />
       )}
 
-      {readOnly && complaintType === COMPLAINT_TYPES.GIR && <GIROutcomeReport onDirtyChange={handleChildDirtyChange} />}
+      {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
+        <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(4, isDirty)} />
+      )}
 
       {/* COS ERS File Linkage */}
       {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
-        <ExternalFileReference onDirtyChange={handleChildDirtyChange} />
+        <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(5, isDirty)} />
       )}
     </div>
   );

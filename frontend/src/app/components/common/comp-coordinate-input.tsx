@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import Option from "@apptypes/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
 import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "@common/methods";
@@ -61,6 +61,7 @@ export const CompCoordinateInput: FC<Props> = ({
 
   // Dirty tracking
   const { markDirty } = useFormDirtyState(onDirtyChange);
+  const initialCoordinatesRef = useRef({ x: initXCoordinate, y: initYCoordinate });
 
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {
@@ -68,8 +69,6 @@ export const CompCoordinateInput: FC<Props> = ({
       if (latitude === yCoordinate && longitude === xCoordinate) {
         return;
       }
-
-      markDirty();
 
       setYCoordinateErrorMsg("");
       setXCoordinateErrorMsg("");
@@ -136,8 +135,6 @@ export const CompCoordinateInput: FC<Props> = ({
         syncCoordinates("", "");
         return;
       }
-
-      markDirty();
 
       const regex = /^-?(?:\d+(\.\d+)?|.\d+)$/;
       let hasErrors = false;
@@ -334,6 +331,11 @@ export const CompCoordinateInput: FC<Props> = ({
     //Check if xCoord and yCoord valid whenever they change
     if (xCoordinate && yCoordinate) {
       handleGeoPointChange(yCoordinate, xCoordinate);
+
+      // Only mark dirty if coordinates have changed from initial values
+      if (xCoordinate !== initialCoordinatesRef.current.x || yCoordinate !== initialCoordinatesRef.current.y) {
+        markDirty();
+      }
     }
   }, [xCoordinate, yCoordinate, handleGeoPointChange]);
 
@@ -468,7 +470,11 @@ export const CompCoordinateInput: FC<Props> = ({
                   ${yCoordinateErrorMsg ? "error-border" : ""}
                   ${validationRequired ? "validation-group-input" : ""}
                 `}
-                  onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
+                  onChange={(evt: any) => {
+                    handleGeoPointChange(evt.target.value, xCoordinate ?? "");
+                    console.log("X changed");
+                    markDirty();
+                  }}
                   value={yCoordinate ?? ""}
                   maxLength={120}
                 />
@@ -490,7 +496,11 @@ export const CompCoordinateInput: FC<Props> = ({
                   comp-form-control
                   ${xCoordinateErrorMsg ? "error-border" : ""}
                 `}
-                  onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
+                  onChange={(evt: any) => {
+                    handleGeoPointChange(yCoordinate ?? "", evt.target.value);
+                    console.log("X changed");
+                    markDirty();
+                  }}
                   value={xCoordinate ?? ""}
                   maxLength={120}
                 />

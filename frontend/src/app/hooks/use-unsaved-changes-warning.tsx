@@ -69,7 +69,10 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
   const [dirtyChildren, setDirtyChildren] = useState<Record<number, boolean>>({});
 
   const markDirty = () => setIsDirty(true);
-  const markClean = () => setIsDirty(false);
+
+  const markClean = useCallback(() => {
+    setIsDirty(false);
+  }, []);
 
   // Hook for tracking dirty state in forms, supporting both local state and child component aggregation
   // onDirtyChange - is a callback to bubble dirty state to parent. The index parameter is controlled
@@ -90,6 +93,13 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
     // the index via a wrapper e.g. (_, isDirty) => handleChildDirtyChange(2, isDirty)
     onDirtyChange?.(0, isAnyDirty);
   }, [isAnyDirty]);
+
+  useEffect(() => {
+    return () => {
+      // When component unmounts, notify parent that we are no longer dirty
+      onDirtyChange?.(0, false);
+    };
+  }, []);
 
   return { isAnyDirty, markDirty, markClean, handleChildDirtyChange };
 };

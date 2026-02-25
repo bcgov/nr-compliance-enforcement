@@ -88,7 +88,7 @@ export const CreateAnimalOutcome: FC<props> = ({
   const showSectionErrors = isInEdit.showSectionErrors;
 
   // -- dirty tracking
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   //-- error handling
   const [speciesError, setSpeciesError] = useState("");
@@ -398,10 +398,12 @@ export const CreateAnimalOutcome: FC<props> = ({
     if (isValid()) {
       save(data);
     } else ToggleError("Error adding animal outcome");
+    markClean();
   };
 
   const handleCancel = () => {
     cancel(index);
+    markClean();
   };
 
   return (

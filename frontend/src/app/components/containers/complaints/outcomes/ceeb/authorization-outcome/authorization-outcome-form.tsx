@@ -23,7 +23,7 @@ type props = {
 export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdentifier, toggleEdit, onDirtyChange }) => {
   const dispatch = useAppDispatch();
 
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const caseId = useAppSelector(selectCaseId);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
@@ -105,6 +105,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
         }
       });
     }
+    markClean();
   };
 
   const handleCancelButtonClick = () => {
@@ -129,6 +130,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
             if (id !== undefined) {
               toggleEdit(false);
             }
+            markClean();
           },
         },
       }),

@@ -90,7 +90,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const showSectionErrors = isInEdit.showSectionErrors;
 
   // Dirty tracking
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   // Clear state on unmount
   useEffect(() => {
@@ -288,6 +288,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
     }
+    markClean();
   };
 
   const handleFormErrors = () => {
@@ -312,6 +313,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
   const cancelConfirmed = () => {
     resetData();
     onCancel();
+    markClean();
   };
 
   const resetData = () => {

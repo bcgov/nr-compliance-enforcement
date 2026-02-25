@@ -80,7 +80,7 @@ export const EditOutcome: FC<props> = ({
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const showSectionErrors = isInEdit.showSectionErrors;
 
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<modalProps>({
@@ -398,6 +398,7 @@ export const EditOutcome: FC<props> = ({
       update(data);
       toggle("");
     } else ToggleError("Error updating animal outcome");
+    markClean();
   };
 
   const handleCancel = () => {
@@ -410,6 +411,7 @@ export const EditOutcome: FC<props> = ({
       cancel: cancel,
     });
     setShowModal(true);
+    markClean();
   };
   const close = () => {
     setShowModal(false);

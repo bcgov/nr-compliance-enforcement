@@ -30,7 +30,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
 
   const dispatch = useAppDispatch();
 
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
@@ -65,6 +65,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
           cancelConfirmed: () => {
             setCurrentNote(note?.note ?? "");
             handleCancel();
+            markClean();
           },
         },
       }),
@@ -83,6 +84,7 @@ export const NoteForm: FC<props> = ({ id, complaintType, note, currentOfficer, m
       setNotesError("Additional notes required");
       ToggleError("Error updating additional notes");
     }
+    markClean();
   };
 
   const validateInput = (): boolean => {

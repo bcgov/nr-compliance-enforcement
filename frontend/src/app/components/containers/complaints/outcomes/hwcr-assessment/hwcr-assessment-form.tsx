@@ -69,7 +69,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const dispatch = useAppDispatch();
 
   // Dirty tracking
-  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
@@ -278,6 +278,8 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
+    console.log("Marking clean");
+    markClean();
     handleCancel();
     setAssessmentState(assessment ?? ({} as Assessment));
   };
@@ -342,6 +344,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
     } else {
       handleFormErrors();
     }
+    markClean();
   };
 
   const handleFormErrors = () => {
@@ -618,7 +621,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     onChange={(e: Option | null, s: string | null) => handleLinkedComplaintChange(e, s)}
                     errorMessage={linkedComplaintErrorMessage}
                     value={selectedLinkedComplaint}
-                    onDirtyChange={handleChildDirtyChange}
+                    onDirtyChange={onDirtyChange}
                   />
                 </div>
               </div>

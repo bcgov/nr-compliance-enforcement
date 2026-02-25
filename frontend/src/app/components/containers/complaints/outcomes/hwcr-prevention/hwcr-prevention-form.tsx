@@ -59,7 +59,7 @@ export const HWCRPreventionForm: FC<Props> = ({
   const [preventionState] = useState<Prevention>(prevention ?? ({} as Prevention));
 
   // Dirty tracking
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   // Errors
 
@@ -173,7 +173,10 @@ export const HWCRPreventionForm: FC<Props> = ({
         data: {
           title: "Cancel changes?",
           description: "Your changes will be lost.",
-          cancelConfirmed: () => handleCancel(),
+          cancelConfirmed: () => {
+            handleCancel();
+            markClean();
+          },
         },
       }),
     );
@@ -201,6 +204,7 @@ export const HWCRPreventionForm: FC<Props> = ({
     } else {
       handleFormErrors();
     }
+    markClean();
   };
 
   return (

@@ -34,7 +34,7 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
   const [referenceNumber, setReferenceNumber] = useState<string>("");
   const [referenceNumberError, setReferenceNumberError] = useState<string>("");
 
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   // State Management for when reference number changes, or page is first loaded
   useEffect(() => {
@@ -47,6 +47,7 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
   // function for handling the cancel modal
   const cancelConfirmed = () => {
     resetValidationErrors();
+    markClean();
 
     if (complaintData) {
       if (complaintData.referenceNumber !== "") {
@@ -105,6 +106,7 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
       if (complaintType === COMPLAINT_TYPES.ERS && [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy)) {
         await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
       }
+      markClean();
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
