@@ -18,7 +18,7 @@
     }
     respond `globalThis.VITE_KEYCLOAK_URL="{$KEYCLOAK_URL}";
              globalThis.VITE_KEYCLOAK_REALM="standard";
-             globalThis.VITE_KEYCLOAK_CLIENT_ID="compliance-and-enforcement-digital-services-dev-6341";
+             globalThis.VITE_KEYCLOAK_CLIENT_ID="{$KEYCLOAK_CLIENT_ID}";
              globalThis.VITE_API_URL="/api";
              globalThis.VITE_GRAPHQL_URL="/graphql";
              globalThis.VITE_COMS_URL="{$COMS_URL}";
