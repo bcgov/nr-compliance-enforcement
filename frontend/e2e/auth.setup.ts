@@ -45,6 +45,8 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
     account = process.env.PLAYWRIGHT_KEYCLOAK_USER_03!;
     totpSecret = process.env.PLAYWRIGHT_TOTP_SECRET_03!;
   }
+  account = account.trim() + "@gov.bc.ca"; // Append email domain to the username for Entra login
+
   // Auth parameters
   const scope = "openid";
   const state = generateRandomString();
