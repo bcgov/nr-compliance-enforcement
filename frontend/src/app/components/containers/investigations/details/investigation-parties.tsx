@@ -3,16 +3,18 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
+import { useFormDirtyState, useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
@@ -35,7 +37,7 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
   }
 `;
 
-export const InvestigationSummary: FC<InvestigationPartiesProps> = ({
+export const InvestigationParties: FC<InvestigationPartiesProps> = ({
   investigationGuid,
   investigationData,
   onDirtyChange,
@@ -52,6 +54,8 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({
     },
   });
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
+
   const handleAddParty = () => {
     document.body.click();
     dispatch(
@@ -63,7 +67,9 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({
           description: "",
           activityGuid: investigationGuid,
           activityType: "investigation",
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -134,4 +140,4 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({
   );
 };
 
-export default InvestigationSummary;
+export default InvestigationParties;
