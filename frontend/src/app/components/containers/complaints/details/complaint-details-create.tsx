@@ -210,7 +210,7 @@ export const CreateComplaint: FC = () => {
         type: "",
       };
 
-      applyComplaintData(model as Complaint);
+      applyComplaintData(model as unknown as Complaint);
     }
   }, [agency, complaintData, currentDate, userid]);
 
