@@ -51,6 +51,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
 
+  // Update the parent
   useEffect(() => {
     onDirtyChange?.(0, isDirty);
   }, [isDirty]);
@@ -74,6 +75,10 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
   }, [show, diaryDate]);
 
   const handleClose = () => {
+    if (isDirty) {
+      const confirmed = globalThis.confirm("You have unsaved changes. Are you sure you want to leave?");
+      if (!confirmed) return;
+    }
     form.reset();
     onHide();
   };
