@@ -30,7 +30,7 @@ export default defineConfig({
     /* Proxy HTTPS traffic through the BC Gov proxy */
     proxy: {
       server: "http://swpxkam.gov.bc.ca:8080",
-      bypass: "localhost,127.0.0.1,*natsuite*",
+      bypass: "localhost,127.0.0.1,*natsuite*,*loginproxy*",
     },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "retain-on-failure",
