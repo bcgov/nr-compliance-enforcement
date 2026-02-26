@@ -16,6 +16,7 @@ import {
 } from "@/app/store/reducers/complaint-outcome-selectors";
 import { HWCRAssessmentForm } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-form";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
@@ -68,18 +69,21 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
 type QuickCloseModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaint_type: string;
   refreshComplaintsOnClose?: boolean;
 };
 export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   close,
   submit,
+  onDirtyChange,
   complaint_type,
   refreshComplaintsOnClose = false,
 }) => {
   // Hooks
   const dispatch = useAppDispatch();
   const validationResults = useValidateComplaint();
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // Selectors
   const loading = useAppSelector(isLoading);
@@ -165,6 +169,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             handleCancel={close}
             allowDuplicate={true}
             quickClose={true}
+            onDirtyChange={onDirtyChange}
           />
         </div>
       </Modal.Body>
