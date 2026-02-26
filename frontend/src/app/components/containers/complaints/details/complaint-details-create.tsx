@@ -193,7 +193,7 @@ export const CreateComplaint: FC = () => {
         status: "OPEN",
         ownedBy: agency,
         reportedByOther: "",
-        incidentDate: currentDate,
+        incidentDate: undefined,
         incidentTime: undefined,
         reportedOn: currentDate,
         updatedOn: currentDate,
@@ -210,7 +210,7 @@ export const CreateComplaint: FC = () => {
         type: "",
       };
 
-      applyComplaintData(model);
+      applyComplaintData(model as unknown as Complaint);
     }
   }, [agency, complaintData, currentDate, userid]);
 

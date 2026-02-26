@@ -56,11 +56,15 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
                 className="comp-date-time-value"
                 id="complaint-incident-date-time"
               >
-                <i
-                  className="bi bi-calendar comp-margin-right-xxs"
-                  id="complaint-incident-date"
-                ></i>
-                {formatDate(incidentDate?.toString())}
+                {incidentDate && (
+                  <>
+                    <i
+                      className="bi bi-calendar comp-margin-right-xxs"
+                      id="complaint-incident-date"
+                    ></i>
+                    {formatDate(incidentDate?.toString())}
+                  </>
+                )}
                 {incidentTime && (
                   <>
                     <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>

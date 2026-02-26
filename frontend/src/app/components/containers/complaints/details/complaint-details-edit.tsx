@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate, formatLocalTime, formatLocalDateTimeToUTC, parseUTCDateTimeToLocal } from "@common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate, formatLocalDateTimeToUTC } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
@@ -289,12 +289,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     if (incidentDate) {
-      const d = parseUTCDateTimeToLocal(incidentDate, incidentTime);
-      if (d) {
-        setSelectedIncidentDate(d);
-        if (incidentTime) {
-          setSelectedIncidentTime(formatLocalTime(d));
-        }
+      setSelectedIncidentDate(incidentDate instanceof Date ? incidentDate : new Date(incidentDate));
+      if (incidentTime) {
+        setSelectedIncidentTime(incidentTime);
       }
     }
   }, [incidentDate, incidentTime]);
