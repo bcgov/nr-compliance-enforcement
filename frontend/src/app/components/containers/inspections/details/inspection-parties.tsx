@@ -9,6 +9,7 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface InspectionPartiesProps {
   inspectionGuid: string;
@@ -48,6 +49,8 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
     },
   });
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
   const handleAddParty = () => {
     document.body.click();
     dispatch(
@@ -59,7 +62,9 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
           description: "",
           activityGuid: inspectionGuid,
           activityType: "inspection",
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };

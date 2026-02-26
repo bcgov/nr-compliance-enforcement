@@ -109,10 +109,7 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
 };
 
 // Hook for managing dirty state in modals to ensure they play nicely with the Redux dispatched modals
-export const useModalDirtyWarning = (
-  onDirtyChange?: (index: number, isDirty: boolean) => void,
-  onBeforeClose?: () => void,
-) => {
+export const useModalDirtyWarning = (onDirtyChange?: (index: number, isDirty: boolean) => void) => {
   const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const isAnyDirtyRef = useRef(isAnyDirty);
@@ -126,7 +123,6 @@ export const useModalDirtyWarning = (
       const confirmed = globalThis.confirm("You have unsaved changes. Are you sure you want to leave?");
       if (!confirmed) return false;
     }
-    onBeforeClose?.();
   };
 
   return { isAnyDirty, handleChildDirtyChange, hideCallback };
