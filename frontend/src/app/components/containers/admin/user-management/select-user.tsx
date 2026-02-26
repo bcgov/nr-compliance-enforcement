@@ -6,6 +6,7 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import "@assets/sass/user-management.scss";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface SelectUserProps {
   officer: any;
@@ -14,6 +15,7 @@ interface SelectUserProps {
   setOfficerError: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
   handleAddNewUser: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const SelectUser: FC<SelectUserProps> = ({
@@ -23,22 +25,23 @@ export const SelectUser: FC<SelectUserProps> = ({
   officer,
   officerError,
   handleEdit,
+  onDirtyChange,
 }) => {
   const officers = useAppSelector(selectOfficers);
   const officerList = officers?.map((officer: AppUser) => {
-    const {
-      app_user_guid: id, first_name, last_name,
-      deactivate_ind,
-    } = officer;
+    const { app_user_guid: id, first_name, last_name, deactivate_ind } = officer;
     return {
       value: id,
       label: `${last_name}, ${first_name} ${deactivate_ind ? "(deactivated user)" : ""}`,
     };
   });
 
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
   const handleOfficerChange = async (input: any) => {
     setOfficerError("");
     if (input.value) {
+      markDirty();
       setOfficer(input);
     }
   };

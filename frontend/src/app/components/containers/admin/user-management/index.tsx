@@ -7,6 +7,7 @@ import { SelectUser } from "@/app/components/containers/admin/user-management/se
 import { EditUser } from "@/app/components/containers/admin/user-management/edit-user";
 import { AddUserSearch } from "@/app/components/containers/admin/user-management/add-user-search";
 import "@assets/sass/user-management.scss";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 export const UserManagement: FC = () => {
   const SEARCH_VIEW = 0;
@@ -21,6 +22,9 @@ export const UserManagement: FC = () => {
   const [officerError, setOfficerError] = useState<string>("");
   const [isInAddUserView, setIsInAddUserView] = useState<boolean>(false);
   const [newUser, setNewUser] = useState<CssUser | null>(null);
+
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  useUnsavedChangesWarning(isAnyDirty);
 
   useEffect(() => {
     const { type } = notification;
@@ -72,6 +76,7 @@ export const UserManagement: FC = () => {
           officer={officer}
           officerError={officerError}
           handleEdit={handleEdit}
+          onDirtyChange={handleChildDirtyChange}
         />
       )}
       {viewState === EDIT_VIEW && officer && (
@@ -82,6 +87,7 @@ export const UserManagement: FC = () => {
           goToSearchView={goToSearchView}
           newUser={newUser}
           setOfficer={setOfficer}
+          onDirtyChange={handleChildDirtyChange}
         />
       )}
       {viewState === ADD_USER_SEARCH_VIEW && (
@@ -91,6 +97,7 @@ export const UserManagement: FC = () => {
           goToEditView={goToEditView}
           setIsInAddUserView={setIsInAddUserView}
           setNewUser={setNewUser}
+          onDirtyChange={handleChildDirtyChange}
         />
       )}
     </>
