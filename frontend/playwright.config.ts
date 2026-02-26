@@ -27,6 +27,11 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: baseURL,
+    /* Proxy HTTPS traffic through the BC Gov proxy */
+    proxy: {
+      server: "http://swpxkam.gov.bc.ca:8080",
+      bypass: "localhost,127.0.0.1",
+    },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "retain-on-failure",
     /* attempted fix for blank traces in pipeline */
