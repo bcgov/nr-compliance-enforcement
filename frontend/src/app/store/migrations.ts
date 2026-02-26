@@ -38,6 +38,7 @@ import { AddPartyType } from "./migrations/migration-38";
 import { AddPartyAssociationRole } from "./migrations/migration-39";
 import { AddTaskTables } from "./migrations/migration-40";
 import { RemoveAttachments } from "@/app/store/migrations/migration-41";
+import { RefreshCommunities } from "./migrations/migration-42";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -90,6 +91,7 @@ migration = {
   ...AddPartyAssociationRole,
   ...AddTaskTables,
   ...RemoveAttachments,
+  ...RefreshCommunities,
 };
 
 export default migration;
