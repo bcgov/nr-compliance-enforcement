@@ -35,12 +35,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER geo_org_unit_structure_mvw_refresh_trigger 
+CREATE OR REPLACE TRIGGER geo_org_unit_structure_mvw_refresh_trigger 
     AFTER INSERT OR DELETE OR UPDATE ON geo_org_unit_structure 
     FOR EACH STATEMENT 
     EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
 
-CREATE TRIGGER geo_organization_unit_code_mvw_refresh_trigger 
+CREATE OR REPLACE TRIGGER geo_organization_unit_code_mvw_refresh_trigger 
     AFTER INSERT OR DELETE OR UPDATE ON geo_organization_unit_code 
     FOR EACH STATEMENT 
     EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
