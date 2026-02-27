@@ -186,6 +186,7 @@ export const fetchObjectsMetadata = async (
 
   for (let i = 0; i < uniqueIds.length; i += BATCH_SIZE) {
     const batch = uniqueIds.slice(i, i + BATCH_SIZE);
+    // Use axios for array serialization
     const response = await axios.get<ObjectMetadata[]>(`${config.COMS_URL}/object/metadata`, {
       headers,
       params: {
