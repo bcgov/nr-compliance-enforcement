@@ -278,7 +278,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
-    console.log("Marking clean");
     markClean();
     handleCancel();
     setAssessmentState(assessment ?? ({} as Assessment));

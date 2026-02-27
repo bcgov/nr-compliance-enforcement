@@ -56,7 +56,6 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
-  console.log(onDirtyChange);
 
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (personId: string) => {

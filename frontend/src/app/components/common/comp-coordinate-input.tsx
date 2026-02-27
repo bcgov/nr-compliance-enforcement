@@ -472,7 +472,6 @@ export const CompCoordinateInput: FC<Props> = ({
                 `}
                   onChange={(evt: any) => {
                     handleGeoPointChange(evt.target.value, xCoordinate ?? "");
-                    console.log("X changed");
                     markDirty();
                   }}
                   value={yCoordinate ?? ""}
@@ -498,7 +497,6 @@ export const CompCoordinateInput: FC<Props> = ({
                 `}
                   onChange={(evt: any) => {
                     handleGeoPointChange(yCoordinate ?? "", evt.target.value);
-                    console.log("X changed");
                     markDirty();
                   }}
                   value={xCoordinate ?? ""}

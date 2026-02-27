@@ -64,7 +64,6 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
   const is_officer_assigned: boolean = modalData.is_officer_assigned;
 
   const handleSelectChange = (selectedValue: string) => {
-    console.log("marking dirty");
     markDirty();
     setSelectedStatus(selectedValue);
   };
