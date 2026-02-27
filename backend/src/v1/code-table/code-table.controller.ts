@@ -2,7 +2,7 @@ import { Controller, Get, Logger, NotFoundException, Param, UseGuards } from "@n
 import { ApiTags } from "@nestjs/swagger";
 
 import { CodeTableService } from "./code-table.service";
-import { Role, coreRoles } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
@@ -22,7 +22,7 @@ export class CodeTableController {
   constructor(private readonly service: CodeTableService) {}
 
   @Get(":table")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, adminRoles)
   async getCodeTableByName(@Param("table") table: string, @Token() token): Promise<BaseCodeTable[]> {
     if (!AvailableCodeTables.includes(table)) {
       throw new NotFoundException();

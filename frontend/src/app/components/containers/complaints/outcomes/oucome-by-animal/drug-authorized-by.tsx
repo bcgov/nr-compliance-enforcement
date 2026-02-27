@@ -125,7 +125,7 @@ export const DrugAuthorizedBy = forwardRef<refProps, props>((props, ref) => {
             <ValidationDatePicker
               id="drug-authorization-incident-time"
               maxDate={new Date()}
-              onChange={(input: Date) => {
+              onChange={(input: Date, _time: string | null) => {
                 handleAuthorizationDateChange(input);
               }}
               selectedDate={date}

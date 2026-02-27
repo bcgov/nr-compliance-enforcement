@@ -39,6 +39,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
       supervisorGuid
       fileCoordinatorGuid
       discoveryDate
+      discoveryTime
     }
   }
 `;
@@ -64,6 +65,7 @@ const GET_INVESTIGATION = gql`
       supervisorGuid
       fileCoordinatorGuid
       discoveryDate
+      discoveryTime
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
@@ -112,6 +114,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
         primaryInvestigator: investigationData.getInvestigation.primaryInvestigatorGuid || "",
         fileCoordinator: investigationData.getInvestigation.fileCoordinatorGuid || "",
         discoveryDate: investigationData.getInvestigation.discoveryDate || null,
+        discoveryTime: investigationData.getInvestigation.discoveryTime || null,
       };
     }
     return {
@@ -126,6 +129,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
       primaryInvestigator: "",
       fileCoordinator: "",
       discoveryDate: "",
+      discoveryTime: null,
     };
   }, [investigationData]);
 
@@ -144,6 +148,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
         primaryInvestigatorGuid: value.primaryInvestigator,
         fileCoordinatorGuid: value.fileCoordinator,
         discoveryDate: value.discoveryDate,
+        discoveryTime: value.discoveryTime,
       };
 
       updateInvestigationMutation.mutate({
@@ -191,6 +196,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
             form={form}
             isDisabled={isDisabled}
             discoveryDate={investigationData?.getInvestigation?.discoveryDate}
+            discoveryTime={investigationData?.getInvestigation?.discoveryTime}
           />
         </Card.Body>
       </Card>

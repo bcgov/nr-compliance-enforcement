@@ -1,4 +1,4 @@
-import { applyStatusClass, formatDate, formatDateTime, formatTime } from "@/app/common/methods";
+import { applyStatusClass, parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTime } from "@/app/common/methods";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Attachments } from "@/app/components/common/attachments-carousel";
 import AttachmentEnum from "@/app/constants/attachment-enum";
@@ -291,8 +291,12 @@ export const TaskItem = ({ task, investigationData, canEdit, onEdit }: TaskItemP
                                 </pre>
                                 <pre id="comp-task-action">
                                   <b>Date/time actioned </b>
-                                  {formatDate(taskAction.actionedTimestamp)}{" "}
-                                  {formatTime(taskAction.actionedTimestamp.toString())}
+                                  {(() => {
+                                    const d = parseUTCDateTimeToLocal(taskAction.actionedDate, taskAction.actionedTime);
+                                    if (!d) return "";
+                                    const s = d.toString();
+                                    return taskAction.actionedTime ? `${formatDate(s)} ${formatTime(s)}` : formatDate(s);
+                                  })()}
                                 </pre>
                                 <pre id="comp-task-action">
                                   <b>Officer </b>

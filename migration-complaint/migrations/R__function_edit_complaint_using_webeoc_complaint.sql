@@ -28,6 +28,8 @@ declare
     _edit_location_summary_text  VARCHAR(120);
     _edit_location_detailed_text VARCHAR(4000);
     _edit_incident_utc_datetime timestamp;
+    _edit_incident_utc_date DATE;
+    _edit_incident_utc_time TIME;
     _edit_create_utc_timestamp timestamp := (now() AT TIME zone 'UTC');
     _edit_update_utc_timestamp timestamp := (now() AT TIME zone 'UTC');
     _edit_create_userid              VARCHAR(200);
@@ -110,6 +112,8 @@ BEGIN
    
     _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
     _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
+    _edit_incident_utc_date := _edit_incident_utc_datetime::DATE;
+    _edit_incident_utc_time := _edit_incident_utc_datetime::TIME;
     _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
 	_edit_address_coordinates_lat := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
     _edit_address_coordinates_long := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
@@ -231,9 +235,16 @@ BEGIN
 	    update_edit_ind = true;
   end if;
  
-  if (_edit_incident_utc_datetime <> current_complaint_record.incident_utc_datetime) then 
+  if (_edit_incident_utc_date <> current_complaint_record.incident_utc_date) then
 	    UPDATE complaint.complaint
-	    SET incident_utc_datetime  = _edit_incident_utc_datetime
+	    SET incident_utc_date  = _edit_incident_utc_date
+	    WHERE complaint_identifier = _complaint_identifier;
+	    update_edit_ind = true;
+  end if;
+
+  if (_edit_incident_utc_time <> current_complaint_record.incident_utc_time) then
+	    UPDATE complaint.complaint
+	    SET incident_utc_time  = _edit_incident_utc_time
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
