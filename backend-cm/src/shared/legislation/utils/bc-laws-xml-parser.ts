@@ -274,7 +274,23 @@ const getBclNum = (element: any): string | null => {
  */
 const getMarginalnote = (element: any): string | null => {
   const note = element?.[`${NS_BCL}marginalnote`];
-  return note ? stripMarkupTags(extractText(note)) || null : null;
+  if (!note) return null;
+
+  // Use raw XML extraction to preserve mixed content order (e.g. "Section 5 of <in:doc>Offence Act</in:doc> does not apply")
+  // fast-xml-parser loses the position of inline elements like in:doc relative to surrounding text
+  const parentId = element?.["@_id"];
+  if (parentId) {
+    const bounds = getBounds(parentId);
+    if (bounds) {
+      const marginalMatch = /<bcl:marginalnote[^>]*>([\s\S]*?)<\/bcl:marginalnote>/i.exec(bounds.content);
+      if (marginalMatch) {
+        return stripMarkupTags(extractTextFromXml(marginalMatch[1])) || null;
+      }
+    }
+  }
+
+  // Fallback to parsed object extraction if raw XML lookup fails
+  return stripMarkupTags(extractText(note)) || null;
 };
 
 /**
