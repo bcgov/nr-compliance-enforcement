@@ -233,6 +233,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           <ValidationDatePicker
             id="investigation-continuation-report-date-picker"
             selectedDate={selectedActionedDateTime}
+            selectedTime={selectedActionedTime}
             onChange={(date: Date, time: string | null) => {
               markDirty();
               setSelectedActionedDateTime(date);
