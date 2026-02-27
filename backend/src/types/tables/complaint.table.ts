@@ -10,7 +10,8 @@ export interface ComplaintTable {
   location_summary_text: string;
   location_detailed_text: string;
   incident_reported_utc_timestmp: Date;
-  incident_utc_datetime: Date;
+  incident_utc_date: Date;
+  incident_utc_time: string;
   reported_by_other_text: string;
   create_user_id: string;
   create_utc_timestamp: Date;

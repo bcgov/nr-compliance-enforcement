@@ -17,6 +17,7 @@ import {
   ADD_PARTY,
   REMOVE_ACTIVITY_FROM_CASE,
   REMOVE_PARTY,
+  CANCEL_CONFIRM_FILE_UPDATE,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -39,6 +40,7 @@ import { AddComplaintToCaseModal } from "./instances/add-complaint-to-case";
 import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-case";
 import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/remove-activity-from-case";
 import { AddPartyModal } from "@/app/components/modal/instances/add-party";
+import { CancelConfirmFileUpdateModal } from "./instances/cancel-confirm-file-update-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -59,4 +61,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [REMOVE_ACTIVITY_FROM_CASE]: RemoveActivityFromCaseModal,
   [ADD_PARTY]: AddPartyModal,
   [REMOVE_PARTY]: RemovePartyModal,
+  [CANCEL_CONFIRM_FILE_UPDATE]: CancelConfirmFileUpdateModal,
 };

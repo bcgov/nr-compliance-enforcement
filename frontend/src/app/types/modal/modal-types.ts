@@ -18,6 +18,7 @@ export const CREATE_ADD_CASE = "CREATE_ADD_CASE";
 export const REMOVE_ACTIVITY_FROM_CASE = "REMOVE_ACTIVITY_FROM_CASE";
 export const ADD_PARTY = "ADD_PARTY";
 export const REMOVE_PARTY = "REMOVE_PARTY";
+export const CANCEL_CONFIRM_FILE_UPDATE = "CANCEL_CONFIRM_FILE_UPDATE";
 
 export interface ModalProps {
   modalType: string;

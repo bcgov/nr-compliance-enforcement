@@ -33,6 +33,7 @@ const CREATE_INVESTIGATION_MUTATION = gql`
       supervisorGuid
       fileCoordinatorGuid
       discoveryDate
+      discoveryTime
     }
   }
 `;
@@ -70,6 +71,7 @@ const InvestigationCreate: FC = () => {
       primaryInvestigator: "",
       fileCoordinator: "",
       discoveryDate: "",
+      discoveryTime: null,
     },
     onSubmit: async ({ value }) => {
       const createInput: CreateInvestigationInput = {
@@ -86,6 +88,7 @@ const InvestigationCreate: FC = () => {
         primaryInvestigatorGuid: value.primaryInvestigator ?? "",
         fileCoordinatorGuid: value.fileCoordinator ?? "",
         discoveryDate: value.discoveryDate,
+        discoveryTime: value.discoveryTime,
       };
 
       createInvestigationMutation.mutate({ input: createInput });

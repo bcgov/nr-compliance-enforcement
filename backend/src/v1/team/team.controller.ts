@@ -3,7 +3,7 @@ import { TeamService } from "./team.service";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "node:crypto";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role } from "../../enum/role.enum";
+import { adminRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { TeamUpdate } from "src/types/models/general/team-update";
 import { Token } from "../../auth/decorators/token.decorator";
@@ -18,19 +18,19 @@ export class TeamController {
   constructor(private readonly teamService: TeamService) {}
 
   @Get("find-user")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(adminRoles)
   findUserIdir(@Query("firstName") firstName: string, @Query("lastName") lastName: string) {
     return this.teamService.findUserIdir(firstName, lastName);
   }
 
   @Get("current")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(adminRoles)
   async findCurrentTeam(@Query("appUserGuid") appUserGuid: UUID, @Token() token: string) {
     return await this.teamService.findUserCurrentTeam(appUserGuid, token);
   }
 
   @Patch("update/:app_user_guid")
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(adminRoles)
   update(@Param("app_user_guid") appUserGuid: UUID, @Body() updateTeamData: TeamUpdate, @Token() token: string) {
     return this.teamService.update(appUserGuid, updateTeamData, token);
   }

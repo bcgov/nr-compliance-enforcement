@@ -566,7 +566,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
                 <ValidationDatePicker
                   id="equipment-day-set"
                   maxDate={dateRemoved ?? new Date()}
-                  onChange={(date: Date | null) => {
+                  onChange={(date: Date | null, _time: string | null) => {
                     if (date) {
                       setDateSet(date);
                       markDirty();
@@ -616,9 +616,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({
                       id="equipment-date-removed"
                       maxDate={new Date()}
                       minDate={dateSet ?? null}
-                      onChange={(date: Date) => {
-                        setDateRemoved(date);
-                        markDirty();
+                      onChange={(date: Date, _time: string | null) => {
+                        setDateRemoved(date); 
+                        markDirty(); 
                       }}
                       errMsg={dateRemovedErrorMsg}
                       selectedDate={dateRemoved}

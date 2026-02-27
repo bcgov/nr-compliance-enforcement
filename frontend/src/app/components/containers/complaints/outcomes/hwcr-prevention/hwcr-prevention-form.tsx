@@ -124,7 +124,7 @@ export const HWCRPreventionForm: FC<Props> = ({
     setSelectedPreventionTypes(selectedItems);
   };
 
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Date | null, _time: string | null) => {
     markDirty();
     setSelectedDate(date);
   };
