@@ -6,7 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { formatDate, formatDateTime, formatTime } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTime } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -24,7 +24,8 @@ const GET_REPORTS = gql`
       activityNoteCode
       investigationGuid
       contentJson
-      actionedTimestamp
+      actionedDate
+      actionedTime
       reportedTimestamp
       actionedAppUserGuidRef
       reportedAppUserGuidRef
@@ -99,7 +100,8 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         activityNoteCode: "CONTREP",
         contentJson: values.contentJson,
         contentText: values.contentText,
-        actionedTimestamp: values.actionedTimestamp || new Date(),
+        actionedDate: values.actionedDate || new Date(),
+        actionedTime: values.actionedTime || null,
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values.actionedAppUserGuidRef,
         reportedAppUserGuidRef: reportedUserGuid,
@@ -116,9 +118,10 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
-      const dateKey = startOfDay(report.actionedTimestamp).toISOString();
-      if (!acc[dateKey]) acc[dateKey] = { date: report.actionedTimestamp, reports: [] };
-      acc[dateKey].reports.push(report);
+      const actionedDateTime = parseUTCDateTimeToLocal(report.actionedDate, report.actionedTime) ?? new Date();
+      const dateKey = startOfDay(actionedDateTime).toISOString();
+      if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
+      acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
       return acc;
     }, {});
 
@@ -241,10 +244,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                             : "Unknown"}
                                         </strong>
                                       </div>
-                                      <div>
-                                        <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                        {formatTime(report.actionedTimestamp.toString())}
-                                      </div>
+                                      {report.actionedTime && (
+                                        <div>
+                                          <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
+                                          {formatTime(report.actionedTime?.toString())}
+                                        </div>
+                                      )}
                                     </div>
                                     <div className="prose prose-sm max-w-none">
                                       <ReportRenderer

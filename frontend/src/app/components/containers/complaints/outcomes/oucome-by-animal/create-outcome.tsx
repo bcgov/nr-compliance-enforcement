@@ -638,7 +638,7 @@ export const CreateAnimalOutcome: FC<props> = ({
                   <ValidationDatePicker
                     id="equipment-day-set"
                     maxDate={new Date()}
-                    onChange={(input: Date) => {
+                    onChange={(input: Date, _time: string | null) => {
                       handleOutcomeDateChange(input);
                     }}
                     selectedDate={data?.date}

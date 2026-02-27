@@ -668,7 +668,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   className="comp-details-input full-width"
                   id="equipment-day-set"
                   maxDate={new Date()}
-                  onChange={(input: Date) => {
+                  onChange={(input: Date, _time: string | null) => {
                     if (data?.date) {
                       showEditWarning(() => {
                         handleOutcomeDateChange(input);

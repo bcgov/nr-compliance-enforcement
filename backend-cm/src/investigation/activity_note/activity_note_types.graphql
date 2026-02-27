@@ -6,7 +6,8 @@ type ActivityNote {
   activityNoteCode: String
   contentJson: String
   contentText: String
-  actionedTimestamp: DateTime
+  actionedDate: DateTime
+  actionedTime: DateTime
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
@@ -19,7 +20,8 @@ input ActivityNoteInput {
   activityNoteCode: String
   contentJson: String
   contentText: String
-  actionedTimestamp: DateTime
+  actionedDate: DateTime
+  actionedTime: DateTime
   reportedTimestamp: DateTime
   actionedAppUserGuidRef: String
   reportedAppUserGuidRef: String
