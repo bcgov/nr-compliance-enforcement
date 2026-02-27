@@ -578,7 +578,12 @@ const parseSubparagraph: ElementParser = (el, order) =>
   });
 
 const parseDefinition: ElementParser = (el, order) => {
-  const term = el?.[`${NS_IN}term`] || el?.[`${NS_BCL}text`]?.[`${NS_IN}term`];
+  // Get the bcl:text element - fast-xml-parser always returns bcl:text as an array (per isArray config),
+  // so if it's an array grab the first element, otherwise use it directly as a fallback
+  const textEl = Array.isArray(el?.[`${NS_BCL}text`]) ? el[`${NS_BCL}text`][0] : el?.[`${NS_BCL}text`];
+  // Find the in:term element that holds the definition's name (e.g. "applicant", "Crown land")
+  // It can appear either directly on the definition element, or nested inside the bcl:text element
+  const term = el?.[`${NS_IN}term`] || textEl?.[`${NS_IN}term`];
   return createNode("DEF", order, {
     sectionTitle: stripMarkupTags(extractText(term)) || null,
     legislationText: getBclText(el) || null,
