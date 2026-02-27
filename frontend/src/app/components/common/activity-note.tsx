@@ -13,11 +13,13 @@ import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { parseUTCDateTimeToLocal, formatLocalTime, formatLocalDateTimeToUTC } from "@common/methods";
 import { gql } from "graphql-request";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ActivityNoteProps {
   index?: number;
   onValidationChange: (isValid: boolean, index?: number) => void;
   onValuesChange: (values: Partial<ActivityNoteInput>, index?: number) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   initialData?: ActivityNote;
   shouldReset?: boolean;
   showErrors: boolean;
@@ -66,6 +68,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   index,
   onValidationChange,
   onValuesChange,
+  onDirtyChange,
   initialData,
   showErrors,
   shouldReset,
@@ -106,6 +109,9 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const [dateTimeError, setDateTimeError] = useState<string>("");
   const [officerError, setOfficerError] = useState<string>("");
 
+  // Dirty tracking
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
   // Editor setup
   const editor = useEditor({
     extensions: [
@@ -118,6 +124,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     content: initialData?.contentJson ? JSON.parse(initialData.contentJson) : undefined,
     onUpdate: ({ editor }) => {
       setPlainText(editor.getText());
+      markDirty();
     },
   });
 
@@ -162,6 +169,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     setContentError("");
     setDateTimeError("");
     setOfficerError("");
+    markClean();
   };
 
   // Validation - runs whenever dependencies change
@@ -227,6 +235,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
             selectedDate={selectedActionedDateTime}
             selectedTime={selectedActionedTime}
             onChange={(date: Date, time: string | null) => {
+              markDirty();
               setSelectedActionedDateTime(date);
               setSelectedActionedTime(time);
             }}
@@ -256,7 +265,10 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
           id="officer-assigned-select-id"
           showInactive={false}
           classNamePrefix="comp-select"
-          onChange={setSelectedOfficer}
+          onChange={(value: Option | null) => {
+            setSelectedOfficer(value);
+            markDirty();
+          }}
           className="comp-details-input w-100 max-w-370"
           options={assignableOfficers}
           placeholder="Select"

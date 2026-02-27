@@ -312,7 +312,7 @@ test.describe("Case Activities - Add Complaint Modal", () => {
     // The input has class rbt-input-text and is inside the add-complaint-div
     const searchInput = modal.locator("#add-complaint-div input.rbt-input-text");
     await expect(searchInput).toBeVisible({ timeout: 5000 });
-    await searchInput.fill("23");
+    await searchInput.pressSequentially("23", { delay: 100 });
 
     const dropdownMenu = page.locator(".rbt-menu");
     const dropdownItem = dropdownMenu.locator(".dropdown-item").first();
