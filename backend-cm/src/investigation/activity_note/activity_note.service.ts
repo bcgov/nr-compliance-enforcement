@@ -46,9 +46,10 @@ export class ActivityNoteService {
         activity_note_code: activityNoteCode,
         active_ind: true,
       },
-      orderBy: {
-        actioned_utc_timestamp: "desc",
-      },
+      orderBy: [
+        { actioned_utc_date: "desc" },
+        { actioned_utc_time: "desc" },
+      ],
     });
     if (!prismaActivityNotes) {
       throw new Error(`Activity notes of investigation ${investigationGuid} with code ${activityNoteCode} not found`);
@@ -72,9 +73,10 @@ export class ActivityNoteService {
         task_guid: taskGuid,
         active_ind: true,
       },
-      orderBy: {
-        actioned_utc_timestamp: "asc",
-      },
+      orderBy: [
+        { actioned_utc_date: "asc" },
+        { actioned_utc_time: "asc" },
+      ],
     });
 
     try {
@@ -99,7 +101,8 @@ export class ActivityNoteService {
           investigation_guid: input.investigationGuid,
           content_json: JSON.parse(input.contentJson),
           content_text: input.contentText,
-          actioned_utc_timestamp: input.actionedTimestamp,
+          actioned_utc_time: input.actionedTime,
+          actioned_utc_date: input.actionedDate,
           reported_utc_timestamp: input.reportedTimestamp,
           actioned_app_user_guid_ref: input.actionedAppUserGuidRef,
           reported_app_user_guid_ref: input.reportedAppUserGuidRef,
@@ -117,7 +120,8 @@ export class ActivityNoteService {
             activity_note_code: input.activityNoteCode,
             content_json: JSON.parse(input.contentJson),
             content_text: input.contentText,
-            actioned_utc_timestamp: input.actionedTimestamp,
+            actioned_utc_time: input.actionedTime,
+            actioned_utc_date: input.actionedDate,
             reported_utc_timestamp: input.reportedTimestamp,
             actioned_app_user_guid_ref: input.actionedAppUserGuidRef,
             reported_app_user_guid_ref: input.reportedAppUserGuidRef,

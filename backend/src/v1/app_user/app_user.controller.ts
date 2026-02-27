@@ -3,7 +3,7 @@ import { AppUserService } from "./app_user.service";
 import { CreateAppUserDto } from "./dto/create-app-user.dto";
 import { UpdateAppUserDto } from "./dto/update-app-user.dto";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { Role, coreRoles } from "../../enum/role.enum";
+import { Role, adminRoles, coreRoles } from "../../enum/role.enum";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { ApiTags } from "@nestjs/swagger";
 import { UUID } from "node:crypto";
@@ -20,7 +20,7 @@ export class AppUserController {
   constructor(private readonly appUserService: AppUserService) {}
 
   @Post()
-  @Roles(Role.TEMPORARY_TEST_ADMIN)
+  @Roles(adminRoles)
   create(@Body() createAppUserDto: CreateAppUserDto, @Token() token: string) {
     return this.appUserService.create(createAppUserDto, token);
   }
@@ -62,7 +62,7 @@ export class AppUserController {
   }
 
   @Patch(":id")
-  @Roles(coreRoles, Role.TEMPORARY_TEST_ADMIN)
+  @Roles(coreRoles, adminRoles)
   update(@Param("id") id: UUID, @Body() updateAppUserDto: UpdateAppUserDto, @Token() token: string) {
     return this.appUserService.update(id, updateAppUserDto, token);
   }

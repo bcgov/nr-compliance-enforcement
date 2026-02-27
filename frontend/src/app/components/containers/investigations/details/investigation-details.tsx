@@ -72,6 +72,7 @@ const GET_INVESTIGATION = gql`
       supervisorGuid
       fileCoordinatorGuid
       discoveryDate
+      discoveryTime
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier

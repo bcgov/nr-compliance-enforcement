@@ -112,7 +112,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showSectionErrors =
     !hasAssessments && complaintOutcomes.isInEdit.showSectionErrors && !complaintOutcomes.isInEdit.hideAssessmentErrors;
 
-  const handleDateChange = (date: Date | null) => {
+  const handleDateChange = (date: Date | null, _time: string | null) => {
     setSelectedDate(date);
   };
 

@@ -289,6 +289,37 @@
   box-shadow: none;
 }
 
+// Hide all time entries after the first 12 (00-55 in 5-min increments)
+// limitation of a minute-only config for the date picker and is marked as wontfix by the library
+//  https://github.com/Hacker0x01/react-datepicker/issues/1750
+.minute-picker .react-datepicker__time-list-item:nth-child(n + 13) {
+  display: none;
+}
+
+.comp-date-time-picker-split {
+  width: fit-content;
+
+  .react-datepicker-wrapper {
+    width: auto;
+  }
+
+  .react-datepicker__input-container {
+    width: auto;
+  }
+
+  .react-datepicker__input-container input[id$="-hour"] {
+    width: 4ch;
+    text-align: center;
+  }
+
+  .react-datepicker__input-container input[id$="-minute"] {
+    width: 4ch;
+    padding-left: 1px;
+    padding-right: 1px;
+    text-align: center;
+  }
+}
+
 .react-datepicker__view-calendar-icon input {
   padding: 6px 10px 5px 32px;
   width: 100%;
