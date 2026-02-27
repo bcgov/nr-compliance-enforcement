@@ -6,7 +6,7 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import "@assets/sass/user-management.scss";
-import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface SelectUserProps {
   officer: any;

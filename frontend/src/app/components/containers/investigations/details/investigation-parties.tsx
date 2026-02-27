@@ -3,13 +3,13 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
-import { useFormDirtyState, useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
