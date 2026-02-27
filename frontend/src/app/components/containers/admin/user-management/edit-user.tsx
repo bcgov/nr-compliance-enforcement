@@ -37,6 +37,7 @@ import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import UserService from "@/app/service/user-service";
 import { Roles } from "@/app/types/app/roles";
 
@@ -47,6 +48,7 @@ interface EditUserProps {
   handleCancel: () => void;
   goToSearchView: () => void;
   setOfficer: Dispatch<SetStateAction<Option | undefined>>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const EditUser: FC<EditUserProps> = ({
@@ -56,6 +58,7 @@ export const EditUser: FC<EditUserProps> = ({
   handleCancel,
   goToSearchView,
   setOfficer,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
   const officerData = useAppSelector(selectOfficerByAppUserGuid(officer.value));
@@ -84,6 +87,8 @@ export const EditUser: FC<EditUserProps> = ({
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
 
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+  
   // Filter agencies
   const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
   const userAgency = UserService.getUserAgency();
@@ -253,20 +258,25 @@ export const EditUser: FC<EditUserProps> = ({
   };
 
   const handleAgencyChange = (input: Option | null) => {
+    markDirty();
     resetSelect();
     setSelectedAgency(input);
   };
 
   const handleOfficeChange = (input: any) => {
+    markDirty();
     setSelectedOffice(input);
   };
   const handleParkAreaChange = (input: any) => {
+    markDirty();
     setSelectedParkArea(input);
   };
   const handleTeamChange = (input: any) => {
+    markDirty();
     setSelectedTeam(input);
   };
   const handleRoleChange = (input: any) => {
+    markDirty();
     setSelectedRoles(input);
   };
 

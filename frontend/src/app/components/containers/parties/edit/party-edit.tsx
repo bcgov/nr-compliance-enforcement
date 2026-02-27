@@ -31,6 +31,7 @@ import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
 import { parse } from "date-fns";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -325,6 +326,7 @@ const PartyEdit: FC = () => {
     },
     onSuccess: (data: any) => {
       ToggleSuccess("Party created successfully");
+      allowNavigation();
       navigate(`/party/${data.createParty.partyIdentifier}`);
     },
   });
@@ -332,6 +334,7 @@ const PartyEdit: FC = () => {
   const updatePartyMutation = useGraphQLMutation(UPDATE_PARTY_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Party updated successfully");
+      allowNavigation();
       navigate(`/party/${id}`);
     },
     onError: (error: any) => {
@@ -415,6 +418,11 @@ const PartyEdit: FC = () => {
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+  const { allowNavigation } = useUnsavedChangesWarning(isDirty);
+
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
   const aliasesValue = useStore(form.store, (state) => state.values.aliases);
   const phoneNumberValue = useStore(form.store, (state) => state.values.phoneNumbers);
@@ -422,6 +430,7 @@ const PartyEdit: FC = () => {
   const contactValue = useStore(form.store, (state) => state.values.contacts);
 
   const navigateToPartyList = () => {
+    allowNavigation();
     navigate(`/parties`);
   };
 
@@ -434,6 +443,7 @@ const PartyEdit: FC = () => {
 
   const confirmCancelChanges = useCallback(() => {
     form.reset();
+    allowNavigation();
 
     if (isEditMode && id) {
       navigate(`/party/${id}`);

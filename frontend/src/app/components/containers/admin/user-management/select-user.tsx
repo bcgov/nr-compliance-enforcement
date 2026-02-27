@@ -14,6 +14,7 @@ import { Agency } from "@apptypes/app/code-tables/agency";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
 import "@assets/sass/user-management.scss";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface SelectUserProps {
   officer: any;
@@ -22,6 +23,7 @@ interface SelectUserProps {
   setOfficerError: Dispatch<SetStateAction<string>>;
   handleEdit: () => void;
   handleAddNewUser: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 // Em dash used for an empty value (e.g. when a user has no office assigned)
@@ -154,9 +156,12 @@ export const SelectUser: FC<SelectUserProps> = ({
   officer,
   officerError,
   handleEdit,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficers);
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
   const offices = useAppSelector(selectOffices);
   const parkAreas = useAppSelector(selectParkAreasDropdown);
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
@@ -265,6 +270,7 @@ export const SelectUser: FC<SelectUserProps> = ({
   );
 
   const handleOfficerChange = (input: Option | null | undefined) => {
+    markDirty();
     setOfficerError("");
     if (input?.value) setOfficer(input);
   };

@@ -11,19 +11,27 @@ import {
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
   complaint_type: string;
   complaint_status: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
+  close,
+  submit,
+  complaint_type,
+  complaint_status,
+  onDirtyChange,
+}) => {
   const modalData = useAppSelector(selectModalData);
   const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
@@ -32,6 +40,8 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   const dispatch = useAppDispatch();
   let [status, setStatus] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
     if (status.length > 1) {
@@ -54,6 +64,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
   const is_officer_assigned: boolean = modalData.is_officer_assigned;
 
   const handleSelectChange = (selectedValue: string) => {
+    markDirty();
     setSelectedStatus(selectedValue);
   };
 

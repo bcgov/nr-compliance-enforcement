@@ -10,7 +10,11 @@ import { DecisionItem } from "./decision-item";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
-export const CeebDecision: FC = () => {
+interface CeebDecisionProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const CeebDecision: FC<CeebDecisionProps> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -89,6 +93,7 @@ export const CeebDecision: FC = () => {
               {...data}
               leadIdentifier={id}
               toggleEdit={setEditable}
+              onDirtyChange={onDirtyChange}
             />
           ) : (
             <DecisionItem

@@ -10,6 +10,7 @@ import { openModal, selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
 import { getThumbnailDataURL, isImage, removeIdentifierFromFilename } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { CANCEL_CONFIRM_FILE_UPDATE } from "@/app/types/modal/modal-types";
 
@@ -25,6 +26,7 @@ type Props = {
   onFileDeleted?: (attachments: COMSObject) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   disabled?: boolean | null;
   refreshKey?: number;
 };
@@ -41,10 +43,12 @@ export const Attachments: FC<Props> = ({
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
+  onDirtyChange,
   disabled,
   refreshKey,
 }) => {
   const dispatch = useAppDispatch();
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize);
@@ -170,6 +174,7 @@ export const Attachments: FC<Props> = ({
     removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
+    markDirty();
   };
 
   // don't upload files that are invalid

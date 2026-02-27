@@ -68,12 +68,14 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
 type QuickCloseModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaint_type: string;
   refreshComplaintsOnClose?: boolean;
 };
 export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   close,
   submit,
+  onDirtyChange,
   complaint_type,
   refreshComplaintsOnClose = false,
 }) => {
@@ -165,6 +167,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             handleCancel={close}
             allowDuplicate={true}
             quickClose={true}
+            onDirtyChange={onDirtyChange}
           />
         </div>
       </Modal.Body>

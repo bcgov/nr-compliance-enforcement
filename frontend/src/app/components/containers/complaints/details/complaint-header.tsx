@@ -29,6 +29,7 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -75,6 +76,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const dispatch = useAppDispatch();
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   useEffect(() => {
     setUserIsCollaborator(collaborators.some((c) => c.appUserGuid === userGuid));
@@ -103,7 +106,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaint_type: complaintType,
           complaint_status: statusCode,
           is_officer_assigned: officerAssigned !== "Not Assigned",
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -119,7 +124,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           description: "",
           id: id,
           complaint_type: complaintType,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -139,7 +146,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           agency_code: complaintAgency,
           park_area_guids: parkAreaGuids,
           isHeader: true,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -161,7 +170,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
             complaint_identifier: id,
             complaint_type: complaintType,
             complaint_status: status,
+            onDirtyChange: handleChildDirtyChange,
           },
+          hideCallback,
         }),
       );
     }
@@ -180,7 +191,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           complaintType: complaintType,
           zone: zone,
           agencyCode: complaintAgency,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -195,7 +208,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           title: `Link complaint: #${id}`,
           complaint_identifier: id,
           complaint_type: complaintType,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
         callback: () => {
           dispatch(getLinkedComplaints(id));
         },
@@ -213,7 +228,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           title: "Create/add case",
           complaint_identifier: id,
           agency_code: complaintAgency,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };

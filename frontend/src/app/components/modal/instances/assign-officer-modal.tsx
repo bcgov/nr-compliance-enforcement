@@ -19,10 +19,12 @@ import { UUID } from "node:crypto";
 import { BsPerson } from "react-icons/bs";
 import { from } from "linq-to-typescript";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type AssignOfficerModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaint_type: string;
   zone: string;
   park_area_guids: string[];
@@ -33,6 +35,7 @@ type AssignOfficerModalProps = {
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   close,
   submit,
+  onDirtyChange,
   complaint_type,
   zone,
   park_area_guids,
@@ -52,8 +55,11 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   const searchResults = useAppSelector(searchOfficers(searchInput, modalData?.agency_code, complaint_type));
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
   // stores the state of the officer that was clicked
   const handleAssigneeClick = (personId: string) => {
+    markDirty();
     setSelectedAssignee(personId);
   };
 
@@ -91,6 +97,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   }
 
   const handleInputChange = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
+    markDirty();
     const {
       target: { value },
     } = evt;

@@ -24,6 +24,7 @@ interface InvestigationFormProps {
   isDisabled: boolean;
   id?: string;
   discoveryDate?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   discoveryTime?: string;
 }
 
@@ -37,7 +38,7 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   }
 `;
 
-export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discoveryTime }: InvestigationFormProps) => {
+export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirtyChange, discoveryTime }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
     () => parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
@@ -74,6 +75,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discove
       form.setFieldValue("discoveryDate", "");
       form.setFieldValue("discoveryTime", null);
     }
+    form.setFieldMeta("discoveryDate", (meta: any) => ({ ...meta, isDirty: false, isTouched: false }));
   };
 
   return (
@@ -374,6 +376,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, discove
                   validationRequired={false}
                   sourceXCoordinate={longitude}
                   sourceYCoordinate={latitude}
+                  onDirtyChange={onDirtyChange}
                 />
               );
             }}

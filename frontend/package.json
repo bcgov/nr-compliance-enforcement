@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.198",
+  "version": "2.0.199",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -211,7 +211,8 @@
     "nth-check": "^2.1.1",
     "resolve-url-loader": "^5.0.0",
     "sass-loader": "^16.0.3",
-    "glob": ">=10.5.0"
+    "glob": ">=10.5.0",
+    "minimatch": "^10.2.1"
   },
   "browser": {
     "fs": false,

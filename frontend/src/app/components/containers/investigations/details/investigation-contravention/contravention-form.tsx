@@ -6,7 +6,7 @@ import {
   InvestigationParty,
   LegislationSource,
 } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useEffect, useState } from "react";
 import Option from "@apptypes/app/option";
@@ -30,6 +30,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -37,6 +38,7 @@ interface ContraventionFormProps {
   contraventionNumber?: string;
   contravention?: Contravention;
   parties?: InvestigationParty[];
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const ADD_CONTRAVENTION = gql`
@@ -98,6 +100,7 @@ export const ContraventionForm = ({
   parties,
   activityGuid,
   onClose,
+  onDirtyChange,
   contraventionNumber,
 }: ContraventionFormProps) => {
   // Form Definition
@@ -135,6 +138,18 @@ export const ContraventionForm = ({
       }
     },
   });
+
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   // Selectors
   const userAgency = getUserAgency();
@@ -261,11 +276,13 @@ export const ContraventionForm = ({
 
   // Manages save click
   const handleSubmit = async () => {
+    markClean();
     await form.handleSubmit();
   };
 
   // Manages cancel action after modal is confirmed
   const handleCancel = async () => {
+    markClean();
     form.reset();
     onClose();
   };
@@ -342,6 +359,8 @@ export const ContraventionForm = ({
       // Set all form values
       form.setFieldValue("act", act);
       form.setFieldValue("section", section);
+      form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
   }, [contravention, act, section]);
 

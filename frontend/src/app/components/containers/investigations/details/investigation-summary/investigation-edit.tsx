@@ -3,14 +3,15 @@ import { InvestigationForm } from "@/app/components/containers/investigations/de
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getUserAgency } from "@/app/service/user-service";
 import { openModal } from "@/app/store/reducers/app";
 import { selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
 import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { UpdateInvestigationInput } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +19,7 @@ interface InvestigationFormProps {
   caseIdentifier: string;
   id: string;
   onClose: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const UPDATE_INVESTIGATION_MUTATION = gql`
@@ -74,7 +76,7 @@ const GET_INVESTIGATION = gql`
   }
 `;
 
-export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: InvestigationFormProps) => {
+export const InvestigationEditForm = ({ caseIdentifier, id, onClose, onDirtyChange }: InvestigationFormProps) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
@@ -82,6 +84,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
   const updateInvestigationMutation = useGraphQLMutation(UPDATE_INVESTIGATION_MUTATION, {
     onSuccess: () => {
       ToggleSuccess("Investigation updated successfully");
+      onDirtyChange?.(0, false);
       onClose();
     },
     onError: (error: any) => {
@@ -161,6 +164,17 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
     },
   });
 
+  const { isAnyDirty } = useFormDirtyState(onDirtyChange);
+
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
+  // Bubble TanStack form dirty state up to parent
+  useEffect(() => {
+    onDirtyChange?.(0, isDirty || isAnyDirty);
+  }, [isDirty, isAnyDirty]);
+
   const confirmCancelChanges = useCallback(() => {
     form.reset();
     onClose();
@@ -196,6 +210,7 @@ export const InvestigationEditForm = ({ caseIdentifier, id, onClose }: Investiga
             form={form}
             isDisabled={isDisabled}
             discoveryDate={investigationData?.getInvestigation?.discoveryDate}
+            onDirtyChange={onDirtyChange}
             discoveryTime={investigationData?.getInvestigation?.discoveryTime}
           />
         </Card.Body>
