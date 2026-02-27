@@ -582,15 +582,21 @@ export const CreateComplaint: FC = () => {
   const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
     markDirty();
     setSelectedIncidentDateTime(date);
-    setSelectedIncidentTime(time);
-    if (date > new Date()) {
-      setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+    setSelectedIncidentTime(time ?? null);
+    if (date) {
+      if (date > new Date()) {
+        setIncidentDateTimeErrorMsg("Date and time cannot be in the future");
+      } else {
+        setIncidentDateTimeErrorMsg("");
+      }
+      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
+      applyComplaintData(complaint);
     } else {
       setIncidentDateTimeErrorMsg("");
+      const complaint = { ...complaintData, incidentDate: null, incidentTime: null } as unknown as Complaint;
+      applyComplaintData(complaint);
     }
-    const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
-    const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
-    applyComplaintData(complaint);
   };
 
   const cancelConfirmed = () => {
@@ -682,6 +688,10 @@ export const CreateComplaint: FC = () => {
   const saveButtonClick = async () => {
     if (!complaintData) {
       return;
+    }
+
+    if (!selectedIncidentDateTime && !selectedIncidentTime) {
+      setIncidentDateTimeErrorMsg("");
     }
 
     if (!hasErrors(complaintType)) {
