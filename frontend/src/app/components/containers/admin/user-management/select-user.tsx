@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
 import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { selectParkAreasDropdown } from "@store/reducers/code-table-selectors";
+import { selectTeamDropdown } from "@store/reducers/code-table";
 import { CompSelect } from "@components/common/comp-select";
 import { SortableHeader } from "@components/common/sortable-header";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -62,11 +63,18 @@ function getParkAreaDisplayName(parkAreaGuid: string | null, parkAreas: Option[]
   return (found?.label as string) ?? EMPTY;
 }
 
-// Gets agency specific area / office assignment
+function getTeamDisplayName(teamCode: string | undefined, teams: Option[] | undefined): string {
+  if (!teamCode || !teams?.length) return EMPTY;
+  const found = teams.find((t) => t.value === teamCode);
+  return (found?.label as string) ?? EMPTY;
+}
+
+// Gets agency specific area / office / team assignment
 function getAgencyDetailDisplay(
   u: AppUser,
   offices: Array<{ id: string; name: string; agency: string }> | undefined,
   parkAreas: Option[] | undefined,
+  teams: Option[] | undefined,
 ): string {
   const code = getOfficerAgencyCode(u);
   switch (code) {
@@ -75,13 +83,13 @@ function getAgencyDetailDisplay(
     case AgencyType.PARKS:
       return getParkAreaDisplayName(u.park_area_guid, parkAreas);
     case AgencyType.CEEB: // EPO
-      return EMPTY; // Team not on officer
+      return getTeamDisplayName(u.team_code as string | undefined, teams);
     default:
       return EMPTY;
   }
 }
 
-type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role";
+type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role" | "zone" | "region";
 
 // Agencies with a dedicated tab / table
 const AGENCY_TAB_CODES = [AgencyType.COS, AgencyType.PARKS, AgencyType.CEEB, AgencyType.SECTOR] as const;
@@ -111,24 +119,41 @@ function escapeCsvCell(value: string): string {
   return s;
 }
 
+function getZoneDisplayName(officer: AppUser): string {
+  if (!officer.office_guid?.cos_geo_org_unit?.zone_name) return EMPTY;
+  return officer.office_guid.cos_geo_org_unit.zone_name;
+}
+
+function getRegionDisplayName(officer: AppUser): string {
+  if (!officer.office_guid?.cos_geo_org_unit?.region_name) return EMPTY;
+  return officer.office_guid.cos_geo_org_unit.region_name;
+}
+
 // Build the CSV
 function buildTableCsv(
   officers: AppUser[],
   offices: Array<{ id: string; name: string; agency: string }> | undefined,
   parkAreas: Option[] | undefined,
   agencyDetailLabel: string,
+  teams: Option[] | undefined,
+  includeZoneRegion: boolean,
 ): string {
-  const headers = ["Name (last, first)", "User ID", "Agency", agencyDetailLabel, "Role"];
+  const baseHeaders = ["Name (last, first)", "User ID", "Agency", agencyDetailLabel];
+  const headers = includeZoneRegion ? [...baseHeaders, "Zone", "Region", "Role"] : [...baseHeaders, "Role"];
   const headerRow = headers.map(escapeCsvCell).join(",");
   const rows = officers.map((u) => {
     const name = `${u.last_name ?? ""}, ${u.first_name ?? ""}${u.deactivate_ind ? " (deactivated)" : ""}`;
-    return [
+    const baseCells = [
       escapeCsvCell(name),
       escapeCsvCell(u.user_id ?? EMPTY),
       escapeCsvCell(getAgencyLabel(u)),
-      escapeCsvCell(getAgencyDetailDisplay(u, offices, parkAreas)),
-      escapeCsvCell(u.user_roles?.length ? u.user_roles.join(", ") : EMPTY),
-    ].join(",");
+      escapeCsvCell(getAgencyDetailDisplay(u, offices, parkAreas, teams)),
+    ];
+    const zoneRegionCells = includeZoneRegion
+      ? [escapeCsvCell(getZoneDisplayName(u)), escapeCsvCell(getRegionDisplayName(u))]
+      : [];
+    const roleCell = [escapeCsvCell(u.user_roles?.length ? u.user_roles.join(", ") : EMPTY)];
+    return [...baseCells, ...zoneRegionCells, ...roleCell].join(",");
   });
   return [headerRow, ...rows].join("\r\n");
 }
@@ -164,6 +189,7 @@ export const SelectUser: FC<SelectUserProps> = ({
 
   const offices = useAppSelector(selectOffices);
   const parkAreas = useAppSelector(selectParkAreasDropdown);
+  const teams = useAppSelector(selectTeamDropdown);
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const [activeAgencyTab, setActiveAgencyTab] = useState<string>(AgencyType.COS);
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
@@ -218,14 +244,18 @@ export const SelectUser: FC<SelectUserProps> = ({
         case "agency":
           return getAgencyLabel(u).toLowerCase();
         case "agency_detail":
-          return getAgencyDetailDisplay(u, offices, parkAreas).toLowerCase();
+          return getAgencyDetailDisplay(u, offices, parkAreas, teams).toLowerCase();
         case "role":
           return (u.user_roles?.length ? u.user_roles.join(", ") : EMPTY).toLowerCase();
+        case "zone":
+          return getZoneDisplayName(u).toLowerCase();
+        case "region":
+          return getRegionDisplayName(u).toLowerCase();
         default:
           return "";
       }
     },
-    [offices, parkAreas],
+    [offices, parkAreas, teams],
   );
 
   // Filter officers by tab: each officer's agency comes from officer.agency_code.agency (EPO, COS, PARKS, NRS/SECTOR).
@@ -281,12 +311,13 @@ export const SelectUser: FC<SelectUserProps> = ({
 
   const handleDownloadCsv = useCallback(() => {
     const agencyDetailLabel = AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? "Agency detail";
-    const csv = buildTableCsv(sortedOfficersForTab, offices, parkAreas, agencyDetailLabel);
+    const includeZoneRegion = activeAgencyTab === AgencyType.COS;
+    const csv = buildTableCsv(sortedOfficersForTab, offices, parkAreas, agencyDetailLabel, teams, includeZoneRegion);
     const tabLabel = agencyTabsWithLabels.find((t) => t.code === activeAgencyTab)?.label ?? activeAgencyTab;
     // Replace spaces with hyphens for a safe filename
     const safeLabel = tabLabel.replaceAll(/\s+/g, "-").toLowerCase();
     downloadCsv(csv, `users-${safeLabel}.csv`);
-  }, [activeAgencyTab, sortedOfficersForTab, offices, parkAreas, agencyTabsWithLabels]);
+  }, [activeAgencyTab, sortedOfficersForTab, offices, parkAreas, agencyTabsWithLabels, teams]);
 
   return (
     <div className="comp-page-container user-management-container">
@@ -415,6 +446,24 @@ export const SelectUser: FC<SelectUserProps> = ({
                       currentSort={sortColumn}
                       sortDirection={sortDirection}
                     />
+                    {activeAgencyTab === AgencyType.COS && (
+                      <>
+                        <SortableHeader
+                          title="Zone"
+                          sortFnc={handleSort}
+                          sortKey="zone"
+                          currentSort={sortColumn}
+                          sortDirection={sortDirection}
+                        />
+                        <SortableHeader
+                          title="Region"
+                          sortFnc={handleSort}
+                          sortKey="region"
+                          currentSort={sortColumn}
+                          sortDirection={sortDirection}
+                        />
+                      </>
+                    )}
                     <SortableHeader
                       title="Role"
                       sortFnc={handleSort}
@@ -434,13 +483,19 @@ export const SelectUser: FC<SelectUserProps> = ({
                         </td>
                         <td>{u.user_id ?? EMPTY}</td>
                         <td>{getAgencyLabel(u)}</td>
-                        <td>{getAgencyDetailDisplay(u, offices, parkAreas)}</td>
+                        <td>{getAgencyDetailDisplay(u, offices, parkAreas, teams)}</td>
+                        {activeAgencyTab === AgencyType.COS && (
+                          <>
+                            <td>{getZoneDisplayName(u)}</td>
+                            <td>{getRegionDisplayName(u)}</td>
+                          </>
+                        )}
                         <td>{u.user_roles?.length ? u.user_roles.join(", ") : EMPTY}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={SORT_COLUMNS.length}>
+                      <td colSpan={SORT_COLUMNS.length + (activeAgencyTab === AgencyType.COS ? 2 : 0)}>
                         <i className="bi bi-info-circle-fill p-2"></i>
                         <span>No users to display for this agency.</span>
                       </td>
