@@ -189,9 +189,6 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             <DatePicker
               id={`${id}-hour`}
               selected={displayTime}
-              onFocus={() => {
-                if (!selectedDate && onTimeWithoutDate) onTimeWithoutDate();
-              }}
               onChange={(date) => {
                 if (!selectedDate) {
                   if (onTimeWithoutDate) onTimeWithoutDate();
@@ -217,9 +214,6 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
             <DatePicker
               id={`${id}-minute`}
               selected={displayTime}
-              onFocus={() => {
-                if (!selectedDate && onTimeWithoutDate) onTimeWithoutDate();
-              }}
               onChange={(date) => {
                 if (!selectedDate) {
                   if (onTimeWithoutDate) onTimeWithoutDate();
