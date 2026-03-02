@@ -333,6 +333,11 @@ export const ComplaintDetailsEdit: FC = () => {
     if (!complaintUpdate) {
       return;
     }
+
+    if (!selectedIncidentDate && !selectedIncidentTime) {
+      setIncidentDateTimeErrorMsg("");
+    }
+
     if (hasValidationErrors()) {
       await dispatch(updateComplaintById(complaintUpdate, complaintType));
       markClean();
@@ -651,7 +656,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
     setSelectedIncidentDate(date);
-    setSelectedIncidentTime(time);
+    setSelectedIncidentTime(time ?? null);
     if (date) {
       const dateTimeToCompare = new Date(date);
       if (time) {
@@ -663,13 +668,15 @@ export const ComplaintDetailsEdit: FC = () => {
       } else {
         setIncidentDateTimeErrorMsg("");
       }
+      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
+      applyComplaintUpdate(updatedComplaint);
     } else {
       setIncidentDateTimeErrorMsg("");
+      const updatedComplaint = { ...complaintUpdate, incidentDate: null, incidentTime: null } as unknown as Complaint;
+      applyComplaintUpdate(updatedComplaint);
     }
     markDirty();
-    const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
-    const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
-    applyComplaintUpdate(updatedComplaint);
   };
 
   const handleAttractantsChange = async (options: Option[] | null) => {
