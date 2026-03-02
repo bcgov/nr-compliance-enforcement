@@ -820,6 +820,20 @@ p {
   }
 }
 
+#task-list {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid $gray-300;
+
+  > thead > tr > th {
+    border-bottom: 1px solid $gray-300;
+
+    + th {
+      border-left: 1px solid $gray-300;
+    }
+  }
+}
+
 // TABLE UTILITIES
 .sticky-table-header {
   position: sticky;
