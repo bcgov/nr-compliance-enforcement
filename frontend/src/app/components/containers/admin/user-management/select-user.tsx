@@ -169,10 +169,14 @@ export const SelectUser: FC<SelectUserProps> = ({
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<string>(SORT_TYPES.ASC);
 
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+
   // Tabs the active user can see: GLOBAL_ADMINISTRATOR sees all
   // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles, and NRS
   const visibleTabCodes = useMemo((): string[] => {
-    if (UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR)) {
+    if (isGlobalAdmin) {
       return [...AGENCY_TAB_CODES];
     }
     if (UserService.hasRole(Roles.AGENCY_ADMINISTRATOR)) {
@@ -253,10 +257,12 @@ export const SelectUser: FC<SelectUserProps> = ({
 
   const officerList = useMemo(
     () =>
-      officers?.map((o: AppUser) => ({
-        value: o.app_user_guid,
-        label: `${o.last_name}, ${o.first_name} ${o.deactivate_ind ? "(deactivated user)" : ""}`,
-      })) ?? [],
+      officers
+        ?.filter((officer) => (isGlobalAdmin ? true : allowedAgencies.has(officer.agency_code_ref)))
+        .map((o: AppUser) => ({
+          value: o.app_user_guid,
+          label: `${o.last_name}, ${o.first_name} ${o.deactivate_ind ? "(deactivated user)" : ""}`,
+        })) ?? [],
     [officers],
   );
 
@@ -341,7 +347,7 @@ export const SelectUser: FC<SelectUserProps> = ({
             <Button
               variant="primary"
               onClick={handleEdit}
-              disabled={officer && officer.value === ""}
+              disabled={officer?.value === ""}
             >
               Edit
             </Button>
