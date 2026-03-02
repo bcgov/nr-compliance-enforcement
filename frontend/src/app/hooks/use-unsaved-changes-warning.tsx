@@ -1,15 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// This hook should only be used once at the top level of a component tree otherwise you might end up with duelling states
-const useUnsavedChangesWarning = (isDirty: boolean) => {
-  // Used to override hook behavior in cases where we want to be able to navigate (e.g. cancelling or saving changes then going to a new page)
-  const allowNavigationRef = useRef(false);
-
-  const allowNavigation = useCallback(() => {
-    allowNavigationRef.current = true;
-  }, []);
-
-  // Browser-level navigation (refresh, tab close, URL bar)
+// Catch browser-level navigation (refresh, tab close, URL bar)
+const useBeforeUnload = (isDirty: boolean) => {
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isDirty) {
@@ -18,11 +10,20 @@ const useUnsavedChangesWarning = (isDirty: boolean) => {
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
+};
+
+// This hook should only be used once at the top level of a component tree otherwise you might end up with duelling states
+const useUnsavedChangesWarning = (isDirty: boolean) => {
+  useBeforeUnload(isDirty);
+
+  // Used to override hook behavior in cases where we want to be able to navigate (e.g. cancelling or saving changes then going to a new page)
+  const allowNavigationRef = useRef(false);
+
+  const allowNavigation = useCallback(() => {
+    allowNavigationRef.current = true;
+  }, []);
 
   // In-app navigation (back/forward buttons + React Router Links)
   useEffect(() => {
@@ -111,6 +112,7 @@ export const useFormDirtyState = (onDirtyChange?: (index: number, isDirty: boole
 // Hook for managing dirty state in modals to ensure they play nicely with the Redux dispatched modals
 export const useModalDirtyWarning = (onDirtyChange?: (index: number, isDirty: boolean) => void) => {
   const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
+  useBeforeUnload(isAnyDirty);
 
   const isAnyDirtyRef = useRef(isAnyDirty);
 
