@@ -11,7 +11,8 @@ export class ActivityNote {
   activityNoteCode: string;
   contentJson: string;
   contentText: string;
-  actionedTimestamp: Date;
+  actionedDate: Date;
+  actionedTime: Date;
   reportedTimestamp: Date;
   actionedAppUserGuidRef: string;
   reportedAppUserGuidRef: string;
@@ -39,8 +40,12 @@ export class ActivityNoteInput {
   @Field(() => String)
   contentText: string;
 
+  @Field(() => Date, { nullable: true })
+  @IsOptional()
+  actionedTime?: Date;
+
   @Field(() => Date)
-  actionedTimestamp: Date;
+  actionedDate: Date;
 
   @Field(() => Date)
   reportedTimestamp: Date;
@@ -82,8 +87,12 @@ export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
       mapFrom((src) => src.content_text),
     ),
     forMember(
-      (dest) => dest.actionedTimestamp,
-      mapFrom((src) => src.actioned_utc_timestamp),
+      (dest) => dest.actionedDate,
+      mapFrom((src) => src.actioned_utc_date),
+    ),
+    forMember(
+      (dest) => dest.actionedTime,
+      mapFrom((src) => src.actioned_utc_time),
     ),
     forMember(
       (dest) => dest.reportedTimestamp,

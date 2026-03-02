@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@store/reducers/officer";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
-import { fetchOfficeAssignments, selectOfficesForAssignmentDropdown, selectOffices } from "@store/reducers/office";
+import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import {
   clearNotification,
@@ -18,7 +18,6 @@ import {
   openModal,
   appUserGuid,
   selectNotification,
-  setActiveTab,
   userId,
 } from "@store/reducers/app";
 import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
@@ -38,6 +37,9 @@ import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
 import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
 
 interface EditUserProps {
   officer: Option;
@@ -46,6 +48,7 @@ interface EditUserProps {
   handleCancel: () => void;
   goToSearchView: () => void;
   setOfficer: Dispatch<SetStateAction<Option | undefined>>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const EditUser: FC<EditUserProps> = ({
@@ -55,6 +58,7 @@ export const EditUser: FC<EditUserProps> = ({
   handleCancel,
   goToSearchView,
   setOfficer,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
   const officerData = useAppSelector(selectOfficerByAppUserGuid(officer.value));
@@ -82,6 +86,18 @@ export const EditUser: FC<EditUserProps> = ({
 
   const [offices, setOffices] = useState<Array<Option>>([]);
   const [roleList, setRoleList] = useState<Array<Option>>([]);
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+  
+  // Filter agencies
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+
+  const agencyList = useMemo(
+    () => agency?.filter((a) => (isGlobalAdmin ? true : allowedAgencies.has(a.value))),
+    [agency, isGlobalAdmin, userAgency],
+  );
 
   //Load offices on mount
   useEffect(() => {
@@ -134,7 +150,7 @@ export const EditUser: FC<EditUserProps> = ({
       let currentAgency;
 
       if (hasCEEBRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agencyList);
 
         const currentTeam = await getUserCurrentTeam(officerData.app_user_guid);
         if (currentTeam?.team_guid) {
@@ -147,7 +163,7 @@ export const EditUser: FC<EditUserProps> = ({
       }
 
       if (hasCOSRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.COS, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.COS, agencyList);
 
         if (officerData.office_guid) {
           const officeGuid =
@@ -166,16 +182,16 @@ export const EditUser: FC<EditUserProps> = ({
           setSelectedParkArea(currentParkArea);
         }
 
-        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agency);
+        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agencyList);
         setCurrentAgency(currentAgency);
         return;
       }
 
       // Fallback to NRS if no matching role
-      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agency);
+      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agencyList);
       setCurrentAgency(currentAgency);
     })();
-  }, [officerData, offices, selectedAgency, agency, teams, dispatch, parkAreasList]);
+  }, [officerData, offices, selectedAgency, agencyList, teams, dispatch, parkAreasList]);
 
   useEffect(() => {
     if (newUser && !officerData) {
@@ -210,9 +226,11 @@ export const EditUser: FC<EditUserProps> = ({
   const mapRolesDropdown = (userRoles: any): Option[] => {
     let result: Option[] = [];
     ROLE_OPTIONS.forEach((roleOption) => {
-      const found = userRoles.some((role: any) => role === roleOption.value);
+      const found = userRoles.includes(roleOption.value);
+
       if (found) result.push(roleOption);
     });
+
     return result;
   };
 
@@ -240,20 +258,25 @@ export const EditUser: FC<EditUserProps> = ({
   };
 
   const handleAgencyChange = (input: Option | null) => {
+    markDirty();
     resetSelect();
     setSelectedAgency(input);
   };
 
   const handleOfficeChange = (input: any) => {
+    markDirty();
     setSelectedOffice(input);
   };
   const handleParkAreaChange = (input: any) => {
+    markDirty();
     setSelectedParkArea(input);
   };
   const handleTeamChange = (input: any) => {
+    markDirty();
     setSelectedTeam(input);
   };
   const handleRoleChange = (input: any) => {
+    markDirty();
     setSelectedRoles(input);
   };
 
@@ -368,7 +391,7 @@ export const EditUser: FC<EditUserProps> = ({
       default: {
         const officerId = officer?.value ? officer.value : "";
         const officeId = selectedOffice?.value ? selectedOffice.value : "";
-        await dispatch(assignOfficerToOffice(officerId, officeId));
+        dispatch(assignOfficerToOffice(officerId, officeId));
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.app_user_guid,
@@ -539,7 +562,7 @@ export const EditUser: FC<EditUserProps> = ({
               classNames={{
                 menu: () => "top-layer-select",
               }}
-              options={agency}
+              options={agencyList}
               placeholder="Select"
               enableValidation={true}
               value={currentAgency ?? selectedAgency}

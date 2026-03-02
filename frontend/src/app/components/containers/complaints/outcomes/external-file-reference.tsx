@@ -16,8 +16,13 @@ import getOfficerAssigned from "@common/get-officer-assigned";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { selectOfficers } from "@store/reducers/officer";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
-export const ExternalFileReference: FC = () => {
+interface ExternalFileReferenceProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyChange }) => {
   const dispatch = useAppDispatch();
 
   const complaintData = useAppSelector(selectComplaint);
@@ -28,6 +33,8 @@ export const ExternalFileReference: FC = () => {
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
   const [referenceNumberError, setReferenceNumberError] = useState<string>("");
+
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   // State Management for when reference number changes, or page is first loaded
   useEffect(() => {
@@ -40,6 +47,7 @@ export const ExternalFileReference: FC = () => {
   // function for handling the cancel modal
   const cancelConfirmed = () => {
     resetValidationErrors();
+    markClean();
 
     if (complaintData) {
       if (complaintData.referenceNumber !== "") {
@@ -98,6 +106,7 @@ export const ExternalFileReference: FC = () => {
       if (complaintType === COMPLAINT_TYPES.ERS && [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy)) {
         await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
       }
+      markClean();
       dispatch(getComplaintById(complaintData.id, complaintType));
     }
   };
@@ -137,6 +146,7 @@ export const ExternalFileReference: FC = () => {
   // function for keeping the value on the component in sync with redux
   const handleExternalFileReferenceChange = (value: string) => {
     setReferenceNumber(value);
+    markDirty();
   };
 
   return (

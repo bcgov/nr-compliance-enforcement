@@ -17,15 +17,23 @@ import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { isValidEmail } from "@/app/common/validate-email";
 import { formatDate } from "@/app/common/methods";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ReferComplaintModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   id: string;
   complaint_type: string;
 };
 
-export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submit, id, complaint_type }) => {
+export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({
+  close,
+  submit,
+  onDirtyChange,
+  id,
+  complaint_type,
+}) => {
   const dispatch = useAppDispatch();
 
   const modalData = useAppSelector(selectModalData);
@@ -39,6 +47,8 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
 
   const { title } = modalData;
   const currentDate = new Date();
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const agencyOptions = agencies
     .filter(
@@ -74,6 +84,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
     setDefaultRecipientEmailInput("");
     setAdditionalEmailInput("");
     if (selectedOption?.value) {
+      markDirty();
       const defaultEmail = emailReferenceList.find((emailReference) => {
         if (selectedOption.value === "COS") {
           return (
@@ -97,12 +108,14 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
   const handleSelectedOfficerChange = (selectedOption: Option | null) => {
     setSelectedOfficer(selectedOption);
     setSelectedOfficerError("");
+    markDirty();
   };
   const [referralReason, setReferralReason] = useState<string>("");
   const [referralReasonError, setReferralReasonError] = useState<string>("");
   const handleReferralReasonChange = (reason: string) => {
     setReferralReason(reason);
     setReferralReasonError("");
+    markDirty();
   };
 
   const [isReferDisabled, setIsReferDisabled] = useState<boolean>(false);

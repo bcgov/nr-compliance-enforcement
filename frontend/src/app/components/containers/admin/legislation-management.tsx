@@ -12,6 +12,7 @@ import { Button } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { toggleLoading } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 const UPDATE_LEGISLATION = gql`
   mutation UpdateLegislationConfiguration($input: [UpdateLegislationConfigurationInput!]!) {
@@ -501,7 +502,7 @@ export const LegislationManagement: FC = () => {
   };
 
   // Guard to prevent someone from changing the URL parameter
-  if (userAgency !== legislationAgency) {
+  if (userAgency !== legislationAgency && legislationAgency !== AgencyType.SECTOR) {
     return <Navigate to="/not-authorized" />;
   }
 

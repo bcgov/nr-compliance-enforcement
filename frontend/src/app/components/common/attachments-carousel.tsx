@@ -6,10 +6,13 @@ import { getAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
-import { selectMaxFileSize } from "@store/reducers/app";
+import { openModal, selectMaxFileSize } from "@store/reducers/app";
 import { v4 as uuidv4 } from "uuid";
-import { getThumbnailDataURL, isImage } from "@common/methods";
+import { getThumbnailDataURL, isImage, removeIdentifierFromFilename } from "@common/methods";
 import AttachmentEnum from "@constants/attachment-enum";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { getDisplayFilename } from "@/app/common/attachment-utils";
+import { CANCEL_CONFIRM_FILE_UPDATE } from "@/app/types/modal/modal-types";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -23,6 +26,7 @@ type Props = {
   onFileDeleted?: (attachments: COMSObject) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   disabled?: boolean | null;
   refreshKey?: number;
 };
@@ -39,10 +43,12 @@ export const Attachments: FC<Props> = ({
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
+  onDirtyChange,
   disabled,
   refreshKey,
 }) => {
   const dispatch = useAppDispatch();
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // max file size for uploads
   const maxFileSize = useAppSelector(selectMaxFileSize);
@@ -118,8 +124,48 @@ export const Attachments: FC<Props> = ({
     return copy;
   }
 
+  const confirmFileUpdate = async (newFiles: FileList) => {
+    let exisingFileNames: string[] = [];
+
+    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT) {
+      exisingFileNames = slides.map((attachment) => {
+        return getDisplayFilename(attachment.name);
+      });
+    } else {
+      exisingFileNames = slides.map((attachment) => {
+        return removeIdentifierFromFilename(decodeURIComponent(attachment.name), identifier ?? "", attachmentType);
+      });
+    }
+
+    const exisingFileNamesSet = new Set(exisingFileNames);
+    const newFileNamesArray = Array.from(newFiles).map((file) => file.name);
+    const conflitingFileNames = newFileNamesArray.filter((item) => exisingFileNamesSet.has(item));
+    if (conflitingFileNames.length === 0) {
+      await stageFiles(newFiles);
+    } else {
+      document.body.click();
+      dispatch(
+        openModal({
+          modalSize: "md",
+          modalType: CANCEL_CONFIRM_FILE_UPDATE,
+          data: {
+            title: "File already exists",
+            fileNames: conflitingFileNames,
+            onUpdate: async () => {
+              await stageFiles(newFiles);
+            },
+          },
+        }),
+      );
+    }
+  };
+
   // when a user selects files (via the file browser that pops up when clicking the upload slide) then add them to the carousel
   const onFileSelect = async (newFiles: FileList) => {
+    await confirmFileUpdate(newFiles);
+  };
+
+  const stageFiles = async (newFiles: FileList) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
     for (let selectedFile of selectedFilesArray) {
@@ -128,6 +174,7 @@ export const Attachments: FC<Props> = ({
     removeInvalidFiles(selectedFilesArray);
 
     setSlides([...newSlides, ...slides]);
+    markDirty();
   };
 
   // don't upload files that are invalid

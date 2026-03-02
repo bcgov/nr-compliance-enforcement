@@ -32,6 +32,8 @@ import {
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
   getIssueDescription,
+  parseUTCDateTimeToLocal,
+  formatLocalTime,
 } from "@common/methods";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
@@ -1068,14 +1070,19 @@ export const selectComplaintDetails = createSelector(
         details,
         locationSummary: location,
         locationDetail: locationDescription,
-        incidentDateTime,
+        incidentDate,
+        incidentTime,
         location: { coordinates },
         organization: { area: areaCode, region, zone, officeLocation },
         ownedBy,
         parkGuid,
       } = complaint as Complaint;
 
-      result = { ...result, details, location, locationDescription, incidentDateTime, coordinates, ownedBy, parkGuid };
+      // Parse UTC date+time from backend into local Date, and extract local time string
+      const localDate = parseUTCDateTimeToLocal(incidentDate, incidentTime);
+      const localIncidentTime = localDate && incidentTime ? formatLocalTime(localDate) : incidentTime;
+
+      result = { ...result, details, location, locationDescription, incidentDate: localDate ?? undefined, incidentTime: localIncidentTime, coordinates, ownedBy, parkGuid };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaint;

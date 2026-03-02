@@ -5,7 +5,11 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectComplaintViewMode, selectComplaint } from "@/app/store/reducers/complaints";
 import { HWCRAssessment } from "./hwcr-assessment";
 
-export const HWCRAssessments: FC = () => {
+interface HWCRAssessmentsProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const HWCRAssessments: FC<HWCRAssessmentsProps> = ({ onDirtyChange }) => {
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const assessments = useAppSelector(selectAssessments);
@@ -50,11 +54,17 @@ export const HWCRAssessments: FC = () => {
               assessment.justification?.value === "DUPLICATE" || assessments.length === 1 ? true : allowDuplicate
             } // Allow saving as duplicate if it is already a duplicate or if it is the only assessment
             allowCancel={assessments?.length !== 0}
+            onDirtyChange={onDirtyChange}
           />
           <br />
         </>
       ))}
-      {showAddAssessment && <HWCRAssessment allowDuplicate={allowDuplicate} />}
+      {showAddAssessment && (
+        <HWCRAssessment
+          allowDuplicate={allowDuplicate}
+          onDirtyChange={onDirtyChange}
+        />
+      )}
       {!isInEdit.assessment && !hasExistingDuplicate && !showAddAssessment && (
         <Button
           variant="primary"

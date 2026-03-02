@@ -17,6 +17,7 @@ type Investigation {
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
   discoveryDate: DateTime
+  discoveryTime: DateTime
   parties: [InvestigationParty]
   contraventions: [Contravention]
   tasks: [Task]
@@ -36,6 +37,7 @@ input CreateInvestigationInput {
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
   discoveryDate: DateTime
+  discoveryTime: DateTime
 }
 
 input UpdateInvestigationInput {
@@ -50,6 +52,7 @@ input UpdateInvestigationInput {
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
   discoveryDate: DateTime
+  discoveryTime: DateTime
 }
 
 input InvestigationFilters {

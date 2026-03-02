@@ -9,6 +9,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CompSelect } from "../../common/comp-select";
 import { selectPartyAssociationRoleDropdown } from "@/app/store/reducers/code-table-selectors";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -80,13 +81,17 @@ type AddPartyModalProps = {
   activityType: ActivityType;
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit }) => {
+export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit, onDirtyChange }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const partyRoles = useAppSelector(selectPartyAssociationRoleDropdown);
+
+  // Dirty Tracking
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // Vars
   const { title, activityGuid } = modalData;
@@ -110,6 +115,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
   const handleSearchPartyChange = (selected: Party) => {
     setPartyErrorMessage("");
     setSelectedParty(selected);
+    markDirty();
   };
 
   const handlePartyRoleChange = (partyRole: string) => {
@@ -161,9 +167,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
     } else {
       addPartyMutation.mutate({ inspectionGuid: activityGuid, input: typeCastedInput });
     }
-
     submit();
-    close();
   };
 
   const partyRoleOptions = partyRoles

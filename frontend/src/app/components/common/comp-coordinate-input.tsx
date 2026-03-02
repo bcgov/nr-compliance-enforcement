@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import Option from "@apptypes/app/option";
 import { CompRadioGroup } from "./comp-radiogroup";
 import { bcBoundaries, bcUtmBoundaries, formatLatLongCoordinate } from "@common/methods";
@@ -8,6 +8,7 @@ import { useAppDispatch } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { MAP_MODAL } from "@apptypes/modal/modal-types";
 import utmObj from "utm-latlng";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id?: string;
@@ -22,6 +23,7 @@ type Props = {
   sourceXCoordinate?: string;
   sourceYCoordinate?: string;
   equipmentType?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 const COORDINATE_TYPES = {
@@ -38,6 +40,7 @@ export const CompCoordinateInput: FC<Props> = ({
   sourceXCoordinate,
   sourceYCoordinate,
   syncCoordinates,
+  onDirtyChange,
   throwError,
   enableCopyCoordinates,
   validationRequired,
@@ -55,6 +58,10 @@ export const CompCoordinateInput: FC<Props> = ({
   const [northingCoordinateErrorMsg, setNorthingCoordinateErrorMsg] = useState<string | undefined>("");
   const [zoneCoordinate, setZoneCoordinate] = useState<Option | undefined | null>();
   const [zoneErrorMsg, setZoneErrorMsg] = useState<string | undefined>("");
+
+  // Dirty tracking
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const initialCoordinatesRef = useRef({ x: initXCoordinate, y: initYCoordinate });
 
   const handleGeoPointChange = useCallback(
     (latitude: string, longitude: string) => {
@@ -324,6 +331,11 @@ export const CompCoordinateInput: FC<Props> = ({
     //Check if xCoord and yCoord valid whenever they change
     if (xCoordinate && yCoordinate) {
       handleGeoPointChange(yCoordinate, xCoordinate);
+
+      // Only mark dirty if coordinates have changed from initial values
+      if (xCoordinate !== initialCoordinatesRef.current.x || yCoordinate !== initialCoordinatesRef.current.y) {
+        markDirty();
+      }
     }
   }, [xCoordinate, yCoordinate, handleGeoPointChange]);
 
@@ -458,7 +470,10 @@ export const CompCoordinateInput: FC<Props> = ({
                   ${yCoordinateErrorMsg ? "error-border" : ""}
                   ${validationRequired ? "validation-group-input" : ""}
                 `}
-                  onChange={(evt: any) => handleGeoPointChange(evt.target.value, xCoordinate ?? "")}
+                  onChange={(evt: any) => {
+                    handleGeoPointChange(evt.target.value, xCoordinate ?? "");
+                    markDirty();
+                  }}
                   value={yCoordinate ?? ""}
                   maxLength={120}
                 />
@@ -480,7 +495,10 @@ export const CompCoordinateInput: FC<Props> = ({
                   comp-form-control
                   ${xCoordinateErrorMsg ? "error-border" : ""}
                 `}
-                  onChange={(evt: any) => handleGeoPointChange(yCoordinate ?? "", evt.target.value)}
+                  onChange={(evt: any) => {
+                    handleGeoPointChange(yCoordinate ?? "", evt.target.value);
+                    markDirty();
+                  }}
                   value={xCoordinate ?? ""}
                   maxLength={120}
                 />

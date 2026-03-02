@@ -8,7 +8,11 @@ import { selectComplaintAssignedBy, selectComplaintViewMode } from "@store/reduc
 import "@assets/sass/hwcr-equipment.scss";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 
-export const HWCREquipment: FC = memo(() => {
+interface HWCREquipmentProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const HWCREquipment: FC<HWCREquipmentProps> = memo(({ onDirtyChange }) => {
   const dispatch = useAppDispatch();
   const assigned = useAppSelector(selectComplaintAssignedBy);
   // used to indicate which equipment's guid is in edit mode (only one can be edited at a time
@@ -56,6 +60,7 @@ export const HWCREquipment: FC = memo(() => {
                   equipment={equipment}
                   onSave={handleSave}
                   onCancel={handleCancel}
+                  onDirtyChange={onDirtyChange}
                 />
               ) : (
                 <EquipmentItem
@@ -74,6 +79,7 @@ export const HWCREquipment: FC = memo(() => {
             onSave={handleSave}
             onCancel={handleCancel}
             assignedOfficer={assigned}
+            onDirtyChange={onDirtyChange}
           />
         ) : (
           <div className="comp-outcome-report-button">
