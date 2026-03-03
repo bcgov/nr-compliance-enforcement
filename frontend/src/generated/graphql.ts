@@ -1748,15 +1748,6 @@ export type PersonUpdateInput = {
   sexCode?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type PersonUpdateInput = {
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  middleName?: InputMaybe<Scalars['String']['input']>;
-  middleName2?: InputMaybe<Scalars['String']['input']>;
-  personGuid: Scalars['String']['input'];
-};
-
 export type Prevention = {
   __typename?: 'Prevention';
   actions?: Maybe<Array<Maybe<CaseFileAction>>>;
