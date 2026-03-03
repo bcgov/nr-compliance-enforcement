@@ -126,14 +126,20 @@ export async function enterDateTimeInDatePicker(
   hour?: string,
   minute?: string,
 ) {
-  await page.locator(`#${datePickerId}`).click();
+  await page.locator(`#${datePickerId}-date`).click();
   const dateButtons = await page.locator(`.react-datepicker__day--0${day}`).all();
   await dateButtons[0].click();
 
-  // Locate the time input field and click it to open the time picker
+  // Fill hour and minute into the split time pickers
   if (hour && minute) {
-    await page.locator(`#${datePickerId}-timepicker`).locator("input:scope").fill(`${hour}:${minute}`);
+    const hourInput = page.locator(`#${datePickerId}-hour`);
+    await hourInput.click();
+    await hourInput.fill(hour);
     await page.keyboard.press("Escape");
+
+    const minuteInput = page.locator(`#${datePickerId}-minute`);
+    await minuteInput.click();
+    await minuteInput.fill(minute);
     await page.keyboard.press("Escape");
   }
 }

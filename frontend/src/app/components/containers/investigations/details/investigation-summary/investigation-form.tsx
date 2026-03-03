@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatLocalTime } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompInput } from "@/app/components/common/comp-input";
@@ -24,6 +24,8 @@ interface InvestigationFormProps {
   isDisabled: boolean;
   id?: string;
   discoveryDate?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+  discoveryTime?: string;
 }
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
@@ -36,11 +38,15 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   }
 `;
 
-export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: InvestigationFormProps) => {
+export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirtyChange, discoveryTime }: InvestigationFormProps) => {
   const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const [selectedDiscoveryDateTime, setSelectedDiscoveryDateTime] = useState<Date | null>(
-    discoveryDate ? new Date(discoveryDate) : null,
+  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
+    () => parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
   );
+  const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
+    const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
+    return d && discoveryTime ? formatLocalTime(d) : null;
+  });
 
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -54,13 +60,22 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
         }))
       : [];
 
-  const handleDiscoveryDateTimeChange = (date: Date | null) => {
-    setSelectedDiscoveryDateTime(date);
+  const handleDiscoveryDateTimeChange = (date: Date | null, time: string | null) => {
+    setSelectedDiscoveryDate(date);
+    setSelectedDiscoveryTime(time);
     if (date) {
-      form.setFieldValue("discoveryDate", new Date(date).toISOString());
+      const discoveryDate = new Date(date);
+      if (time) {
+        const [hh, mm] = time.split(":").map(Number);
+        discoveryDate.setHours(hh, mm, 0, 0);
+      }
+      form.setFieldValue("discoveryDate", discoveryDate.toISOString());
+      form.setFieldValue("discoveryTime", time ? discoveryDate.toISOString() : null);
     } else {
       form.setFieldValue("discoveryDate", "");
+      form.setFieldValue("discoveryTime", null);
     }
+    form.setFieldMeta("discoveryDate", (meta: any) => ({ ...meta, isDirty: false, isTouched: false }));
   };
 
   return (
@@ -244,22 +259,27 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
             }}
             render={(field) => {
               // Flush state to rendered comp if it's available so no-edit saves work
-              if (!field.state.value && selectedDiscoveryDateTime) {
-                field.handleChange(selectedDiscoveryDateTime.toISOString());
+              if (!field.state.value && selectedDiscoveryDate) {
+                field.handleChange(selectedDiscoveryDate.toISOString());
               }
               return (
                 <ValidationDatePicker
                   id="investigation-discovery-date"
-                  selectedDate={selectedDiscoveryDateTime}
-                  onChange={(date: Date) => {
-                    handleDiscoveryDateTimeChange(date);
-                    field.handleChange(date ? date.toISOString() : "");
+                  selectedDate={selectedDiscoveryDate}
+                  selectedTime={selectedDiscoveryTime}
+                  onChange={(date: Date, time: string | null) => {
+                    handleDiscoveryDateTimeChange(date, time);
+                    if (date) {
+                      field.setMeta({ errorMap: {} });
+                    }
                   }}
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                   errMsg={field.state.meta.errors?.[0] || ""}
                   maxDate={new Date()}
                   showTimePicker={true}
+                  nullableTime={true}
+                  onTimeWithoutDate={() => field.setMeta({ errorMap: { onChange: "Select a date before entering a time" } })}
                 />
               );
             }}
@@ -356,6 +376,7 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate }: Inves
                   validationRequired={false}
                   sourceXCoordinate={longitude}
                   sourceYCoordinate={latitude}
+                  onDirtyChange={onDirtyChange}
                 />
               );
             }}

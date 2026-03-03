@@ -12,9 +12,10 @@ type props = {
   id: string;
   complaintType: string;
   note?: NoteType;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
+export const Note: FC<props> = ({ id = "", complaintType = "", note, onDirtyChange }) => {
   const dispatch = useAppDispatch();
   const officer = useAppSelector(selectCurrentOfficer);
 
@@ -55,6 +56,7 @@ export const Note: FC<props> = ({ id = "", complaintType = "", note }) => {
           currentOfficer={officer}
           mode={note ? "update" : "create"}
           handleCancel={() => setShowInput(false)}
+          onDirtyChange={onDirtyChange}
         />
       ) : (
         note && (

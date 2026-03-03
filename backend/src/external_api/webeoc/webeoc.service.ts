@@ -98,6 +98,7 @@ export class WebeocService {
       return (await this.getCookie()) || "";
     } catch (error) {
       this.logger.error(`Error ${action}ing WebEOC session:`, error);
+      await this.clearCookie();
       throw error;
     }
   };
@@ -139,6 +140,7 @@ export class WebeocService {
       return response.data;
     } catch (error) {
       this.logger.error(`Error posting data to WebEOC at ${urlPath}:`, error);
+      await this.clearCookie();
       throw error;
     }
   };

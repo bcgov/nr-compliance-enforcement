@@ -3,7 +3,7 @@ import { Table, Button, Modal, Dropdown } from "react-bootstrap";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { formatDateTime } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
-import { selectAgencyDropdown } from "@store/reducers/code-table";
+import { selectAgencySectorDropdown } from "@store/reducers/code-table";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
@@ -18,6 +18,9 @@ import {
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { Link } from "react-router-dom";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -49,7 +52,7 @@ const sourceTypeOptions: Option[] = [
 
 export const LegislationSourceManagement: FC = () => {
   const { data: sources, isLoading, refetch } = useLegislationSources();
-  const agencies = useAppSelector(selectAgencyDropdown);
+  const agencies = useAppSelector(selectAgencySectorDropdown);
 
   const [showModal, setShowModal] = useState(false);
   const [editingSource, setEditingSource] = useState<EditingSource>(emptySource);
@@ -107,10 +110,23 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+  const agencyList = agencies?.filter((agency) => (isGlobalAdmin ? true : allowedAgencies.has(agency.value)));
+
   // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
   const actSources = useMemo(() => {
     if (!sources) return [];
-    return sources.filter((source) => source.createUserId !== "system");
+
+    let result = sources.filter((source) => source.createUserId !== "system");
+
+    // Restrict by agency if not global admin
+    if (!isGlobalAdmin) {
+      result = result.filter((source) => allowedAgencies.has(source.agencyCode));
+    }
+
+    return result;
   }, [sources]);
 
   const filteredSources = useMemo(() => {
@@ -499,8 +515,8 @@ export const LegislationSourceManagement: FC = () => {
                   id="agency-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={agencies}
-                  value={agencies.find((a: Option) => a.value === editingSource.agencyCode) || null}
+                  options={agencyList}
+                  value={agencyList.find((a: Option) => a.value === editingSource.agencyCode) || null}
                   onChange={(option: Option | null) =>
                     setEditingSource({ ...editingSource, agencyCode: option?.value || "" })
                   }

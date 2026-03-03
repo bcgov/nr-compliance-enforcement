@@ -1466,32 +1466,32 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
-
-          // Get the authorization id from the case management system
-          const ids = items.map((item) => item.id);
-          const { data, errors } = await get(token, {
-            query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
+          if (agencies.includes("EPO")) {
+            // Get the authorization id from the case management system
+            const ids = items.map((item) => item.id);
+            const { data, errors } = await get(token, {
+              query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
             ${caseFileQueryFields}
           }`,
-          });
-          if (errors) {
-            this.logger.error("GraphQL errors:", errors);
-            throw new Error("GraphQL errors occurred");
-          }
+            });
+            if (errors) {
+              this.logger.error("GraphQL errors:", errors);
+              throw new Error("GraphQL errors occurred");
+            }
 
-          // inject the authorization id onto each complaint
-          for (const item of items) {
-            const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
-              (file) => file.complaintId === item.id,
-            );
-            if (complaintOutcome?.authorization) {
-              item.authorization =
-                complaintOutcome.authorization.type !== "permit"
-                  ? "UA" + complaintOutcome.authorization.value
-                  : complaintOutcome.authorization.value;
+            // inject the authorization id onto each complaint
+            for (const item of items) {
+              const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
+                (file) => file.complaintId === item.id,
+              );
+              if (complaintOutcome?.authorization) {
+                item.authorization =
+                  complaintOutcome.authorization.type !== "permit"
+                    ? "UA" + complaintOutcome.authorization.value
+                    : complaintOutcome.authorization.value;
+              }
             }
           }
-
           await this.setOrganization(items, token);
           results.complaints = items;
           break;
@@ -3099,11 +3099,19 @@ export class ComplaintService {
         data.outcome.decision.actionTakenDate = _applyTimezone(data.outcome.decision.actionTakenDate, tz, "date");
       }
 
-      //-- incidentDateTime may not be set, if there's no date
-      //-- don't try and apply the incident date
-      if (data.incidentDateTime) {
-        data.incidentDateTime = _applyTimezone(data.incidentDateTime, tz, "datetime");
+      // incidentDate/Time may not be set, if there's no date
+      // don't try and apply the incident date.
+      // The DB stores date (DATE) and time (TIME) as separate columns; recombine
+      // into a timestamp so _applyTimezone can convert from UTC to the user's tz,
+      // then re-split into display strings.
+      if (data.incidentDate) {
+        const isoDate = new Date(data.incidentDate).toISOString().split("T")[0];
+        const isoTime = data.incidentTime ? String(data.incidentTime) : "00:00:00";
+        const combined = new Date(`${isoDate}T${isoTime}Z`);
+        data.incidentDate = _applyTimezone(combined, tz, "date");
+        data.incidentTime = data.incidentTime ? _applyTimezone(combined, tz, "time") : null;
       }
+      data.incidentDateTime = [data.incidentDate, data.incidentTime].filter(Boolean).join(" ");
       // Using short names like "cAtts" and "oAtts" to fit them in CDOGS template table cells
       data.cAtts = attachments
         .filter((item) => item.type === AttachmentType.COMPLAINT_ATTACHMENT)

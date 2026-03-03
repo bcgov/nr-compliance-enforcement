@@ -148,8 +148,12 @@ export const complaintToComplaintDtoMap = (mapper: Mapper) => {
       mapFrom((source) => source.reported_by_other_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.incident_utc_time),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -530,8 +534,12 @@ export const applyWildlifeComplaintMap = (mapper: Mapper) => {
       mapFrom((source) => source.complaint_identifier.reported_by_other_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -805,8 +813,12 @@ export const applyAllegationComplaintMap = (mapper: Mapper) => {
       mapFrom((source) => source.complaint_identifier.reported_by_other_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -1050,8 +1062,12 @@ export const applyGeneralInfomationComplaintMap = (mapper: Mapper) => {
       mapFrom((source) => source.complaint_identifier.reported_by_other_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -1257,8 +1273,12 @@ export const applySectorComplaintMap = (mapper: Mapper) => {
       mapFrom((source) => source.reported_by_other_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.incident_utc_time),
     ),
     forMember(
       (destination) => destination.reportedOn,
@@ -1437,8 +1457,12 @@ export const mapWildlifeReport = (mapper: Mapper, tz: string = "America/Vancouve
       }),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.location,
@@ -1749,8 +1773,12 @@ export const mapAllegationReport = (mapper: Mapper, tz: string = "America/Vancou
       }),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.location,
@@ -2178,8 +2206,12 @@ export const mapGeneralIncidentReport = (mapper: Mapper, tz: string = "America/V
       mapFrom((source) => source.complaint_identifier.location_summary_text),
     ),
     forMember(
-      (destination) => destination.incidentDateTime,
-      mapFrom((source) => source.complaint_identifier.incident_utc_datetime),
+      (destination) => destination.incidentDate,
+      mapFrom((source) => source.complaint_identifier.incident_utc_date),
+    ),
+    forMember(
+      (destination) => destination.incidentTime,
+      mapFrom((source) => source.complaint_identifier.incident_utc_time),
     ),
     forMember(
       (destination) => destination.status,

@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { parse } from "date-fns";
 import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
@@ -12,6 +12,7 @@ interface DiaryDateModalProps {
   show: boolean;
   onHide: () => void;
   onSave: (input: DiaryDateInput) => Promise<void>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   investigationGuid: string;
   diaryDate: DiaryDate | null;
   isSaving: boolean;
@@ -21,6 +22,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
   show,
   onHide,
   onSave,
+  onDirtyChange,
   investigationGuid,
   diaryDate,
   isSaving,
@@ -45,6 +47,15 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
+  // Update the parent
+  useEffect(() => {
+    onDirtyChange?.(0, isDirty);
+  }, [isDirty]);
+
   const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
 
   useEffect(() => {
@@ -56,12 +67,18 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
         form.setFieldValue("dueDate", null);
         form.setFieldValue("description", "");
       }
+      form.setFieldMeta("dueDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("description", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     } else {
       form.reset();
     }
   }, [show, diaryDate]);
 
   const handleClose = () => {
+    if (isDirty) {
+      const confirmed = globalThis.confirm("You have unsaved changes. Are you sure you want to leave?");
+      if (!confirmed) return;
+    }
     form.reset();
     onHide();
   };
@@ -128,7 +145,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
                 <ValidationDatePicker
                   id="diary-date-due-date"
                   selectedDate={field.state.value}
-                  onChange={(date: Date) => field.handleChange(date)}
+                  onChange={(date: Date, _time: string | null) => field.handleChange(date)}
                   className="comp-details-edit-calendar-input"
                   classNamePrefix="comp-select"
                   errMsg={field.state.meta.errors?.[0]?.message || field.state.meta.errors?.[0] || ""}

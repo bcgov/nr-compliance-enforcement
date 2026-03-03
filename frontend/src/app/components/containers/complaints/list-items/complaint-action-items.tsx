@@ -12,6 +12,7 @@ import { Dropdown } from "react-bootstrap";
 import { getAssessment, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { getComplaintById, getLinkedComplaints } from "@/app/store/reducers/complaints";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   complaint_identifier: string;
@@ -34,6 +35,8 @@ export const ComplaintActionItems: FC<Props> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
   const openAssignOfficerModal = () => {
     document.body.click();
     dispatch(
@@ -48,7 +51,9 @@ export const ComplaintActionItems: FC<Props> = ({
           zone: zone,
           agency_code: agency_code,
           park_area_guids: park_area_guids,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -66,7 +71,9 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
           complaint_status: complaint_status,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -86,7 +93,9 @@ export const ComplaintActionItems: FC<Props> = ({
           complaint_type: complaint_type,
           complaint_status: complaint_status,
           refreshComplaintsOnClose: true,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -101,7 +110,9 @@ export const ComplaintActionItems: FC<Props> = ({
           title: `Link complaint: #${complaint_identifier}`,
           complaint_identifier: complaint_identifier,
           complaint_type: complaint_type,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
         callback: () => {
           dispatch(getLinkedComplaints(complaint_identifier));
         },
@@ -119,7 +130,9 @@ export const ComplaintActionItems: FC<Props> = ({
           title: "Create/add case",
           complaint_identifier: complaint_identifier,
           agency_code: agency_code,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };

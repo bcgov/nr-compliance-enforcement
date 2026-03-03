@@ -12,10 +12,12 @@ import { applyStatusClass, getIssueDescription } from "@common/methods";
 import config from "@/config";
 import { HintInputWrapper } from "@components/common/custom-hint";
 import { AddComplaintToCaseOption } from "@/app/components/modal/instances/add-complaint-to-case";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id?: string;
   onChange?: (selected: Option | AddComplaintToCaseOption | null) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   errorMessage?: string;
   value?: Option | null;
   includeComplaintType?: boolean;
@@ -24,6 +26,7 @@ type Props = {
 export const ComplaintListSearch: FC<Props> = ({
   id = "complaintListSearch",
   onChange = () => {},
+  onDirtyChange,
   errorMessage = "",
   value = null,
   includeComplaintType = false,
@@ -39,6 +42,8 @@ export const ComplaintListSearch: FC<Props> = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [hintText, setHintText] = useState<string>("");
   const [complaintData, setComplaintData] = useState<any[]>([]);
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
@@ -77,6 +82,7 @@ export const ComplaintListSearch: FC<Props> = ({
 
   const handleInputChange = (text: string) => {
     if (text.length > 0) {
+      markDirty();
       setHintText("");
     }
   };

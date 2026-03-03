@@ -274,7 +274,23 @@ const getBclNum = (element: any): string | null => {
  */
 const getMarginalnote = (element: any): string | null => {
   const note = element?.[`${NS_BCL}marginalnote`];
-  return note ? stripMarkupTags(extractText(note)) || null : null;
+  if (!note) return null;
+
+  // Use raw XML extraction to preserve mixed content order (e.g. "Section 5 of <in:doc>Offence Act</in:doc> does not apply")
+  // fast-xml-parser loses the position of inline elements like in:doc relative to surrounding text
+  const parentId = element?.["@_id"];
+  if (parentId) {
+    const bounds = getBounds(parentId);
+    if (bounds) {
+      const marginalMatch = /<bcl:marginalnote[^>]*>([\s\S]*?)<\/bcl:marginalnote>/i.exec(bounds.content);
+      if (marginalMatch) {
+        return stripMarkupTags(extractTextFromXml(marginalMatch[1])) || null;
+      }
+    }
+  }
+
+  // Fallback to parsed object extraction if raw XML lookup fails
+  return stripMarkupTags(extractText(note)) || null;
 };
 
 /**
@@ -578,7 +594,12 @@ const parseSubparagraph: ElementParser = (el, order) =>
   });
 
 const parseDefinition: ElementParser = (el, order) => {
-  const term = el?.[`${NS_IN}term`] || el?.[`${NS_BCL}text`]?.[`${NS_IN}term`];
+  // Get the bcl:text element - fast-xml-parser always returns bcl:text as an array (per isArray config),
+  // so if it's an array grab the first element, otherwise use it directly as a fallback
+  const textEl = Array.isArray(el?.[`${NS_BCL}text`]) ? el[`${NS_BCL}text`][0] : el?.[`${NS_BCL}text`];
+  // Find the in:term element that holds the definition's name (e.g. "applicant", "Crown land")
+  // It can appear either directly on the definition element, or nested inside the bcl:text element
+  const term = el?.[`${NS_IN}term`] || textEl?.[`${NS_IN}term`];
   return createNode("DEF", order, {
     sectionTitle: stripMarkupTags(extractText(term)) || null,
     legislationText: getBclText(el) || null,

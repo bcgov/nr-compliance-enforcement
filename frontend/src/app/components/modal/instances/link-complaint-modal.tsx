@@ -11,10 +11,12 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { ToggleSuccess, ToggleError } from "@common/toast";
 import { HintInputWrapper } from "@components/common/custom-hint";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type LinkComplaintModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 type ValidationResult = {
@@ -25,7 +27,7 @@ type ValidationResult = {
   linkedCount?: number;
 };
 
-export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit }) => {
+export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit, onDirtyChange }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
@@ -41,6 +43,8 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   const [hintText, setHintText] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [validation, setValidation] = useState<ValidationResult>({ isValid: true });
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const getStatusDescription = (status: string): string => {
     return statusCodes?.find((item: any) => item.complaintStatus === status)?.longDescription || status;
@@ -98,6 +102,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
 
   const handleInputChange = (text: string) => {
     if (text.length > 0) {
+      markDirty();
       setHintText("");
     }
     if (text.length >= 2) {
@@ -122,6 +127,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
   };
 
   const handleComplaintSelect = async (selected: any[]) => {
+    markDirty();
     if (selected.length === 0) {
       setSelectedComplaint(null);
       setHintText("");
@@ -170,7 +176,6 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
 
       ToggleSuccess("Complaints successfully linked");
       submit();
-      close();
     } catch (error) {
       console.error("Error linking complaints:", error);
       ToggleError("Failed to link complaints");

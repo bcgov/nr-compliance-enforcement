@@ -28,7 +28,7 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
     <div
       {...getRootProps()}
       className="comp-attachment-upload-btn"
-      style={disabled ?? false ? { cursor: "default" } : {}}
+      style={(disabled ?? false) ? { cursor: "default" } : {}}
     >
       <input {...getInputProps()} />
       <div className="upload-icon">

@@ -22,20 +22,28 @@ import { getAvatarInitials } from "@/app/common/methods";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { AgencyType } from "@/app/types/app/agency-types";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ManageCollaboratorsModalProps = {
   close: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaintId: string;
   complaintType: string;
 };
 
-export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ close, complaintId, complaintType }) => {
+export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
+  close,
+  onDirtyChange,
+  complaintId,
+  complaintType,
+}) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const complaintData = useAppSelector(selectComplaint);
 
   const { title } = modalData;
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [selectedAgency, setSelectedAgency] = useState<Option | null>();
   const [selectedAgencyError, setSelectedAgencyError] = useState<string>("");
@@ -82,6 +90,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
     setSelectedAgencyError("");
     // Reset officer selection when agency changes
     setSelectedPerson(null);
+    markDirty();
   };
 
   const handleSelectedPersonChange = (selectedOption: Option | null) => {
@@ -90,6 +99,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ cl
   };
 
   const handleSaveCollaborator = () => {
+    markClean();
     let hasError = false;
 
     if (!selectedAgency) {
