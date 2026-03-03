@@ -223,19 +223,6 @@ export const ContraventionForm = ({
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [
-<<<<<<< HEAD
-      Legislation.SCHEDULE,
-      Legislation.DIVISION,
-      Legislation.SECTION,
-      Legislation.SUBSECTION,
-      Legislation.PARAGRAPH,
-      Legislation.SUBPARAGRAPH,
-      Legislation.CLAUSE,
-      Legislation.SUBCLAUSE,
-      Legislation.DEFINITION,
-      Legislation.TEXT,
-      Legislation.TABLE,
-=======
       LegislationType.SCHEDULE,
       LegislationType.DIVISION,
       LegislationType.SECTION,
@@ -247,7 +234,6 @@ export const ContraventionForm = ({
       LegislationType.DEFINITION,
       LegislationType.TEXT,
       LegislationType.TABLE,
->>>>>>> release/2.18
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -563,13 +549,8 @@ export const ContraventionForm = ({
 
                 // Schedules and Divisions render as non-clickable headers
                 if (
-<<<<<<< HEAD
-                  section.legislationTypeCode === Legislation.SCHEDULE ||
-                  section.legislationTypeCode === Legislation.DIVISION
-=======
                   section.legislationTypeCode === LegislationType.SCHEDULE ||
                   section.legislationTypeCode === LegislationType.DIVISION
->>>>>>> release/2.18
                 ) {
                   return (
                     <div
@@ -583,11 +564,7 @@ export const ContraventionForm = ({
                   );
                 }
 
-<<<<<<< HEAD
-                if (section.legislationTypeCode === Legislation.TEXT) {
-=======
                 if (section.legislationTypeCode === LegislationType.TEXT) {
->>>>>>> release/2.18
                   return (
                     <div
                       key={section.legislationGuid}

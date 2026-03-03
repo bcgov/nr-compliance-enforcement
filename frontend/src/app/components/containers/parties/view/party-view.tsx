@@ -22,10 +22,7 @@ import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-<<<<<<< HEAD
-=======
 import { formatDate } from "@common/methods";
->>>>>>> release/2.18
 
 type PartyRelation = {
   caseId?: string | null;
@@ -573,80 +570,12 @@ export const PartyView: FC = () => {
               )}
             </div>
             {partyRelations && partyRelations.length > 0 && (
-<<<<<<< HEAD
-              <>
-                <br />
-                <h4>Associated cases and activities</h4>
-                <div className="party-details-item">
-                  {partyRelations
-                    .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
-                    .map((partyRelation) => (
-                      <div key={partyRelation.caseId}>
-                        <p>
-                          <b>
-                            Case:&nbsp;&nbsp;
-                            <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
-                          </b>
-                          <span style={{ marginLeft: "0.8em" }}></span>
-                          <i className="bi-building bi"></i>
-                          <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
-                        </p>
-                        {partyRelation.activities
-                          ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
-                          .map((activity) => (
-                            <p key={activity.id}>
-                              &nbsp;&nbsp;&nbsp;&nbsp;
-                              {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}
-                              : &nbsp;&nbsp;
-                              <Link
-                                to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
-                              >
-                                {activity.name}
-                              </Link>
-                              <span style={{ marginLeft: "0.4em" }}></span>
-                              <span>|</span>
-                              <i
-                                style={{ marginLeft: "0.3em" }}
-                                className="bi bi-building"
-                              ></i>
-                              <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
-                              <span style={{ marginLeft: "0.1em" }}>|</span>
-                              <Badge
-                                style={{ marginLeft: "0.3em" }}
-                                bg="species-badge comp-species-badge"
-                              >
-                                {activity.role}
-                              </Badge>
-                            </p>
-                          ))}
-                      </div>
-                    ))}
-                </div>
-              </>
-=======
               <AssociatedCasesAndActivities partyRelations={partyRelations} />
->>>>>>> release/2.18
             )}
             <br />
             <h4>Contact information</h4>
 
             <div className="party-details-item">
-<<<<<<< HEAD
-              {partyData?.business?.contactMethods && (
-                <>
-                  {partyData.business.contactMethods.map((contactMethod) => {
-                    return (
-                      <p key={contactMethod?.contactMethodGuid}>
-                        <b>{contactMethod?.typeDescription}: </b>
-                        {contactMethod?.typeCode === "PHONE"
-                          ? formatPhoneNumber(contactMethod?.value ?? "")
-                          : contactMethod?.value}
-                        {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                      </p>
-                    );
-                  })}
-                </>
-=======
               {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
                 <ContactMethodsList contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>} />
               )}
@@ -654,7 +583,6 @@ export const PartyView: FC = () => {
                 <ContactMethodsList
                   contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
                 />
->>>>>>> release/2.18
               )}
               {partyData?.business?.contactPeople && (
                 <>
@@ -666,25 +594,11 @@ export const PartyView: FC = () => {
                           <b>Name: </b>
                           {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                         </p>
-<<<<<<< HEAD
-                        {contactPerson?.person?.contactMethods?.map((contactMethod) => {
-                          return (
-                            <p key={contactMethod?.contactMethodGuid}>
-                              <b>{contactMethod?.typeDescription}: </b>
-                              {contactMethod?.typeCode === "PHONE"
-                                ? formatPhoneNumber(contactMethod?.value ?? "")
-                                : contactMethod?.value}
-                              {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                            </p>
-                          );
-                        })}
-=======
                         {contactPerson?.person?.contactMethods && (
                           <ContactMethodsList
                             contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
                           />
                         )}
->>>>>>> release/2.18
                         {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
                       </div>
                     );

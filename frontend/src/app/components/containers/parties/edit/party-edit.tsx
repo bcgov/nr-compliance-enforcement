@@ -19,11 +19,8 @@ import {
   ContactMethod,
   PartyCreateInput,
   PartyUpdateInput,
-<<<<<<< HEAD
-=======
   PersonInput,
   PersonUpdateInput,
->>>>>>> release/2.18
 } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -31,8 +28,6 @@ import { Button } from "react-bootstrap";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
-<<<<<<< HEAD
-=======
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
 import { parse } from "date-fns";
@@ -51,7 +46,6 @@ const PARTY_PERSON_FRAGMENT = gql`
     sexCode
   }
 `;
->>>>>>> release/2.18
 
 const UPDATE_PARTY_MUTATION = gql`
   ${PARTY_PERSON_FRAGMENT}
@@ -265,16 +259,6 @@ const buildBusinessCreate = (value: any) => {
   };
 };
 
-<<<<<<< HEAD
-// Helper to build person object
-const buildPerson = (value: any) => {
-  return {
-    firstName: value.firstName,
-    lastName: value.lastName,
-  };
-};
-
-=======
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
 // Normalize to UTC date-only
@@ -307,7 +291,6 @@ function buildPersonForUpdate(value: any): PersonUpdateInput {
   return { personGuid: value.personGuid, ...buildPersonBase(value, true) };
 }
 
->>>>>>> release/2.18
 const PartyEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
@@ -386,13 +369,9 @@ const PartyEdit: FC = () => {
             aliasGuid: a.aliasGuid,
             name: a.name,
           })) || [],
-<<<<<<< HEAD
-        phoneNumbers: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "PHONE"),
-=======
         phoneNumbers: partyData.party.business
           ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, "PHONE")
           : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, "PHONE"),
->>>>>>> release/2.18
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "EMAILADDR"),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
       };
@@ -425,22 +404,14 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
-<<<<<<< HEAD
-          person: value.partyType === "PRS" ? buildPerson(value) : null,
-=======
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
->>>>>>> release/2.18
         };
         updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
-<<<<<<< HEAD
-          person: value.partyType === "PRS" ? buildPerson(value) : null,
-=======
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
->>>>>>> release/2.18
         };
         createPartyMutation.mutate({ input: createInput });
       }
@@ -1137,11 +1108,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-<<<<<<< HEAD
-                          variant="outline-dark"
-=======
                           variant="outline-primary"
->>>>>>> release/2.18
                           size="sm"
                           onClick={() => handleRemoveAlias(index)}
                           type="button"
@@ -1160,11 +1127,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-task-button"
-<<<<<<< HEAD
-                      variant="outline-dark"
-=======
                       variant="outline-primary"
->>>>>>> release/2.18
                       size="sm"
                       onClick={handleAddAlias}
                       type="button"
@@ -1243,11 +1206,7 @@ const PartyEdit: FC = () => {
                         </div>
 
                         <Button
-<<<<<<< HEAD
-                          variant="outline-dark"
-=======
                           variant="outline-primary"
->>>>>>> release/2.18
                           size="sm"
                           onClick={() => handleRemovePhoneNumber(index)}
                           type="button"
@@ -1267,11 +1226,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-phone-number-button"
-<<<<<<< HEAD
-                      variant="outline-dark"
-=======
                       variant="outline-primary"
->>>>>>> release/2.18
                       size="sm"
                       onClick={handleAddPhoneNumber}
                       type="button"
@@ -1315,11 +1270,7 @@ const PartyEdit: FC = () => {
                           />
                         </div>
                         <Button
-<<<<<<< HEAD
-                          variant="outline-dark"
-=======
                           variant="outline-primary"
->>>>>>> release/2.18
                           size="sm"
                           onClick={() => handleRemoveEmail(index)}
                           type="button"
@@ -1339,11 +1290,7 @@ const PartyEdit: FC = () => {
                   render={() => (
                     <Button
                       id="add-email-button"
-<<<<<<< HEAD
-                      variant="outline-dark"
-=======
                       variant="outline-primary"
->>>>>>> release/2.18
                       size="sm"
                       onClick={handleAddEmail}
                       type="button"
@@ -1380,11 +1327,7 @@ const PartyEdit: FC = () => {
                   label=""
                   render={() => (
                     <Button
-<<<<<<< HEAD
-                      variant="outline-dark"
-=======
                       variant="outline-primary"
->>>>>>> release/2.18
                       onClick={handleAddContact}
                       size="sm"
                       type="button"
