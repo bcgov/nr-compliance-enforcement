@@ -33,7 +33,7 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [attachmentCount, setAttachmentCount] = useState<number | null>(null);
 
-  const isExpandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
+  const expandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
 
   const { data: taskActionsData } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
     GET_ACTIVITY_NOTES_BY_TASK,
@@ -73,10 +73,10 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   return (
     <>
       <tr
-        className={isExpandedClass}
+        className={expandedClass}
         onClick={handleRowClick}
       >
-        <td className={`comp-cell-width-30 comp-cell-min-width-30 text-center ${isExpandedClass}`}>
+        <td className={`comp-cell-width-30 comp-cell-min-width-30 text-center ${expandedClass}`}>
           <button
             onClick={toggleExpand}
             aria-expanded={isExpanded}
@@ -86,7 +86,7 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
             <i className={`bi bi-chevron-${isExpanded ? "down" : "right"}`} />
           </button>
         </td>
-        <td className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${isExpandedClass}`}>
+        <td className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${expandedClass}`}>
           <Link
             to={`/investigation/${investigationGuid}/task/${data.taskIdentifier}`}
             className="comp-cell-link"
@@ -94,15 +94,15 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
             {`Task ${data.taskNumber}`}
           </Link>
         </td>
-        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{categoryLabel}</td>
-        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{subCategoryLabel}</td>
-        <td className={`comp-cell-width-110 ${isExpandedClass}`}>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{categoryLabel}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{subCategoryLabel}</td>
+        <td className={`comp-cell-width-110 ${expandedClass}`}>
           {statusLabel && data.taskStatusCode && (
             <span className={`badge ${applyStatusClass(data.taskStatusCode)}`}>{statusLabel}</span>
           )}
         </td>
-        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{assignedOfficerName}</td>
-        <td className={`comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell ${isExpandedClass}`}>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{assignedOfficerName}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell ${expandedClass}`}>
           {formatDateTime(data.updatedDate ?? data.createdDate)}
         </td>
       </tr>
