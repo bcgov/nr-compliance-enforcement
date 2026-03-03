@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { ToggleError } from "@/app/common/toast";
-import { bulkDownload, getAttachments } from "@store/reducers/attachments";
+import { getAttachments } from "@store/reducers/attachments";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { bulkDownload } from "@/app/store/reducers/bulk-download";
 
 export const BulkDownloadButton = ({
   taskId,
