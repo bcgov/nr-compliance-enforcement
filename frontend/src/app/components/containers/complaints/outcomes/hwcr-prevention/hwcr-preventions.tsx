@@ -5,7 +5,11 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectComplaintViewMode, selectComplaint } from "@/app/store/reducers/complaints";
 import { HWCRPrevention } from "./hwcr-prevention";
 
-export const HWCRPreventions: FC = () => {
+interface HWCRPreventionsProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const HWCRPreventions: FC<HWCRPreventionsProps> = ({ onDirtyChange }) => {
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const preventions = useAppSelector(selectPreventions);
@@ -39,11 +43,12 @@ export const HWCRPreventions: FC = () => {
           <HWCRPrevention
             key={prevention.id}
             prevention={prevention}
+            onDirtyChange={onDirtyChange}
           />
           <br />
         </>
       ))}
-      {showAddPrevention && <HWCRPrevention />}
+      {showAddPrevention && <HWCRPrevention onDirtyChange={onDirtyChange} />}
       {!isInEdit.prevention && !showAddPrevention && (
         <Button
           variant="primary"

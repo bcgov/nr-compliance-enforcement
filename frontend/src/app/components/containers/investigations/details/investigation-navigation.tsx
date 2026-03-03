@@ -29,8 +29,8 @@ export const InvestigationTabs: FC = () => {
     setActiveTab(tabKey === investigationGuid ? "summary" : tabKey);
   }, [location.pathname, investigationGuid]);
 
-  const handleTabClick = (tabKey: string) => {
-    setActiveTab(tabKey);
+  const handleTabClick = (tabKey: string, event: React.MouseEvent<HTMLElement>) => {
+    event.currentTarget.blur();
 
     if (tabKey === "summary") {
       navigate(`/investigation/${investigationGuid}`);
@@ -50,7 +50,7 @@ export const InvestigationTabs: FC = () => {
             <Nav.Link
               className={`nav-link ${key === activeTab ? "active" : "inactive"}`}
               id={key}
-              onClick={() => handleTabClick(key)}
+              onClick={(e) => handleTabClick(key, e)}
             >
               {label}
             </Nav.Link>

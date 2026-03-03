@@ -7,6 +7,7 @@ import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@stor
 import Option from "@apptypes/app/option";
 import { getDropdownOption, isPositiveNum } from "@common/methods";
 import { REQUIRED } from "@constants/general";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type refProps = {
   isValid: Function;
@@ -27,6 +28,7 @@ type props = {
 
   remove: Function;
   update: Function;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
@@ -34,8 +36,21 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   const drugUseMethods = useAppSelector(selectDrugUseMethods);
   const remainingDrugUse = useAppSelector(selectRemainingDrugUse);
 
-  const { id, vial, drug, amountUsed, remainingUse, injectionMethod, additionalComments, order, remove, update } =
-    props;
+  const {
+    id,
+    vial,
+    drug,
+    amountUsed,
+    remainingUse,
+    injectionMethod,
+    additionalComments,
+    order,
+    remove,
+    update,
+    onDirtyChange,
+  } = props;
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   //-- error messages //
   const [vialError, setVialError] = useState("");
@@ -86,6 +101,7 @@ export const DrugUsed = forwardRef<refProps, props>((props, ref) => {
   };
 
   const updateModel = (property: string, value: string | Date | number | null | undefined) => {
+    markDirty();
     const source = {
       id,
       vial,

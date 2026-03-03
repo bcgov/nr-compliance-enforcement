@@ -1,17 +1,19 @@
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { FormField } from "@/app/components/common/form-field";
 import { Button, Card } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { useEffect } from "react";
 import z from "zod";
 import { ValidationDatePicker } from "@common/validation-date-picker";
 import { DiaryDate } from "@/generated/graphql";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface DiaryDateFormProps {
   index: number;
   onDelete: (index: number) => void;
   onValidationChange: (index: number, isValid: boolean) => void;
   onValuesChange: (index: number, values: { description: string; dueDate: Date | null }) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   triggerValidation?: boolean;
   initialData?: DiaryDate | null;
 }
@@ -21,6 +23,7 @@ export const DiaryDateForm = ({
   onDelete,
   onValidationChange,
   onValuesChange,
+  onDirtyChange,
   triggerValidation,
   initialData,
 }: DiaryDateFormProps) => {
@@ -30,6 +33,18 @@ export const DiaryDateForm = ({
       dueDate: initialData?.dueDate || null,
     },
   });
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   // Check validation whenever form state changes
   useEffect(() => {
@@ -124,7 +139,7 @@ export const DiaryDateForm = ({
               classNamePrefix="comp-details-edit-calendar-input"
               className="comp-details-input full-width"
               id={`diary-date-${index}`}
-              onChange={(date: Date) => {
+              onChange={(date: Date, _time: string | null) => {
                 field.handleChange(date);
               }}
               selectedDate={field.state.value}

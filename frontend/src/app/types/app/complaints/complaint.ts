@@ -1,7 +1,9 @@
 import { Delegate } from "@apptypes/app/app_user/app_user";
 import { BaseComplaint } from "nrs-ce-common-types";
 
-export interface Complaint extends BaseComplaint {
+export interface Complaint extends Omit<BaseComplaint, "incidentDateTime"> {
+  incidentDate: Date;
+  incidentTime: string | undefined;
   organization: {
     area: string;
     areaName?: string;

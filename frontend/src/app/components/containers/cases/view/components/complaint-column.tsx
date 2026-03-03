@@ -6,6 +6,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { ADD_COMPLAINT_TO_CASE } from "@/app/types/modal/modal-types";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useParams } from "react-router-dom";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ComplaintColumnProps {
   complaints?: Complaint[];
@@ -23,6 +24,8 @@ export const ComplaintColumn: FC<ComplaintColumnProps> = ({
   const dispatch = useAppDispatch();
   const { id } = useParams<{ id?: string }>();
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
   const handleAddComplaint = () => {
     document.body.click();
     dispatch(
@@ -34,7 +37,9 @@ export const ComplaintColumn: FC<ComplaintColumnProps> = ({
           description: "",
           caseId: id,
           addedComplaints: complaints,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };

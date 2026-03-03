@@ -9,10 +9,12 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
@@ -35,7 +37,11 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
   }
 `;
 
-export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
+export const InvestigationParties: FC<InvestigationPartiesProps> = ({
+  investigationGuid,
+  investigationData,
+  onDirtyChange,
+}) => {
   const dispatch = useAppDispatch();
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
@@ -48,6 +54,8 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
     },
   });
 
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
+
   const handleAddParty = () => {
     document.body.click();
     dispatch(
@@ -59,7 +67,9 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
           description: "",
           activityGuid: investigationGuid,
           activityType: "investigation",
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -130,4 +140,4 @@ export const InvestigationSummary: FC<InvestigationPartiesProps> = ({ investigat
   );
 };
 
-export default InvestigationSummary;
+export default InvestigationParties;

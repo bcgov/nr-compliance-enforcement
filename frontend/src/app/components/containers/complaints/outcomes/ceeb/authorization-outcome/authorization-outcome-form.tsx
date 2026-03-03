@@ -8,6 +8,7 @@ import { PermitSite } from "@/app/types/app/complaint-outcomes/ceeb/authorizatio
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   leadIdentifier: string;
@@ -16,10 +17,13 @@ type props = {
   id?: string;
   type?: "permit" | "site";
   value?: string;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdentifier, toggleEdit }) => {
+export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdentifier, toggleEdit, onDirtyChange }) => {
   const dispatch = useAppDispatch();
+
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const caseId = useAppSelector(selectCaseId);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
@@ -54,6 +58,8 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       }
       setUnauthorized(value);
     }
+
+    markDirty();
   };
 
   const isValid = (): boolean => {
@@ -99,6 +105,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
         }
       });
     }
+    markClean();
   };
 
   const handleCancelButtonClick = () => {
@@ -123,6 +130,7 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
             if (id !== undefined) {
               toggleEdit(false);
             }
+            markClean();
           },
         },
       }),

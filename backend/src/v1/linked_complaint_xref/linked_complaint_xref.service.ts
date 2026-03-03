@@ -74,7 +74,7 @@ export class LinkedComplaintXrefService {
       .andWhere("linkedComplaint.active_ind = :active", { active: true });
 
     if (!isParent) {
-      builder.orderBy("complaint.incident_utc_datetime", "DESC");
+      builder.orderBy("complaint.incident_utc_date", "DESC").addOrderBy("complaint.incident_utc_time", "DESC");
     }
 
     const data = await builder.getMany();

@@ -35,14 +35,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER geo_org_unit_structure_mvw_refresh_trigger 
+CREATE OR REPLACE TRIGGER geo_org_unit_structure_mvw_refresh_trigger 
     AFTER INSERT OR DELETE OR UPDATE ON geo_org_unit_structure 
     FOR EACH STATEMENT 
     EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
 
-CREATE TRIGGER geo_organization_unit_code_mvw_refresh_trigger 
+CREATE OR REPLACE TRIGGER geo_organization_unit_code_mvw_refresh_trigger 
     AFTER INSERT OR DELETE OR UPDATE ON geo_organization_unit_code 
     FOR EACH STATEMENT 
     EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
 
 	REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
+
+-- Correct the name of Pinantan Lake
+-- This needs to be here to ensure that the MV and values are present when it runs
+UPDATE shared.geo_organization_unit_code
+  SET short_description = 'Pinantan Lake',
+  long_description = 'Pinantan Lake'
+  WHERE geo_organization_unit_code = 'PINATNLK';
