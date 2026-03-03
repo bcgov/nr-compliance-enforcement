@@ -52,8 +52,12 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
       mapFrom((src) => src.locationDetail),
     ),
     forMember(
-      (dest) => dest.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.reported_by_other_text,

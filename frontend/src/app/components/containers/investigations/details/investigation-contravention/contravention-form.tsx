@@ -4,8 +4,9 @@ import {
   CreateUpdateContraventionInput,
   InspectionParty,
   InvestigationParty,
+  LegislationSource,
 } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useEffect, useState } from "react";
 import Option from "@apptypes/app/option";
@@ -17,7 +18,7 @@ import {
   useLegislation,
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
-import { indentByType, Legislation } from "@/app/types/app/legislation";
+import { indentByType, LegislationType } from "@/app/types/app/legislation";
 import { Button, Card } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -28,6 +29,8 @@ import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { openModal } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
+import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -35,6 +38,7 @@ interface ContraventionFormProps {
   contraventionNumber?: string;
   contravention?: Contravention;
   parties?: InvestigationParty[];
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const ADD_CONTRAVENTION = gql`
@@ -53,11 +57,50 @@ const UPDATE_CONTRAVENTION = gql`
   }
 `;
 
+const getLegislationViewUrl = (source: LegislationSource | null, sourceUrl: string | null): URL | null => {
+  if (!sourceUrl) return null;
+  if (!source) return new URL(sourceUrl);
+  const { sourceType } = source;
+  if (sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
+    return new URL(sourceUrl.slice(0, -4));
+  }
+  if (sourceType === "FEDERAL") {
+    const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9-]+)\.xml$/;
+    const match = regexPattern.exec(sourceUrl);
+    if (match) {
+      const code = match[1].toLowerCase();
+      return new URL(`https://laws-lois.justice.gc.ca/eng/acts/${code}/`);
+    }
+    return new URL(sourceUrl);
+  }
+  return new URL(sourceUrl);
+};
+
+const formatLegislationSourceUrl = (source: LegislationSource) => {
+  const sourceUrl = source.sourceUrl ?? null;
+  const url = getLegislationViewUrl(source, sourceUrl);
+  if (!url) return null;
+
+  const { sourceType, shortDescription } = source;
+  const site = sourceType === "BCLAWS" ? "BC Laws" : "DoJ Canada";
+  const name = shortDescription?.trim() || "legislation";
+  return (
+    <a
+      href={url.href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      View <i>{name}</i> on {site}
+    </a>
+  );
+};
+
 export const ContraventionForm = ({
   contravention,
   parties,
   activityGuid,
   onClose,
+  onDirtyChange,
   contraventionNumber,
 }: ContraventionFormProps) => {
   // Form Definition
@@ -96,6 +139,18 @@ export const ContraventionForm = ({
     },
   });
 
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
+
   // Selectors
   const userAgency = getUserAgency();
 
@@ -106,6 +161,11 @@ export const ContraventionForm = ({
   const [selectedSection, setSelectedSection] = useState<string>();
   const [selectedParties, setSelectedParties] = useState<Option[]>([]);
   const [validationError, setValidationError] = useState<string>("");
+  const [actSource, setActSource] = useState<LegislationSource | null>(null);
+  const [regulationSource, setRegulationSource] = useState<LegislationSource | null>(null);
+
+  // Fetch legislation sources
+  const { data: legislationSources } = useLegislationSources();
 
   // Hooks
   const dispatch = useAppDispatch();
@@ -135,20 +195,25 @@ export const ContraventionForm = ({
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.ACT],
+    legislationTypeCodes: [LegislationType.ACT],
     enabled: true,
   });
 
   const regulationsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.REGULATION],
+    legislationTypeCodes: [LegislationType.REGULATION],
     ancestorGuid: act || "",
     enabled: !!act,
   });
 
   const sectionsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
-    legislationTypeCodes: [Legislation.PART, Legislation.DIVISION, Legislation.SCHEDULE, Legislation.SECTION],
+    legislationTypeCodes: [
+      LegislationType.PART,
+      LegislationType.DIVISION,
+      LegislationType.SCHEDULE,
+      LegislationType.SECTION,
+    ],
     ancestorGuid: regulation || act,
     // When Act is selected but no regulation, exclude sections from child regulations
     excludeRegulations: !!act && !regulation,
@@ -158,6 +223,7 @@ export const ContraventionForm = ({
   const legislationTextQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [
+<<<<<<< HEAD
       Legislation.SCHEDULE,
       Legislation.DIVISION,
       Legislation.SECTION,
@@ -169,6 +235,19 @@ export const ContraventionForm = ({
       Legislation.DEFINITION,
       Legislation.TEXT,
       Legislation.TABLE,
+=======
+      LegislationType.SCHEDULE,
+      LegislationType.DIVISION,
+      LegislationType.SECTION,
+      LegislationType.SUBSECTION,
+      LegislationType.PARAGRAPH,
+      LegislationType.SUBPARAGRAPH,
+      LegislationType.CLAUSE,
+      LegislationType.SUBCLAUSE,
+      LegislationType.DEFINITION,
+      LegislationType.TEXT,
+      LegislationType.TABLE,
+>>>>>>> release/2.18
     ],
     ancestorGuid: section,
     enabled: !!section,
@@ -211,11 +290,13 @@ export const ContraventionForm = ({
 
   // Manages save click
   const handleSubmit = async () => {
+    markClean();
     await form.handleSubmit();
   };
 
   // Manages cancel action after modal is confirmed
   const handleCancel = async () => {
+    markClean();
     form.reset();
     onClose();
   };
@@ -292,11 +373,67 @@ export const ContraventionForm = ({
       // Set all form values
       form.setFieldValue("act", act);
       form.setFieldValue("section", section);
+      form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
   }, [contravention, act, section]);
 
+  // Sync act source when act/sources load (for when entering edit mode)
+  useEffect(() => {
+    if (!act || !legislationSources || !actsQuery.data?.legislations) {
+      if (!act) setActSource(null);
+      return;
+    }
+    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === act);
+    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setActSource(source ?? null);
+  }, [act, legislationSources, actsQuery.data?.legislations]);
+
+  // Sync regulation source when regulation/sources load (for when entering edit mode)
+  useEffect(() => {
+    if (!regulation || !legislationSources || !regulationsQuery.data?.legislations) {
+      if (!regulation) setRegulationSource(null);
+      return;
+    }
+    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulation);
+    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setRegulationSource(source ?? null);
+  }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
+
   const handlePartyChange = async (options: Option[]) => {
     setSelectedParties(options);
+  };
+
+  const handleActLinkChange = (actGuid: string | null) => {
+    if (!actGuid) {
+      setActSource(null);
+      return;
+    }
+    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === actGuid);
+    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setActSource(source ?? null);
+  };
+
+  const handleRegulationLinkChange = (regulationGuid: string | null) => {
+    if (!regulationGuid) {
+      setRegulationSource(null);
+      return;
+    }
+    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulationGuid);
+    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setRegulationSource(source ?? null);
   };
 
   return (
@@ -323,27 +460,32 @@ export const ContraventionForm = ({
               onSubmit: z.string().min(1, "Act is required"),
             }}
             render={(field) => (
-              <CompSelect
-                id="act-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={actOptions}
-                value={findOptionByValue(actOptions, act)}
-                onChange={(option) => {
-                  const value = option?.value || "";
-                  field.handleChange(value);
-                  setAct(value);
-                  // Reset dependent fields when act changes
-                  setRegulation("");
-                  setSection("");
-                  setSelectedSection("");
-                }}
-                placeholder="Select act"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={true}
-                errorMessage={field.state.meta.errors?.[0]?.message || ""}
-              />
+              <>
+                <CompSelect
+                  id="act-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={actOptions}
+                  value={findOptionByValue(actOptions, act)}
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    field.handleChange(value);
+                    setAct(value);
+                    handleActLinkChange(value);
+                    // Reset dependent fields when act changes
+                    setRegulation("");
+                    setSection("");
+                    setSelectedSection("");
+                    setRegulationSource(null);
+                  }}
+                  placeholder="Select act"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+                {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
+              </>
             )}
           />
 
@@ -354,26 +496,30 @@ export const ContraventionForm = ({
                 name="regulation"
                 label="Regulation"
                 render={(field) => (
-                  <CompSelect
-                    id="regulation-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={regOptions}
-                    value={findOptionByValue(regOptions, regulation)}
-                    onChange={(option) => {
-                      const value = option?.value || "";
-                      field.handleChange(value);
-                      setRegulation(value);
-                      // Reset section when regulation changes
-                      setSection("");
-                      setSelectedSection("");
-                    }}
-                    placeholder="Select regulation"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  />
+                  <>
+                    <CompSelect
+                      id="regulation-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={regOptions}
+                      value={findOptionByValue(regOptions, regulation)}
+                      onChange={(option) => {
+                        const value = option?.value || "";
+                        field.handleChange(value);
+                        setRegulation(value);
+                        handleRegulationLinkChange(value || null);
+                        // Reset section when regulation changes
+                        setSection("");
+                        setSelectedSection("");
+                      }}
+                      placeholder="Select regulation"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                    {regulationSource && <div className="mt-1">{formatLegislationSourceUrl(regulationSource)}</div>}
+                  </>
                 )}
               />
 
@@ -417,8 +563,13 @@ export const ContraventionForm = ({
 
                 // Schedules and Divisions render as non-clickable headers
                 if (
+<<<<<<< HEAD
                   section.legislationTypeCode === Legislation.SCHEDULE ||
                   section.legislationTypeCode === Legislation.DIVISION
+=======
+                  section.legislationTypeCode === LegislationType.SCHEDULE ||
+                  section.legislationTypeCode === LegislationType.DIVISION
+>>>>>>> release/2.18
                 ) {
                   return (
                     <div
@@ -432,7 +583,11 @@ export const ContraventionForm = ({
                   );
                 }
 
+<<<<<<< HEAD
                 if (section.legislationTypeCode === Legislation.TEXT) {
+=======
+                if (section.legislationTypeCode === LegislationType.TEXT) {
+>>>>>>> release/2.18
                   return (
                     <div
                       key={section.legislationGuid}
@@ -445,7 +600,7 @@ export const ContraventionForm = ({
                   );
                 }
 
-                if (section.legislationTypeCode === Legislation.TABLE && section.legislationText) {
+                if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
                   return (
                     <div
                       key={section.legislationGuid}
@@ -458,7 +613,7 @@ export const ContraventionForm = ({
 
                 // For subsections without explicit citation, show (1)
                 const displayCitation =
-                  section.citation || (section.legislationTypeCode === Legislation.SUBSECTION ? "1" : null);
+                  section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
 
                 return (
                   <button
@@ -472,7 +627,7 @@ export const ContraventionForm = ({
                   >
                     <div>
                       <p className={`mb-2 ${indentClass}`}>
-                        {section.legislationTypeCode !== Legislation.SECTION && displayCitation && (
+                        {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
                         <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>

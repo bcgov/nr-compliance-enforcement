@@ -3,7 +3,7 @@ import { Table, Button, Modal, Dropdown } from "react-bootstrap";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { formatDateTime } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
-import { selectAgencyDropdown } from "@store/reducers/code-table";
+import { selectAgencySectorDropdown } from "@store/reducers/code-table";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
@@ -17,6 +17,10 @@ import {
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { Link } from "react-router-dom";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -48,7 +52,7 @@ const sourceTypeOptions: Option[] = [
 
 export const LegislationSourceManagement: FC = () => {
   const { data: sources, isLoading, refetch } = useLegislationSources();
-  const agencies = useAppSelector(selectAgencyDropdown);
+  const agencies = useAppSelector(selectAgencySectorDropdown);
 
   const [showModal, setShowModal] = useState(false);
   const [editingSource, setEditingSource] = useState<EditingSource>(emptySource);
@@ -106,18 +110,36 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
-  const filteredSources = useMemo(() => {
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+  const userAgency = UserService.getUserAgency();
+  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+  const agencyList = agencies?.filter((agency) => (isGlobalAdmin ? true : allowedAgencies.has(agency.value)));
+
+  // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
+  const actSources = useMemo(() => {
     if (!sources) return [];
-    if (!searchQuery) return sources;
+
+    let result = sources.filter((source) => source.createUserId !== "system");
+
+    // Restrict by agency if not global admin
+    if (!isGlobalAdmin) {
+      result = result.filter((source) => allowedAgencies.has(source.agencyCode));
+    }
+
+    return result;
+  }, [sources]);
+
+  const filteredSources = useMemo(() => {
+    if (!searchQuery) return actSources;
     const query = searchQuery.toLowerCase();
-    return sources.filter(
+    return actSources.filter(
       (source) =>
         source.shortDescription.toLowerCase().includes(query) ||
         source.longDescription?.toLowerCase().includes(query) ||
         source.sourceUrl.toLowerCase().includes(query) ||
         source.agencyCode.toLowerCase().includes(query),
     );
-  }, [sources, searchQuery]);
+  }, [actSources, searchQuery]);
 
   const handleOpenCreate = () => {
     setEditingSource(emptySource);
@@ -159,7 +181,12 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+<<<<<<< HEAD
         regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+=======
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+>>>>>>> release/2.18
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
         importedInd: editingSource.importedInd,
@@ -170,7 +197,12 @@ export const LegislationSourceManagement: FC = () => {
         shortDescription: editingSource.shortDescription,
         longDescription: editingSource.longDescription || undefined,
         sourceUrl: editingSource.sourceUrl,
+<<<<<<< HEAD
         regulationsSourceUrl: editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+=======
+        regulationsSourceUrl:
+          editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
+>>>>>>> release/2.18
         agencyCode: editingSource.agencyCode,
         sourceType: editingSource.sourceType,
       };
@@ -304,6 +336,13 @@ export const LegislationSourceManagement: FC = () => {
                 disabled={source.importedInd || source.importStatus === "SUCCESS"}
               >
                 <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+              <Dropdown.Item
+                as={Link}
+                to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
+                disabled={!source.importedInd}
+              >
+                <i className="bi bi-gear" /> Configure
               </Dropdown.Item>
               {source.lastImportLog && (
                 <Dropdown.Item onClick={() => setViewLogSource(source)}>
@@ -484,8 +523,8 @@ export const LegislationSourceManagement: FC = () => {
                   id="agency-select"
                   classNamePrefix="comp-select"
                   className="comp-details-input"
-                  options={agencies}
-                  value={agencies.find((a: Option) => a.value === editingSource.agencyCode) || null}
+                  options={agencyList}
+                  value={agencyList.find((a: Option) => a.value === editingSource.agencyCode) || null}
                   onChange={(option: Option | null) =>
                     setEditingSource({ ...editingSource, agencyCode: option?.value || "" })
                   }

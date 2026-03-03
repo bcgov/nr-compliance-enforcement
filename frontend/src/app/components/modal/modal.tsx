@@ -34,7 +34,8 @@ export const ModalComponent: FC = () => {
 
   const handleCloseModal = () => {
     if (closingCallback) {
-      closingCallback();
+      const shouldClose = closingCallback();
+      if (shouldClose === false) return;
     }
     dispatch(closeModal());
   };

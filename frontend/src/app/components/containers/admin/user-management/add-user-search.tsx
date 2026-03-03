@@ -7,6 +7,7 @@ import config from "@/config";
 import { CssUser, AppUser } from "@apptypes/app/app_user/app_user";
 import { CompInput } from "@/app/components/common/comp-input";
 import "@assets/sass/user-management.scss";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface AddUserSearchProps {
   setOfficer: Dispatch<SetStateAction<Option | undefined>>;
@@ -14,6 +15,7 @@ interface AddUserSearchProps {
   goToEditView: () => void;
   setIsInAddUserView: Dispatch<SetStateAction<boolean>>;
   setNewUser: Dispatch<SetStateAction<CssUser | null>>;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const AddUserSearch: FC<AddUserSearchProps> = ({
@@ -22,6 +24,7 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
   goToEditView,
   setIsInAddUserView,
   setNewUser,
+  onDirtyChange,
 }) => {
   const UserStatus = {
     notInKeyCloak: 0,
@@ -32,6 +35,8 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
   const [emailInput, setEmailInput] = useState<string>("");
   const [userStatus, setUserStatus] = useState<number>();
 
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
   const getCssUserDetails = async (email: string): Promise<AppUser | CssUser | null> => {
     const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/app-user/find-by-email/${email}`);
     const response = await get<AppUser | CssUser | null>(dispatch, parameters);
@@ -39,6 +44,7 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
   };
 
   const handleEmailChange = (input: any) => {
+    markDirty();
     setEmailInput(input.trim());
   };
 

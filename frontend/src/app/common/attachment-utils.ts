@@ -174,26 +174,35 @@ export const fetchObjectsMetadata = async (
   }
 
   const bucketId = getBucketForAttachmentType(attachmentType);
+  const uniqueIds = [...new Set(objectIds)];
 
   const headers: Record<string, string> = {
     Authorization: `Bearer ${localStorage.getItem(AUTH_TOKEN)}`,
   };
 
-  // Use axios for array serialization
-  const response = await axios.get<ObjectMetadata[]>(`${config.COMS_URL}/object/metadata`, {
-    headers,
-    params: {
-      bucketId,
-      objectId: objectIds,
-    },
-  });
+  // COMS API limits objectId to 20 per request
+  const BATCH_SIZE = 20;
+  const results: ObjectMetadata[] = [];
+
+  for (let i = 0; i < uniqueIds.length; i += BATCH_SIZE) {
+    const batch = uniqueIds.slice(i, i + BATCH_SIZE);
+    // Use axios for array serialization
+    const response = await axios.get<ObjectMetadata[]>(`${config.COMS_URL}/object/metadata`, {
+      headers,
+      params: {
+        bucketId,
+        objectId: batch,
+      },
+    });
+    results.push(...response.data);
+  }
 
   // Parse and index metadata by objectId. Map deduplicates, if multiple versions exist we keep the last one.
   // NOTE: There might be an issue with how this COMS API behaves as its returning more results then makes sense
   // to me, we may need to revisit in the future if there are performance issues.
   const metadataMap = new Map<string, ParsedObjectMetadata>();
 
-  for (const item of response.data) {
+  for (const item of results) {
     const taskIdMeta = item.metadata.find((m) => m.key === "task-id");
     const attachmentTypeMeta = item.metadata.find((m) => m.key === "attachment-type");
 

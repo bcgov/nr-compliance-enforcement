@@ -14,7 +14,11 @@ import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
 
-export const OutcomeAttachments: FC = () => {
+interface OutcomeAttachmentProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }) => {
   type ComplaintParams = {
     id: string;
     complaintType: string;
@@ -83,11 +87,6 @@ export const OutcomeAttachments: FC = () => {
   };
 
   const cancelConfirmed = () => {
-    if (!hasAttachments) {
-      setComponentState(EDIT_STATE);
-      return;
-    }
-
     setAttachmentsToAdd([]);
     setAttachmentsToDelete([]);
     setIsPendingUpload(true);
@@ -169,6 +168,7 @@ export const OutcomeAttachments: FC = () => {
             disabled={isReadOnly}
             refreshKey={attachmentRefreshKey}
             showPreview={hasAttachments}
+            onDirtyChange={onDirtyChange}
           />
 
           {isEditing && (

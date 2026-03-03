@@ -56,6 +56,7 @@ const GET_LEGISLATION_SOURCES = gql`
       importStatus
       lastImportTimestamp
       lastImportLog
+      createUserId
     }
   }
 `;

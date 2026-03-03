@@ -1,6 +1,6 @@
 {
   "name": "nr-compliance-enforcement",
-  "version": "2.0.178",
+  "version": "2.0.206",
   "description": "BCGov devops quickstart. For reference, testing and new projects.",
   "main": "index.js",
   "scripts": {
@@ -61,7 +61,7 @@
     "@nestjs/testing": "^10.4.4",
     "@nestjs/typeorm": "^10.0.2",
     "automapper": "^1.0.0",
-    "axios": "^1.7.4",
+    "axios": "^1.13.5",
     "cache-manager": "^5.7.6",
     "cron": "^3.1.7",
     "date-fns": "^3.6.0",

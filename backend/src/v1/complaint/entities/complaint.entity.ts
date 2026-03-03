@@ -157,7 +157,14 @@ export class Complaint {
     description: "The date of the incident the complaint was filed about",
   })
   @Column({ nullable: true })
-  incident_utc_datetime: Date;
+  incident_utc_date: Date;
+
+  @ApiProperty({
+    example: "14:30:00",
+    description: "The time of the incident the complaint was filed about",
+  })
+  @Column({ nullable: true })
+  incident_utc_time: string;
 
   @ApiProperty({
     example: "2023-11-22",
@@ -267,7 +274,8 @@ export class Complaint {
     location_geometry_point?: Point,
     location_summary_text?: string,
     location_detailed_text?: string,
-    incident_utc_datetime?: Date,
+    incident_utc_date?: Date,
+    incident_utc_time?: string,
     incident_reported_utc_timestmp?: Date,
     reported_by_other_text?: string,
     create_user_id?: string,
@@ -302,7 +310,8 @@ export class Complaint {
     this.location_geometry_point = location_geometry_point;
     this.location_summary_text = location_summary_text;
     this.location_detailed_text = location_detailed_text;
-    this.incident_utc_datetime = incident_utc_datetime;
+    this.incident_utc_date = incident_utc_date;
+    this.incident_utc_time = incident_utc_time;
     this.incident_reported_utc_timestmp = incident_reported_utc_timestmp;
     this.reported_by_other_text = reported_by_other_text;
     this.create_user_id = create_user_id;

@@ -1,10 +1,18 @@
 import { agency_code as _agency_code } from "./agency_code";
+import { alias as _alias } from "./alias";
+import { alias_h as _alias_h } from "./alias_h";
 import { app_user as _app_user } from "./app_user";
 import { app_user_h as _app_user_h } from "./app_user_h";
 import { app_user_team_xref as _app_user_team_xref } from "./app_user_team_xref";
 import { app_user_team_xref_h as _app_user_team_xref_h } from "./app_user_team_xref_h";
 import { business as _business } from "./business";
 import { business_h as _business_h } from "./business_h";
+import { business_identifier as _business_identifier } from "./business_identifier";
+import { business_identifier_code as _business_identifier_code } from "./business_identifier_code";
+import { business_identifier_h as _business_identifier_h } from "./business_identifier_h";
+import { business_person_xref as _business_person_xref } from "./business_person_xref";
+import { business_person_xref_code as _business_person_xref_code } from "./business_person_xref_code";
+import { business_person_xref_h as _business_person_xref_h } from "./business_person_xref_h";
 import { case_activity as _case_activity } from "./case_activity";
 import { case_activity_h as _case_activity_h } from "./case_activity_h";
 import { case_activity_type_code as _case_activity_type_code } from "./case_activity_type_code";
@@ -23,8 +31,9 @@ import { geo_org_unit_structure_h as _geo_org_unit_structure_h } from "./geo_org
 import { geo_org_unit_type_code as _geo_org_unit_type_code } from "./geo_org_unit_type_code";
 import { geo_organization_unit_code as _geo_organization_unit_code } from "./geo_organization_unit_code";
 import { legislation as _legislation } from "./legislation";
-import { legislation_source as _legislation_source } from "./legislation_source";
+import { legislation_configuration as _legislation_configuration } from "./legislation_configuration";
 import { legislation_h as _legislation_h } from "./legislation_h";
+import { legislation_source as _legislation_source } from "./legislation_source";
 import { legislation_type_code as _legislation_type_code } from "./legislation_type_code";
 import { office as _office } from "./office";
 import { office_h as _office_h } from "./office_h";
@@ -38,6 +47,7 @@ import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
 import { person as _person } from "./person";
 import { person_h as _person_h } from "./person_h";
+import { sex_code as _sex_code } from "./sex_code";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
@@ -53,12 +63,20 @@ import { business_person_xref_h as _business_person_xref_h } from "./business_pe
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
+  export class alias extends _alias {}
+  export class alias_h extends _alias_h {}
   export class app_user extends _app_user {}
   export class app_user_h extends _app_user_h {}
   export class app_user_team_xref extends _app_user_team_xref {}
   export class app_user_team_xref_h extends _app_user_team_xref_h {}
   export class business extends _business {}
   export class business_h extends _business_h {}
+  export class business_identifier extends _business_identifier {}
+  export class business_identifier_code extends _business_identifier_code {}
+  export class business_identifier_h extends _business_identifier_h {}
+  export class business_person_xref extends _business_person_xref {}
+  export class business_person_xref_code extends _business_person_xref_code {}
+  export class business_person_xref_h extends _business_person_xref_h {}
   export class case_activity extends _case_activity {}
   export class case_activity_h extends _case_activity_h {}
   export class case_activity_type_code extends _case_activity_type_code {}
@@ -77,8 +95,9 @@ export namespace PrismaModel {
   export class geo_org_unit_type_code extends _geo_org_unit_type_code {}
   export class geo_organization_unit_code extends _geo_organization_unit_code {}
   export class legislation extends _legislation {}
-  export class legislation_source extends _legislation_source {}
+  export class legislation_configuration extends _legislation_configuration {}
   export class legislation_h extends _legislation_h {}
+  export class legislation_source extends _legislation_source {}
   export class legislation_type_code extends _legislation_type_code {}
   export class office extends _office {}
   export class office_h extends _office_h {}
@@ -92,6 +111,7 @@ export namespace PrismaModel {
   export class party_type_code extends _party_type_code {}
   export class person extends _person {}
   export class person_h extends _person_h {}
+  export class sex_code extends _sex_code {}
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
@@ -107,12 +127,20 @@ export namespace PrismaModel {
 
   export const extraModels = [
     agency_code,
+    alias,
+    alias_h,
     app_user,
     app_user_h,
     app_user_team_xref,
     app_user_team_xref_h,
     business,
     business_h,
+    business_identifier,
+    business_identifier_code,
+    business_identifier_h,
+    business_person_xref,
+    business_person_xref_code,
+    business_person_xref_h,
     case_activity,
     case_activity_h,
     case_activity_type_code,
@@ -131,8 +159,9 @@ export namespace PrismaModel {
     geo_org_unit_type_code,
     geo_organization_unit_code,
     legislation,
-    legislation_source,
+    legislation_configuration,
     legislation_h,
+    legislation_source,
     legislation_type_code,
     office,
     office_h,
@@ -146,6 +175,7 @@ export namespace PrismaModel {
     party_type_code,
     person,
     person_h,
+    sex_code,
     team,
     team_code,
     team_h,

@@ -11,9 +11,10 @@ import { deletePrevention } from "@/app/store/reducers/complaint-outcome-thunks"
 
 type props = {
   prevention?: Prevention;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const HWCRPrevention: FC<props> = ({ prevention }) => {
+export const HWCRPrevention: FC<props> = ({ prevention, onDirtyChange }) => {
   const { id = "" } = useParams();
   const dispatch = useAppDispatch();
 
@@ -57,6 +58,7 @@ export const HWCRPrevention: FC<props> = ({ prevention }) => {
             setShowInput(false);
           }}
           handleSave={() => setShowInput(false)}
+          onDirtyChange={onDirtyChange}
         />
       ) : (
         prevention && (

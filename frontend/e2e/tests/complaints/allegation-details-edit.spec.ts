@@ -391,7 +391,7 @@ test.describe("Complaint Edit Page spec - Edit Allegation View", () => {
 
     // Incident Time
     await expect(page.locator("#incident-time-pair-id label")).toContainText("Incident date/time");
-    await expect(page.locator("#complaint-incident-time")).toBeVisible();
+    await expect(page.locator("#complaint-incident-time-date")).toBeVisible();
 
     // Location Description
     await expect(page.locator("#location-description-pair-id label")).toContainText("Location description");

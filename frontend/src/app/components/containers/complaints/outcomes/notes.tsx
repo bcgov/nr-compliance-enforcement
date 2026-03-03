@@ -12,7 +12,11 @@ import {
 } from "@/app/store/reducers/complaints";
 import { appUserGuid } from "@/app/store/reducers/app";
 
-export const Notes: FC = () => {
+interface NotesProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const Notes: FC<NotesProps> = ({ onDirtyChange }) => {
   const { id = "", complaintType = "" } = useParams<ComplaintParams>();
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
@@ -55,12 +59,14 @@ export const Notes: FC = () => {
           id={id}
           complaintType={complaintType}
           note={noteItem}
+          onDirtyChange={onDirtyChange}
         />
       ))}
       {showAddNote && (
         <Note
           id={id}
           complaintType={complaintType}
+          onDirtyChange={onDirtyChange}
         />
       )}
       {!isInEdit.notes && !showAddNote && (

@@ -1,6 +1,10 @@
 {
   "name": "webeoc",
+<<<<<<< HEAD
   "version": "2.0.178",
+=======
+  "version": "2.0.206",
+>>>>>>> release/2.18
   "description": "",
   "author": "",
   "private": true,

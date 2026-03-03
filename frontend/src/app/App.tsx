@@ -32,7 +32,7 @@ import { UserManagement } from "@components/containers/admin/user-management";
 import UserService from "./service/user-service";
 import GenericErrorBoundary from "./components/error-handling/generic-error-boundary";
 import { VerifyAccess } from "./components/containers/pages/verify-access";
-import { Roles, coreRoles } from "./types/app/roles";
+import { Roles, adminRoles, coreRoles } from "./types/app/roles";
 import { FeatureManagement } from "./components/containers/admin/feature-management";
 import { LegislationSourceManagement } from "./components/containers/admin/legislation-source-management";
 import { AppUpdate } from "./AppUpdate";
@@ -50,6 +50,7 @@ import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
 import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
+import { LegislationManagement } from "@/app/components/containers/admin/legislation-management";
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -207,22 +208,28 @@ const App: FC = () => {
                   element={<CreateComplaint />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={adminRoles} />}>
                 <Route
                   path="/admin/user"
                   element={<UserManagement />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={adminRoles} />}>
                 <Route
                   path="/admin/feature"
                   element={<FeatureManagement />}
                 />
               </Route>
-              <Route element={<ProtectedRoutes roles={[Roles.TEMPORARY_TEST_ADMIN]} />}>
+              <Route element={<ProtectedRoutes roles={adminRoles} />}>
                 <Route
                   path="/admin/laws"
                   element={<LegislationSourceManagement />}
+                />
+              </Route>
+              <Route element={<ProtectedRoutes roles={adminRoles} />}>
+                <Route
+                  path="/admin/law/:legislationSourceGuid"
+                  element={<LegislationManagement />}
                 />
               </Route>
               <Route
