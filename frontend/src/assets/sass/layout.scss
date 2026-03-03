@@ -827,6 +827,10 @@ p {
 
   > tbody > tr {
     cursor: pointer;
+
+    &:hover {
+      background-color: $gray-110;
+    }
   }
 
   > thead > tr > th {

@@ -7,7 +7,6 @@ import { Investigation, Task } from "@/generated/graphql";
 interface InvestigationTasksNewProps {
   investigationGuid: string;
   investigationData?: Investigation;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {
@@ -24,8 +23,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
           variant="primary"
           size="sm"
         >
-          <i className="bi bi-plus-circle me-1" />
-          Add task
+          <i className="bi bi-plus-circle me-1" /> Add task
         </Button>
       </div>
 

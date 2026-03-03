@@ -48,7 +48,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   const resolveOfficer = useCallback(
     (task: Task) => {
       const officer = officers?.find((o) => o.app_user_guid === task.assignedUserIdentifier);
-      return officer ? `${officer.first_name} ${officer.last_name}` : "";
+      return officer ? `${officer.first_name} ${officer.last_name}` : "-";
     },
     [officers],
   );
@@ -105,7 +105,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     />
   );
 
-  const renderTaskListHeader = (): JSX.Element => (
+  const renderTaskListHeader = () => (
     <thead className="sticky-table-header">
       <tr>
         <th

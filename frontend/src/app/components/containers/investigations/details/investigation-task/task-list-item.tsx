@@ -23,16 +23,17 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
 
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isRowHovered, setIsRowHovered] = useState(false);
-  const [isExpandedClass, setIsExpandedClass] = useState("");
-  const [attachmentCount, setAttachmentCount] = useState<number | null>(null);
-
   const subCategory = taskSubCategories.find((sc) => sc.value === data.taskTypeCode);
-  const category = taskCategories.find((c) => c.value === subCategory?.taskCategory);
-  const status = taskStatuses.find((s) => s.value === data.taskStatusCode);
+  const categoryLabel = taskCategories.find((c) => c.value === subCategory?.taskCategory)?.label ?? "-";
+  const subCategoryLabel = subCategory?.label ?? "-";
+  const statusLabel = taskStatuses.find((s) => s.value === data.taskStatusCode)?.label ?? "";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === data.assignedUserIdentifier);
   const assignedOfficerName = assignedOfficer ? `${assignedOfficer.first_name} ${assignedOfficer.last_name}` : "-";
+
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [attachmentCount, setAttachmentCount] = useState<number | null>(null);
+
+  const isExpandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
 
   const { data: taskActionsData } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
     GET_ACTIVITY_NOTES_BY_TASK,
@@ -50,30 +51,21 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   });
 
   useEffect(() => {
-    if (isExpanded && attachmentCount === null) {
-      dispatch(getAttachments(investigationGuid, data.taskIdentifier, AttachmentEnum.TASK_ATTACHMENT)).then(
-        (attachments) => {
-          setAttachmentCount(attachments?.length ?? 0);
-        },
-      );
-    }
+    if (!isExpanded || attachmentCount !== null) return;
+    dispatch(getAttachments(investigationGuid, data.taskIdentifier, AttachmentEnum.TASK_ATTACHMENT))
+      .then((attachments) => setAttachmentCount(attachments?.length ?? 0))
+      .catch(() => setAttachmentCount(0));
   }, [isExpanded, attachmentCount, dispatch, investigationGuid, data.taskIdentifier]);
 
   const taskActionCount = taskActionsData?.getActivityNotesByTask?.length ?? 0;
   const diaryDates = diaryDatesData?.diaryDatesByTask ?? [];
 
-  const toggleExpand = () => {
-    if (isExpanded) {
-      toggleHoverState(false);
-      setIsExpandedClass("");
-    } else {
-      setIsExpandedClass("comp-cell-parent-expanded");
-    }
-    setIsExpanded(!isExpanded);
-  };
+  const toggleExpand = () => setIsExpanded((prev) => !prev);
 
-  const toggleHoverState = (state: boolean) => {
-    setIsRowHovered(state);
+  const handleRowClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("a")) return;
+    toggleExpand();
   };
 
   const truncatedDescription = truncateString(data.description ?? "", 205);
@@ -81,19 +73,20 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   return (
     <>
       <tr
-        key={data.taskIdentifier}
-        className={`${isExpandedClass} ${isRowHovered ? "comp-table-row-hover-style" : ""}`}
+        className={isExpandedClass}
+        onClick={handleRowClick}
       >
-        <td
-          className={`comp-cell-width-30 comp-cell-min-width-30 text-center ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          <i className={`bi bi-chevron-${isExpanded ? "down" : "right"}`} />
+        <td className={`comp-cell-width-30 comp-cell-min-width-30 text-center ${isExpandedClass}`}>
+          <button
+            onClick={toggleExpand}
+            aria-expanded={isExpanded}
+            aria-label={`${isExpanded ? "Collapse" : "Expand"} task ${data.taskNumber} details`}
+            className="btn btn-link p-0 border-0"
+          >
+            <i className={`bi bi-chevron-${isExpanded ? "down" : "right"}`} />
+          </button>
         </td>
-        <td
-          className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
+        <td className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${isExpandedClass}`}>
           <Link
             to={`/investigation/${investigationGuid}/task/${data.taskIdentifier}`}
             className="comp-cell-link"
@@ -101,48 +94,23 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
             {`Task ${data.taskNumber}`}
           </Link>
         </td>
-        <td
-          className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {category?.label ?? "-"}
-        </td>
-        <td
-          className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {subCategory?.label ?? "-"}
-        </td>
-        <td
-          className={`comp-cell-width-110 ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {status && data.taskStatusCode && (
-            <span className={`badge ${applyStatusClass(data.taskStatusCode)}`}>{status.label}</span>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{categoryLabel}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{subCategoryLabel}</td>
+        <td className={`comp-cell-width-110 ${isExpandedClass}`}>
+          {statusLabel && data.taskStatusCode && (
+            <span className={`badge ${applyStatusClass(data.taskStatusCode)}`}>{statusLabel}</span>
           )}
         </td>
-        <td
-          className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
-          {assignedOfficerName}
-        </td>
-        <td
-          className={`comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell ${isExpandedClass}`}
-          onClick={toggleExpand}
-        >
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${isExpandedClass}`}>{assignedOfficerName}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell ${isExpandedClass}`}>
           {formatDateTime(data.updatedDate ?? data.createdDate)}
         </td>
       </tr>
       {isExpanded && (
-        <tr
-          onMouseEnter={() => toggleHoverState(true)}
-          onMouseLeave={() => toggleHoverState(false)}
-        >
+        <tr onClick={handleRowClick}>
           <td className="comp-cell-width-30 comp-cell-child-expanded"></td>
           <td className="comp-cell-width-90 comp-cell-child-expanded"></td>
           <td
-            onClick={toggleExpand}
             colSpan={5}
             className="comp-cell-child-expanded"
           >
@@ -156,25 +124,17 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
                 {diaryDates.length === 0 ? (
                   <dd>-</dd>
                 ) : (
-                  diaryDates.map((dd) => <dd key={dd.dueDate}>{`${formatDate(dd.dueDate)} - ${dd.description}`}</dd>)
+                  diaryDates.map((dd) => (
+                    <dd key={dd.diaryDateGuid}>{`${formatDate(dd.dueDate)} - ${dd.description}`}</dd>
+                  ))
                 )}
               </div>
               <div className="pb-3 flex-row">
-                <dt
-                  style={{ width: "auto" }}
-                  className="me-2"
-                >
-                  Task actions:
-                </dt>
+                <dt className="w-auto me-2">Task actions:</dt>
                 <dd>{taskActionCount}</dd>
               </div>
               <div className="pb-3 flex-row">
-                <dt
-                  style={{ width: "auto" }}
-                  className="me-2"
-                >
-                  Attachments:
-                </dt>
+                <dt className="w-auto me-2">Attachments:</dt>
                 <dd>{attachmentCount ?? "-"}</dd>
               </div>
             </dl>
