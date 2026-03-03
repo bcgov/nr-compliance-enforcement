@@ -825,6 +825,14 @@ p {
   border-spacing: 0;
   border: 1px solid $gray-300;
 
+  > tbody > tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: $gray-110;
+    }
+  }
+
   > thead > tr > th {
     border-bottom: 1px solid $gray-300;
 

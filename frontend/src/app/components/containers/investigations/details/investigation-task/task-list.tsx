@@ -1,9 +1,13 @@
 import { FC, useCallback, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
 import { SortableHeader } from "@components/common/sortable-header";
+import { SortArrow } from "@components/common/sort-arrow";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { TaskListItem } from "./task-list-item";
 import { Task } from "@/generated/graphql";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectOfficers } from "@/app/store/reducers/officer";
 
 type Props = {
   tasks: Task[];
@@ -15,6 +19,10 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   const [sortBy, setSortBy] = useState<string>("taskNumber");
   const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.ASC);
 
+  const taskCategories = useAppSelector(selectTaskCategory);
+  const taskSubCategories = useAppSelector(selectTaskSubCategory);
+  const officers = useAppSelector(selectOfficers);
+
   const handleSort = useCallback(
     (sortInput: string) => {
       const newDirection = sortBy === sortInput && sortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
@@ -22,6 +30,27 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       setSortOrder(newDirection);
     },
     [sortBy, sortOrder],
+  );
+
+  const resolveCategory = useCallback(
+    (task: Task) => {
+      const subCat = taskSubCategories.find((sc) => sc.value === task.taskTypeCode);
+      return taskCategories.find((c) => c.value === subCat?.taskCategory)?.label ?? "";
+    },
+    [taskCategories, taskSubCategories],
+  );
+
+  const resolveSubCategory = useCallback(
+    (task: Task) => taskSubCategories.find((sc) => sc.value === task.taskTypeCode)?.label ?? "",
+    [taskSubCategories],
+  );
+
+  const resolveOfficer = useCallback(
+    (task: Task) => {
+      const officer = officers?.find((o) => o.app_user_guid === task.assignedUserIdentifier);
+      return officer ? `${officer.first_name} ${officer.last_name}` : "-";
+    },
+    [officers],
   );
 
   const sortedTasks = useMemo(() => {
@@ -34,9 +63,21 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
           aVal = a.taskNumber ?? 0;
           bVal = b.taskNumber ?? 0;
           break;
+        case "category":
+          aVal = resolveCategory(a);
+          bVal = resolveCategory(b);
+          break;
+        case "subCategory":
+          aVal = resolveSubCategory(a);
+          bVal = resolveSubCategory(b);
+          break;
         case "taskStatusCode":
           aVal = a.taskStatusCode ?? "";
           bVal = b.taskStatusCode ?? "";
+          break;
+        case "assignedOfficer":
+          aVal = resolveOfficer(a);
+          bVal = resolveOfficer(b);
           break;
         case "updatedDate":
           aVal = a.updatedDate ?? a.createdDate ?? "";
@@ -51,7 +92,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       return 0;
     });
     return sorted;
-  }, [tasks, sortBy, sortOrder]);
+  }, [tasks, sortBy, sortOrder, resolveCategory, resolveSubCategory, resolveOfficer]);
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
@@ -64,20 +105,29 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     />
   );
 
-  const renderTaskListHeader = (): JSX.Element => (
+  const renderTaskListHeader = () => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("Task #", "taskNumber", "comp-cell-width-90 comp-cell-min-width-90")}
-        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
-          <div className="header-label">Category</div>
+        <th
+          className="sortable-header comp-cell-width-120 comp-cell-min-width-120"
+          colSpan={2}
+          onClick={() => handleSort("taskNumber")}
+        >
+          <div className="sortable-header-inner">
+            <div className="header-label">Task #</div>
+            <div className="header-caret">
+              <SortArrow
+                sortKey="taskNumber"
+                current={sortBy}
+                direction={sortOrder}
+              />
+            </div>
+          </div>
         </th>
-        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
-          <div className="header-label">Sub-category</div>
-        </th>
+        {renderSortableHeader("Category", "category", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "taskStatusCode", "comp-cell-width-110")}
-        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
-          <div className="header-label">Assigned Officer</div>
-        </th>
+        {renderSortableHeader("Assigned Officer", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Last Updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
       </tr>
     </thead>
@@ -86,7 +136,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   const renderLoadingSpinner = () => (
     <tr>
       <td
-        colSpan={6}
+        colSpan={7}
         className="text-center p-4"
       >
         <div className="d-flex align-items-center justify-content-center">
@@ -105,7 +155,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       return (
         <tr>
           <td
-            colSpan={6}
+            colSpan={7}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center">
