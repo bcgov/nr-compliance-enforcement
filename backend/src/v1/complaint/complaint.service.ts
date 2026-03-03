@@ -1466,32 +1466,32 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
-
-          // Get the authorization id from the case management system
-          const ids = items.map((item) => item.id);
-          const { data, errors } = await get(token, {
-            query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
+          if (agencies.includes("EPO")) {
+            // Get the authorization id from the case management system
+            const ids = items.map((item) => item.id);
+            const { data, errors } = await get(token, {
+              query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
             ${caseFileQueryFields}
           }`,
-          });
-          if (errors) {
-            this.logger.error("GraphQL errors:", errors);
-            throw new Error("GraphQL errors occurred");
-          }
+            });
+            if (errors) {
+              this.logger.error("GraphQL errors:", errors);
+              throw new Error("GraphQL errors occurred");
+            }
 
-          // inject the authorization id onto each complaint
-          for (const item of items) {
-            const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
-              (file) => file.complaintId === item.id,
-            );
-            if (complaintOutcome?.authorization) {
-              item.authorization =
-                complaintOutcome.authorization.type !== "permit"
-                  ? "UA" + complaintOutcome.authorization.value
-                  : complaintOutcome.authorization.value;
+            // inject the authorization id onto each complaint
+            for (const item of items) {
+              const complaintOutcome = data.getComplaintOutcomesByComplaintId.find(
+                (file) => file.complaintId === item.id,
+              );
+              if (complaintOutcome?.authorization) {
+                item.authorization =
+                  complaintOutcome.authorization.type !== "permit"
+                    ? "UA" + complaintOutcome.authorization.value
+                    : complaintOutcome.authorization.value;
+              }
             }
           }
-
           await this.setOrganization(items, token);
           results.complaints = items;
           break;
