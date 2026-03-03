@@ -56,8 +56,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
                 title="Edit task"
                 variant="outline-light"
               >
-                <i className="bi bi-pencil me-1" />
-                Edit
+                <i className="bi bi-pencil me-1" /> Edit
               </Button>
             )}
           </div>
