@@ -8,6 +8,8 @@ import { CssUser, AppUser } from "@apptypes/app/app_user/app_user";
 import { CompInput } from "@/app/components/common/comp-input";
 import "@assets/sass/user-management.scss";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import UserService from "@/app/service/user-service";
+import { Roles } from "@/app/types/app/roles";
 
 interface AddUserSearchProps {
   setOfficer: Dispatch<SetStateAction<Option | undefined>>;
@@ -28,7 +30,8 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
 }) => {
   const UserStatus = {
     notInKeyCloak: 0,
-    inNatCom: 1,
+    inNatComSameAgency: 1,
+    inNatComOtherAgency: 2,
   };
 
   const dispatch = useAppDispatch();
@@ -43,6 +46,9 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
     return response;
   };
 
+  const userAgency = UserService.getUserAgency();
+  const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
+
   const handleEmailChange = (input: any) => {
     markDirty();
     setEmailInput(input.trim());
@@ -54,7 +60,11 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
       if (userDetails) {
         if ((userDetails as AppUser).app_user_guid) {
           setOfficer({ value: (userDetails as AppUser).app_user_guid, label: "" });
-          setUserStatus(UserStatus.inNatCom);
+          if (isGlobalAdmin || (userDetails as AppUser).agency_code_ref === userAgency) {
+            setUserStatus(UserStatus.inNatComSameAgency);
+          } else {
+            setUserStatus(UserStatus.inNatComOtherAgency);
+          }
         } else if ((userDetails as CssUser).username) {
           setNewUser(userDetails as CssUser);
           setOfficer({ value: undefined, label: "" });
@@ -109,7 +119,7 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
             </Button>
           </div>
 
-          {userStatus === UserStatus.inNatCom && (
+          {userStatus === UserStatus.inNatComSameAgency && (
             <div style={{ marginTop: "30px" }}>
               <p>
                 User already exists in NatCom.{" "}
@@ -124,6 +134,12 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
                   Go to Edit
                 </a>
               </p>
+            </div>
+          )}
+
+          {userStatus === UserStatus.inNatComOtherAgency && (
+            <div style={{ marginTop: "30px" }}>
+              <p>User already exists in NatCom. Contact a global administrator to modify this user.</p>
             </div>
           )}
 

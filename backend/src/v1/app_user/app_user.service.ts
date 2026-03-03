@@ -16,6 +16,8 @@ import {
   createAppUserTeamXref,
   getTeams,
   getOffices,
+  getAppUserTeamXref,
+  getTeamByGuid,
 } from "../../external_api/shared_data";
 
 @Injectable()
@@ -38,7 +40,26 @@ export class AppUserService {
           useGuid = Object.keys(roleMapping).find((key) => key === user.authUserGuid);
           const userRoles = roleMapping[useGuid] ?? [];
           const mappedUserToOffice = await this.mapAppUserToDtoWithOffice(user, token);
-          return { ...mappedUserToOffice, user_roles: userRoles };
+          let teamCode: string | null = null;
+
+          // For CEEB (EPO) also include their current team
+          if (mappedUserToOffice.agency_code_ref === "EPO") {
+            try {
+              const teamXref = await getAppUserTeamXref(token, mappedUserToOffice.app_user_guid);
+              if (teamXref?.teamGuid) {
+                const team = await getTeamByGuid(token, teamXref.teamGuid);
+                if (team?.teamCode) {
+                  teamCode = team.teamCode;
+                }
+              }
+            } catch (error) {
+              this.logger.warn(
+                `Unable to load team for app user ${mappedUserToOffice.user_id}: ${(error as Error).message}`,
+              );
+            }
+          }
+
+          return { ...mappedUserToOffice, user_roles: userRoles, team_code: teamCode };
         }),
       );
     }

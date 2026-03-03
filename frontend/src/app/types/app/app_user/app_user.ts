@@ -22,6 +22,7 @@ export interface AppUser {
   coms_enrolled_ind: boolean;
   deactivate_ind: boolean;
   park_area_guid: string | null;
+  team_code?: string | null;
 }
 
 /**

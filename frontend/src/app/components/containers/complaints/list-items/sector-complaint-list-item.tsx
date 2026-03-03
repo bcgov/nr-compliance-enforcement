@@ -46,7 +46,7 @@ export const SectorComplaintListItem: FC<Props> = ({ complaint }) => {
 
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
-    return code.areaName;
+    return code?.areaName;
   };
 
   const getStatusDescription = (input: string): string => {
