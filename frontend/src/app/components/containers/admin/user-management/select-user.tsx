@@ -114,7 +114,9 @@ function compareStrings(a: string, b: string, dir: string): number {
 
 // Protect values with quotes, commas and new lines for CSV export
 function escapeCsvCell(value: string): string {
-  const s = String(value ?? "");
+  // Treat the UI placeholder EM dash as an actual empty cell in CSV output
+  const raw = String(value ?? "");
+  const s = raw === EMPTY ? "" : raw;
   if (/[",\r\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
   return s;
 }
