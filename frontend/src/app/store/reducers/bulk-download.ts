@@ -22,6 +22,14 @@ export const configureZipJs = () => {
   });
 };
 
+const CONFIG = {
+  MAX_RETRIES: 3, // Retry failed downloads up to 3 times
+  RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
+  MEMORY_CLEANUP_DELAY_MS: 1500, // Pause between files for memory cleanup
+  MEMORY_HIGH_THRESHOLD: 80, // Warn if memory > 80%
+  PRESIGNED_URL_EXPIRY_SECONDS: 86400, // 24 hours
+};
+
 /**
  * Main bulk download function
  */
@@ -84,7 +92,7 @@ async function bulkDownloadWithZipJs(
   // Get presigned URLs for all files concurrently
   const urlPromises = attachments.map(async (attachment, index) => {
     try {
-      const url = `${config.COMS_URL}/object/${attachment.id}?download=url&expiresIn=3600`;
+      const url = `${config.COMS_URL}/object/${attachment.id}?download=url&expiresIn=${CONFIG.PRESIGNED_URL_EXPIRY_SECONDS}`;
       const params = generateApiParameters(url);
 
       let presignedUrl = await get<string>(dispatch, params);
@@ -109,12 +117,11 @@ async function bulkDownloadWithZipJs(
         url: presignedUrl.trim(),
       };
     } catch (error) {
-      console.error(`    ✗ Failed to get presigned URL for ${attachment.name}:`, error);
+      console.error(`Failed to get presigned URL for ${attachment.name}:`, error);
       throw error;
     }
   });
 
-  // let files: FileWithPresignedUrl[];
   let files: any[];
 
   try {
@@ -129,7 +136,7 @@ async function bulkDownloadWithZipJs(
   const totalSize = files.reduce((sum, f) => sum + f.size, 0);
   const totalSizeMB = totalSize / (1024 * 1024);
 
-  // Step 2: Create ZIP using zip.js
+  //Create ZIP using zip.js
   await createZipWithZipJs(files, taskNumber, totalSizeMB);
 }
 
@@ -141,14 +148,6 @@ async function createZipWithZipJs(
   taskNumber: number,
   totalSizeMB: number,
 ): Promise<void> {
-  // Configuration for retry logic and memory management
-  const CONFIG = {
-    MAX_RETRIES: 3, // Retry failed downloads up to 3 times
-    RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
-    MEMORY_CLEANUP_DELAY_MS: 1500, // Pause between files for memory cleanup
-    MEMORY_HIGH_THRESHOLD: 80, // Warn if memory > 80%
-  };
-
   // Monitor memory usage
   const logMemory = () => {
     if ((performance as any).memory) {
@@ -157,8 +156,6 @@ async function createZipWithZipJs(
       const limitMB = (mem.jsHeapSizeLimit / 1024 / 1024).toFixed(0);
       const availableMB = ((mem.jsHeapSizeLimit - mem.usedJSHeapSize) / (1024 * 1024)).toFixed(0);
       const percentUsed = ((mem.usedJSHeapSize / mem.jsHeapSizeLimit) * 100).toFixed(1);
-
-      console.log(`Memory: ${usedMB}MB / ${limitMB}MB (${percentUsed}% used, ${availableMB}MB available)`);
 
       if (Number.parseFloat(percentUsed) > CONFIG.MEMORY_HIGH_THRESHOLD) {
         console.warn(`Memory usage is HIGH (${percentUsed}%)`);
@@ -184,32 +181,23 @@ async function createZipWithZipJs(
   let failedFiles = 0;
   let totalBytesProcessed = 0;
   const failedFileNames: string[] = [];
-  const startTime = Date.now();
 
-  //Retry download
+  // Retry download
   async function downloadFileWithRetry(
     file: FileWithPresignedUrl,
-    fileIndex: number,
-    totalFiles: number,
   ): Promise<{ success: boolean; blob?: Blob; error?: Error; attempts: number }> {
     let lastError: Error | null = null;
 
     for (let attempt = 1; attempt <= CONFIG.MAX_RETRIES; attempt++) {
       try {
-        const attemptPrefix = attempt > 1 ? `  [Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}] ` : "  ";
+        const attemptPrefix = attempt > 1 ? `[Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}]` : "  ";
 
         console.log(`${attemptPrefix} Downloading (attempt ${attempt}/${CONFIG.MAX_RETRIES})`);
 
         // Check available memory before download
-        const memInfo = logMemory();
-        if (memInfo && attempt > 1) {
-          const neededMB = (file.size / (1024 * 1024)) * 1.5; // Estimate with buffer
-
-          if (memInfo.availableMB < neededMB) {
-            console.warn(`${attemptPrefix} Low memory detected. Waiting 3s for cleanup...`);
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-            logMemory();
-          }
+        if (attempt > 1) {
+          const memInfo = logMemory();
+          await checkMemoryBeforeDownload(memInfo, file, attemptPrefix);
         }
 
         // Download file
@@ -246,31 +234,12 @@ async function createZipWithZipJs(
       } catch (error) {
         lastError = error as Error;
 
-        const attemptPrefix = `  [Attempt ${attempt}/${CONFIG.MAX_RETRIES}] `;
+        const attemptPrefix = `[Attempt ${attempt}/${CONFIG.MAX_RETRIES}] `;
         console.error(`${attemptPrefix}✗ Failed: ${lastError.message}`);
 
-        // Identify error type
-        const errorMsg = lastError.message.toLowerCase();
-        let errorType = "UNKNOWN";
-        let shouldRetry = true;
-
-        if (errorMsg.includes("timeout") || errorMsg.includes("timed out")) {
-          errorType = "TIMEOUT";
-        } else if (errorMsg.includes("network") || errorMsg.includes("failed to fetch")) {
-          errorType = "NETWORK";
-        } else if (errorMsg.includes("403") || errorMsg.includes("forbidden")) {
-          errorType = "AUTH_EXPIRED";
-          shouldRetry = false; // Don't retry auth errors (URL expired)
-        } else if (errorMsg.includes("404")) {
-          errorType = "NOT_FOUND";
-          shouldRetry = false; // Don't retry 404s
-        } else if (errorMsg.includes("0 bytes") || errorMsg.includes("empty")) {
-          errorType = "EMPTY_FILE";
-        } else if (errorMsg.includes("memory") || errorMsg.includes("allocation")) {
-          errorType = "OUT_OF_MEMORY";
-        }
-
-        console.error(`${attemptPrefix}Error type: ${errorType}`);
+        // Categorize error
+        const { errorType, shouldRetry } = categorizeError(lastError);
+        console.error(`${attemptPrefix} Error type: ${errorType}`);
 
         // Don't retry certain error types
         if (!shouldRetry) {
@@ -283,9 +252,6 @@ async function createZipWithZipJs(
           const delayMs = CONFIG.RETRY_DELAY_BASE_MS * attempt; // 2s, 4s, 6s
           console.log(`${attemptPrefix} Waiting ${(delayMs / 1000).toFixed(1)}s before retry...`);
           await new Promise((resolve) => setTimeout(resolve, delayMs));
-
-          // Log memory before retry
-          logMemory();
         }
       }
     }
@@ -295,7 +261,7 @@ async function createZipWithZipJs(
     return { success: false, error: lastError || new Error("All retries failed"), attempts: CONFIG.MAX_RETRIES };
   }
 
-  // ===== MAIN PROCESSING LOOP =====
+  // Main processing loop
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
 
@@ -318,7 +284,7 @@ async function createZipWithZipJs(
 
     try {
       // ===== DOWNLOAD WITH RETRY =====
-      const downloadResult = await downloadFileWithRetry(file, i, files.length);
+      const downloadResult = await downloadFileWithRetry(file);
 
       if (!downloadResult.success || !downloadResult.blob) {
         throw downloadResult.error || new Error("Download failed");
@@ -403,7 +369,7 @@ async function createZipWithZipJs(
     }
   }
 
-  // ===== SUMMARY =====
+  // Summary
   if (failedFiles > 0) {
     console.log(`\n Failed files (after ${CONFIG.MAX_RETRIES} retry attempts each):`);
     failedFileNames.forEach((name, idx) => console.log(`    ${idx + 1}. ${name}`));
@@ -417,10 +383,10 @@ async function createZipWithZipJs(
     ToggleSuccess(`Successfully downloaded ${files.length} files.`, { autoClose: false });
   }
 
-  // ===== FINALIZE ZIP =====
+  // Finalize zip
   const zipBlob = await zipWriter.close();
 
-  // ===== TRIGGER DOWNLOAD =====
+  // Trigger download
   const downloadUrl = globalThis.URL.createObjectURL(zipBlob);
   const link = document.createElement("a");
   link.href = downloadUrl;
@@ -434,7 +400,40 @@ async function createZipWithZipJs(
   setTimeout(() => {
     link.remove();
     globalThis.URL.revokeObjectURL(downloadUrl);
-    console.log(`Cleanup completed`);
-    logMemory();
   }, 1000);
+}
+
+// ==== HELPERS FUNCTIONS ====
+async function checkMemoryBeforeDownload(
+  memInfo: any,
+  file: FileWithPresignedUrl,
+  attemptPrefix: string,
+): Promise<void> {
+  if (!memInfo) return;
+  const neededMB = (file.size / (1024 * 1024)) * 1.5;
+  if (memInfo.availableMB < neededMB) {
+    console.warn(`${attemptPrefix} Low memory detected. Waiting 3s for cleanup...`);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
+}
+
+function categorizeError(error: Error): { errorType: string; shouldRetry: boolean } {
+  const errorMsg = error.message.toLowerCase();
+
+  const errorMap: Array<{ keywords: string[]; type: string; retry: boolean }> = [
+    { keywords: ["timeout", "timed out"], type: "TIMEOUT", retry: true },
+    { keywords: ["network", "failed to fetch"], type: "NETWORK", retry: true },
+    { keywords: ["403", "forbidden"], type: "AUTH_EXPIRED", retry: false },
+    { keywords: ["404"], type: "NOT_FOUND", retry: false },
+    { keywords: ["0 bytes", "empty"], type: "EMPTY_FILE", retry: true },
+    { keywords: ["memory", "allocation"], type: "OUT_OF_MEMORY", retry: true },
+  ];
+
+  for (const { keywords, type, retry } of errorMap) {
+    if (keywords.some((keyword) => errorMsg.includes(keyword))) {
+      return { errorType: type, shouldRetry: retry };
+    }
+  }
+
+  return { errorType: "UNKNOWN", shouldRetry: true };
 }
