@@ -83,7 +83,7 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
             aria-label={`${isExpanded ? "Collapse" : "Expand"} task ${data.taskNumber} details`}
             className="btn btn-link p-0 border-0"
           >
-            <i className={`bi bi-chevron-${isExpanded ? "down" : "right"}`} />
+            <i className={`m-0 ps-1 bi bi-chevron-${isExpanded ? "down" : "right"}`} />
           </button>
         </td>
         <td className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${expandedClass}`}>

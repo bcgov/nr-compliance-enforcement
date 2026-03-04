@@ -108,9 +108,9 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   const renderTaskListHeader = () => (
     <thead className="sticky-table-header">
       <tr>
+        <th className="comp-cell-width-30 comp-cell-min-width-30 text-center"></th>
         <th
           className="sortable-header comp-cell-width-120 comp-cell-min-width-120"
-          colSpan={2}
           onClick={() => handleSort("taskNumber")}
         >
           <div className="sortable-header-inner">
@@ -127,8 +127,8 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
         {renderSortableHeader("Category", "category", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "taskStatusCode", "comp-cell-width-110")}
-        {renderSortableHeader("Assigned Officer", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Last Updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Officer assigned", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Last updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
       </tr>
     </thead>
   );
