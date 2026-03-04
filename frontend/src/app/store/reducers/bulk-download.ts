@@ -29,13 +29,13 @@ export const bulkDownload =
   (taskId: string, taskNumber: number, attachments: COMSObject[]): AppThunk =>
   async (dispatch) => {
     // Prevent concurrent downloads
-    if ((window as any).__bulkDownloadInProgress) {
+    if ((globalThis as any).__bulkDownloadInProgress) {
       ToggleError("A download is already in progress. Please wait.");
       return;
     }
 
     try {
-      (window as any).__bulkDownloadInProgress = true;
+      (globalThis as any).__bulkDownloadInProgress = true;
 
       const authToken = localStorage.getItem(AUTH_TOKEN);
       if (!authToken) {
@@ -67,7 +67,7 @@ export const bulkDownload =
         ToggleError("Failed to download attachments. Please try again.", { autoClose: false });
       }
     } finally {
-      (window as any).__bulkDownloadInProgress = false;
+      (globalThis as any).__bulkDownloadInProgress = false;
     }
   };
 
@@ -99,9 +99,7 @@ async function bulkDownloadWithZipJs(
 
       if (!response.ok) {
         const errorText = await response.text().catch(() => "");
-        throw new Error(
-          `Failed to get URL for ${attachment.name}: HTTP ${response.status}${errorText ? ` - ${errorText}` : ""}`,
-        );
+        throw new Error(`Failed to get URL for ${attachment.name}: HTTP ${response.status} - ${errorText ?? ""}`);
       }
 
       return {
@@ -162,15 +160,15 @@ async function createZipWithZipJs(
 
       console.log(`Memory: ${usedMB}MB / ${limitMB}MB (${percentUsed}% used, ${availableMB}MB available)`);
 
-      if (parseFloat(percentUsed) > CONFIG.MEMORY_HIGH_THRESHOLD) {
+      if (Number.parseFloat(percentUsed) > CONFIG.MEMORY_HIGH_THRESHOLD) {
         console.warn(`Memory usage is HIGH (${percentUsed}%)`);
       }
 
       return {
-        usedMB: parseInt(usedMB),
-        limitMB: parseInt(limitMB),
-        availableMB: parseInt(availableMB),
-        percentUsed: parseFloat(percentUsed),
+        usedMB: Number.parseInt(usedMB),
+        limitMB: Number.parseInt(limitMB),
+        availableMB: Number.parseInt(availableMB),
+        percentUsed: Number.parseFloat(percentUsed),
       };
     }
     return null;
@@ -213,8 +211,6 @@ async function createZipWithZipJs(
             logMemory();
           }
         }
-
-        const downloadStartTime = Date.now();
 
         // Download file
         const response = await fetch(file.url, {
@@ -304,9 +300,9 @@ async function createZipWithZipJs(
     const file = files[i];
 
     // Check URL expiry
-    const expiryMatch = file.url.match(/X-Amz-Expires=(\d+)/);
+    const expiryMatch = /X-Amz-Expires=(\d+)/.exec(file.url);
     if (expiryMatch) {
-      const expirySeconds = parseInt(expiryMatch[1]);
+      const expirySeconds = Number.parseInt(expiryMatch[1]);
       const expiryMinutes = (expirySeconds / 60).toFixed(1);
 
       // Warn if file might take longer than expiry
@@ -333,8 +329,6 @@ async function createZipWithZipJs(
       if (downloadResult.attempts > 1) {
         console.log(`Succeeded after ${downloadResult.attempts} attempts`);
       }
-
-      // logMemory();
 
       // ===== ADD BLOB TO ZIP =====
       const skipCompression =
@@ -427,7 +421,7 @@ async function createZipWithZipJs(
   const zipBlob = await zipWriter.close();
 
   // ===== TRIGGER DOWNLOAD =====
-  const downloadUrl = window.URL.createObjectURL(zipBlob);
+  const downloadUrl = globalThis.URL.createObjectURL(zipBlob);
   const link = document.createElement("a");
   link.href = downloadUrl;
   link.download = `Task_${taskNumber}_Attachments.zip`;
@@ -438,8 +432,8 @@ async function createZipWithZipJs(
 
   // Cleanup
   setTimeout(() => {
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(downloadUrl);
+    link.remove();
+    globalThis.URL.revokeObjectURL(downloadUrl);
     console.log(`Cleanup completed`);
     logMemory();
   }, 1000);

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
-import { ToggleError } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { getAttachments } from "@store/reducers/attachments";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
+import { Id } from "react-toastify";
 
 export const BulkDownloadButton = ({
   taskId,
@@ -18,9 +19,19 @@ export const BulkDownloadButton = ({
   const [downloading, setDownloading] = useState(false);
   const dispatch = useAppDispatch();
 
+  let toastDownloadInfo: Id;
+
   const handleBulkDownload = async () => {
     try {
       setDownloading(true);
+      toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+
       const attachments = await dispatch(getAttachments(investigationGuid, taskId, AttachmentEnum.TASK_ATTACHMENT));
       if (!attachments || attachments.length === 0) {
         ToggleError("No attachments found for this task");
@@ -39,6 +50,7 @@ export const BulkDownloadButton = ({
       ToggleError("Download failed. Please try again.");
     } finally {
       setDownloading(false);
+      DismissToast(toastDownloadInfo);
     }
   };
 
