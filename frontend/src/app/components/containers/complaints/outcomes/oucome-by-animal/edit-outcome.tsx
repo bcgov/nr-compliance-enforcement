@@ -31,6 +31,7 @@ import { ValidationTextArea } from "@common/validation-textarea";
 import { selectComplaintLargeCarnivoreInd } from "@store/reducers/complaints";
 import { getDropdownOption } from "@/app/common/methods";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   index: number;
@@ -40,6 +41,7 @@ type props = {
   agency: string;
   update: Function;
   toggle: Function;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 const defaultAuthorization: DrugAuthorization = {
@@ -56,7 +58,16 @@ type modalProps = {
   cancel: () => void | null;
 };
 
-export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: officer, agency, update, toggle }) => {
+export const EditOutcome: FC<props> = ({
+  id,
+  index,
+  outcome,
+  assignedOfficer: officer,
+  agency,
+  update,
+  toggle,
+  onDirtyChange,
+}) => {
   //-- select data from redux
   const speciesList = useAppSelector(selectSpeciesCodeDropdown);
   const sexes = useAppSelector(selectSexDropdown);
@@ -68,6 +79,8 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const outcomeActionedByOptions = useAppSelector(selectOutcomeActionedByOptions);
   const showSectionErrors = isInEdit.showSectionErrors;
+
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState<modalProps>({
@@ -110,6 +123,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       model = { ...model, outcomeActionedBy: agency };
     }
     applyData(model);
+    markDirty();
   };
 
   //-- handle adding / removing ear tags
@@ -129,6 +143,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
               update={updateEarTag}
               remove={removeEarTag}
               ref={(el) => (earTagRefs.current[idx] = el)}
+              onDirtyChange={onDirtyChange}
             />
           );
         });
@@ -199,6 +214,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                     remove={removeDrugUsed}
                     key={id}
                     ref={(el) => (drugRefs.current[idx] = el)}
+                    onDirtyChange={onDirtyChange}
                   />
                 );
               })}
@@ -209,6 +225,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
             agency={agency}
             update={updateModel}
             ref={authorizationRef}
+            onDirtyChange={onDirtyChange}
           />
         </>
       );
@@ -381,6 +398,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       update(data);
       toggle("");
     } else ToggleError("Error updating animal outcome");
+    markClean();
   };
 
   const handleCancel = () => {
@@ -393,6 +411,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
       cancel: cancel,
     });
     setShowModal(true);
+    markClean();
   };
   const close = () => {
     setShowModal(false);
@@ -668,7 +687,7 @@ export const EditOutcome: FC<props> = ({ id, index, outcome, assignedOfficer: of
                   className="comp-details-input full-width"
                   id="equipment-day-set"
                   maxDate={new Date()}
-                  onChange={(input: Date) => {
+                  onChange={(input: Date, _time: string | null) => {
                     if (data?.date) {
                       showEditWarning(() => {
                         handleOutcomeDateChange(input);

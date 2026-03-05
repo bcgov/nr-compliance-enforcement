@@ -49,7 +49,7 @@ export const GeneralInformationComplaintListItem: FC<Props> = ({ type, complaint
 
   const getLocationName = (input: string): string => {
     const code = areaCodes.find((item) => item.area === input);
-    return code.areaName;
+    return code?.areaName;
   };
 
   const getStatusDescription = (input: string): string => {

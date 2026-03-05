@@ -17,7 +17,7 @@ import {
   DiaryDateInput,
   Task,
 } from "@/generated/graphql";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
@@ -44,11 +44,13 @@ import {
   GET_ACTIVITY_NOTES_BY_TASK,
   SAVE_ACTIVITY_NOTE,
 } from "@/app/components/common/activity-note";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskFormProps {
   investigationGuid: string;
   onClose: (newTask?: Task) => void;
   task?: Task;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const ADD_TASK = gql`
@@ -67,7 +69,7 @@ const EDIT_TASK = gql`
   }
 `;
 
-export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) => {
+export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: TaskFormProps) => {
   const { data: diaryDatesData } = useGraphQLQuery<{ diaryDatesByTask: DiaryDate[] }>(GET_DIARY_DATES_BY_TASK, {
     queryKey: ["diaryDatesByTask", task?.taskIdentifier],
     variables: { taskGuid: task?.taskIdentifier },
@@ -148,6 +150,18 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
 
   // Data
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
+
   const taskCategoryOptions = taskCategories.map((option: any) => {
     return {
       value: option.value,
@@ -157,13 +171,17 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const isEditMode = !!task;
 
-  if (!isEditMode) {
-    // Set defaults
-    form.setFieldValue("task-officer-assigned", form.getFieldValue("task-officer-assigned") || idir);
-    form.setFieldValue("task-status", form.getFieldValue("task-status") || "OPEN");
-  }
-
   // Use Effects
+
+  // Set defaults on first mount
+  useEffect(() => {
+    if (!isEditMode) {
+      form.setFieldValue("task-officer-assigned", form.getFieldValue("task-officer-assigned") || idir);
+      form.setFieldValue("task-status", form.getFieldValue("task-status") || "OPEN");
+      form.setFieldMeta("task-officer-assigned", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-status", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+  }, []);
 
   // Populate form when editing
   useEffect(() => {
@@ -182,6 +200,13 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
       form.setFieldValue("task-officer-assigned", task.assignedUserIdentifier || "");
       form.setFieldValue("task-created-by", task.createdByUserIdentifier || "");
       form.setFieldValue("task-status", task.taskStatusCode || "");
+
+      form.setFieldMeta("task-category", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-sub-category", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-description", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-officer-assigned", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-created-by", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("task-status", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
   }, [task, taskSubCategories]);
 
@@ -214,7 +239,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         activityNoteGuid: ta.activityNoteGuid,
         contentJson: ta.contentJson,
         contentText: ta.contentText,
-        actionedTimestamp: ta.actionedTimestamp || new Date(),
+        actionedDate: ta.actionedDate || new Date(),
+        actionedTime: ta.actionedTime || null,
         actionedAppUserGuidRef: ta?.actionedAppUserGuidRef,
       }));
 
@@ -423,6 +449,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
 
   const handleSubmit = async () => {
     await form.handleSubmit();
+    markClean();
   };
 
   const handleCancel = async () => {
@@ -431,6 +458,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
     setDiaryDateValidation({});
     form.reset();
     onClose();
+    markClean();
   };
 
   const cancelButtonClick = () => {
@@ -552,7 +580,8 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
         activityNoteCode: "TASKACT",
         contentJson: values?.contentJson,
         contentText: values?.contentText,
-        actionedTimestamp: values?.actionedTimestamp || new Date(),
+        actionedDate: values?.actionedDate || new Date(),
+        actionedTime: values?.actionedTime || null,
         reportedTimestamp: new Date(),
         actionedAppUserGuidRef: values?.actionedAppUserGuidRef,
         reportedAppUserGuidRef: idir,
@@ -859,6 +888,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               index={index}
               onDelete={deleteDiaryDate}
               onValidationChange={handleDiaryDateValidationChange}
+              onDirtyChange={onDirtyChange}
               onValuesChange={handleDiaryDateValuesChange}
               initialData={diaryDate}
               triggerValidation={triggerDiaryValidation}
@@ -911,6 +941,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
                   onValuesChange={handleTaskActionValuesChange}
                   initialData={taskAction}
                   showErrors={showTaskActionErrors}
+                  onDirtyChange={onDirtyChange}
                 />
               </Card.Body>
             </Card>
@@ -939,6 +970,7 @@ export const TaskForm = ({ task, investigationGuid, onClose }: TaskFormProps) =>
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
+              onDirtyChange={onDirtyChange}
               showPreview={false}
             />
           </fieldset>

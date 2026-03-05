@@ -69,8 +69,12 @@ export const mapComplaintDtoToComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedByOther),
     ),
     forMember(
-      (dest) => dest.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.incident_reported_utc_timestmp,
@@ -196,8 +200,12 @@ export const mapWildlifeComplaintDtoToHwcrComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedByOther),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.complaint_identifier.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.complaint_identifier.incident_reported_utc_timestmp,
@@ -369,8 +377,12 @@ export const mapAllegationComplaintDtoToAllegationComplaint = (mapper: Mapper) =
       mapFrom((src) => src.reportedByOther),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.complaint_identifier.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.complaint_identifier.incident_reported_utc_timestmp,
@@ -515,8 +527,12 @@ export const mapGirComplaintDtoToGirComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedByOther),
     ),
     forMember(
-      (dest) => dest.complaint_identifier.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.complaint_identifier.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.complaint_identifier.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.complaint_identifier.incident_reported_utc_timestmp,
@@ -639,8 +655,12 @@ export const mapSectorComplaintDtoToSectorComplaint = (mapper: Mapper) => {
       mapFrom((src) => src.reportedByOther),
     ),
     forMember(
-      (dest) => dest.incident_utc_datetime,
-      mapFrom((src) => src.incidentDateTime),
+      (dest) => dest.incident_utc_date,
+      mapFrom((src) => src.incidentDate),
+    ),
+    forMember(
+      (dest) => dest.incident_utc_time,
+      mapFrom((src) => src.incidentTime),
     ),
     forMember(
       (dest) => dest.incident_reported_utc_timestmp,

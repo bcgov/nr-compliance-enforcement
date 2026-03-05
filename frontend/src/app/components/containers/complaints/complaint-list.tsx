@@ -162,24 +162,10 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     }
 
     // Only run fetch when state is settled
-    const payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
-
-    if (searchQuery) {
-      payload.query = searchQuery;
-    }
-
+    let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
+    payload.query = searchQuery ?? "";
     dispatch(getComplaints(type, payload));
   }, [storedTab, activeTab, type, filters, sortKey, sortDirection, page, pageSize, searchQuery]);
-
-  useEffect(() => {
-    //Refresh the list with the current filters when the search is cleared
-    if (!searchQuery) {
-      let payload = generateComplaintRequestPayload(type, filters, page, pageSize, sortKey, sortDirection);
-      payload = { ...payload, query: searchQuery };
-      dispatch(getComplaints(type, payload));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
 
   useEffect(() => {
     if (defaultPageSize) {

@@ -1,10 +1,10 @@
-import { FC, memo, useState, useMemo } from "react";
+import { FC, memo, useState, useMemo, useEffect } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading, appUserGuid } from "@store/reducers/app";
 import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -15,6 +15,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { FormField } from "@/app/components/common/form-field";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
 import { Link } from "react-router-dom";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const createOrAddOptions: Option[] = [
   { label: "Create a new case", value: "create" },
@@ -71,8 +72,9 @@ const ModalLoading: FC = memo(() => (
 type CreateAddCaseModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
-export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit }) => {
+export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit, onDirtyChange }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
@@ -80,6 +82,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   // Vars
   const { title, complaint_identifier, agency_code } = modalData;
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // State
   const [selectedCase, setSelectedCase] = useState<Option | null>();
@@ -109,9 +112,18 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
         createCaseMutation.mutate({ input: createInput });
       }
       submit();
-      close();
     },
   });
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
     onSuccess: (data: any) => {
@@ -176,7 +188,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           input: createCaseAcivityInput,
         });
         submit();
-        close();
       }
     } else {
       form.handleSubmit();
@@ -218,7 +229,10 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
               itemClassName="comp-radio-btn"
               groupClassName="comp-equipment-form-radio-group"
               value={createOrAddOption}
-              onChange={(option: any) => setCreateOrAddOption(option.target.value)}
+              onChange={(option: any) => {
+                setCreateOrAddOption(option.target.value);
+                markDirty();
+              }}
               isDisabled={false}
               radioGroupName="create-add-case-radiogroup"
             />

@@ -7,9 +7,14 @@ import { Investigation, Task } from "@/generated/graphql";
 interface InvestigationTasksProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationGuid, investigationData }) => {
+export const InvestigationTasks: FC<InvestigationTasksProps> = ({
+  investigationGuid,
+  investigationData,
+  onDirtyChange,
+}) => {
   // State
   const [showAddCard, setshowAddCard] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
@@ -64,6 +69,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
                 investigationGuid={investigationGuid}
                 task={task}
                 onClose={handleCloseForm}
+                onDirtyChange={onDirtyChange}
               />
             ) : (
               <TaskItem
@@ -84,6 +90,7 @@ export const InvestigationTasks: FC<InvestigationTasksProps> = ({ investigationG
           <TaskForm
             investigationGuid={investigationGuid}
             onClose={handleCloseForm}
+            onDirtyChange={onDirtyChange}
           />
         )}
       </div>

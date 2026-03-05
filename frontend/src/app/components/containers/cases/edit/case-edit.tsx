@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
 import { CaseEditHeader } from "./case-edit-header";
@@ -19,6 +19,7 @@ import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -116,6 +117,7 @@ const CaseEdit: FC = () => {
   const createCaseMutation = useGraphQLMutation(CREATE_CASE_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Case created successfully");
+      allowNavigation();
       navigate(`/case/${data.createCaseFile.caseIdentifier}`);
     },
     onError: (error: any) => {
@@ -127,6 +129,7 @@ const CaseEdit: FC = () => {
   const updateCaseMutation = useGraphQLMutation(UPDATE_CASE_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Case updated successfully");
+      allowNavigation();
       navigate(`/case/${id}`);
     },
     onError: (error: any) => {
@@ -185,7 +188,14 @@ const CaseEdit: FC = () => {
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
+  const { allowNavigation } = useUnsavedChangesWarning(isDirty);
+
   const confirmCancelChanges = useCallback(() => {
+    allowNavigation();
     form.reset();
 
     if (isEditMode && id) {

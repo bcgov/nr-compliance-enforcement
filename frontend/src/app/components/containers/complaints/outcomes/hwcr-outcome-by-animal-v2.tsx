@@ -21,7 +21,7 @@ import useValidateComplaint from "@hooks/validate-complaint";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 
-type props = {};
+type props = { onDirtyChange?: (index: number, isDirty: boolean) => void };
 
 //--
 //-- in order to make sure things are inserted into the correct spot and get
@@ -46,7 +46,7 @@ export const getNextOrderNumber = <T extends { order: number }>(input: Array<T>)
 //-- displaying a list of animal outcomes and providing
 //-- the user the ability to add update and remove outcomes
 //--
-export const HWCROutcomeByAnimalv2: FC<props> = () => {
+export const HWCROutcomeByAnimalv2: FC<props> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -194,6 +194,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
               assignedOfficer={assignedOfficer}
               update={handleUpdate}
               toggle={handleEnableEdit}
+              onDirtyChange={onDirtyChange}
             />
           );
         }
@@ -244,6 +245,7 @@ export const HWCROutcomeByAnimalv2: FC<props> = () => {
             save={handleSave}
             cancel={handleCancelCreateOutcome}
             outcomeRequired={!validationResults?.validationDetails?.animalCapturedCriteria}
+            onDirtyChange={onDirtyChange}
           />
         )}
       </div>
