@@ -218,41 +218,12 @@ async function createZipWithZipJs(
 
       // Detailed error categorization
       if (error instanceof Error) {
-        const errorMsg = error.message.toLowerCase();
-
-        if (errorMsg.includes("timeout") || errorMsg.includes("timed out")) {
-          console.error(`  → Type: TIMEOUT ERROR`);
-        } else if (errorMsg.includes("network") || errorMsg.includes("failed to fetch")) {
-          console.error(`  → Type: NETWORK ERROR`);
-        } else if (errorMsg.includes("403") || errorMsg.includes("forbidden")) {
-          console.error(`  → Type: AUTH ERROR (403 Forbidden)`);
-        } else if (errorMsg.includes("404")) {
-          console.error(`  → Type: NOT FOUND ERROR (404)`);
-        } else if (errorMsg.includes("0 bytes") || errorMsg.includes("empty")) {
-          console.error(`  → Type: EMPTY FILE ERROR`);
-        } else if (errorMsg.includes("memory") || errorMsg.includes("allocation")) {
-          console.error(`  → Type: OUT OF MEMORY ERROR`);
-        } else {
-          console.error(`  → Type: UNKNOWN ERROR`);
-        }
+        const { errorType } = categorizeError(error);
+        console.error(`  → Type: ${errorType} ERROR`);
       }
 
       // Add error placeholder
-      try {
-        const errorMessage =
-          `Failed to download this file after ${CONFIG.MAX_RETRIES} attempts\n\n` +
-          `Filename: ${file.name}\n` +
-          `Expected Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB\n` +
-          `Error: ${error instanceof Error ? error.message : String(error)}\n` +
-          `Error Type: ${error instanceof Error ? error.constructor.name : typeof error}\n` +
-          `Timestamp: ${new Date().toISOString()}\n` +
-          `File Index: ${i + 1} of ${files.length}\n` +
-          `Retry Attempts: ${CONFIG.MAX_RETRIES}\n\n`;
-
-        await zipWriter.add(`ERROR_${file.name}.txt`, new zip.TextReader(errorMessage), { level: 0 });
-      } catch (placeholderError) {
-        console.error(`Could not add error placeholder:`, placeholderError);
-      }
+      await addErrorPlaceholder(zipWriter, file, error, i, files.length);
 
       // Pause after error to allow memory recovery
       if (i + 1 < files.length) {
@@ -426,4 +397,28 @@ function categorizeError(error: Error): { errorType: string; shouldRetry: boolea
   }
 
   return { errorType: "UNKNOWN", shouldRetry: true };
+}
+
+async function addErrorPlaceholder(
+  zipWriter: any,
+  file: FileWithPresignedUrl,
+  error: unknown,
+  index: number,
+  totalFiles: number,
+): Promise<void> {
+  try {
+    const errorMessage =
+      `Failed to download this file after ${CONFIG.MAX_RETRIES} attempts\n\n` +
+      `Filename: ${file.name}\n` +
+      `Expected Size: ${(file.size / (1024 * 1024)).toFixed(2)}MB\n` +
+      `Error: ${error instanceof Error ? error.message : String(error)}\n` +
+      `Error Type: ${error instanceof Error ? error.constructor.name : typeof error}\n` +
+      `Timestamp: ${new Date().toISOString()}\n` +
+      `File Index: ${index + 1} of ${totalFiles}\n` +
+      `Retry Attempts: ${CONFIG.MAX_RETRIES}\n\n`;
+
+    await zipWriter.add(`ERROR_${file.name}.txt`, new zip.TextReader(errorMessage), { level: 0 });
+  } catch (placeholderError) {
+    console.error(`Could not add error placeholder:`, placeholderError);
+  }
 }
