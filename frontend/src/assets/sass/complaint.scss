@@ -1822,6 +1822,7 @@ p {
   }
 }
 
+tr.comp-cell-parent-expanded,
 .comp-cell-parent-expanded {
   border-bottom: none !important;
 }
@@ -1830,8 +1831,13 @@ p {
   background-color: $gray-110;
 }
 
+tr:has(> .comp-cell-child-expanded) {
+  border-top: none !important;
+}
+
 .comp-cell-child-expanded {
   padding-top: 0 !important;
+  border-top: none !important;
 }
 
 .collapsible .header {

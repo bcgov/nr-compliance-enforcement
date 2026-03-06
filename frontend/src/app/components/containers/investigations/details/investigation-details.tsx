@@ -9,7 +9,8 @@ import { InvestigationContraventions } from "@/app/components/containers/investi
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
-import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-task";
+import InvestigationTasksOld from "@/app/components/containers/investigations/details/investigation-task-old";
+import { InvestigationTasksNew } from "@/app/components/containers/investigations/details/investigation-task";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -47,6 +48,7 @@ const GET_INVESTIGATION = gql`
         assignedUserIdentifier
         createdByUserIdentifier
         createdDate
+        updatedDate
         taskNumber
         description
         activeIndicator
@@ -119,9 +121,17 @@ export const InvestigationDetails: FC = () => {
             onDirtyChange={handleChildDirtyChange}
           />
         );
+      case "oldTasks":
+        return (
+          <InvestigationTasksOld
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
+          />
+        );
       case "tasks":
         return (
-          <InvestigationTasks
+          <InvestigationTasksNew
             investigationData={investigationData}
             investigationGuid={investigationGuid}
             onDirtyChange={handleChildDirtyChange}
