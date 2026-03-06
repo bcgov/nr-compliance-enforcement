@@ -134,6 +134,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationTasksNew
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "parties":

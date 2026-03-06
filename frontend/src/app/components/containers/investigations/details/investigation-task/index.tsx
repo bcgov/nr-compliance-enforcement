@@ -7,6 +7,7 @@ import { Investigation, Task } from "@/generated/graphql";
 interface InvestigationTasksNewProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {
