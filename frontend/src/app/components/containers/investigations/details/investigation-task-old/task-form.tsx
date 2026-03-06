@@ -23,7 +23,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
-import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { ADD_EDIT_TASK_ATTACHMENT, CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { DiaryDateForm } from "@/app/components/containers/investigations/details/investigation-diary-dates/diary-date-form";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import {
@@ -678,6 +678,18 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
     [setAttachmentCount],
   );
 
+  const toggleAddAttachment = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ADD_EDIT_TASK_ATTACHMENT,
+        data: {
+          title: "Upload attachment",
+        },
+      }),
+    );
+  };
+
   return (
     <Card
       className="mb-3"
@@ -959,8 +971,22 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
         </div>
 
         <div className="mt-3">
+          <hr className="mb-3"></hr>
           <fieldset>
-            <h4>Attachments ({attachmentCount})</h4>
+            <div className="attachment-header">
+              <h4>Attachments ({attachmentCount})</h4>
+              <Button
+                id="add-task-attachment"
+                title="Add attachment"
+                variant="primary"
+                size="sm"
+                onClick={toggleAddAttachment}
+              >
+                <i className="bi bi-upload"></i>
+                <span>Add attachment</span>
+              </Button>
+            </div>
+
             <Attachments
               attachmentType={AttachmentEnum.TASK_ATTACHMENT}
               identifier={investigationGuid}
