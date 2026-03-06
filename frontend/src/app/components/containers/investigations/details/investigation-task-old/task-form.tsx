@@ -685,6 +685,8 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
         modalType: ADD_EDIT_TASK_ATTACHMENT,
         data: {
           title: "Upload attachment",
+          investigationIdentifier: investigationGuid,
+          taskIdentifier: task?.taskIdentifier,
         },
       }),
     );

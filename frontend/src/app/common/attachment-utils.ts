@@ -45,6 +45,7 @@ interface PersistAttachmentsParams {
   attachmentType: AttachmentEnum;
   isSynchronous: boolean;
   complaintType?: string;
+  extendedMeta?: Record<string, string>;
 }
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
@@ -58,6 +59,7 @@ export async function handlePersistAttachments({
   setAttachmentsToDelete,
   attachmentType,
   isSynchronous,
+  extendedMeta,
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
@@ -65,7 +67,11 @@ export async function handlePersistAttachments({
   }
 
   if (attachmentsToAdd) {
-    tasks.push(dispatch(saveAttachments(attachmentsToAdd, identifier, subIdentifier, attachmentType, isSynchronous)));
+    tasks.push(
+      dispatch(
+        saveAttachments(attachmentsToAdd, identifier, subIdentifier, attachmentType, isSynchronous, extendedMeta),
+      ),
+    );
   }
 
   await Promise.all(tasks);

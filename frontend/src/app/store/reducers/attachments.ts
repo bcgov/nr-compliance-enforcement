@@ -24,6 +24,7 @@ interface SaveAttachmentParams {
   historicalAttachments: Array<COMSObject>;
   isComplaintAttachment: boolean;
   attachmentConfig: AttachmentTypeConfig;
+  extendedMeta?: Record<string, string>;
 }
 
 interface DeleteAttachmentParams {
@@ -42,6 +43,7 @@ interface BuildHeaderParams {
   isThumb: boolean;
   attachmentName?: string;
   attachmentId?: string;
+  extendedMeta?: Record<string, string>;
 }
 
 const buildAttachmentHeader = ({
@@ -53,6 +55,7 @@ const buildAttachmentHeader = ({
   isThumb,
   attachmentName,
   attachmentId,
+  extendedMeta,
 }: BuildHeaderParams): Record<string, any> => {
   // Common fields
   const header: Record<string, any> = {
@@ -73,6 +76,12 @@ const buildAttachmentHeader = ({
 
   if (isThumb && attachmentId) {
     header["x-amz-meta-thumb-for"] = attachmentId;
+  }
+
+  if (extendedMeta) {
+    Object.entries(extendedMeta).forEach(([key, value]) => {
+      header[`x-amz-meta-${key}`] = value;
+    });
   }
 
   return header;
@@ -198,6 +207,7 @@ const saveSingleAttachment = async ({
   historicalAttachments,
   isComplaintAttachment,
   attachmentConfig,
+  extendedMeta,
 }: SaveAttachmentParams) => {
   const attachmentIdentifier = subIdentifier ?? identifier;
   const attachmentName = encodeURIComponent(
@@ -214,6 +224,7 @@ const saveSingleAttachment = async ({
     contentType: attachment.type,
     isThumb: false,
     attachmentName,
+    extendedMeta,
   });
 
   const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
@@ -285,6 +296,7 @@ export const saveAttachments =
     subIdentifier: string | undefined,
     attachmentType: AttachmentEnum,
     isSynchronous: boolean,
+    extendedMeta?: Record<string, string>,
   ): AppThunk<Promise<void>> =>
   async (dispatch) => {
     if (!attachments) {
@@ -321,6 +333,7 @@ export const saveAttachments =
           historicalAttachments,
           isComplaintAttachment,
           attachmentConfig,
+          extendedMeta,
         });
       } catch (error) {
         handleError(attachment, error);

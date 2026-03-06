@@ -1,16 +1,20 @@
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
-import { FC } from "react";
+import { FC, useCallback, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
-import { ToggleError } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import Option from "@apptypes/app/option";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
+import { handlePersistAttachments } from "@/app/common/attachment-utils";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
+import format from "date-fns/format";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -27,12 +31,13 @@ const fileTypeOptions: Option[] = [
 ];
 
 export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close, submit, onDirtyChange }) => {
+  const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title } = modalData;
+  const { title, investigationIdentifier, taskIdentifier } = modalData;
 
   const form = useForm({
     defaultValues: {
-      file: null,
+      file: null as FileList | null,
       originalFileName: "",
       fileType: "",
       description: "",
@@ -43,12 +48,62 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       ToggleError("Errors in form");
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
+      persistTaskAttachments(value, taskIdentifier);
     },
   });
 
-  const onFileSelect = async (newFiles: FileList) => {
-    console.log("test");
+  const onFileSelect = useCallback(
+    (files: FileList) => {
+      form.setFieldValue("file", files);
+      const fileNames = Array.from(files)
+        .map((f) => f.name)
+        .join("\n");
+      form.setFieldValue("originalFileName", fileNames);
+    },
+    [form],
+  );
+
+  const handleSubmit = async () => {
+    await form.handleSubmit();
+  };
+
+  // TODO: can I type the values?
+  const persistTaskAttachments = async (value: any, taskIdentifier: string) => {
+    const files = value.file ? Array.from<File>(value.file) : null;
+
+    if (!files) return;
+
+    const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+      position: "top-right",
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: false,
+    });
+
+    handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd: files,
+      attachmentsToDelete: null, // TODO: handle deletes
+      identifier: investigationIdentifier,
+      subIdentifier: taskIdentifier,
+      setAttachmentsToAdd: () => {},
+      setAttachmentsToDelete: () => {},
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      isSynchronous: false,
+      extendedMeta: {
+        title: value.title,
+        description: value.description,
+        "file-type": value.fileType,
+        date: value.date ? format(value.date, "yyyy-MM-dd") : "",
+      },
+    }).then(() => {
+      if (files) {
+        DismissToast(toastId);
+        attachmentUploadComplete$.next(taskIdentifier);
+        close();
+      }
+    });
   };
 
   return (
@@ -66,24 +121,37 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               form={form}
               name="file"
               label="File"
-              render={(field) => <AttachmentUpload onFileSelect={onFileSelect} />}
+              required
+              validators={{
+                onChange: z.custom<FileList | null>((val) => val !== null && val.length > 0, {
+                  message: "At least one file is required",
+                }),
+              }}
+              render={(field) => (
+                <>
+                  <AttachmentUpload onFileSelect={onFileSelect} />
+                  {field.state.meta.errors?.[0]?.message && (
+                    <span className="error-message">{field.state.meta.errors[0].message}</span>
+                  )}
+                </>
+              )}
             />
 
             {/* Original File Name */}
             <FormField
               form={form}
               name="originalFileName"
-              label="Original File Name"
+              label={
+                form.getFieldValue("originalFileName")?.includes("\n") ? "Original File Names" : "Original File Name"
+              }
               render={(field) => (
-                <CompInput
-                  id="original-file-name"
-                  divid="original-file-name-value"
-                  type="input"
-                  inputClass="comp-form-control"
-                  value={field.state.value}
-                  onChange={() => {}}
-                  disabled={true}
-                />
+                <div className="comp-details-input">
+                  {field.state.value ? (
+                    field.state.value.split("\n").map((name: string, i: number) => <div key={i}>{name}</div>)
+                  ) : (
+                    <span className="text-muted">No files selected</span>
+                  )}
+                </div>
               )}
             />
 
@@ -159,7 +227,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               name="date"
               label="Date"
               required
-              validators={{ onChange: z.date({ required_error: "Date is required" }) }}
+              validators={{
+                onChange: z
+                  .date()
+                  .nullable()
+                  .refine((val) => val !== null, {
+                    message: "Date is required",
+                  }),
+              }}
               render={(field) => (
                 <ValidationDatePicker
                   id="DateOfBirth"
@@ -188,6 +263,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             variant="primary"
             id="add-attachment-save-button"
             title="Save Attachment"
+            onClick={handleSubmit}
           >
             <span>Save and Close</span>
           </Button>
