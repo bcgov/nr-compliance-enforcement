@@ -4,6 +4,10 @@ import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Task } from "@/generated/graphql";
 import { TaskDetailHeader } from "./task-detail-header";
+import { Button } from "react-bootstrap";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { openModal } from "@/app/store/reducers/app";
+import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -24,6 +28,8 @@ const GET_TASK = gql`
 `;
 
 const TaskDetail: FC = () => {
+  const dispatch = useAppDispatch();
+
   const { investigationGuid = "", taskId = "" } = useParams<{
     investigationGuid: string;
     taskId: string;
@@ -36,6 +42,20 @@ const TaskDetail: FC = () => {
   });
 
   const task = data?.task;
+
+  const toggleAddAttachment = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ADD_EDIT_TASK_ATTACHMENT,
+        data: {
+          title: "Upload attachment",
+          investigationIdentifier: investigationGuid,
+          taskIdentifier: task?.taskIdentifier,
+        },
+      }),
+    );
+  };
 
   if (isLoading) {
     return (
@@ -59,6 +79,20 @@ const TaskDetail: FC = () => {
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
           <h2>Task details</h2>
+        </div>
+
+        <div className="mt-3">
+          <h4>Attachments</h4>
+          <Button
+            id="add-task-attachment"
+            title="Add attachment"
+            variant="primary"
+            size="sm"
+            onClick={toggleAddAttachment}
+          >
+            <i className="bi bi-upload"></i>
+            <span>Add attachment</span>
+          </Button>
         </div>
       </section>
     </div>

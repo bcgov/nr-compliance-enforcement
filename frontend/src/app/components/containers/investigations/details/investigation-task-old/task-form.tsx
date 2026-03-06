@@ -975,19 +975,7 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
         <div className="mt-3">
           <hr className="mb-3"></hr>
           <fieldset>
-            <div className="attachment-header">
-              <h4>Attachments ({attachmentCount})</h4>
-              <Button
-                id="add-task-attachment"
-                title="Add attachment"
-                variant="primary"
-                size="sm"
-                onClick={toggleAddAttachment}
-              >
-                <i className="bi bi-upload"></i>
-                <span>Add attachment</span>
-              </Button>
-            </div>
+            <h4>Attachments ({attachmentCount})</h4>
 
             <Attachments
               attachmentType={AttachmentEnum.TASK_ATTACHMENT}
