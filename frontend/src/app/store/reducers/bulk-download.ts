@@ -148,29 +148,6 @@ async function createZipWithZipJs(
   taskNumber: number,
   totalSizeMB: number,
 ): Promise<void> {
-  // Monitor memory usage
-  const logMemory = () => {
-    if ((performance as any).memory) {
-      const mem = (performance as any).memory;
-      const usedMB = (mem.usedJSHeapSize / 1024 / 1024).toFixed(0);
-      const limitMB = (mem.jsHeapSizeLimit / 1024 / 1024).toFixed(0);
-      const availableMB = ((mem.jsHeapSizeLimit - mem.usedJSHeapSize) / (1024 * 1024)).toFixed(0);
-      const percentUsed = ((mem.usedJSHeapSize / mem.jsHeapSizeLimit) * 100).toFixed(1);
-
-      if (Number.parseFloat(percentUsed) > CONFIG.MEMORY_HIGH_THRESHOLD) {
-        console.warn(`Memory usage is HIGH (${percentUsed}%)`);
-      }
-
-      return {
-        usedMB: Number.parseInt(usedMB),
-        limitMB: Number.parseInt(limitMB),
-        availableMB: Number.parseInt(availableMB),
-        percentUsed: Number.parseFloat(percentUsed),
-      };
-    }
-    return null;
-  };
-
   // Create ZIP writer
   const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"), {
     bufferedWrite: true,
@@ -181,85 +158,6 @@ async function createZipWithZipJs(
   let failedFiles = 0;
   let totalBytesProcessed = 0;
   const failedFileNames: string[] = [];
-
-  // Retry download
-  async function downloadFileWithRetry(
-    file: FileWithPresignedUrl,
-  ): Promise<{ success: boolean; blob?: Blob; error?: Error; attempts: number }> {
-    let lastError: Error | null = null;
-
-    for (let attempt = 1; attempt <= CONFIG.MAX_RETRIES; attempt++) {
-      try {
-        const attemptPrefix = attempt > 1 ? `[Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}]` : "  ";
-
-        console.log(`${attemptPrefix} Downloading (attempt ${attempt}/${CONFIG.MAX_RETRIES})`);
-
-        // Check available memory before download
-        if (attempt > 1) {
-          const memInfo = logMemory();
-          await checkMemoryBeforeDownload(memInfo, file, attemptPrefix);
-        }
-
-        // Download file
-        const response = await fetch(file.url, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        // Download blob
-        const blob = await response.blob();
-
-        // Validate blob
-        if (blob.size === 0) {
-          throw new Error("Downloaded blob is 0 bytes");
-        }
-
-        // Verify size if expected size is known
-        if (file.size > 0) {
-          const sizeDiff = Math.abs(blob.size - file.size);
-          const sizePercentDiff = (sizeDiff / file.size) * 100;
-
-          if (sizePercentDiff > 5) {
-            console.warn(
-              `${attemptPrefix} Size mismatch: Expected ${(file.size / (1024 * 1024)).toFixed(2)}MB, got ${(blob.size / (1024 * 1024)).toFixed(2)}MB (${sizePercentDiff.toFixed(1)}% diff)`,
-            );
-          }
-        }
-
-        // Success!
-        return { success: true, blob, attempts: attempt };
-      } catch (error) {
-        lastError = error as Error;
-
-        const attemptPrefix = `[Attempt ${attempt}/${CONFIG.MAX_RETRIES}] `;
-        console.error(`${attemptPrefix}✗ Failed: ${lastError.message}`);
-
-        // Categorize error
-        const { errorType, shouldRetry } = categorizeError(lastError);
-        console.error(`${attemptPrefix} Error type: ${errorType}`);
-
-        // Don't retry certain error types
-        if (!shouldRetry) {
-          console.error(`${attemptPrefix}This error type should not be retried. Aborting.`);
-          return { success: false, error: lastError, attempts: attempt };
-        }
-
-        // If not last attempt, wait before retry
-        if (attempt < CONFIG.MAX_RETRIES) {
-          const delayMs = CONFIG.RETRY_DELAY_BASE_MS * attempt; // 2s, 4s, 6s
-          console.log(`${attemptPrefix} Waiting ${(delayMs / 1000).toFixed(1)}s before retry...`);
-          await new Promise((resolve) => setTimeout(resolve, delayMs));
-        }
-      }
-    }
-
-    // All retries failed
-    console.error(`All ${CONFIG.MAX_RETRIES} attempts failed for ${file.name}`);
-    return { success: false, error: lastError || new Error("All retries failed"), attempts: CONFIG.MAX_RETRIES };
-  }
 
   // Main processing loop
   for (let i = 0; i < files.length; i++) {
@@ -292,10 +190,6 @@ async function createZipWithZipJs(
 
       const blob = downloadResult.blob;
 
-      if (downloadResult.attempts > 1) {
-        console.log(`Succeeded after ${downloadResult.attempts} attempts`);
-      }
-
       // ===== ADD BLOB TO ZIP =====
       const skipCompression =
         /\.(mp4|mov|avi|mkv|flv|wmv|webm|m4v|mpg|mpeg|3gp|zip|rar|7z|gz|bz2|xz|tar|jpg|jpeg|png|gif|webp|bmp|ico|svg|mp3|m4a|aac|ogg|flac|wav|wma|pdf|epub|mobi)$/i.test(
@@ -310,8 +204,6 @@ async function createZipWithZipJs(
 
       completedFiles++;
       totalBytesProcessed += blob.size;
-
-      console.log(`✅ Success! Progress: ${completedFiles}/${files.length} files`);
 
       // Pause briefly between files to allow memory cleanup
       if (i + 1 < files.length) {
@@ -372,7 +264,7 @@ async function createZipWithZipJs(
   // Summary
   if (failedFiles > 0) {
     console.log(`\n Failed files (after ${CONFIG.MAX_RETRIES} retry attempts each):`);
-    failedFileNames.forEach((name, idx) => console.log(`    ${idx + 1}. ${name}`));
+    failedFileNames.forEach((name, idx) => console.log(`${idx + 1}. ${name}`));
 
     ToggleWarning(
       `Downloaded ${completedFiles} of ${files.length} files. ` +
@@ -404,6 +296,104 @@ async function createZipWithZipJs(
 }
 
 // ==== HELPERS FUNCTIONS ====
+
+function logMemory() {
+  if ((performance as any).memory) {
+    const mem = (performance as any).memory;
+    const usedMB = (mem.usedJSHeapSize / 1024 / 1024).toFixed(0);
+    const limitMB = (mem.jsHeapSizeLimit / 1024 / 1024).toFixed(0);
+    const availableMB = ((mem.jsHeapSizeLimit - mem.usedJSHeapSize) / (1024 * 1024)).toFixed(0);
+    const percentUsed = ((mem.usedJSHeapSize / mem.jsHeapSizeLimit) * 100).toFixed(1);
+
+    if (Number.parseFloat(percentUsed) > CONFIG.MEMORY_HIGH_THRESHOLD) {
+      console.warn(`Memory usage is HIGH (${percentUsed}%)`);
+    }
+
+    return {
+      usedMB: Number.parseInt(usedMB),
+      limitMB: Number.parseInt(limitMB),
+      availableMB: Number.parseInt(availableMB),
+      percentUsed: Number.parseFloat(percentUsed),
+    };
+  }
+  return null;
+}
+
+async function downloadFileWithRetry(
+  file: FileWithPresignedUrl,
+): Promise<{ success: boolean; blob?: Blob; error?: Error; attempts: number }> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= CONFIG.MAX_RETRIES; attempt++) {
+    try {
+      const attemptPrefix = attempt > 1 ? `[Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}]` : "  ";
+
+      // Check available memory before download
+      if (attempt > 1) {
+        const memInfo = logMemory();
+        await checkMemoryBeforeDownload(memInfo, file, attemptPrefix);
+      }
+
+      // Download file
+      const response = await fetch(file.url, { method: "GET" });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      validateBlobSize(blob, file, attemptPrefix);
+
+      // Success!
+      return { success: true, blob, attempts: attempt };
+    } catch (error) {
+      lastError = error as Error;
+      const errorAttemptPrefix = `[Attempt ${attempt}/${CONFIG.MAX_RETRIES}]`;
+
+      console.error(`${errorAttemptPrefix} ✗ Failed: ${lastError.message}`);
+
+      const { errorType, shouldRetry } = categorizeError(lastError);
+      console.error(`${errorAttemptPrefix} Error type: ${errorType}`);
+
+      if (!shouldRetry) {
+        console.error(`${errorAttemptPrefix} This error type should not be retried. Aborting.`);
+        return { success: false, error: lastError, attempts: attempt };
+      }
+
+      if (attempt < CONFIG.MAX_RETRIES) {
+        const delayMs = CONFIG.RETRY_DELAY_BASE_MS * attempt;
+        console.log(`${errorAttemptPrefix} Waiting ${(delayMs / 1000).toFixed(1)}s before retry...`);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  console.error(`All ${CONFIG.MAX_RETRIES} attempts failed for ${file.name}`);
+  return {
+    success: false,
+    error: lastError || new Error("All retries failed"),
+    attempts: CONFIG.MAX_RETRIES,
+  };
+}
+
+function validateBlobSize(blob: Blob, file: FileWithPresignedUrl, attemptPrefix: string): void {
+  if (blob.size === 0) {
+    throw new Error("Downloaded blob is 0 bytes");
+  }
+
+  if (file.size > 0) {
+    const sizeDiff = Math.abs(blob.size - file.size);
+    const sizePercentDiff = (sizeDiff / file.size) * 100;
+
+    if (sizePercentDiff > 5) {
+      console.warn(
+        `${attemptPrefix} Size mismatch: Expected ${(file.size / (1024 * 1024)).toFixed(2)}MB, ` +
+          `got ${(blob.size / (1024 * 1024)).toFixed(2)}MB (${sizePercentDiff.toFixed(1)}% diff)`,
+      );
+    }
+  }
+}
+
 async function checkMemoryBeforeDownload(
   memInfo: any,
   file: FileWithPresignedUrl,
