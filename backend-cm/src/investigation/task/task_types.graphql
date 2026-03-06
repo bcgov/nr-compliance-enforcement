@@ -6,6 +6,7 @@ type Task {
   assignedUserIdentifier: String
   createdByUserIdentifier: String!
   createdDate: DateTime!
+  updatedDate: DateTime
   taskNumber: Int!
   description: String
   activeIndicator: Boolean!

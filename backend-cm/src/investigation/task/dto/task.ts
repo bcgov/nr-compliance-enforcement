@@ -9,6 +9,7 @@ export class Task {
   assignedUserIdentifier: string;
   createdByUserIdentifier: string;
   createdDate: Date;
+  updatedDate: Date;
   taskNumber: number;
   description: string;
   activeIndicator: boolean;
@@ -56,6 +57,10 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     forMember(
       (dest) => dest.createdDate,
       mapFrom((src) => src.create_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.updatedDate,
+      mapFrom((src) => src.update_utc_timestamp),
     ),
     forMember(
       (dest) => dest.taskNumber,
