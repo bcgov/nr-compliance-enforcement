@@ -1,4 +1,4 @@
-FROM node:19-bullseye
+FROM node:22-bullseye
 
 # Install system dependencies required by Playwright WebKit
 # plus dnsutils for network debugging
