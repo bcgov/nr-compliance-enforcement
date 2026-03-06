@@ -1,5 +1,6 @@
 import { FC, useCallback, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
+import Paginator from "@components/common/paginator";
 import { SortableHeader } from "@components/common/sortable-header";
 import { SortArrow } from "@components/common/sort-arrow";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -8,6 +9,8 @@ import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
+
+const PAGE_SIZE = 25;
 
 type Props = {
   tasks: Task[];
@@ -18,6 +21,7 @@ type Props = {
 export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = false }) => {
   const [sortBy, setSortBy] = useState<string>("taskNumber");
   const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.ASC);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -94,6 +98,15 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     return sorted;
   }, [tasks, sortBy, sortOrder, resolveCategory, resolveSubCategory, resolveOfficer]);
 
+  const paginatedTasks = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return sortedTasks.slice(start, start + PAGE_SIZE);
+  }, [sortedTasks, currentPage]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setCurrentPage(newPage);
+  }, []);
+
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
       title={title}
@@ -166,7 +179,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
         </tr>
       );
     }
-    return sortedTasks.map((task) => (
+    return paginatedTasks.map((task) => (
       <TaskListItem
         key={task.taskIdentifier}
         data={task}
@@ -186,6 +199,15 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
           <tbody>{renderTaskListItems()}</tbody>
         </Table>
       </div>
+
+      {sortedTasks.length > 0 && (
+        <Paginator
+          currentPage={currentPage}
+          totalItems={sortedTasks.length}
+          onPageChange={handlePageChange}
+          resultsPerPage={PAGE_SIZE}
+        />
+      )}
     </div>
   );
 };

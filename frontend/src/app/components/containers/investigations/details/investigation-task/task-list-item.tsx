@@ -64,7 +64,7 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
 
   const handleRowClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("a")) return;
+    if (target.closest("a") || target.closest("button")) return;
     toggleExpand();
   };
 

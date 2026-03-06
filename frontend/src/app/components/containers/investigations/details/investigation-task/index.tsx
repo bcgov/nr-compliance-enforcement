@@ -14,8 +14,8 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   const tasks = (investigationData?.tasks as Task[]) ?? [];
 
   return (
-    <div className="comp-details-view">
-      <div className="d-flex align-items-center justify-content-between mb-3">
+    <div className="comp-details-section--list-view">
+      <div className="d-flex align-items-center justify-content-between">
         <h3 className="mb-0">Tasks</h3>
         <Button
           id="add-task-button"
@@ -28,10 +28,14 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         </Button>
       </div>
 
-      <TaskList
-        tasks={tasks}
-        investigationGuid={investigationGuid}
-      />
+      <div className="comp-data-container">
+        <div className="comp-data-list-map">
+          <TaskList
+            tasks={tasks}
+            investigationGuid={investigationGuid}
+          />
+        </div>
+      </div>
     </div>
   );
 };
