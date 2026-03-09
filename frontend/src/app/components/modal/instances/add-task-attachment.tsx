@@ -11,7 +11,7 @@ import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import Option from "@apptypes/app/option";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { handlePersistAttachments } from "@/app/common/attachment-utils";
+import { getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
@@ -37,18 +37,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
   const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
-  const { title, investigationIdentifier, taskIdentifier } = modalData;
+  const { title, investigationIdentifier, taskIdentifier, attachment } = modalData;
 
   const form = useForm({
     defaultValues: {
       file: null as FileList | null,
-      originalFileName: "",
-      fileType: "",
-      description: "",
-      title: "",
-      date: null,
-      takenBy: "",
-      location: "",
+      originalFileName: attachment?.name ? getDisplayFilename(attachment.name) : "",
+      fileType: attachment?.fileType ?? "",
+      description: attachment?.description ?? "",
+      title: attachment?.title ?? "",
+      date: attachment?.date ? new Date(attachment.date) : null,
+      takenBy: attachment?.takenBy ?? "",
+      location: attachment?.location ?? "",
     },
     onSubmitInvalid: () => {
       ToggleError("Errors in form");

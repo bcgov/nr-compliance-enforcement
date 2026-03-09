@@ -8,8 +8,12 @@ import { Button } from "react-bootstrap";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
-import { useInvestigationAttachments } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import {
+  Attachment,
+  useInvestigationAttachments,
+} from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { useDocumentationSearch } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-documentation-search";
+import { TaskAttachmentList } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/attachment-list";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -47,7 +51,7 @@ const TaskDetail: FC = () => {
 
   const task = data?.task;
 
-  const { attachments, totalCount, error } = useInvestigationAttachments({
+  const { attachments } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
     tasks: task ? [task] : [],
     search: searchValues.search,
@@ -59,9 +63,7 @@ const TaskDetail: FC = () => {
     enabled: !!investigationGuid,
   });
 
-  console.log(attachments);
-
-  const toggleAddAttachment = () => {
+  const handleAddAttachment = () => {
     dispatch(
       openModal({
         modalSize: "md",
@@ -70,6 +72,21 @@ const TaskDetail: FC = () => {
           title: "Upload attachment",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
+        },
+      }),
+    );
+  };
+
+  const handleEditAttachment = (attachment: Attachment) => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ADD_EDIT_TASK_ATTACHMENT,
+        data: {
+          title: "Edit attachment",
+          investigationIdentifier: investigationGuid,
+          taskIdentifier: task?.taskIdentifier,
+          attachment,
         },
       }),
     );
@@ -101,16 +118,26 @@ const TaskDetail: FC = () => {
 
         <div className="mt-3">
           <h4>Attachments</h4>
+
           <Button
             id="add-task-attachment"
             title="Add attachment"
             variant="primary"
             size="sm"
-            onClick={toggleAddAttachment}
+            onClick={handleAddAttachment}
+            className="mb-3"
           >
             <i className="bi bi-upload"></i>
             <span>Add attachment</span>
           </Button>
+
+          <div className="comp-data-container">
+            <TaskAttachmentList
+              attachments={attachments}
+              isLoading={isLoading}
+              onEdit={handleEditAttachment}
+            />
+          </div>
         </div>
       </section>
     </div>
