@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { getAttachments } from "@store/reducers/attachments";
@@ -20,7 +19,7 @@ export const BulkDownloadButton = ({
   const dispatch = useAppDispatch();
   const currentDownload = useSelector(selectCurrentDownload);
 
-  const isCurrentTaskDownload = (currentDownload && currentDownload.taskId === taskId) ?? false;
+  const isCurrentTaskDownload = currentDownload?.taskId === taskId ?? false;
   let toastDownloadInfo: Id;
 
   const handleBulkDownload = async () => {
