@@ -156,17 +156,18 @@ const deleteSingleAttachment = async ({
   identifier,
   isComplaintAttachment,
 }: DeleteAttachmentParams) => {
+  console.log(attachment);
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
   const response = await deleteMethod<string>(dispatch, parameters);
 
-  if (isImage(attachment.name)) {
-    const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
-    await deleteMethod<string>(dispatch, thumbParameters);
-  }
-
   if (response) {
     if (isComplaintAttachment) {
+      if (isImage(attachment.name)) {
+        const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
+        await deleteMethod<string>(dispatch, thumbParameters);
+      }
+
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
       await patch<boolean>(dispatch, parameters);
     }
@@ -235,7 +236,7 @@ const saveSingleAttachment = async ({
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
 
-  if (isImage(attachment.name)) {
+  if (isImage(attachment.name) && attachmentType !== AttachmentEnum.TASK_ATTACHMENT) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
@@ -246,7 +247,7 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const bucketId = config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 

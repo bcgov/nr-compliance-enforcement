@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   searchAttachments,
   fetchObjectsMetadata,
@@ -10,6 +10,7 @@ import { COMSObject } from "@apptypes/coms/object";
 import { Task } from "@/generated/graphql";
 import AttachmentEnum from "@constants/attachment-enum";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 interface UseInvestigationAttachmentsParams {
   investigationIdentifier: string;
@@ -116,6 +117,16 @@ export const useInvestigationAttachments = (
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
+
+  const queryClient = useQueryClient();
+
+  // Re-query when an upload is complete
+  useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["investigation-attachments-all", investigationIdentifier] });
+    });
+    return () => subscription.unsubscribe();
+  }, [queryClient, investigationIdentifier]);
 
   // Filter, sort, and paginate
   const attachmentResults = useMemo(() => {

@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useCallback, useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Alert, Button, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
@@ -17,6 +17,7 @@ import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events"
 import format from "date-fns/format";
 import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
+import { Id } from "react-toastify";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -24,7 +25,7 @@ type AddEditTaskAttachmentModalProps = {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-// TODO Add to Backend
+// TODO Add to Backend?
 const fileTypeOptions: Option[] = [
   { label: "Audio", value: "Audio" },
   { label: "Document", value: "Document" },
@@ -38,6 +39,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const userAgency = getUserAgency();
   const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
   const { title, investigationIdentifier, taskIdentifier, attachment } = modalData;
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -79,25 +81,28 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const persistTaskAttachments = async (value: any, taskIdentifier: string) => {
     const files = value.file ? Array.from<File>(value.file) : null;
 
-    if (!files) return;
+    if (!files && !attachment) return;
 
-    const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-      position: "top-right",
-      autoClose: false,
-      closeOnClick: false,
-      closeButton: false,
-      draggable: false,
-    });
+    let toastId: Id;
+    if (!attachment) {
+      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+    }
 
     close();
 
     handlePersistAttachments({
       dispatch,
-      attachmentsToAdd: files,
-      attachmentsToDelete: null, // TODO: handle deletes
+      attachmentsToAdd: showDeleteConfirm ? null : files,
+      attachmentsToDelete: showDeleteConfirm ? [attachment] : null,
       identifier: investigationIdentifier,
       subIdentifier: taskIdentifier,
-      setAttachmentsToAdd: () => {},
+      setAttachmentsToAdd: () => {}, // Don't need these here
       setAttachmentsToDelete: () => {},
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,
       isSynchronous: false,
@@ -110,10 +115,10 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         ...(value.location && { location: value.location }),
       },
     }).then(() => {
-      if (files) {
+      if (toastId) {
         DismissToast(toastId);
-        attachmentUploadComplete$.next(taskIdentifier);
       }
+      attachmentUploadComplete$.next(taskIdentifier);
     });
   };
 
@@ -134,9 +139,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               label="File"
               required
               validators={{
-                onChange: z.custom<FileList | null>((val) => val !== null && val.length > 0, {
-                  message: "At least one file is required",
-                }),
+                onChange: attachment
+                  ? z.custom<FileList | null>(() => true) // optional in edit mode
+                  : z.custom<FileList | null>((val) => val !== null && val.length > 0, {
+                      message: "At least one file is required",
+                    }),
               }}
               render={(field) => (
                 <>
@@ -312,25 +319,69 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             />
           </fieldset>
         </form>
+
+        {showDeleteConfirm && (
+          <Alert
+            variant="danger"
+            className="comp-complaint-details-alert mt-3"
+            id={`attachment-delete-confirm-alert`}
+          >
+            <div className="d-flex align-items-start gap-2">
+              <i className="bi bi-info-circle mt-2" />
+              <span>
+                <strong> Delete attachment</strong>
+                <p className="mb-3">
+                  Are you sure you want to delete "{attachment ? getDisplayFilename(attachment.name) : ""}"? This action
+                  cannot be undone.
+                </p>
+              </span>
+            </div>
+            <div className="d-flex justify-content-end gap-2">
+              <Button
+                variant="outline-primary"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleSubmit}
+              >
+                <i className="bi bi-trash me-1" />
+                <span>Confirm Delete</span>
+              </Button>
+            </div>
+          </Alert>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="comp-details-form-buttons">
-          <Button
-            variant="outline-primary"
-            id="add-attachment-cancel-button"
-            title="Cancel"
-            onClick={close}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            id="add-attachment-save-button"
-            title="Save Attachment"
-            onClick={handleSubmit}
-          >
-            <span>Save and Close</span>
-          </Button>
+        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
+          {attachment && (
+            <Button
+              variant="outline-danger"
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={showDeleteConfirm}
+            >
+              <i className="bi bi-trash me-1" />
+              <span>Delete</span>
+            </Button>
+          )}
+          <div className="d-flex gap-2 ms-auto">
+            <Button
+              variant="outline-primary"
+              onClick={close}
+              disabled={showDeleteConfirm}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSubmit}
+              disabled={showDeleteConfirm}
+            >
+              <span>Save and Close</span>
+            </Button>
+          </div>
         </div>
       </Modal.Footer>
     </>

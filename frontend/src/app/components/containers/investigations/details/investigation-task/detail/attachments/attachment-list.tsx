@@ -5,6 +5,10 @@ import { SortableHeader } from "@components/common/sortable-header";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { selectOfficers } from "@/app/store/reducers/officer";
+import { generateApiParameters, get } from "@/app/common/api";
+import config from "@/config";
 
 const PAGE_SIZE = 25;
 
@@ -15,9 +19,11 @@ type Props = {
 };
 
 export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, onEdit }) => {
+  const dispatch = useAppDispatch();
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.DESC);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const officers = useAppSelector(selectOfficers);
 
   const handleSort = useCallback(
     (sortInput: string) => {
@@ -72,6 +78,26 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
   }, []);
+
+  const getOfficerName = (officerGuid: string) => {
+    const takenByOfficer = officers?.find((o) => o.auth_user_guid === officerGuid);
+    return takenByOfficer ? `${takenByOfficer.last_name}, ${takenByOfficer.first_name}` : "-";
+  };
+
+  const downloadAttachment = async (objectid: string | undefined, filename: string) => {
+    if (!objectid) {
+      return;
+    }
+
+    const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url`);
+    const response = await get<string>(dispatch, parameters);
+
+    const a = document.createElement("a");
+    a.href = response;
+    a.download = filename;
+    a.target = "_blank";
+    a.click();
+  };
 
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
@@ -136,16 +162,23 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
 
     return paginatedAttachments.map((attachment) => (
       <tr key={attachment.id}>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{getDisplayFilename(attachment.name)}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160">
+          <button
+            className="btn btn-link p-0 border-0 text-body"
+            onClick={() => downloadAttachment(attachment.id, getDisplayFilename(attachment.name))}
+          >
+            {getDisplayFilename(attachment.name)}
+          </button>
+        </td>
         <td className="comp-cell-width-120">{attachment.fileType ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.description ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.title ?? "-"}</td>
         <td className="comp-cell-width-120">{attachment.date ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.takenBy ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160">{getOfficerName(attachment.takenBy ?? "")}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
           <button
-            className="btn btn-link p-0 border-0"
+            className="btn btn-link p-0 border-0 text-body"
             onClick={() => onEdit(attachment)}
             aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
           >
