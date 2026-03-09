@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useCallback, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
@@ -15,6 +15,8 @@ import { handlePersistAttachments } from "@/app/common/attachment-utils";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
+import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
+import { getUserAgency } from "@/app/service/user-service";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -33,6 +35,8 @@ const fileTypeOptions: Option[] = [
 export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close, submit, onDirtyChange }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
+  const userAgency = getUserAgency();
+  const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
   const { title, investigationIdentifier, taskIdentifier } = modalData;
 
   const form = useForm({
@@ -43,6 +47,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       description: "",
       title: "",
       date: null,
+      takenBy: "",
+      location: "",
     },
     onSubmitInvalid: () => {
       ToggleError("Errors in form");
@@ -51,6 +57,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       persistTaskAttachments(value, taskIdentifier);
     },
   });
+
+  const fileType = useStore(form.baseStore, (state) => state.values.fileType);
 
   const onFileSelect = useCallback(
     (files: FileList) => {
@@ -81,6 +89,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       draggable: false,
     });
 
+    close();
+
     handlePersistAttachments({
       dispatch,
       attachmentsToAdd: files,
@@ -96,12 +106,13 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         description: value.description,
         "file-type": value.fileType,
         date: value.date ? format(value.date, "yyyy-MM-dd") : "",
+        ...(value.takenBy && { "taken-by": value.takenBy }),
+        ...(value.location && { location: value.location }),
       },
     }).then(() => {
       if (files) {
         DismissToast(toastId);
         attachmentUploadComplete$.next(taskIdentifier);
-        close();
       }
     });
   };
@@ -169,7 +180,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   className="comp-details-input"
                   options={fileTypeOptions}
                   //value={[]} // TODO: find matching option
-                  onChange={(option) => field.handleChange(option?.value || "")}
+                  onChange={(option) => {
+                    field.handleChange(option?.value || "");
+                    const isMediaType = ["Audio", "Video", "Photo"].includes(option?.value || "");
+                    if (!isMediaType) {
+                      form.setFieldValue("takenBy", "");
+                      form.setFieldValue("location", "");
+                    }
+                  }}
                   placeholder="Select file type"
                   isClearable={true}
                   showInactive={false}
@@ -178,6 +196,52 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 />
               )}
             />
+
+            {["Audio", "Video", "Photo"].includes(fileType) && (
+              <>
+                <FormField
+                  form={form}
+                  name="takenBy"
+                  label="Taken By"
+                  required
+                  validators={{ onChange: z.string().min(1, "Taken By is required") }}
+                  render={(field) => (
+                    <CompSelect
+                      id="taken-by-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={assignableOfficers}
+                      value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                      onChange={(option) => field.handleChange(option?.value || "")}
+                      placeholder="Select taken by"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
+
+                <FormField
+                  form={form}
+                  name="location"
+                  label="Location"
+                  render={(field) => (
+                    <CompInput
+                      id="location"
+                      divid="location-value"
+                      type="input"
+                      inputClass="comp-form-control"
+                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                      onChange={(evt: any) => field.handleChange(evt.target.value)}
+                      value={field.state.value}
+                      placeholder="Enter location"
+                      maxLength={1024}
+                    />
+                  )}
+                />
+              </>
+            )}
 
             {/* Description */}
             <FormField
