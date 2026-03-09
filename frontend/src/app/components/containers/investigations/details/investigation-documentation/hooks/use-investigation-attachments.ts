@@ -14,7 +14,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 interface UseInvestigationAttachmentsParams {
   investigationIdentifier: string;
   tasks: Task[];
-  search: string;
+  search: string | null;
   taskFilter: string | null;
   sortBy: string;
   sortOrder: string;
@@ -26,6 +26,12 @@ interface UseInvestigationAttachmentsParams {
 export interface Attachment extends COMSObject {
   taskId: string | null;
   taskNumber?: number;
+  takenBy?: string | null;
+  fileType?: string | null;
+  description?: string | null;
+  title?: string | null;
+  date?: string | null;
+  location?: string | null;
 }
 
 export interface InvestigationAttachmentsResult {
@@ -75,6 +81,12 @@ const fetchAttachmentsWithMetadata = async (investigationIdentifier: string): Pr
       ...attachment,
       taskId: metadata?.taskId ?? null,
       type: metadata?.attachmentType ?? null,
+      takenBy: metadata?.takenBy ?? null,
+      fileType: metadata?.fileType ?? null,
+      description: metadata?.description ?? null,
+      title: metadata?.title ?? null,
+      date: metadata?.date ?? null,
+      location: metadata?.location ?? null,
     };
   });
 };
@@ -117,6 +129,10 @@ export const useInvestigationAttachments = (
         taskNumber: task?.taskNumber,
       };
     });
+
+    // Filter to only include attachments belonging to the provided tasks
+    const taskIdentifiers = new Set(tasks.map((t) => t.taskIdentifier));
+    items = items.filter((a) => a.taskId && taskIdentifiers.has(a.taskId));
 
     // Filter by search term
     if (search) {

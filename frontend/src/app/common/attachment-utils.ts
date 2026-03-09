@@ -118,6 +118,12 @@ export interface ParsedObjectMetadata {
   objectId: string;
   taskId: string | null;
   attachmentType: AttachmentEnum | null;
+  takenBy: string | null;
+  date: string | null;
+  fileType: string | null;
+  location: string | null;
+  description: string | null;
+  title: string | null;
 }
 
 /**
@@ -211,6 +217,12 @@ export const fetchObjectsMetadata = async (
   for (const item of results) {
     const taskIdMeta = item.metadata.find((m) => m.key === "task-id");
     const attachmentTypeMeta = item.metadata.find((m) => m.key === "attachment-type");
+    const takenByMeta = item.metadata.find((m) => m.key === "taken-by");
+    const dateMeta = item.metadata.find((m) => m.key === "date");
+    const fileTypeMeta = item.metadata.find((m) => m.key === "file-type");
+    const locationMeta = item.metadata.find((m) => m.key === "location");
+    const descriptionMeta = item.metadata.find((m) => m.key === "description");
+    const titleMeta = item.metadata.find((m) => m.key === "title");
 
     const attachmentTypeNum = attachmentTypeMeta ? Number.parseInt(attachmentTypeMeta.value, 10) : null;
     const validAttachmentType =
@@ -222,6 +234,12 @@ export const fetchObjectsMetadata = async (
       objectId: item.objectId,
       taskId: taskIdMeta?.value ?? null,
       attachmentType: validAttachmentType,
+      date: dateMeta?.value ?? null,
+      takenBy: takenByMeta?.value ?? null,
+      fileType: fileTypeMeta?.value ?? null,
+      location: locationMeta?.value ?? null,
+      description: descriptionMeta?.value ?? null,
+      title: titleMeta?.value ?? null,
     });
   }
 
