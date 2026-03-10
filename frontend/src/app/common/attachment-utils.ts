@@ -253,3 +253,13 @@ export const getDisplayFilename = (storedName: string): string => {
   const match = new RegExp(/^(.+)_[a-f0-9-]{36}_\d+(\.[^.]+)?$/i).exec(decoded);
   return match ? `${match[1]}${match[2] || ""}` : decoded;
 };
+
+// Convert output from File picker to COMS Object Array for display sizing info in Upload Component
+export const fileListToCOMSObjects = (files: FileList | null): COMSObject[] => {
+  if (!files) return [];
+  return Array.from<File>(files).map((f) => ({
+    name: f.name,
+    size: f.size,
+    pendingUpload: true,
+  }));
+};

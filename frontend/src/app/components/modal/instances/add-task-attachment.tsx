@@ -11,7 +11,7 @@ import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import Option from "@apptypes/app/option";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
+import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
@@ -67,13 +67,25 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   const onFileSelect = useCallback(
     (files: FileList) => {
-      form.setFieldValue("file", files);
-      const fileNames = Array.from(files)
-        .map((f) => f.name)
-        .join("\n");
-      form.setFieldValue("originalFileName", fileNames);
+      const existingFiles = form.getFieldValue("file");
+      const existingFilesArray = existingFiles ? Array.from<File>(existingFiles) : [];
+      const newFilesArray = Array.from<File>(files);
 
-      const duplicates = Array.from(files)
+      // Merge, ignoring files already in the form selection by name
+      const mergedFiles = [
+        ...existingFilesArray,
+        ...newFilesArray.filter((f) => !existingFilesArray.some((e) => e.name === f.name)),
+      ];
+
+      // Convert back to FileList via DataTransfer
+      const dataTransfer = new DataTransfer();
+      mergedFiles.forEach((f) => dataTransfer.items.add(f));
+      const mergedFileList = dataTransfer.files;
+
+      form.setFieldValue("file", mergedFileList);
+      form.setFieldValue("originalFileName", mergedFiles.map((f) => f.name).join("\n"));
+
+      const duplicates = newFilesArray
         .filter((f) => existingAttachments.some((a: COMSObject) => getDisplayFilename(a.name) === f.name))
         .map((f) => f.name);
       setDuplicateFileNames(duplicates);
@@ -132,6 +144,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     });
   };
 
+  const handleRemoveFile = (nameToRemove: string) => {
+    const currentFiles = form.getFieldValue("file");
+    const updatedFiles = currentFiles ? Array.from<File>(currentFiles).filter((f) => f.name !== nameToRemove) : [];
+
+    const dataTransfer = new DataTransfer();
+    updatedFiles.forEach((f) => dataTransfer.items.add(f));
+    const updatedFileList = dataTransfer.files;
+
+    form.setFieldValue("file", updatedFileList.length > 0 ? updatedFileList : null);
+    form.setFieldValue("originalFileName", updatedFiles.map((f) => f.name).join("\n"));
+  };
+
   return (
     <>
       {title && (
@@ -158,7 +182,10 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 }}
                 render={(field) => (
                   <>
-                    <AttachmentUpload onFileSelect={onFileSelect} />
+                    <AttachmentUpload
+                      onFileSelect={onFileSelect}
+                      previousValues={fileListToCOMSObjects(field.state.value)}
+                    />
                     {field.state.meta.errors?.[0]?.message && (
                       <span className="error-message">{field.state.meta.errors[0].message}</span>
                     )}
@@ -177,9 +204,22 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               render={(field) => (
                 <div className="comp-details-input">
                   {field.state.value ? (
-                    field.state.value
-                      .split("\n")
-                      .map((name: string, i: number) => <div key={name + "-" + i}>{name}</div>)
+                    field.state.value.split("\n").map((name: string, i: number) => (
+                      <div
+                        key={name + "-" + i}
+                        className="d-flex align-items-center gap-2"
+                      >
+                        <span>{name}</span>
+                        <button
+                          type="button"
+                          className="btn btn-link p-0 border-0 text-body"
+                          onClick={() => handleRemoveFile(name)}
+                          aria-label={`Remove ${name}`}
+                        >
+                          <i className="bi bi-trash" />
+                        </button>
+                      </div>
+                    ))
                   ) : (
                     <span className="text-muted">No files selected</span>
                   )}

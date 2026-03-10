@@ -1,8 +1,10 @@
-import { FC, useCallback, useState } from "react";
+import { COMSObject } from "@/app/types/coms/object";
+import { FC, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
 type Props = {
   onFileSelect: (selectedFile: FileList) => void;
+  previousValues: COMSObject[] | null; // existing files that were previously selected for accurate counts and sizes
   disabled?: boolean | null;
 };
 
@@ -13,13 +15,9 @@ const formatFileSize = (bytes: number): string => {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
 };
 
-export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
+export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled, previousValues }) => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      setSelectedFiles(acceptedFiles);
-
       const dataTransfer = new DataTransfer();
       acceptedFiles.forEach((file) => {
         dataTransfer.items.add(file);
@@ -34,7 +32,8 @@ export const AttachmentUpload: FC<Props> = ({ onFileSelect, disabled }) => {
     disabled: disabled ?? false,
   });
 
-  const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+  const selectedFiles = previousValues ?? [];
+  const totalSize = selectedFiles.reduce((sum, file) => sum + (file.size ?? 0), 0);
   const hasFiles = selectedFiles.length > 0;
 
   return (

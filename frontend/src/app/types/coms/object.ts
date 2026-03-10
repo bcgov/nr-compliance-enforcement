@@ -22,4 +22,5 @@ export interface COMSObject {
   date?: string | null;
   takenBy?: string | null;
   location?: string | null;
+  size?: number;
 }
