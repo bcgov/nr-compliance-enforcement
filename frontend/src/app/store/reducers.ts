@@ -3,6 +3,7 @@ import storage from "redux-persist/lib/storage";
 import { combineReducers } from "@reduxjs/toolkit";
 
 import officers from "./reducers/officer";
+import bulkDownload from "./reducers/bulk-download";
 import app from "./reducers/app";
 import complaints from "./reducers/complaints";
 import offices from "./reducers/office";
@@ -44,4 +45,5 @@ export const rootReducer = combineReducers({
   codeTables,
   complaintOutcomes,
   parks: persistReducer(parksPersistConfig, parks),
+  bulkDownload,
 });

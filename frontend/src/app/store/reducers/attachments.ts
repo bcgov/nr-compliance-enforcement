@@ -327,6 +327,7 @@ export const saveAttachments =
       }
     }
   };
+
 const handleError = (attachment: File, error: any) => {
   if (axios.isAxiosError(error) && error.response?.status === 409) {
     ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);

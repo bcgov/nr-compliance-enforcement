@@ -9,12 +9,12 @@ export const ToggleInformation = (message: string, options?: ToastOptions) => {
   return toast.info(message, options);
 };
 
-export const ToggleError = (message: string) => {
-  toast.error(message);
+export const ToggleError = (message: string, options?: ToastOptions) => {
+  toast.error(message, options);
 };
 
-export const ToggleWarning = (message: string) => {
-  toast.warning(message);
+export const ToggleWarning = (message: string, options?: ToastOptions) => {
+  toast.warning(message, options);
 };
 
 export const DismissToast = (toastId: Id) => {

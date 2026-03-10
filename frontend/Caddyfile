@@ -59,6 +59,7 @@
     X-Content-Type-Options "nosniff"
     Strict-Transport-Security "max-age=31536000"
     Content-Security-Policy "default-src 'self' https://*.gov.bc.ca https://*.arcgis.com https://*.arcgisonline.com; 
+    connect-src 'self' https://*.gov.bc.ca https://*.arcgis.com https://*.arcgisonline.com https://nrs.objectstore.gov.bc.ca data: blob:; 
     script-src 'self' https://*.gov.bc.ca https://www2.gov.bc.ca https://*.arcgis.com blob:; 
     object-src 'self' blob:; 
     style-src 'self' https://fonts.googleapis.com https://use.fontawesome.com 'unsafe-inline'; 
