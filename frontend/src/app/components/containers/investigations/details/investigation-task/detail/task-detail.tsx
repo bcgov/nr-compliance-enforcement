@@ -119,7 +119,7 @@ const TaskDetail: FC = () => {
         </div>
 
         <div className="mt-3">
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex justify-content-between align-items-center my-2">
             <h4>Attachments</h4>
             {attachments.length > 0 && (
               <Button

@@ -213,7 +213,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
         <Table
-          className="comp-table"
+          className="comp-table mb-0"
           id="task-attachment-list"
         >
           {renderHeader()}
