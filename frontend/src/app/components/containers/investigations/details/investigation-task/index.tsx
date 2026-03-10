@@ -1,101 +1,41 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
-import { TaskItem } from "@/app/components/containers/investigations/details/investigation-task/task-item";
-import { TaskForm } from "@/app/components/containers/investigations/details/investigation-task/task-form";
+import { Link } from "react-router-dom";
+import { TaskList } from "@/app/components/containers/investigations/details/investigation-task/task-list";
 import { Investigation, Task } from "@/generated/graphql";
 
-interface InvestigationTasksProps {
+interface InvestigationTasksNewProps {
   investigationGuid: string;
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const InvestigationTasks: FC<InvestigationTasksProps> = ({
-  investigationGuid,
-  investigationData,
-  onDirtyChange,
-}) => {
-  // State
-  const [showAddCard, setshowAddCard] = useState(false);
-  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
-
-  // Data
-  const tasks = investigationData?.tasks;
-
-  // Functions
-  const handleCloseForm = () => {
-    setshowAddCard(false);
-    setEditingTaskId(null);
-  };
-
-  const handleEditTask = (taskId: string) => {
-    setEditingTaskId(taskId);
-  };
-
-  useEffect(() => {
-    if (showAddCard && targetRef.current) {
-      targetRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [showAddCard]);
+export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {
+  const tasks = (investigationData?.tasks as Task[]) ?? [];
 
   return (
-    <div className="comp-details-view">
-      <div className="row my-2">
-        <div className="col-auto">
-          <h3>Tasks</h3>
-        </div>
-        <div className="col-auto">
-          <Button
-            id="add-task-button"
-            variant="primary"
-            size="sm"
-            onClick={() => {
-              setshowAddCard(true);
-              targetRef.current?.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            <i className="bi bi-plus-circle me-1" /> {/**/}
-            Add task
-          </Button>
-        </div>
+    <div className="comp-details-section--list-view">
+      <div className="d-flex align-items-center justify-content-between my-2">
+        <h3>Tasks</h3>
+        <Button
+          id="add-task-button"
+          as={Link as any}
+          to={`/investigation/${investigationGuid}/task/create`}
+          variant="primary"
+          size="sm"
+        >
+          <i className="bi bi-plus-circle me-1" /> Add task
+        </Button>
       </div>
 
-      <div className="task-list">
-        {tasks?.map((task) => (
-          <div key={task?.taskIdentifier}>
-            {editingTaskId === task?.taskIdentifier ? (
-              <TaskForm
-                investigationGuid={investigationGuid}
-                task={task}
-                onClose={handleCloseForm}
-                onDirtyChange={onDirtyChange}
-              />
-            ) : (
-              <TaskItem
-                task={task as Task}
-                investigationData={investigationData}
-                canEdit={!editingTaskId}
-                onEdit={handleEditTask}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-      <div
-        ref={targetRef}
-        className="scroll-target"
-      >
-        {showAddCard && (
-          <TaskForm
+      <div className="comp-data-container">
+        <div className="comp-data-list-map">
+          <TaskList
+            tasks={tasks}
             investigationGuid={investigationGuid}
-            onClose={handleCloseForm}
-            onDirtyChange={onDirtyChange}
           />
-        )}
+        </div>
       </div>
     </div>
   );
 };
-
-export default InvestigationTasks;

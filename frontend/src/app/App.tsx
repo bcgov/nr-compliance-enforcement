@@ -50,6 +50,8 @@ import PartyEdit from "./components/containers/parties/edit/party-edit";
 import InspectionEdit from "@/app/components/containers/inspections/edit/inspection-edit";
 import Parties from "@/app/components/containers/parties/parties";
 import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
+import TaskDetail from "@/app/components/containers/investigations/details/investigation-task/detail/task-detail";
+import TaskCreate from "@/app/components/containers/investigations/details/investigation-task/create/task-create";
 import { LegislationManagement } from "@/app/components/containers/admin/legislation-management";
 
 const App: FC = () => {
@@ -157,6 +159,24 @@ const App: FC = () => {
                   <Route
                     path="/case/:caseIdentifier/createInvestigation"
                     element={<InvestigationCreate />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid/task/create"
+                    element={<TaskCreate />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid/task/:taskId/edit"
+                    element={<TaskCreate />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid/task/:taskId"
+                    element={<TaskDetail />}
                   />
                 )}
                 {investigationsActive && (
