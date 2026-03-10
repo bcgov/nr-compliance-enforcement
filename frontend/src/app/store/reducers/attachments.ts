@@ -1,5 +1,5 @@
 import { AppThunk } from "@store/store";
-import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
+import { deleteMethod, generateApiParameters, get, patch, put, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
@@ -156,7 +156,6 @@ const deleteSingleAttachment = async ({
   identifier,
   isComplaintAttachment,
 }: DeleteAttachmentParams) => {
-  console.log(attachment);
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
   const response = await deleteMethod<string>(dispatch, parameters);
@@ -341,6 +340,47 @@ export const saveAttachments =
       }
     }
   };
+
+interface ObjectVersion {
+  id: string;
+  s3VersionId: string;
+  objectId: string;
+  isLatest: boolean;
+  deleteMarker: boolean;
+}
+
+export const updateAttachmentMetadata =
+  (objectId: string, extendedMeta: Record<string, string>): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    try {
+      // Fetch versions to get the latest versionId and s3VersionId
+      const versionParameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}/version`);
+      const versions = await get<ObjectVersion[]>(dispatch, versionParameters);
+      const latestVersion = versions.find((v) => v.isLatest && !v.deleteMarker);
+
+      if (!latestVersion) {
+        ToggleError("Could not find latest version of attachment");
+        return;
+      }
+
+      const parameters = generateApiParameters(
+        `${config.COMS_URL}/object/${objectId}/metadata?versionId=${latestVersion.id}`,
+      );
+
+      const headers: Record<string, string> = {};
+      Object.entries(extendedMeta).forEach(([key, value]) => {
+        headers[`x-amz-meta-${key}`] = value;
+      });
+
+      await put<void>(dispatch, parameters, true, headers);
+
+      ToggleSuccess("Attachment updated successfully");
+    } catch (error) {
+      console.error(error);
+      ToggleError("Failed to update attachment");
+    }
+  };
+
 const handleError = (attachment: File, error: any) => {
   if (axios.isAxiosError(error) && error.response?.status === 409) {
     ToggleError(`Attachment "${attachment.name}" could not be saved.  Duplicate file.`);

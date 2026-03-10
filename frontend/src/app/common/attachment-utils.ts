@@ -206,6 +206,7 @@ export const fetchObjectsMetadata = async (
         objectId: batch,
       },
     });
+
     results.push(...response.data);
   }
 

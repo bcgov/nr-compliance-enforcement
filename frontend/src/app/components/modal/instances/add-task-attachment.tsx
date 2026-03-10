@@ -17,8 +17,8 @@ import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events"
 import format from "date-fns/format";
 import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
-import { Id } from "react-toastify";
 import { COMSObject } from "@/app/types/coms/object";
+import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -101,47 +101,86 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   type FormValues = typeof form.state.values;
 
   const persistTaskAttachments = async (value: FormValues, taskIdentifier: string) => {
-    const files = value.file ? Array.from<File>(value.file) : null;
-
-    if (!files && !attachment) return;
-
-    let toastId: Id;
-    if (!attachment) {
-      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-        position: "top-right",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
-        draggable: false,
-      });
+    if (showDeleteConfirm) {
+      await handleDelete(taskIdentifier);
+    } else if (attachment) {
+      await handleEditMetadata(value, taskIdentifier);
+    } else {
+      await handleAdd(value, taskIdentifier);
     }
+  };
+
+  const handleAdd = async (value: FormValues, taskIdentifier: string) => {
+    const files = value.file ? Array.from<File>(value.file) : null;
+    if (!files) return;
+
+    const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+      position: "top-right",
+      autoClose: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: false,
+    });
 
     close();
 
     handlePersistAttachments({
       dispatch,
-      attachmentsToAdd: showDeleteConfirm ? null : files,
-      attachmentsToDelete: showDeleteConfirm ? [attachment] : null,
+      attachmentsToAdd: files,
+      attachmentsToDelete: null,
       identifier: investigationIdentifier,
       subIdentifier: taskIdentifier,
-      setAttachmentsToAdd: () => {}, // Don't need these here
+      setAttachmentsToAdd: () => {},
       setAttachmentsToDelete: () => {},
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,
       isSynchronous: false,
-      extendedMeta: {
-        title: value.title,
-        description: value.description,
-        "file-type": value.fileType,
-        date: value.date ? format(value.date, "yyyy-MM-dd") : "",
-        ...(value.takenBy && { "taken-by": value.takenBy }),
-        ...(value.location && { location: value.location }),
-      },
+      extendedMeta: buildExtendedMeta(value),
     }).then(() => {
-      if (toastId) {
-        DismissToast(toastId);
-      }
+      DismissToast(toastId);
       attachmentUploadComplete$.next(taskIdentifier);
     });
+  };
+
+  const handleDelete = async (taskIdentifier: string) => {
+    close();
+    handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd: null,
+      attachmentsToDelete: [attachment],
+      identifier: investigationIdentifier,
+      subIdentifier: taskIdentifier,
+      setAttachmentsToAdd: () => {},
+      setAttachmentsToDelete: () => {},
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      isSynchronous: false,
+    }).then(() => {
+      attachmentUploadComplete$.next(taskIdentifier);
+    });
+  };
+
+  const handleEditMetadata = async (value: FormValues, taskIdentifier: string) => {
+    close();
+
+    dispatch(updateAttachmentMetadata(attachment.id, buildExtendedMeta(value))).then(() => {
+      attachmentUploadComplete$.next(taskIdentifier);
+    });
+  };
+
+  // shared meta building logic
+  const buildExtendedMeta = (value: FormValues) => {
+    const isMediaType = ["Audio", "Video", "Photo"].includes(value.fileType);
+    return {
+      "is-thumb": "N",
+      "attachment-type": String(AttachmentEnum.TASK_ATTACHMENT),
+      "investigation-id": investigationIdentifier,
+      "task-id": taskIdentifier,
+      title: value.title,
+      description: value.description,
+      "file-type": value.fileType,
+      date: value.date ? format(value.date, "yyyy-MM-dd") : "",
+      ...(isMediaType && value.takenBy && { "taken-by": value.takenBy }),
+      ...(isMediaType && value.location && { location: value.location }),
+    };
   };
 
   const handleRemoveFile = (nameToRemove: string) => {
@@ -210,14 +249,16 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                         className="d-flex align-items-center gap-2"
                       >
                         <span>{name}</span>
-                        <button
-                          type="button"
-                          className="btn btn-link p-0 border-0 text-body"
-                          onClick={() => handleRemoveFile(name)}
-                          aria-label={`Remove ${name}`}
-                        >
-                          <i className="bi bi-trash" />
-                        </button>
+                        {!attachment && (
+                          <button
+                            type="button"
+                            className="btn btn-link p-0 border-0 text-body"
+                            onClick={() => handleRemoveFile(name)}
+                            aria-label={`Remove ${name}`}
+                          >
+                            <i className="bi bi-trash" />
+                          </button>
+                        )}
                       </div>
                     ))
                   ) : (
@@ -289,6 +330,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 </div>
               </Alert>
             )}
+
             {/* File Type */}
             <FormField
               form={form}
@@ -309,6 +351,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                     if (!isMediaType) {
                       form.setFieldValue("takenBy", "");
                       form.setFieldValue("location", "");
+                      form.resetField("takenBy");
+                      form.resetField("location");
                     }
                   }}
                   placeholder="Select file type"
@@ -316,6 +360,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   showInactive={false}
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  menuPlacement="bottom"
                 />
               )}
             />
