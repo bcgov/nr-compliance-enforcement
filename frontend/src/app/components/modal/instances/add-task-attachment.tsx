@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Alert, Button, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -19,11 +19,10 @@ import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
-  submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 // Little value in adding this to the backend as there are no Foreign Keys
@@ -34,12 +33,20 @@ const fileTypeOptions: Option[] = [
   { label: "Video", value: "Video" },
 ];
 
-export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close, submit, onDirtyChange }) => {
+export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
   const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
-  const { title, investigationIdentifier, taskIdentifier, existingAttachments, attachment } = modalData;
+  const {
+    title,
+    investigationIdentifier,
+    taskIdentifier,
+    existingAttachments,
+    attachment,
+    defaultAssignee,
+    onDirtyChange,
+  } = modalData;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
@@ -52,7 +59,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       description: attachment?.description ?? "",
       title: attachment?.title ?? "",
       date: attachment?.date ? new Date(attachment.date) : null,
-      takenBy: attachment?.takenBy ?? "",
+      takenBy: attachment?.takenBy ?? defaultAssignee ?? "",
       location: attachment?.location ?? "",
     },
     onSubmitInvalid: () => {
@@ -62,6 +69,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       persistTaskAttachments(value, taskIdentifier);
     },
   });
+
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   const fileType = useStore(form.baseStore, (state) => state.values.fileType);
 
@@ -95,6 +114,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   );
 
   const handleSubmit = async () => {
+    onDirtyChange?.(0, false);
     await form.handleSubmit();
   };
 
@@ -379,7 +399,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       classNamePrefix="comp-select"
                       className="comp-details-input"
                       options={assignableOfficers}
-                      value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                      value={assignableOfficers.find((opt) => opt.value === (field.state.value || defaultAssignee))}
                       onChange={(option) => field.handleChange(option?.value || "")}
                       placeholder="Select taken by"
                       isClearable={true}

@@ -473,7 +473,7 @@ export const selectOfficerListByAgencyCode = (agency: string) =>
   createSelector([selectOfficers], (officers): Array<Option> => {
     const officerList = filterOfficerByAgency(agency, officers || []);
     return officerList.map((officer: AppUser) => ({
-      value: officer.auth_user_guid,
+      value: officer.app_user_guid,
       label: `${officer.last_name}, ${officer.first_name}`,
     }));
   });

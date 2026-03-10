@@ -14,6 +14,7 @@ import {
 } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { useDocumentationSearch } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-documentation-search";
 import { TaskAttachmentList } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/attachment-list";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -35,6 +36,7 @@ const GET_TASK = gql`
 
 const TaskDetail: FC = () => {
   const dispatch = useAppDispatch();
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const { investigationGuid = "", taskId = "" } = useParams<{
     investigationGuid: string;
@@ -73,7 +75,10 @@ const TaskDetail: FC = () => {
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
           existingAttachments: attachments,
+          defaultAssignee: task?.assignedUserIdentifier,
+          onDirtyChange: handleChildDirtyChange,
         },
+        hideCallback,
       }),
     );
   };
@@ -90,6 +95,7 @@ const TaskDetail: FC = () => {
           existingAttachments: attachments,
           attachment,
         },
+        hideCallback,
       }),
     );
   };

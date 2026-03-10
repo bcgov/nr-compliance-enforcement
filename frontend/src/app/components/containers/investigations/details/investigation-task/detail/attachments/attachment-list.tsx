@@ -80,7 +80,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
   }, []);
 
   const getOfficerName = (officerGuid: string) => {
-    const takenByOfficer = officers?.find((o) => o.auth_user_guid === officerGuid);
+    const takenByOfficer = officers?.find((o) => o.app_user_guid === officerGuid);
     return takenByOfficer ? `${takenByOfficer.last_name}, ${takenByOfficer.first_name}` : "-";
   };
 
