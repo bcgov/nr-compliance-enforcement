@@ -49,12 +49,12 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
           bVal = b.fileType ?? "";
           break;
         case "description":
-          aVal = a.description ?? "";
-          bVal = b.description ?? "";
+          aVal = (a.description ?? "").toLowerCase();
+          bVal = (b.description ?? "").toLowerCase();
           break;
         case "title":
-          aVal = a.title ?? "";
-          bVal = b.title ?? "";
+          aVal = (a.title ?? "").toLowerCase();
+          bVal = (b.title ?? "").toLowerCase();
           break;
         case "date":
           aVal = a.date ?? "";
@@ -99,6 +99,21 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     a.click();
   };
 
+  const getFileTypeIcon = (fileType: string | null | undefined): string => {
+    switch (fileType) {
+      case "Audio":
+        return "bi-file-earmark-music";
+      case "Document":
+        return "bi-file-earmark-text";
+      case "Photo":
+        return "bi-file-earmark-image";
+      case "Video":
+        return "bi-file-earmark-play";
+      default:
+        return "bi-file-earmark";
+    }
+  };
+
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
       title={title}
@@ -113,12 +128,12 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
   const renderHeader = () => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("File Name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("File Type", "fileType", "comp-cell-width-120")}
+        {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("File type", "fileType", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Description", "description", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Title", "title", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date", "date", "comp-cell-width-120")}
-        <th className="comp-cell-width-160 comp-cell-min-width-160">Taken By</th>
+        <th className="comp-cell-width-160 comp-cell-min-width-160">Taken by</th>
         <th className="comp-cell-width-160 comp-cell-min-width-160">Location</th>
         <th className="comp-cell-width-30 comp-cell-min-width-30"></th>
       </tr>
@@ -162,20 +177,25 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
 
     return paginatedAttachments.map((attachment) => (
       <tr key={attachment.id}>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">
-          <button
-            className="btn btn-link p-0 border-0 text-body"
-            onClick={() => downloadAttachment(attachment.id, getDisplayFilename(attachment.name))}
-          >
-            {getDisplayFilename(attachment.name)}
-          </button>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
+          <div className="d-flex align-items-center">
+            <i className={`bi ${getFileTypeIcon(attachment.fileType)} me-2 fs-5`} />
+            <button
+              className="btn btn-link p-0 border-0 text-body"
+              onClick={() => downloadAttachment(attachment.id, getDisplayFilename(attachment.name))}
+            >
+              {getDisplayFilename(attachment.name)}
+            </button>
+          </div>
         </td>
-        <td className="comp-cell-width-120">{attachment.fileType ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.description ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.title ?? "-"}</td>
-        <td className="comp-cell-width-120">{attachment.date ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{getOfficerName(attachment.takenBy ?? "")}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160">{attachment.location ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
+        <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
+          {getOfficerName(attachment.takenBy ?? "")}
+        </td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
           <button
             className="btn btn-link p-0 border-0 text-body"

@@ -18,6 +18,7 @@ import format from "date-fns/format";
 import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import { Id } from "react-toastify";
+import { COMSObject } from "@/app/types/coms/object";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -25,7 +26,7 @@ type AddEditTaskAttachmentModalProps = {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-// TODO Add to Backend?
+// Little value in adding this to the backend as there are no Foreign Keys
 const fileTypeOptions: Option[] = [
   { label: "Audio", value: "Audio" },
   { label: "Document", value: "Document" },
@@ -38,8 +39,10 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
   const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
-  const { title, investigationIdentifier, taskIdentifier, attachment } = modalData;
+  const { title, investigationIdentifier, taskIdentifier, existingAttachments, attachment } = modalData;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
+  const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
   const form = useForm({
     defaultValues: {
@@ -69,16 +72,23 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         .map((f) => f.name)
         .join("\n");
       form.setFieldValue("originalFileName", fileNames);
+
+      const duplicates = Array.from(files)
+        .filter((f) => existingAttachments.some((a: COMSObject) => getDisplayFilename(a.name) === f.name))
+        .map((f) => f.name);
+      setDuplicateFileNames(duplicates);
+      setShowDuplicateConfirm(duplicates.length > 0);
     },
-    [form],
+    [form, existingAttachments],
   );
 
   const handleSubmit = async () => {
     await form.handleSubmit();
   };
 
-  // TODO: can I type the values?
-  const persistTaskAttachments = async (value: any, taskIdentifier: string) => {
+  type FormValues = typeof form.state.values;
+
+  const persistTaskAttachments = async (value: FormValues, taskIdentifier: string) => {
     const files = value.file ? Array.from<File>(value.file) : null;
 
     if (!files && !attachment) return;
@@ -129,31 +139,33 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
           <Modal.Title as="h3">{title}</Modal.Title>
         </Modal.Header>
       )}
-      <Modal.Body className="modal-create-add-case">
+      <Modal.Body className="modal-add-edit-attachment">
         <form onSubmit={form.handleSubmit}>
           <fieldset>
-            {/* File Upload - placeholder */}
-            <FormField
-              form={form}
-              name="file"
-              label="File"
-              required
-              validators={{
-                onChange: attachment
-                  ? z.custom<FileList | null>(() => true) // optional in edit mode
-                  : z.custom<FileList | null>((val) => val !== null && val.length > 0, {
-                      message: "At least one file is required",
-                    }),
-              }}
-              render={(field) => (
-                <>
-                  <AttachmentUpload onFileSelect={onFileSelect} />
-                  {field.state.meta.errors?.[0]?.message && (
-                    <span className="error-message">{field.state.meta.errors[0].message}</span>
-                  )}
-                </>
-              )}
-            />
+            {/* File Upload - don't render on edit  */}
+            {!attachment && (
+              <FormField
+                form={form}
+                name="file"
+                label="File"
+                required
+                validators={{
+                  onChange: attachment
+                    ? z.custom<FileList | null>(() => true) // optional in edit mode
+                    : z.custom<FileList | null>((val) => val !== null && val.length > 0, {
+                        message: "At least one file is required",
+                      }),
+                }}
+                render={(field) => (
+                  <>
+                    <AttachmentUpload onFileSelect={onFileSelect} />
+                    {field.state.meta.errors?.[0]?.message && (
+                      <span className="error-message">{field.state.meta.errors[0].message}</span>
+                    )}
+                  </>
+                )}
+              />
+            )}
 
             {/* Original File Name */}
             <FormField
@@ -165,7 +177,9 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               render={(field) => (
                 <div className="comp-details-input">
                   {field.state.value ? (
-                    field.state.value.split("\n").map((name: string, i: number) => <div key={i}>{name}</div>)
+                    field.state.value
+                      .split("\n")
+                      .map((name: string, i: number) => <div key={name + "-" + i}>{name}</div>)
                   ) : (
                     <span className="text-muted">No files selected</span>
                   )}
@@ -173,6 +187,68 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               )}
             />
 
+            {/* Duplicate Warning */}
+            {showDuplicateConfirm && (
+              <Alert
+                variant="warning"
+                className="comp-complaint-details-alert mt-3"
+              >
+                <div className="d-flex align-items-start gap-2">
+                  <i className="bi bi-exclamation-triangle mt-1" />
+                  <span>
+                    <strong>Duplicate file detected</strong>
+                    <p>
+                      {duplicateFileNames.length === 1 ? (
+                        <>
+                          An attachment with the name <strong>{duplicateFileNames[0]}</strong> already exists. If this
+                          is the latest version of that document, please click <strong>"Update document"</strong>. If
+                          this is intended to be a new, separate document, please click <strong>"Cancel"</strong> and
+                          rename the file before uploading it.
+                        </>
+                      ) : (
+                        <>
+                          <span>Attachments with the following names already exist.</span>
+                          <ul className="mt-3 list-unstyled">
+                            {duplicateFileNames.map((fileName) => (
+                              <li
+                                key={fileName}
+                                className="py-1 px-4"
+                              >
+                                {fileName}
+                              </li>
+                            ))}
+                          </ul>
+                          <span>
+                            If this is the latest version of the documents, please click{" "}
+                            <strong>"Update document"</strong>. If they are intended to be new, separate documents,
+                            please click <strong>"Cancel"</strong> and rename the files before uploading them.
+                          </span>
+                        </>
+                      )}
+                    </p>
+                  </span>
+                </div>
+                <div className="d-flex justify-content-end gap-2 mt-2">
+                  <Button
+                    variant="outline-primary"
+                    onClick={() => {
+                      setShowDuplicateConfirm(false);
+                      setDuplicateFileNames([]);
+                      form.setFieldValue("file", null);
+                      form.setFieldValue("originalFileName", "");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="warning"
+                    onClick={() => setShowDuplicateConfirm(false)}
+                  >
+                    Update document
+                  </Button>
+                </div>
+              </Alert>
+            )}
             {/* File Type */}
             <FormField
               form={form}
@@ -186,7 +262,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   classNamePrefix="comp-select"
                   className="comp-details-input"
                   options={fileTypeOptions}
-                  //value={[]} // TODO: find matching option
+                  value={fileTypeOptions.find((opt) => opt.value === field.state.value)}
                   onChange={(option) => {
                     field.handleChange(option?.value || "");
                     const isMediaType = ["Audio", "Video", "Photo"].includes(option?.value || "");
@@ -370,14 +446,14 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             <Button
               variant="outline-primary"
               onClick={close}
-              disabled={showDeleteConfirm}
+              disabled={showDuplicateConfirm || showDeleteConfirm}
             >
               Cancel
             </Button>
             <Button
               variant="primary"
               onClick={handleSubmit}
-              disabled={showDeleteConfirm}
+              disabled={showDuplicateConfirm || showDeleteConfirm}
             >
               <span>Save and Close</span>
             </Button>

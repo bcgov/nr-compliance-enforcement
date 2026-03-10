@@ -23,7 +23,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import z from "zod";
-import { ADD_EDIT_TASK_ATTACHMENT, CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
 import { DiaryDateForm } from "@/app/components/containers/investigations/details/investigation-diary-dates/diary-date-form";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import {
@@ -677,20 +677,6 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
     },
     [setAttachmentCount],
   );
-
-  const toggleAddAttachment = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: ADD_EDIT_TASK_ATTACHMENT,
-        data: {
-          title: "Upload attachment",
-          investigationIdentifier: investigationGuid,
-          taskIdentifier: task?.taskIdentifier,
-        },
-      }),
-    );
-  };
 
   return (
     <Card

@@ -72,6 +72,7 @@ const TaskDetail: FC = () => {
           title: "Upload attachment",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
+          existingAttachments: attachments,
         },
       }),
     );
@@ -86,6 +87,7 @@ const TaskDetail: FC = () => {
           title: "Edit attachment",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
+          existingAttachments: attachments,
           attachment,
         },
       }),
@@ -119,26 +121,43 @@ const TaskDetail: FC = () => {
         <div className="mt-3">
           <div className="d-flex justify-content-between align-items-center">
             <h4>Attachments</h4>
-            <Button
-              id="add-task-attachment"
-              title="Add attachment"
-              variant="primary"
-              size="sm"
-              onClick={handleAddAttachment}
-              className="mb-3"
-            >
-              <i className="bi bi-upload"></i>
-              <span>Add attachment</span>
-            </Button>
+            {attachments.length > 0 && (
+              <Button
+                id="add-task-attachment"
+                title="Add attachment"
+                variant="primary"
+                size="sm"
+                onClick={handleAddAttachment}
+                className="mb-3"
+              >
+                <i className="bi bi-upload"></i>
+                <span>Add attachment</span>
+              </Button>
+            )}
           </div>
 
-          <div className="comp-data-container">
-            <TaskAttachmentList
-              attachments={attachments}
-              isLoading={isLoading}
-              onEdit={handleEditAttachment}
-            />
-          </div>
+          {attachments.length === 0 ? (
+            <div>
+              <Button
+                id="add-task-attachment"
+                title="Add attachment"
+                variant="primary"
+                size="sm"
+                onClick={handleAddAttachment}
+              >
+                <i className="bi bi-upload"></i>
+                <span>Add attachment</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="comp-data-container">
+              <TaskAttachmentList
+                attachments={attachments}
+                isLoading={isLoading}
+                onEdit={handleEditAttachment}
+              />
+            </div>
+          )}
         </div>
       </section>
     </div>
