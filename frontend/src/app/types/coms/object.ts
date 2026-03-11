@@ -16,4 +16,5 @@ export interface COMSObject {
   imageIconId?: string;
   errorMesage?: string;
   attachmentType?: AttachmentEnum;
+  size?: number;
 }

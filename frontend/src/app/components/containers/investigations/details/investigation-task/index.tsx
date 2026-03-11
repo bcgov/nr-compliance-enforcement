@@ -15,8 +15,8 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
 
   return (
     <div className="comp-details-section--list-view">
-      <div className="d-flex align-items-center justify-content-between">
-        <h3 className="mb-0">Tasks</h3>
+      <div className="d-flex align-items-center justify-content-between my-2">
+        <h3>Tasks</h3>
         <Button
           id="add-task-button"
           as={Link as any}
