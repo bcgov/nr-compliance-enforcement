@@ -8,8 +8,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
-import { selectOfficerAgency } from "@/app/store/reducers/app";
+import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 
@@ -87,6 +86,10 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     form.reset();
     onHide();
   };
+
+  const savingText = task ? "Saving..." : "Creating...";
+  const saveText = task ? "Save" : "Create";
+
 
   return (
     <Modal show={show} onHide={handleClose} centered size="lg">
@@ -206,7 +209,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
           Cancel
         </Button>
         <Button variant="primary" onClick={() => form.handleSubmit()} disabled={isSaving}>
-          {isSaving ? (task ? "Saving..." : "Creating...") : task ? "Save" : "Create"}
+          {isSaving ? savingText : saveText}
         </Button>
       </Modal.Footer>
     </Modal>
