@@ -23,6 +23,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
+  submit: () => void;
 };
 
 // Little value in adding this to the backend as there are no Foreign Keys
@@ -33,7 +34,7 @@ const fileTypeOptions: Option[] = [
   { label: "Video", value: "Video" },
 ];
 
-export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close }) => {
+export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close, submit }) => {
   // Hooks
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
@@ -156,7 +157,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       draggable: false,
     });
 
-    close();
+    submit();
 
     handlePersistAttachments({
       dispatch,
@@ -177,7 +178,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   // function to delete a single object from a task
   const handleDelete = async (taskIdentifier: string) => {
-    close();
+    submit();
     handlePersistAttachments({
       dispatch,
       attachmentsToAdd: null,
@@ -195,7 +196,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   // function to edit an object metadata
   const handleEditMetadata = async (value: FormValues, taskIdentifier: string) => {
-    close();
+    submit();
 
     dispatch(updateAttachmentMetadata(attachment.id, buildExtendedMeta(value))).then(() => {
       attachmentUploadComplete$.next(taskIdentifier);
