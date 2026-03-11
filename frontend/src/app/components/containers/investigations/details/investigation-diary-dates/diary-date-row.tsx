@@ -73,7 +73,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
             className="btn btn-outline-primary rounded p-2"
             onClick={handleEditClick}
             title="Edit diary date"
-            aria-label="Edit diary date"
+            aria-label="edit-diary-date"
           >
             <i className="bi bi-pencil ms-1 me-1" />
           </button>

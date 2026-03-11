@@ -927,7 +927,7 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
                 <Button
                   variant="outline-primary"
                   size="sm"
-                  aria-label="Delete diary date"
+                  aria-label="delete-diary-date"
                   onClick={() => deleteTaskAction(index)}
                 >
                   <i className="bi bi-trash3"></i>
