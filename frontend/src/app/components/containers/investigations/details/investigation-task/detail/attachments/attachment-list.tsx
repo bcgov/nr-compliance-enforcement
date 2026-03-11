@@ -49,6 +49,10 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
           aVal = getDisplayFilename(a.name).toLowerCase();
           bVal = getDisplayFilename(b.name).toLowerCase();
           break;
+        case "sequenceNumber":
+          aVal = a.sequenceNumber ?? "";
+          bVal = b.sequenceNumber ?? "";
+          break;
         case "fileType":
           aVal = a.fileType ?? "";
           bVal = b.fileType ?? "";
@@ -143,6 +147,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
       <tr>
         {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("File type", "fileType", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Sequence number", "sequenceNumber", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Description", "description", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Title", "title", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date", "date", "comp-cell-width-120")}
@@ -203,6 +208,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
           </div>
         </td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.sequenceNumber ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
         <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>

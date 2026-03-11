@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Button, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -20,6 +20,7 @@ import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -39,7 +40,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
-  const assignableOfficers = useAppSelector(selectOfficerListByAgencyCode(userAgency));
+  const officerSelector = useMemo(() => selectOfficerListByAgencyCode(userAgency), [userAgency]);
+  const assignableOfficers = useAppSelector(officerSelector);
   const {
     title,
     investigationIdentifier,
@@ -216,6 +218,11 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       date: value.date ? format(value.date, "yyyy-MM-dd") : "",
       ...(isMediaType && value.takenBy && { "taken-by": value.takenBy }),
       ...(isMediaType && value.location && { location: value.location }),
+      "sequence-number":
+        attachment?.sequenceNumber ??
+        existingAttachments.find((a: Attachment) => getDisplayFilename(a.name) === value.originalFileName)
+          ?.sequenceNumber ??
+        getNextSequenceNumber(existingAttachments, value.fileType),
     };
   };
 
@@ -230,6 +237,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
     form.setFieldValue("file", updatedFileList.length > 0 ? updatedFileList : null);
     form.setFieldValue("originalFileName", updatedFiles.map((f) => f.name).join("\n"));
+  };
+
+  // Function to calculate the next sequence number for a task
+  const getNextSequenceNumber = (existingAttachments: COMSObject[], fileType: string): string => {
+    const matchingAttachments = existingAttachments.filter((a) => a.fileType === fileType);
+
+    const maxSequence = matchingAttachments.reduce((max, a) => {
+      const seq = Number.parseInt(a.sequenceNumber ?? "0", 10);
+      return Math.max(max, seq);
+    }, 0);
+
+    return String(maxSequence + 1).padStart(4, "0");
   };
 
   return (

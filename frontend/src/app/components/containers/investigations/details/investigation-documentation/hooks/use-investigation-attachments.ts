@@ -28,6 +28,7 @@ export interface Attachment extends COMSObject {
   taskId: string | null;
   taskNumber?: number;
   takenBy?: string | null;
+  sequenceNumber?: string | null;
   fileType?: string | null;
   description?: string | null;
   title?: string | null;
@@ -83,6 +84,7 @@ const fetchAttachmentsWithMetadata = async (investigationIdentifier: string): Pr
       taskId: metadata?.taskId ?? null,
       type: metadata?.attachmentType ?? null,
       takenBy: metadata?.takenBy ?? null,
+      sequenceNumber: metadata?.sequenceNumber ?? null,
       fileType: metadata?.fileType ?? null,
       description: metadata?.description ?? null,
       title: metadata?.title ?? null,

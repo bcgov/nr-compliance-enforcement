@@ -119,6 +119,7 @@ export interface ParsedObjectMetadata {
   taskId: string | null;
   attachmentType: AttachmentEnum | null;
   takenBy: string | null;
+  sequenceNumber: string | null;
   date: string | null;
   fileType: string | null;
   location: string | null;
@@ -219,6 +220,7 @@ export const fetchObjectsMetadata = async (
     const taskIdMeta = item.metadata.find((m) => m.key === "task-id");
     const attachmentTypeMeta = item.metadata.find((m) => m.key === "attachment-type");
     const takenByMeta = item.metadata.find((m) => m.key === "taken-by");
+    const sequenceMeta = item.metadata.find((m) => m.key === "sequence-number");
     const dateMeta = item.metadata.find((m) => m.key === "date");
     const fileTypeMeta = item.metadata.find((m) => m.key === "file-type");
     const locationMeta = item.metadata.find((m) => m.key === "location");
@@ -237,6 +239,7 @@ export const fetchObjectsMetadata = async (
       attachmentType: validAttachmentType,
       date: dateMeta?.value ?? null,
       takenBy: takenByMeta?.value ?? null,
+      sequenceNumber: sequenceMeta?.value ?? null,
       fileType: fileTypeMeta?.value ?? null,
       location: locationMeta?.value ?? null,
       description: descriptionMeta?.value ?? null,
