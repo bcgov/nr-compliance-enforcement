@@ -16,6 +16,8 @@ interface DiaryDateModalProps {
   investigationGuid: string;
   diaryDate: DiaryDate | null;
   isSaving: boolean;
+  //When set, new diary dates will be associated with this task
+  taskGuid?: string;
 }
 
 export const DiaryDateModal: FC<DiaryDateModalProps> = ({
@@ -26,6 +28,7 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
   investigationGuid,
   diaryDate,
   isSaving,
+  taskGuid,
 }) => {
   const isEditing = !!diaryDate?.diaryDateGuid;
 
@@ -40,7 +43,8 @@ export const DiaryDateModal: FC<DiaryDateModalProps> = ({
         investigationGuid,
         dueDate: value.dueDate as Date,
         description: value.description.trim(),
-        taskGuid: diaryDate?.taskGuid || undefined,
+        // Preserve existing taskGuid when editing, otherwise use the provided taskGuid
+        taskGuid: diaryDate?.taskGuid || taskGuid || undefined,
       };
 
       await onSave(input);

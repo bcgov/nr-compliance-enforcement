@@ -75,9 +75,11 @@ interface DiaryDatesProps {
   investigationGuid: string;
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
+  // When set, only diary dates for this task are shown
+  taskGuid?: string;
 }
 
-export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange }) => {
+export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange, taskGuid }) => {
   const tasks = investigationData?.tasks || [];
 
   // State
@@ -117,7 +119,8 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
     },
   });
 
-  const diaryDates = data?.diaryDates ?? [];
+  const allDiaryDates = data?.diaryDates ?? [];
+  const diaryDates = taskGuid ? allDiaryDates.filter((dd) => dd.taskGuid === taskGuid) : allDiaryDates;
 
   const handleAddClick = () => {
     setEditingDiaryDate(null);
@@ -159,9 +162,17 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
   };
 
   return (
-    <div className="comp-details-section mt-4">
-      <div className="d-flex align-items-center gap-4 mb-0">
+    <div className="comp-details-section mt-4 mb-3">
+      <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
         <h3 className="mb-0">Diary dates</h3>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleAddClick}
+        >
+          <i className="bi bi-plus-circle"></i>
+          <span>Add diary date</span>
+        </Button>
       </div>
 
       {diaryDates.length === 0 ? (
@@ -181,6 +192,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
                     onEdit={handleEditClick}
                     onDelete={handleDeleteClick}
                     taskNumber={taskNumber ?? null}
+                    showTaskBadge={!taskGuid}
                   />
                 );
               })}
@@ -188,16 +200,6 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
           </Table>
         </div>
       )}
-
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={handleAddClick}
-        className="mt-3"
-      >
-        <i className="bi bi-plus-circle"></i>
-        <span>Add diary date</span>
-      </Button>
 
       <DiaryDateModal
         show={showModal}
@@ -207,6 +209,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
         diaryDate={editingDiaryDate}
         isSaving={saveMutation.isPending}
         onDirtyChange={onDirtyChange}
+        taskGuid={taskGuid}
       />
 
       <DeleteConfirmModal
