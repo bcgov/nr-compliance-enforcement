@@ -134,6 +134,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationTasksNew
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "parties":
@@ -184,7 +185,7 @@ export const InvestigationDetails: FC = () => {
     );
   }
 
-  const isListView = currentTab === "documents";
+  const isListView = currentTab === "documents" || currentTab === "tasks";
   const containerClass = isListView
     ? "comp-complaint-details comp-complaint-details--list-view"
     : "comp-complaint-details";

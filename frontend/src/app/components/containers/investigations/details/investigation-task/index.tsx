@@ -20,6 +20,7 @@ const CREATE_TASK = gql`
 interface InvestigationTasksNewProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {

@@ -1,5 +1,6 @@
 import { FC, useCallback, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
+import Paginator from "@components/common/paginator";
 import { SortableHeader } from "@components/common/sortable-header";
 import { SortArrow } from "@components/common/sort-arrow";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -8,6 +9,8 @@ import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
+
+const PAGE_SIZE = 25;
 
 type Props = {
   tasks: Task[];
@@ -18,6 +21,7 @@ type Props = {
 export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = false }) => {
   const [sortBy, setSortBy] = useState<string>("taskNumber");
   const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.ASC);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -94,6 +98,15 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     return sorted;
   }, [tasks, sortBy, sortOrder, resolveCategory, resolveSubCategory, resolveOfficer]);
 
+  const paginatedTasks = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return sortedTasks.slice(start, start + PAGE_SIZE);
+  }, [sortedTasks, currentPage]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setCurrentPage(newPage);
+  }, []);
+
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
       title={title}
@@ -108,9 +121,9 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   const renderTaskListHeader = () => (
     <thead className="sticky-table-header">
       <tr>
+        <th className="comp-cell-width-30 comp-cell-min-width-30 text-center"></th>
         <th
           className="sortable-header comp-cell-width-120 comp-cell-min-width-120"
-          colSpan={2}
           onClick={() => handleSort("taskNumber")}
         >
           <div className="sortable-header-inner">
@@ -127,8 +140,8 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
         {renderSortableHeader("Category", "category", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Status", "taskStatusCode", "comp-cell-width-110")}
-        {renderSortableHeader("Assigned Officer", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Last Updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Officer assigned", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Last updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
       </tr>
     </thead>
   );
@@ -166,7 +179,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
         </tr>
       );
     }
-    return sortedTasks.map((task) => (
+    return paginatedTasks.map((task) => (
       <TaskListItem
         key={task.taskIdentifier}
         data={task}
@@ -179,13 +192,22 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
         <Table
-          className="comp-table"
+          className="comp-table mb-0"
           id="task-list"
         >
           {renderTaskListHeader()}
           <tbody>{renderTaskListItems()}</tbody>
         </Table>
       </div>
+
+      {sortedTasks.length > 0 && (
+        <Paginator
+          currentPage={currentPage}
+          totalItems={sortedTasks.length}
+          onPageChange={handlePageChange}
+          resultsPerPage={PAGE_SIZE}
+        />
+      )}
     </div>
   );
 };

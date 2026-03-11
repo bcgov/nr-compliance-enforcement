@@ -19,6 +19,7 @@ jobs:
   ### Emerald Jobs ###
   cleanup-emerald:
     name: Cleanup Ephemeral Emerald Developer Environments
+    if: github.event.pull_request.base.ref != 'main'
     runs-on: ubuntu-22.04
     steps:
       - name: Setup gitops repo access

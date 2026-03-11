@@ -28,12 +28,12 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   const subCategoryLabel = subCategory?.label ?? "-";
   const statusLabel = taskStatuses.find((s) => s.value === data.taskStatusCode)?.label ?? "";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === data.assignedUserIdentifier);
-  const assignedOfficerName = assignedOfficer ? `${assignedOfficer.first_name} ${assignedOfficer.last_name}` : "-";
+  const assignedOfficerName = assignedOfficer ? `${assignedOfficer.last_name}, ${assignedOfficer.first_name}` : "-";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [attachmentCount, setAttachmentCount] = useState<number | null>(null);
 
-  const expandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
+  const expandedClass = isExpanded ? "comp-cell-parent-expanded align-middle" : "align-middle";
 
   const { data: taskActionsData } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
     GET_ACTIVITY_NOTES_BY_TASK,
@@ -64,7 +64,7 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
 
   const handleRowClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("a")) return;
+    if (target.closest("a") || target.closest("button")) return;
     toggleExpand();
   };
 
@@ -81,12 +81,12 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
             onClick={toggleExpand}
             aria-expanded={isExpanded}
             aria-label={`${isExpanded ? "Collapse" : "Expand"} task ${data.taskNumber} details`}
-            className="btn btn-link p-0 border-0"
+            className="btn p-0 border-0 text-muted"
           >
-            <i className={`bi bi-chevron-${isExpanded ? "down" : "right"}`} />
+            <i className={`m-0 ps-1 bi bi-chevron-${isExpanded ? "down" : "right"}`} />
           </button>
         </td>
-        <td className={`comp-cell-width-90 comp-cell-min-width-90 text-center ${expandedClass}`}>
+        <td className={`comp-cell-width-90 comp-cell-min-width-90 ${expandedClass}`}>
           <Link
             to={`/investigation/${investigationGuid}/task/${data.taskIdentifier}`}
             className="comp-cell-link"
