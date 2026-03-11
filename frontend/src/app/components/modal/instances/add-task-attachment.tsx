@@ -34,6 +34,7 @@ const fileTypeOptions: Option[] = [
 ];
 
 export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close }) => {
+  // Hooks
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
@@ -47,10 +48,13 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     defaultAssignee,
     onDirtyChange,
   } = modalData;
+
+  // State
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [duplicateFileNames, setDuplicateFileNames] = useState<string[]>([]);
 
+  // Form Definition
   const form = useForm({
     defaultValues: {
       file: null as FileList | null,
@@ -70,20 +74,27 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     },
   });
 
+  // Data and Types
+  const fileType = useStore(form.baseStore, (state) => state.values.fileType);
+  type FormValues = typeof form.state.values;
+
+  // Form Dirty Tracking
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
 
+  // Use Effects and Callbacks
+
+  // Detects if a form field is touched and marks form dirty
   useEffect(() => {
     if (isFormDirty) {
       markDirty();
     }
   }, [isFormDirty, markDirty]);
 
-  const fileType = useStore(form.baseStore, (state) => state.values.fileType);
-
+  // Orchestrates integration with TanStack Form and contains logic for tracking duplicates
   const onFileSelect = useCallback(
     (files: FileList) => {
       const existingFiles = form.getFieldValue("file");
@@ -113,13 +124,15 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     [form, existingAttachments],
   );
 
+  // Functions
+
+  // Handle save button click
   const handleSubmit = async () => {
-    onDirtyChange?.(0, false);
+    onDirtyChange?.(0, false); // Mark form clean.  markClean() can't be used here due to modal and useEffect timing.
     await form.handleSubmit();
   };
 
-  type FormValues = typeof form.state.values;
-
+  // Controller function for adding / editing / deleting attachments
   const persistTaskAttachments = async (value: FormValues, taskIdentifier: string) => {
     if (showDeleteConfirm) {
       await handleDelete(taskIdentifier);
@@ -130,6 +143,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     }
   };
 
+  // Function to add attachments to a task.
   const handleAdd = async (value: FormValues, taskIdentifier: string) => {
     const files = value.file ? Array.from<File>(value.file) : null;
     if (!files) return;
@@ -161,6 +175,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     });
   };
 
+  // function to delete a single object from a task
   const handleDelete = async (taskIdentifier: string) => {
     close();
     handlePersistAttachments({
@@ -178,6 +193,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     });
   };
 
+  // function to edit an object metadata
   const handleEditMetadata = async (value: FormValues, taskIdentifier: string) => {
     close();
 
@@ -186,7 +202,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     });
   };
 
-  // shared meta building logic
+  // helper function - shared meta building logic
   const buildExtendedMeta = (value: FormValues) => {
     const isMediaType = ["Audio", "Video", "Photo"].includes(value.fileType);
     return {
@@ -203,6 +219,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     };
   };
 
+  // Function to remove a file that was selected from the modal (do not upload it)
   const handleRemoveFile = (nameToRemove: string) => {
     const currentFiles = form.getFieldValue("file");
     const updatedFiles = currentFiles ? Array.from<File>(currentFiles).filter((f) => f.name !== nameToRemove) : [];

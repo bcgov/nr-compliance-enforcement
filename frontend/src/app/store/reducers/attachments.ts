@@ -46,6 +46,14 @@ interface BuildHeaderParams {
   extendedMeta?: Record<string, string>;
 }
 
+interface ObjectVersion {
+  id: string;
+  s3VersionId: string;
+  objectId: string;
+  isLatest: boolean;
+  deleteMarker: boolean;
+}
+
 const buildAttachmentHeader = ({
   attachmentConfig,
   identifier,
@@ -341,19 +349,12 @@ export const saveAttachments =
     }
   };
 
-interface ObjectVersion {
-  id: string;
-  s3VersionId: string;
-  objectId: string;
-  isLatest: boolean;
-  deleteMarker: boolean;
-}
-
+// Deletes and replaces the attachment metadata on a file.  Note that all custom meta-data is affected
 export const updateAttachmentMetadata =
   (objectId: string, extendedMeta: Record<string, string>): AppThunk<Promise<void>> =>
   async (dispatch) => {
     try {
-      // Fetch versions to get the latest versionId and s3VersionId
+      // Fetch versions to get the latest versionId as this is required to update metadata
       const versionParameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}/version`);
       const versions = await get<ObjectVersion[]>(dispatch, versionParameters);
       const latestVersion = versions.find((v) => v.isLatest && !v.deleteMarker);

@@ -12,19 +12,23 @@ import config from "@/config";
 
 const PAGE_SIZE = 25;
 
-type Props = {
+type TaskAttachmentListProps = {
   attachments: Attachment[];
   isLoading?: boolean;
   onEdit: (attachment: Attachment) => void;
 };
 
-export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, onEdit }) => {
+export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, isLoading = false, onEdit }) => {
+  // Hooks
   const dispatch = useAppDispatch();
   const [sortBy, setSortBy] = useState<string>("date");
   const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.DESC);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const officers = useAppSelector(selectOfficers);
 
+  // Callbacks
+
+  // controller for when sort columns are clicked
   const handleSort = useCallback(
     (sortInput: string) => {
       const newDirection = sortBy === sortInput && sortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
@@ -34,6 +38,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     [sortBy, sortOrder],
   );
 
+  // contains sorting logic
   const sortedAttachments = useMemo(() => {
     return [...attachments].sort((a, b) => {
       let aVal: string = "";
@@ -70,20 +75,26 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     });
   }, [attachments, sortBy, sortOrder]);
 
+  // Determines pagination
   const paginatedAttachments = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return sortedAttachments.slice(start, start + PAGE_SIZE);
   }, [sortedAttachments, currentPage]);
 
+  // Manages pagination navigation
   const handlePageChange = useCallback((newPage: number) => {
     setCurrentPage(newPage);
   }, []);
 
+  // Functions
+
+  // Converts guid to officer name
   const getOfficerName = (officerGuid: string) => {
     const takenByOfficer = officers?.find((o) => o.app_user_guid === officerGuid);
     return takenByOfficer ? `${takenByOfficer.last_name}, ${takenByOfficer.first_name}` : "-";
   };
 
+  // Downloads attachment from COMS
   const downloadAttachment = async (objectid: string | undefined, filename: string) => {
     if (!objectid) {
       return;
@@ -99,6 +110,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     a.click();
   };
 
+  // manages display of icon in table
   const getFileTypeIcon = (fileType: string | null | undefined): string => {
     switch (fileType) {
       case "Audio":
@@ -125,6 +137,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     />
   );
 
+  // Renders the table header
   const renderHeader = () => (
     <thead className="sticky-table-header">
       <tr>
@@ -140,6 +153,7 @@ export const TaskAttachmentList: FC<Props> = ({ attachments, isLoading = false, 
     </thead>
   );
 
+  // Renders the table Body
   const renderBody = () => {
     if (isLoading) {
       return (
