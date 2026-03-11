@@ -37,10 +37,13 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
 
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const taskCategoryOptions = taskCategories.map((c) => ({ value: c.value, label: c.label }));
+  const taskCategoryOptions = taskCategories.map((c) => ({
+    value: String(c.value ?? ""),
+    label: String(c.label ?? ""),
+  }));
   const taskSubCategoryOptions = taskSubCategories
     .filter((s) => s.taskCategory === selectedCategory)
-    .map((s) => ({ value: s.value, label: s.label }));
+    .map((s) => ({ value: String(s.value ?? ""), label: String(s.label ?? "") }));
   const officerOptions = (officersInAgencyList ?? []).map((o) => ({
     value: o.app_user_guid,
     label: `${o.last_name}, ${o.first_name}`,
@@ -69,8 +72,9 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
 
   useEffect(() => {
     if (show && task) {
-      const categoryValue =
-        taskSubCategories.find((s) => s.value === task.taskTypeCode)?.taskCategory ?? "";
+      const categoryValue = String(
+        taskSubCategories.find((s) => s.value === task.taskTypeCode)?.taskCategory ?? "",
+      );
       setSelectedCategory(categoryValue);
       form.setFieldValue("taskCategory", categoryValue);
       form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");

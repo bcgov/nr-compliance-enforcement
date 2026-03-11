@@ -24,7 +24,10 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   isSaving,
 }) => {
   const taskStatuses = useAppSelector(selectTaskStatus);
-  const statusOptions = taskStatuses.map((s) => ({ value: s.value, label: s.label }));
+  const statusOptions = taskStatuses.map((s) => ({
+    value: String(s.value ?? ""),
+    label: String(s.label ?? ""),
+  }));
 
   const [selectedStatus, setSelectedStatus] = useState<string>("");
 
@@ -72,6 +75,7 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
             placeholder="Select status"
             isClearable
             showInactive={false}
+            enableValidation={false}
           />
         </div>
       </Modal.Body>
