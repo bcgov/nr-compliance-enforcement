@@ -39,6 +39,7 @@ import { AddPartyAssociationRole } from "./migrations/migration-39";
 import { AddTaskTables } from "./migrations/migration-40";
 import { RemoveAttachments } from "@/app/store/migrations/migration-41";
 import { RefreshCommunities } from "./migrations/migration-42";
+import { AddBulkDownload } from "@/app/store/migrations/migration-43";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -92,6 +93,7 @@ migration = {
   ...AddTaskTables,
   ...RemoveAttachments,
   ...RefreshCommunities,
+  ...AddBulkDownload,
 };
 
 export default migration;
