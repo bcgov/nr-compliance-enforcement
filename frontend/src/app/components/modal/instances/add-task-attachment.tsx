@@ -129,7 +129,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
   // Handle save button click
   const handleSubmit = async () => {
-    onDirtyChange?.(0, false); // Mark form clean.  markClean() can't be used here due to modal and useEffect timing.
     await form.handleSubmit();
   };
 
