@@ -25,25 +25,19 @@ import { AgencyType } from "@/app/types/app/agency-types";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ManageCollaboratorsModalProps = {
-  close: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
+  submit: () => void;
   complaintId: string;
   complaintType: string;
 };
 
-export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
-  close,
-  onDirtyChange,
-  complaintId,
-  complaintType,
-}) => {
+export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({ submit, complaintId, complaintType }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
   const complaintData = useAppSelector(selectComplaint);
 
-  const { title } = modalData;
-  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+  const { title, onDirtyChange } = modalData;
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const [selectedAgency, setSelectedAgency] = useState<Option | null>();
   const [selectedAgencyError, setSelectedAgencyError] = useState<string>("");
@@ -99,7 +93,6 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
   };
 
   const handleSaveCollaborator = () => {
-    markClean();
     let hasError = false;
 
     if (!selectedAgency) {
@@ -232,7 +225,7 @@ export const ManageCollaboratorsModal: FC<ManageCollaboratorsModalProps> = ({
           <div className="comp-details-form-actions d-flex justify-content-end">
             <Button
               variant="outline-primary"
-              onClick={close}
+              onClick={submit}
               id="close-collaborator-modal-button"
             >
               Close
