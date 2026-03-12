@@ -75,6 +75,13 @@ $modal-xl: 1140px !default;
   padding-bottom: 0px;
 }
 
+.modal-add-edit-attachment {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  overflow-y: auto;
+  max-height: 70vh;
+}
+
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button
 //body > div.fade.modal.show > div > div > div.border-0.modal-header > button
 

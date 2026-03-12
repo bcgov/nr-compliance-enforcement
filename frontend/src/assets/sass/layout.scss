@@ -1111,3 +1111,7 @@ td.actions-col {
     padding: 0px;
   }
 }
+
+#task-attachment-list tbody tr:last-child td {
+  border-bottom: none;
+}

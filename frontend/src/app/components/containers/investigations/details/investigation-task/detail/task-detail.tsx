@@ -13,6 +13,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -174,7 +175,10 @@ const TaskDetail: FC = () => {
           investigationGuid={investigationGuid}
           taskIdentifier={task?.taskIdentifier}
         />
-
+        <TaskAttachments
+          investigationGuid={investigationGuid}
+          task={task}
+        />
       </section>
     </div>
   );
