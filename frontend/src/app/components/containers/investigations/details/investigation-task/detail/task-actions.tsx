@@ -1,17 +1,14 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { ActivityNote } from "@/generated/graphql";
 import { formatDate, formatTime, formatDateTime, parseUTCDateTimeToLocal } from "@/app/common/methods";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import {
-  GET_ACTIVITY_NOTES_BY_TASK,
-  SAVE_ACTIVITY_NOTE,
-} from "@/app/components/common/activity-note";
+import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { TaskActionModal } from "./task-action-modal";
+import { openModal } from "@/app/store/reducers/app";
+import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskActionsProps {
   investigationGuid: string;
@@ -81,8 +78,8 @@ export const TaskActions: FC<TaskActionsProps> = ({
   taskIdentifier,
   onEdit,
 }) => {
-  const [editingTaskAction, setEditingTaskAction] = useState<ActivityNote | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const dispatch = useAppDispatch();
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const { data, refetch } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
     GET_ACTIVITY_NOTES_BY_TASK,
@@ -93,80 +90,99 @@ export const TaskActions: FC<TaskActionsProps> = ({
     },
   );
 
-  const saveMutation = useGraphQLMutation(SAVE_ACTIVITY_NOTE, {
-    onSuccess: () => {
-      ToggleSuccess("Task action saved successfully");
-      setShowModal(false);
-      setEditingTaskAction(null);
-      refetch();
-    },
-    onError: () => {
-      ToggleError("Failed to save task action");
-    },
-  });
-
   const taskActions = data?.getActivityNotesByTask ?? [];
+  const hasTaskActions = taskActions.length > 0;
 
   const handleEditClick = (taskAction: ActivityNote) => {
-    setEditingTaskAction(taskAction);
-    setShowModal(true);
     onEdit?.(taskAction);
+    if (!taskIdentifier) return;
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_TASK_ACTION,
+        modalSize: "lg",
+        data: {
+          investigationGuid,
+          taskIdentifier,
+          taskAction,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        callback: refetch,
+        hideCallback,
+      }),
+    );
   };
 
   const handleAddClick = () => {
-    setEditingTaskAction(null);
-    setShowModal(true);
+    if (!taskIdentifier) return;
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_TASK_ACTION,
+        modalSize: "lg",
+        data: {
+          investigationGuid,
+          taskIdentifier,
+          taskAction: null,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        callback: refetch,
+        hideCallback,
+      }),
+    );
   };
 
-  const handleSave = async (input: Parameters<typeof saveMutation.mutateAsync>[0]["input"]) => {
-    await saveMutation.mutateAsync({ input });
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingTaskAction(null);
-  };
+  const taskActionsTable = (
+    <Table className="mb-0 table-borderless diary-dates-table">
+      <tbody>
+        {taskActions.map((ta) => (
+          <TaskActionRow
+            key={ta.activityNoteGuid}
+            taskAction={ta}
+            onEdit={handleEditClick}
+          />
+        ))}
+      </tbody>
+    </Table>
+  );
 
   return (
     <div className="comp-details-section">
       <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
         <h3 className="mb-0">Task actions</h3>
-        {taskIdentifier && (
-          <Button variant="primary" size="sm" onClick={handleAddClick}>
+        {taskIdentifier && hasTaskActions && (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleAddClick}
+          >
             <i className="bi bi-plus-circle" />
             <span>Add task action</span>
           </Button>
         )}
       </div>
-      <Card className="mb-3 mt-3" border="default">
-        <Card.Body>
-          {taskActions.length === 0 ? (
-            <p className="text-muted mb-0">No task actions</p>
-          ) : (
-            <Table className="mb-0 table-borderless diary-dates-table">
-              <tbody>
-                {taskActions.map((ta) => (
-                  <TaskActionRow
-                    key={ta.activityNoteGuid}
-                    taskAction={ta}
-                    onEdit={handleEditClick}
-                  />
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </Card.Body>
-      </Card>
-      {taskIdentifier && (
-        <TaskActionModal
-          show={showModal}
-          onHide={handleCloseModal}
-          onSave={handleSave}
-          investigationGuid={investigationGuid}
-          taskIdentifier={taskIdentifier}
-          taskAction={editingTaskAction}
-          isSaving={saveMutation.isPending}
-        />
+
+      {taskIdentifier ? (
+        hasTaskActions ? (
+          <Card className="mb-3 mt-3" border="default">
+            <Card.Body>{taskActionsTable}</Card.Body>
+          </Card>
+        ) : (
+          <div className="mt-3">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleAddClick}
+            >
+              <i className="bi bi-plus-circle" />
+              <span>Add task action</span>
+            </Button>
+          </div>
+        )
+      ) : (
+        <Card className="mb-3 mt-3" border="default">
+          <Card.Body>
+            {hasTaskActions ? taskActionsTable : <p className="text-muted mb-0">No task actions</p>}
+          </Card.Body>
+        </Card>
       )}
     </div>
   );
