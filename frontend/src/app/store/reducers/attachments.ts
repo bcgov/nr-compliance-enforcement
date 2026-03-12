@@ -218,10 +218,7 @@ const saveSingleAttachment = async ({
   extendedMeta,
 }: SaveAttachmentParams) => {
   const attachmentIdentifier = subIdentifier ?? identifier;
-  const attachmentName = encodeURIComponent(
-    injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType),
-  );
-
+  const attachmentName = injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType);
   const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
 
   const header = buildAttachmentHeader({

@@ -1,3 +1,4 @@
+import { BulkDownloadButton } from "@/app/components/common/attachment-download-button";
 import { useDocumentationSearch } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-documentation-search";
 import {
   Attachment,
@@ -73,21 +74,30 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
 
   return (
     <div className="mt-3">
-      <div className="d-flex justify-content-between align-items-center my-2">
-        <h4>Attachments</h4>
-        {attachments.length > 0 && (
-          <Button
-            id="add-task-attachment"
-            title="Add attachment"
-            variant="primary"
-            size="sm"
-            onClick={handleAddAttachment}
-            className="mb-3"
-          >
-            <i className="bi bi-upload"></i>
-            <span>Add attachment</span>
-          </Button>
+      <div className="d-flex align-items-center my-2">
+        <h4 className="me-3">Attachments</h4>
+        {task?.taskIdentifier && attachments.length > 0 && (
+          <BulkDownloadButton
+            taskId={task.taskIdentifier}
+            taskNumber={task.taskNumber}
+            investigationGuid={investigationGuid}
+          />
         )}
+        <div className="d-flex align-items-center gap-3 ms-auto">
+          {attachments.length > 0 && (
+            <Button
+              id="add-task-attachment"
+              title="Add attachment"
+              variant="primary"
+              size="sm"
+              onClick={handleAddAttachment}
+              className="mb-3"
+            >
+              <i className="bi bi-upload"></i>
+              <span>Add attachment</span>
+            </Button>
+          )}
+        </div>
       </div>
 
       {attachments.length === 0 ? (
