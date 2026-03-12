@@ -218,11 +218,13 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
           <button
-            className="btn btn-link p-0 border-0 text-body"
+            type="button"
+            className="btn btn-outline-primary rounded p-2"
             onClick={() => onEdit(attachment)}
+            title="Edit task action"
             aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
           >
-            <i className="bi bi-pencil-square" />
+            <i className="bi bi-pencil ms-1 me-1" />
           </button>
         </td>
       </tr>
