@@ -28,10 +28,12 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: baseURL,
     /* Proxy HTTPS traffic through the BC Gov proxy */
-    proxy: {
-      server: process.env.E2E_HTTPS_PROXY || "",
-      bypass: "localhost,127.0.0.1,*natsuite*,*loginproxy*",
-    },
+    ...(process.env.E2E_HTTPS_PROXY && {
+      proxy: {
+        server: process.env.E2E_HTTPS_PROXY,
+        bypass: "localhost,127.0.0.1,*natsuite*,*loginproxy*",
+      },
+    }),
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "retain-on-failure",
     /* attempted fix for blank traces in pipeline */

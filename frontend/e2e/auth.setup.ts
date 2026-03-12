@@ -101,7 +101,6 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   await page.click("[type='submit']");
 
   // Wait for redirect and app load
-  await page.waitForLoadState("networkidle");
   await page.waitForSelector(".loading-spinner", { state: "hidden" });
   console.log("Succesfully logged in as ", role);
 }
