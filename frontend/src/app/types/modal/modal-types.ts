@@ -19,6 +19,7 @@ export const REMOVE_ACTIVITY_FROM_CASE = "REMOVE_ACTIVITY_FROM_CASE";
 export const ADD_PARTY = "ADD_PARTY";
 export const REMOVE_PARTY = "REMOVE_PARTY";
 export const CANCEL_CONFIRM_FILE_UPDATE = "CANCEL_CONFIRM_FILE_UPDATE";
+export const ADD_EDIT_TASK_ATTACHMENT = "ADD_EDIT_TASK_ATTACHMENT";
 
 export interface ModalProps {
   modalType: string;

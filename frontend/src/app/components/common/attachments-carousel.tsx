@@ -201,6 +201,7 @@ export const Attachments: FC<Props> = ({
       updatedBy: "",
       imageIconString: imageIconString,
       pendingUpload: true,
+      size: file.size,
     };
 
     // check for large file sizes
@@ -271,6 +272,7 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
+                    previousValues={slides}
                   />
                 )}
                 {slides?.map((item, index) => (
@@ -292,6 +294,7 @@ export const Attachments: FC<Props> = ({
                   <AttachmentUpload
                     onFileSelect={onFileSelect}
                     disabled={disabled}
+                    previousValues={slides}
                   />
                 </div>
               )}

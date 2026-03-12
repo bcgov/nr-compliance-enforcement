@@ -77,9 +77,10 @@ RAISE notice 'EXECUTING FUNCTION';
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE complaint.staging_complaint
-    SET    staging_status_code = STAGING_STATUS_CODE_ERROR
+    SET    staging_status_code = STAGING_STATUS_CODE_ERROR,
+           staging_status_error_message = SQLERRM
     WHERE  staging_complaint_guid = staging_id
-    AND    staging_status_code = STAGING_STATUS_CODE_PENDING 
+    AND    staging_status_code = STAGING_STATUS_CODE_PENDING
     AND    staging_activity_code = action_taken_type;
   
 
