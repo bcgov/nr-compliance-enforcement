@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { gql } from "graphql-request";
 import { InspectionEditHeader } from "./inspection-edit-header";
@@ -22,6 +22,7 @@ import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import Option from "@apptypes/app/option";
 import { bcUtmZoneNumbers } from "@common/methods";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const CHECK_INSPECTION_NAME_EXISTS = gql`
   query CheckInspectionNameExists($name: String!, $leadAgency: String!, $excludeInspectionGuid: String) {
@@ -112,6 +113,7 @@ const InspectionEdit: FC = () => {
   const createInspectionMutation = useGraphQLMutation(CREATE_INSPECTION_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection created successfully");
+      allowNavigation();
       navigate(`/inspection/${data.createInspection.inspectionGuid}`);
     },
     onError: (error: any) => {
@@ -123,6 +125,7 @@ const InspectionEdit: FC = () => {
   const updateInspectionMutation = useGraphQLMutation(UPDATE_INSPECTION_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Inspection updated successfully");
+      allowNavigation();
       navigate(`/inspection/${id}`);
     },
     onError: (error: any) => {
@@ -194,8 +197,15 @@ const InspectionEdit: FC = () => {
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  const { allowNavigation } = useUnsavedChangesWarning(isDirty || isAnyDirty);
+
   const confirmCancelChanges = useCallback(() => {
     form.reset();
+    allowNavigation();
 
     if (id) {
       navigate(`/inspection/${id}`);
@@ -437,6 +447,7 @@ const InspectionEdit: FC = () => {
                     validationRequired={false}
                     sourceXCoordinate={longitude}
                     sourceYCoordinate={latitude}
+                    onDirtyChange={handleChildDirtyChange}
                   />
                 );
               }}

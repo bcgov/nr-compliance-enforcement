@@ -820,6 +820,27 @@ p {
   }
 }
 
+#task-list {
+  border-collapse: separate;
+  border-spacing: 0;
+
+  > tbody > tr {
+    cursor: pointer;
+
+    &:hover {
+      background-color: $gray-110;
+    }
+  }
+
+  > thead > tr > th {
+    border-bottom: 1px solid $gray-300;
+
+    + th {
+      border-left: 1px solid $gray-300;
+    }
+  }
+}
+
 // TABLE UTILITIES
 .sticky-table-header {
   position: sticky;
@@ -1088,4 +1109,8 @@ td.actions-col {
     text-decoration: none !important;
     padding: 0px;
   }
+}
+
+#task-attachment-list tbody tr:last-child td {
+  border-bottom: none;
 }

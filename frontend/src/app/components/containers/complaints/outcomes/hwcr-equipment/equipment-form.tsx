@@ -32,15 +32,23 @@ import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { CompInput } from "@/app/components/common/comp-input";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 export interface EquipmentFormProps {
   equipment?: EquipmentDetailsDto;
   assignedOfficer?: string | null;
   onSave: () => void;
   onCancel: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOfficer, onSave, onCancel }) => {
+export const EquipmentForm: FC<EquipmentFormProps> = ({
+  equipment,
+  assignedOfficer,
+  onSave,
+  onCancel,
+  onDirtyChange,
+}) => {
   const [type, setType] = useState<Option>();
   const [quantity, setQuantity] = useState<number>();
   const [dateSet, setDateSet] = useState<Date>(new Date());
@@ -80,6 +88,9 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const showSectionErrors = isInEdit.showSectionErrors;
+
+  // Dirty tracking
+  const { markDirty, markClean, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   // Clear state on unmount
   useEffect(() => {
@@ -277,6 +288,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
       dispatch(upsertEquipment(id, equipmentDetails));
       onSave();
     }
+    markClean();
   };
 
   const handleFormErrors = () => {
@@ -301,6 +313,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   const cancelConfirmed = () => {
     resetData();
     onCancel();
+    markClean();
   };
 
   const resetData = () => {
@@ -318,6 +331,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   const handleSetType = (type: any) => {
     setType(type);
+    markDirty();
     if (!trapEquipment.includes(type?.value ?? "")) {
       setWasAnimalCaptured("U");
     }
@@ -329,10 +343,12 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
   };
 
   const handleSetQuantity = (input: any) => {
+    markDirty();
     setQuantity(input.replace(/\D/g, ""));
   };
 
   const syncCoordinates = (yCoordinate: string | undefined, xCoordinate: string | undefined) => {
+    markDirty();
     setXCoordinate(xCoordinate);
     setYCoordinate(yCoordinate);
   };
@@ -343,6 +359,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
 
   const handleCopyLocation = () => {
     // Copy address if exists
+    markDirty();
     if (complaintData) {
       setAddress(complaintData.locationSummary);
     } else setAddress("");
@@ -482,7 +499,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       ? "comp-form-control error-border validation-group-input"
                       : "comp-form-control validation-group-input"
                   }
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                    markDirty();
+                  }}
                   maxLength={120}
                   value={address}
                 />
@@ -505,6 +525,7 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
               enableCopyCoordinates={enableCopyCoordinates}
               validationRequired={true}
               equipmentType={type?.label}
+              onDirtyChange={handleChildDirtyChange}
             />
             {/* SET BY */}
             <div
@@ -524,7 +545,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                   value={officerSet}
                   enableValidation={true}
                   errorMessage={officerSetErrorMsg}
-                  onChange={(officer: any) => setOfficerSet(officer)}
+                  onChange={(officer: any) => {
+                    setOfficerSet(officer);
+                    markDirty();
+                  }}
                   isClearable={true}
                 />
               </div>
@@ -542,7 +566,12 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                 <ValidationDatePicker
                   id="equipment-day-set"
                   maxDate={dateRemoved ?? new Date()}
-                  onChange={(date: Date | null, _time: string | null) => date && setDateSet(date)}
+                  onChange={(date: Date | null, _time: string | null) => {
+                    if (date) {
+                      setDateSet(date);
+                      markDirty();
+                    }
+                  }}
                   errMsg={dateSetErrorMsg}
                   selectedDate={dateSet}
                   className="comp-details-edit-calendar-input"
@@ -569,7 +598,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       value={officerRemoved}
                       enableValidation={true}
                       errorMessage={officerRemovedErrorMsg}
-                      onChange={(officer: any) => setOfficerRemoved(officer)}
+                      onChange={(officer: any) => {
+                        setOfficerRemoved(officer);
+                        markDirty();
+                      }}
                       isClearable={true}
                     />
                   </div>
@@ -584,7 +616,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       id="equipment-date-removed"
                       maxDate={new Date()}
                       minDate={dateSet ?? null}
-                      onChange={(date: Date, _time: string | null) => setDateRemoved(date)}
+                      onChange={(date: Date, _time: string | null) => {
+                        setDateRemoved(date); 
+                        markDirty(); 
+                      }}
                       errMsg={dateRemovedErrorMsg}
                       selectedDate={dateRemoved}
                       className="comp-details-edit-calendar-input"
@@ -614,7 +649,10 @@ export const EquipmentForm: FC<EquipmentFormProps> = ({ equipment, assignedOffic
                       itemClassName="comp-radio-btn"
                       groupClassName="comp-equipment-form-radio-group"
                       value={wasAnimalCaptured}
-                      onChange={(option: any) => setWasAnimalCaptured(option.target.value)}
+                      onChange={(option: any) => {
+                        setWasAnimalCaptured(option.target.value);
+                        markDirty();
+                      }}
                       isDisabled={false}
                       radioGroupName="equipment-animal-captured-radiogroup"
                     />

@@ -13,7 +13,11 @@ import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
 import { deleteAuthorizationOutcome, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 
-export const AuthoizationOutcome: FC = () => {
+interface AuthorizationOutcomeProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const AuthorizationOutcome: FC<AuthorizationOutcomeProps> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -124,6 +128,7 @@ export const AuthoizationOutcome: FC = () => {
               {...data}
               leadIdentifier={id}
               toggleEdit={setEditable}
+              onDirtyChange={onDirtyChange}
             />
           ) : (
             <AuthoizationOutcomeItem {...data} />

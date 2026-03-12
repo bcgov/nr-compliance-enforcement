@@ -2277,6 +2277,7 @@ export type Task = {
   taskNumber: Scalars['Int']['output'];
   taskStatusCode: Scalars['String']['output'];
   taskTypeCode: Scalars['String']['output'];
+  updatedDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TaskCategoryTypeCode = {

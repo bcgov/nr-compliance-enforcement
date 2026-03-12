@@ -9,8 +9,10 @@ import { InvestigationContraventions } from "@/app/components/containers/investi
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
-import InvestigationTasks from "@/app/components/containers/investigations/details/investigation-task";
+import InvestigationTasksOld from "@/app/components/containers/investigations/details/investigation-task-old";
+import { InvestigationTasksNew } from "@/app/components/containers/investigations/details/investigation-task";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
+import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
@@ -46,6 +48,7 @@ const GET_INVESTIGATION = gql`
         assignedUserIdentifier
         createdByUserIdentifier
         createdDate
+        updatedDate
         taskNumber
         description
         activeIndicator
@@ -98,6 +101,10 @@ export const InvestigationDetails: FC = () => {
     enabled: !!investigationGuid, // Only refresh query if id is provided
   });
 
+  // dirty form Handler
+  const { isAnyDirty, handleChildDirtyChange } = useFormDirtyState();
+  useUnsavedChangesWarning(isAnyDirty);
+
   const investigationData = data?.getInvestigation;
   const caseIdentifier = data?.caseFilesByActivityIds?.[0]?.caseIdentifier;
   const caseName = data?.caseFilesByActivityIds?.[0]?.name;
@@ -111,13 +118,23 @@ export const InvestigationDetails: FC = () => {
             investigationGuid={investigationGuid}
             caseGuid={caseIdentifier ?? ""}
             caseName={caseName ?? ""}
+            onDirtyChange={handleChildDirtyChange}
+          />
+        );
+      case "oldTasks":
+        return (
+          <InvestigationTasksOld
+            investigationData={investigationData}
+            investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "tasks":
         return (
-          <InvestigationTasks
+          <InvestigationTasksNew
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "parties":
@@ -125,6 +142,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationParties
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "contraventions":
@@ -132,6 +150,7 @@ export const InvestigationDetails: FC = () => {
           <InvestigationContraventions
             investigationData={investigationData}
             investigationGuid={investigationGuid}
+            onDirtyChange={handleChildDirtyChange}
           />
         );
       case "documents":
@@ -142,7 +161,12 @@ export const InvestigationDetails: FC = () => {
           />
         );
       case "continuation":
-        return <InvestigationContinuation investigationData={investigationData} />;
+        return (
+          <InvestigationContinuation
+            investigationData={investigationData}
+            onDirtyChange={handleChildDirtyChange}
+          />
+        );
       case "admin":
         return <InvestigationAdministration />;
     }
@@ -161,7 +185,7 @@ export const InvestigationDetails: FC = () => {
     );
   }
 
-  const isListView = currentTab === "documents";
+  const isListView = currentTab === "documents" || currentTab === "tasks";
   const containerClass = isListView
     ? "comp-complaint-details comp-complaint-details--list-view"
     : "comp-complaint-details";

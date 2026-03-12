@@ -1,7 +1,7 @@
 import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Badge } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
@@ -15,6 +15,7 @@ import { HintInputWrapper } from "@components/common/custom-hint";
 type Props = {
   id?: string;
   onChange?: (selected: Option | null, status: string | null) => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
   errorMessage?: string;
   value?: Option | null;
 };
@@ -22,6 +23,7 @@ type Props = {
 export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
   id = "linkedComplaint",
   onChange = () => {},
+  onDirtyChange,
   errorMessage = "",
   value = null,
 }) => {
@@ -33,6 +35,7 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const [hintText, setHintText] = useState<string>("");
   const [complaintData, setComplaintData] = useState<any[]>([]);
+  const [isDirty, setIsDirty] = useState<boolean>(false);
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
@@ -50,6 +53,7 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
   };
 
   const handleChange = (selected: any[]) => {
+    setIsDirty(true);
     onChange(
       selected.length > 0 ? ({ label: selected[0].id as string, value: selected[0].id as string } as Option) : null,
       selected[0]?.status,
@@ -62,6 +66,7 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
   };
 
   const handleInputChange = (text: string) => {
+    setIsDirty(true);
     if (text.length > 0) {
       setHintText("");
     }
@@ -76,6 +81,10 @@ export const HWCRAssessmentLinkComplaintSearch: FC<Props> = ({
       setComplaintData(response.complaints);
     }
   };
+
+  useEffect(() => {
+    onDirtyChange?.(0, isDirty);
+  }, [isDirty]);
 
   return (
     <div className="complaint-search-container">

@@ -19,7 +19,7 @@ test.describe("Investigation Task Form", () => {
     await expect(header).not.toContainText("Unknown", { timeout: 15000 });
 
     // Click Tasks button
-    const taskButton = page.locator("#tasks");
+    const taskButton = page.locator("#oldTasks");
     await taskButton.click();
 
     // Verify Add Task button is present

@@ -6,9 +6,9 @@ import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { useQueryClient } from "@tanstack/react-query";
 import { CaseActivityCreateInput } from "@/generated/graphql";
 import { ComplaintListSearch } from "@/app/components/common/complaint-list-search";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -37,16 +37,16 @@ const ModalLoading: FC = memo(() => (
 type AddComplaintToCaseModalProps = {
   close: () => void;
   submit: () => void;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
-export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ close, submit }) => {
-  const queryClient = useQueryClient();
-
+export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ close, submit, onDirtyChange }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
 
   // Vars
   const { title, caseId, addedComplaints } = modalData;
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   // State
   const [selectedComplaint, setSelectedComplaint] = useState<AddComplaintToCaseOption | null>();
@@ -65,6 +65,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
 
   const handleAddComplaintChange = (selected: AddComplaintToCaseOption | null) => {
     if (selected) {
+      markDirty();
       setSelectedComplaint(selected);
     } else {
       setSelectedComplaint(null);
@@ -100,8 +101,8 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
       });
     }
 
+    markClean();
     submit();
-    close();
   };
 
   return (
@@ -135,6 +136,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
                 onChange={(e) => handleAddComplaintChange(e as AddComplaintToCaseOption | null)}
                 errorMessage={addComplaintErrorMessage}
                 includeComplaintType={true}
+                onDirtyChange={onDirtyChange}
               />
             </div>
           </div>

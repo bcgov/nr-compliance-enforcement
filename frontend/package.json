@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.192",
+  "version": "2.0.216",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -45,6 +45,7 @@
     "@types/warning": "^3.0.0",
     "@typescript-eslint/parser": "5.62.0",
     "@vitejs/plugin-react": "^4.6.0",
+    "@zip.js/zip.js": "^2.8.21",
     "assert": "^2.1.0",
     "axios": "^1.13.5",
     "bootstrap": "^5.2.3",
@@ -52,7 +53,6 @@
     "chart.js": "^4.3.0",
     "child_process": "^1.0.2",
     "classnames": "^2.3.2",
-    "copy-webpack-plugin": "^13.0.0",
     "date-fns": "^3.6.0",
     "dequal": "^2.0.3",
     "dom-helpers": "^5.2.1",
@@ -81,7 +81,6 @@
     "make-fetch-happen": "15.0.3",
     "mapbox-gl-leaflet": "^0.0.16",
     "node": "^21.6.1",
-    "npm": "^11.6.4",
     "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
@@ -116,7 +115,7 @@
     "react-tooltip": "^5.23.0",
     "react-transition-group": "^4.4.5",
     "redux-persist": "^6.0.0",
-    "rollup": "^3.29.5",
+    "rollup": "^4.0.0",
     "rxjs": "^7.8.2",
     "stream-browserify": "^3.0.0",
     "typescript": "*",
@@ -180,7 +179,7 @@
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "@playwright/test": "^1.52.0",
-    "@tsconfig/node18": "^18.2.0",
+    "@tsconfig/node20": "^20.1.0",
     "@types/jest": "^29.5.1",
     "@types/node": "^24.0.10",
     "@types/react-test-renderer": "^18.0.0",
@@ -213,7 +212,8 @@
     "nth-check": "^2.1.1",
     "resolve-url-loader": "^5.0.0",
     "sass-loader": "^16.0.3",
-    "glob": ">=10.5.0"
+    "glob": ">=10.5.0",
+    "minimatch": "^10.2.1"
   },
   "browser": {
     "fs": false,

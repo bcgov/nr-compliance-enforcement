@@ -35,9 +35,10 @@ const GET_REPORTS = gql`
 
 interface InvestigationContinuationProps {
   investigationData?: Investigation;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData }) => {
+export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData, onDirtyChange }) => {
   const { investigationGuid = "" } = useParams<{ investigationGuid: string }>();
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -154,6 +155,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
           onValuesChange={handleContinuationReportValuesChange}
           showErrors={showContinuationReportErrors}
           shouldReset={shouldReset}
+          onDirtyChange={onDirtyChange}
         />
 
         <div className="comp-details-form-buttons">

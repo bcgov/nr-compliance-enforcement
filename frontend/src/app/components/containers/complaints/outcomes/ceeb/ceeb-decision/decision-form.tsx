@@ -25,6 +25,7 @@ import { UUID } from "node:crypto";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { getDropdownOption } from "@/app/common/methods";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type props = {
   leadIdentifier: string;
@@ -42,6 +43,7 @@ type props = {
   assignedTo: string;
   actionTaken: string;
   actionTakenDate: Date | null;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 export const DecisionForm: FC<props> = ({
@@ -60,8 +62,11 @@ export const DecisionForm: FC<props> = ({
   assignedTo,
   actionTaken,
   actionTakenDate,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   //-- select data from redux
   const caseId = useAppSelector(selectCaseId) as UUID;
@@ -125,8 +130,8 @@ export const DecisionForm: FC<props> = ({
   //-- update the decision state by property
   const updateModel = (property: string, value: string | Date | undefined | null) => {
     const model = { ...data, [property]: value };
-
     setData(model);
+    markDirty();
   };
 
   const handleRationaleChange = (value: string) => {
@@ -159,6 +164,7 @@ export const DecisionForm: FC<props> = ({
       };
       setData(model);
       setSectorList(options);
+      markDirty();
     } else {
       const model = { ...data, schedule: "" };
       setData(model);
@@ -176,6 +182,7 @@ export const DecisionForm: FC<props> = ({
       inspectionNumber: undefined,
     };
     setData(update);
+    markDirty();
   };
 
   const handleCancelButtonClick = () => {
@@ -207,6 +214,7 @@ export const DecisionForm: FC<props> = ({
             if (id !== undefined) {
               toggleEdit(false);
             }
+            markClean();
           },
         },
       }),
@@ -239,6 +247,7 @@ export const DecisionForm: FC<props> = ({
         }
       });
     }
+    markClean();
   };
 
   const isValid = (): boolean => {

@@ -45,6 +45,7 @@ import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
 import UserService from "@/app/service/user-service";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type Props = {
   id: string;
@@ -53,6 +54,7 @@ type Props = {
   handleCancel?: () => void;
   quickClose?: boolean;
   allowDuplicate?: boolean;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 export const HWCRAssessmentForm: FC<Props> = ({
@@ -62,8 +64,12 @@ export const HWCRAssessmentForm: FC<Props> = ({
   handleCancel = () => {},
   quickClose = false,
   allowDuplicate = false,
+  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+
+  // Dirty tracking
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
@@ -114,6 +120,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const handleDateChange = (date: Date | null, _time: string | null) => {
     setSelectedDate(date);
+    markDirty();
   };
 
   const handleActionRequiredChange = (selected: Option | null) => {
@@ -124,6 +131,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
     setSelectedCategoryLevel(null);
     setSelectedConflictHistory(null);
     if (selected) {
+      markDirty();
       setSelectedActionRequired(selected);
       setSelectedJustification(null as unknown as Option);
       setSelectedLinkedComplaint(null);
@@ -134,6 +142,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const handleJustificationChange = (selected: Option | null) => {
     if (selected) {
+      markDirty();
       setSelectedJustification(selected);
       if (selected.value !== "DUPLICATE") {
         setSelectedLinkedComplaint(null);
@@ -145,6 +154,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const handleLinkedComplaintChange = (selected: Option | null, status: string | null) => {
     if (selected) {
+      markDirty();
       setSelectedLinkedComplaint(selected);
     } else {
       setSelectedLinkedComplaint(null);
@@ -153,6 +163,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const handleSelectedOfficerChange = (selected: Option | null) => {
     if (selected && officersInAgencyList) {
+      markDirty();
       let filteredOfficer = officersInAgencyList?.find((officer) => officer.auth_user_guid === selected.value);
       setSelectedOfficerData(filteredOfficer);
     }
@@ -267,6 +278,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
+    markClean();
     handleCancel();
     setAssessmentState(assessment ?? ({} as Assessment));
   };
@@ -331,6 +343,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
     } else {
       handleFormErrors();
     }
+    markClean();
   };
 
   const handleFormErrors = () => {
@@ -607,6 +620,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     onChange={(e: Option | null, s: string | null) => handleLinkedComplaintChange(e, s)}
                     errorMessage={linkedComplaintErrorMessage}
                     value={selectedLinkedComplaint}
+                    onDirtyChange={onDirtyChange}
                   />
                 </div>
               </div>
@@ -628,7 +642,10 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   itemClassName="comp-radio-btn"
                   groupClassName="comp-equipment-form-radio-group"
                   value={selectedContacted}
-                  onChange={(option: any) => setSelectedContacted(option.target.value)}
+                  onChange={(option: any) => {
+                    setSelectedContacted(option.target.value);
+                    markDirty();
+                  }}
                   isDisabled={false}
                   radioGroupName="assessment-contacted-complainant-radiogroup"
                 />
@@ -651,7 +668,10 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   itemClassName="comp-radio-btn"
                   groupClassName="comp-equipment-form-radio-group"
                   value={selectedAttended}
-                  onChange={(option: any) => setSelectedAttended(option.target.value)}
+                  onChange={(option: any) => {
+                    setSelectedAttended(option.target.value);
+                    markDirty();
+                  }}
                   isDisabled={false}
                   radioGroupName="assessment-attended-radiogroup"
                 />
@@ -675,14 +695,20 @@ export const HWCRAssessmentForm: FC<Props> = ({
                 <ValidationCheckboxGroup
                   errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
                   options={assessmentTypeList}
-                  onCheckboxChange={(option: Option[]) => setSelectedAssessmentTypes(option)}
+                  onCheckboxChange={(option: Option[]) => {
+                    setSelectedAssessmentTypes(option);
+                    markDirty();
+                  }}
                   checkedValues={selectedAssessmentTypes}
                 ></ValidationCheckboxGroup>
                 {isLargeCarnivore && (
                   <ValidationCheckboxGroup
                     errMsg={assessmentRequiredErrorMessage}
                     options={assessmentCat1Options}
-                    onCheckboxChange={(option: Option[]) => setSelectedAssessmentCat1Types(option)}
+                    onCheckboxChange={(option: Option[]) => {
+                      setSelectedAssessmentCat1Types(option);
+                      markDirty();
+                    }}
                     checkedValues={selectedAssessmentCat1Types}
                   ></ValidationCheckboxGroup>
                 )}
@@ -714,6 +740,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     placeholder={"Select"}
                     onChange={(e: any) => {
                       setSelectedLocation(e);
+                      markDirty();
                     }}
                     isClearable={true}
                   />
@@ -741,6 +768,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     placeholder={"Select"}
                     onChange={(e: any) => {
                       setSelectedConflictHistory(e);
+                      markDirty();
                     }}
                     isClearable={true}
                   />
@@ -768,6 +796,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                     placeholder={"Select"}
                     onChange={(e: any) => {
                       setSelectedCategoryLevel(e);
+                      markDirty();
                     }}
                     isClearable={true}
                   />

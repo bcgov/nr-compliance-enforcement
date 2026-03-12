@@ -18,6 +18,7 @@ import {
   REMOVE_ACTIVITY_FROM_CASE,
   REMOVE_PARTY,
   CANCEL_CONFIRM_FILE_UPDATE,
+  ADD_EDIT_TASK_ATTACHMENT,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -41,6 +42,7 @@ import { CreateAddCaseModal } from "@/app/components/modal/instances/create-add-
 import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/remove-activity-from-case";
 import { AddPartyModal } from "@/app/components/modal/instances/add-party";
 import { CancelConfirmFileUpdateModal } from "./instances/cancel-confirm-file-update-modal";
+import { AddEditTaskAttachmentModal } from "@/app/components/modal/instances/add-task-attachment";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -62,4 +64,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [ADD_PARTY]: AddPartyModal,
   [REMOVE_PARTY]: RemovePartyModal,
   [CANCEL_CONFIRM_FILE_UPDATE]: CancelConfirmFileUpdateModal,
+  [ADD_EDIT_TASK_ATTACHMENT]: AddEditTaskAttachmentModal,
 };

@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
@@ -12,6 +12,7 @@ import { CreateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
+import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -48,6 +49,7 @@ const InvestigationCreate: FC = () => {
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
+      allowNavigation();
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
     },
     onError: (error: any) => {
@@ -96,7 +98,13 @@ const InvestigationCreate: FC = () => {
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
+  );
+  const { allowNavigation } = useUnsavedChangesWarning(isDirty);
+
   const confirmCancelChanges = useCallback(() => {
+    allowNavigation();
     form.reset();
 
     if (caseIdentifier) {
