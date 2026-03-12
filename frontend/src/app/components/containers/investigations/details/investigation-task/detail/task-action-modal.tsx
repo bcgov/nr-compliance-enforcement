@@ -28,6 +28,7 @@ export const TaskActionModal: FC<TaskActionModalProps> = ({
   const [editValues, setEditValues] = useState<Partial<ActivityNoteInput>>({});
   const [isValid, setIsValid] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const handleValuesChange = useCallback((values: Partial<ActivityNoteInput>) => {
     setEditValues(values);
@@ -37,6 +38,7 @@ export const TaskActionModal: FC<TaskActionModalProps> = ({
     if (show) {
       setEditValues({});
       setShowErrors(false);
+      setIsDirty(false);
     }
   }, [show, taskAction?.activityNoteGuid]);
 
@@ -59,8 +61,15 @@ export const TaskActionModal: FC<TaskActionModalProps> = ({
   };
 
   const handleClose = () => {
+    if (isDirty) {
+      const confirmed = globalThis.confirm(
+        "You have unsaved changes. Are you sure you want to leave?",
+      );
+      if (!confirmed) return;
+    }
     setShowErrors(false);
     setEditValues({});
+    setIsDirty(false);
     onHide();
   };
 
@@ -74,6 +83,7 @@ export const TaskActionModal: FC<TaskActionModalProps> = ({
           initialData={taskAction ?? undefined}
           onValuesChange={handleValuesChange}
           onValidationChange={handleValidationChange}
+          onDirtyChange={(_index, dirty) => setIsDirty(dirty)}
           showErrors={showErrors}
         />
       </Modal.Body>

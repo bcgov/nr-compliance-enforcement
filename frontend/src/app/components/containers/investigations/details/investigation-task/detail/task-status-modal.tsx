@@ -30,15 +30,25 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   }));
 
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const initialStatus = task?.taskStatusCode ?? "";
+  const isDirty = selectedStatus !== initialStatus;
 
   useEffect(() => {
-    if (show && task?.taskStatusCode) {
-      setSelectedStatus(task.taskStatusCode);
+    if (show) {
+      setSelectedStatus(initialStatus);
+    } else {
+      setSelectedStatus("");
     }
-  }, [show, task?.taskStatusCode]);
+  }, [show, initialStatus]);
 
   const handleClose = () => {
-    setSelectedStatus("");
+    if (isDirty) {
+      const confirmed = globalThis.confirm(
+        "You have unsaved changes. Are you sure you want to leave?",
+      );
+      if (!confirmed) return;
+    }
+    setSelectedStatus(initialStatus);
     onHide();
   };
 

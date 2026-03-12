@@ -64,6 +64,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           taskIdentifier: task?.taskIdentifier,
           existingAttachments: attachments,
           attachment,
+          onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,
       }),

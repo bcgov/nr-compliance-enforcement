@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
@@ -70,6 +70,10 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     },
   });
 
+  const isDirty = useStore(form.baseStore, (state) =>
+    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
+  );
+
   useEffect(() => {
     if (show && task) {
       const categoryValue = String(
@@ -87,6 +91,12 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [show, task?.taskIdentifier]);
 
   const handleClose = () => {
+    if (isDirty) {
+      const confirmed = globalThis.confirm(
+        "You have unsaved changes. Are you sure you want to leave?",
+      );
+      if (!confirmed) return;
+    }
     form.reset();
     onHide();
   };
