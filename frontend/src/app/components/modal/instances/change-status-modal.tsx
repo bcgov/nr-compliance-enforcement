@@ -49,30 +49,25 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
 
   const validationResults = useValidateComplaint();
 
-  const validateCloseStatus = () => {
-    if (validationResults.canCloseComplaint) {
-      if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        dispatch(updateWildlifeComplaintStatus(complaint_identifier, selectedStatus));
-      } else if (COMPLAINT_TYPES.ERS === complaint_type) {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier, selectedStatus));
-      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-        dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, selectedStatus));
-      }
-      dispatch(setIsInEdit({ showSectionErrors: false }));
-      submit();
-    } else {
-      validationResults.scrollToErrors();
-      dispatch(setIsInEdit({ showSectionErrors: true }));
-      submit();
+  const dispatchStatusUpdate = () => {
+    if (COMPLAINT_TYPES.HWCR === complaint_type) {
+      dispatch(updateWildlifeComplaintStatus(complaint_identifier, selectedStatus));
+    } else if (COMPLAINT_TYPES.ERS === complaint_type) {
+      dispatch(updateAllegationComplaintStatus(complaint_identifier, selectedStatus));
+    } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+      dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, selectedStatus));
     }
   };
 
   const handleSubmit = () => {
-    if (selectedStatus === "CLOSED") {
-      validateCloseStatus();
+    if (selectedStatus === "CLOSED" && !validationResults.canCloseComplaint) {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
     } else {
+      dispatchStatusUpdate();
       dispatch(setIsInEdit({ showSectionErrors: false }));
     }
+    submit();
   };
 
   return (
