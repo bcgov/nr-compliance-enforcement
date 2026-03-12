@@ -4,6 +4,7 @@ import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Task } from "@/generated/graphql";
 import { TaskDetailHeader } from "./task-detail-header";
+import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -60,6 +61,11 @@ const TaskDetail: FC = () => {
         <div className="comp-details-section-header">
           <h2>Task details</h2>
         </div>
+
+        <TaskAttachments
+          investigationGuid={investigationGuid}
+          task={task}
+        />
       </section>
     </div>
   );

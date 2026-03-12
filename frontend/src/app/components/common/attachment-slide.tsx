@@ -67,7 +67,7 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
   );
 
   const content = (
-    <div className={showPreview ? `comp-attachment-slide ${getSlideClass()}` : "comp-carousel-files-no-preview"}>
+    <div className={showPreview ? `comp-attachment-slide ${getSlideClass()}` : "attachment-header"}>
       {showPreview ? (
         <>
           <div className="comp-attachment-slide-actions">{renderButtons()}</div>

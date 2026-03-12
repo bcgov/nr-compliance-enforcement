@@ -466,6 +466,18 @@ export const selectOfficersByAgencyDropdownUsingPersonGuid =
     return officerDropdown;
   };
 
+// Returns a list of options by agency.
+// Recommend reviewing the previous 3 selectors that also return Option lists of officers
+// to see if we can combine into one.
+export const selectOfficerListByAgencyCode = (agency: string) =>
+  createSelector([selectOfficers], (officers): Array<Option> => {
+    const officerList = filterOfficerByAgency(agency, officers || []);
+    return officerList.map((officer: AppUser) => ({
+      value: officer.app_user_guid,
+      label: `${officer.last_name}, ${officer.first_name}`,
+    }));
+  });
+
 export const selectOfficersByReportedBy =
   (reportedBy: string) =>
   (state: RootState): AppUser[] | null => {

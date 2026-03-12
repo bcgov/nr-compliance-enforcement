@@ -959,8 +959,10 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
         </div>
 
         <div className="mt-3">
+          <hr className="mb-3"></hr>
           <fieldset>
             <h4>Attachments ({attachmentCount})</h4>
+
             <Attachments
               attachmentType={AttachmentEnum.TASK_ATTACHMENT}
               identifier={investigationGuid}

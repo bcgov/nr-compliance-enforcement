@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   searchAttachments,
   fetchObjectsMetadata,
@@ -10,11 +10,12 @@ import { COMSObject } from "@apptypes/coms/object";
 import { Task } from "@/generated/graphql";
 import AttachmentEnum from "@constants/attachment-enum";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 
 interface UseInvestigationAttachmentsParams {
   investigationIdentifier: string;
   tasks: Task[];
-  search: string;
+  search: string | null;
   taskFilter: string | null;
   sortBy: string;
   sortOrder: string;
@@ -26,6 +27,13 @@ interface UseInvestigationAttachmentsParams {
 export interface Attachment extends COMSObject {
   taskId: string | null;
   taskNumber?: number;
+  takenBy?: string | null;
+  sequenceNumber?: string | null;
+  fileType?: string | null;
+  description?: string | null;
+  title?: string | null;
+  date?: string | null;
+  location?: string | null;
 }
 
 export interface InvestigationAttachmentsResult {
@@ -75,6 +83,13 @@ const fetchAttachmentsWithMetadata = async (investigationIdentifier: string): Pr
       ...attachment,
       taskId: metadata?.taskId ?? null,
       type: metadata?.attachmentType ?? null,
+      takenBy: metadata?.takenBy ?? null,
+      sequenceNumber: metadata?.sequenceNumber ?? null,
+      fileType: metadata?.fileType ?? null,
+      description: metadata?.description ?? null,
+      title: metadata?.title ?? null,
+      date: metadata?.date ?? null,
+      location: metadata?.location ?? null,
     };
   });
 };
@@ -105,6 +120,16 @@ export const useInvestigationAttachments = (
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
+  const queryClient = useQueryClient();
+
+  // Re-query when an upload is complete
+  useEffect(() => {
+    const subscription = attachmentUploadComplete$.subscribe(() => {
+      queryClient.invalidateQueries({ queryKey: ["investigation-attachments-all", investigationIdentifier] });
+    });
+    return () => subscription.unsubscribe();
+  }, [queryClient, investigationIdentifier]);
+
   // Filter, sort, and paginate
   const attachmentResults = useMemo(() => {
     const attachments = query.data ?? [];
@@ -117,6 +142,10 @@ export const useInvestigationAttachments = (
         taskNumber: task?.taskNumber,
       };
     });
+
+    // Filter to only include attachments belonging to the provided tasks
+    const taskIdentifiers = new Set(tasks.map((t) => t.taskIdentifier));
+    items = items.filter((a) => a.taskId && taskIdentifiers.has(a.taskId));
 
     // Filter by search term
     if (search) {
