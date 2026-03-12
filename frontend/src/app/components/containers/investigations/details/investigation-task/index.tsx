@@ -47,9 +47,9 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   };
 
   return (
-    <div className="comp-details-view">
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <h3 className="mb-0">Tasks</h3>
+    <div className="comp-details-section--list-view">
+      <div className="d-flex align-items-center justify-content-between my-2">
+        <h3>Tasks</h3>
         <Button
           id="add-task-button"
           variant="primary"
@@ -60,10 +60,14 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         </Button>
       </div>
 
-      <TaskList
-        tasks={tasks}
-        investigationGuid={investigationGuid}
-      />
+      <div className="comp-data-container">
+        <div className="comp-data-list-map">
+          <TaskList
+            tasks={tasks}
+            investigationGuid={investigationGuid}
+          />
+        </div>
+      </div>
 
       <TaskDetailEditModal
         show={showAddTaskModal}
