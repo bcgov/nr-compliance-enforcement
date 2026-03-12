@@ -432,7 +432,8 @@ EXCEPTION
 WHEN OTHERS THEN
     RAISE NOTICE 'An unexpected error occurred: %', SQLERRM;
     UPDATE complaint.staging_complaint
-    SET    staging_status_code = STAGING_STATUS_CODE_ERROR
+    SET    staging_status_code = STAGING_STATUS_CODE_ERROR,
+           staging_status_error_message = SQLERRM
     WHERE  complaint_identifier = _complaint_identifier
     AND    staging_status_code = STAGING_STATUS_CODE_PENDING
     AND    staging_activity_code = STAGING_STATUS_CODE_EDIT;
