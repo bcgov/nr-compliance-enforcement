@@ -193,10 +193,10 @@ export const useInvestigationAttachments = (
 
       switch (sortBy) {
         case "sequenceNumber": {
-          const sequenceA = parseInt(a.sequenceNumber ?? "0", 10);
-          const sequenceB = parseInt(b.sequenceNumber ?? "0", 10);
-          const numA = isNaN(sequenceA) ? 0 : sequenceA;
-          const numB = isNaN(sequenceB) ? 0 : sequenceB;
+          const sequenceA = Number.parseInt(a.sequenceNumber ?? "0", 10);
+          const sequenceB = Number.parseInt(b.sequenceNumber ?? "0", 10);
+          const numA = Number.isNaN(sequenceA) ? 0 : sequenceA;
+          const numB = Number.isNaN(sequenceB) ? 0 : sequenceB;
           comparison = numA - numB;
           break;
         }
@@ -211,13 +211,6 @@ export const useInvestigationAttachments = (
           const titleA = a.title ?? "";
           const titleB = b.title ?? "";
           comparison = titleA.localeCompare(titleB);
-          break;
-        }
-
-        case "date": {
-          const dateA = a.date ? new Date(a.date).getTime() : 0;
-          const dateB = b.date ? new Date(b.date).getTime() : 0;
-          comparison = dateA - dateB;
           break;
         }
 
