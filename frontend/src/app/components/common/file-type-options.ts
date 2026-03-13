@@ -5,5 +5,4 @@ export const fileTypeOptions: Option[] = [
   { value: "Document", label: "Document" },
   { value: "Photo", label: "Photo" },
   { value: "Video", label: "Video" },
-  { value: "Other", label: "Other" },
 ];
