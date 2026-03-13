@@ -9,7 +9,6 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import Option from "@apptypes/app/option";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
 import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import AttachmentEnum from "@/app/constants/attachment-enum";
@@ -22,6 +21,7 @@ import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
+import { parseISO } from "date-fns";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -58,7 +58,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       fileType: attachment?.fileType ?? "",
       description: attachment?.description ?? "",
       title: attachment?.title ?? "",
-      date: attachment?.date ? new Date(attachment.date) : null,
+      date: attachment?.date ? parseISO(attachment.date) : null,
       takenBy: attachment?.takenBy ?? defaultAssignee ?? "",
       location: attachment?.location ?? "",
     },
@@ -153,21 +153,41 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
     submit();
 
-    handlePersistAttachments({
-      dispatch,
-      attachmentsToAdd: files,
-      attachmentsToDelete: null,
-      identifier: investigationIdentifier,
-      subIdentifier: taskIdentifier,
-      setAttachmentsToAdd: () => {},
-      setAttachmentsToDelete: () => {},
-      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
-      isSynchronous: false,
-      extendedMeta: buildExtendedMeta(value),
-    }).then(() => {
-      DismissToast(toastId);
-      attachmentUploadComplete$.next(taskIdentifier);
+    // Pre-calculate sequence numbers for each file
+    const baseSequence = existingAttachments
+      .filter((a: Attachment) => a.fileType === value.fileType)
+      .reduce((max: number, a: Attachment) => Math.max(max, Number.parseInt(a.sequenceNumber ?? "0", 10)), 0);
+
+    const fileSequences = files.map((file, i) => {
+      const existingSequence = existingAttachments.find(
+        (a: Attachment) => getDisplayFilename(a.name) === file.name,
+      )?.sequenceNumber;
+
+      return existingSequence ?? String(baseSequence + i + 1).padStart(4, "0");
     });
+
+    await Promise.all(
+      files.map((file, i) =>
+        handlePersistAttachments({
+          dispatch,
+          attachmentsToAdd: [file],
+          attachmentsToDelete: null,
+          identifier: investigationIdentifier,
+          subIdentifier: taskIdentifier,
+          setAttachmentsToAdd: () => {},
+          setAttachmentsToDelete: () => {},
+          attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+          isSynchronous: false,
+          extendedMeta: {
+            ...buildExtendedMeta(value),
+            "sequence-number": fileSequences[i],
+          },
+        }),
+      ),
+    );
+
+    DismissToast(toastId);
+    attachmentUploadComplete$.next(taskIdentifier);
   };
 
   // function to delete a single object from a task
@@ -192,7 +212,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
   const handleEditMetadata = async (value: FormValues, taskIdentifier: string) => {
     submit();
 
-    dispatch(updateAttachmentMetadata(attachment.id, buildExtendedMeta(value))).then(() => {
+    dispatch(
+      updateAttachmentMetadata(attachment.id, {
+        ...buildExtendedMeta(value),
+        "sequence-number": attachment?.sequenceNumber ?? "",
+      }),
+    ).then(() => {
       attachmentUploadComplete$.next(taskIdentifier);
     });
   };
@@ -211,11 +236,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       date: value.date ? format(value.date, "yyyy-MM-dd") : "",
       ...(isMediaType && value.takenBy && { "taken-by": value.takenBy }),
       ...(isMediaType && value.location && { location: value.location }),
-      "sequence-number":
-        attachment?.sequenceNumber ??
-        existingAttachments.find((a: Attachment) => getDisplayFilename(a.name) === value.originalFileName)
-          ?.sequenceNumber ??
-        getNextSequenceNumber(existingAttachments, value.fileType),
     };
   };
 
@@ -230,18 +250,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
 
     form.setFieldValue("file", updatedFileList.length > 0 ? updatedFileList : null);
     form.setFieldValue("originalFileName", updatedFiles.map((f) => f.name).join("\n"));
-  };
-
-  // Function to calculate the next sequence number for a task
-  const getNextSequenceNumber = (existingAttachments: COMSObject[], fileType: string): string => {
-    const matchingAttachments = existingAttachments.filter((a) => a.fileType === fileType);
-
-    const maxSequence = matchingAttachments.reduce((max, a) => {
-      const seq = Number.parseInt(a.sequenceNumber ?? "0", 10);
-      return Math.max(max, seq);
-    }, 0);
-
-    return String(maxSequence + 1).padStart(4, "0");
   };
 
   return (
@@ -414,52 +422,6 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               )}
             />
 
-            {["Audio", "Video", "Photo"].includes(fileType) && (
-              <>
-                <FormField
-                  form={form}
-                  name="takenBy"
-                  label="Taken By"
-                  required
-                  validators={{ onChange: z.string().min(1, "Taken By is required") }}
-                  render={(field) => (
-                    <CompSelect
-                      id="taken-by-select"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={assignableOfficers}
-                      value={assignableOfficers.find((opt) => opt.value === (field.state.value || defaultAssignee))}
-                      onChange={(option) => field.handleChange(option?.value || "")}
-                      placeholder="Select taken by"
-                      isClearable={true}
-                      showInactive={false}
-                      enableValidation={true}
-                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                    />
-                  )}
-                />
-
-                <FormField
-                  form={form}
-                  name="location"
-                  label="Location"
-                  render={(field) => (
-                    <CompInput
-                      id="location"
-                      divid="location-value"
-                      type="input"
-                      inputClass="comp-form-control"
-                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      onChange={(evt: any) => field.handleChange(evt.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter location"
-                      maxLength={1024}
-                    />
-                  )}
-                />
-              </>
-            )}
-
             {/* Description */}
             <FormField
               form={form}
@@ -522,11 +484,58 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   classNamePrefix="comp-details-input"
                   className="comp-form-control comp-details-input"
                   selectedDate={field.state.value}
+                  maxDate={new Date()}
                   onChange={(date: Date | undefined) => field.handleChange(date ?? undefined)}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
               )}
             />
+
+            {["Audio", "Video", "Photo"].includes(fileType) && (
+              <>
+                <FormField
+                  form={form}
+                  name="takenBy"
+                  label="Taken By"
+                  required
+                  validators={{ onChange: z.string().min(1, "Taken By is required") }}
+                  render={(field) => (
+                    <CompSelect
+                      id="taken-by-select"
+                      classNamePrefix="comp-select"
+                      className="comp-details-input"
+                      options={assignableOfficers}
+                      value={assignableOfficers.find((opt) => opt.value === (field.state.value || defaultAssignee))}
+                      onChange={(option) => field.handleChange(option?.value || "")}
+                      placeholder="Select taken by"
+                      isClearable={true}
+                      showInactive={false}
+                      enableValidation={true}
+                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
+
+                <FormField
+                  form={form}
+                  name="location"
+                  label="Location"
+                  render={(field) => (
+                    <CompInput
+                      id="location"
+                      divid="location-value"
+                      type="input"
+                      inputClass="comp-form-control"
+                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                      onChange={(evt: any) => field.handleChange(evt.target.value)}
+                      value={field.state.value}
+                      placeholder="Enter location"
+                      maxLength={1024}
+                    />
+                  )}
+                />
+              </>
+            )}
           </fieldset>
         </form>
 
