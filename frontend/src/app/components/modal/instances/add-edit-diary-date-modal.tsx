@@ -3,17 +3,19 @@ import { Alert, Modal, Button } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { parse } from "date-fns";
-import { DiaryDate, DiaryDateInput } from "@/generated/graphql";
+import { DiaryDateInput } from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
-import { selectModalData } from "@/app/store/reducers/app";
+import { appUserGuid as selectAppUserGuid, selectModalData } from "@/app/store/reducers/app";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { SAVE_DIARY_DATE, DELETE_DIARY_DATE } from "@/app/components/containers/investigations/details/investigation-diary-dates";
+import {
+  SAVE_DIARY_DATE,
+  DELETE_DIARY_DATE,
+} from "@/app/components/containers/investigations/details/investigation-diary-dates";
 
 type AddEditDiaryDateModalProps = {
   close: () => void;
@@ -119,7 +121,10 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
 
   return (
     <>
-      <Modal.Header closeButton className="pb-0">
+      <Modal.Header
+        closeButton
+        className="pb-0"
+      >
         <Modal.Title>{isEditing ? "Edit diary date" : "Add diary date"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -180,18 +185,22 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
           />
         </form>
         {isEditing && showDeleteConfirm && (
-          <Alert variant="danger" className="comp-complaint-details-alert mt-3">
+          <Alert
+            variant="danger"
+            className="comp-complaint-details-alert mt-3"
+          >
             <div className="d-flex align-items-start gap-2">
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong>Delete diary date</strong>
-                <p className="mb-3">
-                  Are you sure you want to delete this diary date? This action cannot be undone.
-                </p>
+                <p className="mb-3">Are you sure you want to delete this diary date? This action cannot be undone.</p>
               </span>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <Button variant="outline-primary" onClick={() => setShowDeleteConfirm(false)}>
+              <Button
+                variant="outline-primary"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -219,7 +228,11 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
             </Button>
           )}
           <div className="d-flex gap-2 ms-auto">
-            <Button variant="outline-primary" onClick={handleClose} disabled={isSaving}>
+            <Button
+              variant="outline-primary"
+              onClick={handleClose}
+              disabled={isSaving}
+            >
               Cancel
             </Button>
             <Button

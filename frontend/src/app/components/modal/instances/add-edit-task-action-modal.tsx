@@ -1,12 +1,10 @@
 import { FC, useState, useCallback, useEffect } from "react";
 import { Alert, Modal, Button } from "react-bootstrap";
-import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
-import { ActivityNoteEditor } from "@/app/components/common/activity-note";
+import { ActivityNoteInput } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
-import { selectModalData } from "@/app/store/reducers/app";
+import { appUserGuid as selectAppUserGuid, selectModalData } from "@/app/store/reducers/app";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { SAVE_ACTIVITY_NOTE, DELETE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
+import { SAVE_ACTIVITY_NOTE, DELETE_ACTIVITY_NOTE, ActivityNoteEditor } from "@/app/components/common/activity-note";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 
@@ -96,7 +94,10 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
 
   return (
     <>
-      <Modal.Header closeButton className="pb-0">
+      <Modal.Header
+        closeButton
+        className="pb-0"
+      >
         <Modal.Title>{taskAction ? "Edit task action" : "Add task action"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -109,18 +110,22 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
         />
 
         {taskAction && showDeleteConfirm && (
-          <Alert variant="danger" className="comp-complaint-details-alert mt-3">
+          <Alert
+            variant="danger"
+            className="comp-complaint-details-alert mt-3"
+          >
             <div className="d-flex align-items-start gap-2">
               <i className="bi bi-info-circle mt-2" />
               <span>
                 <strong>Delete task action</strong>
-                <p className="mb-3">
-                  Are you sure you want to delete this task action? This action cannot be undone.
-                </p>
+                <p className="mb-3">Are you sure you want to delete this task action? This action cannot be undone.</p>
               </span>
             </div>
             <div className="d-flex justify-content-end gap-2">
-              <Button variant="outline-primary" onClick={() => setShowDeleteConfirm(false)}>
+              <Button
+                variant="outline-primary"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
                 Cancel
               </Button>
               <Button
@@ -148,7 +153,11 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
             </Button>
           )}
           <div className="d-flex gap-2 ms-auto">
-            <Button variant="outline-primary" onClick={handleClose} disabled={isSaving}>
+            <Button
+              variant="outline-primary"
+              onClick={handleClose}
+              disabled={isSaving}
+            >
               Cancel
             </Button>
             <Button
