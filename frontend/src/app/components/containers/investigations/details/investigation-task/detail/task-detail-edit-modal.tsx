@@ -74,6 +74,14 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
 
+  const clearFieldMeta = () => {
+    (["taskCategory", "taskSubCategory", "officerAssigned", "description"] as const).forEach(
+      (name) => {
+        form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      },
+    );
+  };
+
   useEffect(() => {
     if (show && task) {
       const categoryValue = String(
@@ -84,7 +92,11 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? "");
       form.setFieldValue("description", task.description ?? "");
-    } else if (show && !task) {
+      clearFieldMeta();
+      const timeout = globalThis.setTimeout(clearFieldMeta, 0);
+      return () => globalThis.clearTimeout(timeout);
+    }
+    if (show && !task) {
       setSelectedCategory("");
       form.reset();
     }

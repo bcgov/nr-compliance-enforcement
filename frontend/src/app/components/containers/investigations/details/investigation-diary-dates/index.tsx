@@ -7,7 +7,7 @@ import { DiaryDate, Investigation } from "@/generated/graphql";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { DiaryDateRow } from "./diary-date-row";
 import { DeleteConfirmModal } from "@/app/components/modal/instances/delete-confirm-modal";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_DIARY_DATE } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
@@ -108,7 +108,6 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
 
   const allDiaryDates = data?.diaryDates ?? [];
   const diaryDates = taskGuid ? allDiaryDates.filter((dd) => dd.taskGuid === taskGuid) : allDiaryDates;
-  const hasDiaryDates = diaryDates.length > 0;
 
   const handleAddClick = () => {
     dispatch(
@@ -162,7 +161,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
     <div className="comp-details-section mt-4 mb-3">
       <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
         <h3 className="mb-0">Diary dates</h3>
-        {hasDiaryDates && (
+        {diaryDates.length > 0 && (
           <Button
             variant="primary"
             size="sm"
@@ -174,7 +173,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
         )}
       </div>
 
-      {!hasDiaryDates ? (
+      {diaryDates.length === 0 ? (
         <div className="mt-3">
           <Button
             variant="primary"
