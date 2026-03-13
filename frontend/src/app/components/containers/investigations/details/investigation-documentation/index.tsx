@@ -24,6 +24,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, tasks
     tasks,
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
+    fileTypeFilter: searchValues.fileTypeFilter,
     sortBy: searchValues.sortBy,
     sortOrder: searchValues.sortOrder,
     page: searchValues.page,

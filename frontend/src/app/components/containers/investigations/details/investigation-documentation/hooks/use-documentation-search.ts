@@ -5,6 +5,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 export interface DocumentationSearchParams {
   search: string;
   taskFilter: string | null;
+  fileTypeFilter: string | null;
   sortBy: string;
   sortOrder: string;
   page: number;
@@ -14,6 +15,7 @@ export interface DocumentationSearchParams {
 const DEFAULT_SEARCH_VALUES: DocumentationSearchParams = {
   search: "",
   taskFilter: null,
+  fileTypeFilter: null,
   sortBy: "createdAt",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
@@ -47,6 +49,7 @@ export const useDocumentationSearch = () => {
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       taskFilter: searchParams.get("taskFilter"),
+      fileTypeFilter: searchParams.get("fileTypeFilter"),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: Number.parseInt(searchParams.get("page") || "1", 10),

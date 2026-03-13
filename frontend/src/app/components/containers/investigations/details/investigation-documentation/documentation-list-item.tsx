@@ -1,12 +1,13 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { formatDateTime } from "@common/methods";
+import { formatDate } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
-import { useAppDispatch } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
 import { getDisplayFilename } from "@common/attachment-utils";
 import config from "@/config";
 import { Attachment } from "./hooks/use-investigation-attachments";
+import { selectOfficers } from "@/app/store/reducers/officer";
 
 type Props = {
   attachment: Attachment;
@@ -16,6 +17,12 @@ type Props = {
 
 export const DocumentationListItem: FC<Props> = ({ attachment, investigationGuid, task }) => {
   const dispatch = useAppDispatch();
+  const officers = useAppSelector(selectOfficers);
+
+  const geUserName = (officerGuid: string) => {
+    const takenBy = officers?.find((o) => o.app_user_guid === officerGuid);
+    return takenBy ? `${takenBy.last_name}, ${takenBy.first_name}` : "-";
+  };
 
   const handleFileClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -32,15 +39,11 @@ export const DocumentationListItem: FC<Props> = ({ attachment, investigationGuid
 
   return (
     <tr>
-      <td className="comp-cell-min-width-200">
-        <a
-          href={`${config.COMS_URL}/object/${attachment.id}`}
-          className="comp-cell-link"
-          onClick={handleFileClick}
-          title={`Download ${displayName}`}
-        >
-          {displayName}
-        </a>
+      <td className="comp-cell-width-150 comp-cell-min-width-150 border-end-0">{attachment.sequenceNumber || ""}</td>
+      <td className="comp-cell-width-150 comp-cell-min-width-150">{attachment.description || "-"}</td>
+      <td className="comp-cell-width-150 comp-cell-min-width-150">{attachment.title || "-"}</td>
+      <td className="comp-cell-width-150 comp-cell-min-width-150">
+        {attachment.date ? formatDate(attachment.date) : "-"}
       </td>
       <td className="comp-cell-width-150 comp-cell-min-width-150">
         {task ? (
@@ -54,8 +57,17 @@ export const DocumentationListItem: FC<Props> = ({ attachment, investigationGuid
           <span>{taskLabel}</span>
         )}
       </td>
-      <td className="comp-cell-width-150 comp-cell-min-width-150">
-        {attachment.createdAt ? formatDateTime(attachment.createdAt.toString()) : "-"}
+      <td className="comp-cell-width-150 comp-cell-min-width-150">{geUserName(attachment.takenBy ?? "") || "-"}</td>
+      <td className="comp-cell-width-150 comp-cell-min-width-150">{attachment.location || "-"}</td>
+      <td className="comp-cell-min-width-200">
+        <a
+          href={`${config.COMS_URL}/object/${attachment.id}`}
+          className="comp-cell-link"
+          onClick={handleFileClick}
+          title={`Download ${displayName}`}
+        >
+          {displayName}
+        </a>
       </td>
     </tr>
   );
