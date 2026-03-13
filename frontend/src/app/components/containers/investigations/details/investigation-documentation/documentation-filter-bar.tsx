@@ -66,6 +66,10 @@ export const DocumentationFilterBar: FC<Props> = ({
     return task ? `Task ${task.taskNumber}` : "Task";
   };
 
+  const getFileTypeLabel = (): string => {
+    return searchValues.fileTypeFilter ? `${searchValues.fileTypeFilter}` : "File type";
+  };
+
   const renderFilterButton = (variant: "desktop" | "mobile", onClick: MouseEventHandler, id?: string) => (
     <Button
       variant="outline-primary"
@@ -85,7 +89,7 @@ export const DocumentationFilterBar: FC<Props> = ({
         <InputGroup className="search-input-group">
           <input
             id="documentation-search"
-            placeholder="Search by filename..."
+            placeholder="Search..."
             aria-label="Search by filename"
             className="comp-form-control comp-search-input form-control"
             onChange={handleSearchChange}
@@ -121,6 +125,14 @@ export const DocumentationFilterBar: FC<Props> = ({
             id="task-filter-pill"
             label={getTaskFilterLabel()}
             name="taskFilter"
+            clear={removeFilter}
+          />
+        )}
+        {hasFilter("fileTypeFilter") && (
+          <FilterButton
+            id="filetype-filter-pill"
+            label={getFileTypeLabel()}
+            name="fileTypeFilter"
             clear={removeFilter}
           />
         )}

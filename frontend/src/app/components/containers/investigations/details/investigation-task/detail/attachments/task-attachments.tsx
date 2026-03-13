@@ -29,6 +29,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     tasks: task ? [task] : [],
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
+    fileTypeFilter: searchValues.fileTypeFilter,
     sortBy: searchValues.sortBy,
     sortOrder: searchValues.sortOrder,
     page: searchValues.page,
