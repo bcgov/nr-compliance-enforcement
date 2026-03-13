@@ -112,6 +112,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
   const handleAddClick = () => {
     dispatch(
       openModal({
+        modalSize: "md",
         modalType: ADD_EDIT_DIARY_DATE,
         data: {
           investigationGuid,
@@ -128,6 +129,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
   const handleEditClick = (diaryDate: DiaryDate) => {
     dispatch(
       openModal({
+        modalSize: "md",
         modalType: ADD_EDIT_DIARY_DATE,
         data: {
           investigationGuid,
