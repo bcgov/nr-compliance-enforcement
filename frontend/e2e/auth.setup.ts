@@ -35,7 +35,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   const authBaseUrl = process.env.REACT_APP_KEYCLOAK_URL!;
   const realm = process.env.REACT_APP_KEYCLOAK_REALM!;
   const clientId = process.env.REACT_APP_KEYCLOAK_CLIENT_ID!;
-  const redirectUri = process.env.E2E_BASE_URL!;
+  const redirectUri = `${process.env.E2E_BASE_URL!}.apps.emerald.devops.gov.bc.ca`;
   let account = process.env.PLAYWRIGHT_KEYCLOAK_USER!;
   let totpSecret = process.env.PLAYWRIGHT_TOTP_SECRET!;
   if (role === "CEEB") {
