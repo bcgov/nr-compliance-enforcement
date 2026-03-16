@@ -19,6 +19,8 @@ import {
   REMOVE_PARTY,
   CANCEL_CONFIRM_FILE_UPDATE,
   ADD_EDIT_TASK_ATTACHMENT,
+  ADD_EDIT_DIARY_DATE,
+  ADD_EDIT_TASK_ACTION,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -43,6 +45,8 @@ import { RemoveActivityFromCaseModal } from "@/app/components/modal/instances/re
 import { AddPartyModal } from "@/app/components/modal/instances/add-party";
 import { CancelConfirmFileUpdateModal } from "./instances/cancel-confirm-file-update-modal";
 import { AddEditTaskAttachmentModal } from "@/app/components/modal/instances/add-task-attachment";
+import { AddEditDiaryDateModal } from "@/app/components/modal/instances/add-edit-diary-date-modal";
+import { AddEditTaskActionModal } from "@/app/components/modal/instances/add-edit-task-action-modal";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -65,4 +69,6 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [REMOVE_PARTY]: RemovePartyModal,
   [CANCEL_CONFIRM_FILE_UPDATE]: CancelConfirmFileUpdateModal,
   [ADD_EDIT_TASK_ATTACHMENT]: AddEditTaskAttachmentModal,
+  [ADD_EDIT_DIARY_DATE]: AddEditDiaryDateModal,
+  [ADD_EDIT_TASK_ACTION]: AddEditTaskActionModal,
 };

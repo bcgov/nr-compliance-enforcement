@@ -22,18 +22,11 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 type ReferComplaintModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
   id: string;
   complaint_type: string;
 };
 
-export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({
-  close,
-  submit,
-  onDirtyChange,
-  id,
-  complaint_type,
-}) => {
+export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submit, id, complaint_type }) => {
   const dispatch = useAppDispatch();
 
   const modalData = useAppSelector(selectModalData);
@@ -45,7 +38,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({
   const emailReferenceList = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.EMAIL_REFERENCE));
   const complaintAgency = agencies.find((agency) => agency.agency === complaintData?.ownedBy);
 
-  const { title } = modalData;
+  const { title, onDirtyChange } = modalData;
   const currentDate = new Date();
 
   const { markDirty } = useFormDirtyState(onDirtyChange);

@@ -13,6 +13,7 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
 import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface OutcomeAttachmentProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -46,6 +47,8 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
 
   const showSectionErrors = isEditing && hasAttachments && isInEdit.showSectionErrors;
 
+  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
   useEffect(() => {
     dispatch(setIsInEdit({ attachments: isEditing }));
   }, [dispatch, isEditing]);
@@ -55,14 +58,18 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
   }, []);
 
   const onHandleAddAttachments = (selectedFiles: File[]) => {
+    markDirty();
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    markDirty();
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
   const saveButtonClick = async () => {
+    markClean();
+
     let toastId: Id | undefined;
 
     if (attachmentsToAdd?.length) {
@@ -95,6 +102,7 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
   };
 
   const cancelButtonClick = () => {
+    markClean();
     dispatch(
       openModal({
         modalSize: "md",
@@ -168,7 +176,6 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
             disabled={isReadOnly}
             refreshKey={attachmentRefreshKey}
             showPreview={hasAttachments}
-            onDirtyChange={onDirtyChange}
           />
 
           {isEditing && (

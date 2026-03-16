@@ -81,20 +81,19 @@ type AddPartyModalProps = {
   activityType: ActivityType;
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit, onDirtyChange }) => {
+export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const partyRoles = useAppSelector(selectPartyAssociationRoleDropdown);
 
+  // Vars
+  const { title, activityGuid, onDirtyChange } = modalData;
+
   // Dirty Tracking
   const { markDirty } = useFormDirtyState(onDirtyChange);
-
-  // Vars
-  const { title, activityGuid } = modalData;
 
   // State
   const [selectedParty, setSelectedParty] = useState<Party | null>();
