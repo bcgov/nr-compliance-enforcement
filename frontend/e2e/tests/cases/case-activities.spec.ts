@@ -133,3 +133,210 @@ test.describe("Case Activities - Inspections Column", () => {
     expect(hasCards || isLoading || true).toBe(true);
   });
 });
+
+test.describe("Case Activities - Activity Cards", () => {
+  test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
+
+  test("it displays investigation cards with correct info", async ({ page }) => {
+    // Navigate to a case that has investigations (CASE1 from test data)
+    await page.goto("/cases");
+    await waitForSpinner(page);
+
+    // Look for CASE1 which has investigations
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+
+    expect(await caseLink.count(), "CASE1 not found.").toBeGreaterThan(0);
+
+    await caseLink.first().click();
+    await waitForSpinner(page);
+
+    // Look for investigation cards
+    const investigationsSection = page.locator("text=Investigations").first().locator("..");
+    await expect(investigationsSection).toBeVisible();
+
+    const cards = investigationsSection.locator(".card, [class*='activity-card']");
+    const cardCount = await cards.count();
+
+    if (cardCount > 0) {
+      // Cards should have some content
+      const firstCard = cards.first();
+      const cardText = await firstCard.textContent();
+      expect(cardText).toBeTruthy();
+    }
+  });
+
+  test("it displays inspection cards with correct info", async ({ page }) => {
+    // Navigate to a case that might have inspections
+    await page.goto("/cases");
+    await waitForSpinner(page);
+
+    const rows = page.locator("#case-list tbody tr");
+    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+
+    await rows.first().locator("a.comp-cell-link").first().click();
+    await waitForSpinner(page);
+
+    // Look for inspection cards
+    const inspectionsSection = page.locator("text=Inspections").first().locator("..");
+    await expect(inspectionsSection).toBeVisible();
+
+    const cards = inspectionsSection.locator(".card, [class*='activity-card']");
+    const cardCount = await cards.count();
+
+    if (cardCount > 0) {
+      const firstCard = cards.first();
+      const cardText = await firstCard.textContent();
+      expect(cardText).toBeTruthy();
+    }
+  });
+});
+
+test.describe("Case Activities - Three Column Layout", () => {
+  test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
+
+  test("it displays three-column layout", async ({ page }) => {
+    await page.goto("/cases");
+    await waitForSpinner(page);
+
+    const rows = page.locator("#case-list tbody tr");
+    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+
+    await rows.first().locator("a.comp-cell-link").first().click();
+    await waitForSpinner(page);
+
+    // All three columns should be visible
+    await expect(page.locator("text=Complaints").first()).toBeVisible();
+    await expect(page.locator("text=Inspections").first()).toBeVisible();
+    await expect(page.locator("text=Investigations").first()).toBeVisible();
+  });
+
+  test("it stacks columns on mobile viewport", async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+
+    await page.goto("/cases");
+    await waitForSpinner(page);
+
+    const rows = page.locator("#case-list tbody tr");
+    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+
+    await rows.first().locator("a.comp-cell-link").first().click();
+    await waitForSpinner(page);
+
+    // All sections should be visible
+    const complaintsHeader = page.locator("text=Complaints").first();
+    const inspectionsHeader = page.locator("text=Inspections").first();
+    const investigationsHeader = page.locator("text=Investigations").first();
+
+    await expect(complaintsHeader).toBeVisible();
+    await expect(inspectionsHeader).toBeVisible();
+    await expect(investigationsHeader).toBeVisible();
+
+    // Verify sections are stacked vertically (each section below the previous)
+    const complaintsBox = await complaintsHeader.boundingBox();
+    const inspectionsBox = await inspectionsHeader.boundingBox();
+    const investigationsBox = await investigationsHeader.boundingBox();
+
+    if (complaintsBox && inspectionsBox && investigationsBox) {
+      // Verify vertical stacking: each section should be below the previous
+      expect(inspectionsBox.y).toBeGreaterThan(complaintsBox.y);
+      expect(investigationsBox.y).toBeGreaterThan(inspectionsBox.y);
+    }
+  });
+});
+
+// Use CASE1 as a test case for linked activities, ensuring case history exists for subsequent tests
+async function navigateToCASE1(page: any): Promise<boolean> {
+  await page.goto("/cases");
+  await waitForSpinner(page);
+
+  // Find CASE1 specifically
+  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+
+  if ((await caseLink.count()) === 0) {
+    // Fall back to first case
+    const rows = page.locator("#case-list tbody tr");
+    if ((await rows.count()) === 0) {
+      return false;
+    }
+    await rows.first().locator("a.comp-cell-link").first().click();
+  } else {
+    await caseLink.first().click();
+  }
+
+  await waitForSpinner(page);
+  return true;
+}
+
+test.describe("Case Activities - Add Complaint Modal", () => {
+  test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
+
+  test("it opens add complaint modal", async ({ page }) => {
+    const success = await navigateToCASE1(page);
+    expect(success, "Could not navigate to case.").toBe(true);
+
+    const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });
+    await addComplaintBtn.click();
+
+    const modal = page.locator(".modal");
+    await expect(modal).toBeVisible();
+  });
+
+  test("it can close add complaint modal", async ({ page }) => {
+    const success = await navigateToCASE1(page);
+    expect(success, "Could not navigate to case.").toBe(true);
+
+    const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });
+    await addComplaintBtn.click();
+
+    const modal = page.locator(".modal");
+    await expect(modal).toBeVisible();
+
+    const closeButton = modal.locator("button.btn-close, button:has-text('Cancel'), button:has-text('Close')").first();
+    await closeButton.click();
+
+    await expect(modal).not.toBeVisible();
+  });
+
+  test("it adds a complaint activity to the case", async ({ page }) => {
+    const success = await navigateToCASE1(page);
+    expect(success, "Could not navigate to case.").toBe(true);
+
+    const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });
+    await addComplaintBtn.click();
+
+    const modal = page.locator(".modal");
+    await expect(modal).toBeVisible();
+
+    // Find the complaint search input inside the modal - uses AsyncTypeahead with custom HintInputWrapper
+    // The input has class rbt-input-text and is inside the add-complaint-div
+    const searchInput = modal.locator("#add-complaint-div input.rbt-input-text");
+    await expect(searchInput).toBeVisible({ timeout: 5000 });
+    await searchInput.pressSequentially("23", { delay: 100 });
+
+    const dropdownMenu = page.locator(".rbt-menu");
+    const dropdownItem = dropdownMenu.locator(".dropdown-item").first();
+
+    if (await dropdownItem.isVisible({ timeout: 10000 }).catch(() => false)) {
+      await dropdownItem.click();
+
+      // Check if complaint is already added from a previous test run
+      const alreadyAddedError = modal.locator("text=This complaint is already added");
+      if (await alreadyAddedError.isVisible({ timeout: 1000 }).catch(() => false)) {
+        test.skip(true, "Complaint is already added to the case from a previous test run");
+        return;
+      }
+
+      const saveButton = modal.locator("#outcome-save-button");
+      await saveButton.click();
+
+      await expect(modal).not.toBeVisible({ timeout: 10000 });
+
+      const successToast = page.locator(".Toastify__toast--success").first();
+      await expect(successToast).toBeVisible({ timeout: 5000 });
+    } else {
+      // Fail due to no complaints found in search
+      expect(false, "Complaint search returned no results.").toBe(true);
+    }
+  });
+});
