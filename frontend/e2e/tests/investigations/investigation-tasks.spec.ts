@@ -87,4 +87,3 @@ test.describe("Investigation Task Form", () => {
 
     await expect(page.locator(".Toastify__toast-body", { hasText: "Task updated successfully" })).toBeVisible();
   });
-});
