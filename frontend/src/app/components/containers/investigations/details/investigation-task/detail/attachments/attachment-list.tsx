@@ -10,7 +10,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { generateApiParameters, get } from "@/app/common/api";
 import config from "@/config";
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 5;
 
 type TaskAttachmentListProps = {
   attachments: Attachment[];
@@ -153,6 +153,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
         {renderSortableHeader("Date", "date", "comp-cell-width-120")}
         <th className="comp-cell-width-160 comp-cell-min-width-160">Taken by</th>
         <th className="comp-cell-width-160 comp-cell-min-width-160">Location</th>
+        <th className="comp-cell-width-30 comp-cell-min-width-30">Task</th>
         <th className="comp-cell-width-30 comp-cell-min-width-30"></th>
       </tr>
     </thead>
@@ -216,6 +217,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
           {getOfficerName(attachment.takenBy ?? "")}
         </td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.taskNumber ?? "-"}</td>
         <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
           <button
             type="button"
