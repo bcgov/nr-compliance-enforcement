@@ -295,7 +295,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               form={form}
               name="originalFileName"
               label={
-                form.getFieldValue("originalFileName")?.includes("\n") ? "Original File Names" : "Original File Name"
+                form.getFieldValue("originalFileName")?.includes("\n") ? "Original file names" : "Original file name"
               }
               render={(field) => (
                 <div className="comp-details-input">
@@ -392,7 +392,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
             <FormField
               form={form}
               name="fileType"
-              label="File Type"
+              label="File type"
               required
               validators={{ onChange: z.string().min(1, "File type is required") }}
               render={(field) => (
@@ -496,7 +496,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 <FormField
                   form={form}
                   name="takenBy"
-                  label="Taken By"
+                  label="Taken by"
                   required
                   validators={{ onChange: z.string().min(1, "Taken By is required") }}
                   render={(field) => (
@@ -567,7 +567,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                 onClick={handleSubmit}
               >
                 <i className="bi bi-trash me-1" />
-                <span>Confirm Delete</span>
+                <span>Confirm delete</span>
               </Button>
             </div>
           </Alert>
@@ -598,7 +598,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
               onClick={handleSubmit}
               disabled={showDuplicateConfirm || showDeleteConfirm}
             >
-              <span>Save and Close</span>
+              <span>Save and close</span>
             </Button>
           </div>
         </div>
