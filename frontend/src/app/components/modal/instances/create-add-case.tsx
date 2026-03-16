@@ -72,16 +72,15 @@ const ModalLoading: FC = memo(() => (
 type CreateAddCaseModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
-export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit, onDirtyChange }) => {
+export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const currentAppUserGuid = useAppSelector(appUserGuid);
 
   // Vars
-  const { title, complaint_identifier, agency_code } = modalData;
+  const { title, complaint_identifier, agency_code, onDirtyChange } = modalData;
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // State
