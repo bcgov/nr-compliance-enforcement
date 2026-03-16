@@ -70,16 +70,16 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
     },
   });
 
-  const isDirty = useStore(form.baseStore, (state) =>
+  const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
-    if (isDirty) {
+    if (isFormDirty) {
       markDirty();
     }
-  }, [isDirty, markDirty]);
+  }, [isFormDirty, markDirty]);
 
   const parseDate = (dateStr: string) => parse(dateStr, "yyyy-MM-dd", new Date());
 
@@ -99,10 +99,6 @@ export const AddEditDiaryDateModal: FC<AddEditDiaryDateModalProps> = ({ close, s
     if (showDeleteConfirm) {
       setShowDeleteConfirm(false);
       return;
-    }
-    if (isDirty) {
-      const confirmed = globalThis.confirm("You have unsaved changes. Are you sure you want to leave?");
-      if (!confirmed) return;
     }
     form.reset();
     close();

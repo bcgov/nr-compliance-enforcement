@@ -14,6 +14,7 @@ import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -112,6 +113,7 @@ const TaskDetail: FC = () => {
   }>();
 
   const [showTaskDetailEditModal, setShowTaskDetailEditModal] = useState(false);
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const { data, isLoading, refetch } = useGraphQLQuery<{ task: Task }>(GET_TASK, {
     queryKey: ["getTask", taskId],
@@ -131,6 +133,12 @@ const TaskDetail: FC = () => {
   });
 
   const task = data?.task;
+  const handleHideTaskDetailEditModal = () => {
+    const result = hideCallback();
+    if (result === false) return;
+    setShowTaskDetailEditModal(false);
+  };
+
 
   if (isLoading) {
     return (
@@ -160,11 +168,12 @@ const TaskDetail: FC = () => {
         />
         <TaskDetailEditModal
           show={showTaskDetailEditModal}
-          onHide={() => setShowTaskDetailEditModal(false)}
+          onHide={handleHideTaskDetailEditModal}
           onSave={(input) => updateTaskMutation.mutateAsync({ input })}
           investigationGuid={investigationGuid}
           task={task}
           isSaving={updateTaskMutation.isPending}
+          onDirtyChange={handleChildDirtyChange}
         />
         <DiaryDates
           investigationGuid={investigationGuid}

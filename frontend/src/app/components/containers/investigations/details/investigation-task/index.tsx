@@ -8,6 +8,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Investigation, Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 const CREATE_TASK = gql`
   mutation CreateTask($input: CreateUpdateTaskInput!) {
@@ -27,6 +28,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   const navigate = useNavigate();
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const tasks = (investigationData?.tasks as Task[]) ?? [];
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const createTaskMutation = useGraphQLMutation<{ createTask: { taskIdentifier: string } }>(CREATE_TASK, {
     onSuccess: (data) => {
@@ -44,6 +46,12 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
 
   const handleSaveNewTask = async (input: CreateUpdateTaskInput) => {
     await createTaskMutation.mutateAsync({ input });
+  };
+
+  const handleHideAddTaskModal = () => {
+    const result = hideCallback();
+    if (result === false) return;
+    setShowAddTaskModal(false);
   };
 
   return (
@@ -71,11 +79,12 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
 
       <TaskDetailEditModal
         show={showAddTaskModal}
-        onHide={() => setShowAddTaskModal(false)}
+        onHide={handleHideAddTaskModal}
         onSave={handleSaveNewTask}
         investigationGuid={investigationGuid}
         task={undefined}
         isSaving={createTaskMutation.isPending}
+        onDirtyChange={handleChildDirtyChange}
       />
     </div>
   );

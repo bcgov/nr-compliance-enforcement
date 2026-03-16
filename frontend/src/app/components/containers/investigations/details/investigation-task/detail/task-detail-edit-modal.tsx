@@ -11,6 +11,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskDetailEditModalProps {
   show: boolean;
@@ -19,6 +20,7 @@ interface TaskDetailEditModalProps {
   investigationGuid: string;
   task: Task | undefined;
   isSaving: boolean;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
@@ -28,6 +30,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   investigationGuid,
   task,
   isSaving,
+  onDirtyChange,
 }) => {
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
@@ -70,9 +73,17 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     },
   });
 
-  const isDirty = useStore(form.baseStore, (state) =>
+  const { markDirty } = useFormDirtyState(onDirtyChange);
+
+  const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
+
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
 
   const clearFieldMeta = () => {
     (["taskCategory", "taskSubCategory", "officerAssigned", "description"] as const).forEach(
@@ -103,12 +114,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [show, task?.taskIdentifier]);
 
   const handleClose = () => {
-    if (isDirty) {
-      const confirmed = globalThis.confirm(
-        "You have unsaved changes. Are you sure you want to leave?",
-      );
-      if (!confirmed) return;
-    }
     form.reset();
     onHide();
   };
