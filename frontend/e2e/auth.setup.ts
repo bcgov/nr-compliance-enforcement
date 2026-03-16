@@ -61,6 +61,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   console.log(authUrl.toString());
   authUrl.searchParams.append("client_id", clientId);
   authUrl.searchParams.append("redirect_uri", redirectUri);
+  console.log(redirectUri.toString());
   authUrl.searchParams.append("response_type", "code");
   authUrl.searchParams.append("scope", scope);
   authUrl.searchParams.append("state", state);
