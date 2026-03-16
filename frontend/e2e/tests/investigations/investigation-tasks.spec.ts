@@ -70,7 +70,7 @@ test.describe("Investigation Task Form", () => {
     // Navigate to task detail by clicking first task link (task list shows task numbers as links)
     const taskLink = page.locator("#task-list tbody tr a.comp-cell-link").first();
     await taskLink.click();
-    await expect(page).toHaveURL(/\/task\//, );
+    await expect(page).toHaveURL(/\/task\//);
 
     const editTaskButton = page.locator("#task-edit-button").first();
     await editTaskButton.click();
@@ -86,16 +86,4 @@ test.describe("Investigation Task Form", () => {
 
     await expect(page.locator(".Toastify__toast-body", { hasText: "Task updated successfully" })).toBeVisible();
   });
-
-  // test("it removes a task", async ({ page }) => {
-  //   // Press Remove Task Button
-  //   const removeTaskButton = page.locator("#task-remove-button").first();
-  //   await removeTaskButton.click();
-
-  //   const confirmButton = page.locator("button", { hasText: /Yes, delete item/i }).first();
-  //   await expect(confirmButton).toBeEnabled();
-  //   await confirmButton.click({ force: true });
-
-  //   await expect(await page.locator(".Toastify__toast-body", { hasText: "Task removed successfully" })).toBeVisible();
-  // });
 });

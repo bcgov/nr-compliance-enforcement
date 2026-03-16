@@ -144,6 +144,31 @@ export const TaskActions: FC<TaskActionsProps> = ({
     </Table>
   );
 
+  const taskActionsContent = (() => {
+    if (taskIdentifier && hasTaskActions) {
+      return (
+        <Card className="mb-3 mt-3" border="default">
+          <Card.Body>{taskActionsTable}</Card.Body>
+        </Card>
+      );
+    }
+    if (taskIdentifier && !hasTaskActions) {
+      return (
+        <div className="mt-3">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleAddClick}
+          >
+            <i className="bi bi-plus-circle" />
+            <span>Add task action</span>
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  })();
+
   return (
     <div className="comp-details-section">
       <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
@@ -160,30 +185,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
         )}
       </div>
 
-      {taskIdentifier ? (
-        hasTaskActions ? (
-          <Card className="mb-3 mt-3" border="default">
-            <Card.Body>{taskActionsTable}</Card.Body>
-          </Card>
-        ) : (
-          <div className="mt-3">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleAddClick}
-            >
-              <i className="bi bi-plus-circle" />
-              <span>Add task action</span>
-            </Button>
-          </div>
-        )
-      ) : (
-        <Card className="mb-3 mt-3" border="default">
-          <Card.Body>
-            {hasTaskActions ? taskActionsTable : <p className="text-muted mb-0">No task actions</p>}
-          </Card.Body>
-        </Card>
-      )}
+      {taskActionsContent}
     </div>
   );
 };
