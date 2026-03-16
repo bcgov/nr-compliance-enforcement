@@ -21,19 +21,12 @@ import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { fileTypeOptions } from "@/app/components/common/file-type-options";
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
   submit: () => void;
 };
-
-// Little value in adding this to the backend as there are no Foreign Keys
-const fileTypeOptions: Option[] = [
-  { label: "Audio", value: "Audio" },
-  { label: "Document", value: "Document" },
-  { label: "Photo", value: "Photo" },
-  { label: "Video", value: "Video" },
-];
 
 export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = ({ close, submit }) => {
   // Hooks
