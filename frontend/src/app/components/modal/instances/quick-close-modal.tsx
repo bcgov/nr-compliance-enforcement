@@ -68,14 +68,12 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
 type QuickCloseModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaint_type: string;
   refreshComplaintsOnClose?: boolean;
 };
 export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   close,
   submit,
-  onDirtyChange,
   complaint_type,
   refreshComplaintsOnClose = false,
 }) => {
@@ -96,7 +94,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
   const reviewComplete = useAppSelector(selectReviewComplete);
 
   // Vars
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, onDirtyChange } = modalData;
   const hasOutcomeData =
     assessmentsData?.length > 0 ||
     equipmentData?.length > 0 ||

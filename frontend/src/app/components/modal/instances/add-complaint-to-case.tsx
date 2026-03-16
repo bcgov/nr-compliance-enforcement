@@ -37,16 +37,16 @@ const ModalLoading: FC = memo(() => (
 type AddComplaintToCaseModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
-export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ close, submit, onDirtyChange }) => {
+
+export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ close, submit }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
 
   // Vars
-  const { title, caseId, addedComplaints } = modalData;
-  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+  const { title, caseId, addedComplaints, onDirtyChange } = modalData;
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   // State
   const [selectedComplaint, setSelectedComplaint] = useState<AddComplaintToCaseOption | null>();
@@ -101,7 +101,6 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
       });
     }
 
-    markClean();
     submit();
   };
 

@@ -664,10 +664,12 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
   });
 
   const onHandleAddAttachments = (selectedFiles: File[]) => {
+    markDirty();
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    markDirty();
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
@@ -972,7 +974,6 @@ export const TaskForm = ({ task, investigationGuid, onClose, onDirtyChange }: Ta
               onFilesSelected={onHandleAddAttachments}
               onFileDeleted={onHandleDeleteAttachment}
               onSlideCountChange={handleSlideCountChange}
-              onDirtyChange={onDirtyChange}
               showPreview={false}
             />
           </fieldset>
