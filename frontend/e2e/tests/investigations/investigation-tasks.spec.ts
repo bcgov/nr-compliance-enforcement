@@ -19,7 +19,7 @@ test.describe("Investigation Task Form", () => {
     await expect(header).not.toContainText("Unknown", { timeout: 15000 });
 
     // Click Tasks button
-    const taskButton = page.locator("#oldTasks");
+    const taskButton = page.locator("#tasks");
     await taskButton.click();
 
     // Verify Add Task button is present
@@ -31,62 +31,59 @@ test.describe("Investigation Task Form", () => {
     const addTaskButton = page.locator("#add-task-button");
     await addTaskButton.click();
 
-    // Try to save without filling required fields
-    const saveButton = page.locator("button", { hasText: /Save/i }).first();
+    // Scope to the open modal (task add/edit modal)
+    const modal = page.locator(".modal").first();
+    await expect(modal).toBeVisible();
+    const saveButton = modal.locator("button", { hasText: /Create/i }).first();
     await saveButton.click();
 
     // Check for validation errors
     const errorMessages = page.locator(".error-message", { hasText: "Task category is required" });
-    await expect(errorMessages).toBeVisible({ timeout: 10000 });
+    await expect(errorMessages).toBeVisible();
   });
 
   test("it adds a task", async ({ page }) => {
-    // Press Add Task Button
     const addTaskButton = page.locator("#add-task-button");
     await addTaskButton.click();
 
-    await selectItemById("task-category-select", "Type 2", page);
+    await selectItemById("task-detail-edit-category", "Type 2", page);
 
-    const subCategory = page.locator("#task-sub-category-select");
-    await expect(subCategory).toBeVisible({ timeout: 10000 });
-    await selectItemById("task-sub-category-select", "Type g", page);
+    const subCategory = page.locator("#task-detail-edit-subcategory");
+    await expect(subCategory).toBeVisible();
+    await selectItemById("task-detail-edit-subcategory", "Type g", page);
 
-    const descriptionInput = page.locator("#description");
+    await selectItemById("task-detail-edit-officer", "TestAcct, ENV", page);
+
+    const descriptionInput = page.locator("#task-detail-edit-description");
     await descriptionInput.fill("Test task description");
 
-    await selectItemById("task-officer-select", "TestAcct, ENV", page);
-
-    const saveButton = page.locator("button", { hasText: /Save/i }).first();
-    await expect(saveButton).toBeEnabled({ timeout: 10000 });
+    const modal = page.locator(".modal").first();
+    await expect(modal).toBeVisible();
+    const saveButton = modal.locator("button", { hasText: /Create/i }).first();
+    await expect(saveButton).toBeEnabled();
     await saveButton.click({ force: true });
 
-    await expect(await page.locator(".Toastify__toast-body", { hasText: "Task added successfully" })).toBeVisible();
+    await expect(await page.locator(".Toastify__toast-body", { hasText: "Task created successfully" })).toBeVisible();
   });
 
   test("it edits a task", async ({ page }) => {
-    // Press Edit Task Button
+    // Navigate to task detail by clicking first task link (task list shows task numbers as links)
+    const taskLink = page.locator("#task-list tbody tr a.comp-cell-link").first();
+    await taskLink.click();
+    await expect(page).toHaveURL(/\/task\//);
+
     const editTaskButton = page.locator("#task-edit-button").first();
     await editTaskButton.click();
 
-    const descriptionInput = page.locator("#description");
+    const descriptionInput = page.locator("#task-detail-edit-description");
     await descriptionInput.fill("Edited description");
 
-    const saveButton = page.locator("button", { hasText: /Save/i }).first();
-    await expect(saveButton).toBeEnabled({ timeout: 10000 });
+    const modal = page.locator(".modal").first();
+    await expect(modal).toBeVisible();
+    const saveButton = modal.locator("button", { hasText: /Save/i }).first();
+    await expect(saveButton).toBeEnabled();
     await saveButton.click({ force: true });
 
-    await expect(await page.locator(".Toastify__toast-body", { hasText: "Task edited successfully" })).toBeVisible();
-  });
-
-  test("it removes a task", async ({ page }) => {
-    // Press Remove Task Button
-    const removeTaskButton = page.locator("#task-remove-button").first();
-    await removeTaskButton.click();
-
-    const confirmButton = page.locator("button", { hasText: /Yes, delete item/i }).first();
-    await expect(confirmButton).toBeEnabled({ timeout: 10000 });
-    await confirmButton.click({ force: true });
-
-    await expect(await page.locator(".Toastify__toast-body", { hasText: "Task removed successfully" })).toBeVisible();
+    await expect(page.locator(".Toastify__toast-body", { hasText: "Task updated successfully" })).toBeVisible();
   });
 });
