@@ -10,7 +10,7 @@ test.describe("Case Activities - Complaints Column", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {
-    await page.goto("https://f208ae-dev-2-natsuite-frontend.apps.emerald.devops.gov.bc.ca/cases");
+    await page.goto("/cases");
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
