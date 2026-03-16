@@ -58,6 +58,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   // Construct auth URL
   const urlString = `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`;
   const authUrl = new URL(urlString);
+  console.log(authUrl.toString());
   authUrl.searchParams.append("client_id", clientId);
   authUrl.searchParams.append("redirect_uri", redirectUri);
   authUrl.searchParams.append("response_type", "code");
@@ -101,6 +102,7 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   await page.click("[type='submit']");
 
   // Wait for redirect and app load
+  await page.waitForLoadState("networkidle");
   await page.waitForSelector(".loading-spinner", { state: "hidden" });
   console.log("Succesfully logged in as ", role);
 }
