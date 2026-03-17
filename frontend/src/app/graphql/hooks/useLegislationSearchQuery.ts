@@ -218,7 +218,7 @@ export const convertLegislationToHierarchicalOptions = (
 
   // Group by parent then sort
   const childrenMap = new Map<string, Legislation[]>();
-  for (const item of legislation) {
+  for (const item of displayItems) {
     const key = getParentKey(item);
     if (!childrenMap.has(key)) childrenMap.set(key, []);
     childrenMap.get(key)!.push(item);
