@@ -514,7 +514,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                   name="takenBy"
                   label="Taken by"
                   required
-                  validators={{ onChange: z.string().min(1, "Taken By is required") }}
+                  validators={{ onChange: z.string().min(1, "Taken by is required") }}
                   render={(field) => (
                     <CompSelect
                       id="taken-by-select"
