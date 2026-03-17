@@ -126,6 +126,16 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const savingText = task ? "Saving..." : "Creating...";
   const saveText = task ? "Save" : "Create";
 
+  const dueDateValidator = z.preprocess(
+    (val) => (val instanceof Date ? val : val ? new Date(val as string) : null),
+    z
+      .date({ invalid_type_error: "Date is required" })
+      .nullable()
+      .refine((val) => val !== null, {
+        message: "Date is required",
+      }),
+  );
+
   return (
     <Modal
       show={show}
@@ -255,7 +265,8 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
             label="Due date"
             required
             validators={{
-              onSubmit: ({ value }: { value: Date | null }) => (value ? undefined : "Date is required"),
+              onChange: dueDateValidator,
+              onSubmit: dueDateValidator,
             }}
             render={(field) => (
               <ValidationDatePicker
