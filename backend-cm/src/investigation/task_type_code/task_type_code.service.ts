@@ -25,6 +25,9 @@ export class TaskTypeCodeService {
       where: {
         active_ind: true,
       },
+      orderBy: {
+        short_description: "asc",
+      },
     });
 
     return this.mapper.mapArray<task_type_code, TaskTypeCode>(

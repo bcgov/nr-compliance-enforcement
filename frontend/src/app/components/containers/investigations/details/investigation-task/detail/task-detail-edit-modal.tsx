@@ -211,8 +211,8 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
             render={(field) => (
               <div>
                 <CompInput
-                  id="display-name"
-                  divid="display-name-value"
+                  id="task-detail-edit-remarks"
+                  divid="task-detail-edit-remarks-value"
                   type="input"
                   inputClass="comp-form-control"
                   error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
