@@ -128,3 +128,93 @@ export const getBcLawsRegulations = async (contentApiUrl: string): Promise<Regul
 
   return regulations;
 };
+
+// -- Federal Laws lookup XML parsing --
+
+const FEDERAL_LOOKUP_URL =
+  "https://raw.githubusercontent.com/justicecanada/laws-lois-xml/master/lookup/lookup.xml";
+
+interface FederalLookupData {
+  statutes: any[];
+  regulations: any[];
+}
+
+let cachedLookup: FederalLookupData | null = null;
+
+const fetchFederalLookup = async (): Promise<FederalLookupData> => {
+  if (cachedLookup) return cachedLookup;
+
+  const xmlString = await fetchXml(FEDERAL_LOOKUP_URL, "Federal Laws Lookup");
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "@_",
+    isArray: (tagName: string) => ["Statute", "Regulation", "Relationship"].includes(tagName),
+  });
+
+  const parsed = parser.parse(xmlString);
+  const db = parsed?.Database;
+
+  cachedLookup = {
+    statutes: toArray(db?.Statutes?.Statute),
+    regulations: toArray(db?.Regulations?.Regulation),
+  };
+  return cachedLookup;
+};
+
+/**
+ * Builds the XML document URL for a federal regulation given its AlphaNumber (e.g., "SOR/98-462")
+ */
+export const getFederalRegulationXmlUrl = (alphaNumber: string): string => {
+  const normalizedId = alphaNumber.replaceAll("/", "-").replaceAll(" ", "_");
+  return `https://laws-lois.justice.gc.ca/eng/XML/${normalizedId}.xml`;
+};
+
+/**
+ * Clears the cached federal lookup data (useful between import runs or for testing)
+ */
+export const clearFederalLookupCache = (): void => {
+  cachedLookup = null;
+};
+
+/**
+ * Fetches the list of regulations associated with a federal act by looking up the
+ * Justice Canada lookup.xml from GitHub.
+ * @param consolidatedNumber - The act's consolidated number (e.g., "C-46")
+ * @returns Array of regulations with their XML URLs
+ */
+export const getFederalRegulations = async (consolidatedNumber: string): Promise<Regulation[]> => {
+  const lookup = await fetchFederalLookup();
+
+  // Find the English statute matching the consolidated number
+  const statute = lookup.statutes.find(
+    (s: any) => s.ChapterNumber === consolidatedNumber && s.Language === "en",
+  );
+
+  if (!statute?.Relationships?.Relationship) {
+    return [];
+  }
+
+  const rids = new Set(toArray(statute.Relationships.Relationship).map((r: any) => r["@_rid"]));
+
+  // Build a map of regulation id -> regulation for quick lookup
+  const regMap = new Map<string, any>();
+  for (const reg of lookup.regulations) {
+    regMap.set(reg["@_id"], reg);
+  }
+
+  const regulations: Regulation[] = [];
+  for (const rid of rids) {
+    const reg = regMap.get(rid);
+    if (!reg) continue;
+
+    const alphaNumber: string = reg.AlphaNumber;
+    const title: string = reg.ShortTitle || alphaNumber;
+    // Convert "SOR/98-462" -> "SOR-98-462", "C.R.C., c. 430" -> "C.R.C.,_c._430"
+    const normalizedId = alphaNumber.replaceAll("/", "-").replaceAll(" ", "_");
+    const url = `https://laws-lois.justice.gc.ca/eng/regulations/${normalizedId}/index.html`;
+
+    regulations.push({ id: alphaNumber, title, url, status: null });
+  }
+
+  return regulations;
+};

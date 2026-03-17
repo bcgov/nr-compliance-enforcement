@@ -6,7 +6,7 @@ export interface FederalLawsMetadata {
   longTitle: string | null;
   consolidatedNumber: string | null;
   inForceStartDate: string | null;
-  documentType: "ACT";
+  documentType: "ACT" | "REG";
 }
 
 export interface ParsedFederalLawsDocument {
@@ -26,6 +26,19 @@ const stripXmlTags = (raw: string): string => {
       .trim();
   }
   return "";
+};
+
+let originalXmlString = "";
+
+/**
+ * Finds the position of an element in the original XML string by its lims:fid attribute.
+ * Used to determine document order since fid values are not sequential for amended documents.
+ */
+const getXmlPosition = (el: any): number => {
+  const fid = el?.["@_lims:fid"] || el?.["@_lims:id"];
+  if (!fid || !originalXmlString) return Infinity;
+  const pos = originalXmlString.indexOf(`lims:fid="${fid}"`);
+  return pos > -1 ? pos : Infinity;
 };
 
 function toArray(v: any): any[] {
@@ -122,13 +135,23 @@ const HIERARCHY: Array<[tag: string, typeCode: string, childTags: string[]]> = [
 ];
 
 for (const [tag, typeCode, childTags] of HIERARCHY) {
-  parsers[tag] = (el, order) =>
-    createNode(typeCode, order, {
+  parsers[tag] = (el, order) => {
+    const sectionTitle = getMarginalNote(el);
+    let legislationText = getTextContent(el);
+
+    // For Sections with no MarginalNote and no direct Text, use first Subsection's text as fallback
+    if (typeCode === "SEC" && !sectionTitle && !legislationText) {
+      const firstSub = toArray(el?.Subsection)[0];
+      if (firstSub) legislationText = getTextContent(firstSub);
+    }
+
+    return createNode(typeCode, order, {
       citation: getLabel(el),
-      sectionTitle: getMarginalNote(el),
-      legislationText: getTextContent(el),
+      sectionTitle,
+      legislationText,
       children: parseChildren(el, childTags),
     });
+  };
 }
 
 parsers["Definition"] = (el, order) => {
@@ -191,7 +214,7 @@ function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
     );
 
   const body = schedule?.RegulationPiece?.Body || schedule?.Body;
-  if (body) children.push(...parseChildren(body, ["Section", "Provision"]));
+  if (body) children.push(...parseBody(body));
 
   children.forEach((child, i) => {
     child.displayOrder = i + 1;
@@ -224,9 +247,9 @@ function parseSchedule(schedule: any, displayOrder: number): ParsedLegislationNo
 // -- Body parsing --
 
 function parseBody(body: any): ParsedLegislationNode[] {
-  const getFid = (el: any) => Number(el?.["@_lims:fid"] || el?.["@_lims:id"] || 0);
-  const collect = (tag: string) => toArray(body?.[tag]).map((data: any) => ({ tag, data, fid: getFid(data) }));
-  const elements = [...collect("Heading"), ...collect("Section"), ...collect("Schedule")].sort((a, b) => a.fid - b.fid);
+  const collect = (tag: string) => toArray(body?.[tag]).map((data: any) => ({ tag, data, pos: getXmlPosition(data) }));
+  const elements = [...collect("Heading"), ...collect("Section"), ...collect("Schedule"), ...collect("Provision")]
+    .sort((a, b) => a.pos - b.pos);
 
   const topChildren: ParsedLegislationNode[] = [];
   let currentPart: ParsedLegislationNode | null = null;
@@ -254,6 +277,8 @@ function parseBody(body: any): ParsedLegislationNode[] {
       }
     } else if (tag === "Section") {
       addToContainer(parsers["Section"](data, order++));
+    } else if (tag === "Provision") {
+      addToContainer(parsers["Provision"](data, order++));
     } else if (tag === "Schedule") {
       topChildren.push(parseSchedule(data, order++));
     }
@@ -262,38 +287,42 @@ function parseBody(body: any): ParsedLegislationNode[] {
   return topChildren;
 }
 
+const FEDERAL_XML_PARSER_OPTIONS = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+  textNodeName: "#text",
+  preserveOrder: false,
+  trimValues: false,
+  parseAttributeValue: false,
+  parseTagValue: false,
+  stopNodes: ["*.Text"],
+  isArray: (tagName: string) =>
+    [
+      "Heading",
+      "Section",
+      "Subsection",
+      "Paragraph",
+      "Subparagraph",
+      "Clause",
+      "Subclause",
+      "Definition",
+      "ContinuedDefinition",
+      "Schedule",
+      "Text",
+      "TitleText",
+      "Provision",
+      "FormGroup",
+      "RelatedOrNotInForce",
+      "TableGroup",
+      "Group",
+      "HistoricalNoteSubItem",
+      "LongTitle",
+    ].includes(tagName),
+};
+
 export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocument {
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@_",
-    textNodeName: "#text",
-    preserveOrder: false,
-    trimValues: false,
-    parseAttributeValue: false,
-    parseTagValue: false,
-    stopNodes: ["*.Text"],
-    isArray: (tagName: string) =>
-      [
-        "Heading",
-        "Section",
-        "Subsection",
-        "Paragraph",
-        "Subparagraph",
-        "Clause",
-        "Subclause",
-        "Definition",
-        "ContinuedDefinition",
-        "Schedule",
-        "Text",
-        "TitleText",
-        "Provision",
-        "FormGroup",
-        "RelatedOrNotInForce",
-        "TableGroup",
-        "Group",
-        "HistoricalNoteSubItem",
-      ].includes(tagName),
-  });
+  originalXmlString = xmlString;
+  const parser = new XMLParser(FEDERAL_XML_PARSER_OPTIONS);
 
   const parsed = parser.parse(xmlString);
   const statute = parsed?.Statute;
@@ -324,5 +353,40 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
   return {
     metadata,
     root: createNode("ACT", 0, { citation: consolidatedNumber, sectionTitle: metadata.title, children: bodyChildren }),
+  };
+}
+
+export function parseFederalRegulationXml(xmlString: string): ParsedFederalLawsDocument {
+  originalXmlString = xmlString;
+  const parser = new XMLParser(FEDERAL_XML_PARSER_OPTIONS);
+
+  const parsed = parser.parse(xmlString);
+  const regulation = parsed?.Regulation;
+  if (!regulation) throw new Error("No <Regulation> root element found in federal regulation XML");
+
+  const id = regulation?.Identification;
+  const instrumentNumber = id?.InstrumentNumber ? extractText(id.InstrumentNumber).trim() : null;
+  const longTitle = id?.LongTitle
+    ? toArray(id.LongTitle)
+        .map((lt: any) => extractText(lt).trim())
+        .join(" ")
+    : null;
+
+  const metadata: FederalLawsMetadata = {
+    title: longTitle || instrumentNumber || "Unknown Federal Regulation",
+    longTitle,
+    consolidatedNumber: instrumentNumber,
+    inForceStartDate: regulation?.["@_lims:inforce-start-date"] || null,
+    documentType: "REG",
+  };
+
+  const bodyChildren = regulation?.Body ? parseBody(regulation.Body) : [];
+
+  let scheduleOrder = bodyChildren.length > 0 ? bodyChildren.at(-1).displayOrder + 1000 : 1000;
+  for (const schedule of toArray(regulation?.Schedule)) bodyChildren.push(parseSchedule(schedule, scheduleOrder++));
+
+  return {
+    metadata,
+    root: createNode("REG", 0, { citation: instrumentNumber, sectionTitle: metadata.title, children: bodyChildren }),
   };
 }

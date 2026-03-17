@@ -113,7 +113,7 @@ export async function insertLegislationTree(
 
   try {
     logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
-    await sleep(25); // Rate limiting
+    //await sleep(25); // Rate limiting
 
     // Upsert the legislation record
     const created = await legislationService.upsert({

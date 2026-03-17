@@ -2,13 +2,158 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { fetchXml } from "../../external_api/laws-service";
-import { parseFederalLawsXml, ParsedFederalLawsDocument } from "../../shared/legislation/utils/federal-laws-xml-parser";
+import {
+  fetchXml,
+  getFederalRegulations,
+  getFederalRegulationXmlUrl,
+  clearFederalLookupCache,
+  Regulation,
+} from "../../external_api/laws-service";
+import {
+  parseFederalLawsXml,
+  parseFederalRegulationXml,
+  ParsedFederalLawsDocument,
+} from "../../shared/legislation/utils/federal-laws-xml-parser";
 import {
   InsertLegislationContext,
   insertLegislationTree,
   parseEffectiveDate,
 } from "../shared/legislation-import-utils";
+
+interface RegulationImportResult {
+  totalRecords: number;
+  totalRegulations: number;
+  successfulRegs: number;
+  failedRegs: number;
+  skippedRegs: number;
+}
+
+/**
+ * Imports regulations for a federal Act by looking up related regulations via the
+ * Justice Canada lookup.xml and fetching each regulation's XML document.
+ */
+async function importRegulations(
+  source: LegislationSource,
+  actRootGuid: string,
+  consolidatedNumber: string,
+  legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
+  logger: Logger,
+  errors: string[],
+): Promise<RegulationImportResult> {
+  const result: RegulationImportResult = {
+    totalRecords: 0,
+    totalRegulations: 0,
+    successfulRegs: 0,
+    failedRegs: 0,
+    skippedRegs: 0,
+  };
+
+  logger.log(`\nFetching regulations for ${consolidatedNumber}...`);
+
+  try {
+    const regulations = await getFederalRegulations(consolidatedNumber);
+    result.totalRegulations = regulations.length;
+    logger.log(`Found ${regulations.length} regulation(s) to import`);
+
+    for (const reg of regulations) {
+      const recordCount = await importSingleRegulation(
+        reg,
+        actRootGuid,
+        source,
+        legislationService,
+        legislationSourceService,
+        logger,
+        errors,
+      );
+      if (recordCount > 0) {
+        result.successfulRegs++;
+        result.totalRecords += recordCount;
+      } else if (recordCount === -1) {
+        result.skippedRegs++;
+      } else {
+        result.failedRegs++;
+      }
+    }
+
+    if (regulations.length > 0) {
+      logger.log(`\nRegulations summary: ${result.successfulRegs} of ${regulations.length} imported successfully`);
+      if (result.skippedRegs > 0) {
+        logger.warn(`  ${result.skippedRegs} regulation(s) skipped (no body content in XML)`);
+      }
+      if (result.failedRegs > 0) {
+        logger.warn(`  ${result.failedRegs} regulation(s) failed to import`);
+      }
+    }
+  } catch (error) {
+    const errorMsg = `Failed to fetch regulations: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(errorMsg);
+    errors.push(errorMsg);
+  }
+
+  return result;
+}
+
+async function importSingleRegulation(
+  reg: Regulation,
+  actRootGuid: string,
+  actSource: LegislationSource,
+  legislationService: LegislationService,
+  legislationSourceService: LegislationSourceService,
+  logger: Logger,
+  errors: string[],
+): Promise<number> {
+  logger.log(`  Importing: ${reg.title}`);
+
+  try {
+    const xmlUrl = getFederalRegulationXmlUrl(reg.id);
+    logger.log(`  URL: ${xmlUrl}`);
+    const xmlString = await fetchXml(xmlUrl, "Federal Laws API");
+    const parsedDocument = parseFederalRegulationXml(xmlString);
+
+    // Skip regulations whose XML has no body content (metadata-only documents)
+    if (parsedDocument.root.children.length === 0) {
+      logger.warn(`  Skipped: ${parsedDocument.metadata.title} (XML contains no body content)`);
+      return -1;
+    }
+
+    const effectiveDate = parseEffectiveDate(parsedDocument.metadata.inForceStartDate);
+
+    const regSource = await legislationSourceService.createRegulationSource(
+      actSource.agencyCode,
+      parsedDocument.metadata.title,
+      reg.url,
+      "FEDERAL",
+    );
+
+    const context: InsertLegislationContext = {
+      actTitle: parsedDocument.metadata.title,
+      effectiveDate,
+      legislationService,
+      logger,
+      errors: [],
+    };
+
+    const count = await insertLegislationTree(
+      parsedDocument.root,
+      context,
+      actSource.agencyCode,
+      null,
+      null,
+      regSource.legislationSourceGuid,
+      actRootGuid,
+    );
+
+    errors.push(...context.errors);
+    logger.log(`  Completed: ${parsedDocument.metadata.title} - ${count} records`);
+    return count;
+  } catch (error) {
+    const errorMsg = `Regulation ${reg.title}: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(`  Error: ${errorMsg}`);
+    errors.push(errorMsg);
+    return 0;
+  }
+}
 
 /**
  * Imports a Federal Laws XML document
@@ -47,7 +192,7 @@ async function importLegislationSourceDocument(
       logger,
       errors: [],
     };
-    const insertedCount = await insertLegislationTree(
+    let insertedCount = await insertLegislationTree(
       parsedDocument.root,
       context,
       source.agencyCode,
@@ -56,8 +201,33 @@ async function importLegislationSourceDocument(
       source.legislationSourceGuid,
     );
 
+    // Import regulations if the act has a consolidated number and was inserted successfully
+    let regResult: RegulationImportResult | null = null;
+    if (parsedDocument.metadata.consolidatedNumber && context.rootLegislationGuid) {
+      regResult = await importRegulations(
+        source,
+        context.rootLegislationGuid,
+        parsedDocument.metadata.consolidatedNumber,
+        legislationService,
+        legislationSourceService,
+        logger,
+        context.errors,
+      );
+      insertedCount += regResult.totalRecords;
+    }
+
     const buildLogMessage = () => {
-      return `Imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
+      let msg = `Imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
+      if (regResult && regResult.totalRegulations > 0) {
+        msg += `\nRegulations: ${regResult.successfulRegs} of ${regResult.totalRegulations} imported successfully`;
+        if (regResult.skippedRegs > 0) {
+          msg += `, ${regResult.skippedRegs} skipped (no content)`;
+        }
+        if (regResult.failedRegs > 0) {
+          msg += `, ${regResult.failedRegs} failed`;
+        }
+      }
+      return msg;
     };
 
     if (context.errors.length > 0) {
@@ -102,6 +272,7 @@ export async function runFederalLawsImport(
 ): Promise<void> {
   logger.log("Starting Federal Laws import...");
   logger.log("Fetching pending legislation sources from database...");
+  clearFederalLookupCache();
 
   try {
     // Get pending federal legislation sources
