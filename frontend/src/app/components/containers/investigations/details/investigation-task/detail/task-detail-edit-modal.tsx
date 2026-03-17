@@ -127,7 +127,11 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const saveText = task ? "Save" : "Create";
 
   const dueDateValidator = z.preprocess(
-    (val) => (val instanceof Date ? val : val ? new Date(val as string) : null),
+    (val) => {
+      if (val instanceof Date) return val;
+      if (val) return new Date(val as string);
+      return null;
+    },
     z
       .date({ invalid_type_error: "Date is required" })
       .nullable()
