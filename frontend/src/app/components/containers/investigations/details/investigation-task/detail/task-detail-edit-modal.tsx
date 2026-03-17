@@ -12,6 +12,8 @@ import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/sto
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { CompInput } from "@/app/components/common/comp-input";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 
 interface TaskDetailEditModalProps {
   show: boolean;
@@ -58,16 +60,21 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       taskSubCategory: "",
       officerAssigned: "",
       description: "",
+      remarks: "",
+      dueDate: task?.dueDate ?? new Date(),
     },
     onSubmit: async ({ value }) => {
       const input: CreateUpdateTaskInput = {
         taskIdentifier: task?.taskIdentifier,
         investigationIdentifier: investigationGuid,
-        taskTypeCode: value.taskSubCategory || undefined,
-        taskStatusCode: task ? undefined :  "OPEN", // default to open for new tasks
+        taskTypeCode: value.taskSubCategory || null,
+        taskStatusCode: task ? undefined : "OPEN", // default to open for new tasks
         assignedUserIdentifier: value.officerAssigned || undefined,
         appUserIdentifier: currentUserGuid,
         description: value.description?.trim() || undefined,
+        remarks: value.remarks,
+        dueDate: value.dueDate as Date,
+        taskCategoryTypeCode: value.taskCategory,
       };
       await onSave(input);
     },
@@ -86,7 +93,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   }, [isFormDirty, markDirty]);
 
   const clearFieldMeta = () => {
-    (["taskCategory", "taskSubCategory", "officerAssigned", "description"] as const).forEach(
+    (["taskCategory", "taskSubCategory", "officerAssigned", "description", "dueDate", "remarks"] as const).forEach(
       (name) => {
         form.setFieldMeta(name, (meta) => ({ ...meta, isDirty: false, isTouched: false }));
       },
@@ -95,14 +102,12 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
 
   useEffect(() => {
     if (show && task) {
-      const categoryValue = String(
-        taskSubCategories.find((s) => s.value === task.taskTypeCode)?.taskCategory ?? "",
-      );
-      setSelectedCategory(categoryValue);
-      form.setFieldValue("taskCategory", categoryValue);
+      form.setFieldValue("taskCategory", task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");
       form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? "");
       form.setFieldValue("description", task.description ?? "");
+      form.setFieldValue("dueDate", task?.dueDate ? task.dueDate : new Date());
+      form.setFieldValue("remarks", task.remarks ?? "");
       clearFieldMeta();
       const timeout = globalThis.setTimeout(clearFieldMeta, 0);
       return () => globalThis.clearTimeout(timeout);
@@ -121,10 +126,17 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const savingText = task ? "Saving..." : "Creating...";
   const saveText = task ? "Save" : "Create";
 
-
   return (
-    <Modal show={show} onHide={handleClose} centered size="lg">
-      <Modal.Header closeButton className="pb-0">
+    <Modal
+      show={show}
+      onHide={handleClose}
+      centered
+      size="lg"
+    >
+      <Modal.Header
+        closeButton
+        className="pb-0"
+      >
         <Modal.Title>{task ? "Edit task details" : "Add task"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -168,11 +180,6 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
               form={form}
               name="taskSubCategory"
               label="Task sub-category"
-              required
-              validators={{
-                onChange: z.string().min(1, "Task sub-category is required"),
-                onSubmit: z.string().min(1, "Task sub-category is required"),
-              }}
               render={(field) => (
                 <CompSelect
                   key={selectedCategory}
@@ -182,15 +189,41 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                   options={taskSubCategoryOptions}
                   value={taskSubCategoryOptions.find((opt) => opt.value === field.state.value)}
                   onChange={(option) => field.handleChange(option?.value ?? "")}
-                  placeholder="Select sub-category"
+                  placeholder={taskSubCategoryOptions[0].label === "None" ? "" : "Select sub-category"}
                   isClearable
                   showInactive={false}
                   enableValidation
                   errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+                  isDisabled={taskSubCategoryOptions[0].label === "None"}
                 />
               )}
             />
           )}
+          <FormField
+            form={form}
+            name="remarks"
+            label="Remarks"
+            required
+            validators={{
+              onChange: z.string().min(1, "Task remarks is required"),
+              onSubmit: z.string().min(1, "Task remarks is required"),
+            }}
+            render={(field) => (
+              <div>
+                <CompInput
+                  id="display-name"
+                  divid="display-name-value"
+                  type="input"
+                  inputClass="comp-form-control"
+                  error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                  maxLength={120}
+                  onChange={(evt: any) => field.handleChange(evt.target.value)}
+                  value={field.state.value}
+                  placeholder="Enter task remarks"
+                />
+              </div>
+            )}
+          />
           <FormField
             form={form}
             name="officerAssigned"
@@ -218,6 +251,28 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
           />
           <FormField
             form={form}
+            name="dueDate"
+            label="Due date"
+            required
+            validators={{
+              onSubmit: ({ value }: { value: Date | null }) => (value ? undefined : "Date is required"),
+            }}
+            render={(field) => (
+              <ValidationDatePicker
+                classNamePrefix="comp-details-edit-calendar-input"
+                className="comp-details-input full-width"
+                id={`task-due-date`}
+                onChange={(date: Date, _time: string | null) => {
+                  field.handleChange(date);
+                }}
+                selectedDate={field.state.value}
+                errMsg={field.state.meta.errors?.[0]?.message || ""}
+                vertical={true}
+              />
+            )}
+          />
+          <FormField
+            form={form}
             name="description"
             label="Task details"
             render={(field) => (
@@ -236,10 +291,18 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
         </form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="outline-primary" onClick={handleClose} disabled={isSaving}>
+        <Button
+          variant="outline-primary"
+          onClick={handleClose}
+          disabled={isSaving}
+        >
           Cancel
         </Button>
-        <Button variant="primary" onClick={() => form.handleSubmit()} disabled={isSaving}>
+        <Button
+          variant="primary"
+          onClick={() => form.handleSubmit()}
+          disabled={isSaving}
+        >
           {isSaving ? savingText : saveText}
         </Button>
       </Modal.Footer>
