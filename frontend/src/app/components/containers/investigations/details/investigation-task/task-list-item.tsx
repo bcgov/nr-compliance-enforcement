@@ -24,8 +24,8 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   const officers = useAppSelector(selectOfficers);
 
   const subCategory = taskSubCategories.find((sc) => sc.value === data.taskTypeCode);
-  const categoryLabel = taskCategories.find((c) => c.value === subCategory?.taskCategory)?.label ?? "-";
-  const subCategoryLabel = subCategory?.label ?? "-";
+  const categoryLabel = taskCategories.find((c) => c.value === data.taskCategoryTypeCode)?.label ?? "-";
+  const subCategoryLabel = subCategory?.label && subCategory.label !== "None" ? subCategory.label : "-";
   const statusLabel = taskStatuses.find((s) => s.value === data.taskStatusCode)?.label ?? "";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === data.assignedUserIdentifier);
   const assignedOfficerName = assignedOfficer ? `${assignedOfficer.last_name}, ${assignedOfficer.first_name}` : "-";
