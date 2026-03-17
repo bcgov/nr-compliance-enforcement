@@ -30,6 +30,9 @@ const GET_TASK = gql`
       taskNumber
       description
       activeIndicator
+      taskCategoryTypeCode
+      remarks
+      dueDate
     }
   }
 `;
@@ -48,17 +51,20 @@ interface TaskDetailSectionProps {
   onEditClick?: () => void;
 }
 
+//-----------TASK DETAIL SECTION----------------
 const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid, onEditClick }) => {
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const officers = useAppSelector(selectOfficers);
 
+  const category = taskCategories.find((c) => c.value === task?.taskCategoryTypeCode);
   const subCategory = taskSubCategories.find((s) => s.value === task?.taskTypeCode);
-  const category = taskCategories.find((c) => c.value === subCategory?.taskCategory);
   const categoryLabel = category?.label ?? "-";
-  const subCategoryLabel = subCategory?.label ?? "-";
+  const subCategoryLabel = subCategory?.label && subCategory?.label !== "None" ? subCategory.label : "-";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === task?.assignedUserIdentifier);
   const assignedOfficerName = assignedOfficer ? `${assignedOfficer.last_name}, ${assignedOfficer.first_name}` : "-";
+
+  const dueDateObj = new Date(task?.dueDate);
 
   return (
     <div className="comp-details-section">
@@ -94,9 +100,19 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
               </dd>
             </div>
             <div>
+              <dt>Remarks</dt>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-remarks` : undefined}>{task?.remarks ?? "-"}</dd>
+            </div>
+            <div>
               <dt>Officer Assigned</dt>
               <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-officer-assigned` : undefined}>
                 {assignedOfficerName}
+              </dd>
+            </div>
+            <div>
+              <dt>Due date</dt>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-due-date` : undefined}>
+                {dueDateObj.toISOString().split("T")[0] ?? "-"}
               </dd>
             </div>
             <div>
@@ -112,6 +128,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
   );
 };
 
+//-----------TASK DETAIL COMPONENT----------------
 const TaskDetail: FC = () => {
   const { investigationGuid = "", taskId = "" } = useParams<{
     investigationGuid: string;

@@ -30,6 +30,9 @@ export class TaskService {
         task_number: true,
         description: true,
         active_ind: true,
+        task_category_type_code: true,
+        remarks: true,
+        due_date: true,
       },
       where: {
         active_ind: true,
@@ -56,6 +59,9 @@ export class TaskService {
         task_number: true,
         description: true,
         active_ind: true,
+        task_category_type_code: true,
+        remarks: true,
+        due_date: true,
       },
       where: {
         task_guid: taskIdentifier,
@@ -92,7 +98,7 @@ export class TaskService {
           return await tx.task.create({
             data: {
               investigation_guid: taskInput.investigationIdentifier,
-              task_type_code: taskInput.taskTypeCode,
+              task_type_code: taskInput.taskTypeCode || null,
               task_status_code: taskInput.taskStatusCode,
               assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
               app_create_user_guid_ref: taskInput.appUserIdentifier,
@@ -102,6 +108,9 @@ export class TaskService {
               active_ind: true,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
+              task_category_type_code: taskInput.taskCategoryTypeCode,
+              remarks: taskInput.remarks,
+              due_date: taskInput.dueDate,
             },
           });
         });
@@ -158,6 +167,9 @@ export class TaskService {
           description: taskInput.description,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
+          task_category_type_code: taskInput.taskCategoryTypeCode,
+          remarks: taskInput.remarks,
+          due_date: taskInput.dueDate,
         },
       });
 
