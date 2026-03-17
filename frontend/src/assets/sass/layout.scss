@@ -823,6 +823,7 @@ p {
 #task-list {
   border-collapse: separate;
   border-spacing: 0;
+  border: 1px solid $gray-300;
 
   > tbody > tr {
     cursor: pointer;
