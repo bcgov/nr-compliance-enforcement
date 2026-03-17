@@ -128,14 +128,25 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     },
   });
 
-  // Component Data - assignable officers
-  const assignableOfficers: Option[] =
+  // Component Data - assignable officers (include existing officer so value populates even if inactive/different agency)
+  const assignableOfficersBase: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
       ? officersInAgencyList.map((officer: AppUser) => ({
           value: officer.app_user_guid,
           label: `${officer.last_name}, ${officer.first_name}`,
         }))
       : [];
+
+  const assignableOfficers: Option[] =
+    existingOfficer && !assignableOfficersBase.some((opt) => opt.value === existingOfficer.app_user_guid)
+      ? [
+          ...assignableOfficersBase,
+          {
+            value: existingOfficer.app_user_guid,
+            label: `${existingOfficer.last_name}, ${existingOfficer.first_name}`,
+          },
+        ]
+      : assignableOfficersBase;
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
