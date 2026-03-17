@@ -62,7 +62,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
 
   return (
     <div className="comp-details-section">
-      <h2 className="mb-0">Task details</h2>
+      <h3 className="mb-0">Task details</h3>
       <Card
         className="mb-3 mt-3 position-relative"
         border="default"
@@ -74,7 +74,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
             variant="outline-primary"
             size="sm"
             title="Edit task"
-            className="position-absolute top-0 end-0 m-2"
+            className="position-absolute top-0 end-0 m-3"
             onClick={onEditClick}
           >
             <i className="bi bi-pencil" />
@@ -89,15 +89,21 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
             </div>
             <div>
               <dt>Sub Category</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-sub-category` : undefined}>{subCategoryLabel}</dd>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-sub-category` : undefined}>
+                {subCategoryLabel}
+              </dd>
             </div>
             <div>
               <dt>Officer Assigned</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-officer-assigned` : undefined}>{assignedOfficerName}</dd>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-officer-assigned` : undefined}>
+                {assignedOfficerName}
+              </dd>
             </div>
             <div>
               <dt>Task Details</dt>
-              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-detail-description` : undefined}>{task?.description ?? "-"}</dd>
+              <dd id={task?.taskIdentifier ? `${task.taskIdentifier}-task-detail-description` : undefined}>
+                {task?.description ?? "-"}
+              </dd>
             </div>
           </dl>
         </Card.Body>
@@ -138,7 +144,6 @@ const TaskDetail: FC = () => {
     if (result === false) return;
     setShowTaskDetailEditModal(false);
   };
-
 
   if (isLoading) {
     return (

@@ -5,6 +5,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
+import { Button } from "react-bootstrap";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
@@ -35,12 +36,6 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
     onEdit(diaryDate);
   };
 
-  const handleDeleteClick = () => {
-    if (diaryDate.diaryDateGuid) {
-      onDelete(diaryDate.diaryDateGuid);
-    }
-  };
-
   return (
     <tr>
       <td>
@@ -68,15 +63,16 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
       </td>
       <td className="align-top text-end">
         <div className="d-flex gap-1 justify-content-end">
-          <button
+          <Button
             type="button"
-            className="btn btn-outline-primary rounded p-2"
+            variant="outline-primary"
+            size="sm"
             onClick={handleEditClick}
             title="Edit diary date"
             aria-label="edit-diary-date"
           >
             <i className="bi bi-pencil ms-1 me-1" />
-          </button>
+          </Button>
         </div>
       </td>
     </tr>
