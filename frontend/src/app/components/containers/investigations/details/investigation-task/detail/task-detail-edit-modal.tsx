@@ -10,7 +10,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface TaskDetailEditModalProps {
@@ -36,6 +36,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const agency = useAppSelector(selectOfficerAgency);
+  const officers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
 
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -47,7 +48,20 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   const taskSubCategoryOptions = taskSubCategories
     .filter((s) => s.taskCategory === selectedCategory)
     .map((s) => ({ value: String(s.value ?? ""), label: String(s.label ?? "") }));
-  const officerOptions = (officersInAgencyList ?? []).map((o) => ({
+  const assignedOfficer =
+    task && officers
+      ? officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null
+      : null;
+
+  const officerOptionsBase = officersInAgencyList ?? [];
+
+  const officerOptionsExtended =
+    assignedOfficer &&
+    !officerOptionsBase.some((o) => o.app_user_guid === assignedOfficer.app_user_guid)
+      ? [...officerOptionsBase, assignedOfficer]
+      : officerOptionsBase;
+
+  const officerOptions = officerOptionsExtended.map((o) => ({
     value: o.app_user_guid,
     label: `${o.last_name}, ${o.first_name}`,
   }));
