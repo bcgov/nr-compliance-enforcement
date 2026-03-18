@@ -1,5 +1,5 @@
 import { AppThunk } from "@store/store";
-import { deleteMethod, generateApiParameters, get, patch, putFile } from "@common/api";
+import { deleteMethod, generateApiParameters, get, patch, put, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
@@ -24,6 +24,7 @@ interface SaveAttachmentParams {
   historicalAttachments: Array<COMSObject>;
   isComplaintAttachment: boolean;
   attachmentConfig: AttachmentTypeConfig;
+  extendedMeta?: Record<string, string>;
 }
 
 interface DeleteAttachmentParams {
@@ -42,6 +43,15 @@ interface BuildHeaderParams {
   isThumb: boolean;
   attachmentName?: string;
   attachmentId?: string;
+  extendedMeta?: Record<string, string>;
+}
+
+interface ObjectVersion {
+  id: string;
+  s3VersionId: string;
+  objectId: string;
+  isLatest: boolean;
+  deleteMarker: boolean;
 }
 
 const buildAttachmentHeader = ({
@@ -53,6 +63,7 @@ const buildAttachmentHeader = ({
   isThumb,
   attachmentName,
   attachmentId,
+  extendedMeta,
 }: BuildHeaderParams): Record<string, any> => {
   // Common fields
   const header: Record<string, any> = {
@@ -73,6 +84,12 @@ const buildAttachmentHeader = ({
 
   if (isThumb && attachmentId) {
     header["x-amz-meta-thumb-for"] = attachmentId;
+  }
+
+  if (extendedMeta) {
+    Object.entries(extendedMeta).forEach(([key, value]) => {
+      header[`x-amz-meta-${key}`] = value;
+    });
   }
 
   return header;
@@ -151,13 +168,13 @@ const deleteSingleAttachment = async ({
 
   const response = await deleteMethod<string>(dispatch, parameters);
 
-  if (isImage(attachment.name)) {
-    const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
-    await deleteMethod<string>(dispatch, thumbParameters);
-  }
-
   if (response) {
     if (isComplaintAttachment) {
+      if (isImage(attachment.name)) {
+        const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
+        await deleteMethod<string>(dispatch, thumbParameters);
+      }
+
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
       await patch<boolean>(dispatch, parameters);
     }
@@ -198,12 +215,10 @@ const saveSingleAttachment = async ({
   historicalAttachments,
   isComplaintAttachment,
   attachmentConfig,
+  extendedMeta,
 }: SaveAttachmentParams) => {
   const attachmentIdentifier = subIdentifier ?? identifier;
-  const attachmentName = encodeURIComponent(
-    injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType),
-  );
-
+  const attachmentName = injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType);
   const existingAttachment = historicalAttachments.find((item) => item.name === attachmentName);
 
   const header = buildAttachmentHeader({
@@ -214,6 +229,7 @@ const saveSingleAttachment = async ({
     contentType: attachment.type,
     isThumb: false,
     attachmentName,
+    extendedMeta,
   });
 
   const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
@@ -224,7 +240,7 @@ const saveSingleAttachment = async ({
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
 
-  if (isImage(attachment.name)) {
+  if (isImage(attachment.name) && attachmentType !== AttachmentEnum.TASK_ATTACHMENT) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
@@ -235,7 +251,7 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const bucketId = config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 
@@ -285,6 +301,7 @@ export const saveAttachments =
     subIdentifier: string | undefined,
     attachmentType: AttachmentEnum,
     isSynchronous: boolean,
+    extendedMeta?: Record<string, string>,
   ): AppThunk<Promise<void>> =>
   async (dispatch) => {
     if (!attachments) {
@@ -321,10 +338,44 @@ export const saveAttachments =
           historicalAttachments,
           isComplaintAttachment,
           attachmentConfig,
+          extendedMeta,
         });
       } catch (error) {
         handleError(attachment, error);
       }
+    }
+  };
+
+// Deletes and replaces the attachment metadata on a file.  Note that all custom meta-data is affected
+export const updateAttachmentMetadata =
+  (objectId: string, extendedMeta: Record<string, string>): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    try {
+      // Fetch versions to get the latest versionId as this is required to update metadata
+      const versionParameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}/version`);
+      const versions = await get<ObjectVersion[]>(dispatch, versionParameters);
+      const latestVersion = versions.find((v) => v.isLatest && !v.deleteMarker);
+
+      if (!latestVersion) {
+        ToggleError("Could not find latest version of attachment");
+        return;
+      }
+
+      const parameters = generateApiParameters(
+        `${config.COMS_URL}/object/${objectId}/metadata?versionId=${latestVersion.id}`,
+      );
+
+      const headers: Record<string, string> = {};
+      Object.entries(extendedMeta).forEach(([key, value]) => {
+        headers[`x-amz-meta-${key}`] = value;
+      });
+
+      await put<void>(dispatch, parameters, true, headers);
+
+      ToggleSuccess("Attachment updated successfully");
+    } catch (error) {
+      console.error(error);
+      ToggleError("Failed to update attachment");
     }
   };
 

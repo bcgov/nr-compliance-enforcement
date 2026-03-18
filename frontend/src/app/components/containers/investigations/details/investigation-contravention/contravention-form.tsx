@@ -583,6 +583,11 @@ export const ContraventionForm = ({
                       key={section.legislationGuid}
                       className={`contravention-text-segment ${indentClass}`}
                     >
+                      {section.sectionTitle && (
+                        <p className="mb-1">
+                          <strong>{section.sectionTitle}</strong>
+                        </p>
+                      )}
                       <LegislationTable html={section.legislationText} />
                     </div>
                   );

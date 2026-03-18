@@ -1,20 +1,27 @@
 import { FC } from "react";
-import { Button } from "react-bootstrap";
 import { DiaryDate } from "@/generated/graphql";
 import { formatDate, formatDateTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
+import { Button } from "react-bootstrap";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
   onEdit: (diaryDate: DiaryDate) => void;
   onDelete: (diaryDateGuid: string) => void;
   taskNumber: number | null;
+  showTaskBadge?: boolean;
 }
 
-export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelete, taskNumber }) => {
+export const DiaryDateRow: FC<DiaryDateRowProps> = ({
+  diaryDate,
+  onEdit,
+  onDelete,
+  taskNumber,
+  showTaskBadge = true,
+}) => {
   const navigate = useNavigate();
   const { investigationGuid } = useParams<InvestigationParams>();
 
@@ -29,12 +36,6 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
     onEdit(diaryDate);
   };
 
-  const handleDeleteClick = () => {
-    if (diaryDate.diaryDateGuid) {
-      onDelete(diaryDate.diaryDateGuid);
-    }
-  };
-
   return (
     <tr>
       <td>
@@ -44,7 +45,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
             <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
-          {taskNumber && (
+          {showTaskBadge && taskNumber && (
             <button
               className="badge comp-status-badge-conflict-history"
               style={{ maxHeight: "20px", border: "none" }}
@@ -60,23 +61,17 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({ diaryDate, onEdit, onDelet
           Added on {addedTimestamp} by {addedByName}
         </div>
       </td>
-      <td>
-        <div className="d-flex gap-2 justify-content-end text-nowrap pt-1">
+      <td className="align-top text-end">
+        <div className="d-flex gap-1 justify-content-end">
           <Button
+            type="button"
             variant="outline-primary"
             size="sm"
             onClick={handleEditClick}
             title="Edit diary date"
+            aria-label="edit-diary-date"
           >
-            <i className="bi bi-pencil" /> Edit
-          </Button>
-          <Button
-            variant="outline-primary"
-            size="sm"
-            onClick={handleDeleteClick}
-            title="Delete diary date"
-          >
-            <i className="bi bi-trash" /> Delete
+            <i className="bi bi-pencil ms-1 me-1" />
           </Button>
         </div>
       </td>

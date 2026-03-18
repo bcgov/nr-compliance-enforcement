@@ -823,6 +823,7 @@ p {
 #task-list {
   border-collapse: separate;
   border-spacing: 0;
+  border: 1px solid $gray-300;
 
   > tbody > tr {
     cursor: pointer;
@@ -1109,4 +1110,8 @@ td.actions-col {
     text-decoration: none !important;
     padding: 0px;
   }
+}
+
+#task-attachment-list tbody tr:last-child td {
+  border-bottom: none;
 }

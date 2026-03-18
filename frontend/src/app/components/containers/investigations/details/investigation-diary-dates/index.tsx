@@ -1,15 +1,16 @@
 import { FC, useState } from "react";
 import { gql } from "graphql-request";
-import { Button, Table } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { DiaryDate, DiaryDateInput, Investigation } from "@/generated/graphql";
+import { DiaryDate, Investigation } from "@/generated/graphql";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { DiaryDateRow } from "./diary-date-row";
-import { DiaryDateModal } from "./diary-date-modal";
 import { DeleteConfirmModal } from "@/app/components/modal/instances/delete-confirm-modal";
-import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid as selectAppUserGuid } from "@/app/store/reducers/app";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { openModal } from "@/app/store/reducers/app";
+import { ADD_EDIT_DIARY_DATE } from "@/app/types/modal/modal-types";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
 export const GET_DIARY_DATES = gql`
   query GetDiaryDates($investigationGuid: String!) {
@@ -75,34 +76,22 @@ interface DiaryDatesProps {
   investigationGuid: string;
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
+  // When set, only diary dates for this task are shown
+  taskGuid?: string;
 }
 
-export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange }) => {
+export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange, taskGuid }) => {
+  const dispatch = useAppDispatch();
   const tasks = investigationData?.tasks || [];
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
-  // State
-  const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [editingDiaryDate, setEditingDiaryDate] = useState<DiaryDate | null>(null);
   const [deletingDiaryDateGuid, setDeletingDiaryDateGuid] = useState<string | null>(null);
-  const currentUserGuid = useAppSelector(selectAppUserGuid);
 
   const { data, refetch } = useGraphQLQuery<{ diaryDates: DiaryDate[] }>(GET_DIARY_DATES, {
     queryKey: ["diaryDates", investigationGuid],
     variables: { investigationGuid },
     enabled: !!investigationGuid,
-  });
-
-  const saveMutation = useGraphQLMutation(SAVE_DIARY_DATE, {
-    onSuccess: () => {
-      ToggleSuccess("Diary date saved successfully");
-      setShowModal(false);
-      setEditingDiaryDate(null);
-      refetch();
-    },
-    onError: () => {
-      ToggleError("Failed to save diary date");
-    },
   });
 
   const deleteMutation = useGraphQLMutation(DELETE_DIARY_DATE, {
@@ -117,29 +106,46 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
     },
   });
 
-  const diaryDates = data?.diaryDates ?? [];
+  const allDiaryDates = data?.diaryDates ?? [];
+  const diaryDates = taskGuid ? allDiaryDates.filter((dd) => dd.taskGuid === taskGuid) : allDiaryDates;
 
   const handleAddClick = () => {
-    setEditingDiaryDate(null);
-    setShowModal(true);
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ADD_EDIT_DIARY_DATE,
+        data: {
+          investigationGuid,
+          diaryDate: null,
+          taskGuid,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        callback: refetch,
+        hideCallback,
+      }),
+    );
   };
 
   const handleEditClick = (diaryDate: DiaryDate) => {
-    setEditingDiaryDate(diaryDate);
-    setShowModal(true);
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: ADD_EDIT_DIARY_DATE,
+        data: {
+          investigationGuid,
+          diaryDate,
+          taskGuid,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        callback: refetch,
+        hideCallback,
+      }),
+    );
   };
 
   const handleDeleteClick = (diaryDateGuid: string) => {
     setDeletingDiaryDateGuid(diaryDateGuid);
     setShowDeleteModal(true);
-  };
-
-  const handleSave = async (input: DiaryDateInput) => {
-    const inputWithUser = {
-      ...input,
-      userGuid: currentUserGuid,
-    };
-    await saveMutation.mutateAsync({ input: inputWithUser });
   };
 
   const handleConfirmDelete = () => {
@@ -148,29 +154,46 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
     }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingDiaryDate(null);
-  };
-
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
     setDeletingDiaryDateGuid(null);
   };
 
   return (
-    <div className="comp-details-section mt-4">
-      <div className="d-flex align-items-center gap-4 mb-0">
+    <div className="comp-details-section mt-3 mb-3">
+      <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
         <h3 className="mb-0">Diary dates</h3>
+        {diaryDates.length > 0 && (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleAddClick}
+          >
+            <i className="bi bi-plus-circle"></i>
+            <span>Add diary date</span>
+          </Button>
+        )}
       </div>
 
       {diaryDates.length === 0 ? (
-        <></>
+        <div className="mt-3">
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleAddClick}
+          >
+            <i className="bi bi-plus-circle"></i>
+            <span>Add diary date</span>
+          </Button>
+        </div>
       ) : (
-        <div className="border rounded p-3 pt-0 pb-0 mt-3">
+        <Card
+          className="mb-3 mt-3 position-relative p-3"
+          border="default"
+        >
           <Table className="mb-0 table-borderless diary-dates-table">
             <tbody>
-              {diaryDates.map((diaryDate) => {
+              {diaryDates.map((diaryDate, index) => {
                 const taskNumber = tasks
                   ? tasks.find((task) => task?.taskIdentifier === diaryDate.taskGuid)?.taskNumber
                   : null;
@@ -181,33 +204,14 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
                     onEdit={handleEditClick}
                     onDelete={handleDeleteClick}
                     taskNumber={taskNumber ?? null}
+                    showTaskBadge={!taskGuid}
                   />
                 );
               })}
             </tbody>
           </Table>
-        </div>
+        </Card>
       )}
-
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={handleAddClick}
-        className="mt-3"
-      >
-        <i className="bi bi-plus-circle"></i>
-        <span>Add diary date</span>
-      </Button>
-
-      <DiaryDateModal
-        show={showModal}
-        onHide={handleCloseModal}
-        onSave={handleSave}
-        investigationGuid={investigationGuid}
-        diaryDate={editingDiaryDate}
-        isSaving={saveMutation.isPending}
-        onDirtyChange={onDirtyChange}
-      />
 
       <DeleteConfirmModal
         show={showDeleteModal}

@@ -406,7 +406,8 @@ OR REPLACE FUNCTION complaint.insert_complaint_from_staging (_complaint_identifi
   WHEN OTHERS THEN
     RAISE notice 'An unexpected error occurred: %', SQLERRM;
     UPDATE complaint.staging_complaint
-    SET    staging_status_code = STAGING_STATUS_CODE_ERROR
+    SET    staging_status_code = STAGING_STATUS_CODE_ERROR,
+           staging_status_error_message = SQLERRM
     WHERE  complaint_identifier = _complaint_identifier
     and staging_status_code = STAGING_STATUS_CODE_PENDING
     AND    staging_activity_code = WEBEOC_UPDATE_TYPE_INSERT;

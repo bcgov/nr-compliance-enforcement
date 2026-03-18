@@ -38,10 +38,9 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
 
   const resolveCategory = useCallback(
     (task: Task) => {
-      const subCat = taskSubCategories.find((sc) => sc.value === task.taskTypeCode);
-      return taskCategories.find((c) => c.value === subCat?.taskCategory)?.label ?? "";
+      return taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "";
     },
-    [taskCategories, taskSubCategories],
+    [taskCategories],
   );
 
   const resolveSubCategory = useCallback(
