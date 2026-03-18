@@ -61,6 +61,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         ]
       : assignableOfficers;
 
+  const assignableOfficersExtendedSorted = [...assignableOfficersExtended].sort((a, b) => {
+    const labelA = String(a.label ?? "");
+    const labelB = String(b.label ?? "");
+    return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
+  });
+
   // State
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
@@ -520,8 +526,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       id="taken-by-select"
                       classNamePrefix="comp-select"
                       className="comp-details-input"
-                      options={assignableOfficersExtended}
-                      value={assignableOfficersExtended.find((opt) => opt.value === field.state.value)}
+                      options={assignableOfficersExtendedSorted}
+                      value={assignableOfficersExtendedSorted.find((opt) => opt.value === field.state.value)}
                       onChange={(option) => field.handleChange(option?.value || "")}
                       placeholder="Select taken by"
                       isClearable={true}

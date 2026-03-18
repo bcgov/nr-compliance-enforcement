@@ -63,7 +63,13 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
       ? [...officerOptionsBase, assignedOfficer]
       : officerOptionsBase;
 
-  const officerOptions = officerOptionsExtended.map((o) => ({
+  const officerOptionsExtendedSorted = [...officerOptionsExtended].sort((a, b) => {
+    const labelA = `${a.last_name}, ${a.first_name}`;
+    const labelB = `${b.last_name}, ${b.first_name}`;
+    return String(labelA).localeCompare(String(labelB), undefined, { sensitivity: "base" });
+  });
+
+  const officerOptions = officerOptionsExtendedSorted.map((o) => ({
     value: o.app_user_guid,
     label: `${o.last_name}, ${o.first_name}`,
   }));

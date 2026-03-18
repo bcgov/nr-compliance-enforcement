@@ -148,6 +148,12 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
         ]
       : assignableOfficersBase;
 
+  const assignableOfficersSorted = [...assignableOfficers].sort((a, b) => {
+    const labelA = String(a.label ?? "");
+    const labelB = String(b.label ?? "");
+    return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
+  });
+
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
     let actionedTime: Date | undefined = undefined;
@@ -281,7 +287,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
             markDirty();
           }}
           className="comp-details-input w-100 max-w-370"
-          options={assignableOfficers}
+          options={assignableOfficersSorted}
           placeholder="Select"
           enableValidation={true}
           errorMessage={officerError}
