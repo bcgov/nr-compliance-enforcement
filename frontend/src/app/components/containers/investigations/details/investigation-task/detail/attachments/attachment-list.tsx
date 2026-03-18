@@ -130,19 +130,18 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
   const renderHeader = () => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("File type", "fileType", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Sequence number", "sequenceNumber", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("ID", "sequenceNumber", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Description", "description", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Title", "title", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date", "date", "comp-cell-width-120")}
         <th className="comp-cell-width-160 comp-cell-min-width-160">Taken by</th>
         <th className="comp-cell-width-160 comp-cell-min-width-160">Location</th>
+        {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
         <th className="comp-cell-width-30 comp-cell-min-width-30"></th>
       </tr>
     </thead>
   );
-
   // Renders the table Body
   const renderBody = () => {
     if (isLoading) {
@@ -181,6 +180,15 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
 
     return paginatedAttachments.map((attachment) => (
       <tr key={attachment.id}>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.sequenceNumber ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
+        <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
+          {getOfficerName(attachment.takenBy ?? "")}
+        </td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
           <div className="d-flex align-items-center">
             <i className={`bi ${getFileTypeIcon(attachment.fileType)} me-2 fs-5`} />
@@ -192,22 +200,13 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
             </button>
           </div>
         </td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.sequenceNumber ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
-        <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
-          {getOfficerName(attachment.takenBy ?? "")}
-        </td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
-        <td className="comp-cell-width-30 comp-cell-min-width-30 text-end pe-3">
+        <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
           <Button
             type="button"
             variant="outline-primary"
             size="sm"
             onClick={() => onEdit(attachment)}
-            title="Edit task action"
+            title="Edit attachment data"
             aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
           >
             <i className="bi bi-pencil ms-1 me-1" />
