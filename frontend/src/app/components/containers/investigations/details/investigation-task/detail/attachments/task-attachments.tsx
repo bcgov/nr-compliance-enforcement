@@ -75,8 +75,8 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
 
   return (
     <div className="mt-3">
-      <div className="d-flex align-items-center my-2">
-        <h4 className="me-3">Attachments</h4>
+      <div className="d-flex align-items-center my-3">
+        <h3 className="me-3 mb-0">Attachments</h3>
         {task?.taskIdentifier && attachments.length > 0 && (
           <BulkDownloadButton
             taskId={task.taskIdentifier}
@@ -92,7 +92,6 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
               variant="primary"
               size="sm"
               onClick={handleAddAttachment}
-              className="mb-3"
             >
               <i className="bi bi-upload"></i>
               <span>Add attachment</span>

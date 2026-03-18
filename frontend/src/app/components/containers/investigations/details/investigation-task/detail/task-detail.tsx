@@ -68,7 +68,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
 
   return (
     <div className="comp-details-section">
-      <h2 className="mb-0">Task details</h2>
+      <h3 className="mb-0">Task details</h3>
       <Card
         className="mb-3 mt-3 position-relative"
         border="default"
@@ -80,7 +80,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
             variant="outline-primary"
             size="sm"
             title="Edit task"
-            className="position-absolute top-0 end-0 m-2"
+            className="position-absolute top-0 end-0 m-3"
             onClick={onEditClick}
           >
             <i className="bi bi-pencil" />

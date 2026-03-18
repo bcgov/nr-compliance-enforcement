@@ -1207,6 +1207,7 @@ SET
 UPDATE investigation.task
 SET
     task_type_code = 'ADMINBUSRULE',
+    task_category_type_code = 'ADMIN',
     update_user_id = 'FLYWAY',
     update_utc_timestamp = NOW ()
 WHERE
