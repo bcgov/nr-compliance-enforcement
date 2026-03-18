@@ -128,14 +128,31 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     },
   });
 
-  // Component Data - assignable officers
-  const assignableOfficers: Option[] =
+  // Component Data - assignable officers (include existing officer so value populates even if inactive/different agency)
+  const assignableOfficersBase: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
       ? officersInAgencyList.map((officer: AppUser) => ({
           value: officer.app_user_guid,
           label: `${officer.last_name}, ${officer.first_name}`,
         }))
       : [];
+
+  const assignableOfficers: Option[] =
+    existingOfficer && !assignableOfficersBase.some((opt) => opt.value === existingOfficer.app_user_guid)
+      ? [
+          ...assignableOfficersBase,
+          {
+            value: existingOfficer.app_user_guid,
+            label: `${existingOfficer.last_name}, ${existingOfficer.first_name}`,
+          },
+        ]
+      : assignableOfficersBase;
+
+  const assignableOfficersSorted = [...assignableOfficers].sort((a, b) => {
+    const labelA = String(a.label ?? "");
+    const labelB = String(b.label ?? "");
+    return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
+  });
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
@@ -270,7 +287,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
             markDirty();
           }}
           className="comp-details-input w-100 max-w-370"
-          options={assignableOfficers}
+          options={assignableOfficersSorted}
           placeholder="Select"
           enableValidation={true}
           errorMessage={officerError}

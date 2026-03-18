@@ -14,7 +14,7 @@ import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } f
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
-import { selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
+import { selectOfficerByAppUserGuid, selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { getUserAgency } from "@/app/service/user-service";
 import { COMSObject } from "@/app/types/coms/object";
 import { updateAttachmentMetadata } from "@/app/store/reducers/attachments";
@@ -44,6 +44,28 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     defaultAssignee,
     onDirtyChange,
   } = modalData;
+
+  const takenByInitialValue = attachment?.takenBy ?? defaultAssignee ?? "";
+  const takenByOfficer = useAppSelector(
+    useMemo(() => selectOfficerByAppUserGuid(takenByInitialValue), [takenByInitialValue]),
+  );
+
+  const assignableOfficersExtended =
+    takenByOfficer && !assignableOfficers.some((opt) => opt.value === takenByOfficer.app_user_guid)
+      ? [
+          ...assignableOfficers,
+          {
+            value: takenByOfficer.app_user_guid,
+            label: `${takenByOfficer.last_name}, ${takenByOfficer.first_name}`,
+          },
+        ]
+      : assignableOfficers;
+
+  const assignableOfficersExtendedSorted = [...assignableOfficersExtended].sort((a, b) => {
+    const labelA = String(a.label ?? "");
+    const labelB = String(b.label ?? "");
+    return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
+  });
 
   // State
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -504,8 +526,8 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
                       id="taken-by-select"
                       classNamePrefix="comp-select"
                       className="comp-details-input"
-                      options={assignableOfficers}
-                      value={assignableOfficers.find((opt) => opt.value === (field.state.value || defaultAssignee))}
+                      options={assignableOfficersExtendedSorted}
+                      value={assignableOfficersExtendedSorted.find((opt) => opt.value === field.state.value)}
                       onChange={(option) => field.handleChange(option?.value || "")}
                       placeholder="Select taken by"
                       isClearable={true}
