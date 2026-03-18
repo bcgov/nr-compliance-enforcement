@@ -6,7 +6,6 @@ import {
   fetchXml,
   getFederalRegulations,
   getFederalRegulationXmlUrl,
-  clearFederalLookupCache,
   Regulation,
 } from "../../external_api/laws-service";
 import {
@@ -270,7 +269,6 @@ export async function runFederalLawsImport(
 ): Promise<void> {
   logger.log("Starting Federal Laws import...");
   logger.log("Fetching pending legislation sources from database...");
-  clearFederalLookupCache();
 
   try {
     // Get pending federal legislation sources
