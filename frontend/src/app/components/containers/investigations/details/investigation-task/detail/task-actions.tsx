@@ -30,9 +30,7 @@ const TaskActionRow: FC<{
     return taskAction.actionedTime ? `${formatDate(s)} ${formatTime(s)}` : formatDate(s);
   })();
 
-  const actionedOfficerStr = actionedByUser
-    ? `${actionedByUser.last_name}, ${actionedByUser.first_name}`
-    : "-";
+  const actionedOfficerStr = actionedByUser ? `${actionedByUser.last_name}, ${actionedByUser.first_name}` : "-";
 
   const addedOnStr = addedByUser
     ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
@@ -50,8 +48,7 @@ const TaskActionRow: FC<{
           <span className="text-nowrap">Date/time actioned</span>{" "}
           <span className="text-dark">{actionedDateTimeStr}</span>
           {"  |  "}
-          <span className="text-nowrap">Officer</span>{" "}
-          <span className="text-dark">{actionedOfficerStr}</span>
+          <span className="text-nowrap">Officer</span> <span className="text-dark">{actionedOfficerStr}</span>
         </div>
         <div className="mb-1">{description}</div>
         <div className="text-muted small mt-1 mb-0">
@@ -59,36 +56,30 @@ const TaskActionRow: FC<{
         </div>
       </td>
       <td className="align-top text-end">
-        <button
+        <Button
           type="button"
-          className="btn btn-outline-primary rounded p-2"
+          size="sm"
+          variant="outline-primary"
           onClick={() => onEdit?.(taskAction)}
           title="Edit task action"
           aria-label="Edit task action"
         >
           <i className="bi bi-pencil ms-1 me-1" />
-        </button>
+        </Button>
       </td>
     </tr>
-  );  
+  );
 };
 
-export const TaskActions: FC<TaskActionsProps> = ({
-  investigationGuid,
-  taskIdentifier,
-  onEdit,
-}) => {
+export const TaskActions: FC<TaskActionsProps> = ({ investigationGuid, taskIdentifier, onEdit }) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
-  const { data, refetch } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(
-    GET_ACTIVITY_NOTES_BY_TASK,
-    {
-      queryKey: ["getActivityNotesByTask", taskIdentifier],
-      variables: { taskGuid: taskIdentifier ?? "" },
-      enabled: !!taskIdentifier,
-    },
-  );
+  const { data, refetch } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(GET_ACTIVITY_NOTES_BY_TASK, {
+    queryKey: ["getActivityNotesByTask", taskIdentifier],
+    variables: { taskGuid: taskIdentifier ?? "" },
+    enabled: !!taskIdentifier,
+  });
 
   const taskActions = data?.getActivityNotesByTask ?? [];
   const hasTaskActions = taskActions.length > 0;
@@ -147,8 +138,11 @@ export const TaskActions: FC<TaskActionsProps> = ({
   const taskActionsContent = (() => {
     if (taskIdentifier && hasTaskActions) {
       return (
-        <Card className="mb-3 mt-3" border="default">
-          <Card.Body>{taskActionsTable}</Card.Body>
+        <Card
+          className="mb-3 mt-3 position-relative p-3"
+          border="default"
+        >
+          {taskActionsTable}
         </Card>
       );
     }

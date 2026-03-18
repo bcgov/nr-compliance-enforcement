@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { gql } from "graphql-request";
-import { Button, Table } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { DiaryDate, Investigation } from "@/generated/graphql";
@@ -160,7 +160,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
   };
 
   return (
-    <div className="comp-details-section mt-4 mb-3">
+    <div className="comp-details-section mt-3 mb-3">
       <div className="d-flex align-items-center justify-content-between gap-4 mb-0">
         <h3 className="mb-0">Diary dates</h3>
         {diaryDates.length > 0 && (
@@ -187,10 +187,13 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
           </Button>
         </div>
       ) : (
-        <div className="border rounded p-3 pt-0 pb-0 mt-3">
+        <Card
+          className="mb-3 mt-3 position-relative p-3"
+          border="default"
+        >
           <Table className="mb-0 table-borderless diary-dates-table">
             <tbody>
-              {diaryDates.map((diaryDate) => {
+              {diaryDates.map((diaryDate, index) => {
                 const taskNumber = tasks
                   ? tasks.find((task) => task?.taskIdentifier === diaryDate.taskGuid)?.taskNumber
                   : null;
@@ -207,7 +210,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
               })}
             </tbody>
           </Table>
-        </div>
+        </Card>
       )}
 
       <DeleteConfirmModal
