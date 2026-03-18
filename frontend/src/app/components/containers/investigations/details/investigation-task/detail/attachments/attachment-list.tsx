@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo, useState } from "react";
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import Paginator from "@components/common/paginator";
 import { SortableHeader } from "@components/common/sortable-header";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -201,16 +201,17 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
           {getOfficerName(attachment.takenBy ?? "")}
         </td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
-        <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
-          <button
+        <td className="comp-cell-width-30 comp-cell-min-width-30 text-end pe-3">
+          <Button
             type="button"
-            className="btn btn-outline-primary rounded p-2"
+            variant="outline-primary"
+            size="sm"
             onClick={() => onEdit(attachment)}
             title="Edit task action"
             aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
           >
             <i className="bi bi-pencil ms-1 me-1" />
-          </button>
+          </Button>
         </td>
       </tr>
     ));
@@ -220,7 +221,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
         <Table
-          className="comp-table mb-0"
+          className="comp-table mb-0 attachments-table"
           id="task-attachment-list"
         >
           {renderHeader()}

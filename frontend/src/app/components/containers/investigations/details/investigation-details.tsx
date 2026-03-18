@@ -51,6 +51,9 @@ const GET_INVESTIGATION = gql`
         taskNumber
         description
         activeIndicator
+        taskCategoryTypeCode
+        remarks
+        dueDate
       }
       contraventions {
         contraventionIdentifier
