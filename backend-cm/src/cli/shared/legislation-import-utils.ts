@@ -73,6 +73,8 @@ export function buildFullCitation(
         break;
       case "PAR":
       case "SUBPAR":
+      case "CL":
+      case "SUBCL":
         parts.push(`(${node.citation})`);
         break;
       case "DEF":

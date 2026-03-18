@@ -457,6 +457,11 @@ export const LegislationManagement: FC = () => {
     if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
       return baseWrapper(
         <div className={indentClass}>
+          {section.sectionTitle && (
+            <p className="mb-1">
+              <strong>{section.sectionTitle}</strong>
+            </p>
+          )}
           <LegislationTable html={section.legislationText} />
         </div>,
       );

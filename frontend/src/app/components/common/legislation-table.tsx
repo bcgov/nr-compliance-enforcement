@@ -26,7 +26,7 @@ export const LegislationTable = ({ html }: LegislationTableProps) => {
               rowSpan={getAttr(cell, "rowspan")}
               colSpan={getAttr(cell, "colspan")}
             >
-              <LegislationText>{cell.innerHTML}</LegislationText>
+              <LegislationText>{cell.textContent}</LegislationText>
             </Tag>
           );
         })}
