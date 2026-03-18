@@ -24,14 +24,12 @@ const stripXmlTags = (raw: string): string =>
     .replaceAll(/\s+/g, " ")
     .trim();
 
-let originalXmlString = "";
-
 // Get the position of an element in the original XML string by its lims:fid attribute
 // Used to determine document order since fid values are not always sequential
-const getXmlPosition = (el: any): number => {
+const getXmlPosition = (el: any, xmlString: string): number => {
   const fid = el?.["@_lims:fid"] || el?.["@_lims:id"];
-  if (!fid || !originalXmlString) return Infinity;
-  const pos = originalXmlString.indexOf(`lims:fid="${fid}"`);
+  if (!fid || !xmlString) return Infinity;
+  const pos = xmlString.indexOf(`lims:fid="${fid}"`);
   return pos > -1 ? pos : Infinity;
 };
 
@@ -364,7 +362,7 @@ function collectDocumentInternalChildren(docInternal: any): ParsedLegislationNod
   );
 }
 
-function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
+function collectScheduleChildren(schedule: any, xmlString: string): ParsedLegislationNode[] {
   const children: ParsedLegislationNode[] = [];
 
   for (const fg of toArray(schedule?.FormGroup))
@@ -381,12 +379,12 @@ function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
 
   children.push(...collectTextChildren(schedule, 0), ...collectDocumentInternalChildren(schedule?.DocumentInternal));
 
-  for (const cat of toArray(schedule?.ConventionAgreementTreaty)) children.push(parseConventionAgreementTreaty(cat));
+  for (const cat of toArray(schedule?.ConventionAgreementTreaty)) children.push(parseConventionAgreementTreaty(cat, xmlString));
 
-  for (const nested of toArray(schedule?.Schedule)) children.push(parseSchedule(nested, 0));
+  for (const nested of toArray(schedule?.Schedule)) children.push(parseSchedule(nested, 0, xmlString));
 
   const body = schedule?.RegulationPiece?.Body || schedule?.Body;
-  if (body) children.push(...parseBody(body));
+  if (body) children.push(...parseBody(body, xmlString));
 
   children.forEach((child, i) => {
     child.displayOrder = i + 1;
@@ -394,7 +392,7 @@ function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
   return children;
 }
 
-function parseSchedule(schedule: any, displayOrder: number): ParsedLegislationNode {
+function parseSchedule(schedule: any, displayOrder: number, xmlString: string): ParsedLegislationNode {
   const h = schedule?.ScheduleFormHeading;
   const label = h?.Label ? extractText(h.Label).trim() : null;
   const titleStr = h
@@ -412,13 +410,13 @@ function parseSchedule(schedule: any, displayOrder: number): ParsedLegislationNo
     citation,
     sectionTitle: title,
     legislationText,
-    children: collectScheduleChildren(schedule),
+    children: collectScheduleChildren(schedule, xmlString),
   });
 }
 
 // ConventionAgreementTreaty parsing
 
-function parseConventionAgreementTreaty(cat: any): ParsedLegislationNode {
+function parseConventionAgreementTreaty(cat: any, xmlString: string): ParsedLegislationNode {
   const children: ParsedLegislationNode[] = [];
 
   for (const group of toArray(cat?.Group)) {
@@ -434,7 +432,7 @@ function parseConventionAgreementTreaty(cat: any): ParsedLegislationNode {
     const text = extractText(heading?.TitleText).trim();
     if (text) children.push(createNode("DIV", children.length + 1, { sectionTitle: text }));
   }
-  for (const sched of toArray(cat?.Schedule)) children.push(parseSchedule(sched, children.length + 1));
+  for (const sched of toArray(cat?.Schedule)) children.push(parseSchedule(sched, children.length + 1, xmlString));
 
   return createNode("SCHED", 0, {
     sectionTitle: "Convention/Agreement/Treaty",
@@ -477,8 +475,9 @@ function parseOrderChildren(order: any): ParsedLegislationNode[] {
 
 // Body parsing
 
-function parseBody(body: any): ParsedLegislationNode[] {
-  const collect = (tag: string) => toArray(body?.[tag]).map((data: any) => ({ tag, data, pos: getXmlPosition(data) }));
+function parseBody(body: any, xmlString: string): ParsedLegislationNode[] {
+  const collect = (tag: string) =>
+    toArray(body?.[tag]).map((data: any) => ({ tag, data, pos: getXmlPosition(data, xmlString) }));
   const elements = [
     ...collect("Heading"),
     ...collect("Section"),
@@ -523,7 +522,7 @@ function parseBody(body: any): ParsedLegislationNode[] {
         }),
       );
     } else if (tag === "Schedule") {
-      topChildren.push(parseSchedule(data, order++));
+      topChildren.push(parseSchedule(data, order++, xmlString));
     }
   }
 
@@ -590,13 +589,12 @@ const getLongTitle = (id: any): string | null =>
 const nextOrder = (children: ParsedLegislationNode[], offset = 1): number =>
   children.length > 0 ? children.at(-1).displayOrder + offset : offset;
 
-const appendSchedules = (children: ParsedLegislationNode[], root: any) => {
+const appendSchedules = (children: ParsedLegislationNode[], root: any, xmlString: string) => {
   let order = nextOrder(children, 1000);
-  for (const schedule of toArray(root?.Schedule)) children.push(parseSchedule(schedule, order++));
+  for (const schedule of toArray(root?.Schedule)) children.push(parseSchedule(schedule, order++, xmlString));
 };
 
 function parseXml(xmlString: string): any {
-  originalXmlString = xmlString;
   return new XMLParser(FEDERAL_XML_PARSER_OPTIONS).parse(xmlString);
 }
 
@@ -617,8 +615,8 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
     documentType: "ACT",
   };
 
-  const bodyChildren = statute?.Body ? parseBody(statute.Body) : [];
-  appendSchedules(bodyChildren, statute);
+  const bodyChildren = statute?.Body ? parseBody(statute.Body, xmlString) : [];
+  appendSchedules(bodyChildren, statute, xmlString);
 
   return {
     metadata,
@@ -643,7 +641,7 @@ export function parseFederalRegulationXml(xmlString: string): ParsedFederalLawsD
     documentType: "REG",
   };
 
-  const bodyChildren = regulation?.Body ? parseBody(regulation.Body) : [];
+  const bodyChildren = regulation?.Body ? parseBody(regulation.Body, xmlString) : [];
 
   // Some regulations use Order elements instead of or alongside Body
   let offset = nextOrder(bodyChildren);
@@ -654,12 +652,12 @@ export function parseFederalRegulationXml(xmlString: string): ParsedFederalLawsD
     }
   }
   for (const cat of toArray(regulation?.ConventionAgreementTreaty)) {
-    const node = parseConventionAgreementTreaty(cat);
+    const node = parseConventionAgreementTreaty(cat, xmlString);
     node.displayOrder = offset++;
     bodyChildren.push(node);
   }
 
-  appendSchedules(bodyChildren, regulation);
+  appendSchedules(bodyChildren, regulation, xmlString);
 
   return {
     metadata,
