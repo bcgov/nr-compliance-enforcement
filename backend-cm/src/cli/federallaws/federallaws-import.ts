@@ -28,10 +28,8 @@ interface RegulationImportResult {
   skippedRegs: number;
 }
 
-/**
- * Imports regulations for a federal Act by looking up related regulations via the
- * Justice Canada lookup.xml and fetching each regulation's XML document.
- */
+// Imports regulations for a federal Act by looking up related regulations via the Justice Canada's github where
+// a lookup.xml file contains references to the related regulations, then fetches each regulation
 async function importRegulations(
   source: LegislationSource,
   actRootGuid: string,
@@ -111,7 +109,7 @@ async function importSingleRegulation(
     const xmlString = await fetchXml(xmlUrl, "Federal Laws API");
     const parsedDocument = parseFederalRegulationXml(xmlString);
 
-    // Skip regulations whose XML has no body content (metadata-only documents)
+    // Skip regulations whose XML has no body content
     if (parsedDocument.root.children.length === 0) {
       logger.warn(`  Skipped: ${parsedDocument.metadata.title} (XML contains no body content)`);
       return -1;
@@ -201,7 +199,7 @@ async function importLegislationSourceDocument(
       source.legislationSourceGuid,
     );
 
-    // Import regulations if the act has a consolidated number and was inserted successfully
+    // Import regulations
     let regResult: RegulationImportResult | null = null;
     if (parsedDocument.metadata.consolidatedNumber && context.rootLegislationGuid) {
       regResult = await importRegulations(

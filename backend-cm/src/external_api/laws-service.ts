@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import { XMLParser } from "fast-xml-parser";
 
@@ -11,46 +11,19 @@ export interface Regulation {
 
 const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.env.HTTPS_PROXY) : undefined;
 
-/**
- * Fetches an XML document from the given URL
- * @param url - The full URL to the XML document
- * @param apiName - Name of the API for error messages
- * @returns The raw XML string
- */
+const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsAgent: httpsProxyAgent } : {};
+
 export const fetchXml = async (url: string, apiName: string): Promise<string> => {
-  let config: AxiosRequestConfig = {};
-
-  if (process.env.HTTPS_PROXY) {
-    config = {
-      ...config,
-      proxy: false,
-      httpsAgent: httpsProxyAgent,
-    };
+  try {
+    const response = await axios.get(url, proxyConfig);
+    return response.data;
+  } catch (error: any) {
+    const msg = error?.message || String(error);
+    let prefix = "Error";
+    if (error?.response) prefix = "Request Failed";
+    else if (error?.request) prefix = "No response received from";
+    throw new Error(`${apiName} ${prefix}: ${url}, ${msg}`);
   }
-
-  return axios
-    .get(url, config)
-    .then((response: AxiosResponse) => {
-      return response.data;
-    })
-    .catch((error: AxiosError) => {
-      if (error.response) {
-        throw new Error(`${apiName} Request Failed: ${url}, ${error.message}`);
-      } else if (error.request) {
-        throw new Error(`No response received from ${apiName}: ${url}, ${error.message}`);
-      } else {
-        throw new Error(`${apiName} Error: ${error.message}`);
-      }
-    });
-};
-
-/**
- * Fetches BC Laws XML document from the BC Laws API
- * @param url - The full URL to the BC Laws XML document
- * @returns The raw XML string
- */
-export const getBcLawsXml = async (url: string): Promise<string> => {
-  return fetchXml(url, "BC Laws API");
 };
 
 const toArray = (value: any): any[] => {
@@ -88,7 +61,7 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
  * @returns Set of regulation documents with their URLs
  */
 export const getBcLawsRegulations = async (contentApiUrl: string): Promise<Regulation[]> => {
-  const xmlString = await getBcLawsXml(contentApiUrl);
+  const xmlString = await fetchXml(contentApiUrl, "BC Laws API");
   const documents = parseDocumentsFromXml(xmlString);
 
   if (documents.length === 0) {
@@ -129,10 +102,9 @@ export const getBcLawsRegulations = async (contentApiUrl: string): Promise<Regul
   return regulations;
 };
 
-// -- Federal Laws lookup XML parsing --
+// Federal Laws lookup.xml parsing
 
-const FEDERAL_LOOKUP_URL =
-  "https://raw.githubusercontent.com/justicecanada/laws-lois-xml/master/lookup/lookup.xml";
+const FEDERAL_LOOKUP_URL = "https://raw.githubusercontent.com/justicecanada/laws-lois-xml/master/lookup/lookup.xml";
 
 interface FederalLookupData {
   statutes: any[];
@@ -161,20 +133,10 @@ const fetchFederalLookup = async (): Promise<FederalLookupData> => {
   return cachedLookup;
 };
 
-/**
- * Builds the XML document URL for a federal regulation given its AlphaNumber (e.g., "SOR/98-462")
- */
-export const getFederalRegulationXmlUrl = (alphaNumber: string): string => {
-  const normalizedId = alphaNumber.replaceAll("/", "-").replaceAll(" ", "_");
-  return `https://laws-lois.justice.gc.ca/eng/XML/${normalizedId}.xml`;
-};
+const normalizeFederalId = (alphaNumber: string): string => alphaNumber.replaceAll("/", "-").replaceAll(" ", "_");
 
-/**
- * Clears the cached federal lookup data (useful between import runs or for testing)
- */
-export const clearFederalLookupCache = (): void => {
-  cachedLookup = null;
-};
+export const getFederalRegulationXmlUrl = (alphaNumber: string): string =>
+  `https://laws-lois.justice.gc.ca/eng/XML/${normalizeFederalId(alphaNumber)}.xml`;
 
 /**
  * Fetches the list of regulations associated with a federal act by looking up the
@@ -186,21 +148,14 @@ export const getFederalRegulations = async (consolidatedNumber: string): Promise
   const lookup = await fetchFederalLookup();
 
   // Find the English statute matching the consolidated number
-  const statute = lookup.statutes.find(
-    (s: any) => s.ChapterNumber === consolidatedNumber && s.Language === "en",
-  );
+  const statute = lookup.statutes.find((s: any) => s.ChapterNumber === consolidatedNumber && s.Language === "en");
 
   if (!statute?.Relationships?.Relationship) {
     return [];
   }
 
   const rids = new Set(toArray(statute.Relationships.Relationship).map((r: any) => r["@_rid"]));
-
-  // Build a map of regulation id -> regulation for quick lookup
-  const regMap = new Map<string, any>();
-  for (const reg of lookup.regulations) {
-    regMap.set(reg["@_id"], reg);
-  }
+  const regMap = new Map(lookup.regulations.map((r: any) => [r["@_id"], r]));
 
   const regulations: Regulation[] = [];
   for (const rid of rids) {
@@ -208,12 +163,8 @@ export const getFederalRegulations = async (consolidatedNumber: string): Promise
     if (!reg) continue;
 
     const alphaNumber: string = reg.AlphaNumber;
-    const title: string = reg.ShortTitle || alphaNumber;
-    // Convert "SOR/98-462" -> "SOR-98-462", "C.R.C., c. 430" -> "C.R.C.,_c._430"
-    const normalizedId = alphaNumber.replaceAll("/", "-").replaceAll(" ", "_");
-    const url = `https://laws-lois.justice.gc.ca/eng/regulations/${normalizedId}/index.html`;
-
-    regulations.push({ id: alphaNumber, title, url, status: null });
+    const url = `https://laws-lois.justice.gc.ca/eng/regulations/${normalizeFederalId(alphaNumber)}/index.html`;
+    regulations.push({ id: alphaNumber, title: reg.ShortTitle || alphaNumber, url, status: null });
   }
 
   return regulations;
