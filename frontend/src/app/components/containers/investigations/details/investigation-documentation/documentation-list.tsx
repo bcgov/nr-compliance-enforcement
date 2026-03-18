@@ -65,7 +65,7 @@ export const DocumentationList: FC<Props> = ({
         {renderSortableHeader("Description", "description", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("Title", "title", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("Date", "date", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Taken By", "takenBy", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("Taken by", "takenBy", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("Location", "location", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("Task", "taskNumber", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("File name", "name", "comp-cell-width-150 comp-cell-min-width-150")}
