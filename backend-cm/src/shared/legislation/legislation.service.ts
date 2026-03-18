@@ -79,9 +79,9 @@ export class LegislationService {
           OR
             -- When legislationSourceGuid is provided (no ancestorGuid), find that specific source's root
             (
-              COALESCE(${ancestorGuid}, '') = '' 
+              COALESCE(${ancestorGuid}, '') = ''
               AND COALESCE(${legislationSourceGuid}, '') <> ''
-              AND l.parent_legislation_guid IS NULL 
+              AND l.parent_legislation_guid IS NULL
               AND l.legislation_source_guid = ${legislationSourceGuid}::uuid
             )
           OR
