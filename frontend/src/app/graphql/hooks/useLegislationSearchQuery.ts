@@ -10,6 +10,7 @@ export interface LegislationSearchParams {
   ancestorGuid?: string;
   excludeRegulations?: boolean;
   legislationSourceGuid?: string;
+  offenseDate?: string;
   enabled: boolean;
 }
 
@@ -34,6 +35,7 @@ const SEARCH_LEGISLATION = gql`
     $ancestorGuid: String
     $excludeRegulations: Boolean
     $legislationSourceGuid: String
+    $offenseDate: String
   ) {
     legislations(
       agencyCode: $agencyCode
@@ -42,6 +44,7 @@ const SEARCH_LEGISLATION = gql`
       ancestorGuid: $ancestorGuid
       excludeRegulations: $excludeRegulations
       legislationSourceGuid: $legislationSourceGuid
+      offenseDate: $offenseDate
     ) {
       legislationGuid
       legislationSourceGuid
@@ -118,6 +121,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       searchParams.ancestorGuid,
       searchParams.excludeRegulations,
       searchParams.legislationSourceGuid,
+      searchParams.offenseDate,
     ],
     variables: {
       agencyCode: searchParams.agencyCode,
@@ -126,6 +130,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       ancestorGuid: searchParams.ancestorGuid,
       excludeRegulations: searchParams.excludeRegulations,
       legislationSourceGuid: searchParams.legislationSourceGuid,
+      offenseDate: searchParams.offenseDate,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,

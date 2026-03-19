@@ -8,7 +8,7 @@ import {
 } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Option from "@apptypes/app/option";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -27,6 +27,10 @@ import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { format } from "date-fns";
 
 interface ContraventionFormProps {
   activityGuid: string;
@@ -106,6 +110,8 @@ export const ContraventionForm = ({
     defaultValues: {
       act: "",
       section: "",
+      contraventionDate: null as Date | null,
+      communityCode: "",
     },
     onSubmit: async ({ value }) => {
       // Clear previous validation error
@@ -161,6 +167,10 @@ export const ContraventionForm = ({
   const [validationError, setValidationError] = useState<string>("");
   const [actSource, setActSource] = useState<LegislationSource | null>(null);
   const [regulationSource, setRegulationSource] = useState<LegislationSource | null>(null);
+  const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
+  const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
+
+  console.log(formattedContraventionDate);
 
   // Fetch legislation sources
   const { data: legislationSources } = useLegislationSources();
@@ -193,7 +203,8 @@ export const ContraventionForm = ({
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
     legislationTypeCodes: [LegislationType.ACT],
-    enabled: true,
+    offenseDate: formattedContraventionDate,
+    enabled: !!formattedContraventionDate,
   });
 
   const regulationsQuery = useLegislationSearchQuery({
@@ -242,6 +253,7 @@ export const ContraventionForm = ({
   const isEditMode = !!contravention;
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
+  const communityCodes = useAppSelector(selectCommunityCodeDropdown);
   // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 
@@ -272,10 +284,10 @@ export const ContraventionForm = ({
   // Functions
 
   // Manages save click
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     markClean();
     await form.handleSubmit();
-  };
+  }, [markClean, form]);
 
   // Helper Function for returning correct value from Options array
   const findOptionByValue = (options: Option[], value: string) =>
@@ -410,44 +422,110 @@ export const ContraventionForm = ({
           form.handleSubmit();
         }}
       >
-        <FormField
-          form={form}
-          name="act"
-          label="Act"
-          required
-          validators={{
-            onChange: z.string().min(1, "Act is required"),
-            onSubmit: z.string().min(1, "Act is required"),
-          }}
-          render={(field) => (
-            <>
-              <CompSelect
-                id="act-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={actOptions}
-                value={findOptionByValue(actOptions, act)}
-                onChange={(option) => {
-                  const value = option?.value || "";
-                  field.handleChange(value);
-                  setAct(value);
-                  handleActLinkChange(value);
-                  // Reset dependent fields when act changes
-                  setRegulation("");
-                  setSection("");
-                  setSelectedSection("");
-                  setRegulationSource(null);
-                }}
-                placeholder="Select act"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={true}
-                errorMessage={field.state.meta.errors?.[0]?.message || ""}
-              />
-              {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
-            </>
-          )}
-        />
+        <div className="row mb-3">
+          <div className="col-6">
+            <FormField
+              form={form}
+              name="contraventionDate"
+              label="Date"
+              required
+              validators={{
+                onChange: z
+                  .date()
+                  .nullable()
+                  .refine((val) => val !== null, {
+                    message: "Date is required",
+                  }),
+                onSubmit: z
+                  .date()
+                  .nullable()
+                  .refine((val) => val !== null, {
+                    message: "Date is required",
+                  }),
+              }}
+              render={(field) => (
+                <ValidationDatePicker
+                  id="contravention-date"
+                  classNamePrefix="comp-details-input"
+                  className="comp-form-control comp-details-input"
+                  selectedDate={field.state.value}
+                  maxDate={new Date()}
+                  onChange={(date: Date | undefined) => {
+                    field.handleChange(date ?? null);
+                    // Reset legislation selections when date changes
+                    setAct("");
+                    setRegulation("");
+                    setSection("");
+                    setSelectedSection("");
+                  }}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+          </div>
+          <div className="col-6">
+            <FormField
+              form={form}
+              name="communityCode"
+              label="Community"
+              render={(field) => (
+                <CompSelect
+                  id="community-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={communityCodes}
+                  value={communityCodes.find((opt) => opt.value === field.state.value) ?? null}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select community"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={false}
+                />
+              )}
+            />
+          </div>
+        </div>
+
+        {form.getFieldValue("contraventionDate") && (
+          <FormField
+            form={form}
+            name="act"
+            label="Act"
+            required
+            validators={{
+              onChange: z.string().min(1, "Act is required"),
+              onSubmit: z.string().min(1, "Act is required"),
+            }}
+            render={(field) => (
+              <>
+                <CompSelect
+                  id="act-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={actOptions}
+                  value={findOptionByValue(actOptions, act)}
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    field.handleChange(value);
+                    setAct(value);
+                    handleActLinkChange(value);
+                    // Reset dependent fields when act changes
+                    setRegulation("");
+                    setSection("");
+                    setSelectedSection("");
+                    setRegulationSource(null);
+                  }}
+                  placeholder="Select act"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+                {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
+              </>
+            )}
+          />
+        )}
 
         {act && (
           <>

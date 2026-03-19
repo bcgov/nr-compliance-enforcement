@@ -56,8 +56,11 @@ export class LegislationService {
     ancestorGuid?: string,
     excludeRegulations?: boolean,
     legislationSourceGuid?: string,
+    offenseDate?: string,
   ) {
-    const today = new Date().toISOString().split("T")[0];
+    const filterDate = offenseDate ?? new Date().toISOString().split("T")[0];
+
+    console.log(filterDate);
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
@@ -126,8 +129,8 @@ export class LegislationService {
           ${legislationTypeCodes ?? []} = '{}'::text[]
           OR l.legislation_type_code = ANY(${legislationTypeCodes ?? []}::text[])
         )
-        AND (l.effective_date IS NULL OR l.effective_date <= ${today}::date)
-        AND (l.expiry_date IS NULL OR l.expiry_date > ${today}::date)
+        AND (l.effective_date IS NULL OR l.effective_date <= ${filterDate}::date)
+        AND (l.expiry_date IS NULL OR l.expiry_date > ${filterDate}::date)
         -- When excludeRegulations is true, exclude nodes that have a REG ancestor
         AND (NOT ${excludeRegulations ?? false} OR NOT d.has_reg_ancestor)
         AND (${onlyActive} = false OR lc.enabled_ind = true)
