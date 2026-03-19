@@ -1,9 +1,10 @@
 import { FC, useCallback, useMemo, useState } from "react";
-import { Table } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import Paginator from "@components/common/paginator";
 import { SortableHeader } from "@components/common/sortable-header";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
+import { getFileTypeIcon } from "@components/common/file-type-icon";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -114,22 +115,6 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
     a.click();
   };
 
-  // manages display of icon in table
-  const getFileTypeIcon = (fileType: string | null | undefined): string => {
-    switch (fileType) {
-      case "Audio":
-        return "bi-file-earmark-music";
-      case "Document":
-        return "bi-file-earmark-text";
-      case "Photo":
-        return "bi-file-earmark-image";
-      case "Video":
-        return "bi-file-earmark-play";
-      default:
-        return "bi-file-earmark";
-    }
-  };
-
   const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
     <SortableHeader
       title={title}
@@ -145,19 +130,18 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
   const renderHeader = () => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("File type", "fileType", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Sequence number", "sequenceNumber", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("ID", "sequenceNumber", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Description", "description", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Title", "title", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Date", "date", "comp-cell-width-120")}
         <th className="comp-cell-width-160 comp-cell-min-width-160">Taken by</th>
         <th className="comp-cell-width-160 comp-cell-min-width-160">Location</th>
+        {renderSortableHeader("File name", "name", "comp-cell-width-160 comp-cell-min-width-160")}
         <th className="comp-cell-width-30 comp-cell-min-width-30"></th>
       </tr>
     </thead>
   );
-
   // Renders the table Body
   const renderBody = () => {
     if (isLoading) {
@@ -196,6 +180,15 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
 
     return paginatedAttachments.map((attachment) => (
       <tr key={attachment.id}>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.sequenceNumber ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
+        <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
+          {getOfficerName(attachment.takenBy ?? "")}
+        </td>
+        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
           <div className="d-flex align-items-center">
             <i className={`bi ${getFileTypeIcon(attachment.fileType)} me-2 fs-5`} />
@@ -207,25 +200,17 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
             </button>
           </div>
         </td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.fileType ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.sequenceNumber ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.description ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.title ?? "-"}</td>
-        <td className="comp-cell-width-120 align-middle">{attachment.date ?? "-"}</td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
-          {getOfficerName(attachment.takenBy ?? "")}
-        </td>
-        <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">{attachment.location ?? "-"}</td>
         <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
-          <button
+          <Button
             type="button"
-            className="btn btn-outline-primary rounded p-2"
+            variant="outline-primary"
+            size="sm"
             onClick={() => onEdit(attachment)}
-            title="Edit task action"
+            title="Edit attachment data"
             aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
           >
             <i className="bi bi-pencil ms-1 me-1" />
-          </button>
+          </Button>
         </td>
       </tr>
     ));
@@ -235,7 +220,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
         <Table
-          className="comp-table mb-0"
+          className="comp-table mb-0 attachments-table"
           id="task-attachment-list"
         >
           {renderHeader()}

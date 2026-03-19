@@ -6,7 +6,7 @@ export interface FederalLawsMetadata {
   longTitle: string | null;
   consolidatedNumber: string | null;
   inForceStartDate: string | null;
-  documentType: "ACT";
+  documentType: "ACT" | "REG";
 }
 
 export interface ParsedFederalLawsDocument {
@@ -16,16 +16,23 @@ export interface ParsedFederalLawsDocument {
 
 type ElementParser = (el: any, order: number) => ParsedLegislationNode;
 
-const stripXmlTags = (raw: string): string => {
-  if (typeof raw === "string") {
-    return raw
-      .replaceAll(/<br\s*\/?>/gi, " ")
-      .replaceAll(/<DefinedTermEn>([^<]*)<\/DefinedTermEn>/g, '"$1"')
-      .replaceAll(/<[^>]+>/g, "") // NOSONAR no backtracking per warning because of negated class [^] with fixed delimiters
-      .replaceAll(/\s+/g, " ")
-      .trim();
-  }
-  return "";
+const stripXmlTags = (raw: string): string =>
+  raw
+    .replaceAll(/<br\s*\/?>/gi, " ")
+    .replaceAll(/<DefinedTermEn>([^<]*)<\/DefinedTermEn>/g, '"$1"')
+    .replaceAll(/<[^>]+>/g, "") // NOSONAR no backtracking per warning because of negated class [^] with fixed delimiters
+    .replaceAll(/\s+/g, " ")
+    .trim();
+
+let originalXmlString = "";
+
+// Get the position of an element in the original XML string by its lims:fid attribute
+// Used to determine document order since fid values are not always sequential
+const getXmlPosition = (el: any): number => {
+  const fid = el?.["@_lims:fid"] || el?.["@_lims:id"];
+  if (!fid || !originalXmlString) return Infinity;
+  const pos = originalXmlString.indexOf(`lims:fid="${fid}"`);
+  return pos > -1 ? pos : Infinity;
 };
 
 function toArray(v: any): any[] {
@@ -113,7 +120,8 @@ function parseChildren(parent: any, tags: string[]): ParsedLegislationNode[] {
 }
 
 const HIERARCHY: Array<[tag: string, typeCode: string, childTags: string[]]> = [
-  ["Subclause", "SUBCL", []],
+  ["Subsubclause", "SUBCL", []],
+  ["Subclause", "SUBCL", ["Subsubclause"]],
   ["Clause", "CL", ["Subclause"]],
   ["Subparagraph", "SUBPAR", ["Clause"]],
   ["Paragraph", "PAR", ["Subparagraph", "Clause"]],
@@ -121,14 +129,192 @@ const HIERARCHY: Array<[tag: string, typeCode: string, childTags: string[]]> = [
   ["Section", "SEC", ["Subsection", "Paragraph", "Definition"]],
 ];
 
+// -- table parsing
+
+const getEntryText = (entry: any): string => {
+  if (!entry) return "";
+  return extractText(entry).replaceAll("\n", " ").replaceAll(/\s+/g, " ").trim();
+};
+
+const ENTRY_ATTRS: Array<[string, string, string?]> = [
+  ["@_rowspan", "rowspan", "1"],
+  ["@_colspan", "colspan", "1"],
+  ["@_align", "align"],
+  ["@_valign", "valign"],
+];
+
+const getEntryAttributes = (entry: any): string => {
+  const attrs = ENTRY_ATTRS.map(([key, name, skip]) => {
+    const val = entry?.[key];
+    return val && val !== skip ? `${name}="${val}"` : null;
+  }).filter(Boolean);
+  return attrs.length > 0 ? " " + attrs.join(" ") : "";
+};
+
+const generateCell = (entry: any, isHeader: boolean): string => {
+  const tag = isHeader ? "th" : "td";
+  const attrs = getEntryAttributes(entry);
+  return `<${tag}${attrs}>${getEntryText(entry)}</${tag}>`;
+};
+
+const renderTableSection = (section: any, tag: string, isHeader: boolean): string => {
+  if (!section) return "";
+  const rows = toArray(section?.row)
+    .map((row: any) => {
+      const cells = toArray(row?.entry).map((e: any) => generateCell(e, isHeader)).join("");
+      return cells ? `<tr>${cells}</tr>` : "";
+    })
+    .filter(Boolean)
+    .join("");
+  return rows ? `<${tag}>${rows}</${tag}>` : "";
+};
+
+const getTableHtml = (table: any): string => {
+  const tgroup = table?.tgroup;
+  if (!tgroup) return "";
+  return `<table>${renderTableSection(tgroup.thead, "thead", true)}${renderTableSection(tgroup.tbody, "tbody", false)}</table>`;
+};
+
+const parseTableGroup = (tg: any): ParsedLegislationNode => {
+  const caption = tg?.Caption ? extractText(tg.Caption).trim() : null;
+  const title = tg?.table?.title ? extractText(tg.table.title).trim() : null;
+  const html = getTableHtml(tg?.table);
+  return createNode("TABLE", 0, {
+    sectionTitle: [caption, title].filter(Boolean).join(" — ") || null,
+    legislationText: html || extractText(tg).trim() || null,
+  });
+};
+
+const processFormulaXml = (raw: any): string => {
+  if (typeof raw !== "string") return extractText(raw).trim();
+  return raw
+    .replaceAll(/>\s+</g, "><") // NOSONAR collapse whitespace between tags
+    .replaceAll(/<[^>]+>/g, "") // NOSONAR strip all XML tags
+    .replaceAll(/\s+/g, " ")
+    .trim();
+};
+
+const formatDefinitionLine = (indent: string, term: string, defText: string): string | null => {
+  if (term && defText) return `${indent}${term} \u2014 ${defText}`;
+  if (term) return `${indent}${term}`;
+  if (defText) return `${indent}${defText}`;
+  return null;
+};
+
+// Special handling for formula text to preserve formatting as much as possible
+function formatFormulaGroup(fg: any, depth: number = 0): string {
+  const indent = "\u00A0".repeat(depth * 4);
+  const lines: string[] = [];
+
+  for (const formula of toArray(fg?.Formula)) {
+    const text = processFormulaXml(formula?.FormulaText);
+    if (text) lines.push(`${indent}${text}`);
+  }
+
+  const connectorRaw = fg?.FormulaConnector;
+  const connectorText = typeof connectorRaw === "string" ? connectorRaw.trim() : extractText(connectorRaw).trim();
+  if (connectorText) lines.push(`${indent}${connectorText}`);
+
+  for (const def of toArray(fg?.FormulaDefinition)) {
+    const term = processFormulaXml(def?.FormulaTerm);
+    const defText = getTextContent(def) || "";
+
+    const line = formatDefinitionLine(indent, term, defText);
+    if (line) lines.push(line);
+
+    for (const nestedFg of toArray(def?.FormulaGroup)) {
+      lines.push(formatFormulaGroup(nestedFg, depth + 1));
+    }
+  }
+
+  return lines.join("<br/>");
+}
+
+function collectListItems(el: any): string[] {
+  const texts: string[] = [];
+  for (const list of toArray(el?.List))
+    for (const item of toArray(list?.Item)) {
+      const text = extractText(item?.Text).trim();
+      if (text) texts.push(text);
+    }
+  return texts;
+}
+
+// Get text from child elements (TableGroup, List, FormulaGroup, Note)
+function collectTextChildren(el: any, startOrder: number): ParsedLegislationNode[] {
+  const nodes: ParsedLegislationNode[] = [];
+  let order = startOrder;
+  for (const tg of toArray(el?.TableGroup)) {
+    const node = parseTableGroup(tg);
+    node.displayOrder = order++;
+    nodes.push(node);
+  }
+  for (const text of collectListItems(el)) {
+    nodes.push(createNode("TEXT", order++, { legislationText: text }));
+  }
+  for (const fg of toArray(el?.FormulaGroup)) {
+    const text = formatFormulaGroup(fg);
+    if (text) nodes.push(createNode("TEXT", order++, { legislationText: text }));
+  }
+  for (const note of toArray(el?.Note)) {
+    const text = extractText(note).trim();
+    if (text) nodes.push(createNode("TEXT", order++, { legislationText: text }));
+  }
+  for (const rep of toArray(el?.Repealed)) {
+    const text = extractText(rep).trim();
+    if (text) nodes.push(createNode("TEXT", order++, { legislationText: text }));
+  }
+  return nodes;
+}
+
+// Parses a Heading element into a PART or DIV
+function parseHeadingNode(heading: any, order: number): ParsedLegislationNode | null {
+  const titleText = extractText(heading?.TitleText).trim();
+  if (!titleText) return null;
+  const level = heading?.["@_level"] || "1";
+  return createNode(level === "1" ? "PART" : "DIV", order, {
+    citation: level === "1" ? (/^PART\s+([IVXLCDM]+(?:\.\d+)?)/i.exec(titleText)?.[1] ?? null) : null,
+    sectionTitle: titleText,
+  });
+}
+
+const CONTINUED_TAGS: Record<string, string[]> = {
+  Section: ["ContinuedSectionSubsection"],
+  Subsection: ["ContinuedSectionSubsection"],
+  Paragraph: ["ContinuedParagraph"],
+  Subparagraph: ["ContinuedSubparagraph"],
+  Clause: ["ContinuedClause"],
+  Subclause: ["ContinuedSubclause"],
+};
+
 for (const [tag, typeCode, childTags] of HIERARCHY) {
-  parsers[tag] = (el, order) =>
-    createNode(typeCode, order, {
+  parsers[tag] = (el, order) => {
+    const sectionTitle = getMarginalNote(el);
+    let legislationText = getTextContent(el);
+
+    // For Sections with no direct Text use first Subsection's text as fallback so that section titles still have some content
+    if (typeCode === "SEC" && !sectionTitle && !legislationText) {
+      const firstSub = toArray(el?.Subsection)[0];
+      if (firstSub) legislationText = getTextContent(firstSub);
+    }
+
+    const children = parseChildren(el, childTags);
+
+    children.push(...collectTextChildren(el, children.length + 1));
+
+    for (const contTag of CONTINUED_TAGS[tag] ?? []) {
+      for (const cont of toArray(el?.[contTag])) {
+        children.push(createNode("TEXT", children.length + 1, { legislationText: getTextContent(cont) }));
+      }
+    }
+
+    return createNode(typeCode, order, {
       citation: getLabel(el),
-      sectionTitle: getMarginalNote(el),
-      legislationText: getTextContent(el),
-      children: parseChildren(el, childTags),
+      sectionTitle,
+      legislationText,
+      children,
     });
+  };
 }
 
 parsers["Definition"] = (el, order) => {
@@ -146,10 +332,7 @@ parsers["Definition"] = (el, order) => {
 
 parsers["Provision"] = (el, order) => {
   const children = parseChildren(el, ["Provision"]);
-  for (const tg of toArray(el?.TableGroup)) {
-    const text = extractText(tg).trim();
-    if (text) children.push(createNode("TABLE", children.length + 1, { legislationText: text }));
-  }
+  children.push(...collectTextChildren(el, children.length + 1));
   return createNode("TEXT", order, {
     citation: el?.Label ? extractText(el.Label).trim() : null,
     legislationText: getTextContent(el),
@@ -157,7 +340,29 @@ parsers["Provision"] = (el, order) => {
   });
 };
 
-// -- Schedule parsing --
+// Schedule parsing
+
+function collectBillPieceChildren(bp: any): ParsedLegislationNode[] {
+  const nodes: ParsedLegislationNode[] = [];
+  for (const rnif of toArray(bp.RelatedOrNotInForce))
+    nodes.push(
+      createNode("DIV", 0, {
+        sectionTitle: extractText(toArray(rnif?.Heading)[0]?.TitleText).trim() || null,
+        children: parseChildren(rnif, ["Section"]),
+      }),
+    );
+  for (const sec of toArray(bp.Section)) nodes.push(parsers["Section"](sec, 0));
+  return nodes;
+}
+
+function collectDocumentInternalChildren(docInternal: any): ParsedLegislationNode[] {
+  return toArray(docInternal?.Group).map((group: any) =>
+    createNode("DIV", 0, {
+      sectionTitle: extractText(group?.GroupHeading?.TitleText).trim() || null,
+      children: parseChildren(group, ["Provision"]),
+    }),
+  );
+}
 
 function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
   const children: ParsedLegislationNode[] = [];
@@ -165,33 +370,23 @@ function collectScheduleChildren(schedule: any): ParsedLegislationNode[] {
   for (const fg of toArray(schedule?.FormGroup))
     for (const prov of toArray(fg?.Provision)) children.push(parsers["Provision"](prov, 0));
 
-  const bp = schedule?.BillPiece;
-  if (bp) {
-    for (const rnif of toArray(bp.RelatedOrNotInForce))
-      children.push(
-        createNode("DIV", 0, {
-          sectionTitle: extractText(toArray(rnif?.Heading)[0]?.TitleText).trim() || null,
-          children: parseChildren(rnif, ["Section"]),
-        }),
-      );
-    for (const sec of toArray(bp.Section)) children.push(parsers["Section"](sec, 0));
+  for (const prov of toArray(schedule?.Provision)) children.push(parsers["Provision"](prov, 0));
+
+  for (const heading of toArray(schedule?.Heading)) {
+    const node = parseHeadingNode(heading, 0);
+    if (node) children.push(node);
   }
 
-  for (const tg of toArray(schedule?.TableGroup)) {
-    const text = extractText(tg).trim();
-    if (text) children.push(createNode("TABLE", 0, { legislationText: text }));
-  }
+  if (schedule?.BillPiece) children.push(...collectBillPieceChildren(schedule.BillPiece));
 
-  for (const group of toArray(schedule?.DocumentInternal?.Group))
-    children.push(
-      createNode("DIV", 0, {
-        sectionTitle: extractText(group?.GroupHeading?.TitleText).trim() || null,
-        children: parseChildren(group, ["Provision"]),
-      }),
-    );
+  children.push(...collectTextChildren(schedule, 0), ...collectDocumentInternalChildren(schedule?.DocumentInternal));
+
+  for (const cat of toArray(schedule?.ConventionAgreementTreaty)) children.push(parseConventionAgreementTreaty(cat));
+
+  for (const nested of toArray(schedule?.Schedule)) children.push(parseSchedule(nested, 0));
 
   const body = schedule?.RegulationPiece?.Body || schedule?.Body;
-  if (body) children.push(...parseChildren(body, ["Section", "Provision"]));
+  if (body) children.push(...parseBody(body));
 
   children.forEach((child, i) => {
     child.displayOrder = i + 1;
@@ -221,12 +416,76 @@ function parseSchedule(schedule: any, displayOrder: number): ParsedLegislationNo
   });
 }
 
-// -- Body parsing --
+// ConventionAgreementTreaty parsing
+
+function parseConventionAgreementTreaty(cat: any): ParsedLegislationNode {
+  const children: ParsedLegislationNode[] = [];
+
+  for (const group of toArray(cat?.Group)) {
+    children.push(
+      createNode("DIV", children.length + 1, {
+        sectionTitle: extractText(group?.Heading?.TitleText).trim() || null,
+        children: parseChildren(group, ["Provision"]),
+      }),
+    );
+  }
+  for (const prov of toArray(cat?.Provision)) children.push(parsers["Provision"](prov, children.length + 1));
+  for (const heading of toArray(cat?.Heading)) {
+    const text = extractText(heading?.TitleText).trim();
+    if (text) children.push(createNode("DIV", children.length + 1, { sectionTitle: text }));
+  }
+  for (const sched of toArray(cat?.Schedule)) children.push(parseSchedule(sched, children.length + 1));
+
+  return createNode("SCHED", 0, {
+    sectionTitle: "Convention/Agreement/Treaty",
+    children,
+  });
+}
+
+// Order parsing
+
+function parseOrderChildren(order: any): ParsedLegislationNode[] {
+  const children: ParsedLegislationNode[] = [];
+
+  for (const group of toArray(order?.Group)) {
+    const groupChildren: ParsedLegislationNode[] = parseChildren(group, ["Section", "Provision"]);
+    for (const subGroup of toArray(group?.Group)) {
+      groupChildren.push(
+        createNode("DIV", groupChildren.length + 1, {
+          sectionTitle: extractText(subGroup?.Heading?.TitleText).trim() || null,
+          children: parseChildren(subGroup, ["Section", "Provision"]),
+        }),
+      );
+    }
+    children.push(
+      createNode("DIV", 0, {
+        sectionTitle: extractText(group?.Heading?.TitleText).trim() || null,
+        children: groupChildren,
+      }),
+    );
+  }
+
+  for (const prov of toArray(order?.Provision)) {
+    children.push(parsers["Provision"](prov, 0));
+  }
+
+  children.forEach((child, i) => {
+    child.displayOrder = i + 1;
+  });
+  return children;
+}
+
+// Body parsing
 
 function parseBody(body: any): ParsedLegislationNode[] {
-  const getFid = (el: any) => Number(el?.["@_lims:fid"] || el?.["@_lims:id"] || 0);
-  const collect = (tag: string) => toArray(body?.[tag]).map((data: any) => ({ tag, data, fid: getFid(data) }));
-  const elements = [...collect("Heading"), ...collect("Section"), ...collect("Schedule")].sort((a, b) => a.fid - b.fid);
+  const collect = (tag: string) => toArray(body?.[tag]).map((data: any) => ({ tag, data, pos: getXmlPosition(data) }));
+  const elements = [
+    ...collect("Heading"),
+    ...collect("Section"),
+    ...collect("Schedule"),
+    ...collect("Provision"),
+    ...collect("Reserved"),
+  ].sort((a, b) => a.pos - b.pos);
 
   const topChildren: ParsedLegislationNode[] = [];
   let currentPart: ParsedLegislationNode | null = null;
@@ -254,6 +513,15 @@ function parseBody(body: any): ParsedLegislationNode[] {
       }
     } else if (tag === "Section") {
       addToContainer(parsers["Section"](data, order++));
+    } else if (tag === "Provision") {
+      addToContainer(parsers["Provision"](data, order++));
+    } else if (tag === "Reserved") {
+      addToContainer(
+        createNode("SEC", order++, {
+          citation: getLabel(data),
+          legislationText: extractText(data).trim() || "[Reserved]",
+        }),
+      );
     } else if (tag === "Schedule") {
       topChildren.push(parseSchedule(data, order++));
     }
@@ -262,54 +530,87 @@ function parseBody(body: any): ParsedLegislationNode[] {
   return topChildren;
 }
 
-export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocument {
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "@_",
-    textNodeName: "#text",
-    preserveOrder: false,
-    trimValues: false,
-    parseAttributeValue: false,
-    parseTagValue: false,
-    stopNodes: ["*.Text"],
-    isArray: (tagName: string) =>
-      [
-        "Heading",
-        "Section",
-        "Subsection",
-        "Paragraph",
-        "Subparagraph",
-        "Clause",
-        "Subclause",
-        "Definition",
-        "ContinuedDefinition",
-        "Schedule",
-        "Text",
-        "TitleText",
-        "Provision",
-        "FormGroup",
-        "RelatedOrNotInForce",
-        "TableGroup",
-        "Group",
-        "HistoricalNoteSubItem",
-      ].includes(tagName),
-  });
+const FEDERAL_XML_PARSER_OPTIONS = {
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+  textNodeName: "#text",
+  preserveOrder: false,
+  trimValues: false,
+  parseAttributeValue: false,
+  parseTagValue: false,
+  stopNodes: ["*.Text", "*.FormulaText", "*.FormulaTerm"],
+  isArray: (tagName: string) =>
+    [
+      "Heading",
+      "Section",
+      "Subsection",
+      "Paragraph",
+      "Subparagraph",
+      "Clause",
+      "Subclause",
+      "Subsubclause",
+      "Definition",
+      "ContinuedDefinition",
+      "ContinuedSectionSubsection",
+      "ContinuedParagraph",
+      "ContinuedSubparagraph",
+      "ContinuedClause",
+      "ContinuedSubclause",
+      "Schedule",
+      "Text",
+      "TitleText",
+      "Provision",
+      "FormulaGroup",
+      "Formula",
+      "FormulaDefinition",
+      "Note",
+      "FormGroup",
+      "RelatedOrNotInForce",
+      "TableGroup",
+      "Group",
+      "HistoricalNoteSubItem",
+      "LongTitle",
+      "Order",
+      "Reserved",
+      "ConventionAgreementTreaty",
+      "List",
+      "Item",
+      "row",
+      "entry",
+    ].includes(tagName),
+};
 
-  const parsed = parser.parse(xmlString);
+const getLongTitle = (id: any): string | null =>
+  id?.LongTitle
+    ? toArray(id.LongTitle)
+        .map((lt: any) => extractText(lt).trim())
+        .join(" ") || null
+    : null;
+
+const nextOrder = (children: ParsedLegislationNode[], offset = 1): number =>
+  children.length > 0 ? children.at(-1).displayOrder + offset : offset;
+
+const appendSchedules = (children: ParsedLegislationNode[], root: any) => {
+  let order = nextOrder(children, 1000);
+  for (const schedule of toArray(root?.Schedule)) children.push(parseSchedule(schedule, order++));
+};
+
+function parseXml(xmlString: string): any {
+  originalXmlString = xmlString;
+  return new XMLParser(FEDERAL_XML_PARSER_OPTIONS).parse(xmlString);
+}
+
+export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocument {
+  const parsed = parseXml(xmlString);
   const statute = parsed?.Statute;
   if (!statute) throw new Error("No <Statute> root element found in federal laws XML");
 
   const id = statute?.Identification;
-  const shortTitle = extractText(id?.ShortTitle).trim();
-  const longTitle = id?.LongTitle
-    ? toArray(id.LongTitle)
-        .map((lt: any) => extractText(lt).trim())
-        .join(" ")
-    : null;
+  const longTitle = getLongTitle(id);
   const consolidatedNumber = id?.Chapter?.ConsolidatedNumber ? extractText(id.Chapter.ConsolidatedNumber).trim() : null;
 
   const metadata: FederalLawsMetadata = {
-    title: shortTitle || longTitle || "Unknown Federal Statute",
+    title: extractText(id?.ShortTitle).trim() || longTitle || "Unknown Federal Statute",
     longTitle,
     consolidatedNumber,
     inForceStartDate: statute?.["@_lims:inforce-start-date"] || null,
@@ -317,12 +618,51 @@ export function parseFederalLawsXml(xmlString: string): ParsedFederalLawsDocumen
   };
 
   const bodyChildren = statute?.Body ? parseBody(statute.Body) : [];
-
-  let scheduleOrder = bodyChildren.length > 0 ? bodyChildren.at(-1).displayOrder + 1000 : 1000;
-  for (const schedule of toArray(statute?.Schedule)) bodyChildren.push(parseSchedule(schedule, scheduleOrder++));
+  appendSchedules(bodyChildren, statute);
 
   return {
     metadata,
     root: createNode("ACT", 0, { citation: consolidatedNumber, sectionTitle: metadata.title, children: bodyChildren }),
+  };
+}
+
+export function parseFederalRegulationXml(xmlString: string): ParsedFederalLawsDocument {
+  const parsed = parseXml(xmlString);
+  const regulation = parsed?.Regulation;
+  if (!regulation) throw new Error("No <Regulation> root element found in federal regulation XML");
+
+  const id = regulation?.Identification;
+  const instrumentNumber = id?.InstrumentNumber ? extractText(id.InstrumentNumber).trim() : null;
+  const longTitle = getLongTitle(id);
+
+  const metadata: FederalLawsMetadata = {
+    title: longTitle || instrumentNumber || "Unknown Federal Regulation",
+    longTitle,
+    consolidatedNumber: instrumentNumber,
+    inForceStartDate: regulation?.["@_lims:inforce-start-date"] || null,
+    documentType: "REG",
+  };
+
+  const bodyChildren = regulation?.Body ? parseBody(regulation.Body) : [];
+
+  // Some regulations use Order elements instead of or alongside Body
+  let offset = nextOrder(bodyChildren);
+  for (const order of toArray(regulation?.Order)) {
+    for (const child of parseOrderChildren(order)) {
+      child.displayOrder = offset++;
+      bodyChildren.push(child);
+    }
+  }
+  for (const cat of toArray(regulation?.ConventionAgreementTreaty)) {
+    const node = parseConventionAgreementTreaty(cat);
+    node.displayOrder = offset++;
+    bodyChildren.push(node);
+  }
+
+  appendSchedules(bodyChildren, regulation);
+
+  return {
+    metadata,
+    root: createNode("REG", 0, { citation: instrumentNumber, sectionTitle: metadata.title, children: bodyChildren }),
   };
 }

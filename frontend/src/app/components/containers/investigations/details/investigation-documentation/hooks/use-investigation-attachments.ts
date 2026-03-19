@@ -164,6 +164,7 @@ export const useInvestigationAttachments = (
       items = items.filter((a) => {
         const displayName = getDisplayFilename(a.name).toLowerCase();
         return (
+          a.fileType?.toLowerCase().includes(searchLower) ||
           a.sequenceNumber?.toString().includes(searchLower) ||
           a.description?.toLowerCase().includes(searchLower) ||
           a.title?.toLowerCase().includes(searchLower) ||
@@ -192,6 +193,12 @@ export const useInvestigationAttachments = (
       let comparison = 0;
 
       switch (sortBy) {
+        case "fileType": {
+          const fileTypeA = a.fileType ?? "";
+          const fileTypeB = b.fileType ?? "";
+          comparison = fileTypeA.localeCompare(fileTypeB);
+          break;
+        }
         case "sequenceNumber": {
           const sequenceA = Number.parseInt(a.sequenceNumber ?? "0", 10);
           const sequenceB = Number.parseInt(b.sequenceNumber ?? "0", 10);

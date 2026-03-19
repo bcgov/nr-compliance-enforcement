@@ -76,6 +76,7 @@ export class LegislationSourceService {
     agencyCode: string,
     shortDescription: string,
     sourceUrl: string,
+    sourceType: string = "BCLAWS",
   ): Promise<LegislationSource> {
     const source = await this.prisma.legislation_source.create({
       data: {
@@ -84,7 +85,7 @@ export class LegislationSourceService {
         source_url: sourceUrl,
         regulations_source_url: null,
         agency_code: agencyCode,
-        source_type: "BCLAWS",
+        source_type: sourceType,
         active_ind: true,
         imported_ind: true,
         import_status: "SUCCESS",
