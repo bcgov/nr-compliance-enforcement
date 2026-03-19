@@ -560,7 +560,10 @@ export type CreateUpdateTaskInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   assignedUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   investigationIdentifier?: InputMaybe<Scalars['String']['input']>;
+  remarks?: InputMaybe<Scalars['String']['input']>;
+  taskCategoryTypeCode?: InputMaybe<Scalars['String']['input']>;
   taskIdentifier?: InputMaybe<Scalars['String']['input']>;
   taskStatusCode?: InputMaybe<Scalars['String']['input']>;
   taskTypeCode?: InputMaybe<Scalars['String']['input']>;
@@ -2272,11 +2275,15 @@ export type Task = {
   createdByUserIdentifier: Scalars['String']['output'];
   createdDate: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  dueDate: Scalars['DateTime']['output'];
   investigationIdentifier: Scalars['String']['output'];
+  remarks: Scalars['String']['output'];
+  taskCategoryTypeCode: Scalars['String']['output'];
   taskIdentifier: Scalars['String']['output'];
   taskNumber: Scalars['Int']['output'];
   taskStatusCode: Scalars['String']['output'];
-  taskTypeCode: Scalars['String']['output'];
+  taskTypeCode?: Maybe<Scalars['String']['output']>;
+  updatedDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TaskCategoryTypeCode = {

@@ -283,7 +283,7 @@ div[class^="slideInner"] {
   flex-shrink: 0;
 }
 
-.comp-carousel-files-no-preview {
+.attachment-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -292,4 +292,19 @@ div[class^="slideInner"] {
 .comp-carousel-files-buttons-no-preview {
   display: flex;
   gap: 8px;
+}
+
+.comp-attachment-upload-btn--has-files {
+  flex-direction: row;
+  gap: 0.75rem;
+
+  .upload-icon {
+    font-size: 32px;
+  }
+
+  .upload-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

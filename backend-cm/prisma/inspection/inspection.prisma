@@ -35,7 +35,7 @@ model flyway_schema_history {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection {
-  inspection_guid                 String                    @id(map: "PK_inspection_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inspection_guid                 String                    @id(map: "PK_inspection_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   inspection_description          String?                   @db.VarChar(4000)
   owned_by_agency_ref             String                    @db.VarChar(10)
   inspection_status               String                    @db.VarChar(10)
@@ -60,7 +60,7 @@ model inspection {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_business {
-  inspection_business_guid String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inspection_business_guid String            @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   business_guid_ref        String?           @db.Uuid
   inspection_party_guid    String?           @db.Uuid
   name                     String            @db.VarChar(128)
@@ -76,7 +76,7 @@ model inspection_business {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_business_h {
-  h_inspection_business_guid    String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_inspection_business_guid    String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -88,7 +88,7 @@ model inspection_business_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_h {
-  h_inspection_guid             String   @id(map: "PK_h_inspection") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_inspection_guid             String   @id(map: "PK_h_inspection") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -100,7 +100,7 @@ model inspection_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_party {
-  inspection_party_guid      String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inspection_party_guid      String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   party_guid_ref             String?               @db.Uuid
   party_type_code_ref        String                @db.VarChar(16)
   inspection_guid            String                @db.Uuid
@@ -119,7 +119,7 @@ model inspection_party {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_party_h {
-  h_inspection_party_guid       String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_inspection_party_guid       String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -131,7 +131,7 @@ model inspection_party_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_person {
-  inspection_person_guid String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inspection_person_guid String            @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   person_guid_ref        String?           @db.Uuid
   inspection_party_guid  String?           @db.Uuid
   first_name             String            @db.VarChar(128)
@@ -150,7 +150,7 @@ model inspection_person {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_person_h {
-  h_inspection_person_guid      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_inspection_person_guid      String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -178,7 +178,7 @@ model inspection_status_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model inspection_status_code_h {
-  h_inspection_status_code_guid String   @id(map: "PK_h_inspection_status_code") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_inspection_status_code_guid String   @id(map: "PK_h_inspection_status_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.VarChar(20)
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -190,7 +190,7 @@ model inspection_status_code_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref {
-  officer_inspection_xref_guid                                                                                    String                       @id(map: "PK_officer_inspection_xref_guid") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  officer_inspection_xref_guid                                                                                    String                       @id(map: "PK_officer_inspection_xref_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   officer_guid_ref                                                                                                String                       @db.Uuid
   inspection_guid                                                                                                 String                       @db.Uuid
   officer_inspection_xref_code                                                                                    String                       @db.VarChar(10)
@@ -223,7 +223,7 @@ model officer_inspection_xref_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref_code_h {
-  h_officer_inspection_xref_code_guid String   @id(map: "PK_h_officer_inspection_xref_code") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_officer_inspection_xref_code_guid String   @id(map: "PK_h_officer_inspection_xref_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                       String   @db.VarChar(20)
   operation_type                      String   @db.Char(1)
   operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -235,7 +235,7 @@ model officer_inspection_xref_code_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model officer_inspection_xref_h {
-  h_officer_inspection_xref_guid String   @id(map: "PK_h_officer_inspection_xref") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  h_officer_inspection_xref_guid String   @id(map: "PK_h_officer_inspection_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                  String   @db.Uuid
   operation_type                 String   @db.Char(1)
   operation_user_id              String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)

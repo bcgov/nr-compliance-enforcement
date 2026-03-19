@@ -226,10 +226,12 @@ export const CreateComplaint: FC = () => {
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
 
   const onHandleAddAttachments = (selectedFiles: File[]) => {
+    markDirty();
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
+    markDirty();
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
@@ -578,7 +580,7 @@ export const CreateComplaint: FC = () => {
     const complaint = { ...complaintData, violationDetails: value?.trim() } as AllegationComplaint;
     applyComplaintData(complaint);
   };
-    
+
   const handleIncidentDateTimeChange = (date: Date, time: string | null) => {
     markDirty();
     setSelectedIncidentDateTime(date);
@@ -1406,7 +1408,6 @@ export const CreateComplaint: FC = () => {
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
             onSlideCountChange={handleSlideCountChange}
-            onDirtyChange={handleChildDirtyChange}
             showPreview={true}
           />
         </fieldset>

@@ -16,7 +16,6 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 type LinkComplaintModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 type ValidationResult = {
@@ -27,7 +26,7 @@ type ValidationResult = {
   linkedCount?: number;
 };
 
-export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit, onDirtyChange }) => {
+export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
@@ -35,7 +34,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit,
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
 
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, onDirtyChange } = modalData;
 
   const [selectedComplaint, setSelectedComplaint] = useState<any>(null);
   const [complaintData, setComplaintData] = useState<any[]>([]);

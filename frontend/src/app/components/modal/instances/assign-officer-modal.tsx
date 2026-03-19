@@ -24,7 +24,6 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 type AssignOfficerModalProps = {
   close: () => void;
   submit: () => void;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
   complaint_type: string;
   zone: string;
   park_area_guids: string[];
@@ -35,7 +34,6 @@ type AssignOfficerModalProps = {
 export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
   close,
   submit,
-  onDirtyChange,
   complaint_type,
   zone,
   park_area_guids,
@@ -43,7 +41,7 @@ export const AssignOfficerModal: FC<AssignOfficerModalProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
-  const { title, complaint_identifier } = modalData;
+  const { title, complaint_identifier, onDirtyChange } = modalData;
   const initials = useAppSelector(profileInitials);
   const displayName = useAppSelector(profileDisplayName);
   const idir = useAppSelector(profileIdir);

@@ -60,9 +60,15 @@ export const DocumentationList: FC<Props> = ({
   const renderTableHeader = (): JSX.Element => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("File name", "name", "comp-cell-min-width-200")}
+        {renderSortableHeader("File type", "fileType", "comp-cell-min-width-150")}
+        {renderSortableHeader("ID", "sequenceNumber", "comp-cell-min-width-150")}
+        {renderSortableHeader("Description", "description", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("Title", "title", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("Date", "date", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("Taken by", "takenBy", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("Location", "location", "comp-cell-width-150 comp-cell-min-width-150")}
         {renderSortableHeader("Task", "taskNumber", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Date Uploaded", "createdAt", "comp-cell-width-150 comp-cell-min-width-150")}
+        {renderSortableHeader("File name", "name", "comp-cell-width-150 comp-cell-min-width-150")}
       </tr>
     </thead>
   );

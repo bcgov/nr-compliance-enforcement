@@ -1,6 +1,11 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate, formatLocalDateTimeToUTC } from "@common/methods";
+import {
+  bcUtmZoneNumbers,
+  getSelectedOfficer,
+  formatLatLongCoordinate,
+  formatLocalDateTimeToUTC,
+} from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
@@ -1608,7 +1613,6 @@ export const ComplaintDetailsEdit: FC = () => {
                   onFileDeleted={onHandleDeleteAttachment}
                   onSlideCountChange={handleSlideCountChange}
                   showPreview={true}
-                  onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} // Complaint Edit transaction (Index 0)
                 />
               </div>
             </fieldset>

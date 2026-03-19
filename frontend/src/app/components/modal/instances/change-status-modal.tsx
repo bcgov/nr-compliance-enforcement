@@ -18,49 +18,28 @@ type ChangeStatusModalProps = {
   submit: () => void;
   complaint_type: string;
   complaint_status: string;
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
 /**
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
-  close,
-  submit,
-  complaint_type,
-  complaint_status,
-  onDirtyChange,
-}) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
   const modalData = useAppSelector(selectModalData);
+  const { title, description, complaint_identifier, onDirtyChange } = modalData;
   const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
-  let [status, setStatus] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
   useEffect(() => {
-    if (status.length > 1) {
-      if (COMPLAINT_TYPES.HWCR === complaint_type) {
-        dispatch(updateWildlifeComplaintStatus(complaint_identifier, status));
-      } else if (COMPLAINT_TYPES.ERS === complaint_type) {
-        dispatch(updateAllegationComplaintStatus(complaint_identifier, status));
-      } else if (COMPLAINT_TYPES.GIR === complaint_type) {
-        dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, status));
-      }
-      submit();
-    }
-  });
-
-  useEffect(() => {
     setStatusChangeDisabledInd(isReviewRequired && !reviewCompleteAction?.actionCode && complaint_status === "PENDREV");
   }, [isReviewRequired, reviewCompleteAction, complaint_status]);
 
-  const { title, description, complaint_identifier } = modalData;
   const is_officer_assigned: boolean = modalData.is_officer_assigned;
 
   const handleSelectChange = (selectedValue: string) => {
@@ -70,24 +49,25 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({
 
   const validationResults = useValidateComplaint();
 
-  const validateCloseStatus = () => {
-    if (validationResults.canCloseComplaint) {
-      setStatus(selectedStatus);
-      dispatch(setIsInEdit({ showSectionErrors: false }));
-    } else {
-      validationResults.scrollToErrors();
-      dispatch(setIsInEdit({ showSectionErrors: true }));
-      close();
+  const dispatchStatusUpdate = () => {
+    if (COMPLAINT_TYPES.HWCR === complaint_type) {
+      dispatch(updateWildlifeComplaintStatus(complaint_identifier, selectedStatus));
+    } else if (COMPLAINT_TYPES.ERS === complaint_type) {
+      dispatch(updateAllegationComplaintStatus(complaint_identifier, selectedStatus));
+    } else if (COMPLAINT_TYPES.GIR === complaint_type) {
+      dispatch(updateGeneralIncidentComplaintStatus(complaint_identifier, selectedStatus));
     }
   };
 
   const handleSubmit = () => {
-    if (selectedStatus === "CLOSED") {
-      validateCloseStatus();
+    if (selectedStatus === "CLOSED" && !validationResults.canCloseComplaint) {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
     } else {
-      setStatus(selectedStatus);
+      dispatchStatusUpdate();
       dispatch(setIsInEdit({ showSectionErrors: false }));
     }
+    submit();
   };
 
   return (

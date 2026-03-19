@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
 import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import { getBcLawsXml, getBcLawsRegulations, Regulation } from "../../external_api/laws-service";
+import { fetchXml, getBcLawsRegulations, Regulation } from "../../external_api/laws-service";
 import { parseBcLawsXml, ParsedBcLawsDocument } from "../../shared/legislation/utils/bc-laws-xml-parser";
 import {
   InsertLegislationContext,
@@ -107,7 +107,7 @@ async function importSingleRegulation(
 
   try {
     logger.log(`  URL: ${reg.url}`);
-    const xmlString = await getBcLawsXml(reg.url);
+    const xmlString = await fetchXml(reg.url, "BC Laws API");
     const parsedDocument = parseBcLawsXml(xmlString);
     const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
 
@@ -161,7 +161,7 @@ async function importLegislationSourceDocument(
 
   try {
     // Fetch the XML document
-    const xmlString = await getBcLawsXml(source.sourceUrl);
+    const xmlString = await fetchXml(source.sourceUrl, "BC Laws API");
     logger.log(`Received XML document (${xmlString.length} characters)`);
 
     // Parse the XML

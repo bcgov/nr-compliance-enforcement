@@ -216,8 +216,9 @@ export const patch = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
   toggleLoading: boolean = true,
+  headers: {} = {},
 ): Promise<T> => {
-  let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
+  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
@@ -249,8 +250,9 @@ export const put = <T, M = {}>(
   dispatch: Dispatch,
   parameters: ApiRequestParameters<M>,
   toggleLoading: boolean = true,
+  headers: {} = {},
 ): Promise<T> => {
-  let config: NatComRequestConfig = { headers: {}, toggleLoading: toggleLoading };
+  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
   return new Promise<T>((resolve, reject) => {
     const { url, requiresAuthentication, params: data } = parameters;
 
