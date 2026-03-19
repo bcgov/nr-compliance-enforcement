@@ -19,15 +19,11 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { indentByType, LegislationType } from "@/app/types/app/legislation";
-import { Button, Card } from "react-bootstrap";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
-import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
-import { openModal } from "@/app/store/reducers/app";
-import { useAppDispatch } from "@/app/hooks/hooks";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
@@ -39,6 +35,7 @@ interface ContraventionFormProps {
   contravention?: Contravention;
   parties?: InvestigationParty[];
   onDirtyChange?: (index: number, isDirty: boolean) => void;
+  onRequestSubmit?: (submit: () => Promise<void>) => void;
 }
 
 const ADD_CONTRAVENTION = gql`
@@ -102,6 +99,7 @@ export const ContraventionForm = ({
   onClose,
   onDirtyChange,
   contraventionNumber,
+  onRequestSubmit,
 }: ContraventionFormProps) => {
   // Form Definition
   const form = useForm({
@@ -168,7 +166,6 @@ export const ContraventionForm = ({
   const { data: legislationSources } = useLegislationSources();
 
   // Hooks
-  const dispatch = useAppDispatch();
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
     onSuccess: () => {
       ToggleSuccess("Contravention added successfully");
@@ -280,28 +277,6 @@ export const ContraventionForm = ({
     await form.handleSubmit();
   };
 
-  // Manages cancel action after modal is confirmed
-  const handleCancel = async () => {
-    markClean();
-    form.reset();
-    onClose();
-  };
-
-  // Manages cancel click
-  const cancelButtonClick = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: CANCEL_CONFIRM,
-        data: {
-          title: "Cancel changes?",
-          description: "Your changes will be lost.",
-          cancelConfirmed: () => handleCancel(),
-        },
-      }),
-    );
-  };
-
   // Helper Function for returning correct value from Options array
   const findOptionByValue = (options: Option[], value: string) =>
     value ? options.find((opt) => opt.value === value) : null;
@@ -392,6 +367,11 @@ export const ContraventionForm = ({
     setRegulationSource(source ?? null);
   }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
 
+  // Detect submit call from parent
+  useEffect(() => {
+    onRequestSubmit?.(handleSubmit);
+  }, [onRequestSubmit, handleSubmit]);
+
   const handlePartyChange = async (options: Option[]) => {
     setSelectedParties(options);
   };
@@ -423,263 +403,233 @@ export const ContraventionForm = ({
   };
 
   return (
-    <Card className="mb-3">
-      <Card.Header className="comp-card-header">
-        <div className="comp-card-header-title">
-          <h5>{isEditMode ? `Edit contravention ${contraventionNumber}` : "Add contravention"}</h5>
-        </div>
-      </Card.Header>
-      <Card.Body>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
+    <>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <FormField
+          form={form}
+          name="act"
+          label="Act"
+          required
+          validators={{
+            onChange: z.string().min(1, "Act is required"),
+            onSubmit: z.string().min(1, "Act is required"),
           }}
-        >
-          <FormField
-            form={form}
-            name="act"
-            label="Act"
-            required
-            validators={{
-              onChange: z.string().min(1, "Act is required"),
-              onSubmit: z.string().min(1, "Act is required"),
-            }}
-            render={(field) => (
-              <>
-                <CompSelect
-                  id="act-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={actOptions}
-                  value={findOptionByValue(actOptions, act)}
-                  onChange={(option) => {
-                    const value = option?.value || "";
-                    field.handleChange(value);
-                    setAct(value);
-                    handleActLinkChange(value);
-                    // Reset dependent fields when act changes
-                    setRegulation("");
-                    setSection("");
-                    setSelectedSection("");
-                    setRegulationSource(null);
-                  }}
-                  placeholder="Select act"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                />
-                {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
-              </>
-            )}
-          />
-
-          {act && (
+          render={(field) => (
             <>
-              <FormField
-                form={form}
-                name="regulation"
-                label="Regulation"
-                render={(field) => (
-                  <>
-                    <CompSelect
-                      id="regulation-select"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={regOptions}
-                      value={findOptionByValue(regOptions, regulation)}
-                      onChange={(option) => {
-                        const value = option?.value || "";
-                        field.handleChange(value);
-                        setRegulation(value);
-                        handleRegulationLinkChange(value || null);
-                        // Reset section when regulation changes
-                        setSection("");
-                        setSelectedSection("");
-                      }}
-                      placeholder="Select regulation"
-                      isClearable={true}
-                      showInactive={false}
-                      enableValidation={true}
-                      errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                    />
-                    {regulationSource && <div className="mt-1">{formatLegislationSourceUrl(regulationSource)}</div>}
-                  </>
-                )}
-              />
-
-              <FormField
-                form={form}
-                name="section"
-                label="Section"
-                required
-                validators={{
-                  onChange: z.string().min(1, "Section is required"),
-                  onSubmit: z.string().min(1, "Section is required"),
+              <CompSelect
+                id="act-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={actOptions}
+                value={findOptionByValue(actOptions, act)}
+                onChange={(option) => {
+                  const value = option?.value || "";
+                  field.handleChange(value);
+                  setAct(value);
+                  handleActLinkChange(value);
+                  // Reset dependent fields when act changes
+                  setRegulation("");
+                  setSection("");
+                  setSelectedSection("");
+                  setRegulationSource(null);
                 }}
-                render={(field) => (
+                placeholder="Select act"
+                isClearable={true}
+                showInactive={false}
+                enableValidation={true}
+                errorMessage={field.state.meta.errors?.[0]?.message || ""}
+              />
+              {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
+            </>
+          )}
+        />
+
+        {act && (
+          <>
+            <FormField
+              form={form}
+              name="regulation"
+              label="Regulation"
+              render={(field) => (
+                <>
                   <CompSelect
-                    id="section-select"
+                    id="regulation-select"
                     classNamePrefix="comp-select"
-                    className="comp-details-input mb-4"
-                    options={secOptions}
-                    value={findOptionByValue(secOptions, section)}
+                    className="comp-details-input"
+                    options={regOptions}
+                    value={findOptionByValue(regOptions, regulation)}
                     onChange={(option) => {
                       const value = option?.value || "";
                       field.handleChange(value);
-                      setSection(value);
+                      setRegulation(value);
+                      handleRegulationLinkChange(value || null);
+                      // Reset section when regulation changes
+                      setSection("");
                       setSelectedSection("");
                     }}
-                    placeholder="Select section"
+                    placeholder="Select regulation"
                     isClearable={true}
                     showInactive={false}
                     enableValidation={true}
                     errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   />
-                )}
-              />
-            </>
-          )}
+                  {regulationSource && <div className="mt-1">{formatLegislationSourceUrl(regulationSource)}</div>}
+                </>
+              )}
+            />
 
-          {section && legislationText && legislationText.length > 0 && (
-            <>
-              {legislationText.map((section) => {
-                const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+            <FormField
+              form={form}
+              name="section"
+              label="Section"
+              required
+              validators={{
+                onChange: z.string().min(1, "Section is required"),
+                onSubmit: z.string().min(1, "Section is required"),
+              }}
+              render={(field) => (
+                <CompSelect
+                  id="section-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input mb-4"
+                  options={secOptions}
+                  value={findOptionByValue(secOptions, section)}
+                  onChange={(option) => {
+                    const value = option?.value || "";
+                    field.handleChange(value);
+                    setSection(value);
+                    setSelectedSection("");
+                  }}
+                  placeholder="Select section"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+          </>
+        )}
 
-                // Schedules and Divisions render as non-clickable headers
-                if (
-                  section.legislationTypeCode === LegislationType.SCHEDULE ||
-                  section.legislationTypeCode === LegislationType.DIVISION
-                ) {
-                  return (
-                    <div
-                      key={section.legislationGuid}
-                      className="contravention-text-segment"
-                    >
-                      <p className={`mb-2 ${indentClass}`}>
+        {section && legislationText && legislationText.length > 0 && (
+          <>
+            {legislationText.map((section) => {
+              const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+
+              // Schedules and Divisions render as non-clickable headers
+              if (
+                section.legislationTypeCode === LegislationType.SCHEDULE ||
+                section.legislationTypeCode === LegislationType.DIVISION
+              ) {
+                return (
+                  <div
+                    key={section.legislationGuid}
+                    className="contravention-text-segment"
+                  >
+                    <p className={`mb-2 ${indentClass}`}>
+                      <strong>{section.sectionTitle}</strong>
+                    </p>
+                  </div>
+                );
+              }
+
+              if (section.legislationTypeCode === LegislationType.TEXT) {
+                return (
+                  <div
+                    key={section.legislationGuid}
+                    className="contravention-text-segment"
+                  >
+                    <p className={`mb-2 ${indentClass}`}>
+                      <LegislationText>{section.legislationText}</LegislationText>
+                    </p>
+                  </div>
+                );
+              }
+
+              if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
+                return (
+                  <div
+                    key={section.legislationGuid}
+                    className={`contravention-text-segment ${indentClass}`}
+                  >
+                    {section.sectionTitle && (
+                      <p className="mb-1">
                         <strong>{section.sectionTitle}</strong>
                       </p>
-                    </div>
-                  );
-                }
-
-                if (section.legislationTypeCode === LegislationType.TEXT) {
-                  return (
-                    <div
-                      key={section.legislationGuid}
-                      className="contravention-text-segment"
-                    >
-                      <p className={`mb-2 ${indentClass}`}>
-                        <LegislationText>{section.legislationText}</LegislationText>
-                      </p>
-                    </div>
-                  );
-                }
-
-                if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
-                  return (
-                    <div
-                      key={section.legislationGuid}
-                      className={`contravention-text-segment ${indentClass}`}
-                    >
-                      {section.sectionTitle && (
-                        <p className="mb-1">
-                          <strong>{section.sectionTitle}</strong>
-                        </p>
-                      )}
-                      <LegislationTable html={section.legislationText} />
-                    </div>
-                  );
-                }
-
-                // For subsections without explicit citation, show (1)
-                const displayCitation =
-                  section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
-
-                return (
-                  <button
-                    key={section.legislationGuid}
-                    type="button"
-                    className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
-                    onClick={() => {
-                      setValidationError("");
-                      setSelectedSection(section.legislationGuid as string);
-                    }}
-                  >
-                    <div>
-                      <p className={`mb-2 ${indentClass}`}>
-                        {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
-                          <>{`(${displayCitation})`} </>
-                        )}
-                        <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
-                      </p>
-                      {section.alternateText && (
-                        <div className="contravention-alternate-text">{section.alternateText}</div>
-                      )}
-                    </div>
-                  </button>
+                    )}
+                    <LegislationTable html={section.legislationText} />
+                  </div>
                 );
-              })}
-              <div className="mt-3">
-                <FormField
-                  form={form}
-                  name="party"
-                  label="Party"
-                  render={(field) => (
-                    <ValidationMultiSelect
-                      id="party-select"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input mt-3"
-                      options={partyOptions}
-                      values={selectedParties}
-                      onChange={handlePartyChange}
-                      placeholder="Select party"
-                      isClearable={true}
-                      errMsg={field.state.meta.errors?.[0]?.message || ""}
-                    />
-                  )}
-                />
-              </div>
-            </>
-          )}
-        </form>
-        {errorMessages.length > 0 && (
-          <div>
-            {errorMessages.map((msg) => (
-              <div
-                key={msg}
-                className="error-message"
-              >
-                {msg}
-              </div>
-            ))}
-          </div>
+              }
+
+              // For subsections without explicit citation, show (1)
+              const displayCitation =
+                section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
+
+              return (
+                <button
+                  key={section.legislationGuid}
+                  type="button"
+                  className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
+                  onClick={() => {
+                    setValidationError("");
+                    setSelectedSection(section.legislationGuid as string);
+                  }}
+                >
+                  <div>
+                    <p className={`mb-2 ${indentClass}`}>
+                      {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
+                        <>{`(${displayCitation})`} </>
+                      )}
+                      <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
+                    </p>
+                    {section.alternateText && (
+                      <div className="contravention-alternate-text">{section.alternateText}</div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+            <div className="mt-3">
+              <FormField
+                form={form}
+                name="party"
+                label="Party"
+                render={(field) => (
+                  <ValidationMultiSelect
+                    id="party-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input mt-3"
+                    options={partyOptions}
+                    values={selectedParties}
+                    onChange={handlePartyChange}
+                    placeholder="Select party"
+                    isClearable={true}
+                    errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  />
+                )}
+              />
+            </div>
+          </>
         )}
-        <div className="comp-details-form-buttons">
-          <Button
-            variant="outline-primary"
-            id="add-contravention-cancel-button"
-            title="Cancel"
-            onClick={() => {
-              cancelButtonClick();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            id="add-contravention-save-button"
-            title="Save Add Contravention"
-            onClick={() => {
-              handleSubmit();
-            }}
-          >
-            <i className="bi bi-check-circle"></i>
-            <span>Save</span>
-          </Button>
+      </form>
+      {errorMessages.length > 0 && (
+        <div>
+          {errorMessages.map((msg) => (
+            <div
+              key={msg}
+              className="error-message"
+            >
+              {msg}
+            </div>
+          ))}
         </div>
-      </Card.Body>
-    </Card>
+      )}
+    </>
   );
 };
