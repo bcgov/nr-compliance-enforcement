@@ -249,7 +249,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                   divid="task-detail-edit-remarks-value"
                   type="input"
                   inputClass="comp-form-control"
-                  error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                  error={field.state.meta.errors?.[0]?.message ?? ""}
                   maxLength={120}
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
