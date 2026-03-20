@@ -8,7 +8,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
+import { appUserGuid as selectAppUserGuid, selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
