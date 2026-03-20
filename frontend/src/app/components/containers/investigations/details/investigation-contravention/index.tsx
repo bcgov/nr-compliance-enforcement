@@ -1,9 +1,10 @@
+import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { ContraventionItem } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-item";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_EDIT_CONTRAVENTION } from "@/app/types/modal/modal-types";
-import { Contravention, Investigation } from "@/generated/graphql";
+import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
+import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useState } from "react";
 import { Button } from "react-bootstrap";
 
@@ -30,11 +31,28 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     dispatch(
       openModal({
         modalSize: "xl",
-        modalType: ADD_EDIT_CONTRAVENTION,
+        modalType: MULTI_STEP_MODAL,
         data: {
-          activityGuid: investigationGuid,
-          parties: investigationData?.parties,
-          onDirtyChange: handleChildDirtyChange,
+          titles: ["Add contravention", "Add party"],
+          totalSteps: 2,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+          ) => (
+            <ContraventionForm
+              currentStep={currentStep}
+              activityGuid={investigationGuid}
+              contravention={undefined}
+              parties={investigationData?.parties as InvestigationParty[]}
+              onDirtyChange={handleChildDirtyChange}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onClose={onClose}
+            />
+          ),
+          handleChildDirtyChange,
         },
         hideCallback,
       }),
@@ -46,12 +64,27 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     dispatch(
       openModal({
         modalSize: "xl",
-        modalType: ADD_EDIT_CONTRAVENTION,
+        modalType: MULTI_STEP_MODAL,
         data: {
-          activityGuid: investigationGuid,
-          parties: investigationData?.parties,
-          contravention,
-          contraventionNumber: contravention?.contraventionIdentifier,
+          titles: ["Add contravention", "Add party"],
+          totalSteps: 2,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+          ) => (
+            <ContraventionForm
+              currentStep={currentStep}
+              activityGuid={investigationGuid}
+              contravention={contravention ?? undefined}
+              parties={investigationData?.parties as InvestigationParty[]}
+              onDirtyChange={handleChildDirtyChange}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onClose={onClose}
+            />
+          ),
           handleChildDirtyChange,
         },
         hideCallback,
