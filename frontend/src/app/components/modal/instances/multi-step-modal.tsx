@@ -1,8 +1,7 @@
 import { FC, useCallback, useState } from "react";
 import { Modal } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { openModal, selectModalData } from "@store/reducers/app";
-import { CANCEL_CONFIRM } from "@/app/types/modal/modal-types";
+import { useAppSelector } from "@hooks/hooks";
+import { selectModalData } from "@store/reducers/app";
 import { StepModalFooter } from "@/app/components/modal/step-modal-footer";
 
 type MultiStepModalProps = {
@@ -11,7 +10,6 @@ type MultiStepModalProps = {
 };
 
 export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
-  const dispatch = useAppDispatch();
   const modalData = useAppSelector(selectModalData);
   const { titles, totalSteps, content } = modalData;
 

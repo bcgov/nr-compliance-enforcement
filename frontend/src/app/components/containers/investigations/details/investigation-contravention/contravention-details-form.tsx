@@ -439,7 +439,7 @@ export const ContraventionDetailsForm = ({
                 <CompSelect
                   id="section-select"
                   classNamePrefix="comp-select"
-                  className="comp-details-input mb-4"
+                  className="comp-details-input mb-1"
                   options={secOptions}
                   value={findOptionByValue(secOptions, section)}
                   onChange={(option) => {
@@ -520,9 +520,10 @@ export const ContraventionDetailsForm = ({
                     item.citation || (item.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
 
                   return (
-                    <div
+                    <label
                       key={item.legislationGuid}
-                      className="d-flex align-items-start gap-2 contravention-section"
+                      htmlFor={`section-${item.legislationGuid}`}
+                      className={"d-flex align-items-start gap-2 contravention-section"}
                     >
                       <input
                         type="radio"
@@ -532,17 +533,14 @@ export const ContraventionDetailsForm = ({
                         onChange={() => field.handleChange(item.legislationGuid as string)}
                         className="mt-1"
                       />
-                      <label
-                        htmlFor={`section-${item.legislationGuid}`}
-                        className={`mb-2 ${indentClass}`}
-                      >
+                      <span className={`mb-2 ${indentClass}`}>
                         {item.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
                           <>{`(${displayCitation})`} </>
                         )}
                         <LegislationText>{item.legislationText || item.sectionTitle}</LegislationText>
                         {item.alternateText && <div className="contravention-alternate-text">{item.alternateText}</div>}
-                      </label>
-                    </div>
+                      </span>
+                    </label>
                   );
                 })}
                 {field.state.meta.errors?.[0]?.message && (
