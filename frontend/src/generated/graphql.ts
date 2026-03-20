@@ -2072,6 +2072,7 @@ export type QuerylegislationsArgs = {
   excludeRegulations?: InputMaybe<Scalars['Boolean']['input']>;
   legislationSourceGuid?: InputMaybe<Scalars['String']['input']>;
   legislationTypeCodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  offenseDate?: InputMaybe<Scalars['String']['input']>;
   onlyActive?: InputMaybe<Scalars['Boolean']['input']>;
 };
 

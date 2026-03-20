@@ -1,17 +1,7 @@
 import { getUserAgency } from "@/app/service/user-service";
-import {
-  Contravention,
-  CreateUpdateContraventionInput,
-  InspectionParty,
-  InvestigationParty,
-  LegislationSource,
-} from "@/generated/graphql";
+import { Contravention, LegislationSource } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
-import { gql } from "graphql-request";
 import { useCallback, useEffect, useState } from "react";
-import Option from "@apptypes/app/option";
-import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -23,7 +13,6 @@ import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { LegislationTable } from "@/app/components/common/legislation-table";
-import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import z from "zod";
 import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
@@ -32,31 +21,18 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
 
-interface ContraventionFormProps {
-  activityGuid: string;
-  onClose: () => void;
-  contraventionNumber?: string;
-  contravention?: Contravention;
-  parties?: InvestigationParty[];
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
-  onRequestSubmit?: (submit: () => Promise<void>) => void;
+export interface ContraventionDetailsFormValues {
+  contraventionDate: string;
+  communityCode: string;
+  selectedSection: string;
 }
 
-const ADD_CONTRAVENTION = gql`
-  mutation CreateContravention($input: CreateUpdateContraventionInput!) {
-    createContravention(input: $input) {
-      investigationGuid
-    }
-  }
-`;
-
-const UPDATE_CONTRAVENTION = gql`
-  mutation UpdateContravention($contraventionGuid: String!, $input: CreateUpdateContraventionInput!) {
-    updateContravention(contraventionGuid: $contraventionGuid, input: $input) {
-      investigationGuid
-    }
-  }
-`;
+interface ContraventionDetailsFormProps {
+  contravention?: Contravention;
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+  onRequestValidate?: (validateForm: () => Promise<boolean>) => void;
+  onRequestValues?: (getValues: () => ContraventionDetailsFormValues) => void;
+}
 
 const getLegislationViewUrl = (source: LegislationSource | null, sourceUrl: string | null): URL | null => {
   if (!sourceUrl) return null;
@@ -81,7 +57,6 @@ const formatLegislationSourceUrl = (source: LegislationSource) => {
   const sourceUrl = source.sourceUrl ?? null;
   const url = getLegislationViewUrl(source, sourceUrl);
   if (!url) return null;
-
   const { sourceType, shortDescription } = source;
   const site = sourceType === "BCLAWS" ? "BC Laws" : "DoJ Canada";
   const name = shortDescription?.trim() || "legislation";
@@ -96,109 +71,42 @@ const formatLegislationSourceUrl = (source: LegislationSource) => {
   );
 };
 
-export const ContraventionForm = ({
+export const ContraventionDetailsForm = ({
   contravention,
-  parties,
-  activityGuid,
-  onClose,
   onDirtyChange,
-  contraventionNumber,
-  onRequestSubmit,
-}: ContraventionFormProps) => {
-  // Form Definition
+  onRequestValidate,
+  onRequestValues,
+}: ContraventionDetailsFormProps) => {
   const form = useForm({
     defaultValues: {
       act: "",
       section: "",
       contraventionDate: null as Date | null,
       communityCode: "",
+      subsection: "",
     },
-    onSubmit: async ({ value }) => {
-      // Clear previous validation error
-      setValidationError("");
-
-      if (!selectedSection) {
-        setValidationError("Please select a contravention.");
-        return;
-      }
-
-      const input: CreateUpdateContraventionInput = {
-        investigationGuid: activityGuid,
-        // Convert Option[] → string[]
-        // - map each party to its value
-        // - drop any parties that don't have a value
-        // - avoid returning undefined by flattening to an empty array instead
-        investigationPartyGuids: selectedParties?.flatMap((p) => (p.value ? [p.value] : [])),
-        legislationReference: selectedSection ?? "",
-      };
-
-      if (isEditMode) {
-        editContraventionMutation.mutate({
-          contraventionGuid: contravention?.contraventionIdentifier,
-          input: input,
-        });
-      } else {
-        addContraventionMutation.mutate({ input: input });
-      }
-    },
+    onSubmit: async () => {},
   });
 
-  const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+  const { markDirty } = useFormDirtyState(onDirtyChange);
 
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field.isTouched),
   );
 
-  useEffect(() => {
-    if (isFormDirty) {
-      markDirty();
-    }
-  }, [isFormDirty, markDirty]);
-
-  // Selectors
   const userAgency = getUserAgency();
+  const communityCodes = useAppSelector(selectCommunityCodeDropdown);
 
-  // State
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
-  const [selectedSection, setSelectedSection] = useState<string>();
-  const [selectedParties, setSelectedParties] = useState<Option[]>([]);
-  const [validationError, setValidationError] = useState<string>("");
   const [actSource, setActSource] = useState<LegislationSource | null>(null);
   const [regulationSource, setRegulationSource] = useState<LegislationSource | null>(null);
+
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
 
-  console.log(formattedContraventionDate);
-
-  // Fetch legislation sources
   const { data: legislationSources } = useLegislationSources();
-
-  // Hooks
-  const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
-    onSuccess: () => {
-      ToggleSuccess("Contravention added successfully");
-      form.reset();
-      onClose();
-    },
-    onError: (error: any) => {
-      console.error("Error adding contravention:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add contravention");
-    },
-  });
-
-  const editContraventionMutation = useGraphQLMutation(UPDATE_CONTRAVENTION, {
-    onSuccess: () => {
-      ToggleSuccess("Contravention updated successfully");
-      form.reset();
-      onClose();
-    },
-    onError: (error: any) => {
-      console.error("Error updating contravention:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update contravention");
-    },
-  });
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
@@ -223,7 +131,6 @@ export const ContraventionForm = ({
       LegislationType.SECTION,
     ],
     ancestorGuid: regulation || act,
-    // When Act is selected but no regulation, exclude sections from child regulations
     excludeRegulations: !!act && !regulation,
     enabled: !!regulation || !!act,
   });
@@ -249,144 +156,20 @@ export const ContraventionForm = ({
 
   const legislationQuery = useLegislation(contravention?.legislationIdentifierRef, true);
 
-  // Data
-  const isEditMode = !!contravention;
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
-  const communityCodes = useAppSelector(selectCommunityCodeDropdown);
-  // Use hierarchical options for sections with Parts/Divisions as disabled headers
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
 
-  // Only filter to items with text or a section title, and DO NOT re-sort. Sorting by displayOrder
-  // will group all items with the same displayOrder regardless of parent.
+  const findOptionByValue = (options: any[], value: string) =>
+    value ? options.find((opt) => opt.value === value) : null;
+
   const legislationText = legislationTextQuery.data?.legislations?.filter(
     (item) => !!item.legislationText || !!item.sectionTitle,
   );
 
-  const partyOptions: Option[] =
-    parties
-      ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
-      .map((party: InvestigationParty | InspectionParty) => ({
-        value: party.partyIdentifier,
-        label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
-      })) ?? [];
-
-  const errorMessages = [
-    actsQuery.error,
-    regulationsQuery.error,
-    sectionsQuery.error,
-    legislationTextQuery.error,
-    validationError,
-  ]
-    .filter(Boolean) // remove undefined/null
+  const errorMessages = [actsQuery.error, regulationsQuery.error, sectionsQuery.error, legislationTextQuery.error]
+    .filter(Boolean)
     .map((err) => (err as Error).message || String(err));
-
-  // Functions
-
-  // Manages save click
-  const handleSubmit = useCallback(async () => {
-    markClean();
-    await form.handleSubmit();
-  }, [markClean, form]);
-
-  // Helper Function for returning correct value from Options array
-  const findOptionByValue = (options: Option[], value: string) =>
-    value ? options.find((opt) => opt.value === value) : null;
-
-  // State Management for Legislation and Selected Legislation
-  useEffect(() => {
-    const legislation = legislationQuery?.data?.legislation;
-    const ancestors = legislation?.ancestors;
-    const contraventionId = contravention?.legislationIdentifierRef;
-
-    if (!legislation || !ancestors || !contraventionId) return;
-
-    const findAncestor = (type: string) => ancestors.find((a) => a?.legislationTypeCode === type)?.legislationGuid;
-
-    const actGuid = findAncestor("ACT");
-    const regGuid = findAncestor("REG");
-
-    // If the legislation itself is a schedule/section use it directly, otherwise find the ancestor
-    const sectionGuid =
-      (legislation.legislationTypeCode === "SCHED" ? contraventionId : null) ??
-      findAncestor("SCHED") ??
-      (legislation.legislationTypeCode === "SEC" ? contraventionId : null) ??
-      findAncestor("SEC");
-
-    if (actGuid) setAct(actGuid);
-    if (regGuid) setRegulation(regGuid);
-    if (sectionGuid) setSection(sectionGuid);
-    setSelectedSection(contraventionId);
-  }, [legislationQuery?.data, contravention?.legislationIdentifierRef]);
-
-  // State Management for Parties
-  useEffect(() => {
-    const parties = contravention?.investigationParty;
-
-    // Exit early until parties are available
-    if (!parties) return;
-
-    const options: Option[] = parties
-      // Remove any null entries coming from the GraphQL response
-      .filter((party): party is NonNullable<typeof party> => party !== null)
-
-      // Map remaining valid parties into <Option> objects for the UI
-      .map((party) => ({
-        value: party.partyIdentifier,
-        label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
-      }));
-
-    // Sync local state once real data is available (no fake defaults)
-    setSelectedParties(options);
-  }, [contravention?.investigationParty]);
-
-  // State Management for validation
-  useEffect(() => {
-    if (contravention) {
-      // Set all form values
-      form.setFieldValue("act", act);
-      form.setFieldValue("section", section);
-      form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
-      form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
-    }
-  }, [contravention, act, section]);
-
-  // Sync act source when act/sources load (for when entering edit mode)
-  useEffect(() => {
-    if (!act || !legislationSources || !actsQuery.data?.legislations) {
-      if (!act) setActSource(null);
-      return;
-    }
-    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === act);
-    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setActSource(source ?? null);
-  }, [act, legislationSources, actsQuery.data?.legislations]);
-
-  // Sync regulation source when regulation/sources load (for when entering edit mode)
-  useEffect(() => {
-    if (!regulation || !legislationSources || !regulationsQuery.data?.legislations) {
-      if (!regulation) setRegulationSource(null);
-      return;
-    }
-    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulation);
-    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setRegulationSource(source ?? null);
-  }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
-
-  // Detect submit call from parent
-  useEffect(() => {
-    onRequestSubmit?.(handleSubmit);
-  }, [onRequestSubmit, handleSubmit]);
-
-  const handlePartyChange = async (options: Option[]) => {
-    setSelectedParties(options);
-  };
 
   const handleActLinkChange = (actGuid: string | null) => {
     if (!actGuid) {
@@ -414,6 +197,98 @@ export const ContraventionForm = ({
     setRegulationSource(source ?? null);
   };
 
+  // Expose validate to modal
+  const handleValidate = useCallback(async (): Promise<boolean> => {
+    const results = await form.validateAllFields("submit");
+
+    const hasErrors = Object.values(results).some((fieldErrors) => fieldErrors && Object.keys(fieldErrors).length > 0);
+    return !hasErrors;
+  }, [form]);
+
+  // Expose values to modal
+  const getValues = useCallback(
+    (): ContraventionDetailsFormValues => ({
+      contraventionDate: formattedContraventionDate ?? "",
+      communityCode: form.getFieldValue("communityCode"),
+      selectedSection: form.getFieldValue("subsection"),
+    }),
+    [formattedContraventionDate, form],
+  );
+
+  // Return validation results to parent
+  useEffect(() => {
+    onRequestValidate?.(handleValidate);
+  }, [onRequestValidate, handleValidate]);
+
+  // Return values to parent
+  useEffect(() => {
+    onRequestValues?.(getValues);
+  }, [onRequestValues, getValues]);
+
+  // Edit mode - populate legislation fields
+  useEffect(() => {
+    const legislation = legislationQuery?.data?.legislation;
+    const ancestors = legislation?.ancestors;
+    const contraventionId = contravention?.legislationIdentifierRef;
+    if (!legislation || !ancestors || !contraventionId) return;
+    const findAncestor = (type: string) => ancestors.find((a) => a?.legislationTypeCode === type)?.legislationGuid;
+    const actGuid = findAncestor("ACT");
+    const regGuid = findAncestor("REG");
+    const sectionGuid =
+      (legislation.legislationTypeCode === "SCHED" ? contraventionId : null) ??
+      findAncestor("SCHED") ??
+      (legislation.legislationTypeCode === "SEC" ? contraventionId : null) ??
+      findAncestor("SEC");
+    if (actGuid) setAct(actGuid);
+    if (regGuid) setRegulation(regGuid);
+    if (sectionGuid) setSection(sectionGuid);
+  }, [legislationQuery?.data, contravention?.legislationIdentifierRef]);
+
+  // Edit mode - sync form field meta
+  useEffect(() => {
+    if (contravention) {
+      form.setFieldValue("act", act);
+      form.setFieldValue("section", section);
+      form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+      form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+  }, [contravention, act, section]);
+
+  // Sync act source
+  useEffect(() => {
+    if (!act || !legislationSources || !actsQuery.data?.legislations) {
+      if (!act) setActSource(null);
+      return;
+    }
+    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === act);
+    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setActSource(source ?? null);
+  }, [act, legislationSources, actsQuery.data?.legislations]);
+
+  // Sync regulation source
+  useEffect(() => {
+    if (!regulation || !legislationSources || !regulationsQuery.data?.legislations) {
+      if (!regulation) setRegulationSource(null);
+      return;
+    }
+    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulation);
+    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
+    const source = legislationSourceGuid
+      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
+      : null;
+    setRegulationSource(source ?? null);
+  }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
+
+  // Mark form dirty on changes
+  useEffect(() => {
+    if (isFormDirty) {
+      markDirty();
+    }
+  }, [isFormDirty, markDirty]);
+
   return (
     <>
       <form
@@ -433,15 +308,11 @@ export const ContraventionForm = ({
                 onChange: z
                   .date()
                   .nullable()
-                  .refine((val) => val !== null, {
-                    message: "Date is required",
-                  }),
+                  .refine((val) => val !== null, { message: "Date is required" }),
                 onSubmit: z
                   .date()
                   .nullable()
-                  .refine((val) => val !== null, {
-                    message: "Date is required",
-                  }),
+                  .refine((val) => val !== null, { message: "Date is required" }),
               }}
               render={(field) => (
                 <ValidationDatePicker
@@ -452,11 +323,9 @@ export const ContraventionForm = ({
                   maxDate={new Date()}
                   onChange={(date: Date | undefined) => {
                     field.handleChange(date ?? null);
-                    // Reset legislation selections when date changes
                     setAct("");
                     setRegulation("");
                     setSection("");
-                    setSelectedSection("");
                   }}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
@@ -509,10 +378,8 @@ export const ContraventionForm = ({
                     field.handleChange(value);
                     setAct(value);
                     handleActLinkChange(value);
-                    // Reset dependent fields when act changes
                     setRegulation("");
                     setSection("");
-                    setSelectedSection("");
                     setRegulationSource(null);
                   }}
                   placeholder="Select act"
@@ -546,9 +413,7 @@ export const ContraventionForm = ({
                       field.handleChange(value);
                       setRegulation(value);
                       handleRegulationLinkChange(value || null);
-                      // Reset section when regulation changes
                       setSection("");
-                      setSelectedSection("");
                     }}
                     placeholder="Select regulation"
                     isClearable={true}
@@ -581,7 +446,6 @@ export const ContraventionForm = ({
                     const value = option?.value || "";
                     field.handleChange(value);
                     setSection(value);
-                    setSelectedSection("");
                   }}
                   placeholder="Select section"
                   isClearable={true}
@@ -593,107 +457,100 @@ export const ContraventionForm = ({
             />
           </>
         )}
-
         {section && legislationText && legislationText.length > 0 && (
-          <>
-            {legislationText.map((section) => {
-              const indentClass = indentByType[section.legislationTypeCode as keyof typeof indentByType];
+          <FormField
+            form={form}
+            name="subsection"
+            label="Select subsection"
+            required
+            validators={{
+              onSubmit: z.string().min(1, "Please select a subsection."),
+            }}
+            render={(field) => (
+              <div className="contravention-subsection-box">
+                {legislationText.map((item) => {
+                  const indentClass = indentByType[item.legislationTypeCode as keyof typeof indentByType];
 
-              // Schedules and Divisions render as non-clickable headers
-              if (
-                section.legislationTypeCode === LegislationType.SCHEDULE ||
-                section.legislationTypeCode === LegislationType.DIVISION
-              ) {
-                return (
-                  <div
-                    key={section.legislationGuid}
-                    className="contravention-text-segment"
-                  >
-                    <p className={`mb-2 ${indentClass}`}>
-                      <strong>{section.sectionTitle}</strong>
-                    </p>
-                  </div>
-                );
-              }
+                  if (
+                    item.legislationTypeCode === LegislationType.SCHEDULE ||
+                    item.legislationTypeCode === LegislationType.DIVISION
+                  ) {
+                    return (
+                      <div
+                        key={item.legislationGuid}
+                        className="contravention-text-segment"
+                      >
+                        <p className={`mb-2 ${indentClass}`}>
+                          <strong>{item.sectionTitle}</strong>
+                        </p>
+                      </div>
+                    );
+                  }
 
-              if (section.legislationTypeCode === LegislationType.TEXT) {
-                return (
-                  <div
-                    key={section.legislationGuid}
-                    className="contravention-text-segment"
-                  >
-                    <p className={`mb-2 ${indentClass}`}>
-                      <LegislationText>{section.legislationText}</LegislationText>
-                    </p>
-                  </div>
-                );
-              }
+                  if (item.legislationTypeCode === LegislationType.TEXT) {
+                    return (
+                      <div
+                        key={item.legislationGuid}
+                        className="contravention-text-segment"
+                      >
+                        <p className={`mb-2 ${indentClass}`}>
+                          <LegislationText>{item.legislationText}</LegislationText>
+                        </p>
+                      </div>
+                    );
+                  }
 
-              if (section.legislationTypeCode === LegislationType.TABLE && section.legislationText) {
-                return (
-                  <div
-                    key={section.legislationGuid}
-                    className={`contravention-text-segment ${indentClass}`}
-                  >
-                    {section.sectionTitle && (
-                      <p className="mb-1">
-                        <strong>{section.sectionTitle}</strong>
-                      </p>
-                    )}
-                    <LegislationTable html={section.legislationText} />
-                  </div>
-                );
-              }
+                  if (item.legislationTypeCode === LegislationType.TABLE && item.legislationText) {
+                    return (
+                      <div
+                        key={item.legislationGuid}
+                        className={`contravention-text-segment ${indentClass}`}
+                      >
+                        {item.sectionTitle && (
+                          <p className="mb-1">
+                            <strong>{item.sectionTitle}</strong>
+                          </p>
+                        )}
+                        <LegislationTable html={item.legislationText} />
+                      </div>
+                    );
+                  }
 
-              // For subsections without explicit citation, show (1)
-              const displayCitation =
-                section.citation || (section.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
+                  const displayCitation =
+                    item.citation || (item.legislationTypeCode === LegislationType.SUBSECTION ? "1" : null);
 
-              return (
-                <button
-                  key={section.legislationGuid}
-                  type="button"
-                  className={`contravention-section ${selectedSection === section.legislationGuid ? "selected" : ""}`}
-                  onClick={() => {
-                    setValidationError("");
-                    setSelectedSection(section.legislationGuid as string);
-                  }}
-                >
-                  <div>
-                    <p className={`mb-2 ${indentClass}`}>
-                      {section.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
-                        <>{`(${displayCitation})`} </>
-                      )}
-                      <LegislationText>{section.legislationText || section.sectionTitle}</LegislationText>
-                    </p>
-                    {section.alternateText && (
-                      <div className="contravention-alternate-text">{section.alternateText}</div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-            <div className="mt-3">
-              <FormField
-                form={form}
-                name="party"
-                label="Party"
-                render={(field) => (
-                  <ValidationMultiSelect
-                    id="party-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input mt-3"
-                    options={partyOptions}
-                    values={selectedParties}
-                    onChange={handlePartyChange}
-                    placeholder="Select party"
-                    isClearable={true}
-                    errMsg={field.state.meta.errors?.[0]?.message || ""}
-                  />
+                  return (
+                    <div
+                      key={item.legislationGuid}
+                      className="d-flex align-items-start gap-2 contravention-section"
+                    >
+                      <input
+                        type="radio"
+                        name="subsection"
+                        id={`section-${item.legislationGuid}`}
+                        checked={field.state.value === item.legislationGuid}
+                        onChange={() => field.handleChange(item.legislationGuid as string)}
+                        className="mt-1"
+                      />
+                      <label
+                        htmlFor={`section-${item.legislationGuid}`}
+                        className={`mb-2 ${indentClass}`}
+                      >
+                        {item.legislationTypeCode !== LegislationType.SECTION && displayCitation && (
+                          <>{`(${displayCitation})`} </>
+                        )}
+                        <LegislationText>{item.legislationText || item.sectionTitle}</LegislationText>
+                        {item.alternateText && <div className="contravention-alternate-text">{item.alternateText}</div>}
+                      </label>
+                    </div>
+                  );
+                })}
+                {field.state.meta.errors?.[0]?.message && (
+                  <div className="error-message mt-2">{field.state.meta.errors[0].message}</div>
                 )}
-              />
-            </div>
-          </>
+              </div>
+            )}
+          />
         )}
       </form>
       {errorMessages.length > 0 && (
