@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { openModal, selectModalData } from "@store/reducers/app";
@@ -36,28 +36,14 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
     await saveFn?.();
   };
 
-  const handleCancel = () => {
-    dispatch(
-      openModal({
-        modalSize: "md",
-        modalType: CANCEL_CONFIRM,
-        data: {
-          title: "Cancel changes?",
-          description: "Your changes will be lost.",
-          cancelConfirmed: () => close(),
-        },
-      }),
-    );
-  };
-
   // Wire up validate and save callbacks from child
-  const handleRequestValidate = (fn: (step: number) => Promise<boolean>) => {
+  const handleRequestValidate = useCallback((fn: (step: number) => Promise<boolean>) => {
     setValidateFn(() => fn);
-  };
+  }, []);
 
-  const handleRequestSave = (fn: () => Promise<void>) => {
+  const handleRequestSave = useCallback((fn: () => Promise<void>) => {
     setSaveFn(() => fn);
-  };
+  }, []);
 
   return (
     <>
@@ -69,7 +55,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
         <StepModalFooter
           currentStep={currentStep}
           totalSteps={totalSteps}
-          onCancel={handleCancel}
+          onCancel={close}
           onPrevious={handlePrevious}
           onNext={handleNext}
           onSave={handleSave}

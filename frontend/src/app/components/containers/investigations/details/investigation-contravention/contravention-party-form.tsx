@@ -44,11 +44,6 @@ export const ContraventionPartyForm = ({
     }
   }, [isFormDirty, markDirty]);
 
-  // Mark Dirty on mount since we are a substep in a multi-step form
-  useEffect(() => {
-    markDirty();
-  }, []);
-
   const partyOptions: Option[] =
     parties
       ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")

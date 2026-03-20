@@ -1,10 +1,22 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Contravention, CreateUpdateContraventionInput, InvestigationParty } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ContraventionDetailsForm, ContraventionDetailsFormValues } from "./contravention-details-form";
 import { ContraventionPartyForm, ContraventionPartyFormValues } from "./contravention-party-form";
+import { useMultiStepForm } from "@/app/hooks/multi-step-form";
+
+interface ContraventionFormProps {
+  currentStep: number;
+  activityGuid: string;
+  contravention?: Contravention;
+  parties?: InvestigationParty[];
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+  onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
+  onRequestSave: (fn: () => Promise<void>) => void;
+  onClose: () => void;
+}
 
 const ADD_CONTRAVENTION = gql`
   mutation CreateContravention($input: CreateUpdateContraventionInput!) {
@@ -22,17 +34,6 @@ const UPDATE_CONTRAVENTION = gql`
   }
 `;
 
-interface ContraventionFormProps {
-  currentStep: number;
-  activityGuid: string;
-  contravention?: Contravention;
-  parties?: InvestigationParty[];
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
-  onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
-  onRequestSave: (fn: () => Promise<void>) => void;
-  onClose: () => void;
-}
-
 export const ContraventionForm: FC<ContraventionFormProps> = ({
   currentStep,
   activityGuid,
@@ -43,12 +44,12 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   onRequestSave,
   onClose,
 }) => {
-  const [validateStep1Fn, setValidateStep1Fn] = useState<(() => Promise<boolean>) | null>(null);
-  const [validateStep2Fn, setValidateStep2Fn] = useState<(() => Promise<boolean>) | null>(null);
-  const [getStep1Values, setGetStep1Values] = useState<(() => ContraventionDetailsFormValues) | null>(null);
-  const [getStep2Values, setGetStep2Values] = useState<(() => ContraventionPartyFormValues) | null>(null);
-
   const isEditMode = !!contravention;
+
+  const { registerStepValidate, registerStepValues, getStepValues, validateStep } = useMultiStepForm(
+    onRequestValidate,
+    onRequestSave,
+  );
 
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
     onSuccess: () => {
@@ -72,27 +73,14 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     },
   });
 
-  // Expose validate to MultiStepModal
-  useEffect(() => {
-    onRequestValidate(async (step: number) => {
-      if (step === 0) {
-        return (await validateStep1Fn?.()) ?? false;
-      }
-      if (step === 1) {
-        return (await validateStep2Fn?.()) ?? false;
-      }
-      return true;
-    });
-  }, [validateStep1Fn, validateStep2Fn, onRequestValidate]);
-
   // Expose save to MultiStepModal
   useEffect(() => {
     onRequestSave(async () => {
-      const isValid = await validateStep2Fn?.();
+      const isValid = await validateStep(1);
       if (!isValid) return;
 
-      const step1Values = getStep1Values?.();
-      const step2Values = getStep2Values?.();
+      const step1Values = getStepValues<ContraventionDetailsFormValues>(0);
+      const step2Values = getStepValues<ContraventionPartyFormValues>(1);
       if (!step1Values || !step2Values) return;
 
       const input: CreateUpdateContraventionInput = {
@@ -110,27 +98,28 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         addContraventionMutation.mutate({ input });
       }
     });
-  }, [validateStep2Fn, getStep1Values, getStep2Values, activityGuid, isEditMode, contravention]);
+  }, [onRequestSave, getStepValues, activityGuid, isEditMode, contravention]);
 
+  // Note: The forms are hidden when not active in order to prevent them from unmounting and losing state
   return (
     <>
-      {currentStep === 0 && (
+      <div className={currentStep === 0 ? "" : "d-none"}>
         <ContraventionDetailsForm
           contravention={contravention}
           onDirtyChange={onDirtyChange}
-          onRequestValidate={(fn) => setValidateStep1Fn(() => fn)}
-          onRequestValues={(fn) => setGetStep1Values(() => fn)}
+          onRequestValidate={(fn) => registerStepValidate(0, fn)}
+          onRequestValues={(fn) => registerStepValues<ContraventionDetailsFormValues>(0, fn)}
         />
-      )}
-      {currentStep === 1 && (
+      </div>
+      <div className={currentStep === 1 ? "" : "d-none"}>
         <ContraventionPartyForm
           contravention={contravention}
           parties={parties}
           onDirtyChange={onDirtyChange}
-          onRequestValidate={(fn) => setValidateStep2Fn(() => fn)}
-          onRequestValues={(fn) => setGetStep2Values(() => fn)}
+          onRequestValidate={(fn) => registerStepValidate(1, fn)}
+          onRequestValues={(fn) => registerStepValues<ContraventionPartyFormValues>(1, fn)}
         />
-      )}
+      </div>
     </>
   );
 };
