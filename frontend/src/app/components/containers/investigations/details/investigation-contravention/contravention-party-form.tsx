@@ -6,7 +6,11 @@ import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { FormField } from "@/app/components/common/form-field";
 
+import z from "zod";
+import { CardOption, CardOptionSelector } from "@/app/components/common/card-option";
+
 export interface ContraventionPartyFormValues {
+  partyType: string;
   selectedParties: string[];
 }
 
@@ -18,6 +22,21 @@ interface ContraventionPartyFormProps {
   onRequestValues?: (valuesFn: () => ContraventionPartyFormValues) => void;
 }
 
+const PARTY_TYPE_OPTIONS: CardOption[] = [
+  {
+    value: "known",
+    label: "Known Party",
+    description: "Identified individual or entity",
+    icon: "bi bi-person",
+  },
+  {
+    value: "unknown",
+    label: "Unknown Party",
+    description: "Unidentified individual or entity",
+    icon: "bi bi-person-x",
+  },
+];
+
 export const ContraventionPartyForm = ({
   contravention,
   parties,
@@ -27,6 +46,7 @@ export const ContraventionPartyForm = ({
 }: ContraventionPartyFormProps) => {
   const form = useForm({
     defaultValues: {
+      partyType: "known",
       selectedParties: [] as Option[],
     },
     onSubmit: async () => {},
@@ -43,6 +63,8 @@ export const ContraventionPartyForm = ({
       markDirty();
     }
   }, [isFormDirty, markDirty]);
+
+  const partyType = useStore(form.baseStore, (state) => state.values.partyType);
 
   const partyOptions: Option[] =
     parties
@@ -66,10 +88,12 @@ export const ContraventionPartyForm = ({
     form.setFieldMeta("selectedParties", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
   }, [contravention?.investigationParty]);
 
-  // Expose validate to modal - no required fields for now
+  // Expose validate to modal
   const handleValidate = useCallback(async (): Promise<boolean> => {
-    return true;
-  }, []);
+    await form.handleSubmit();
+    const hasErrors = Object.values(form.state.fieldMeta).some((field) => field?.errors && field.errors.length > 0);
+    return !hasErrors;
+  }, [form]);
 
   useEffect(() => {
     onRequestValidate?.(handleValidate);
@@ -78,6 +102,7 @@ export const ContraventionPartyForm = ({
   // Expose values to modal
   const getValues = useCallback(
     (): ContraventionPartyFormValues => ({
+      partyType: form.getFieldValue("partyType"),
       selectedParties: form.getFieldValue("selectedParties").flatMap((p) => (p.value ? [p.value] : [])),
     }),
     [form],
@@ -96,25 +121,50 @@ export const ContraventionPartyForm = ({
     >
       <FormField
         form={form}
-        name="selectedParties"
-        label="Party"
+        name="partyType"
+        label="Select Party Type"
+        required
         render={(field) => (
-          <ValidationMultiSelect
-            id="party-select"
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={partyOptions}
-            values={field.state.value}
-            onChange={(option: Option) => {
-              field.handleChange(option);
-              markDirty();
-            }}
-            placeholder="Select party"
-            isClearable={true}
-            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          <CardOptionSelector
+            id="party-type"
+            options={PARTY_TYPE_OPTIONS}
+            value={field.state.value}
+            onChange={(value) => field.handleChange(value)}
           />
         )}
       />
+
+      <div className={partyType === "known" ? "pt-3" : "d-none"}>
+        <FormField
+          form={form}
+          name="selectedParties"
+          label="Name"
+          required
+          validators={{
+            onSubmit: z
+              .array(z.object({ value: z.string(), label: z.string() }))
+              .refine((val) => form.getFieldValue("partyType") === "unknown" || val.length > 0, {
+                message: "At least one party is required",
+              }),
+          }}
+          render={(field) => (
+            <ValidationMultiSelect
+              id="party-select"
+              classNamePrefix="comp-select"
+              className="comp-details-input"
+              options={partyOptions}
+              values={field.state.value}
+              onChange={(option: Option) => {
+                field.handleChange(option);
+                markDirty();
+              }}
+              placeholder="Select names"
+              isClearable={true}
+              errMsg={field.state.meta.errors?.[0]?.message || ""}
+            />
+          )}
+        />
+      </div>
     </form>
   );
 };
