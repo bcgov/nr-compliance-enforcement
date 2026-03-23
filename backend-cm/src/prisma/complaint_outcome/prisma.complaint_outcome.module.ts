@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ComplaintOutcomePrismaService } from "./prisma.complaint_outcome.service";
 import { PrismaClient } from ".prisma/complaint_outcome";
 import createPgSessionExtension from "src/pg-session-extension/prisma-pg-session-extension";
+import createRetryExtension from "../prisma-retry-extension";
 
 @Module({
   providers: [
@@ -9,7 +10,7 @@ import createPgSessionExtension from "src/pg-session-extension/prisma-pg-session
       provide: ComplaintOutcomePrismaService,
       useFactory: () => {
         const client = new PrismaClient();
-        return client.$extends(createPgSessionExtension(client));
+        return client.$extends(createPgSessionExtension(client)).$extends(createRetryExtension());
       },
     },
   ],
