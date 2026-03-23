@@ -39,16 +39,6 @@ export const ContraventionPartyForm = ({
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
 
-  const isFormDirty = useStore(form.baseStore, (state) =>
-    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
-  );
-
-  useEffect(() => {
-    if (isFormDirty) {
-      markDirty();
-    }
-  }, [isFormDirty, markDirty]);
-
   const partyType = useStore(form.baseStore, (state) => state.values.partyType);
 
   const partyOptions: Option[] =
@@ -147,7 +137,10 @@ export const ContraventionPartyForm = ({
             id="party-type"
             options={partyTypeOptions}
             value={field.state.value}
-            onChange={(value) => field.handleChange(value)}
+            onChange={(value) => {
+              markDirty();
+              field.handleChange(value);
+            }}
             errMsg={field.state.meta.errors?.[0]?.message || ""}
           />
         )}

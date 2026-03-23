@@ -1,7 +1,7 @@
 import { getUserAgency } from "@/app/service/user-service";
 import { Contravention, LegislationSource } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -90,10 +90,6 @@ export const ContraventionDetailsForm = ({
   });
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
-
-  const isFormDirty = useStore(form.baseStore, (state) =>
-    Object.values(state.fieldMetaBase).some((field) => field.isTouched),
-  );
 
   const userAgency = getUserAgency();
   const communityCodes = useAppSelector(selectCommunityCodeDropdown);
@@ -304,13 +300,6 @@ export const ContraventionDetailsForm = ({
     setRegulationSource(source ?? null);
   }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
 
-  // Mark form dirty on changes
-  useEffect(() => {
-    if (isFormDirty) {
-      markDirty();
-    }
-  }, [isFormDirty, markDirty]);
-
   return (
     <>
       <form
@@ -344,6 +333,7 @@ export const ContraventionDetailsForm = ({
                   selectedDate={field.state.value}
                   maxDate={new Date()}
                   onChange={(date: Date | undefined) => {
+                    markDirty();
                     field.handleChange(date ?? null);
                     setAct("");
                     setRegulation("");
@@ -366,7 +356,10 @@ export const ContraventionDetailsForm = ({
                   className="comp-details-input"
                   options={communityCodes}
                   value={communityCodes.find((opt) => opt.value === field.state.value) ?? null}
-                  onChange={(option) => field.handleChange(option?.value || "")}
+                  onChange={(option) => {
+                    markDirty();
+                    field.handleChange(option?.value || "");
+                  }}
                   placeholder="Select community"
                   isClearable={true}
                   showInactive={false}
@@ -396,6 +389,7 @@ export const ContraventionDetailsForm = ({
                   options={actOptions}
                   value={findOptionByValue(actOptions, act)}
                   onChange={(option) => {
+                    markDirty();
                     const value = option?.value || "";
                     field.handleChange(value);
                     setAct(value);
@@ -431,6 +425,7 @@ export const ContraventionDetailsForm = ({
                     options={regOptions}
                     value={findOptionByValue(regOptions, regulation)}
                     onChange={(option) => {
+                      markDirty();
                       const value = option?.value || "";
                       field.handleChange(value);
                       setRegulation(value);
@@ -465,6 +460,7 @@ export const ContraventionDetailsForm = ({
                   options={secOptions}
                   value={findOptionByValue(secOptions, section)}
                   onChange={(option) => {
+                    markDirty();
                     const value = option?.value || "";
                     field.handleChange(value);
                     setSection(value);
@@ -552,7 +548,10 @@ export const ContraventionDetailsForm = ({
                         name="subsection"
                         id={`section-${item.legislationGuid}`}
                         checked={field.state.value === item.legislationGuid}
-                        onChange={() => field.handleChange(item.legislationGuid as string)}
+                        onChange={() => {
+                          markDirty();
+                          field.handleChange(item.legislationGuid as string);
+                        }}
                         className="mt-1"
                       />
                       <span className={`mb-2 ${indentClass}`}>
