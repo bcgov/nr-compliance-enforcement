@@ -381,7 +381,9 @@ export type ContactMethodInput = {
 
 export type Contravention = {
   __typename?: 'Contravention';
+  community?: Maybe<Scalars['String']['output']>;
   contraventionIdentifier: Scalars['String']['output'];
+  date?: Maybe<Scalars['DateTime']['output']>;
   investigationIdentifier: Scalars['String']['output'];
   investigationParty?: Maybe<Array<Maybe<InvestigationParty>>>;
   isActive: Scalars['Boolean']['output'];
@@ -551,6 +553,8 @@ export type CreatePreventionInput = {
 };
 
 export type CreateUpdateContraventionInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   legislationReference: Scalars['String']['input'];

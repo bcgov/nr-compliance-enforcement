@@ -19,9 +19,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   investigationData,
   onDirtyChange,
 }) => {
-  // State
-  const [editingContraventionId, setEditingContraventionId] = useState<string | null>(null);
-
   const dispatch = useAppDispatch();
   const contraventions = investigationData?.contraventions;
 
@@ -63,10 +60,10 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
     dispatch(
       openModal({
-        modalSize: "xl",
+        modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Add contravention", "Add party"],
+          titles: ["Edit contravention", "Edit party"],
           totalSteps: 2,
           content: (
             currentStep: number,
@@ -107,7 +104,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contravention={contravention as Contravention}
               investigationGuid={investigationGuid}
               index={index}
-              canEdit={!editingContraventionId}
               onEdit={handleEditContravention}
             />
           </div>

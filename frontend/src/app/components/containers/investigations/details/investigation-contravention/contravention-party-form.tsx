@@ -82,14 +82,23 @@ export const ContraventionPartyForm = ({
   useEffect(() => {
     const existingParties = contravention?.investigationParty;
     if (!existingParties) return;
-    const options: Option[] = existingParties
-      .filter((party): party is NonNullable<typeof party> => party !== null)
-      .map((party) => ({
-        value: party.partyIdentifier,
-        label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
-      }));
-    form.setFieldValue("selectedParties", options);
-    form.setFieldMeta("selectedParties", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+
+    // Set party type based on whether parties exist
+    const partyType = existingParties.length > 0 ? "known" : "unknown";
+    form.setFieldValue("partyType", partyType);
+    form.setFieldMeta("partyType", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+
+    // Populate parties if known
+    if (existingParties.length > 0) {
+      const options: Option[] = existingParties
+        .filter((party): party is NonNullable<typeof party> => party !== null)
+        .map((party) => ({
+          value: party.partyIdentifier,
+          label: party.business ? party.business.name : `${party.person?.lastName}, ${party.person?.firstName}`,
+        }));
+      form.setFieldValue("selectedParties", options);
+      form.setFieldMeta("selectedParties", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
   }, [contravention?.investigationParty]);
 
   // Expose validate to modal

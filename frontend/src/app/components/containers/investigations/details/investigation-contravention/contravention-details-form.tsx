@@ -19,7 +19,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -80,6 +80,7 @@ export const ContraventionDetailsForm = ({
   const form = useForm({
     defaultValues: {
       act: "",
+      regulation: "",
       section: "",
       contraventionDate: null as Date | null,
       communityCode: "",
@@ -246,13 +247,53 @@ export const ContraventionDetailsForm = ({
 
   // Edit mode - sync form field meta
   useEffect(() => {
-    if (contravention) {
-      form.setFieldValue("act", act);
-      form.setFieldValue("section", section);
+    if (!contravention) return;
+
+    // Populate date
+    if (contravention.date) {
+      form.setFieldValue("contraventionDate", parseISO(contravention.date));
+      form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+
+    // Populate community
+    if (contravention.community) {
+      form.setFieldValue("communityCode", contravention.community);
+      form.setFieldMeta("communityCode", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+
+    // Populate legislation fields - these come from legislationQuery so are handled separately
+    const legislation = legislationQuery?.data?.legislation;
+    const ancestors = legislation?.ancestors;
+    const contraventionId = contravention?.legislationIdentifierRef;
+    if (!legislation || !ancestors || !contraventionId) return;
+
+    const findAncestor = (type: string) => ancestors.find((a) => a?.legislationTypeCode === type)?.legislationGuid;
+    const actGuid = findAncestor("ACT");
+    const regGuid = findAncestor("REG");
+    const sectionGuid =
+      (legislation.legislationTypeCode === "SCHED" ? contraventionId : null) ??
+      findAncestor("SCHED") ??
+      (legislation.legislationTypeCode === "SEC" ? contraventionId : null) ??
+      findAncestor("SEC");
+
+    if (actGuid) {
+      setAct(actGuid);
+      form.setFieldValue("act", actGuid);
       form.setFieldMeta("act", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+    if (regGuid) {
+      setRegulation(regGuid);
+      form.setFieldValue("regulation", regGuid);
+      form.setFieldMeta("regulation", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+    }
+    if (sectionGuid) {
+      setSection(sectionGuid);
+      form.setFieldValue("section", sectionGuid);
       form.setFieldMeta("section", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
-  }, [contravention, act, section]);
+    form.setFieldValue("subsection", contraventionId);
+    form.setFieldMeta("subsection", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
+  }, [contravention, legislationQuery?.data]);
 
   // Sync act source
   useEffect(() => {

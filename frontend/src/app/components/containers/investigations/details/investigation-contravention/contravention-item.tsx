@@ -1,7 +1,7 @@
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
-import { useAppDispatch } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { DELETE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Contravention, InvestigationParty } from "@/generated/graphql";
@@ -9,22 +9,18 @@ import { gql } from "graphql-request";
 import { useCallback } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
+import { formatDate } from "@/app/common/methods";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
+import { selectCodeTable } from "@store/reducers/code-table";
 
 interface ContraventionItemProps {
   contravention: Contravention;
   investigationGuid: string;
   index: number;
-  canEdit: boolean;
   onEdit: (contraventionId: string) => void;
 }
 
-export const ContraventionItem = ({
-  contravention,
-  investigationGuid,
-  index,
-  canEdit,
-  onEdit,
-}: ContraventionItemProps) => {
+export const ContraventionItem = ({ contravention, investigationGuid, index, onEdit }: ContraventionItemProps) => {
   const REMOVE_CONTRAVENTION = gql`
     mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
       removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
@@ -42,6 +38,9 @@ export const ContraventionItem = ({
       ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove contravention");
     },
   });
+
+  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
+  const community = areaCodes.find((item) => item.area === contravention.community);
 
   const legislation = useLegislation(contravention.legislationIdentifierRef, false);
   const legislationData = legislation?.data?.legislation;
@@ -101,7 +100,6 @@ export const ContraventionItem = ({
         </div>
         <div className="comp-card-header-actions">
           <Button
-            disabled={!canEdit}
             variant="outline-primary"
             size="sm"
             id="contravention-edit-button"
@@ -152,6 +150,21 @@ export const ContraventionItem = ({
             </Col>
           </Row>
         )}
+        <Row
+          as="dl"
+          className="mb-3"
+        >
+          <Col xs={6}>
+            <dt>Date:</dt>
+            <dd>{formatDate(contravention.date)}</dd>
+          </Col>
+          {community?.areaName && (
+            <Col xs={6}>
+              <dt>Community:</dt>
+              <dd>{community?.areaName}</dd>
+            </Col>
+          )}
+        </Row>
       </Card.Body>
     </Card>
   );
