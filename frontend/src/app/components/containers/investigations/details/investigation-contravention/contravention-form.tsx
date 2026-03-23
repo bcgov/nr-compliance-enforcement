@@ -86,7 +86,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
       const input: CreateUpdateContraventionInput = {
         investigationGuid: activityGuid,
         legislationReference: step1Values.selectedSection,
-        investigationPartyGuids: step2Values.selectedParties,
+        investigationPartyGuids: step2Values.partyType === "unknown" ? [] : step2Values.selectedParties,
       };
 
       if (isEditMode) {

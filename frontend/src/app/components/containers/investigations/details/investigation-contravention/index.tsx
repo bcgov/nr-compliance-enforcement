@@ -30,7 +30,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   const handleAddContravention = () => {
     dispatch(
       openModal({
-        modalSize: "xl",
+        modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
           titles: ["Add contravention", "Add party"],
