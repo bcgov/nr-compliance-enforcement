@@ -5,7 +5,7 @@ import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationContraventionProps {
@@ -37,6 +37,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onClose: () => void,
+            // Note this is an intentional architectural decisions to allow for a reusable multi-step modal
+            // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
               currentStep={currentStep}
@@ -70,6 +72,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onClose: () => void,
+            // Note this is an intentional architectural decisions to allow for a reusable multi-step modal
+            // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
               currentStep={currentStep}
