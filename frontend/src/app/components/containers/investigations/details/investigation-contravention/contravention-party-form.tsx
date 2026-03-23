@@ -25,13 +25,13 @@ interface ContraventionPartyFormProps {
 const PARTY_TYPE_OPTIONS: CardOption[] = [
   {
     value: "known",
-    label: "Known Party",
+    label: "Known party",
     description: "Identified individual or entity",
     icon: "bi bi-person",
   },
   {
     value: "unknown",
-    label: "Unknown Party",
+    label: "Unknown party",
     description: "Unidentified individual or entity",
     icon: "bi bi-person-x",
   },
@@ -46,7 +46,7 @@ export const ContraventionPartyForm = ({
 }: ContraventionPartyFormProps) => {
   const form = useForm({
     defaultValues: {
-      partyType: "known",
+      partyType: "",
       selectedParties: [] as Option[],
     },
     onSubmit: async () => {},
@@ -122,7 +122,7 @@ export const ContraventionPartyForm = ({
       <FormField
         form={form}
         name="partyType"
-        label="Select Party Type"
+        label="Select party type"
         required
         render={(field) => (
           <CardOptionSelector
