@@ -170,10 +170,12 @@ export const useLegislationDirectChildren = (params: LegislationDirectChildrenPa
 
 export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
   return (
-    legislation?.map((legislation) => ({
-      label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
-      value: legislation.legislationGuid ?? "",
-    })) ?? []
+    legislation
+      ?.map((legislation) => ({
+        label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
+        value: legislation.legislationGuid ?? "",
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
 };
 
