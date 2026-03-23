@@ -1,7 +1,7 @@
 import { getUserAgency } from "@/app/service/user-service";
 import { Contravention, LegislationSource } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
