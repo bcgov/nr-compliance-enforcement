@@ -64,11 +64,7 @@ const parseDateInput = (raw: string): Date | null => {
   return date;
 };
 
-const buildTimeFromPickerDate = (
-  date: Date,
-  currentTime: string | null,
-  segment: TimeSegment,
-): string => {
+const buildTimeFromPickerDate = (date: Date, currentTime: string | null, segment: TimeSegment): string => {
   const [currentHour, currentMin] = (currentTime ?? "00:00").split(":");
   if (segment === "hour") {
     return `${date.getHours().toString().padStart(2, "0")}:${currentMin}`;
@@ -97,10 +93,7 @@ const handleTimeRawInput = (
     const max = segment === "hour" ? 23 : 59;
     if (selectedDate && value >= 0 && value <= max) {
       const [h, m] = (selectedTime ?? "00:00").split(":");
-      const newTime =
-        segment === "hour"
-          ? `${truncated.padStart(2, "0")}:${m}`
-          : `${h}:${truncated.padStart(2, "0")}`;
+      const newTime = segment === "hour" ? `${truncated.padStart(2, "0")}:${m}` : `${h}:${truncated.padStart(2, "0")}`;
       onChange(selectedDate, newTime);
     }
   }

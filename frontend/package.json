@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.228",
+  "version": "2.0.230",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -84,6 +84,7 @@
     "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
+    "otplib": "^13.3.0",
     "overlapping-marker-spiderfier-leaflet": "^0.2.7",
     "path-browserify": "^1.0.1",
     "path-to-regexp": "^8.0.0",
