@@ -226,25 +226,6 @@ export const ContraventionDetailsForm = ({
     onRequestValues?.(getValues);
   }, [onRequestValues, getValues]);
 
-  // Edit mode - populate legislation fields
-  useEffect(() => {
-    const legislation = legislationQuery?.data?.legislation;
-    const ancestors = legislation?.ancestors;
-    const contraventionId = contravention?.legislationIdentifierRef;
-    if (!legislation || !ancestors || !contraventionId) return;
-    const findAncestor = (type: string) => ancestors.find((a) => a?.legislationTypeCode === type)?.legislationGuid;
-    const actGuid = findAncestor("ACT");
-    const regGuid = findAncestor("REG");
-    const sectionGuid =
-      (legislation.legislationTypeCode === "SCHED" ? contraventionId : null) ??
-      findAncestor("SCHED") ??
-      (legislation.legislationTypeCode === "SEC" ? contraventionId : null) ??
-      findAncestor("SEC");
-    if (actGuid) setAct(actGuid);
-    if (regGuid) setRegulation(regGuid);
-    if (sectionGuid) setSection(sectionGuid);
-  }, [legislationQuery?.data, contravention?.legislationIdentifierRef]);
-
   // Edit mode - sync form field meta
   useEffect(() => {
     if (!contravention) return;
