@@ -22,21 +22,6 @@ interface ContraventionPartyFormProps {
   onRequestValues?: (valuesFn: () => ContraventionPartyFormValues) => void;
 }
 
-const PARTY_TYPE_OPTIONS: CardOption[] = [
-  {
-    value: "known",
-    label: "Known party",
-    description: "Identified individual or entity",
-    icon: "bi bi-person",
-  },
-  {
-    value: "unknown",
-    label: "Unknown party",
-    description: "Unidentified individual or entity",
-    icon: "bi bi-person-x",
-  },
-];
-
 export const ContraventionPartyForm = ({
   contravention,
   parties,
@@ -73,6 +58,25 @@ export const ContraventionPartyForm = ({
         value: party.partyIdentifier,
         label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
       })) ?? [];
+
+  const hasParties = partyOptions.length > 0;
+
+  const partyTypeOptions: CardOption[] = [
+    {
+      value: "known",
+      label: "Known party",
+      description: hasParties ? "Identified individual or entity" : "No parties of interest added to investigation",
+      icon: "bi bi-person",
+      disabled: !hasParties,
+      disabledMessage: "No parties of interest have been added to this investigation",
+    },
+    {
+      value: "unknown",
+      label: "Unknown party",
+      description: "Unidentified individual or entity",
+      icon: "bi bi-person-x",
+    },
+  ];
 
   // Edit mode - populate parties
   useEffect(() => {
@@ -124,12 +128,18 @@ export const ContraventionPartyForm = ({
         name="partyType"
         label="Select party type"
         required
+        validators={{
+          onSubmit: z.enum(["known", "unknown"], {
+            message: "Please select a party type",
+          }),
+        }}
         render={(field) => (
           <CardOptionSelector
             id="party-type"
-            options={PARTY_TYPE_OPTIONS}
+            options={partyTypeOptions}
             value={field.state.value}
             onChange={(value) => field.handleChange(value)}
+            errMsg={field.state.meta.errors?.[0]?.message || ""}
           />
         )}
       />
@@ -143,7 +153,7 @@ export const ContraventionPartyForm = ({
           validators={{
             onSubmit: z
               .array(z.object({ value: z.string(), label: z.string() }))
-              .refine((val) => form.getFieldValue("partyType") === "unknown" || val.length > 0, {
+              .refine((val) => form.getFieldValue("partyType") !== "known" || val.length > 0, {
                 message: "At least one party is required",
               }),
           }}

@@ -5,6 +5,8 @@ export interface CardOption {
   label: string;
   description?: string;
   icon?: string;
+  disabled?: boolean;
+  disabledMessage?: string;
 }
 
 interface CardOptionSelectorProps {
@@ -26,6 +28,8 @@ export const CardOptionSelector: FC<CardOptionSelectorProps> = ({ id, options, v
             id={`${id}-${option.value}`}
             className={`card-option-selector ${value === option.value ? "selected" : ""}`}
             onClick={() => onChange(option.value)}
+            disabled={option.disabled}
+            title={option.disabled ? option.disabledMessage : undefined}
           >
             <div className="card-option-selector-content">
               {option.icon && <i className={`${option.icon} card-option-selector-icon`} />}
