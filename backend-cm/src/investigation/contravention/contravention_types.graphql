@@ -4,10 +4,14 @@ type Contravention {
   legislationIdentifierRef: String!
   investigationParty: [InvestigationParty]
   isActive: Boolean!
+  date: Date
+  community: String
 }
 
 input CreateUpdateContraventionInput {
   investigationGuid: String!
   investigationPartyGuids: [String]
   legislationReference: String!
+  date: Date
+  community: String
 }
