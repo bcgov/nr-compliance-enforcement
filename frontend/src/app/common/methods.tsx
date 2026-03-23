@@ -184,11 +184,7 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
-/**
- * Escape a value for safe inclusion in a CSV cell.
- * Converts UI placeholder dashes (em-dash) to empty strings, then
- * wraps in double-quotes when the value contains commas, quotes, or newlines.
- */
+// Protect values with quotes, commas and new lines for CSV export
 export const escapeCsvCell = (value: string): string => {
   const raw = String(value ?? "");
   const s = raw === "\u2014" ? "" : raw;
