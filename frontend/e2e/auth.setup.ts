@@ -58,7 +58,6 @@ async function loginToKeycloak(page: Page, role?: string): Promise<void> {
   // Construct auth URL
   const urlString = `${authBaseUrl}/realms/${realm}/protocol/openid-connect/auth`;
   const authUrl = new URL(urlString);
-  console.log(authUrl.toString());
   authUrl.searchParams.append("client_id", clientId);
   authUrl.searchParams.append("redirect_uri", redirectUri);
   authUrl.searchParams.append("response_type", "code");
