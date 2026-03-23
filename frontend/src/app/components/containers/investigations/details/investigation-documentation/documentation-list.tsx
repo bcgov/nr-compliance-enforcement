@@ -92,7 +92,7 @@ export const DocumentationList: FC<Props> = ({
   const renderMessage = (icon: string, message: string, variant?: string) => (
     <tr>
       <td
-        colSpan={3}
+        colSpan={9}
         className="text-center p-4"
       >
         <div className={`d-flex align-items-center justify-content-center ${variant || ""}`}>

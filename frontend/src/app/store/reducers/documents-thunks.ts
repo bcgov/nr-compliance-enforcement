@@ -95,7 +95,7 @@ export const exportComplaint =
 
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
 
       return "success";
     } catch (error) {
