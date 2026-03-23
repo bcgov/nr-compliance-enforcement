@@ -13,4 +13,4 @@ bootstrap()
   })
   .catch((err) => {
     logger.error(err);
-  });
+  }); // sigh
