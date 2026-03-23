@@ -60,8 +60,6 @@ export class LegislationService {
   ) {
     const filterDate = offenseDate ?? new Date().toISOString().split("T")[0];
 
-    console.log(filterDate);
-
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
       WITH RECURSIVE descendants AS (
         SELECT
