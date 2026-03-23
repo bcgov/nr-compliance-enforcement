@@ -9,6 +9,8 @@ export class Contravention {
   legislationIdentifierRef: string;
   investigationParty: InvestigationParty[];
   isActive: boolean;
+  date: Date;
+  community: string;
 }
 
 @InputType()
@@ -21,6 +23,12 @@ export class CreateUpdateContraventionInput {
 
   @Field(() => String)
   legislationReference: string;
+
+  @Field(() => Date)
+  date: Date;
+
+  @Field(() => String)
+  community: string;
 }
 
 export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
@@ -53,6 +61,14 @@ export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isActive,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.date,
+      mapFrom((src) => src.contravention_date),
+    ),
+    forMember(
+      (dest) => dest.community,
+      mapFrom((src) => src.geo_organization_unit_code_ref),
     ),
   );
 };
