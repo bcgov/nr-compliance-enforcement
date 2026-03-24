@@ -78,6 +78,14 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
           aVal = a.taskStatusCode ?? "";
           bVal = b.taskStatusCode ?? "";
           break;
+        case "remarks":
+          aVal = a.remarks ?? "";
+          bVal = b.remarks ?? "";
+          break;
+        case "dueDate":
+          aVal = a.dueDate ?? "";
+          bVal = b.dueDate ?? "";
+          break;
         case "assignedOfficer":
           aVal = resolveOfficer(a);
           bVal = resolveOfficer(b);
@@ -137,9 +145,11 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
           </div>
         </th>
         {renderSortableHeader("Category", "category", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-60 comp-cell-min-width-160")}
+        {renderSortableHeader("Remarks", "remarks", "comp-cell-width-110")}
         {renderSortableHeader("Status", "taskStatusCode", "comp-cell-width-110")}
         {renderSortableHeader("Officer assigned", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Due date", "dueDate", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader("Last updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
       </tr>
     </thead>

@@ -153,6 +153,7 @@ export const InvestigationDetails: FC = () => {
         return (
           <InvestigationDocumentation
             investigationGuid={investigationGuid}
+            investigationName={investigationData?.name}
             tasks={(investigationData?.tasks as Task[]) ?? []}
           />
         );
