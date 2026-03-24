@@ -347,7 +347,7 @@ export class InspectionService {
     let inspection;
     await this.prisma.$transaction(async (tx) => {
       try {
-        inspection = await this.prisma.inspection.create({
+        inspection = await tx.inspection.create({
           data: {
             inspection_status: input.inspectionStatus,
             inspection_description: input.description,
@@ -446,7 +446,7 @@ export class InspectionService {
           updateData.location_description = input.locationDescription;
         }
         // Perform the update
-        updatedInspection = await this.prisma.inspection.update({
+        updatedInspection = await tx.inspection.update({
           where: { inspection_guid: inspectionGuid },
           data: updateData,
           include: {

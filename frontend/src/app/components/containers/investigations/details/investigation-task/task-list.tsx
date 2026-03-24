@@ -201,7 +201,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
         <Table
-          className="comp-table mb-0"
+          className="comp-table mb-0 border-0"
           id="task-list"
         >
           {renderTaskListHeader()}
