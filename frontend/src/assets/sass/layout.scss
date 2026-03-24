@@ -679,6 +679,11 @@ p {
       margin-right: 8px;
       font-size: 1rem;
     }
+
+    // changes margins if the image is after the text (e.g. next button)
+    span + i {
+      margin-right: 0;
+    }
   }
 
   &-txt {

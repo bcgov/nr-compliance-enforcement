@@ -22,7 +22,7 @@ export async function bootstrap() {
   );
   app.enableCors();
   app.set("trust proxy", 1);
-  app.use(json({ limit: "3mb" })); // To support large legislation updates.
+  app.use(json({ limit: "3mb" })); // To support large legislation updates
   app.use(urlencoded({ extended: true, limit: "3mb" })); // To support large legislation updates
   app.enableShutdownHooks();
   app.setGlobalPrefix("api");

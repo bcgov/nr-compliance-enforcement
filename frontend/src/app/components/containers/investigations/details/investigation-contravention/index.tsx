@@ -24,55 +24,26 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
-  const handleAddContravention = () => {
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: MULTI_STEP_MODAL,
-        data: {
-          titles: ["Add contravention", "Add party"],
-          totalSteps: 2,
-          content: (
-            currentStep: number,
-            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
-            onRequestSave: (fn: () => Promise<void>) => void,
-            onClose: () => void,
-            // Note this is an intentional architectural decisions to allow for a reusable multi-step modal
-            // eslint-disable-next-line react/no-unstable-nested-components
-          ) => (
-            <ContraventionForm
-              currentStep={currentStep}
-              activityGuid={investigationGuid}
-              contravention={undefined}
-              parties={investigationData?.parties as InvestigationParty[]}
-              onDirtyChange={handleChildDirtyChange}
-              onRequestValidate={onRequestValidate}
-              onRequestSave={onRequestSave}
-              onClose={onClose}
-            />
-          ),
-          handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
-  };
+  const openContraventionModal = (contraventionId?: string) => {
+    const contravention = contraventionId
+      ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
+      : undefined;
 
-  const handleEditContravention = (contraventionId: string) => {
-    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
+    const isEdit = !!contravention;
+
     dispatch(
       openModal({
         modalSize: "lg",
         modalType: MULTI_STEP_MODAL,
         data: {
-          titles: ["Edit contravention", "Edit party"],
+          titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
           totalSteps: 2,
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
             onRequestSave: (fn: () => Promise<void>) => void,
             onClose: () => void,
-            // Note this is an intentional architectural decisions to allow for a reusable multi-step modal
+            // Note: this is an intentional architectural decision to allow for a reusable multi-step modal
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
@@ -108,7 +79,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contravention={contravention as Contravention}
               investigationGuid={investigationGuid}
               index={index}
-              onEdit={handleEditContravention}
+              onEdit={() => openContraventionModal(contravention?.contraventionIdentifier)}
             />
           </div>
         ))}
@@ -120,7 +91,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             variant="primary"
             size="sm"
             id="details-screen-edit-button"
-            onClick={handleAddContravention}
+            onClick={() => openContraventionModal()}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add contravention</span>

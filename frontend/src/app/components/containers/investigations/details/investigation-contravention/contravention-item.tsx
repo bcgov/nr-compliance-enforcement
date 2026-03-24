@@ -20,15 +20,15 @@ interface ContraventionItemProps {
   onEdit: (contraventionId: string) => void;
 }
 
-export const ContraventionItem = ({ contravention, investigationGuid, index, onEdit }: ContraventionItemProps) => {
-  const REMOVE_CONTRAVENTION = gql`
-    mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
-      removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
-        investigationGuid
-      }
+const REMOVE_CONTRAVENTION = gql`
+  mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!) {
+    removeContravention(investigationGuid: $investigationGuid, contraventionGuid: $contraventionGuid) {
+      investigationGuid
     }
-  `;
+  }
+`;
 
+export const ContraventionItem = ({ contravention, investigationGuid, index, onEdit }: ContraventionItemProps) => {
   const removeContraventionMutation = useGraphQLMutation(REMOVE_CONTRAVENTION, {
     onSuccess: () => {
       ToggleSuccess("Contravention removed successfully");
