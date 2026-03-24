@@ -184,6 +184,14 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
+// Protect values with quotes, commas and new lines for CSV export
+export const escapeCsvCell = (value: string): string => {
+  const raw = String(value ?? "");
+  const s = raw === "\u2014" ? "" : raw;
+  if (/[",\r\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
+  return s;
+};
+
 // given a filename and complaint identifier, inject the complaint identifier inbetween the file name and extension
 export const injectIdentifierToFilename = (
   filename: string,

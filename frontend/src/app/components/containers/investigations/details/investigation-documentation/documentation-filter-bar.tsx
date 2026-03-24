@@ -8,12 +8,16 @@ type Props = {
   tasks?: Task[];
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
+  onExport: () => void;
+  isExportDisabled: boolean;
 };
 
 export const DocumentationFilterBar: FC<Props> = ({
   tasks = [],
   toggleShowMobileFilters,
   toggleShowDesktopFilters,
+  onExport,
+  isExportDisabled,
 }) => {
   const { searchValues, setValues, clearValues } = useDocumentationSearch();
   const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
@@ -136,6 +140,18 @@ export const DocumentationFilterBar: FC<Props> = ({
             clear={removeFilter}
           />
         )}
+
+        <Button
+          id="documentation-export-btn"
+          variant="outline-primary"
+          size="sm"
+          className="icon-start ms-auto"
+          onClick={onExport}
+          disabled={isExportDisabled}
+        >
+          <i className="bi bi-download"></i>
+          <span>Export data</span>
+        </Button>
       </div>
     </div>
   );

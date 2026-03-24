@@ -41,6 +41,7 @@ export interface Attachment extends COMSObject {
 
 export interface InvestigationAttachmentsResult {
   attachments: Attachment[];
+  filteredAttachments: Attachment[];
   totalCount: number;
   isLoading: boolean;
   isError: boolean;
@@ -268,12 +269,14 @@ export const useInvestigationAttachments = (
 
     return {
       items: paginatedItems,
+      filtered: items,
       totalCount,
     };
   }, [query.data, tasks, search, taskFilter, fileTypeFilter, sortBy, sortOrder, page, pageSize]);
 
   return {
     attachments: attachmentResults.items,
+    filteredAttachments: attachmentResults.filtered,
     totalCount: attachmentResults.totalCount,
     isLoading: query.isLoading,
     isError: query.isError,
