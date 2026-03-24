@@ -6,6 +6,7 @@ type Query {
     legislationSourceGuid: String
     excludeRegulations: Boolean
     onlyActive: Boolean
+    offenseDate: String
   ): [Legislation]!
   legislation(legislationGuid: String!, includeAncestors: Boolean): Legislation
   legislationTypeCodes: [LegislationType]!

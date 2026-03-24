@@ -68,6 +68,8 @@ const GET_INVESTIGATION = gql`
             name
           }
         }
+        date
+        community
       }
       leadAgency
       locationAddress
