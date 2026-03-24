@@ -51,15 +51,12 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     .filter((s) => s.taskCategory === selectedCategory)
     .map((s) => ({ value: String(s.value ?? ""), label: String(s.label ?? "") }));
   const assignedOfficer =
-    task && officers
-      ? officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null
-      : null;
+    task && officers ? (officers.find((o) => o.app_user_guid === task.assignedUserIdentifier) ?? null) : null;
 
   const officerOptionsBase = officersInAgencyList ?? [];
 
   const officerOptionsExtended =
-    assignedOfficer &&
-    !officerOptionsBase.some((o) => o.app_user_guid === assignedOfficer.app_user_guid)
+    assignedOfficer && !officerOptionsBase.some((o) => o.app_user_guid === assignedOfficer.app_user_guid)
       ? [...officerOptionsBase, assignedOfficer]
       : officerOptionsBase;
 
@@ -78,7 +75,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     defaultValues: {
       taskCategory: "",
       taskSubCategory: "",
-      officerAssigned: "",
+      officerAssigned: currentUserGuid,
       description: "",
       remarks: "",
       dueDate: task?.dueDate ?? new Date(),
@@ -122,9 +119,10 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
 
   useEffect(() => {
     if (show && task) {
+      setSelectedCategory(task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskCategory", task.taskCategoryTypeCode ?? "");
       form.setFieldValue("taskSubCategory", task.taskTypeCode ?? "");
-      form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? "");
+      form.setFieldValue("officerAssigned", task.assignedUserIdentifier ?? currentUserGuid);
       form.setFieldValue("description", task.description ?? "");
       form.setFieldValue("dueDate", task?.dueDate ? task.dueDate : new Date());
       form.setFieldValue("remarks", task.remarks ?? "");
@@ -200,6 +198,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                   const value = option?.value ?? "";
                   field.handleChange(value);
                   setSelectedCategory(value);
+                  form.setFieldValue("taskSubCategory", ""); // reset sub-category when category changes
                 }}
                 placeholder="Select category"
                 isClearable
