@@ -142,99 +142,101 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
   const calculatedBorderClass = errMsg === "" ? "" : "error-border";
 
   return (
-    <div className={`comp-lat-long-input ${vertical ? "d-flex flex-column" : ""}`}>
-      <div className="d-flex flex-row gap-2">
-        <div
-          className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
-          style={vertical ? undefined : { maxWidth: "180px" }}
-        >
-          <i className="bi bi-calendar" />
-          <DatePicker
-            selected={displayDate}
-            onChange={(date) => {
-              if (date) {
-                emit(date, selectedTime);
-              }
-            }}
-            onBlur={handleDatePickerBlur}
-            placeholderText="yyyy-mm-dd"
-            className={`${calculatedBorderClass} ${classNamePrefix}`}
-            id={`${id}-date`}
-            dateFormat="yyyy-MM-dd"
-            {...(maxDate && { maxDate })}
-            minDate={minDate}
-            autoComplete="false"
-            monthsShown={2}
-            disabled={isDisabled}
-            showIcon={false}
-            showPreviousMonths={showPreviousMonths}
-            showYearDropdown={showYearDropdown}
-            scrollableYearDropdown={showYearDropdown}
-            {...(yearDropdownItemNumber != null && { yearDropdownItemNumber })}
-          />
-        </div>
-
-        {showTimePicker && (
+    <>
+      <div className={`comp-lat-long-input ${vertical ? "d-flex flex-column" : ""}`}>
+        <div className="d-flex flex-row gap-2">
           <div
-            className={`d-flex comp-date-time-picker comp-date-time-picker-split align-items-center ${calculatedBorderClass}`}
+            className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
+            style={vertical ? undefined : { maxWidth: "180px" }}
           >
-            <i className="bi bi-clock" />
+            <i className="bi bi-calendar" />
             <DatePicker
-              id={`${id}-hour`}
-              selected={displayTime}
+              selected={displayDate}
               onChange={(date) => {
-                if (!selectedDate) {
-                  if (onTimeWithoutDate) onTimeWithoutDate();
-                  return;
-                }
                 if (date) {
-                  emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "hour"));
+                  emit(date, selectedTime);
                 }
               }}
-              onChangeRaw={(event) => {
-                handleTimeRawInput(event, selectedDate, selectedTime, "hour", emit);
-              }}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={60}
-              timeCaption="Hour"
-              timeFormat="HH"
-              dateFormat="HH"
-              placeholderText="HH"
-              locale={enGB}
-            />
-            <span>:</span>
-            <DatePicker
-              id={`${id}-minute`}
-              selected={displayTime}
-              onChange={(date) => {
-                if (!selectedDate) {
-                  if (onTimeWithoutDate) onTimeWithoutDate();
-                  return;
-                }
-                if (date) {
-                  emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "minute"));
-                }
-              }}
-              onChangeRaw={(event) => {
-                handleTimeRawInput(event, selectedDate, selectedTime, "minute", emit);
-              }}
-              showTimeSelect
-              showTimeSelectOnly
-              // Note that we have to use custom css to hide the rest of the repeating minutes due to a lib limitation
-              calendarClassName="minute-picker"
-              timeIntervals={5}
-              timeCaption="Min"
-              timeFormat="mm"
-              dateFormat="mm"
-              placeholderText="mm"
-              minTime={new Date(0, 0, 0, 0, 0)}
-              maxTime={new Date(0, 0, 0, 0, 55)}
+              onBlur={handleDatePickerBlur}
+              placeholderText="yyyy-mm-dd"
+              className={`${calculatedBorderClass} ${classNamePrefix}`}
+              id={`${id}-date`}
+              dateFormat="yyyy-MM-dd"
+              {...(maxDate && { maxDate })}
+              minDate={minDate}
+              autoComplete="false"
+              monthsShown={2}
+              disabled={isDisabled}
+              showIcon={false}
+              showPreviousMonths={showPreviousMonths}
+              showYearDropdown={showYearDropdown}
+              scrollableYearDropdown={showYearDropdown}
+              {...(yearDropdownItemNumber != null && { yearDropdownItemNumber })}
             />
           </div>
-        )}
+
+          {showTimePicker && (
+            <div
+              className={`d-flex comp-date-time-picker comp-date-time-picker-split align-items-center ${calculatedBorderClass}`}
+            >
+              <i className="bi bi-clock" />
+              <DatePicker
+                id={`${id}-hour`}
+                selected={displayTime}
+                onChange={(date) => {
+                  if (!selectedDate) {
+                    if (onTimeWithoutDate) onTimeWithoutDate();
+                    return;
+                  }
+                  if (date) {
+                    emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "hour"));
+                  }
+                }}
+                onChangeRaw={(event) => {
+                  handleTimeRawInput(event, selectedDate, selectedTime, "hour", emit);
+                }}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={60}
+                timeCaption="Hour"
+                timeFormat="HH"
+                dateFormat="HH"
+                placeholderText="HH"
+                locale={enGB}
+              />
+              <span>:</span>
+              <DatePicker
+                id={`${id}-minute`}
+                selected={displayTime}
+                onChange={(date) => {
+                  if (!selectedDate) {
+                    if (onTimeWithoutDate) onTimeWithoutDate();
+                    return;
+                  }
+                  if (date) {
+                    emit(selectedDate, buildTimeFromPickerDate(date, selectedTime, "minute"));
+                  }
+                }}
+                onChangeRaw={(event) => {
+                  handleTimeRawInput(event, selectedDate, selectedTime, "minute", emit);
+                }}
+                showTimeSelect
+                showTimeSelectOnly
+                // Note that we have to use custom css to hide the rest of the repeating minutes due to a lib limitation
+                calendarClassName="minute-picker"
+                timeIntervals={5}
+                timeCaption="Min"
+                timeFormat="mm"
+                dateFormat="mm"
+                placeholderText="mm"
+                minTime={new Date(0, 0, 0, 0, 0)}
+                maxTime={new Date(0, 0, 0, 0, 55)}
+              />
+            </div>
+          )}
+        </div>
       </div>
       <div className={calculatedClass}>{errMsg}</div>
-    </div>
+    </>
   );
 };
