@@ -20,7 +20,7 @@ export const generateExportComplaintInputParams = (
 ) => {
   let fileName = "";
 
-  if (agency != null) {
+  if (agency) {
     switch (agency) {
       case AgencyType.CEEB: {
         fileName = `${format(dateLogged, "yyyy-MM-dd")} Complaint ${id}.pdf`;
@@ -95,7 +95,7 @@ export const exportComplaint =
 
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      link.remove();
 
       return "success";
     } catch (error) {
