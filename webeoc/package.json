@@ -78,6 +78,7 @@
   },
   "overrides": {
     "glob": ">=10.5.0",
-    "flatted": "^3.4.2"
+    "flatted": "^3.4.2",
+    "minimatch": "^10.2.3"
   }
 }

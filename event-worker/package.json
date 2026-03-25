@@ -75,6 +75,7 @@
     "testEnvironment": "node"
   },
   "overrides": {
+    "minimatch": "^10.2.3",
     "glob": ">=10.5.0"
   }
 }
