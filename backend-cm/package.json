@@ -150,7 +150,7 @@
   "overrides": {
     "minimist@<1.2.6": "1.2.6",
     "minimatch": "^10.2.3",
-    "multer": "^2.0.3",
+    "multer": "^2.1.1",
     "lodash": "^4.17.21",
     "flatted": "^3.4.2",
     "js-yaml": "^4.1.1",
