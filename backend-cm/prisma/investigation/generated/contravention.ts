@@ -27,6 +27,12 @@ export class contravention {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: Date })
+  contravention_date?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  geo_organization_unit_code_ref?: string;
+
   @ApiPropertyOptional({ type: () => investigation })
   investigation?: investigation;
 

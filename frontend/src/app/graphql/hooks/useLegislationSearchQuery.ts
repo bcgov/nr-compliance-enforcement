@@ -10,6 +10,7 @@ export interface LegislationSearchParams {
   ancestorGuid?: string;
   excludeRegulations?: boolean;
   legislationSourceGuid?: string;
+  offenseDate?: string;
   enabled: boolean;
 }
 
@@ -34,6 +35,7 @@ const SEARCH_LEGISLATION = gql`
     $ancestorGuid: String
     $excludeRegulations: Boolean
     $legislationSourceGuid: String
+    $offenseDate: String
   ) {
     legislations(
       agencyCode: $agencyCode
@@ -42,6 +44,7 @@ const SEARCH_LEGISLATION = gql`
       ancestorGuid: $ancestorGuid
       excludeRegulations: $excludeRegulations
       legislationSourceGuid: $legislationSourceGuid
+      offenseDate: $offenseDate
     ) {
       legislationGuid
       legislationSourceGuid
@@ -118,6 +121,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       searchParams.ancestorGuid,
       searchParams.excludeRegulations,
       searchParams.legislationSourceGuid,
+      searchParams.offenseDate,
     ],
     variables: {
       agencyCode: searchParams.agencyCode,
@@ -126,6 +130,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       ancestorGuid: searchParams.ancestorGuid,
       excludeRegulations: searchParams.excludeRegulations,
       legislationSourceGuid: searchParams.legislationSourceGuid,
+      offenseDate: searchParams.offenseDate,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,
@@ -165,10 +170,12 @@ export const useLegislationDirectChildren = (params: LegislationDirectChildrenPa
 
 export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {
   return (
-    legislation?.map((legislation) => ({
-      label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
-      value: legislation.legislationGuid ?? "",
-    })) ?? []
+    legislation
+      ?.map((legislation) => ({
+        label: legislation.sectionTitle ?? legislation.legislationText ?? "", // If there is a section title we want this instead for dropdowns.
+        value: legislation.legislationGuid ?? "",
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)) ?? []
   );
 };
 
