@@ -38,7 +38,7 @@
     "import:federallaws": "nest start --entryFile=./src/cli.js -- import -j federallaws"
   },
   "dependencies": {
-    "@apollo/server": "^4.13.0",
+    "@apollo/server": "^5.0.0",
     "@automapper/core": "^8.8.1",
     "@automapper/nestjs": "^8.8.1",
     "@automapper/pojos": "^8.8.1",
