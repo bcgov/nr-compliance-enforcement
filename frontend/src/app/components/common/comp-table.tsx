@@ -98,36 +98,40 @@ export const CompTable = <T,>({
       <tr>
         {/* Chevron column header - only rendered when table is expandable */}
         {isExpandable && <th className="comp-cell-width-30 comp-cell-min-width-30" />}
-        {columns.map((col) =>
-          col.isSortable ? (
-            <SortableHeader
-              key={col.label}
-              title={col.label}
-              sortFnc={handleSort}
-              sortKey={col.sortKey ?? col.label}
-              currentSort={sortBy}
-              sortDirection={sortOrder}
-              className={col.headerClassName}
-            />
-          ) : (
-            <th
-              key={col.label}
-              className={col.headerClassName}
-            >
-              {col.label}
-            </th>
-          ),
-        )}
+        {columns
+          .filter((col) => !col.isHidden)
+          .map((col) =>
+            col.isSortable ? (
+              <SortableHeader
+                key={col.label}
+                title={col.label}
+                sortFnc={handleSort}
+                sortKey={col.sortKey ?? col.label}
+                currentSort={sortBy}
+                sortDirection={sortOrder}
+                className={col.headerClassName}
+              />
+            ) : (
+              <th
+                key={col.label}
+                className={col.headerClassName}
+              >
+                {col.label}
+              </th>
+            ),
+          )}
       </tr>
     </thead>
   );
 
   const renderBody = () => {
+    const visibleColumnCount = columns.filter((col) => !col.isHidden).length;
+
     if (isLoading) {
       return (
         <tr>
           <td
-            colSpan={columns.length + (isExpandable ? 1 : 0)}
+            colSpan={visibleColumnCount + (isExpandable ? 1 : 0)}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center">
@@ -145,7 +149,7 @@ export const CompTable = <T,>({
       return (
         <tr>
           <td
-            colSpan={columns.length + (isExpandable ? 1 : 0)}
+            colSpan={visibleColumnCount + (isExpandable ? 1 : 0)}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center text-danger">
@@ -161,7 +165,7 @@ export const CompTable = <T,>({
       return (
         <tr>
           <td
-            colSpan={columns.length + (isExpandable ? 1 : 0)}
+            colSpan={visibleColumnCount + (isExpandable ? 1 : 0)}
             className="text-center p-4"
           >
             <div className="d-flex align-items-center justify-content-center">

@@ -4,7 +4,6 @@ import { Button, CloseButton, Collapse, Offcanvas, OverlayTrigger, Tooltip } fro
 
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { ComplaintFilter } from "./complaint-filter";
-import { ComplaintList } from "./complaint-list";
 
 import { ComplaintFilterBar } from "./complaint-filter-bar";
 import { ComplaintFilterContext, ComplaintFilterProvider } from "@providers/complaint-filter-provider";
@@ -33,6 +32,7 @@ import { resetComplaintSearchParameters, selectComplaintSearchParameters } from 
 import { AgencyType } from "@/app/types/app/agency-types";
 import { DropdownOption } from "@/app/types/app/drop-down-option";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { ComplaintList } from "@/app/components/containers/complaints/complaint-list";
 
 type Props = {
   defaultComplaintType: string;

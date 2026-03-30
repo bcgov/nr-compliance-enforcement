@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 export type CompColumn<T> = {
   label: string;
+  isHidden?: boolean;
   sortKey?: string;
   headerClassName?: string;
   cellClassName?: string;

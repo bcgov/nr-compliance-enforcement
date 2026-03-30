@@ -10,6 +10,7 @@ export const CompTableRow = <T,>({
 }: CompTableRowProps<T>) => {
   const isExpandable = !!renderExpandedContent;
   const expandedClass = isExpanded ? "comp-cell-parent-expanded align-middle" : "align-middle";
+  const visibleColumns = columns.filter((col) => !col.isHidden);
 
   const handleRowClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -37,8 +38,8 @@ export const CompTableRow = <T,>({
           </td>
         )}
 
-        {/* Data cells */}
-        {columns.map((col) => (
+        {/* Data cells - hidden columns are skipped */}
+        {visibleColumns.map((col) => (
           <td
             key={col.label}
             className={`${col.cellClassName ?? ""} ${expandedClass}`}
@@ -55,9 +56,9 @@ export const CompTableRow = <T,>({
           <td className="comp-cell-width-30 comp-cell-child-expanded" />
           {/* Spacer cell for identifier column */}
           <td className="comp-cell-child-expanded" />
-          {/* Expanded content spanning remaining columns */}
+          {/* Expanded content spanning remaining visible columns */}
           <td
-            colSpan={columns.length}
+            colSpan={visibleColumns.length - 1}
             className="comp-cell-child-expanded"
           >
             {renderExpandedContent(row)}

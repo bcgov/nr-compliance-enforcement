@@ -1,4 +1,4 @@
-import { FC, useRef, useState, useContext, useEffect, useCallback } from "react";
+import { FC, useRef, useState, useContext, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import {
@@ -8,27 +8,18 @@ import {
   selectTotalComplaintsByType,
   selectComplaintSearchParameters,
 } from "@store/reducers/complaints";
-import { Table } from "react-bootstrap";
+
 import { SORT_TYPES } from "@constants/sort-direction";
 import { ComplaintFilterContext } from "@providers/complaint-filter-provider";
 import { ComplaintFilters } from "@apptypes/complaints/complaint-filters/complaint-filters";
 import { ComplaintRequestPayload } from "@/app/types/complaints/complaint-filters/complaint-request-payload";
-import { WildlifeComplaintListHeader } from "./headers/wildlife-complaint-list-header";
-import { GeneralComplaintListHeader } from "./headers/general-complaint-list-header";
-import { AllegationComplaintListHeader } from "./headers/allegation-complaint-list-header";
-import { SectorComplaintListHeader } from "./headers/sector-complaint-list-header";
 import { selectActiveTab, selectDefaultPageSize } from "@store/reducers/app";
-import { WildlifeComplaintListItem } from "./list-items/wildlife-complaint-list-item";
-import { AllegationComplaintListItem } from "./list-items/allegation-complaint-list-item";
-import { SectorComplaintListItem } from "./list-items/sector-complaint-list-item";
-import Paginator from "@/app/components/common/paginator";
 
 //-- new models
-import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
-import { GeneralInformationComplaintListItem } from "./list-items/general-complaint-list-item";
-import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
-import { Complaint } from "@apptypes/app/complaints/complaint";
+import { WildlifeComplaintList } from "@/app/components/containers/complaints/lists/wildlife-complaint-list";
+import { AllegationComplaintList } from "@/app/components/containers/complaints/lists/allegation-complaint-list";
+import { AllegationComplaint } from "@/app/types/app/complaints/allegation-complaint";
 
 type Props = {
   type: string;
@@ -181,20 +172,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSort = (sortInput: string) => {
-    if (sortKey === sortInput) {
-      setSortDirection(sortDirection === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC);
-    } else {
-      setSortKey(sortInput);
-      setSortDirection(SORT_TYPES.ASC);
-    }
-  };
-
-  const handlePageChange = useCallback((page: number) => {
-    setPage(page);
-    scrollToTop();
-  }, []);
-
   // Scroll to top of table container when paginating
   const divRef = useRef<HTMLDivElement>(null);
   const scrollToTop = () => {
@@ -204,42 +181,42 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     });
   };
 
-  const renderComplaintListHeader = (type: string): JSX.Element => {
-    switch (type) {
-      case COMPLAINT_TYPES.ERS:
-        return (
-          <AllegationComplaintListHeader
-            handleSort={handleSort}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
-          />
-        );
+  const renderComplaintList = (type: string): JSX.Element => {
+    const sharedProps = {
+      isLoading: false, // ComplaintList doesn't currently track loading state
+      error: null,
+      totalItems: totalComplaints,
+      currentPage: page,
+      pageSize,
+      sortKey,
+      sortDirection,
+      onSort: (key: string, direction: string) => {
+        setSortKey(key);
+        setSortDirection(direction);
+      },
+      onPageChange: (newPage: number) => {
+        setPage(newPage);
+        scrollToTop();
+      },
+    };
 
-      case COMPLAINT_TYPES.GIR:
-        return (
-          <GeneralComplaintListHeader
-            handleSort={handleSort}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
-          />
-        );
+    switch (type) {
       case COMPLAINT_TYPES.HWCR:
         return (
-          <WildlifeComplaintListHeader
-            handleSort={handleSort}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
+          <WildlifeComplaintList
+            complaints={complaints as WildlifeComplaint[]}
+            {...sharedProps}
           />
         );
-      case COMPLAINT_TYPES.SECTOR:
-      default:
+      case COMPLAINT_TYPES.ERS:
         return (
-          <SectorComplaintListHeader
-            handleSort={handleSort}
-            sortKey={sortKey}
-            sortDirection={sortDirection}
+          <AllegationComplaintList
+            complaints={complaints as AllegationComplaint[]}
+            {...sharedProps}
           />
         );
+      default:
+        return <></>;
     }
   };
 
@@ -255,71 +232,11 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
   };
 
   return (
-    <div className="comp-table-container">
-      <div
-        className="comp-table-scroll-container"
-        ref={divRef}
-      >
-        <Table
-          className="comp-table"
-          id="complaint-list"
-        >
-          {renderComplaintListHeader(type)}
-          <tbody>
-            {totalComplaints === 0 && renderNoComplaintsFound()}
-            {complaints.map((item) => {
-              const { id } = item;
-
-              switch (type) {
-                case COMPLAINT_TYPES.ERS: {
-                  return (
-                    <AllegationComplaintListItem
-                      key={id}
-                      type={type}
-                      complaint={item as AllegationComplaint}
-                    />
-                  );
-                }
-                case COMPLAINT_TYPES.GIR: {
-                  return (
-                    <GeneralInformationComplaintListItem
-                      key={id}
-                      type={type}
-                      complaint={item as GeneralIncidentComplaint}
-                    />
-                  );
-                }
-                case COMPLAINT_TYPES.HWCR: {
-                  return (
-                    <WildlifeComplaintListItem
-                      key={id}
-                      type={type}
-                      complaint={item as WildlifeComplaint}
-                    />
-                  );
-                }
-                case COMPLAINT_TYPES.SECTOR:
-                default: {
-                  return (
-                    <SectorComplaintListItem
-                      key={id}
-                      complaint={item as Complaint}
-                    />
-                  );
-                }
-              }
-            })}
-          </tbody>
-        </Table>
-      </div>
-
-      <Paginator
-        currentPage={page}
-        totalItems={totalComplaints}
-        onPageChange={handlePageChange}
-        resultsPerPage={pageSize}
-        resetPageOnChange={true}
-      />
+    <div
+      className="comp-table-container"
+      ref={divRef}
+    >
+      {renderComplaintList(type)}
     </div>
   );
 };
