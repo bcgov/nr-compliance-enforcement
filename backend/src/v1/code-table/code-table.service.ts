@@ -318,13 +318,21 @@ export class CodeTableService {
             "{inactionJustificationCodes{inactionJustificationCode outcomeAgencyCode shortDescription longDescription displayOrder activeIndicator}}",
         });
         const justificationCodes = data.inactionJustificationCodes.map(
-          ({ inactionJustificationCode, shortDescription, longDescription, displayOrder, activeIndicator }) => {
+          ({
+            inactionJustificationCode,
+            outcomeAgencyCode,
+            shortDescription,
+            longDescription,
+            displayOrder,
+            activeIndicator,
+          }) => {
             const table: Justification = {
               justification: inactionJustificationCode,
               shortDescription: shortDescription,
               longDescription: longDescription,
               displayOrder: displayOrder,
               isActive: activeIndicator,
+              outcomeAgencyCode,
             };
             return table;
           },

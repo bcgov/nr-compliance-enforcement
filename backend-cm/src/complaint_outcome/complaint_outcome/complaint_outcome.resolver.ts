@@ -27,7 +27,7 @@ export class ComplaintOutcomeResolver {
   constructor(private readonly complaintOutcomeService: ComplaintOutcomeService) {}
 
   @Mutation("createAssessment")
-  @Roles(Role.COS, Role.PARKS)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB)
   createAssessment(@Args("input") input: CreateAssessmentInput) {
     return this.complaintOutcomeService.createAssessment(input);
   }
@@ -69,7 +69,7 @@ export class ComplaintOutcomeResolver {
   }
 
   @Mutation("updateAssessment")
-  @Roles(Role.COS, Role.PARKS)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB)
   updateAssessment(@Args("input") input: UpdateAssessmentInput) {
     return this.complaintOutcomeService.updateAssessment(input);
   }
