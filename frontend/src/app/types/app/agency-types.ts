@@ -4,7 +4,6 @@ export const AgencyType = {
   NROS: "NROS",
   PARKS: "PARKS",
   SECTOR: "NRS",
-  NROS: "NROS",
 };
 
 export const AgencyNames = {

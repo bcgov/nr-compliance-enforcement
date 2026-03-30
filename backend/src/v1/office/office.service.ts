@@ -6,7 +6,6 @@ import { OfficeAssignmentDto } from "../../types/models/office/office-assignment
 import {
   getOffices,
   getCosGeoOrgUnits,
-  getGeoOrganizationUnitCodes,
   createOffice,
   updateOffice,
   getOfficesByZone,

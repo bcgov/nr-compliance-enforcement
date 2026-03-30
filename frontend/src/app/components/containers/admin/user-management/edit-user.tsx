@@ -377,8 +377,7 @@ export const EditUser: FC<EditUserProps> = ({
     mapRoles: Array<{ name: string | undefined }>,
   ) => {
     switch (selectedUserAgency?.value) {
-      case AgencyType.CEEB:
-      case AgencyType.NROS: {
+      case AgencyType.CEEB: {
         if (selectedRoles) {
           let res = await updateTeamRole(
             selectedUserIdir,
@@ -597,8 +596,7 @@ export const EditUser: FC<EditUserProps> = ({
           <div className="comp-details-form-row">
             <label htmlFor="user-team-office-id">{labelOffice()}</label>
             <div className="comp-details-edit-input user-team-office-id">
-              {(currentAgency?.value === AgencyType.CEEB ||
-                selectedAgency?.value === AgencyType.CEEB) && (
+              {(currentAgency?.value === AgencyType.CEEB || selectedAgency?.value === AgencyType.CEEB) && (
                 <CompSelect
                   id="team-select-id"
                   showInactive={false}
@@ -616,8 +614,10 @@ export const EditUser: FC<EditUserProps> = ({
                   isClearable={true}
                 />
               )}
-              {(currentAgency?.value === AgencyType.COS || selectedAgency?.value === AgencyType.COS ||
-                currentAgency?.value === AgencyType.NROS || selectedAgency?.value === AgencyType.NROS) && (
+              {(currentAgency?.value === AgencyType.COS ||
+                selectedAgency?.value === AgencyType.COS ||
+                currentAgency?.value === AgencyType.NROS ||
+                selectedAgency?.value === AgencyType.NROS) && (
                 <CompSelect
                   id="species-select-id"
                   showInactive={false}
