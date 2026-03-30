@@ -53,6 +53,8 @@ export const CompTableRow = <T,>({
         <tr onClick={handleRowClick}>
           {/* Spacer cell for chevron column */}
           <td className="comp-cell-width-30 comp-cell-child-expanded" />
+          {/* Spacer cell for identifier column */}
+          <td className="comp-cell-child-expanded" />
           {/* Expanded content spanning remaining columns */}
           <td
             colSpan={columns.length}
