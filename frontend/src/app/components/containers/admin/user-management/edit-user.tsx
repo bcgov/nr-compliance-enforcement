@@ -24,6 +24,7 @@ import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/
 import {
   CEEB_ROLE_OPTIONS,
   COS_ROLE_OPTIONS,
+  NROS_ROLE_OPTIONS,
   PARKS_ROLE_OPTIONS,
   ROLE_OPTIONS,
   SECTOR_ROLE_OPTIONS,
@@ -187,6 +188,13 @@ export const EditUser: FC<EditUserProps> = ({
         return;
       }
 
+      const hasNROSRole = userRoles.some((role: any) => role.includes("NROS"));
+      if (hasNROSRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.NROS, agencyList);
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
       // Fallback to NRS if no matching role
       currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agencyList);
       setCurrentAgency(currentAgency);
@@ -216,6 +224,9 @@ export const EditUser: FC<EditUserProps> = ({
         break;
       case AgencyType.PARKS:
         setRoleList(PARKS_ROLE_OPTIONS);
+        break;
+      case AgencyType.NROS:
+        setRoleList(NROS_ROLE_OPTIONS);
         break;
       default:
         setRoleList(SECTOR_ROLE_OPTIONS);
@@ -378,6 +389,16 @@ export const EditUser: FC<EditUserProps> = ({
           await dispatch(updateOfficerReducer(app_user_guid, { park_area_guid: selectedParkArea?.value ?? null }));
         }
         //Update roles
+        let res = await updateTeamRole(
+          selectedUserIdir,
+          officerData?.app_user_guid,
+          selectedUserAgency?.value,
+          null,
+          mapRoles,
+        );
+        return res;
+      }
+      case AgencyType.NROS: {
         let res = await updateTeamRole(
           selectedUserIdir,
           officerData?.app_user_guid,

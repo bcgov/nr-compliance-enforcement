@@ -93,13 +93,14 @@ function getAgencyDetailDisplay(
 type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role" | "zone" | "region";
 
 // Agencies with a dedicated tab / table
-const AGENCY_TAB_CODES = [AgencyType.COS, AgencyType.PARKS, AgencyType.CEEB, AgencyType.SECTOR] as const;
+const AGENCY_TAB_CODES = [AgencyType.COS, AgencyType.PARKS, AgencyType.CEEB, AgencyType.NROS, AgencyType.SECTOR] as const;
 
 // Labels for the agency detail column
 const AGENCY_DETAIL_COLUMN_LABEL: Record<string, string> = {
   [AgencyType.COS]: "Office",
   [AgencyType.PARKS]: "Park area",
   [AgencyType.CEEB]: "Team",
+  [AgencyType.NROS]: "—",
   [AgencyType.SECTOR]: "—",
 };
 
@@ -204,6 +205,7 @@ export const SelectUser: FC<SelectUserProps> = ({
       if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
       if (UserService.hasRole(Roles.CEEB)) tabs.push(AgencyType.CEEB); // EPO
       if (UserService.hasRole(Roles.PARKS)) tabs.push(AgencyType.PARKS);
+      if (UserService.hasRole(Roles.NROS)) tabs.push(AgencyType.NROS);
       tabs.push(AgencyType.SECTOR); // Natural Resource Sector visible to all agency administrators
       return tabs;
     }

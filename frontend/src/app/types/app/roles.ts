@@ -12,9 +12,10 @@ enum Roles {
   PARKS = "PARKS",
   HWCR_ONLY = "HWCR only",
   SECTOR = "SECTOR",
+  NROS = "NROS",
 }
 
-const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.SECTOR];
+const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.NROS, Roles.SECTOR];
 
 const adminRoles: Roles[] = [Roles.GLOBAL_ADMINISTRATOR, Roles.AGENCY_ADMINISTRATOR];
 

@@ -111,7 +111,7 @@ export const CreateComplaint: FC = () => {
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
   let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
-  if (agency === AgencyType.CEEB) {
+  if (agency === AgencyType.CEEB || agency === AgencyType.NROS) {
     initialComplaintType = COMPLAINT_TYPES.ERS;
   } else if (agency === AgencyType.COS || agency === AgencyType.PARKS) {
     switch (activeTab) {
