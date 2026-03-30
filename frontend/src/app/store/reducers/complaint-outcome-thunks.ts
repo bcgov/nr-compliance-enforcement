@@ -115,20 +115,28 @@ export const getAssessment =
 
 export const upsertAssessment =
   (complaintIdentifier: string, assessment: Assessment): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     if (!assessment) {
       return;
     }
-    const complaintOutcomeGuid = await dispatch(findCase(complaintIdentifier));
-    if (!complaintOutcomeGuid || !assessment.id) {
-      dispatch(addAssessment(assessment, complaintIdentifier, complaintOutcomeGuid));
+    const {
+      complaintOutcomes: { complaintOutcomeGuid },
+    } = getState();
+
+    if (!assessment.id) {
+      dispatch(addAssessment(assessment, complaintIdentifier));
     } else {
-      dispatch(updateAssessment(assessment, complaintIdentifier, complaintOutcomeGuid));
+      const guid = complaintOutcomeGuid ?? (await dispatch(findCase(complaintIdentifier)));
+      if (!guid) {
+        ToggleError("Unable to update assessment: complaint outcome was not found.");
+        return;
+      }
+      dispatch(updateAssessment(assessment, complaintIdentifier, guid));
     }
   };
 
 const addAssessment =
-  (assessment: Assessment, complaintIdentifier: string, complaintOutcomeGuid?: string): AppThunk =>
+  (assessment: Assessment, complaintIdentifier: string): AppThunk =>
   async (dispatch, getState) => {
     const {
       codeTables: { "assessment-type": assessmentType, "assessment-cat1-type": assessmentCat1Type },
@@ -218,7 +226,9 @@ const addAssessment =
       const assessments = await parseAssessmentResponse(res, officers);
       if (res) {
         dispatch(setAssessments(assessments));
-        if (!complaintOutcomeGuid) dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
+        if (res.complaintOutcomeGuid) {
+          dispatch(setComplaintOutcomeGuid(res.complaintOutcomeGuid));
+        }
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
       } else {
