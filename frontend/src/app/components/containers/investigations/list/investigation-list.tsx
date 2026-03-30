@@ -1,31 +1,40 @@
 import { FC, useCallback } from "react";
-import { Table } from "react-bootstrap";
-import { SortableHeader } from "@components/common/sortable-header";
-import Paginator from "@/app/components/common/paginator";
-import { SORT_TYPES } from "@constants/sort-direction";
-import { InvestigationListItem } from "./investigation-list-item";
+import { Dropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { CompTable } from "@components/common/comp-table";
+import { CompColumn } from "@/app/types/app/comp-tables";
+import { CaseFile, Investigation } from "@/generated/graphql";
+import { applyStatusClass, formatDateTime } from "@common/methods";
+import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { useAppSelector } from "@/app/hooks/hooks";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
+import { SORT_TYPES } from "@constants/sort-direction";
+import Option from "@apptypes/app/option";
 
 type Props = {
-  investigations: any[];
-  cases?: Map<string, any[]>;
+  investigations: Investigation[];
+  cases?: Map<string, CaseFile[]>;
   totalItems?: number;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, isLoading = false, error = null, cases = new Map() }) => {
+export const InvestigationList: FC<Props> = ({
+  investigations,
+  totalItems = 0,
+  isLoading = false,
+  error = null,
+  cases = new Map(),
+}) => {
   const { searchValues, setValues, setSort } = useInvestigationSearch();
+  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
 
-  const handleSort = (sortInput: string) => {
-    const currentSortBy = searchValues.sortBy;
-    const currentSortOrder = searchValues.sortOrder;
-    const newDirection =
-      currentSortBy === sortInput && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
-
-    // Update both sortBy and sortOrder atomically to avoid timing issues
-    setSort(sortInput, newDirection);
-  };
+  const handleSort = useCallback(
+    (sortKey: string, sortDirection: string) => {
+      setSort(sortKey, sortDirection);
+    },
+    [setSort],
+  );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -34,111 +43,138 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
     [setValues],
   );
 
-  const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
-    <SortableHeader
-      title={title}
-      sortFnc={handleSort}
-      sortKey={sortKey}
-      currentSort={searchValues.sortBy}
-      sortDirection={searchValues.sortOrder}
-      className={className}
-    />
-  );
-
-  const renderInvestigationListHeader = (): JSX.Element => (
-    <thead className="sticky-table-header">
-      <tr>
-        {renderSortableHeader(
-          "Investigation ID",
-          "name",
-          "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-        )}
-        <th className="unsortable comp-cell-width-160 comp-cell-min-width-160">
-          <div className="header-label">Case ID</div>
-        </th>
-        {renderSortableHeader("Date Opened", "openedTimestamp", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Status", "investigationStatus", "comp-cell-width-110")}
-        {renderSortableHeader("Agency", "leadAgency")}
-        <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell">
-          <div className="header-label">Actions</div>
-        </th>
-      </tr>
-    </thead>
-  );
-
-  const renderLoadingSpinner = () => (
-    <tr>
-      <td
-        colSpan={5}
-        className="text-center p-4"
-      >
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="spinner-border spinner-border-sm me-2">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <span>Loading investigations...</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderMessage = (icon: string, message: string, variant?: string) => {
-    return (
-      <tr>
-        <td
-          colSpan={6}
-          className="text-center p-4"
+  const columns: CompColumn<Investigation>[] = [
+    {
+      label: "Investigation ID",
+      sortKey: "name",
+      headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center",
+      isSortable: true,
+      getValue: (investigation) => investigation.name ?? investigation.investigationGuid ?? "",
+      renderCell: (investigation) => (
+        <Link
+          to={`/investigation/${investigation.investigationGuid}`}
+          className="comp-cell-link"
         >
-          <div className={`d-flex align-items-center justify-content-center${variant || ""}`}>
-            <i className={`bi bi-${icon} me-2`}></i>
-            <span>{message}</span>
-          </div>
-        </td>
-      </tr>
-    );
-  };
-
-  const renderErrorMessage = () =>
-    renderMessage(
-      "exclamation-triangle-fill",
-      `Error loading investigations: ${error?.message || "An unexpected error occurred"}`,
-      "text-danger",
-    );
-
-  const renderInvestigationListItems = () => {
-    if (isLoading) return renderLoadingSpinner();
-    if (!isLoading && error) return renderErrorMessage();
-    if (!isLoading && !error && investigations.length === 0)
-      return renderMessage("info-circle-fill", "No investigations found.");
-    return investigations.map((investigation) => (
-      <InvestigationListItem
-        key={investigation.investigationGuid}
-        data={investigation}
-        cases={cases.get(investigation.investigationGuid) || []}
-      />
-    ));
-  };
+          {investigation.name || investigation.investigationGuid}
+        </Link>
+      ),
+    },
+    {
+      label: "Case ID",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 text-center",
+      isSortable: false,
+      getValue: () => "",
+      renderCell: (investigation) =>
+        (cases.get(investigation.investigationGuid) ?? []).map((caseFile: CaseFile) => (
+          <Link
+            to={`/case/${caseFile.caseIdentifier}`}
+            className="comp-cell-link"
+            key={caseFile.caseIdentifier}
+          >
+            {caseFile.name || caseFile.caseIdentifier}
+          </Link>
+        )),
+    },
+    {
+      label: "Date Opened",
+      sortKey: "openedTimestamp",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
+      isSortable: true,
+      getValue: (investigation) => investigation.openedTimestamp ?? "",
+      renderCell: (investigation) => formatDateTime(investigation.openedTimestamp),
+    },
+    {
+      label: "Status",
+      sortKey: "investigationStatus",
+      headerClassName: "comp-cell-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (investigation) => investigation.investigationStatus?.investigationStatusCode ?? "",
+      renderCell: (investigation) =>
+        investigation.investigationStatus?.investigationStatusCode ? (
+          <span className={`badge ${applyStatusClass(investigation.investigationStatus.investigationStatusCode)}`}>
+            {investigation.investigationStatus.shortDescription}
+          </span>
+        ) : null,
+    },
+    {
+      label: "Agency",
+      sortKey: "leadAgency",
+      headerClassName: "",
+      cellClassName: "",
+      isSortable: true,
+      getValue: (investigation) => {
+        const agency = leadAgencyOptions.find((o: Option) => o.value === investigation.leadAgency);
+        return agency?.label ?? "";
+      },
+      renderCell: (investigation) => {
+        const agency = leadAgencyOptions.find((o: Option) => o.value === investigation.leadAgency);
+        return agency?.label ?? "-";
+      },
+    },
+    {
+      label: "Actions",
+      headerClassName:
+        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell",
+      cellClassName:
+        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell",
+      isSortable: false,
+      getValue: () => "",
+      renderCell: (investigation) => (
+        <Dropdown
+          id={`investigation-action-button-${investigation.investigationGuid}`}
+          drop="start"
+          className="comp-action-dropdown"
+        >
+          <Dropdown.Toggle
+            id={`investigation-action-toggle-${investigation.investigationGuid}`}
+            size="sm"
+            variant="outline-primary"
+          >
+            Actions
+          </Dropdown.Toggle>
+          <Dropdown.Menu
+            popperConfig={{
+              modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
+            }}
+          >
+            <Dropdown.Item
+              as={Link}
+              to={`/investigation/${investigation.investigationGuid}`}
+              id={`view-investigation-${investigation.investigationGuid}`}
+            >
+              <i className="bi bi-eye" /> View investigation
+            </Dropdown.Item>
+            <Dropdown.Item
+              as={Link}
+              to={`/investigation/${investigation.investigationGuid}/edit`}
+              id={`edit-investigation-${investigation.investigationGuid}`}
+            >
+              <i className="bi bi-pencil" /> Edit investigation
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      ),
+    },
+  ];
 
   return (
-    <div className="comp-table-container">
-      <div className="comp-table-scroll-container">
-        <Table
-          className="comp-table"
-          id="investigation-list"
-        >
-          {renderInvestigationListHeader()}
-          <tbody>{renderInvestigationListItems()}</tbody>
-        </Table>
-      </div>
-
-      {totalItems > 0 && (
-        <Paginator
-          currentPage={searchValues.page}
-          totalItems={totalItems}
-          onPageChange={handlePageChange}
-          resultsPerPage={searchValues.pageSize}
-        />
-      )}
-    </div>
+    <CompTable
+      data={investigations}
+      columns={columns}
+      getRowKey={(investigation) => investigation.investigationGuid ?? ""}
+      isLoading={isLoading}
+      error={error}
+      totalItems={totalItems}
+      currentPage={searchValues.page}
+      pageSize={searchValues.pageSize}
+      defaultSortLabel="Investigation ID"
+      defaultSortDirection={SORT_TYPES.ASC}
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+    />
   );
 };

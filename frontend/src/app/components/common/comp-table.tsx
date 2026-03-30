@@ -14,14 +14,25 @@ export const CompTable = <T,>({
   getRowKey,
   renderExpandedContent,
   isLoading = false,
+  error = null,
   pageSize = DEFAULT_PAGE_SIZE,
   defaultSortLabel,
   defaultSortDirection = SORT_TYPES.ASC,
+  onSort,
+  onPageChange,
+  totalItems,
+  currentPage: externalCurrentPage,
 }: CompTableProps<T>) => {
   const [sortBy, setSortBy] = useState<string>(defaultSortLabel);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [internalCurrentPage, setInternalCurrentPage] = useState<number>(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+
+  // Infer whether sorting and pagination are server-side
+  const isServerSort = !!onSort;
+  const isServerPagination = !!onPageChange;
+
+  const currentPage = isServerPagination ? (externalCurrentPage ?? 1) : internalCurrentPage;
 
   const isExpandable = !!renderExpandedContent;
 
@@ -30,8 +41,11 @@ export const CompTable = <T,>({
       const newDirection = sortBy === sortInput && sortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
       setSortBy(sortInput);
       setSortOrder(newDirection);
+      if (isServerSort) {
+        onSort(sortInput, newDirection);
+      }
     },
-    [sortBy, sortOrder],
+    [sortBy, sortOrder, isServerSort, onSort],
   );
 
   const handleToggleExpand = useCallback((rowKey: string) => {
@@ -46,11 +60,19 @@ export const CompTable = <T,>({
     });
   }, []);
 
-  const handlePageChange = useCallback((newPage: number) => {
-    setCurrentPage(newPage);
-  }, []);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      if (isServerPagination) {
+        onPageChange(newPage);
+      } else {
+        setInternalCurrentPage(newPage);
+      }
+    },
+    [isServerPagination, onPageChange],
+  );
 
   const sortedData = useMemo(() => {
+    if (isServerSort) return data;
     const activeColumn = columns.find((col) => col.label === sortBy);
     if (!activeColumn?.getValue) return [...data];
 
@@ -61,12 +83,15 @@ export const CompTable = <T,>({
       if (aVal > bVal) return sortOrder === SORT_TYPES.ASC ? 1 : -1;
       return 0;
     });
-  }, [data, columns, sortBy, sortOrder]);
+  }, [data, columns, sortBy, sortOrder, isServerSort]);
 
   const paginatedData = useMemo(() => {
+    if (isServerPagination) return data;
     const start = (currentPage - 1) * pageSize;
     return sortedData.slice(start, start + pageSize);
-  }, [sortedData, currentPage, pageSize]);
+  }, [sortedData, currentPage, pageSize, isServerPagination, data]);
+
+  const totalCount = isServerPagination ? (totalItems ?? 0) : sortedData.length;
 
   const renderHeader = () => (
     <thead className="sticky-table-header">
@@ -79,7 +104,7 @@ export const CompTable = <T,>({
               key={col.label}
               title={col.label}
               sortFnc={handleSort}
-              sortKey={col.label}
+              sortKey={col.sortKey ?? col.label}
               currentSort={sortBy}
               sortDirection={sortOrder}
               className={col.headerClassName}
@@ -110,6 +135,22 @@ export const CompTable = <T,>({
                 <span className="visually-hidden">Loading...</span>
               </div>
               <span>Loading...</span>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    if (error) {
+      return (
+        <tr>
+          <td
+            colSpan={columns.length + (isExpandable ? 1 : 0)}
+            className="text-center p-4"
+          >
+            <div className="d-flex align-items-center justify-content-center text-danger">
+              <i className="bi bi-exclamation-triangle-fill me-2" />
+              <span>{`Error loading data: ${error.message || "An unexpected error occurred"}`}</span>
             </div>
           </td>
         </tr>
@@ -157,10 +198,10 @@ export const CompTable = <T,>({
         </Table>
       </div>
 
-      {sortedData.length > 0 && (
+      {totalCount > 0 && (
         <Paginator
           currentPage={currentPage}
-          totalItems={sortedData.length}
+          totalItems={totalCount}
           onPageChange={handlePageChange}
           resultsPerPage={pageSize}
         />

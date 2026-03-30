@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 
 export type CompColumn<T> = {
   label: string;
+  sortKey?: string;
   headerClassName?: string;
   cellClassName?: string;
   isSortable?: boolean;
@@ -21,6 +22,11 @@ export type CompTableProps<T> = CompTableSharedProps<T> & {
   pageSize?: number;
   defaultSortLabel: string;
   defaultSortDirection?: string;
+  error?: Error | null;
+  onSort?: (sortKey: string, sortDirection: string) => void;
+  onPageChange?: (page: number) => void;
+  totalItems?: number;
+  currentPage?: number;
 };
 
 export type CompTableRowProps<T> = CompTableSharedProps<T> & {
