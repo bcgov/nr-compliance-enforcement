@@ -56,7 +56,7 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       dispatch(setActiveTab(CEEB_TYPES.ERS));
     } else if (UserService.hasRole([Roles.NROS])) {
       dispatch(setActiveTab(NROS_TYPES.ERS));
-    } 
+    }
   }, [dispatch]);
 
   const [complaintType, setComplaintType] = useState(() => {
@@ -332,6 +332,8 @@ const getFilters = (
     }
   } else if (UserService.hasRole(Roles.PARKS)) {
     filters = { ...filters, area: defaultParkArea };
+  } else if (UserService.hasRole(Roles.NROS)) {
+    filters = { ...filters, region: defaultRegion };
   } else if (currentOfficer && !UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
     const { first_name: firstName, last_name: lastName, app_user_guid: id } = currentOfficer;
     const officer = { label: `${lastName}, ${firstName}`, value: id };

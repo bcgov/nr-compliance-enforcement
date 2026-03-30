@@ -3,8 +3,8 @@ import Option from "@apptypes/app/option";
 export const ROLE_OPTIONS: Array<Option> = [
   { value: "COS", label: "COS" },
   { value: "CEEB", label: "CEEB User" },
+  { value: "NROS", label: "NROS User" },
   { value: "PARKS", label: "PARKS" },
-  { value: "NROS", label: "NROS" },
   { value: "CEEB Section Head", label: "Section Head" },
   { value: "CEEB Compliance Coordinator", label: "Compliance Coordinator" },
   { value: "READ ONLY", label: "Read Only" },
@@ -31,7 +31,7 @@ export const COS_ROLE_OPTIONS: Array<Option> = [
 ];
 
 export const NROS_ROLE_OPTIONS: Array<Option> = [
-  { value: "NROS", label: "NROS" },
+  { value: "NROS", label: "NROS User" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
 ];

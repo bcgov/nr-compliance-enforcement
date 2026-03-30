@@ -103,8 +103,8 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = agency && agency === AgencyType.CEEB;
-  const enableOfficeFeature = agency && agency !== AgencyType.CEEB;
+  const enablePrivacyFeature = agency && (agency === AgencyType.CEEB || agency === AgencyType.NROS);
+  const enableOfficeFeature = agency && agency !== AgencyType.CEEB && agency !== AgencyType.NROS;
 
   const currentDate = useMemo(() => new Date(), []);
 

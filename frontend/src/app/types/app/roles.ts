@@ -3,6 +3,7 @@ enum Roles {
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",
   CEEB_SECTION_HEAD = "CEEB Section Head",
+  NROS = "NROS",
   COS = "COS",
   GLOBAL_ADMINISTRATOR = "Global Administrator",
   AGENCY_ADMINISTRATOR = "Agency Administrator",
@@ -12,7 +13,6 @@ enum Roles {
   PARKS = "PARKS",
   HWCR_ONLY = "HWCR only",
   SECTOR = "SECTOR",
-  NROS = "NROS",
 }
 
 const coreRoles: Roles[] = [Roles.COS, Roles.CEEB, Roles.PARKS, Roles.NROS, Roles.SECTOR];

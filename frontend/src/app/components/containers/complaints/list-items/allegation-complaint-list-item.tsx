@@ -129,7 +129,7 @@ export const AllegationComplaintListItem: FC<Props> = ({ type, complaint }) => {
           {getViolationDescription(violation)}
         </td>
         {/* customization 1:, if there are more than 2 of these exceptions create a new listview item */}
-        {!UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR]) && (
+        {!UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR, Roles.NROS]) && (
           <td
             className={`${isExpandedClass}`}
             onClick={toggleExpand}

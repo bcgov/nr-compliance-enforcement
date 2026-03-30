@@ -15,7 +15,7 @@ type Props = {
 const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handleSearch }) => {
   const activeTab = useAppSelector(selectActiveTab);
   const userAgency = getUserAgency();
-  const isCEEB = activeTab === COMPLAINT_TYPES.ERS && userAgency === "EPO";
+  const isCEEB = activeTab === COMPLAINT_TYPES.ERS && (userAgency === "EPO" || userAgency === "NROS");
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {

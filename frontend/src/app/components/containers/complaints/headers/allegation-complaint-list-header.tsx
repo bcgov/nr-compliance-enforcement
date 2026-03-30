@@ -49,7 +49,7 @@ export const AllegationComplaintListHeader: FC<Props> = ({ handleSort, sortKey, 
         />
 
         {/* customization 1:, if there are more than 2 of these exceptions create a new listview item */}
-        {!UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR, Roles.CEEB]) && (
+        {!UserService.hasRole([Roles.CEEB_COMPLIANCE_COORDINATOR, Roles.CEEB, Roles.NROS]) && (
           <SortableHeader
             title="Violation in progress"
             sortFnc={handleSort}
