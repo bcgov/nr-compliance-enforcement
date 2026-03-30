@@ -179,7 +179,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     const agency = assessmentState.agency ?? UserService.getUserAgency();
     if (agency) {
       list = list.filter((option) => {
-        const o = option as typeof option & { outcomeAgencyCode?: string };
+        const o = option;
         return !o.outcomeAgencyCode || o.outcomeAgencyCode === agency;
       });
     }
@@ -345,7 +345,9 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    if (!validateErrors()) {
+    if (validateErrors()) {
+      handleFormErrors();
+    } else {
       dispatch(upsertAssessment(id, getUpdatedAssessmentData()));
       if (
         selectedOfficer?.value &&
@@ -356,8 +358,6 @@ export const ComplaintAssessmentForm: FC<Props> = ({
         dispatch(assignComplaintToOfficer(id, selectedOfficerData?.app_user_guid));
       }
       handleSave();
-    } else {
-      handleFormErrors();
     }
     markClean();
   };

@@ -123,15 +123,15 @@ export const upsertAssessment =
       complaintOutcomes: { complaintOutcomeGuid },
     } = getState();
 
-    if (!assessment.id) {
-      dispatch(addAssessment(assessment, complaintIdentifier));
-    } else {
+    if (assessment.id) {
       const guid = complaintOutcomeGuid ?? (await dispatch(findCase(complaintIdentifier)));
       if (!guid) {
         ToggleError("Unable to update assessment: complaint outcome was not found.");
         return;
       }
       dispatch(updateAssessment(assessment, complaintIdentifier, guid));
+    } else {
+      dispatch(addAssessment(assessment, complaintIdentifier));
     }
   };
 
