@@ -213,3 +213,9 @@
     min-width: #{$width}px;
   }
 }
+
+@each $height in $cell-heights {
+  .comp-cell-height-#{$height} {
+    height: #{$height}px;
+  }
+}

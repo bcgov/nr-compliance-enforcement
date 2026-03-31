@@ -1,6 +1,7 @@
 import { activity_note } from "./activity_note";
 import { contravention } from "./contravention";
 import { diary_date } from "./diary_date";
+import { exhibit } from "./exhibit";
 import { investigation_status_code } from "./investigation_status_code";
 import { investigation_party } from "./investigation_party";
 import { officer_investigation_xref } from "./officer_investigation_xref";
@@ -70,6 +71,9 @@ export class investigation {
 
   @ApiProperty({ isArray: true, type: () => diary_date })
   diary_date: diary_date[];
+
+  @ApiProperty({ isArray: true, type: () => exhibit })
+  exhibit: exhibit[];
 
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;

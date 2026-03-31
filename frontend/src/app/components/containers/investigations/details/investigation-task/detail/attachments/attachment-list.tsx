@@ -200,7 +200,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
             </button>
           </div>
         </td>
-        <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
+        <td className="comp-cell-width-30 comp-cell-min-width-30 text-end">
           <Button
             type="button"
             variant="outline-primary"
