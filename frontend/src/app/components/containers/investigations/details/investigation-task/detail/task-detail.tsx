@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
@@ -15,6 +15,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { TaskExhibits } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -155,7 +156,7 @@ const TaskDetail: FC = () => {
     },
   });
 
-  const task = data?.task;
+  const task = useMemo(() => data?.task, [data]);
   const handleHideTaskDetailEditModal = () => {
     const result = hideCallback();
     if (result === false) return;
@@ -205,6 +206,10 @@ const TaskDetail: FC = () => {
         <TaskActions
           investigationGuid={investigationGuid}
           taskIdentifier={task?.taskIdentifier}
+        />
+        <TaskExhibits
+          investigationGuid={investigationGuid}
+          task={task}
         />
         <TaskAttachments
           investigationGuid={investigationGuid}
