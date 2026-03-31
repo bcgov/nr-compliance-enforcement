@@ -16,6 +16,7 @@ export class CssService implements ExternalApiService {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly grantType: string;
+  readonly integrationId: string;
   readonly env: string;
   readonly maxPages: number;
 
@@ -31,6 +32,7 @@ export class CssService implements ExternalApiService {
     this.clientId = process.env.CSS_CLIENT_ID;
     this.clientSecret = process.env.CSS_CLIENT_SECRET;
     this.grantType = "client_credentials";
+    this.integrationId = process.env.CSS_INTEGRATION_ID || "4794";
     this.env = process.env.ENVIRONMENT;
     this.maxPages = 20;
   }
@@ -109,7 +111,7 @@ export class CssService implements ExternalApiService {
   getUserRoles = async (userIdir): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +129,7 @@ export class CssService implements ExternalApiService {
   updateUserRole = async (userIdir, userRoles): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +151,7 @@ export class CssService implements ExternalApiService {
   deleteUserRole = async (userIdir, roleName): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles/${roleName}`;
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles/${roleName}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +182,7 @@ export class CssService implements ExternalApiService {
 
     const apiToken = await this.authenticate();
     //Get all roles from NatCom CSS integration
-    const rolesUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles`;
+    const rolesUrl = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/roles`;
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -200,7 +202,7 @@ export class CssService implements ExternalApiService {
         roleList.map(async (role) => {
           let usersRolesTemp = [];
           for (const page of pages) {
-            usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users?page=${page}`;
+            usersUrl = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/roles/${role.name}/users?page=${page}`;
             const userRes = await get(apiToken, encodeURI(usersUrl), config);
             if (userRes?.data.data.length > 0) {
               const {
