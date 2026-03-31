@@ -1,6 +1,6 @@
 {
   "name": "event-worker",
-  "version": "2.0.234",
+  "version": "2.0.236",
   "description": "",
   "author": "",
   "private": true,
@@ -75,6 +75,9 @@
     "testEnvironment": "node"
   },
   "overrides": {
-    "glob": ">=10.5.0"
+    "minimatch": "^10.2.3",
+    "glob": ">=10.5.0",
+    "path-to-regexp": "^8.4.0",
+    "picomatch": "^4.0.4"
   }
 }
