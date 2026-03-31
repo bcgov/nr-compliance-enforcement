@@ -30,7 +30,7 @@ export const CompTable = <T,>({
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   // Infer whether sorting and pagination are server-side
-  const isServerSort = !!onSort;
+  const isServerSort = !!onSort && !!onPageChange;
   const isServerPagination = !!onPageChange;
 
   const currentPage = isServerPagination ? (externalCurrentPage ?? 1) : internalCurrentPage;
@@ -42,11 +42,10 @@ export const CompTable = <T,>({
       const newDirection = sortBy === sortInput && sortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
       setSortBy(sortInput);
       setSortOrder(newDirection);
-      if (isServerSort) {
-        onSort(sortInput, newDirection);
-      }
+      // Notify parent of sort change regardless of server/client mode
+      onSort?.(sortInput, newDirection);
     },
-    [sortBy, sortOrder, isServerSort, onSort],
+    [sortBy, sortOrder, onSort],
   );
 
   const handleToggleExpand = useCallback((rowKey: string) => {
@@ -74,7 +73,7 @@ export const CompTable = <T,>({
 
   const sortedData = useMemo(() => {
     if (isServerSort) return data;
-    const activeColumn = columns.find((col) => col.label === sortBy);
+    const activeColumn = columns.find((col) => (col.sortKey ?? col.label) === sortBy);
     if (!activeColumn?.getValue) return [...data];
 
     return [...data].sort((a, b) => {
