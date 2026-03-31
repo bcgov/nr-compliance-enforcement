@@ -30,8 +30,6 @@ type Props = {
   onPageChange: (page: number) => void;
   currentPage: number;
   pageSize: number;
-  sortKey: string;
-  sortDirection: string;
 };
 
 export const AllegationComplaintList: FC<Props> = ({
@@ -43,8 +41,6 @@ export const AllegationComplaintList: FC<Props> = ({
   onPageChange,
   currentPage,
   pageSize,
-  sortKey,
-  sortDirection,
 }) => {
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));

@@ -1,9 +1,8 @@
 import { FC } from "react";
 import { Link } from "react-router-dom";
-import { Badge } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
+import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { isFeatureActive } from "@store/reducers/app";
@@ -19,7 +18,7 @@ import { usePark } from "@/app/hooks/usePark";
 import getOfficerAssigned from "@common/get-officer-assigned";
 
 type Props = {
-  complaints: WildlifeComplaint[];
+  complaints: GeneralIncidentComplaint[];
   totalItems: number;
   isLoading?: boolean;
   error?: Error | null;
@@ -29,7 +28,7 @@ type Props = {
   pageSize: number;
 };
 
-export const WildlifeComplaintList: FC<Props> = ({
+export const GeneralComplaintList: FC<Props> = ({
   complaints,
   totalItems,
   isLoading = false,
@@ -40,8 +39,8 @@ export const WildlifeComplaintList: FC<Props> = ({
   pageSize,
 }) => {
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
-  const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
-  const speciesCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SPECIES));
+  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
+  const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const officers = useAppSelector(selectOfficers);
 
   const isParkColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.PARK_COLUMN));
@@ -55,27 +54,27 @@ export const WildlifeComplaintList: FC<Props> = ({
     return code?.longDescription ?? "";
   };
 
-  const getNatureOfComplaint = (input: string): string => {
-    const code = natureOfComplaints.find((item) => item.natureOfComplaint === input);
+  const getLocationName = (input: string): string => {
+    const code = areaCodes.find((item) => item.area === input);
+    return code?.areaName ?? "-";
+  };
+
+  const getGirTypeDescription = (input: string): string => {
+    const code = girTypeCodes.find((item) => item.girType === input);
     return code?.longDescription ?? "";
   };
 
-  const getSpecies = (input: string): string => {
-    const code = speciesCodes.find((item) => item.species === input);
-    return code?.longDescription ?? "";
-  };
-
-  const columns: CompColumn<WildlifeComplaint>[] = [
+  const columns: CompColumn<GeneralIncidentComplaint>[] = [
     {
       label: "Complaint #",
       sortKey: "complaint_identifier",
       headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-110 sticky-col sticky-col--left text-center",
+      cellClassName: "comp-cell-width-100 sticky-col sticky-col--left text-center",
       isSortable: true,
       getValue: (complaint) => complaint.id,
       renderCell: (complaint) => (
         <Link
-          to={`/complaint/${COMPLAINT_TYPES.HWCR}/${complaint.id}`}
+          to={`/complaint/${COMPLAINT_TYPES.GIR}/${complaint.id}`}
           id={complaint.id}
           className="comp-cell-link"
         >
@@ -87,34 +86,24 @@ export const WildlifeComplaintList: FC<Props> = ({
       label: "Date logged",
       sortKey: "incident_reported_utc_timestmp",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 gc-table-date-cell",
       isSortable: true,
       getValue: (complaint) => complaint.reportedOn?.toString() ?? "",
       renderCell: (complaint) => formatDateTime(complaint.reportedOn?.toString()),
     },
     {
-      label: "Nature of complaint",
-      sortKey: "hwcr_complaint_nature_code",
-      cellClassName: "hwc-nature-of-complaint-cell",
+      label: "GIR type",
+      sortKey: "gir_type_code",
       isSortable: true,
-      getValue: (complaint) => getNatureOfComplaint(complaint.natureOfComplaint),
-      renderCell: (complaint) => getNatureOfComplaint(complaint.natureOfComplaint),
-    },
-    {
-      label: "Species",
-      sortKey: "species_code",
-      cellClassName: "comp-cell-width-130",
-      isSortable: true,
-      getValue: (complaint) => getSpecies(complaint.species),
-      renderCell: (complaint) => <Badge bg="species-badge comp-species-badge">{getSpecies(complaint.species)}</Badge>,
+      getValue: (complaint) => getGirTypeDescription(complaint.girType),
+      renderCell: (complaint) => getGirTypeDescription(complaint.girType),
     },
     {
       label: "Community",
       sortKey: "area_name",
-      cellClassName: "comp-cell-width-165",
       isSortable: true,
-      getValue: (complaint) => complaint.organization?.areaName ?? "",
-      renderCell: (complaint) => complaint.organization?.areaName ?? "-",
+      getValue: (complaint) => getLocationName(complaint.organization?.area ?? ""),
+      renderCell: (complaint) => getLocationName(complaint.organization?.area ?? ""),
     },
     {
       label: "Park",
@@ -131,7 +120,6 @@ export const WildlifeComplaintList: FC<Props> = ({
     {
       label: "Status",
       sortKey: "complaint_status_code",
-      cellClassName: "comp-cell-width-75",
       isSortable: true,
       getValue: (complaint) => {
         const derivedStatus = complaint.ownedBy === userAgency ? complaint.status : "Referred";
@@ -153,7 +141,7 @@ export const WildlifeComplaintList: FC<Props> = ({
       label: "Last updated",
       sortKey: "update_utc_timestamp",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 hwc-table-date-cell",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 gc-table-date-cell",
       isSortable: true,
       getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
       renderCell: (complaint) => formatDateTime(complaint.updatedOn?.toString()),
@@ -161,11 +149,11 @@ export const WildlifeComplaintList: FC<Props> = ({
     {
       label: "Actions",
       headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col hwc-table-actions-cell",
+        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col gc-table-actions-cell",
       cellClassName:
-        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col hwc-table-actions-cell",
+        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col gc-table-actions-cell",
       isSortable: false,
-      renderCell: (complaint) => <WildlifeActionsCell complaint={complaint} />,
+      renderCell: (complaint) => <GeneralActionsCell complaint={complaint} />,
     },
   ];
 
@@ -184,7 +172,7 @@ export const WildlifeComplaintList: FC<Props> = ({
       onSort={onSort}
       onPageChange={onPageChange}
       renderExpandedContent={(complaint) => {
-        const truncatedDescription = truncateString(complaint.details, 205);
+        const truncatedDescription = truncateString(complaint.details, 185);
         const truncatedLocationDetail = truncateString(complaint.locationDetail, 220);
         return (
           <dl className="hwc-table-dl">
@@ -203,13 +191,12 @@ export const WildlifeComplaintList: FC<Props> = ({
   );
 };
 
-// Small helper component to avoid calling usePark conditionally inside renderCell
 const ParkCell: FC<{ parkGuid?: string }> = ({ parkGuid }) => {
   const park = usePark(parkGuid);
   return <>{park?.name ?? "-"}</>;
 };
 
-const WildlifeActionsCell: FC<{ complaint: WildlifeComplaint }> = ({ complaint }) => {
+const GeneralActionsCell: FC<{ complaint: GeneralIncidentComplaint }> = ({ complaint }) => {
   const userAgency = getUserAgency();
   const derivedStatus = complaint.ownedBy === userAgency ? complaint.status : "Referred";
   const park = usePark(complaint.parkGuid);
@@ -218,7 +205,7 @@ const WildlifeActionsCell: FC<{ complaint: WildlifeComplaint }> = ({ complaint }
   return (
     <ComplaintActionItems
       complaint_identifier={complaint.id}
-      complaint_type={COMPLAINT_TYPES.HWCR}
+      complaint_type={COMPLAINT_TYPES.GIR}
       zone={complaint.organization?.zone ?? ""}
       agency_code={complaint.ownedBy}
       complaint_status={derivedStatus}

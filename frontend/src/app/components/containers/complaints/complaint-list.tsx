@@ -20,6 +20,10 @@ import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { WildlifeComplaintList } from "@/app/components/containers/complaints/lists/wildlife-complaint-list";
 import { AllegationComplaintList } from "@/app/components/containers/complaints/lists/allegation-complaint-list";
 import { AllegationComplaint } from "@/app/types/app/complaints/allegation-complaint";
+import { GeneralComplaintList } from "@/app/components/containers/complaints/lists/general-complaint-list";
+import { GeneralIncidentComplaint } from "@/app/types/app/complaints/general-complaint";
+import { SectorComplaintList } from "@/app/components/containers/complaints/lists/sector-complaint-list";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 
 type Props = {
   type: string;
@@ -212,6 +216,20 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
         return (
           <AllegationComplaintList
             complaints={complaints as AllegationComplaint[]}
+            {...sharedProps}
+          />
+        );
+      case COMPLAINT_TYPES.GIR:
+        return (
+          <GeneralComplaintList
+            complaints={complaints as GeneralIncidentComplaint[]}
+            {...sharedProps}
+          />
+        );
+      case COMPLAINT_TYPES.SECTOR:
+        return (
+          <SectorComplaintList
+            complaints={complaints as SectorComplaint[]}
             {...sharedProps}
           />
         );
