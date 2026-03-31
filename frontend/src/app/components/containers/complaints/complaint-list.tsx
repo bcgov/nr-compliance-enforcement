@@ -238,17 +238,6 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
     }
   };
 
-  const renderNoComplaintsFound = () => {
-    return (
-      <tr>
-        <td colSpan={11}>
-          <i className="bi bi-info-circle-fill p-2"></i>
-          <span>No complaints found using your current filters. Remove or change your filters to see complaints.</span>
-        </td>
-      </tr>
-    );
-  };
-
   return (
     <div
       className="comp-table-container"

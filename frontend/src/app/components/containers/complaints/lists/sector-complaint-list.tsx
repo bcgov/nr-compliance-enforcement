@@ -175,6 +175,7 @@ export const SectorComplaintList: FC<Props> = ({
   return (
     <CompTable
       data={complaints}
+      emptyMessage="No complaints found using your current filters. Remove or change your filters to see complaints."
       columns={columns}
       getRowKey={(complaint) => complaint.id}
       isLoading={isLoading}

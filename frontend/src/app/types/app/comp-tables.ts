@@ -28,6 +28,7 @@ export type CompTableProps<T> = CompTableSharedProps<T> & {
   onPageChange?: (page: number) => void;
   totalItems?: number;
   currentPage?: number;
+  emptyMessage?: string;
 };
 
 export type CompTableRowProps<T> = CompTableSharedProps<T> & {

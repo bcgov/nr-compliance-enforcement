@@ -22,6 +22,7 @@ export const CompTable = <T,>({
   onPageChange,
   totalItems,
   currentPage: externalCurrentPage,
+  emptyMessage,
 }: CompTableProps<T>) => {
   const [sortBy, setSortBy] = useState<string>(defaultSortLabel);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
@@ -170,7 +171,7 @@ export const CompTable = <T,>({
           >
             <div className="d-flex align-items-center justify-content-center">
               <i className="bi bi-info-circle-fill me-2" />
-              <span>No records found.</span>
+              <span>{emptyMessage ?? "No records found."}</span>
             </div>
           </td>
         </tr>

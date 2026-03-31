@@ -13,13 +13,13 @@ import { selectOfficers } from "@store/reducers/officer";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { SORT_TYPES } from "@constants/sort-direction";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
-import { ComplaintActionItems } from "../list-items/complaint-action-items";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { getUserAgency } from "@/app/service/user-service";
-import { usePark } from "@/app/hooks/usePark";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { ParkCell } from "@/app/components/containers/complaints/lists/custom/park-cell";
+import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/custom/action-cell";
 
 type Props = {
   complaints: AllegationComplaint[];
@@ -180,13 +180,23 @@ export const AllegationComplaintList: FC<Props> = ({
       cellClassName:
         "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col ac-table-actions-cell",
       isSortable: false,
-      renderCell: (complaint) => <AllegationActionsCell complaint={complaint} />,
+      renderCell: (complaint) => (
+        <ComplaintActionsCell
+          id={complaint.id}
+          complaintType={COMPLAINT_TYPES.ERS}
+          ownedBy={complaint.ownedBy}
+          zone={complaint.organization?.zone ?? ""}
+          status={complaint.status}
+          parkGuid={complaint.parkGuid}
+        />
+      ),
     },
   ];
 
   return (
     <CompTable
       data={complaints}
+      emptyMessage="No complaints found using your current filters. Remove or change your filters to see complaints."
       columns={columns}
       getRowKey={(complaint) => complaint.id}
       isLoading={isLoading}
@@ -214,29 +224,6 @@ export const AllegationComplaintList: FC<Props> = ({
           </dl>
         );
       }}
-    />
-  );
-};
-
-const ParkCell: FC<{ parkGuid?: string }> = ({ parkGuid }) => {
-  const park = usePark(parkGuid);
-  return <>{park?.name ?? "-"}</>;
-};
-
-const AllegationActionsCell: FC<{ complaint: AllegationComplaint }> = ({ complaint }) => {
-  const userAgency = getUserAgency();
-  const derivedStatus = complaint.ownedBy === userAgency ? complaint.status : "Referred";
-  const park = usePark(complaint.parkGuid);
-  const parkAreaGuids = park?.parkAreas?.map((area) => area.parkAreaGuid) ?? [];
-
-  return (
-    <ComplaintActionItems
-      complaint_identifier={complaint.id}
-      complaint_type={COMPLAINT_TYPES.ERS}
-      zone={complaint.organization?.zone ?? ""}
-      agency_code={complaint.ownedBy}
-      complaint_status={derivedStatus}
-      park_area_guids={parkAreaGuids}
     />
   );
 };
