@@ -560,6 +560,16 @@ export type CreateUpdateContraventionInput = {
   legislationReference: Scalars['String']['input'];
 };
 
+export type CreateUpdateExhibitInput = {
+  appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  collectedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
+  dateCollected?: InputMaybe<Scalars['DateTime']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  exhibitGuid?: InputMaybe<Scalars['String']['input']>;
+  investigationGuid?: InputMaybe<Scalars['String']['input']>;
+  taskGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateUpdateTaskInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   assignedUserIdentifier?: InputMaybe<Scalars['String']['input']>;
@@ -873,6 +883,20 @@ export type EventVerbTypeCode = {
   shortDescription: Scalars['String']['output'];
 };
 
+export type Exhibit = {
+  __typename?: 'Exhibit';
+  activeIndicator: Scalars['Boolean']['output'];
+  collectedAppUserGuidRef: Scalars['String']['output'];
+  createdDate: Scalars['DateTime']['output'];
+  dateCollected: Scalars['DateTime']['output'];
+  description: Scalars['String']['output'];
+  exhibitGuid: Scalars['String']['output'];
+  exhibitNumber: Scalars['Int']['output'];
+  investigationGuid: Scalars['String']['output'];
+  taskGuid: Scalars['String']['output'];
+  updatedDate?: Maybe<Scalars['DateTime']['output']>;
+};
+
 export type GeoOrgUnitTypeCode = {
   __typename?: 'GeoOrgUnitTypeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1158,6 +1182,7 @@ export type Mutation = {
   createDecision: ComplaintOutcome;
   createEquipment: ComplaintOutcome;
   createEvent: Event;
+  createExhibit: Exhibit;
   createInspection: Inspection;
   createInvestigation: Investigation;
   createLegislationSource: LegislationSource;
@@ -1186,6 +1211,7 @@ export type Mutation = {
   deleteWildlife: ComplaintOutcome;
   removeCaseActivity: CaseActivity;
   removeContravention: Investigation;
+  removeExhibit: Exhibit;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
   removeTask: Task;
@@ -1200,6 +1226,7 @@ export type Mutation = {
   updateContravention: Investigation;
   updateDecision: ComplaintOutcome;
   updateEquipment: ComplaintOutcome;
+  updateExhibit: Exhibit;
   updateInspection: Inspection;
   updateInvestigation: Investigation;
   updateLegislationConfiguration: Scalars['Boolean']['output'];
@@ -1276,6 +1303,11 @@ export type MutationcreateEquipmentArgs = {
 
 export type MutationcreateEventArgs = {
   input: EventCreateInput;
+};
+
+
+export type MutationcreateExhibitArgs = {
+  input: CreateUpdateExhibitInput;
 };
 
 
@@ -1420,6 +1452,11 @@ export type MutationremoveContraventionArgs = {
 };
 
 
+export type MutationremoveExhibitArgs = {
+  exhibitGuid: Scalars['String']['input'];
+};
+
+
 export type MutationremovePartyFromInspectionArgs = {
   inspectionGuid: Scalars['String']['input'];
   partyIdentifier: Scalars['String']['input'];
@@ -1493,6 +1530,11 @@ export type MutationupdateDecisionArgs = {
 
 export type MutationupdateEquipmentArgs = {
   updateEquipmentInput: UpdateEquipmentInput;
+};
+
+
+export type MutationupdateExhibitArgs = {
+  input: CreateUpdateExhibitInput;
 };
 
 
@@ -1816,6 +1858,8 @@ export type Query = {
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
   getComplaintOutcomesBySearchString?: Maybe<Array<Maybe<ComplaintOutcome>>>;
+  getExhibit?: Maybe<Exhibit>;
+  getExhibitsByTask: Array<Maybe<Exhibit>>;
   getInspection?: Maybe<Inspection>;
   getInspections?: Maybe<Array<Maybe<Inspection>>>;
   getInspectionsByParty?: Maybe<Array<Maybe<Inspection>>>;
@@ -1995,6 +2039,16 @@ export type QuerygetComplaintOutcomesByComplaintIdArgs = {
 export type QuerygetComplaintOutcomesBySearchStringArgs = {
   complaintType: Scalars['String']['input'];
   searchString: Scalars['String']['input'];
+};
+
+
+export type QuerygetExhibitArgs = {
+  exhibitGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerygetExhibitsByTaskArgs = {
+  taskId?: InputMaybe<Scalars['String']['input']>;
 };
 
 

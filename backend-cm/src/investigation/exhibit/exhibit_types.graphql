@@ -1,0 +1,22 @@
+type Exhibit {
+  exhibitGuid: String!
+  taskGuid: String!
+  investigationGuid: String!
+  exhibitNumber: Int!
+  description: String!
+  dateCollected: DateTime!
+  collectedAppUserGuidRef: String!
+  activeIndicator: Boolean!
+  createdDate: DateTime!
+  updatedDate: DateTime
+}
+
+input CreateUpdateExhibitInput {
+  exhibitGuid: String
+  taskGuid: String
+  investigationGuid: String
+  description: String
+  dateCollected: DateTime
+  collectedAppUserGuidRef: String
+  appUserIdentifier: String
+}
