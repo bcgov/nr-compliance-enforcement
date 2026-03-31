@@ -1,12 +1,22 @@
 import { FC, useCallback } from "react";
-import { Table } from "react-bootstrap";
-import Paginator from "@components/common/paginator";
-import { SortableHeader } from "@components/common/sortable-header";
-import { SORT_TYPES } from "@constants/sort-direction";
-import { DocumentationListItem } from "./documentation-list-item";
+import { Link } from "react-router-dom";
+import { CompTable } from "@components/common/comp-table";
+import { CompColumn } from "@/app/types/app/comp-tables";
+import { formatDate } from "@common/methods";
+import { generateApiParameters, get } from "@common/api";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { Task } from "@/generated/graphql";
+import { getDisplayFilename } from "@common/attachment-utils";
+import { getFileTypeIcon } from "@components/common/file-type-icon";
+import { selectOfficers } from "@/app/store/reducers/officer";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Attachment } from "./hooks/use-investigation-attachments";
-import { Task } from "@/generated/graphql";
+import { SORT_TYPES } from "@constants/sort-direction";
+import config from "@/config";
+
+type AttachmentWithTask = Attachment & {
+  task?: Task;
+};
 
 type Props = {
   attachments: Attachment[];
@@ -25,18 +35,15 @@ export const DocumentationList: FC<Props> = ({
   error,
   investigationGuid,
 }) => {
+  const dispatch = useAppDispatch();
+  const officers = useAppSelector(selectOfficers);
   const { searchValues, setValues, setSort } = useDocumentationSearch();
 
   const handleSort = useCallback(
-    (sortKey: string) => {
-      const currentSortBy = searchValues.sortBy;
-      const currentSortOrder = searchValues.sortOrder;
-      const newDirection =
-        currentSortBy === sortKey && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
-
-      setSort(sortKey, newDirection);
+    (sortKey: string, sortDirection: string) => {
+      setSort(sortKey, sortDirection);
     },
-    [searchValues.sortBy, searchValues.sortOrder, setSort],
+    [setSort],
   );
 
   const handlePageChange = useCallback(
@@ -46,112 +53,155 @@ export const DocumentationList: FC<Props> = ({
     [setValues],
   );
 
-  const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
-    <SortableHeader
-      title={title}
-      sortFnc={handleSort}
-      sortKey={sortKey}
-      currentSort={searchValues.sortBy}
-      sortDirection={searchValues.sortOrder}
-      className={className}
-    />
-  );
-
-  const renderTableHeader = (): JSX.Element => (
-    <thead className="sticky-table-header">
-      <tr>
-        {renderSortableHeader("File type", "fileType", "comp-cell-min-width-150")}
-        {renderSortableHeader("ID", "sequenceNumber", "comp-cell-min-width-150")}
-        {renderSortableHeader("Description", "description", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Title", "title", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Date", "date", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Taken by", "takenBy", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Location", "location", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("Task", "taskNumber", "comp-cell-width-150 comp-cell-min-width-150")}
-        {renderSortableHeader("File name", "name", "comp-cell-width-150 comp-cell-min-width-150")}
-      </tr>
-    </thead>
-  );
-
-  const renderLoadingSpinner = () => (
-    <tr>
-      <td
-        colSpan={3}
-        className="text-center p-4"
-      >
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="spinner-border spinner-border-sm me-2">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <span>Loading documents...</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderMessage = (icon: string, message: string, variant?: string) => (
-    <tr>
-      <td
-        colSpan={9}
-        className="text-center p-4"
-      >
-        <div className={`d-flex align-items-center justify-content-center ${variant || ""}`}>
-          <i className={`bi bi-${icon} me-2`}></i>
-          <span>{message}</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderErrorMessage = () =>
-    renderMessage(
-      "exclamation-triangle-fill",
-      `Error loading documents: ${error?.message || "An unexpected error occurred"}`,
-      "text-danger",
-    );
-
-  const renderEmptyMessage = () => {
-    if (searchValues.search || searchValues.taskFilter) {
-      return renderMessage("info-circle-fill", "No documents match your search criteria.");
-    }
-    return renderMessage("info-circle-fill", "No documents have been uploaded for this investigation.");
+  const getUserName = (officerGuid: string): string => {
+    const officer = officers?.find((o) => o.app_user_guid === officerGuid);
+    return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
   };
 
-  const renderListItems = () => {
-    if (isLoading) return renderLoadingSpinner();
-    if (error) return renderErrorMessage();
-    if (attachments.length === 0) return renderEmptyMessage();
-
-    return attachments.map((attachment) => (
-      <DocumentationListItem
-        key={attachment.id}
-        attachment={attachment}
-        investigationGuid={investigationGuid}
-        task={attachment.taskId ? tasks.find((t) => t.taskIdentifier === attachment.taskId) : undefined}
-      />
-    ));
+  const handleFileClick = async (e: React.MouseEvent<HTMLAnchorElement>, attachmentId: string) => {
+    e.preventDefault();
+    if (!attachmentId) return;
+    const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachmentId}?download=url`);
+    const downloadUrl = await get<string>(dispatch, parameters);
+    window.open(downloadUrl, "_blank");
   };
+
+  const attachmentsWithTasks: AttachmentWithTask[] = attachments.map((attachment) => ({
+    ...attachment,
+    task: attachment.taskId ? tasks.find((t) => t.taskIdentifier === attachment.taskId) : undefined,
+  }));
+
+  const emptyMessage =
+    searchValues.search || searchValues.taskFilter
+      ? "No documents match your search criteria."
+      : "No documents have been uploaded for this investigation.";
+
+  const columns: CompColumn<AttachmentWithTask>[] = [
+    {
+      label: "File type",
+      sortKey: "fileType",
+      headerClassName: "comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.fileType ?? "",
+      renderCell: (attachment) => attachment.fileType ?? "",
+    },
+    {
+      label: "ID",
+      sortKey: "sequenceNumber",
+      headerClassName: "comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.sequenceNumber ?? "",
+      renderCell: (attachment) => attachment.sequenceNumber ?? "",
+    },
+    {
+      label: "Description",
+      sortKey: "description",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.description ?? "",
+      renderCell: (attachment) => attachment.description ?? "-",
+    },
+    {
+      label: "Title",
+      sortKey: "title",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.title ?? "",
+      renderCell: (attachment) => attachment.title ?? "-",
+    },
+    {
+      label: "Date",
+      sortKey: "date",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.date ?? "",
+      renderCell: (attachment) => (attachment.date ? formatDate(attachment.date) : "-"),
+    },
+    {
+      label: "Taken by",
+      sortKey: "takenBy",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => getUserName(attachment.takenBy ?? ""),
+      renderCell: (attachment) => getUserName(attachment.takenBy ?? ""),
+    },
+    {
+      label: "Location",
+      sortKey: "location",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => attachment.location ?? "",
+      renderCell: (attachment) => attachment.location ?? "-",
+    },
+    {
+      label: "Task",
+      sortKey: "taskNumber",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      isSortable: true,
+      getValue: (attachment) => (attachment.task ? `Task ${attachment.task.taskNumber}` : ""),
+      renderCell: (attachment) => {
+        const taskLabel = attachment.task ? `Task ${attachment.task.taskNumber}` : "-";
+        return attachment.task ? (
+          <Link
+            to={`/investigation/${investigationGuid}/tasks?section=task-item-${attachment.task.taskNumber}`}
+            className="comp-cell-link"
+          >
+            {taskLabel}
+          </Link>
+        ) : (
+          <span>{taskLabel}</span>
+        );
+      },
+    },
+    {
+      label: "File name",
+      sortKey: "name",
+      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      cellClassName: "comp-cell-min-width-200",
+      isSortable: true,
+      getValue: (attachment) => attachment.name ?? "",
+      renderCell: (attachment) => {
+        const displayName = getDisplayFilename(attachment.name);
+        return (
+          <>
+            <i className={`bi ${getFileTypeIcon(attachment.fileType)} me-1 fs-5`} />
+            <a
+              href={`${config.COMS_URL}/object/${attachment.id}`}
+              className="comp-cell-link"
+              onClick={(e) => handleFileClick(e, attachment.id ?? "")}
+              title={`Download ${displayName}`}
+            >
+              {displayName}
+            </a>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
-    <div className="comp-table-container">
-      <div className="comp-table-scroll-container">
-        <Table
-          className="comp-table"
-          id="documentation-list"
-        >
-          {renderTableHeader()}
-          <tbody>{renderListItems()}</tbody>
-        </Table>
-      </div>
-
-      {totalItems > 0 && (
-        <Paginator
-          currentPage={searchValues.page}
-          totalItems={totalItems}
-          onPageChange={handlePageChange}
-          resultsPerPage={searchValues.pageSize}
-        />
-      )}
-    </div>
+    <CompTable
+      data={attachmentsWithTasks}
+      columns={columns}
+      getRowKey={(attachment) => attachment.id ?? ""}
+      isLoading={isLoading}
+      error={error}
+      totalItems={totalItems}
+      currentPage={searchValues.page}
+      pageSize={searchValues.pageSize}
+      defaultSortLabel="File type"
+      defaultSortDirection={SORT_TYPES.ASC}
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+      emptyMessage={emptyMessage}
+    />
   );
 };
