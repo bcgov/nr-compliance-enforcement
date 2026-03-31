@@ -7,7 +7,7 @@ WORKDIR /app
 COPY *.json ./
 COPY ./src ./src
 COPY ./prisma ./prisma
-RUN npm ci --ignore-scripts --no-update-notifier
+RUN npm ci --ignore-scripts --no-update-notifier --legacy-peer-deps
 RUN npm run prisma-generate-complaint-outcome 
 RUN npm run prisma-generate-shared
 RUN npm run prisma-generate-investigation
@@ -20,7 +20,7 @@ COPY *.json ./
 COPY ./src ./src
 COPY ./prisma ./prisma
 RUN ls -la /app/src/**
-RUN npm ci --ignore-scripts --no-update-notifier --omit=dev
+RUN npm ci --ignore-scripts --no-update-notifier --omit=dev --legacy-peer-deps
 
 # COPY over few dependencies from buildwithdevdeps
 COPY --from=buildwithdevdeps /app/node_modules/@prisma ./node_modules/@prisma
