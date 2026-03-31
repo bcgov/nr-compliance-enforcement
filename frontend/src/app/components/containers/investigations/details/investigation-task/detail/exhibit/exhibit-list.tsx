@@ -98,8 +98,8 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
   const renderHeader = () => (
     <thead className="sticky-table-header">
       <tr>
-        {renderSortableHeader("Exhibit #", "exhibitNumber", "comp-cell-width-120 comp-cell-min-width-120")}
-        {renderSortableHeader("Description", "description", "comp-cell-width-160 comp-cell-min-width-160")}
+        {renderSortableHeader("Exhibit #", "exhibitNumber", "comp-cell-width-80 comp-cell-min-width-80")}
+        {renderSortableHeader("Description", "description", "comp-cell-width-250 comp-cell-min-width-250")}
         {renderSortableHeader("Date collected", "dateCollected", "comp-cell-width-160 comp-cell-min-width-160")}
         {renderSortableHeader(
           "Officer collected",
@@ -157,17 +157,20 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
           <td className="comp-cell-width-160 comp-cell-min-width-160 align-middle">
             {getOfficerName(exhibit.collectedAppUserGuidRef ?? "")}
           </td>
-          <td className="comp-cell-width-30 comp-cell-min-width-30 text-center">
-            <Button
-              type="button"
-              variant="outline-primary"
-              size="sm"
-              onClick={() => onEdit(exhibit)}
-              title="Edit exhibit"
-              aria-label={`Edit exhibit ${exhibit.exhibitNumber}`}
-            >
-              <i className="bi bi-pencil ms-1 me-1" />
-            </Button>
+          <td className="comp-cell-width-30 comp-cell-min-width-30 text-end">
+            <div className="d-flex justify-content-end">
+              <Button
+                className="comp-cell-width-30 comp-cell-height-30 d-flex align-items-center justify-content-center"
+                type="button"
+                variant="outline-primary"
+                size="sm"
+                onClick={() => onEdit(exhibit)}
+                title="Edit exhibit"
+                aria-label={`Edit exhibit ${exhibit.exhibitNumber}`}
+              >
+                <i className="bi bi-pencil ms-1 me-1" />
+              </Button>
+            </div>
           </td>
         </tr>
       );

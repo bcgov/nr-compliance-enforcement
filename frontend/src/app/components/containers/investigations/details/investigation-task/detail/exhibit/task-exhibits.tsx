@@ -139,7 +139,7 @@ export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task })
               size="sm"
               onClick={handleAddExhibit}
             >
-              <i className="bi bi-plus-lg"></i>
+              <i className="bi bi-plus-circle"></i>
               <span>Add exhibit</span>
             </Button>
           )}
@@ -155,7 +155,7 @@ export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task })
             size="sm"
             onClick={handleAddExhibit}
           >
-            <i className="bi bi-plus-lg"></i>
+            <i className="bi bi-plus-circle"></i>
             <span>Add exhibit</span>
           </Button>
         </div>
