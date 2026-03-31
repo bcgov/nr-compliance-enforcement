@@ -1,5 +1,6 @@
 import { activity_note } from "./activity_note";
 import { diary_date } from "./diary_date";
+import { exhibit } from "./exhibit";
 import { investigation } from "./investigation";
 import { task_category_type_code } from "./task_category_type_code";
 import { task_status_code } from "./task_status_code";
@@ -69,6 +70,9 @@ export class task {
 
   @ApiProperty({ isArray: true, type: () => diary_date })
   diary_date: diary_date[];
+
+  @ApiProperty({ isArray: true, type: () => exhibit })
+  exhibit: exhibit[];
 
   @ApiProperty({ type: () => investigation })
   investigation: investigation;
