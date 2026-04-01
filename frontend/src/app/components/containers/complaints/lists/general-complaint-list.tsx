@@ -114,6 +114,3 @@ export const GeneralComplaintList: FC<Props> = ({
     />
   );
 };
-function communityLookupColumn<T>(getLocationName: (input: string) => string): CompColumn<GeneralIncidentComplaint> {
-  throw new Error("Function not implemented.");
-}

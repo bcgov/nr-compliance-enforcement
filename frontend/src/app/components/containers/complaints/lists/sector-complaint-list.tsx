@@ -140,6 +140,3 @@ export const SectorComplaintList: FC<Props> = ({
     />
   );
 };
-function communityLookupColumn<T>(getLocationName: (input: string) => string): CompColumn<any> {
-  throw new Error("Function not implemented.");
-}
