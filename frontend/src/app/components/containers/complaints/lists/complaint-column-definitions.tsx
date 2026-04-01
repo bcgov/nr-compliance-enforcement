@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/custom/action-cell";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { complaintTypeToName } from "@/app/types/app/complaint-types";
+import COMPLAINT_TYPES, { complaintTypeToName } from "@/app/types/app/complaint-types";
 
 // COMMON COLUMNS
 
@@ -214,7 +214,9 @@ export const sectorStatusColumn = <T,>(
 // Parameterized Columns
 
 // Complaint number column
-export const complaintNumberColumn = <T extends { id: string }>(complaintType: string): CompColumn<T> => ({
+export const complaintNumberColumn = <T extends { id: string; type?: string }>(
+  complaintType: string,
+): CompColumn<T> => ({
   label: "Complaint #",
   sortKey: "complaint_identifier",
   headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
@@ -223,7 +225,7 @@ export const complaintNumberColumn = <T extends { id: string }>(complaintType: s
   getValue: (complaint) => complaint.id,
   renderCell: (complaint) => (
     <Link
-      to={`/complaint/${complaintType}/${complaint.id}`}
+      to={`/complaint/${complaintType === COMPLAINT_TYPES.SECTOR ? complaint.type : complaintType}/${complaint.id}`}
       id={complaint.id}
       className="comp-cell-link"
     >
