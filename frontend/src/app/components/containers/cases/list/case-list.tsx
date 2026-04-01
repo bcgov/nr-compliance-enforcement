@@ -126,6 +126,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
   return (
     <CompTable
       data={cases}
+      tableIdentifier="case-list"
       columns={columns}
       getRowKey={(caseFile) => caseFile.caseIdentifier}
       isLoading={isLoading}

@@ -91,6 +91,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
   return (
     <CompTable
       data={exhibits}
+      tableIdentifier="exhibit-list"
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}

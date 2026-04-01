@@ -113,6 +113,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
   return (
     <CompTable
       data={tasks}
+      tableIdentifier="task-list"
       columns={columns}
       getRowKey={(task) => task.taskIdentifier}
       renderExpandedContent={(task) => (

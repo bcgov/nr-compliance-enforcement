@@ -182,6 +182,7 @@ export const ComplaintTableList: FC<Props> = ({
   return (
     <CompTable
       data={complaints}
+      tableIdentifier="complaint-list"
       columns={buildColumns()}
       getRowKey={(complaint) => complaint.id}
       isLoading={isLoading}

@@ -162,6 +162,7 @@ export const InspectionList: FC<Props> = ({
   return (
     <CompTable
       data={inspections}
+      tableIdentifier="inspection-list"
       columns={columns}
       getRowKey={(inspection) => inspection.inspectionGuid ?? ""}
       isLoading={isLoading}

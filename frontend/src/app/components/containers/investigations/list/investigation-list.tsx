@@ -164,6 +164,7 @@ export const InvestigationList: FC<Props> = ({
   return (
     <CompTable
       data={investigations}
+      tableIdentifier="investigation-list"
       columns={columns}
       getRowKey={(investigation) => investigation.investigationGuid ?? ""}
       isLoading={isLoading}

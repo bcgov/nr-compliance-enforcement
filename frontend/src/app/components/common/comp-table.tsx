@@ -10,6 +10,7 @@ const DEFAULT_PAGE_SIZE = 25;
 
 export const CompTable = <T,>({
   data,
+  tableIdentifier,
   columns,
   getRowKey,
   renderExpandedContent,
@@ -196,7 +197,10 @@ export const CompTable = <T,>({
   return (
     <div className="comp-table-container">
       <div className="comp-table-scroll-container">
-        <Table className="comp-table mb-0 border-0">
+        <Table
+          id={tableIdentifier}
+          className="comp-table mb-0 border-0"
+        >
           {renderHeader()}
           <tbody>{renderBody()}</tbody>
         </Table>

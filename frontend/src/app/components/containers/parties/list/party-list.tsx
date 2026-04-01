@@ -132,6 +132,7 @@ export const PartyList: FC<Props> = ({ parties, totalItems = 0, isLoading = fals
   return (
     <CompTable
       data={parties}
+      tableIdentifier="party-list"
       columns={columns}
       getRowKey={(party) => party.partyIdentifier}
       isLoading={isLoading}
