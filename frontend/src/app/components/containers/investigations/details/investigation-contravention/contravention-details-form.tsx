@@ -19,7 +19,8 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
+import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -228,7 +229,7 @@ export const ContraventionDetailsForm = ({
 
     // Populate date
     if (contravention.date) {
-      form.setFieldValue("contraventionDate", parseISO(contravention.date));
+      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date, null));
       form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 

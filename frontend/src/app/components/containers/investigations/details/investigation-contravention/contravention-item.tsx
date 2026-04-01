@@ -9,7 +9,7 @@ import { gql } from "graphql-request";
 import { useCallback } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { LegislationText } from "@/app/components/common/legislation-text";
-import { formatDate } from "@/app/common/methods";
+import { formatDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { selectCodeTable } from "@store/reducers/code-table";
 
@@ -156,7 +156,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, onE
         >
           <Col xs={6}>
             <dt>Date:</dt>
-            <dd>{formatDate(contravention.date)}</dd>
+            <dd>{formatDate(parseUTCDateTimeToLocal(contravention.date, null)?.toString())}</dd>
           </Col>
           {community?.areaName && (
             <Col xs={6}>
