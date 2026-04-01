@@ -85,7 +85,7 @@ export const WildlifeComplaintList: FC<Props> = ({
     statusColumn<WildlifeComplaint>(userAgency, getStatusDescription),
     officerAssignedColumn<WildlifeComplaint>((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
     lastUpdatedColumn<WildlifeComplaint>(),
-    actionsColumn<WildlifeComplaint>(COMPLAINT_TYPES.HWCR, "hwc-table-actions-cell"),
+    actionsColumn<WildlifeComplaint>(COMPLAINT_TYPES.HWCR),
   ];
 
   return (

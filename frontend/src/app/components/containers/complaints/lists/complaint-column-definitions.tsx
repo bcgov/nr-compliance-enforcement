@@ -4,6 +4,9 @@ import { ParkCell } from "@/app/components/containers/complaints/lists/custom/pa
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/custom/action-cell";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { complaintTypeToName } from "@/app/types/app/complaint-types";
 
 // COMMON COLUMNS
 
@@ -67,30 +70,19 @@ export const lastUpdatedColumn = <T extends { updatedOn?: any }>(): CompColumn<T
   label: "Last updated",
   sortKey: "update_utc_timestamp",
   headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-  cellClassName: "comp-cell-width-160 comp-cell-min-width-160 comp-table-date-cell",
+  cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
   isSortable: true,
   getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
   renderCell: (complaint) => formatDateTime(complaint.updatedOn?.toString()),
 });
 
-// Community column using areaName directly - HWCR and ERS
+// Community
 export const communityColumn = <T extends { organization?: { areaName?: string } }>(): CompColumn<T> => ({
   label: "Community",
   sortKey: "area_name",
   isSortable: true,
   getValue: (complaint) => complaint.organization?.areaName ?? "",
   renderCell: (complaint) => complaint.organization?.areaName ?? "-",
-});
-
-// Community column using area code lookup - GIR and Sector
-export const communityLookupColumn = <T extends { organization?: { area?: string } }>(
-  getLocationName: (input: string) => string,
-): CompColumn<T> => ({
-  label: "Community",
-  sortKey: "area_name",
-  isSortable: true,
-  getValue: (complaint) => getLocationName(complaint.organization?.area ?? ""),
-  renderCell: (complaint) => getLocationName(complaint.organization?.area ?? ""),
 });
 
 // HWCR Specific Columns
@@ -119,6 +111,106 @@ export const speciesColumn = <T extends { species?: string }>(
   renderCell: (complaint) => <Badge bg="species-badge comp-species-badge">{getSpecies(complaint.species ?? "")}</Badge>,
 });
 
+// ERS specific columns
+
+// Authorization column
+export const authorizationColumn = <T extends { authorization?: string }>(isHidden: boolean): CompColumn<T> => ({
+  label: "Authorization",
+  isSortable: false,
+  isHidden,
+  renderCell: (complaint) => complaint.authorization ?? "-",
+});
+
+// Violation type column
+export const violationTypeColumn = <T extends { violation?: string }>(
+  getViolationDescription: (input: string) => string,
+): CompColumn<T> => ({
+  label: "Violation type",
+  sortKey: "violation_code",
+  isSortable: true,
+  getValue: (complaint) => getViolationDescription(complaint.violation ?? ""),
+  renderCell: (complaint) => getViolationDescription(complaint.violation ?? ""),
+});
+
+// Violation in progress column
+export const violationInProgressColumn = <T extends { isInProgress?: boolean }>(isHidden: boolean): CompColumn<T> => ({
+  label: "Violation in progress",
+  sortKey: "in_progress_ind",
+  isSortable: true,
+  isHidden,
+  getValue: (complaint) => (complaint.isInProgress ? "In Progress" : ""),
+  renderCell: (complaint) =>
+    complaint.isInProgress ? (
+      <div
+        id="comp-details-status-text-id"
+        className="comp-box-violation-in-progress"
+      >
+        <FontAwesomeIcon
+          id="violation-in-progress-icon"
+          className="comp-cell-violation-in-progress-icon"
+          icon={faExclamationCircle}
+        />
+        In Progress
+      </div>
+    ) : null,
+});
+
+// GIR Specific Columns
+
+// GIR type column
+export const girTypeColumn = <T extends { girType?: string }>(
+  getGirTypeDescription: (input: string) => string,
+): CompColumn<T> => ({
+  label: "GIR type",
+  sortKey: "gir_type_code",
+  isSortable: true,
+  getValue: (complaint) => getGirTypeDescription(complaint.girType ?? ""),
+  renderCell: (complaint) => getGirTypeDescription(complaint.girType ?? ""),
+});
+
+// Sector Specific Columns
+
+// Agency column
+export const agencyColumn = <T extends { ownedBy?: string }>(agencies: any[]): CompColumn<T> => ({
+  label: "Agency",
+  isSortable: false,
+  getValue: (complaint) => agencies?.find((agency: any) => agency.agency === complaint.ownedBy)?.longDescription ?? "",
+  renderCell: (complaint) =>
+    agencies?.find((agency: any) => agency.agency === complaint.ownedBy)?.longDescription ?? "-",
+});
+
+// Complaint type column
+export const complaintTypeColumn = <T extends { type?: string }>(): CompColumn<T> => ({
+  label: "Complaint type",
+  sortKey: "complaint_type_code",
+  isSortable: true,
+  getValue: (complaint) => complaintTypeToName(complaint.type ?? ""),
+  renderCell: (complaint) => complaintTypeToName(complaint.type ?? ""),
+});
+
+// Type of issue column
+export const typeOfIssueColumn = <T,>(getIssueType: (complaint: T) => string): CompColumn<T> => ({
+  label: "Type of issue",
+  isSortable: false,
+  getValue: (complaint) => getIssueType(complaint),
+  renderCell: (complaint) => getIssueType(complaint),
+});
+
+// Status column for Sector - different derived status logic
+export const sectorStatusColumn = <T,>(
+  getDerivedStatus: (complaint: T) => string,
+  getStatusDescription: (input: string) => string,
+): CompColumn<T> => ({
+  label: "Status",
+  sortKey: "complaint_status_code",
+  isSortable: true,
+  getValue: (complaint) => getDerivedStatus(complaint),
+  renderCell: (complaint) => {
+    const derivedStatus = getDerivedStatus(complaint);
+    return <div className={`badge ${applyStatusClass(derivedStatus)}`}>{getStatusDescription(derivedStatus)}</div>;
+  },
+});
+
 // Parameterized Columns
 
 // Complaint number column
@@ -145,11 +237,10 @@ export const actionsColumn = <
   T extends { id: string; ownedBy?: string; status?: string; parkGuid?: string; organization?: { zone?: string } },
 >(
   complaintType: string,
-  cssClassSuffix: string,
 ): CompColumn<T> => ({
   label: "Actions",
-  headerClassName: `sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col ${cssClassSuffix}`,
-  cellClassName: `comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col ${cssClassSuffix}`,
+  headerClassName: "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col",
+  cellClassName: "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col",
   isSortable: false,
   renderCell: (complaint) => (
     <ComplaintActionsCell

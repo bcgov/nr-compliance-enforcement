@@ -1,11 +1,8 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
-import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
+import { truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { isFeatureActive } from "@store/reducers/app";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -18,8 +15,21 @@ import { getUserAgency } from "@/app/service/user-service";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
-import { ParkCell } from "@/app/components/containers/complaints/lists/custom/park-cell";
-import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/custom/action-cell";
+
+import {
+  actionsColumn,
+  authorizationColumn,
+  communityColumn,
+  complaintNumberColumn,
+  dateLoggedColumn,
+  lastUpdatedColumn,
+  locationAddressColumn,
+  officerAssignedColumn,
+  parkColumn,
+  statusColumn,
+  violationInProgressColumn,
+  violationTypeColumn,
+} from "@/app/components/containers/complaints/lists/complaint-column-definitions";
 
 type Props = {
   complaints: AllegationComplaint[];
@@ -65,132 +75,18 @@ export const AllegationComplaintList: FC<Props> = ({
   };
 
   const columns: CompColumn<AllegationComplaint>[] = [
-    {
-      label: "Complaint #",
-      sortKey: "complaint_identifier",
-      headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-110 sticky-col sticky-col--left text-center",
-      isSortable: true,
-      getValue: (complaint) => complaint.id,
-      renderCell: (complaint) => (
-        <Link
-          to={`/complaint/${COMPLAINT_TYPES.ERS}/${complaint.id}`}
-          id={complaint.id}
-          className="comp-cell-link"
-        >
-          {complaint.id}
-        </Link>
-      ),
-    },
-    {
-      label: "Date logged",
-      sortKey: "incident_reported_utc_timestmp",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell",
-      isSortable: true,
-      getValue: (complaint) => complaint.reportedOn?.toString() ?? "",
-      renderCell: (complaint) => formatDateTime(complaint.reportedOn?.toString()),
-    },
-    {
-      label: "Authorization",
-      isSortable: false,
-      isHidden: !isAuthorizationColumnEnabled,
-      renderCell: (complaint) => complaint.authorization ?? "-",
-    },
-    {
-      label: "Violation type",
-      sortKey: "violation_code",
-      isSortable: true,
-      getValue: (complaint) => getViolationDescription(complaint.violation),
-      renderCell: (complaint) => getViolationDescription(complaint.violation),
-    },
-    {
-      label: "Violation in progress",
-      sortKey: "in_progress_ind",
-      isSortable: true,
-      isHidden: isCeebRole,
-      getValue: (complaint) => (complaint.isInProgress ? "In Progress" : ""),
-      renderCell: (complaint) =>
-        complaint.isInProgress ? (
-          <div
-            id="comp-details-status-text-id"
-            className="comp-box-violation-in-progress"
-          >
-            <FontAwesomeIcon
-              id="violation-in-progress-icon"
-              className="comp-cell-violation-in-progress-icon"
-              icon={faExclamationCircle}
-            />
-            In Progress
-          </div>
-        ) : null,
-    },
-    {
-      label: "Community",
-      sortKey: "geo_organization_unit_code",
-      isSortable: true,
-      getValue: (complaint) => complaint.organization?.areaName ?? "",
-      renderCell: (complaint) => complaint.organization?.areaName ?? "-",
-    },
-    {
-      label: "Park",
-      isSortable: false,
-      isHidden: !isParkColumnEnabled,
-      renderCell: (complaint) => <ParkCell parkGuid={complaint.parkGuid} />,
-    },
-    {
-      label: "Location/address",
-      isSortable: false,
-      isHidden: !isLocationColumnEnabled,
-      renderCell: (complaint) => complaint.locationSummary ?? "-",
-    },
-    {
-      label: "Status",
-      sortKey: "complaint_status_code",
-      isSortable: true,
-      getValue: (complaint) => {
-        const derivedStatus = complaint.ownedBy === userAgency ? complaint.status : "Referred";
-        return derivedStatus;
-      },
-      renderCell: (complaint) => {
-        const derivedStatus = complaint.ownedBy === userAgency ? complaint.status : "Referred";
-        return <div className={`badge ${applyStatusClass(derivedStatus)}`}>{getStatusDescription(derivedStatus)}</div>;
-      },
-    },
-    {
-      label: "Officer assigned",
-      sortKey: "last_name",
-      isSortable: true,
-      getValue: (complaint) => getOfficerAssigned(complaint, officers) ?? "",
-      renderCell: (complaint) => getOfficerAssigned(complaint, officers),
-    },
-    {
-      label: "Last updated",
-      sortKey: "update_utc_timestamp",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 ac-table-date-cell",
-      isSortable: true,
-      getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
-      renderCell: (complaint) => formatDateTime(complaint.updatedOn?.toString()),
-    },
-    {
-      label: "Actions",
-      headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col ac-table-actions-cell",
-      cellClassName:
-        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col ac-table-actions-cell",
-      isSortable: false,
-      renderCell: (complaint) => (
-        <ComplaintActionsCell
-          id={complaint.id}
-          complaintType={COMPLAINT_TYPES.ERS}
-          ownedBy={complaint.ownedBy}
-          zone={complaint.organization?.zone ?? ""}
-          status={complaint.status}
-          parkGuid={complaint.parkGuid}
-        />
-      ),
-    },
+    complaintNumberColumn<AllegationComplaint>(COMPLAINT_TYPES.ERS),
+    dateLoggedColumn<AllegationComplaint>(),
+    authorizationColumn<AllegationComplaint>(!isAuthorizationColumnEnabled),
+    violationTypeColumn<AllegationComplaint>(getViolationDescription),
+    violationInProgressColumn<AllegationComplaint>(isCeebRole),
+    communityColumn<AllegationComplaint>(),
+    parkColumn<AllegationComplaint>(!isParkColumnEnabled),
+    locationAddressColumn<AllegationComplaint>(!isLocationColumnEnabled),
+    statusColumn<AllegationComplaint>(userAgency, getStatusDescription),
+    officerAssignedColumn<AllegationComplaint>((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
+    lastUpdatedColumn<AllegationComplaint>(),
+    actionsColumn<AllegationComplaint>(COMPLAINT_TYPES.ERS),
   ];
 
   return (

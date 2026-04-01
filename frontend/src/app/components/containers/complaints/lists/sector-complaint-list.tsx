@@ -1,17 +1,27 @@
 import { FC } from "react";
-import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { applyStatusClass, formatDateTime, truncateString } from "@common/methods";
+import { truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { isFeatureActive } from "@store/reducers/app";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { SORT_TYPES } from "@constants/sort-direction";
-import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { getUserAgency } from "@/app/service/user-service";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
+import {
+  agencyColumn,
+  communityColumn,
+  complaintNumberColumn,
+  complaintTypeColumn,
+  dateLoggedColumn,
+  lastUpdatedColumn,
+  locationAddressColumn,
+  sectorStatusColumn,
+  typeOfIssueColumn,
+} from "@/app/components/containers/complaints/lists/complaint-column-definitions";
 
 type Props = {
   complaints: SectorComplaint[];
@@ -35,7 +45,6 @@ export const SectorComplaintList: FC<Props> = ({
   pageSize,
 }) => {
   const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
-  const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const natureOfComplaints = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.NATURE_OF_COMPLAINT));
   const girTypeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GIR_TYPE));
   const violationCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.VIOLATIONS));
@@ -49,11 +58,6 @@ export const SectorComplaintList: FC<Props> = ({
     if (input === "Referred") return "Referred";
     const code = statusCodes.find((item) => item.complaintStatus === input);
     return code?.longDescription ?? "";
-  };
-
-  const getLocationName = (input: string): string => {
-    const code = areaCodes.find((item) => item.area === input);
-    return code?.areaName ?? "-";
   };
 
   const getNatureOfComplaint = (input: string): string => {
@@ -90,86 +94,16 @@ export const SectorComplaintList: FC<Props> = ({
     return isReferred ? "Referred" : complaint.status;
   };
 
-  const columns: CompColumn<any>[] = [
-    {
-      label: "Complaint #",
-      sortKey: "complaint_identifier",
-      headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-100 sticky-col sticky-col--left text-center",
-      isSortable: true,
-      getValue: (complaint) => complaint.id,
-      renderCell: (complaint) => (
-        <Link
-          to={`/complaint/${complaint.type}/${complaint.id}`}
-          id={complaint.id}
-          className="comp-cell-link"
-        >
-          {complaint.id}
-        </Link>
-      ),
-    },
-    {
-      label: "Date logged",
-      sortKey: "incident_reported_utc_timestmp",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 gc-table-date-cell",
-      isSortable: true,
-      getValue: (complaint) => complaint.reportedOn?.toString() ?? "",
-      renderCell: (complaint) => formatDateTime(complaint.reportedOn?.toString()),
-    },
-    {
-      label: "Agency",
-      isSortable: false,
-      getValue: (complaint) =>
-        agencies?.find((agency: any) => agency.agency === complaint.ownedBy)?.longDescription ?? "",
-      renderCell: (complaint) =>
-        agencies?.find((agency: any) => agency.agency === complaint.ownedBy)?.longDescription ?? "-",
-    },
-    {
-      label: "Complaint type",
-      sortKey: "complaint_type_code",
-      isSortable: true,
-      getValue: (complaint) => complaintTypeToName(complaint.type),
-      renderCell: (complaint) => complaintTypeToName(complaint.type),
-    },
-    {
-      label: "Type of issue",
-      isSortable: false,
-      getValue: (complaint) => getIssueType(complaint),
-      renderCell: (complaint) => getIssueType(complaint),
-    },
-    {
-      label: "Community",
-      sortKey: "area_name",
-      isSortable: true,
-      getValue: (complaint) => getLocationName(complaint.organization?.area ?? ""),
-      renderCell: (complaint) => getLocationName(complaint.organization?.area ?? ""),
-    },
-    {
-      label: "Location/address",
-      isSortable: false,
-      isHidden: !isLocationColumnEnabled,
-      renderCell: (complaint) => complaint.locationSummary ?? "-",
-    },
-    {
-      label: "Status",
-      sortKey: "complaint_status_code",
-      isSortable: true,
-      getValue: (complaint) => getDerivedStatus(complaint),
-      renderCell: (complaint) => {
-        const derivedStatus = getDerivedStatus(complaint);
-        return <div className={`badge ${applyStatusClass(derivedStatus)}`}>{getStatusDescription(derivedStatus)}</div>;
-      },
-    },
-    {
-      label: "Last updated",
-      sortKey: "update_utc_timestamp",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 gc-table-date-cell",
-      isSortable: true,
-      getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
-      renderCell: (complaint) => formatDateTime(complaint.updatedOn?.toString()),
-    },
+  const columns: CompColumn<SectorComplaint>[] = [
+    complaintNumberColumn<SectorComplaint>(COMPLAINT_TYPES.SECTOR),
+    dateLoggedColumn<SectorComplaint>(),
+    agencyColumn<SectorComplaint>(agencies),
+    complaintTypeColumn<SectorComplaint>(),
+    typeOfIssueColumn<SectorComplaint>(getIssueType),
+    communityColumn<SectorComplaint>(),
+    locationAddressColumn<SectorComplaint>(!isLocationColumnEnabled),
+    sectorStatusColumn<SectorComplaint>(getDerivedStatus, getStatusDescription),
+    lastUpdatedColumn<SectorComplaint>(),
   ];
 
   return (
@@ -206,3 +140,6 @@ export const SectorComplaintList: FC<Props> = ({
     />
   );
 };
+function communityLookupColumn<T>(getLocationName: (input: string) => string): CompColumn<any> {
+  throw new Error("Function not implemented.");
+}
