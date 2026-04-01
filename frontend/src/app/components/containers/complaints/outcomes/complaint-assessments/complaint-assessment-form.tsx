@@ -177,7 +177,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const filteredJustificationList = useMemo(() => {
     let list = justificationList;
-    const agency = assessmentState.agency ?? UserService.getUserAgency();
+    const agency = UserService.getUserAgency();
     if (agency) {
       list = list.filter((option) => {
         const o = option;
@@ -185,7 +185,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       });
     }
     return list;
-  }, [isHwcrComplaint, justificationList, assessmentState.agency]);
+  }, [justificationList]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();

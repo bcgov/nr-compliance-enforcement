@@ -40,6 +40,7 @@ import { AddTaskTables } from "./migrations/migration-40";
 import { RemoveAttachments } from "@/app/store/migrations/migration-41";
 import { RefreshCommunities } from "./migrations/migration-42";
 import { AddBulkDownload } from "@/app/store/migrations/migration-43";
+import { RefreshJustificationCodes } from "@/app/store/migrations/migration-44";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -94,6 +95,7 @@ migration = {
   ...RemoveAttachments,
   ...RefreshCommunities,
   ...AddBulkDownload,
+  ...RefreshJustificationCodes,
 };
 
 export default migration;
