@@ -562,7 +562,7 @@ export const fetchJustificationCodes = (): AppThunk => async (dispatch) => {
     `${config.API_BASE_URL}/v1/code-table/case-management/${CODE_TABLE_TYPES.JUSTIFICATION}`,
   );
   const response = await get<Array<Justification>>(dispatch, parameters);
-  if (response && from(response).any()) {
+  if (Array.isArray(response)) {
     const payload = { key: CODE_TABLE_TYPES.JUSTIFICATION, data: response };
     dispatch(setCodeTable(payload));
   }
@@ -966,10 +966,11 @@ export const selectComplaintReceivedMethodDropdown = createSelector(
 export const selectJustificationCodeDropdown = createSelector(
   (state: RootState) => state.codeTables.justification,
   (justification) =>
-    justification.map(({ justification, longDescription, isActive }) => ({
+    justification.map(({ justification, longDescription, isActive, outcomeAgencyCode }) => ({
       label: longDescription,
       value: justification,
       isActive,
+      outcomeAgencyCode,
     })),
 );
 

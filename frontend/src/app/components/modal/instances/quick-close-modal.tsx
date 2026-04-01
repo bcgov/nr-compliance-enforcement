@@ -14,7 +14,7 @@ import {
   selectIsReviewRequired,
   selectReviewComplete,
 } from "@/app/store/reducers/complaint-outcome-selectors";
-import { HWCRAssessmentForm } from "@components/containers/complaints/outcomes/hwcr-assessment/hwcr-assessment-form";
+import { ComplaintAssessmentForm } from "@components/containers/complaints/outcomes/complaint-assessments/complaint-assessment-form";
 import useValidateComplaint from "@/app/hooks/validate-complaint";
 
 const ModalLoading: FC = memo(() => (
@@ -156,7 +156,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             display: displayAssessment ? "inherit" : "none",
           }}
         >
-          <HWCRAssessmentForm
+          <ComplaintAssessmentForm
             id={complaint_identifier}
             handleSave={() => {
               submit();

@@ -12,7 +12,7 @@ export class InactionJustificationTypeResolver {
 
   @Query("inactionJustificationCodes")
   @Roles(coreRoles)
-  find(@Args("agencyCode") outcomeAgencyCode?: string) {
+  find(@Args("outcomeAgencyCode") outcomeAgencyCode?: string) {
     return this.inactionJustificationTypeService.find(outcomeAgencyCode);
   }
 }
