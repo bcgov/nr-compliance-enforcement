@@ -46,6 +46,7 @@ import { mapPrismaAliasToAlias } from "src/shared/alias/dto/alias";
 import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "src/shared/business_identifier_code/dto/business_identifier_code";
 import { mapPrismaBusinessIdentifierToIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { mapPrismaExhibitToExhibit } from "src/investigation/exhibit/dto/exhibit";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -82,7 +83,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
-  
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);
@@ -95,6 +95,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
   mapPrismaTaskToTask(mapper);
   mapPrismaDiaryDateToDiaryDate(mapper);
+  mapPrismaExhibitToExhibit(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

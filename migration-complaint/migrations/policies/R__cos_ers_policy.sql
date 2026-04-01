@@ -29,30 +29,27 @@ CREATE POLICY policy_cos_ers_complaints ON complaint.complaint
       -- - Referral (from requesting users agency)
       -- - Collaborator
       WHEN (
-        (',' || COALESCE(current_setting('jwt.claims.client_roles', true), '') || ',' LIKE '%,COS,%')
+        -- Roles come in as a comma separated list.
+         'COS' = ANY(string_to_array(COALESCE(current_setting('jwt.claims.client_roles', true), ''), ','))
         OR
-        -- Roles come in as a comma separated list. This prepends and appends a comma to the list
-        -- so we can use LIKE to check for the role to avoid false negatives on ,<role>, for the first
-        -- and last roles of the list, or a list of one, while also avoiding a name overlap causing a false
-        -- postive
-        EXISTS (
-          SELECT 1
-          FROM complaint.complaint_referral cr
-          WHERE cr.complaint_identifier = complaint.complaint_identifier
-          AND (',' || COALESCE(current_setting('jwt.claims.client_roles', true), '') || ',' LIKE '%,' || cr.referred_by_agency_code_ref || ',%')
-        )
+        complaint.complaint_identifier IN (
+        SELECT cr.complaint_identifier
+        FROM complaint.complaint_referral cr
+        WHERE cr.referred_by_agency_code_ref = ANY(string_to_array(COALESCE(current_setting('jwt.claims.client_roles', true), ''), ','))
+      )
         OR
         -- NOTE: This block accesses the shared schema to get the app_user_guid
         -- associated with the querying user's auth_user_guid
-        EXISTS (
-          SELECT 1
-          FROM complaint.app_user_complaint_xref aucx
-          INNER JOIN shared.app_user au ON au.app_user_guid = aucx.app_user_guid_ref
-          WHERE aucx.complaint_identifier = complaint.complaint_identifier
-          AND aucx.app_user_complaint_xref_code = 'COLLABORAT'
-          AND UPPER(REPLACE(au.auth_user_guid::text, '-', '')) = UPPER(REPLACE(COALESCE(current_setting('jwt.claims.idir_user_guid', true), ''), '-', ''))
+        complaint.complaint_identifier IN (
+        SELECT aucx.complaint_identifier
+        FROM complaint.app_user_complaint_xref aucx
+        JOIN shared.app_user au
+          ON au.app_user_guid = aucx.app_user_guid_ref
+        WHERE aucx.app_user_complaint_xref_code = 'COLLABORAT'
+          AND UPPER(REPLACE(au.auth_user_guid::text, '-', '')) =
+              UPPER(REPLACE(COALESCE(current_setting('jwt.claims.idir_user_guid', true), ''), '-', ''))
           AND (au.deactivate_ind = false OR au.deactivate_ind IS NULL)
-        )
+      )
       ) THEN true
       -- Default: deny access
       ELSE false

@@ -1,0 +1,10 @@
+type Mutation {
+  createExhibit(input: CreateUpdateExhibitInput!): Exhibit!
+  removeExhibit(exhibitGuid: String!): Exhibit!
+  updateExhibit(input: CreateUpdateExhibitInput!): Exhibit!
+}
+
+type Query {
+  getExhibitsByTask(taskId: String): [Exhibit]!
+  getExhibit(exhibitGuid: String): Exhibit
+}

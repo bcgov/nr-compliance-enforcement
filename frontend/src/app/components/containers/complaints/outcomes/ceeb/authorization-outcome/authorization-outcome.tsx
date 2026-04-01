@@ -30,6 +30,7 @@ export const AuthorizationOutcome: FC<AuthorizationOutcomeProps> = ({ onDirtyCha
 
   const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
   const hasAuthorization = !complaintOutcomes.authorization;
+  const showAuthorizationSectionErrors = showSectionErrors && !data?.id;
 
   const isReadOnly = useAppSelector(selectComplaintViewMode);
 
@@ -109,10 +110,10 @@ export const AuthorizationOutcome: FC<AuthorizationOutcomeProps> = ({ onDirtyCha
 
       <Card
         id="ceeb-authorization"
-        border={showSectionErrors ? "danger" : "default"}
+        border={showAuthorizationSectionErrors ? "danger" : "default"}
       >
         <Card.Body>
-          {showSectionErrors && (
+          {showAuthorizationSectionErrors && (
             <div className="section-error-message">
               <BsExclamationCircleFill />
               {hasAuthorization ? (

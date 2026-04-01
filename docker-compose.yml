@@ -238,7 +238,7 @@ services:
       WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
+    entrypoint: sh -c "npm i --legacy-peer-deps && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \

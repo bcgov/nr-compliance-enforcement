@@ -119,7 +119,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
     {
       label: "",
       headerClassName: "comp-cell-width-30 comp-cell-min-width-30",
-      cellClassName: "comp-cell-width-30 comp-cell-min-width-30 text-center",
+      cellClassName: "comp-cell-width-30 comp-cell-min-width-30 text-end",
       isSortable: false,
       renderCell: (attachment) => (
         <Button
