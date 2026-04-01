@@ -46,7 +46,8 @@ import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
 import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { AgencyType } from "@/app/types/app/agency-types";
+import { getComplaintType } from "@/app/common/methods";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 type Props = {
   id: string;
@@ -114,7 +115,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const validationResults = useValidateComplaint();
   const isReadOnly = useAppSelector(selectComplaintViewMode);
-  const isCOSAgent = UserService.getUserAgency() === AgencyType.COS;
+  const isHwcrComplaint = getComplaintType(complaintData) === COMPLAINT_TYPES.HWCR;
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors =
@@ -176,7 +177,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
   const filteredJustificationList = useMemo(() => {
     let list = justificationList;
-    const agency = assessmentState.agency ?? UserService.getUserAgency();
+    const agency = UserService.getUserAgency();
     if (agency) {
       list = list.filter((option) => {
         const o = option;
@@ -184,7 +185,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       });
     }
     return list;
-  }, [isCOSAgent, justificationList, assessmentState.agency]);
+  }, [justificationList]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();
@@ -230,7 +231,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
         value: assessmentState.justification.value,
       };
     } else if (quickClose) {
-      selectedJustification = isCOSAgent ? { label: "Duplicate", value: "DUPLICATE" } : null;
+      selectedJustification = isHwcrComplaint ? { label: "Duplicate", value: "DUPLICATE" } : null;
     }
 
     const selectedLinkedComplaint =
@@ -281,7 +282,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState, linkedComplaintData, assigned, quickClose, isCOSAgent]);
+  }, [assessmentState, linkedComplaintData, assigned, quickClose, isHwcrComplaint]);
 
   useEffect(() => {
     populateAssessmentUI();
@@ -289,7 +290,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
   const showDuplicateOptions =
-    isCOSAgent && selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
+    isHwcrComplaint && selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
     markClean();
@@ -331,11 +332,11 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO ? [] : mapOptions(selectedAssessmentTypes),
     contacted_complainant: selectedContacted === "Yes",
     attended: selectedAttended === "Yes",
-    location_type: isLargeCarnivore && isCOSAgent ? mapOption(selectedLocation) : undefined,
+    location_type: isLargeCarnivore && isHwcrComplaint ? mapOption(selectedLocation) : undefined,
     conflict_history:
-      isLargeCarnivore && isCOSAgent && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
+      isLargeCarnivore && isHwcrComplaint && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
     category_level:
-      isLargeCarnivore && isCOSAgent && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
+      isLargeCarnivore && isHwcrComplaint && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
     assessment_cat1_type:
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
@@ -404,7 +405,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   const validateAssessmentTypes = useCallback((): boolean => {
     if (
-      isCOSAgent &&
+      isHwcrComplaint &&
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
@@ -413,14 +414,14 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       return true;
     }
     return false;
-  }, [selectedActionRequired, selectedAssessmentTypes, selectedAssessmentCat1Types, isCOSAgent]);
+  }, [selectedActionRequired, selectedAssessmentTypes, selectedAssessmentCat1Types, isHwcrComplaint]);
 
   const validateLocationType = useCallback((): boolean => {
     if (
       !selectedLocation &&
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
       isLargeCarnivore &&
-      isCOSAgent
+      isHwcrComplaint
     ) {
       setLocationErrorMessage("Required");
       return true;
@@ -430,7 +431,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       return true;
     }
     return false;
-  }, [isLargeCarnivore, selectedActionRequired?.value, selectedJustification, selectedLocation, isCOSAgent]);
+  }, [isLargeCarnivore, selectedActionRequired?.value, selectedJustification, selectedLocation, isHwcrComplaint]);
 
   const validateJustification = useCallback((): boolean => {
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
@@ -700,7 +701,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
               </div>
             </div>
 
-            {isCOSAgent && (
+            {isHwcrComplaint && (
               <div
                 className={assessmentDivClass}
                 id="assessment-checkbox-div"
@@ -738,7 +739,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
               </div>
             )}
 
-            {isCOSAgent && isLargeCarnivore && (
+            {isHwcrComplaint && isLargeCarnivore && (
               <>
                 {/* Location type - edit state */}
                 <div
