@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Button, Card } from "react-bootstrap";
 import { selectCaseDecision } from "@/app/store/reducers/complaint-outcome-selectors";
@@ -21,9 +21,12 @@ export const CeebDecision: FC<CeebDecisionProps> = ({ onDirtyChange }) => {
   //-- select the decision
   const data = useAppSelector(selectCaseDecision);
 
-  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
   const [editable, setEditable] = useState(true);
-  const showSectionErrors = isInEdit.showSectionErrors;
+  const [showSectionErrors, setShowSectionErrors] = useState(false);
+
+  const onDecisionFormValidationChange = useCallback((hasErrors: boolean) => {
+    setShowSectionErrors(hasErrors);
+  }, []);
 
   const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
   const hasDecision = !complaintOutcomes.decision;
@@ -42,6 +45,12 @@ export const CeebDecision: FC<CeebDecisionProps> = ({ onDirtyChange }) => {
   useEffect(() => {
     setEditable(!data.id);
   }, [data.id]);
+
+  useEffect(() => {
+    if (!editable) {
+      setShowSectionErrors(false);
+    }
+  }, [editable]);
 
   const toggleEdit = () => {
     setEditable(true);
@@ -80,11 +89,7 @@ export const CeebDecision: FC<CeebDecisionProps> = ({ onDirtyChange }) => {
           {showSectionErrors && (
             <div className="section-error-message">
               <BsExclamationCircleFill />
-              {hasDecision ? (
-                <span>Save section before closing the complaint.</span>
-              ) : (
-                <span>Complete section before closing the complaint.</span>
-              )}
+              <span>Please correct the highlighted fields before saving.</span>
             </div>
           )}
 
@@ -93,6 +98,7 @@ export const CeebDecision: FC<CeebDecisionProps> = ({ onDirtyChange }) => {
               {...data}
               leadIdentifier={id}
               toggleEdit={setEditable}
+              onFormValidationChange={onDecisionFormValidationChange}
               onDirtyChange={onDirtyChange}
             />
           ) : (

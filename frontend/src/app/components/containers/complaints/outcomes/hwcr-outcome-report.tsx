@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { HWCRAssessments } from "./hwcr-assessment/hwcr-assessments";
+import { ComplaintAssessments } from "./complaint-assessments/complaint-assessments";
 import { HWCREquipment } from "./hwcr-equipment";
 import { HWCRFileReview } from "./hwcr-file-review";
 import { Notes } from "./notes";
@@ -32,7 +32,7 @@ export const HWCROutcomeReport: FC<HWCROutcomeReportProps> = ({ onDirtyChange })
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      <HWCRAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
+      <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
       <HWCRPreventions onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} />
       <HWCREquipment onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
       <HWCROutcomeByAnimalv2 onDirtyChange={(_, isDirty) => handleChildDirtyChange(3, isDirty)} />

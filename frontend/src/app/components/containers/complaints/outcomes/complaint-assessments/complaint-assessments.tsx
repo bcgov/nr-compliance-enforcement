@@ -3,13 +3,13 @@ import { Button } from "react-bootstrap";
 import { selectIsInEdit, selectAssessments } from "@/app/store/reducers/complaint-outcome-selectors";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectComplaintViewMode, selectComplaint } from "@/app/store/reducers/complaints";
-import { HWCRAssessment } from "./hwcr-assessment";
+import { ComplaintAssessment } from "./complaint-assessment";
 
-interface HWCRAssessmentsProps {
+interface ComplaintAssessmentsProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const HWCRAssessments: FC<HWCRAssessmentsProps> = ({ onDirtyChange }) => {
+export const ComplaintAssessments: FC<ComplaintAssessmentsProps> = ({ onDirtyChange }) => {
   const isInEdit = useAppSelector(selectIsInEdit);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const assessments = useAppSelector(selectAssessments);
@@ -47,7 +47,7 @@ export const HWCRAssessments: FC<HWCRAssessmentsProps> = ({ onDirtyChange }) => 
       </div>
       {assessments?.map((assessment: any) => (
         <>
-          <HWCRAssessment
+          <ComplaintAssessment
             key={assessment.id}
             assessment={assessment}
             allowDuplicate={
@@ -60,7 +60,7 @@ export const HWCRAssessments: FC<HWCRAssessmentsProps> = ({ onDirtyChange }) => 
         </>
       ))}
       {showAddAssessment && (
-        <HWCRAssessment
+        <ComplaintAssessment
           allowDuplicate={allowDuplicate}
           onDirtyChange={onDirtyChange}
         />

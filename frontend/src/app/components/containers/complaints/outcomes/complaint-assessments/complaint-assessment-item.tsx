@@ -13,17 +13,19 @@ import { Badge, Button, Card } from "react-bootstrap";
 import "@assets/sass/hwcr-assessment.scss";
 import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
+import { AgencyType } from "@/app/types/app/agency-types";
 
 type Props = {
   assessment: Assessment;
   handleEdit: Function;
 };
 
-export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
+export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const linkedComplaintData = useAppSelector(selectLinkedComplaints);
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const officer = useAppSelector(selectOfficerByAuthUserGuid(assessment.officer?.value ?? ""));
+  const isCOSAgent = UserService.getUserAgency() === AgencyType.COS;
 
   const showDuplicateOptions = assessment.action_required === "No" && assessment.justification?.value === "DUPLICATE";
   const assessmentDivClass = `comp-details-form-row ${assessment.action_required === "Yes" ? "inherit" : "hidden"}`;
@@ -116,7 +118,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
               )}
 
               {/* Animal actions - view state */}
-              {(assessment.assessment_type?.length > 0 || assessment.assessment_cat1_type?.length > 0) && (
+              {isCOSAgent && (assessment.assessment_type?.length > 0 || assessment.assessment_cat1_type?.length > 0) && (
                 <div
                   id="assessment-checkbox-div"
                   className={assessmentDivClass}
@@ -147,7 +149,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
               )}
 
               {/* Location type - view state */}
-              {isLargeCarnivore && assessment.action_required && assessment.location_type?.key && (
+              {isCOSAgent && isLargeCarnivore && assessment.action_required && assessment.location_type?.key && (
                 <div
                   id="location-type-div"
                   className={assessmentDivClass}
@@ -161,8 +163,9 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
               )}
 
               {/* Conflict history - view state */}
-              {(isLargeCarnivore ||
-                (assessment.assessment_type_legacy && assessment.assessment_type_legacy.length > 0)) &&
+              {isCOSAgent &&
+                (isLargeCarnivore ||
+                  (assessment.assessment_type_legacy && assessment.assessment_type_legacy.length > 0)) &&
                 assessment.action_required &&
                 assessment.conflict_history?.key && (
                   <div
@@ -178,7 +181,7 @@ export const HWCRAssessmentItem: FC<Props> = ({ assessment, handleEdit }) => {
                 )}
 
               {/* Category level - view state */}
-              {isLargeCarnivore && assessment.action_required && assessment.category_level?.key && (
+              {isCOSAgent && isLargeCarnivore && assessment.action_required && assessment.category_level?.key && (
                 <div
                   id="conflict history-div"
                   className={assessmentDivClass}
