@@ -783,6 +783,14 @@ p {
 .comp-table {
   font-size: 0.875rem;
 
+  tbody {
+    tr:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
   thead {
     font-weight: 600;
     height: 44px;
