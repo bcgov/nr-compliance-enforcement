@@ -1,9 +1,9 @@
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { formatDateTime, applyStatusClass } from "@common/methods";
-import { ParkCell } from "@/app/components/containers/complaints/lists/custom/park-cell";
+import { ParkCell } from "@/app/components/containers/complaints/lists/park-cell";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/custom/action-cell";
+import { ComplaintActionsCell } from "@/app/components/containers/complaints/lists/action-cell";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@/app/types/app/complaint-types";

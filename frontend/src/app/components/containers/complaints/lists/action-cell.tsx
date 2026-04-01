@@ -1,4 +1,4 @@
-import { ComplaintActionItems } from "@/app/components/containers/complaints/lists/custom/complaint-action-items";
+import { ComplaintActionItems } from "@/app/components/containers/complaints/lists/complaint-action-items";
 import { usePark } from "@/app/hooks/usePark";
 import { getUserAgency } from "@/app/service/user-service";
 import { FC } from "react";
