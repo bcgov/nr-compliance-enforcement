@@ -124,7 +124,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
         />
       )}
       isLoading={isLoading}
-      defaultSortLabel="Task #"
+      defaultSort="Task #"
       defaultSortDirection={SORT_TYPES.ASC}
     />
   );

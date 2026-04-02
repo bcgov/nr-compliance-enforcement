@@ -18,7 +18,7 @@ export const CompTable = <T,>({
   isLoading = false,
   error = null,
   pageSize = DEFAULT_PAGE_SIZE,
-  defaultSortLabel,
+  defaultSort,
   defaultSortDirection = SORT_TYPES.ASC,
   onSort,
   onPageChange,
@@ -26,7 +26,7 @@ export const CompTable = <T,>({
   currentPage: externalCurrentPage,
   emptyMessage,
 }: CompTableProps<T>) => {
-  const [sortBy, setSortBy] = useState<string>(defaultSortLabel);
+  const [sortBy, setSortBy] = useState<string>(defaultSort);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
   const [internalCurrentPage, setInternalCurrentPage] = useState<number>(1);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());

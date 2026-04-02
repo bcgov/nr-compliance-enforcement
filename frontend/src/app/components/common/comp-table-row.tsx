@@ -9,7 +9,7 @@ export const CompTableRow = <T,>({
   renderExpandedContent,
 }: CompTableRowProps<T>) => {
   const isExpandable = !!renderExpandedContent;
-  const expandedClass = isExpanded ? "comp-cell-parent-expanded align-middle" : "align-middle";
+  const expandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
   const visibleColumns = columns.filter((col) => !col.isHidden);
 
   const handleRowClick = (e: React.MouseEvent) => {

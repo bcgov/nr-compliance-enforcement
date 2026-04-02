@@ -135,8 +135,8 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       totalItems={totalItems}
       currentPage={searchValues.page}
       pageSize={searchValues.pageSize}
-      defaultSortLabel="Case ID"
-      defaultSortDirection={SORT_TYPES.ASC}
+      defaultSort="openedTimestamp"
+      defaultSortDirection={SORT_TYPES.DESC}
       onSort={handleSort}
       onPageChange={handlePageChange}
     />

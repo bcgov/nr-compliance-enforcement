@@ -144,7 +144,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
       columns={columns}
       getRowKey={(attachment) => attachment.id ?? ""}
       isLoading={isLoading}
-      defaultSortLabel="Date"
+      defaultSort="Date"
       defaultSortDirection={SORT_TYPES.DESC}
     />
   );

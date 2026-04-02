@@ -96,7 +96,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}
-      defaultSortLabel="Exhibit #"
+      defaultSort="Exhibit #"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No exhibits found."
     />

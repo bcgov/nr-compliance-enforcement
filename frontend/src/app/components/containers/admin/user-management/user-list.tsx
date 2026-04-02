@@ -151,7 +151,7 @@ export const UserList: FC<Props> = ({
       isFixedHeight={false}
       columns={columns}
       getRowKey={(u) => u.app_user_guid}
-      defaultSortLabel="Name (last, first)"
+      defaultSort="name"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No users to display for this agency."
       onSort={onSort}

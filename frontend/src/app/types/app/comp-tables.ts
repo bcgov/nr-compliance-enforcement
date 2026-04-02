@@ -23,7 +23,7 @@ export type CompTableProps<T> = CompTableSharedProps<T> & {
   getRowKey: (row: T) => string; // Callback to get a unique identifier for a row
   isLoading?: boolean; // For GraphQL driven tables can display a loading spinner while fetching data
   pageSize?: number; // The number of entries per page to display
-  defaultSortLabel: string; // The column to initially sort the table by
+  defaultSort: string; // The column to initially sort the table by
   defaultSortDirection?: string; // the direction to intially sort the table by
   error?: Error | null; // Allows the caller to display a custom error message
   onSort?: (sortKey: string, sortDirection: string) => void; // callback to define behavior when table is sorted

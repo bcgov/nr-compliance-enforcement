@@ -173,8 +173,8 @@ export const InvestigationList: FC<Props> = ({
       totalItems={totalItems}
       currentPage={searchValues.page}
       pageSize={searchValues.pageSize}
-      defaultSortLabel="Investigation ID"
-      defaultSortDirection={SORT_TYPES.ASC}
+      defaultSort="openedTimestamp"
+      defaultSortDirection={SORT_TYPES.DESC}
       onSort={handleSort}
       onPageChange={handlePageChange}
     />

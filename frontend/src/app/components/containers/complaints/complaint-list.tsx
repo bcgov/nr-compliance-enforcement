@@ -180,6 +180,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
 
   const renderComplaintList = (type: string): JSX.Element => (
     <ComplaintTableList
+      key={type}
       complaints={complaints}
       complaintType={type}
       isLoading={false}
