@@ -76,6 +76,7 @@ import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
 import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
@@ -157,6 +158,10 @@ export const ComplaintDetailsEdit: FC = () => {
 
     return () => subscription.unsubscribe();
   }, [id]);
+
+  useEffect(() => {
+    dispatch(setIsInEdit({ showSectionErrors: false, hideAssessmentErrors: false }));
+  }, [id, dispatch]);
 
   useEffect(() => {
     dispatch(getCaseFile(id));
