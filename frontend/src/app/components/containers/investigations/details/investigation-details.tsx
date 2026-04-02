@@ -13,7 +13,7 @@ import { InvestigationTasksNew } from "@/app/components/containers/investigation
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
-const GET_INVESTIGATION = gql`
+export const GET_INVESTIGATION = gql`
   query GetInvestigation($investigationGuid: String!) {
     getInvestigation(investigationGuid: $investigationGuid) {
       __typename
@@ -68,6 +68,8 @@ const GET_INVESTIGATION = gql`
             name
           }
         }
+        date
+        community
       }
       leadAgency
       locationAddress
@@ -151,6 +153,7 @@ export const InvestigationDetails: FC = () => {
         return (
           <InvestigationDocumentation
             investigationGuid={investigationGuid}
+            investigationName={investigationData?.name}
             tasks={(investigationData?.tasks as Task[]) ?? []}
           />
         );

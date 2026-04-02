@@ -14,6 +14,7 @@ import { AgencyType } from "@/app/types/app/agency-types";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { escapeCsvCell } from "@common/methods";
 import "@assets/sass/user-management.scss";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -110,15 +111,6 @@ function compareStrings(a: string, b: string, dir: string): number {
   // localeCompare is used here to handle accents in names
   const cmp = aa.localeCompare(bb, undefined, { sensitivity: "base" });
   return dir === SORT_TYPES.ASC ? cmp : -cmp;
-}
-
-// Protect values with quotes, commas and new lines for CSV export
-function escapeCsvCell(value: string): string {
-  // Treat the UI placeholder EM dash as an actual empty cell in CSV output
-  const raw = String(value ?? "");
-  const s = raw === EMPTY ? "" : raw;
-  if (/[",\r\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
-  return s;
 }
 
 function getZoneDisplayName(officer: AppUser): string {

@@ -18,10 +18,10 @@ async function bootstrap() {
 
   process.env.TZ = "UTC";
   const config = new DocumentBuilder()
-    .setTitle("NatComplaints - Complaint Management API")
-    .setDescription("NatComplaints - Complaint Management API")
+    .setTitle("NatSuite - Complaint Management API")
+    .setDescription("NatSuite - Complaint Management API")
     .setVersion("1.0.0")
-    .addTag("NatComplaints - Complaint Management API")
+    .addTag("NatSuite - Complaint Management API")
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

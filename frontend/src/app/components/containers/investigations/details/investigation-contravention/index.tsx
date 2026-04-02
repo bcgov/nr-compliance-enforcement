@@ -1,7 +1,11 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { ContraventionItem } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-item";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { openModal } from "@/app/store/reducers/app";
+import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationContraventionProps {
@@ -15,63 +19,71 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   investigationData,
   onDirtyChange,
 }) => {
-  // State
-  const [showAddCard, setshowAddCard] = useState(false);
-  const [editingContraventionId, setEditingContraventionId] = useState<string | null>(null);
-
+  const dispatch = useAppDispatch();
   const contraventions = investigationData?.contraventions;
 
-  // Functions
-  const handleCloseForm = () => {
-    setshowAddCard(false);
-    setEditingContraventionId(null);
-  };
+  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
-  const handleEditContravention = (contraventionId: string) => {
-    setEditingContraventionId(contraventionId);
+  const openContraventionModal = (contraventionId?: string) => {
+    const contravention = contraventionId
+      ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
+      : undefined;
+
+    const isEdit = !!contravention;
+
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: MULTI_STEP_MODAL,
+        data: {
+          titles: isEdit ? ["Edit contravention", "Edit party"] : ["Add contravention", "Add party"],
+          totalSteps: 2,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+            // Note: this is an intentional architectural decision to allow for a reusable multi-step modal
+            // eslint-disable-next-line react/no-unstable-nested-components
+          ) => (
+            <ContraventionForm
+              currentStep={currentStep}
+              activityGuid={investigationGuid}
+              contravention={contravention ?? undefined}
+              parties={investigationData?.parties as InvestigationParty[]}
+              onDirtyChange={handleChildDirtyChange}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onClose={onClose}
+            />
+          ),
+          handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
   };
 
   return (
     <div className="comp-details-view">
       <div className="row">
         <div className="col-12">
-          <h3>Contraventions</h3>
+          <h3>Outcomes</h3>
         </div>
       </div>
 
       <div className="contraventions-list">
         {contraventions?.map((contravention, index) => (
           <div key={contravention?.contraventionIdentifier}>
-            {editingContraventionId === contravention?.contraventionIdentifier ? (
-              <ContraventionForm
-                activityGuid={investigationGuid}
-                onClose={handleCloseForm}
-                contravention={contravention}
-                parties={investigationData?.parties as InvestigationParty[]}
-                contraventionNumber={(index + 1).toString()}
-                onDirtyChange={onDirtyChange}
-              />
-            ) : (
-              <ContraventionItem
-                contravention={contravention as Contravention}
-                investigationGuid={investigationGuid}
-                index={index}
-                canEdit={!editingContraventionId}
-                onEdit={handleEditContravention}
-              />
-            )}
+            <ContraventionItem
+              contravention={contravention as Contravention}
+              investigationGuid={investigationGuid}
+              index={index}
+              onEdit={() => openContraventionModal(contravention?.contraventionIdentifier)}
+            />
           </div>
         ))}
       </div>
-
-      {showAddCard && (
-        <ContraventionForm
-          activityGuid={investigationGuid}
-          onClose={handleCloseForm}
-          parties={investigationData?.parties as InvestigationParty[]}
-          onDirtyChange={onDirtyChange}
-        />
-      )}
 
       <div className="row">
         <div className="col-12">
@@ -79,7 +91,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             variant="primary"
             size="sm"
             id="details-screen-edit-button"
-            onClick={() => setshowAddCard(true)}
+            onClick={() => openContraventionModal()}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add contravention</span>

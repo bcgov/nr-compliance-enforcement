@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useCallback } from "react";
+import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { Button, Card, Alert } from "react-bootstrap";
 import Option from "@apptypes/app/option";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
@@ -37,7 +37,7 @@ import { BsExclamationCircleFill } from "react-icons/bs";
 import "@assets/sass/hwcr-assessment.scss";
 import { upsertAssessment } from "@/app/store/reducers/complaint-outcome-thunks";
 import { OptionLabels } from "@constants/option-labels";
-import { HWCRAssessmentLinkComplaintSearch } from "./hwcr-assessment-link-complaint-search";
+import { HWCRAssessmentLinkComplaintSearch } from "../hwcr-assessment/hwcr-assessment-link-complaint-search";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { AppUser } from "@/app/types/app/app_user/app_user";
@@ -46,6 +46,8 @@ import { useSelector } from "react-redux";
 import KeyValuePair from "@/app/types/app/key-value-pair";
 import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { getComplaintType } from "@/app/common/methods";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 type Props = {
   id: string;
@@ -57,7 +59,7 @@ type Props = {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const HWCRAssessmentForm: FC<Props> = ({
+export const ComplaintAssessmentForm: FC<Props> = ({
   id,
   assessment,
   handleSave = () => {},
@@ -113,6 +115,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
   const isLargeCarnivore = useAppSelector(selectComplaintLargeCarnivoreInd);
   const validationResults = useValidateComplaint();
   const isReadOnly = useAppSelector(selectComplaintViewMode);
+  const isHwcrComplaint = getComplaintType(complaintData) === COMPLAINT_TYPES.HWCR;
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors =
@@ -172,6 +175,17 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const actionRequiredList = useAppSelector(selectYesNoCodeDropdown);
   const justificationList = useAppSelector(selectJustificationCodeDropdown);
+  const filteredJustificationList = useMemo(() => {
+    let list = justificationList;
+    const agency = UserService.getUserAgency();
+    if (agency) {
+      list = list.filter((option) => {
+        const o = option;
+        return !o.outcomeAgencyCode || o.outcomeAgencyCode === agency;
+      });
+    }
+    return list;
+  }, [justificationList]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();
@@ -217,7 +231,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
         value: assessmentState.justification.value,
       };
     } else if (quickClose) {
-      selectedJustification = { label: "Duplicate", value: "DUPLICATE" };
+      selectedJustification = isHwcrComplaint ? { label: "Duplicate", value: "DUPLICATE" } : null;
     }
 
     const selectedLinkedComplaint =
@@ -268,14 +282,15 @@ export const HWCRAssessmentForm: FC<Props> = ({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assessmentState, linkedComplaintData, assigned, quickClose]);
+  }, [assessmentState, linkedComplaintData, assigned, quickClose, isHwcrComplaint]);
 
   useEffect(() => {
     populateAssessmentUI();
   }, [assessmentState, populateAssessmentUI]);
 
   const justificationEditClass = selectedActionRequired?.value === "No" ? "inherit" : "hidden";
-  const showDuplicateOptions = selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
+  const showDuplicateOptions =
+    isHwcrComplaint && selectedActionRequired?.value === "No" && selectedJustification?.value === "DUPLICATE";
 
   const cancelConfirmed = () => {
     markClean();
@@ -317,9 +332,11 @@ export const HWCRAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO ? [] : mapOptions(selectedAssessmentTypes),
     contacted_complainant: selectedContacted === "Yes",
     attended: selectedAttended === "Yes",
-    location_type: isLargeCarnivore ? mapOption(selectedLocation) : undefined,
-    conflict_history: isLargeCarnivore && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
-    category_level: isLargeCarnivore && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
+    location_type: isLargeCarnivore && isHwcrComplaint ? mapOption(selectedLocation) : undefined,
+    conflict_history:
+      isLargeCarnivore && isHwcrComplaint && selectedConflictHistory ? mapOption(selectedConflictHistory) : undefined,
+    category_level:
+      isLargeCarnivore && isHwcrComplaint && selectedCategoryLevel ? mapOption(selectedCategoryLevel) : undefined,
     assessment_cat1_type:
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
@@ -329,7 +346,9 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   // save to redux if no errors.  Otherwise, display error message(s).
   const saveButtonClick = async () => {
-    if (!validateErrors()) {
+    if (validateErrors()) {
+      handleFormErrors();
+    } else {
       dispatch(upsertAssessment(id, getUpdatedAssessmentData()));
       if (
         selectedOfficer?.value &&
@@ -340,8 +359,6 @@ export const HWCRAssessmentForm: FC<Props> = ({
         dispatch(assignComplaintToOfficer(id, selectedOfficerData?.app_user_guid));
       }
       handleSave();
-    } else {
-      handleFormErrors();
     }
     markClean();
   };
@@ -388,6 +405,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
 
   const validateAssessmentTypes = useCallback((): boolean => {
     if (
+      isHwcrComplaint &&
       selectedActionRequired?.value === OptionLabels.OPTION_YES &&
       (!selectedAssessmentTypes || selectedAssessmentTypes?.length <= 0) &&
       (!selectedAssessmentCat1Types || selectedAssessmentCat1Types?.length <= 0)
@@ -396,10 +414,15 @@ export const HWCRAssessmentForm: FC<Props> = ({
       return true;
     }
     return false;
-  }, [selectedActionRequired, selectedAssessmentTypes, selectedAssessmentCat1Types]);
+  }, [selectedActionRequired, selectedAssessmentTypes, selectedAssessmentCat1Types, isHwcrComplaint]);
 
   const validateLocationType = useCallback((): boolean => {
-    if (!selectedLocation && selectedActionRequired?.value === OptionLabels.OPTION_YES && isLargeCarnivore) {
+    if (
+      !selectedLocation &&
+      selectedActionRequired?.value === OptionLabels.OPTION_YES &&
+      isLargeCarnivore &&
+      isHwcrComplaint
+    ) {
       setLocationErrorMessage("Required");
       return true;
     }
@@ -408,7 +431,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
       return true;
     }
     return false;
-  }, [isLargeCarnivore, selectedActionRequired?.value, selectedJustification, selectedLocation]);
+  }, [isLargeCarnivore, selectedActionRequired?.value, selectedJustification, selectedLocation, isHwcrComplaint]);
 
   const validateJustification = useCallback((): boolean => {
     if (selectedActionRequired?.value === "No" && !selectedJustification) {
@@ -578,7 +601,7 @@ export const HWCRAssessmentForm: FC<Props> = ({
                   id="justification"
                   showInactive={false}
                   classNamePrefix="comp-select"
-                  options={justificationList}
+                  options={filteredJustificationList}
                   enableValidation={true}
                   errorMessage={justificationRequiredErrorMessage}
                   value={selectedJustification}
@@ -678,44 +701,45 @@ export const HWCRAssessmentForm: FC<Props> = ({
               </div>
             </div>
 
-            {/* Animal actions */}
-            <div
-              className={assessmentDivClass}
-              id="assessment-checkbox-div"
-            >
-              <div className="muliline-label">
-                <div>
+            {isHwcrComplaint && (
+              <div
+                className={assessmentDivClass}
+                id="assessment-checkbox-div"
+              >
+                <div className="muliline-label">
                   <div>
-                    Animal actions<span className="required-ind">*</span>
+                    <div>
+                      Animal actions<span className="required-ind">*</span>
+                    </div>
+                    <div>(Select all applicable boxes)</div>
                   </div>
-                  <div>(Select all applicable boxes)</div>
                 </div>
-              </div>
-              <div className="comp-details-input full-width">
-                <ValidationCheckboxGroup
-                  errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
-                  options={assessmentTypeList}
-                  onCheckboxChange={(option: Option[]) => {
-                    setSelectedAssessmentTypes(option);
-                    markDirty();
-                  }}
-                  checkedValues={selectedAssessmentTypes}
-                ></ValidationCheckboxGroup>
-                {isLargeCarnivore && (
+                <div className="comp-details-input full-width">
                   <ValidationCheckboxGroup
-                    errMsg={assessmentRequiredErrorMessage}
-                    options={assessmentCat1Options}
+                    errMsg={isLargeCarnivore ? "" : assessmentRequiredErrorMessage}
+                    options={assessmentTypeList}
                     onCheckboxChange={(option: Option[]) => {
-                      setSelectedAssessmentCat1Types(option);
+                      setSelectedAssessmentTypes(option);
                       markDirty();
                     }}
-                    checkedValues={selectedAssessmentCat1Types}
+                    checkedValues={selectedAssessmentTypes}
                   ></ValidationCheckboxGroup>
-                )}
+                  {isLargeCarnivore && (
+                    <ValidationCheckboxGroup
+                      errMsg={assessmentRequiredErrorMessage}
+                      options={assessmentCat1Options}
+                      onCheckboxChange={(option: Option[]) => {
+                        setSelectedAssessmentCat1Types(option);
+                        markDirty();
+                      }}
+                      checkedValues={selectedAssessmentCat1Types}
+                    ></ValidationCheckboxGroup>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
-            {isLargeCarnivore && (
+            {isHwcrComplaint && isLargeCarnivore && (
               <>
                 {/* Location type - edit state */}
                 <div

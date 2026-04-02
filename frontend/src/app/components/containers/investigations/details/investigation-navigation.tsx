@@ -5,7 +5,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 const INVESTIGATION_TAB_ITEMS = {
   summary: "Details",
   tasks: "Tasks",
-  contraventions: "Contraventions",
+  contraventions: "Outcomes",
   parties: "Parties",
   continuation: "Continuation report",
   documents: "Documentation",

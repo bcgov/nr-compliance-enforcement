@@ -35,7 +35,19 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    { name: "setup", testMatch: /.{0,5}\.setup\.ts/ },
+    {
+      name: "setup",
+      testMatch: /.{0,5}\.setup\.ts/,
+      /* Proxy HTTPS traffic through the BC Gov proxy for auth */
+      use: {
+        ...(process.env.E2E_HTTPS_PROXY && {
+          proxy: {
+            server: process.env.E2E_HTTPS_PROXY,
+            bypass: "localhost,127.0.0.1,*loginproxy*,*natsuite*",
+          },
+        }),
+      },
+    },
     // {
     //   name: "chromium",
     //   use: {

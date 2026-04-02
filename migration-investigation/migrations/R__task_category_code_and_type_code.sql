@@ -1220,3 +1220,402 @@ WHERE
 DELETE FROM investigation.task_category_type_code
 WHERE
     task_category_type_code LIKE 'TEMPTYPE%';
+
+---------------------------------
+-- CE-2288 Fix categories and subcategories list  
+---------------------------------
+UPDATE investigation.task
+SET
+    task_type_code = 'OPBRIEFNOTE',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'OPINTENFREQ';
+
+UPDATE investigation.task
+SET
+    task_type_code = 'OPINTCOMMS',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'OPINTCOMMS';
+
+UPDATE investigation.task
+SET
+    task_type_code = NULL,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'SCENEINSPECTION';
+
+UPDATE investigation.task
+SET
+    task_type_code = NULL,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'SENSCRIMESTOP';
+
+UPDATE investigation.task
+SET
+    task_type_code = NULL,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'COURTDOCNONE';
+
+UPDATE investigation.task
+SET
+    task_type_code = 'EXHIBDETENTION',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'EXHIBDETORDER';
+
+UPDATE investigation.task
+SET
+    task_type_code = NULL,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code = 'ANALYSISFORREV';
+
+UPDATE investigation.task
+SET
+    task_type_code = NULL,
+    task_category_type_code = 'WITNESSMGMT',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_type_code IN ('WITNESSNOTES', 'WITNESSMGMT');
+
+-- Remap any task rows still pointing to old WITNESS or COURTDOC categories
+UPDATE investigation.task
+SET
+    task_category_type_code = 'WITNESSMGMT',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_category_type_code = 'WITNESS';
+
+UPDATE investigation.task
+SET
+    task_category_type_code = 'COURTDOCUMENTS',
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ()
+WHERE
+    task_category_type_code = 'COURTDOC';
+
+-- Delete removed task_type_code rows
+DELETE FROM investigation.task_type_code
+WHERE
+    task_type_code IN (
+        'ANALYSISFORREV',
+        'COURTDOCNONE',
+        'EXHIBDETORDER',
+        'OPINTENFREQ',
+        'OPINTCOMMS',
+        'SCENEINSPECTION',
+        'SENSCRIMESTOP',
+        'WITNESSNOTES',
+        'WITNESSMGMT'
+    );
+
+-- Delete removed task_category_type_code rows
+DELETE FROM investigation.task_category_type_code
+WHERE
+    task_category_type_code IN (
+        'COURTDOC', -- Renamed to COURTDOCUMENTS
+        'WITNESS' -- Renamed to WITNESSMGMT
+    );
+
+-- Insert new/updated task_category_type_code rows
+INSERT INTO
+    investigation.task_category_type_code (
+        task_category_type_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp
+    )
+VALUES
+    -- New categories
+    (
+        'ARREST',
+        'Arrest',
+        'Arrest',
+        55,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'COURTDOCUMENTS',
+        'Court documents',
+        'Court documents',
+        40,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'PERMIT',
+        'Permit',
+        'Permit',
+        125,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'REGULATORY',
+        'Regulatory',
+        'Regulatory',
+        135,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'WITNESSMGMT',
+        'Witness management',
+        'Witness management',
+        195,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ) ON CONFLICT (task_category_type_code) DO
+UPDATE
+SET
+    short_description = EXCLUDED.short_description,
+    long_description = EXCLUDED.long_description,
+    display_order = EXCLUDED.display_order,
+    active_ind = EXCLUDED.active_ind,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ();
+
+-- Insert new/updated task_type_code rows
+INSERT INTO
+    investigation.task_type_code (
+        task_type_code,
+        task_category_type_code,
+        short_description,
+        long_description,
+        display_order,
+        active_ind,
+        create_user_id,
+        create_utc_timestamp
+    )
+VALUES
+    -- Admin
+    (
+        'ADMININVOICE',
+        'ADMIN',
+        'Invoice',
+        'Invoice',
+        45,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'ADMINPLANNING',
+        'ADMIN',
+        'Planning',
+        'Planning',
+        95,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Analysis
+    (
+        'ANALYSISREV',
+        'ANALYSIS',
+        'Revenue',
+        'Revenue',
+        125,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'ANALYSISRFI',
+        'ANALYSIS',
+        'Request for Information',
+        'Request for Information',
+        135,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'ANALYSISTIMELINE',
+        'ANALYSIS',
+        'Timeline',
+        'Timeline',
+        145,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Arrest
+    (
+        'ARRESTNONE',
+        'ARREST',
+        'None',
+        'None',
+        555,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Court documents
+    (
+        'COURTDOCSSUBPNA',
+        'COURTDOCUMENTS',
+        'Subpoena',
+        'Subpoena',
+        150,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'COURTDOCSSUMMONS',
+        'COURTDOCUMENTS',
+        'Summons',
+        'Summons',
+        160,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Exhibits
+    (
+        'EXHIBDETENTION',
+        'EXHIBITS',
+        'Detention',
+        'Detention',
+        160,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Operational
+    (
+        'OPAUDIT',
+        'OPERATIONAL',
+        'Audit',
+        'Audit',
+        295,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'OPSITREP',
+        'OPERATIONAL',
+        'Sit Rep',
+        'Sit Rep',
+        455,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Permit
+    (
+        'PERMITNONE',
+        'PERMIT',
+        'None',
+        'None',
+        1250,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Regulatory
+    (
+        'REGULATORYORDER',
+        'REGULATORY',
+        'Order',
+        'Order',
+        1350,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'REGULATORYREQ',
+        'REGULATORY',
+        'Requirements',
+        'Requirements',
+        1360,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Scene
+    (
+        'SCENENONE',
+        'SCENE',
+        'None',
+        'None',
+        550,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Sensitive
+    (
+        'SENSITIVENONE',
+        'SENSITIVE',
+        'None',
+        'None',
+        560,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Statement
+    (
+        'STMTPERSON',
+        'STATEMENT',
+        'Person',
+        'Person',
+        565,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    (
+        'STMTVICTIM',
+        'STATEMENT',
+        'Victim',
+        'Victim',
+        568,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ),
+    -- Witness management
+    (
+        'WITNESSMGMTNONE',
+        'WITNESSMGMT',
+        'None',
+        'None',
+        620,
+        TRUE,
+        'FLYWAY',
+        NOW ()
+    ) ON CONFLICT (task_type_code) DO
+UPDATE
+SET
+    short_description = EXCLUDED.short_description,
+    long_description = EXCLUDED.long_description,
+    display_order = EXCLUDED.display_order,
+    active_ind = EXCLUDED.active_ind,
+    update_user_id = 'FLYWAY',
+    update_utc_timestamp = NOW ();

@@ -29,6 +29,8 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
   const statusLabel = taskStatuses.find((s) => s.value === data.taskStatusCode)?.label ?? "";
   const assignedOfficer = officers?.find((o) => o.app_user_guid === data.assignedUserIdentifier);
   const assignedOfficerName = assignedOfficer ? `${assignedOfficer.last_name}, ${assignedOfficer.first_name}` : "-";
+  const dueDateObj = new Date(data?.dueDate);
+  const dueDate = dueDateObj.toISOString().split("T")[0] ?? "-";
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [attachmentCount, setAttachmentCount] = useState<number | null>(null);
@@ -96,12 +98,14 @@ export const TaskListItem: FC<Props> = ({ data, investigationGuid }) => {
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{categoryLabel}</td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{subCategoryLabel}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{data.remarks}</td>
         <td className={`comp-cell-width-110 ${expandedClass}`}>
           {statusLabel && data.taskStatusCode && (
             <span className={`badge ${applyStatusClass(data.taskStatusCode)}`}>{statusLabel}</span>
           )}
         </td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{assignedOfficerName}</td>
+        <td className={`comp-cell-width-160 comp-cell-min-width-160 ${expandedClass}`}>{dueDate}</td>
         <td className={`comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell ${expandedClass}`}>
           {formatDateTime(data.updatedDate ?? data.createdDate)}
         </td>

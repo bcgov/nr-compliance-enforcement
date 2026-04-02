@@ -252,7 +252,12 @@ export const fetchObjectsMetadata = async (
 
 // Strip embedded tags from filename
 export const getDisplayFilename = (storedName: string): string => {
-  const decoded = decodeURIComponent(storedName);
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(storedName);
+  } catch {
+    decoded = storedName;
+  }
   // {name}_{uuid}_{type}.{ext} or {name}_{uuid}_{type} (no extension)
   const match = new RegExp(/^(.+)_[a-f0-9-]{36}_\d+(\.[^.]+)?$/i).exec(decoded);
   return match ? `${match[1]}${match[2] || ""}` : decoded;

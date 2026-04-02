@@ -238,7 +238,7 @@ services:
       WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
-    entrypoint: sh -c "npm i && npm run prisma-generate-complaint-outcome && \
+    entrypoint: sh -c "npm i --legacy-peer-deps && npm run prisma-generate-complaint-outcome && \
       npm run prisma-generate-shared && \
       npm run prisma-generate-investigation && \
       npm run prisma-generate-inspection && \
@@ -247,7 +247,7 @@ services:
       <<: *postgres-vars
       NODE_ENV: development
       BACKEND_PORT: "3000"
-      KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-web-4794
+      KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-dev-6341
       JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
       JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
       NATS_HOST: nats://nats:4222

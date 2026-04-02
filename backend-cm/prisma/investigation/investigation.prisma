@@ -19,16 +19,18 @@ datasource db {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contravention {
-  contravention_guid       String                     @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid       String?                    @db.Uuid
-  legislation_guid_ref     String                     @db.Uuid
-  active_ind               Boolean                    @default(true)
-  create_user_id           String                     @db.VarChar(32)
-  create_utc_timestamp     DateTime                   @default(now()) @db.Timestamp(6)
-  update_user_id           String?                    @db.VarChar(32)
-  update_utc_timestamp     DateTime?                  @db.Timestamp(6)
-  investigation            investigation?             @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
-  contravention_party_xref contravention_party_xref[]
+  contravention_guid             String                     @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid             String?                    @db.Uuid
+  legislation_guid_ref           String                     @db.Uuid
+  active_ind                     Boolean                    @default(true)
+  create_user_id                 String                     @db.VarChar(32)
+  create_utc_timestamp           DateTime                   @default(now()) @db.Timestamp(6)
+  update_user_id                 String?                    @db.VarChar(32)
+  update_utc_timestamp           DateTime?                  @db.Timestamp(6)
+  contravention_date             DateTime?                  @db.Date
+  geo_organization_unit_code_ref String?                    @db.VarChar(10)
+  investigation                  investigation?             @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
+  contravention_party_xref       contravention_party_xref[]
 
   @@schema("investigation")
 }
@@ -73,6 +75,7 @@ model investigation {
   activity_note                      activity_note[]
   contravention                      contravention[]
   diary_date                         diary_date[]
+  exhibit                            exhibit[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
@@ -310,6 +313,7 @@ model task {
   due_date                                                                      DateTime                @default(dbgenerated("CURRENT_DATE")) @db.Date
   activity_note                                                                 activity_note[]
   diary_date                                                                    diary_date[]
+  exhibit                                                                       exhibit[]
   investigation                                                                 investigation           @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   task_category_type_code_task_task_category_type_codeTotask_category_type_code task_category_type_code @relation("task_task_category_type_codeTotask_category_type_code", fields: [task_category_type_code], references: [task_category_type_code], onDelete: NoAction, onUpdate: NoAction)
   task_status_code_task_task_status_codeTotask_status_code                      task_status_code        @relation("task_task_status_codeTotask_status_code", fields: [task_status_code], references: [task_status_code], onDelete: NoAction, onUpdate: NoAction)
@@ -442,5 +446,26 @@ model activity_note_code {
   update_utc_timestamp                                               DateTime?       @db.Timestamp(6)
   activity_note_activity_note_activity_note_codeToactivity_note_code activity_note[] @relation("activity_note_activity_note_codeToactivity_note_code")
 
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exhibit {
+  exhibit_guid            String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  task_guid               String        @db.Uuid
+  investigation_guid      String        @db.Uuid
+  exhibit_number          Int
+  description             String
+  date_collected          DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Date
+  collected_user_guid_ref String        @db.Uuid
+  active_ind              Boolean       @default(true)
+  create_user_id          String        @db.VarChar(32)
+  create_utc_timestamp    DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id          String?       @db.VarChar(32)
+  update_utc_timestamp    DateTime?     @db.Timestamp(6)
+  investigation           investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__investigation")
+  task                    task          @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__task")
+
+  @@unique([investigation_guid, exhibit_number], map: "uq_exhibit_number_per_investigation")
   @@schema("investigation")
 }

@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from "react";
 import { useAppDispatch } from "@hooks/hooks";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
-import { HWCRAssessmentItem } from "./hwcr-assessment-item";
-import { HWCRAssessmentForm } from "./hwcr-assessment-form";
+import { ComplaintAssessmentItem } from "./complaint-assessment-item";
+import { ComplaintAssessmentForm } from "./complaint-assessment-form";
 import { Assessment } from "@/app/types/outcomes/assessment";
 import { useParams } from "react-router-dom";
 
@@ -13,7 +13,7 @@ type props = {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 };
 
-export const HWCRAssessment: FC<props> = ({
+export const ComplaintAssessment: FC<props> = ({
   assessment,
   allowDuplicate = false,
   allowCancel = true,
@@ -34,7 +34,7 @@ export const HWCRAssessment: FC<props> = ({
   return (
     <>
       {!assessment || showInput ? (
-        <HWCRAssessmentForm
+        <ComplaintAssessmentForm
           id={id}
           assessment={assessment}
           handleCancel={() => {
@@ -46,7 +46,7 @@ export const HWCRAssessment: FC<props> = ({
         />
       ) : (
         assessment && (
-          <HWCRAssessmentItem
+          <ComplaintAssessmentItem
             assessment={assessment}
             handleEdit={() => setShowInput(true)}
           />

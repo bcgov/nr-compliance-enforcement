@@ -1,4 +1,5 @@
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -42,36 +43,6 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
       fileCoordinatorGuid
       discoveryDate
       discoveryTime
-    }
-  }
-`;
-
-const GET_INVESTIGATION = gql`
-  query GetInvestigation($investigationGuid: String!) {
-    getInvestigation(investigationGuid: $investigationGuid) {
-      __typename
-      investigationGuid
-      description
-      name
-      openedTimestamp
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-      locationAddress
-      locationDescription
-      locationGeometry
-      primaryInvestigatorGuid
-      supervisorGuid
-      fileCoordinatorGuid
-      discoveryDate
-      discoveryTime
-    }
-    caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
-      caseIdentifier
-      name
     }
   }
 `;
