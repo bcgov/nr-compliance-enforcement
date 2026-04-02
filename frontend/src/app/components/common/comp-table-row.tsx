@@ -31,7 +31,7 @@ export const CompTableRow = <T,>({
               onClick={() => onToggleExpand(rowKey)}
               aria-expanded={isExpanded}
               aria-label={`${isExpanded ? "Collapse" : "Expand"} row details`}
-              className="btn p-0 border-0 text-muted"
+              className="btn p-0 border-0 text-muted lh-1"
             >
               <i className={`m-0 ps-1 bi bi-chevron-${isExpanded ? "down" : "right"}`} />
             </button>

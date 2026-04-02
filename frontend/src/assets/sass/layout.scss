@@ -887,9 +887,7 @@ td.sticky-col {
 td.actions-col {
   padding-top: 0;
   padding-bottom: 0;
-  .btn {
-    margin-top: 4px;
-  }
+  vertical-align: middle;
 
   .btn + .btn {
     margin-left: 8px;
