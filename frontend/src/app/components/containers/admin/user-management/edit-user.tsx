@@ -23,6 +23,7 @@ import {
 import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import {
   CEEB_ROLE_OPTIONS,
+  NROS_ROLE_OPTIONS,
   COS_ROLE_OPTIONS,
   PARKS_ROLE_OPTIONS,
   ROLE_OPTIONS,
@@ -88,7 +89,7 @@ export const EditUser: FC<EditUserProps> = ({
   const [roleList, setRoleList] = useState<Array<Option>>([]);
 
   const { markDirty } = useFormDirtyState(onDirtyChange);
-  
+
   // Filter agencies
   const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
   const userAgency = UserService.getUserAgency();
@@ -144,6 +145,7 @@ export const EditUser: FC<EditUserProps> = ({
       setSelectedRoles(currentRoles);
 
       const hasCEEBRole = userRoles.some((role: any) => role.includes("CEEB"));
+      const hasNROSRole = userRoles.some((role: any) => role.includes("NROS"));
       const hasCOSRole = userRoles.some((role: any) => role.includes("COS"));
       const hasParksRole = userRoles.some((role: any) => role.includes("PARKS"));
 
@@ -156,6 +158,20 @@ export const EditUser: FC<EditUserProps> = ({
         if (currentTeam?.team_guid) {
           const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
           setSelectedTeam(currentTeamMapped);
+        }
+
+        setCurrentAgency(currentAgency);
+        return;
+      }
+
+      if (hasNROSRole) {
+        currentAgency = mapValueToDropdownList(AgencyType.NROS, agencyList);
+
+        if (officerData.office_guid) {
+          const officeGuid =
+            typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
+          const currentOffice = mapValueToDropdownList(officeGuid, offices);
+          setSelectedOffice(currentOffice);
         }
 
         setCurrentAgency(currentAgency);
@@ -210,6 +226,9 @@ export const EditUser: FC<EditUserProps> = ({
     switch (currentAgency?.value ?? selectedAgency?.value) {
       case AgencyType.CEEB:
         setRoleList(CEEB_ROLE_OPTIONS);
+        break;
+      case AgencyType.NROS:
+        setRoleList(NROS_ROLE_OPTIONS);
         break;
       case AgencyType.COS:
         setRoleList(COS_ROLE_OPTIONS);
@@ -387,6 +406,7 @@ export const EditUser: FC<EditUserProps> = ({
         );
         return res;
       }
+      case AgencyType.NROS:
       case AgencyType.COS:
       default: {
         const officerId = officer?.value ? officer.value : "";
@@ -438,7 +458,7 @@ export const EditUser: FC<EditUserProps> = ({
     const agency = currentAgency ?? selectedAgency;
     if (agency?.value === AgencyType.CEEB) {
       return "Team";
-    } else if (agency?.value === AgencyType.COS) {
+    } else if (agency?.value === AgencyType.COS || agency?.value === AgencyType.NROS) {
       return "Office";
     } else if (agency?.value === AgencyType.PARKS) {
       return "Park area";
@@ -594,7 +614,10 @@ export const EditUser: FC<EditUserProps> = ({
                   isClearable={true}
                 />
               )}
-              {(currentAgency?.value === AgencyType.COS || selectedAgency?.value === AgencyType.COS) && (
+              {(currentAgency?.value === AgencyType.COS ||
+                selectedAgency?.value === AgencyType.COS ||
+                currentAgency?.value === AgencyType.NROS ||
+                selectedAgency?.value === AgencyType.NROS) && (
                 <CompSelect
                   id="species-select-id"
                   showInactive={false}

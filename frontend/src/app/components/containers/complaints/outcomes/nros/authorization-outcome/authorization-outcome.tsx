@@ -1,0 +1,140 @@
+import { FC, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { ComplaintParams } from "@components/containers/complaints/details/complaint-details-edit";
+import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
+import { selectCeebAuthorization } from "@/app/store/reducers/complaint-outcome-selectors";
+import { Button, Card } from "react-bootstrap";
+import { BsExclamationCircleFill } from "react-icons/bs";
+import { AuthoizationOutcomeForm } from "./authorization-outcome-form";
+import { AuthoizationOutcomeItem } from "./authorization-outcome-item";
+import { openModal } from "@store/reducers/app";
+import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
+import { deleteAuthorizationOutcome, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
+import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
+
+interface AuthorizationOutcomeProps {
+  onDirtyChange?: (index: number, isDirty: boolean) => void;
+}
+
+export const AuthorizationOutcome: FC<AuthorizationOutcomeProps> = ({ onDirtyChange }) => {
+  const { id = "" } = useParams<ComplaintParams>();
+  const dispatch = useAppDispatch();
+
+  //-- select the authorization
+  const data = useAppSelector(selectCeebAuthorization);
+
+  const isInEdit = useAppSelector((state) => state.complaintOutcomes.isInEdit);
+  const [editable, setEditable] = useState(true);
+  const showSectionErrors = isInEdit.showSectionErrors;
+
+  const complaintOutcomes = useAppSelector((state) => state.complaintOutcomes);
+  const hasAuthorization = !complaintOutcomes.authorization;
+
+  const isReadOnly = useAppSelector(selectComplaintViewMode);
+
+  useEffect(() => {
+    if (!hasAuthorization && editable) {
+      dispatch(setIsInEdit({ site: false }));
+    } else dispatch(setIsInEdit({ site: editable }));
+    return () => {
+      dispatch(setIsInEdit({ site: false }));
+    };
+  }, [dispatch, editable, hasAuthorization]);
+
+  useEffect(() => {
+    setEditable(!data.id);
+  }, [data.id]);
+
+  const toggleEdit = () => {
+    setEditable(true);
+  };
+
+  const handleDeleteButtonClick = () => {
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: DELETE_CONFIRM,
+        data: {
+          title: "Delete authorization?",
+          description: "Your changes will be lost.",
+          confirmText: "delete authorization",
+          deleteConfirmed: () => {
+            dispatch(deleteAuthorizationOutcome(id)).then(async (response) => {
+              if (response === "success") {
+                dispatch(getCaseFile(id));
+              }
+            });
+          },
+        },
+      }),
+    );
+  };
+
+  return (
+    <section
+      className="comp-details-section"
+      id="nros-authorization"
+    >
+      <div className="comp-details-section-header">
+        <h3>Authorization{editable && <span className="required-ind">*</span>}</h3>
+        {!editable && (
+          <div className="comp-details-section-header-actions">
+            <Button
+              id="nros-authorization-edit-btn"
+              variant="outline-primary"
+              size="sm"
+              onClick={() => {
+                toggleEdit();
+              }}
+              disabled={isReadOnly}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit</span>
+            </Button>
+
+            <Button
+              id="nros-authorization-delete-btn"
+              variant="outline-primary"
+              size="sm"
+              onClick={handleDeleteButtonClick}
+              disabled={isReadOnly}
+            >
+              <i className="bi bi-trash3"></i>
+              <span>Delete</span>
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Card
+        id="nros-authorization"
+        border={showSectionErrors ? "danger" : "default"}
+      >
+        <Card.Body>
+          {showSectionErrors && (
+            <div className="section-error-message">
+              <BsExclamationCircleFill />
+              {hasAuthorization ? (
+                <span>Save section before closing the complaint.</span>
+              ) : (
+                <span>Complete section before closing the complaint.</span>
+              )}
+            </div>
+          )}
+
+          {editable ? (
+            <AuthoizationOutcomeForm
+              {...data}
+              leadIdentifier={id}
+              toggleEdit={setEditable}
+              onDirtyChange={onDirtyChange}
+            />
+          ) : (
+            <AuthoizationOutcomeItem {...data} />
+          )}
+        </Card.Body>
+      </Card>
+    </section>
+  );
+};

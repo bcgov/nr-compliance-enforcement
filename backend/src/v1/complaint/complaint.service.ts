@@ -1385,7 +1385,7 @@ export class ComplaintService {
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (agencies.includes("EPO") && filters.actionTaken) {
+      if ((agencies.includes("EPO") || agencies.includes("NROS")) && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
@@ -1466,7 +1466,7 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
-          if (agencies.includes("EPO")) {
+          if (agencies.includes("EPO") || agencies.includes("NROS")) {
             // Get the authorization id from the case management system
             const ids = items.map((item) => item.id);
             const { data, errors } = await get(token, {
@@ -1718,7 +1718,7 @@ export class ComplaintService {
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if (agencies.includes("EPO") && filters.actionTaken) {
+      if ((agencies.includes("EPO") || agencies.includes("NROS")) && filters.actionTaken) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
