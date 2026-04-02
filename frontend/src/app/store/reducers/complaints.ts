@@ -960,7 +960,13 @@ export const selectTotalComplaintsByType =
 
 export const selectComplaintsByType =
   (complaintType: string) =>
-  (state: RootState): Array<WildlifeComplaint> | Array<AllegationComplaint> | Array<GeneralIncidentComplaint> => {
+  (
+    state: RootState,
+  ):
+    | Array<WildlifeComplaint>
+    | Array<AllegationComplaint>
+    | Array<GeneralIncidentComplaint>
+    | Array<SectorComplaint> => {
     switch (complaintType) {
       case COMPLAINT_TYPES.ERS:
         return selectAllegationComplaints(state);
@@ -1082,7 +1088,17 @@ export const selectComplaintDetails = createSelector(
       const localDate = parseUTCDateTimeToLocal(incidentDate, incidentTime);
       const localIncidentTime = localDate && incidentTime ? formatLocalTime(localDate) : incidentTime;
 
-      result = { ...result, details, location, locationDescription, incidentDate: localDate ?? undefined, incidentTime: localIncidentTime, coordinates, ownedBy, parkGuid };
+      result = {
+        ...result,
+        details,
+        location,
+        locationDescription,
+        incidentDate: localDate ?? undefined,
+        incidentTime: localIncidentTime,
+        coordinates,
+        ownedBy,
+        parkGuid,
+      };
 
       if (complaintType === "HWCR") {
         const { attractants } = complaint as WildlifeComplaint;

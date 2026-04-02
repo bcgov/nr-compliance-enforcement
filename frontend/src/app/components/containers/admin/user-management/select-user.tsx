@@ -1,12 +1,11 @@
 import { Dispatch, FC, SetStateAction, useEffect, useMemo, useCallback, useState } from "react";
-import { Button, Nav, Table } from "react-bootstrap";
+import { Button, Nav } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectOfficers } from "@store/reducers/officer";
 import { fetchOfficeAssignments, selectOffices } from "@store/reducers/office";
 import { selectParkAreasDropdown } from "@store/reducers/code-table-selectors";
 import { selectTeamDropdown } from "@store/reducers/code-table";
 import { CompSelect } from "@components/common/comp-select";
-import { SortableHeader } from "@components/common/sortable-header";
 import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
@@ -17,6 +16,7 @@ import { Roles } from "@apptypes/app/roles";
 import { escapeCsvCell } from "@common/methods";
 import "@assets/sass/user-management.scss";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { UserList } from "./user-list";
 
 interface SelectUserProps {
   officer: any;
@@ -186,6 +186,8 @@ export const SelectUser: FC<SelectUserProps> = ({
   const teams = useAppSelector(selectTeamDropdown);
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const [activeAgencyTab, setActiveAgencyTab] = useState<string>(AgencyType.COS);
+
+  // Sort state retained for CSV export
   const [sortColumn, setSortColumn] = useState<SortColumn>("name");
   const [sortDirection, setSortDirection] = useState<string>(SORT_TYPES.ASC);
 
@@ -196,9 +198,7 @@ export const SelectUser: FC<SelectUserProps> = ({
   // Tabs the active user can see: GLOBAL_ADMINISTRATOR sees all
   // AGENCY_ADMINISTRATOR sees COS, CEEB, PARKS based on their core roles, and NRS
   const visibleTabCodes = useMemo((): string[] => {
-    if (isGlobalAdmin) {
-      return [...AGENCY_TAB_CODES];
-    }
+    if (isGlobalAdmin) return [...AGENCY_TAB_CODES];
     if (UserService.hasRole(Roles.AGENCY_ADMINISTRATOR)) {
       const tabs: string[] = [];
       if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
@@ -210,6 +210,11 @@ export const SelectUser: FC<SelectUserProps> = ({
     return [];
   }, []);
 
+  const handleSort = useCallback((key: string, direction: string) => {
+    setSortColumn(key as SortColumn);
+    setSortDirection(direction);
+  }, []);
+
   useEffect(() => {
     dispatch(fetchOfficeAssignments());
   }, [dispatch]);
@@ -219,18 +224,6 @@ export const SelectUser: FC<SelectUserProps> = ({
       setActiveAgencyTab(visibleTabCodes[0]);
     }
   }, [visibleTabCodes, activeAgencyTab]);
-
-  const handleSort = useCallback(
-    (sortInput: string) => {
-      if (sortColumn === sortInput) {
-        setSortDirection((prev) => (prev === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC));
-      } else {
-        setSortColumn(sortInput as SortColumn);
-        setSortDirection(SORT_TYPES.ASC);
-      }
-    },
-    [sortColumn],
-  );
 
   const getSortKey = useCallback(
     (u: AppUser, sortCol: SortColumn): string => {
@@ -272,8 +265,9 @@ export const SelectUser: FC<SelectUserProps> = ({
     );
   }, [officers]);
 
+  // Retained for CSV export only
   const sortedOfficersForTab = useMemo(() => {
-    const list = officersByAgency[activeAgencyTab as keyof typeof officersByAgency] ?? [];
+    const list = officersByAgency[activeAgencyTab] ?? [];
     return [...list].sort((a, b) =>
       compareStrings(getSortKey(a, sortColumn), getSortKey(b, sortColumn), sortDirection),
     );
@@ -331,13 +325,13 @@ export const SelectUser: FC<SelectUserProps> = ({
             <i className="comp-sidenav-item-icon bi bi-plus-circle"></i>Add new user
           </Button>
         </div>
-
         <p className="admin-subtitle">
           After selecting a user, click <strong>Edit</strong> for more options, such as: choosing an agency,
           team/office, specifying roles, updating the last name and/or email address, temporarily disabling or deleting
           the user.
         </p>
       </div>
+
       <section className="comp-details-section">
         <div>
           <dl className="comp-call-details-group">
@@ -405,106 +399,20 @@ export const SelectUser: FC<SelectUserProps> = ({
                   id={`${code}-tab`}
                   onClick={() => setActiveAgencyTab(code)}
                 >
-                  {label} ({officersByAgency[code as keyof typeof officersByAgency]?.length ?? 0})
+                  {label} ({officersByAgency[code]?.length ?? 0})
                 </Nav.Link>
               </Nav.Item>
             ))}
           </Nav>
-          <div className="comp-table-container">
-            <div className="comp-table-scroll-container">
-              <Table
-                className="comp-table"
-                id="user-list"
-              >
-                <thead className="sticky-table-header">
-                  <tr>
-                    <SortableHeader
-                      title="Name (last, first)"
-                      sortFnc={handleSort}
-                      sortKey="name"
-                      currentSort={sortColumn}
-                      sortDirection={sortDirection}
-                    />
-                    <SortableHeader
-                      title="User ID"
-                      sortFnc={handleSort}
-                      sortKey="user_id"
-                      currentSort={sortColumn}
-                      sortDirection={sortDirection}
-                    />
-                    <SortableHeader
-                      title="Agency"
-                      sortFnc={handleSort}
-                      sortKey="agency"
-                      currentSort={sortColumn}
-                      sortDirection={sortDirection}
-                    />
-                    <SortableHeader
-                      title={AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? EMPTY}
-                      sortFnc={handleSort}
-                      sortKey="agency_detail"
-                      currentSort={sortColumn}
-                      sortDirection={sortDirection}
-                    />
-                    {activeAgencyTab === AgencyType.COS && (
-                      <>
-                        <SortableHeader
-                          title="Zone"
-                          sortFnc={handleSort}
-                          sortKey="zone"
-                          currentSort={sortColumn}
-                          sortDirection={sortDirection}
-                        />
-                        <SortableHeader
-                          title="Region"
-                          sortFnc={handleSort}
-                          sortKey="region"
-                          currentSort={sortColumn}
-                          sortDirection={sortDirection}
-                        />
-                      </>
-                    )}
-                    <SortableHeader
-                      title="Role"
-                      sortFnc={handleSort}
-                      sortKey="role"
-                      currentSort={sortColumn}
-                      sortDirection={sortDirection}
-                    />
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedOfficersForTab.length ? (
-                    sortedOfficersForTab.map((u) => (
-                      <tr key={u.app_user_guid}>
-                        <td>
-                          {u.last_name}, {u.first_name}
-                          {u.deactivate_ind ? " (deactivated)" : ""}
-                        </td>
-                        <td>{u.user_id ?? EMPTY}</td>
-                        <td>{getAgencyLabel(u)}</td>
-                        <td>{getAgencyDetailDisplay(u, offices, parkAreas, teams)}</td>
-                        {activeAgencyTab === AgencyType.COS && (
-                          <>
-                            <td>{getZoneDisplayName(u)}</td>
-                            <td>{getRegionDisplayName(u)}</td>
-                          </>
-                        )}
-                        <td>{u.user_roles?.length ? u.user_roles.join(", ") : EMPTY}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={SORT_COLUMNS.length + (activeAgencyTab === AgencyType.COS ? 2 : 0)}>
-                        <i className="bi bi-info-circle-fill p-2"></i>
-                        <span>No users to display for this agency.</span>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-            </div>
-          </div>
+          <UserList
+            officers={officersByAgency[activeAgencyTab] ?? []}
+            activeAgencyTab={activeAgencyTab}
+            offices={offices}
+            parkAreas={parkAreas}
+            teams={teams}
+            agencyDetailLabel={AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? EMPTY}
+            onSort={handleSort}
+          />
         </section>
       )}
     </div>
