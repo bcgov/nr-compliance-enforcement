@@ -146,6 +146,7 @@ export const ComplaintList: FC<Props> = ({ type, searchQuery }) => {
       setActiveTab(storedTab);
       setSortKey("incident_reported_utc_timestmp");
       setSortDirection(SORT_TYPES.DESC);
+      setPage(1);
       return; // prevent fetch with old sort key
     }
 
