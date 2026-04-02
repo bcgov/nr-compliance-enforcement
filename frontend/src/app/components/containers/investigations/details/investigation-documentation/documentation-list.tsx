@@ -191,6 +191,7 @@ export const DocumentationList: FC<Props> = ({
     <CompTable
       data={attachmentsWithTasks}
       tableIdentifier="documentation-list"
+      isFixedHeight={false}
       columns={columns}
       getRowKey={(attachment) => attachment.id ?? ""}
       isLoading={isLoading}

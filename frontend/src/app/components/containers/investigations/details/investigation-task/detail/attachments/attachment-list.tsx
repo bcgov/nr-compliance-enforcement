@@ -140,6 +140,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
     <CompTable
       data={attachments}
       tableIdentifier="attachment-list"
+      isFixedHeight={false}
       columns={columns}
       getRowKey={(attachment) => attachment.id ?? ""}
       isLoading={isLoading}

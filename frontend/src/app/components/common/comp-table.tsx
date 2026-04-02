@@ -11,6 +11,7 @@ const DEFAULT_PAGE_SIZE = 25;
 export const CompTable = <T,>({
   data,
   tableIdentifier,
+  isFixedHeight,
   columns,
   getRowKey,
   renderExpandedContent,
@@ -33,6 +34,9 @@ export const CompTable = <T,>({
   // Infer whether sorting and pagination are server-side
   const isServerSort = !!onSort && !!onPageChange;
   const isServerPagination = !!onPageChange;
+
+  // Determine height of table
+  const isPartial = data.length < pageSize;
 
   const currentPage = isServerPagination ? (externalCurrentPage ?? 1) : internalCurrentPage;
 
@@ -196,10 +200,10 @@ export const CompTable = <T,>({
 
   return (
     <div className="comp-table-container">
-      <div className="comp-table-scroll-container">
+      <div className={`comp-table-scroll-container ${isFixedHeight ? "comp-table-scroll-container--fixed" : ""}`}>
         <Table
           id={tableIdentifier}
-          className="comp-table mb-0 border-0"
+          className={`comp-table mb-0 border-0 ${isPartial ? "comp-table--partial" : ""}`}
         >
           {renderHeader()}
           <tbody>{renderBody()}</tbody>

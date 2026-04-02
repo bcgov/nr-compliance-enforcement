@@ -148,6 +148,7 @@ export const UserList: FC<Props> = ({
     <CompTable
       data={officers}
       tableIdentifier="user-list"
+      isFixedHeight={false}
       columns={columns}
       getRowKey={(u) => u.app_user_guid}
       defaultSortLabel="Name (last, first)"

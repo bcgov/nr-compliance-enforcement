@@ -183,6 +183,7 @@ export const ComplaintTableList: FC<Props> = ({
     <CompTable
       data={complaints}
       tableIdentifier="complaint-list"
+      isFixedHeight={true}
       columns={buildColumns()}
       getRowKey={(complaint) => complaint.id}
       isLoading={isLoading}

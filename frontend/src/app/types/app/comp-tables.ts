@@ -19,6 +19,7 @@ export type CompTableSharedProps<T> = {
 export type CompTableProps<T> = CompTableSharedProps<T> & {
   data: T[]; // The data to be displayed in the table
   tableIdentifier: string; // id for the table
+  isFixedHeight: boolean; // true for tables that are always on the page and large regardless of data (e.g. complaints, tasks)
   getRowKey: (row: T) => string; // Callback to get a unique identifier for a row
   isLoading?: boolean; // For GraphQL driven tables can display a loading spinner while fetching data
   pageSize?: number; // The number of entries per page to display

@@ -542,7 +542,6 @@ button.modal-buttons {
   padding: 12px 16px;
   gap: 8px;
   min-height: 63px;
-  border-top: 1px solid $gray-300;
 
   * {
     font-size: 0.875rem;
@@ -784,6 +783,7 @@ p {
   font-size: 0.875rem;
 
   tbody {
+    font-weight: 400;
     tr:last-child {
       td {
         border-bottom: none;
@@ -827,9 +827,15 @@ p {
   a {
     color: #1a5a96;
   }
+}
 
+.comp-table--partial {
   tbody {
-    font-weight: 400;
+    tr:last-child {
+      td {
+        border-bottom: 1px solid $gray-300;
+      }
+    }
   }
 }
 
