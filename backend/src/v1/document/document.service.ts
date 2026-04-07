@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
-import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
+import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
 
 @Injectable()
 export class DocumentService {
@@ -41,11 +41,10 @@ export class DocumentService {
 
     try {
       //-- get the complaint from the system, but do not include anything other
-      //-- than the base complaint. no maps, no attachments, no outcome data
       const data = await this.ceds.getReportData(id, type, tz, token, combinedAttachments);
 
       //--
-      return await this.cdogs.generate(fileName, data, type);
+      return await this.cdogs.generate(fileName, data, type as REPORT_TYPE);
     } catch (error) {
       this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
       throw new Error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
