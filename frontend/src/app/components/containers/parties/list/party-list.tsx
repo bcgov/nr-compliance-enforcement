@@ -1,10 +1,12 @@
 import { FC, useCallback } from "react";
-import { Table } from "react-bootstrap";
+import { Dropdown } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { CompTable } from "@components/common/comp-table";
+import { CompColumn } from "@/app/types/app/comp-tables";
 import { usePartySearch } from "../hooks/use-party-search";
-import { SortableHeader } from "@components/common/sortable-header";
-import Paginator from "@/app/components/common/paginator";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { PartyListItem } from "./party-list-item";
 
 type Props = {
   parties: any[];
@@ -15,16 +17,14 @@ type Props = {
 
 export const PartyList: FC<Props> = ({ parties, totalItems = 0, isLoading = false, error = null }) => {
   const { searchValues, setValues, setSort } = usePartySearch();
+  const partyTypes = useAppSelector(selectPartyTypeDropdown);
 
-  const handleSort = (sortInput: string) => {
-    const currentSortBy = searchValues.sortBy;
-    const currentSortOrder = searchValues.sortOrder;
-    const newDirection =
-      currentSortBy === sortInput && currentSortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
-
-    // Update both sortBy and sortOrder atomically to avoid timing issues
-    setSort(sortInput, newDirection);
-  };
+  const handleSort = useCallback(
+    (sortKey: string, sortDirection: string) => {
+      setSort(sortKey, sortDirection);
+    },
+    [setSort],
+  );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -33,107 +33,118 @@ export const PartyList: FC<Props> = ({ parties, totalItems = 0, isLoading = fals
     [setValues],
   );
 
-  const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
-    <SortableHeader
-      title={title}
-      sortFnc={handleSort}
-      sortKey={sortKey}
-      currentSort={searchValues.sortBy}
-      sortDirection={searchValues.sortOrder}
-      className={className}
-    />
-  );
-
-  const renderPartyListHeader = (): JSX.Element => (
-    <thead className="sticky-table-header">
-      <tr>
-        {renderSortableHeader(
-          "Party #",
-          "partyIdentifier",
-          "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-        )}
-        {renderSortableHeader("Party Type", "partyType", "comp-cell-min-width-110")}
-        {renderSortableHeader("First name", "firstName", "comp-cell-min-width-110")}
-        {renderSortableHeader("Last name", "lastName", "comp-cell-min-width-110")}
-        {renderSortableHeader("Business name", "name", "comp-cell-width-110")}
-        <th className="unsortable sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col">
-          <div className="header-label">Actions</div>
-        </th>
-      </tr>
-    </thead>
-  );
-
-  const renderLoadingSpinner = () => (
-    <tr>
-      <td
-        colSpan={5}
-        className="text-center p-4"
-      >
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="spinner-border spinner-border-sm me-2">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <span>Loading parties...</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderMessage = (icon: string, message: string, variant?: string) => {
-    return (
-      <tr>
-        <td
-          colSpan={5}
-          className="text-center p-4"
+  const columns: CompColumn<any>[] = [
+    {
+      label: "Party #",
+      sortKey: "partyIdentifier",
+      headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center",
+      isSortable: true,
+      getValue: (party) => party.partyIdentifier ?? "",
+      renderCell: (party) => (
+        <Link
+          to={`/party/${party.partyIdentifier}`}
+          className="comp-cell-link"
         >
-          <div className={`d-flex align-items-center justify-content-center${variant || ""}`}>
-            <i className={`bi bi-${icon} me-2`}></i>
-            <span>{message}</span>
-          </div>
-        </td>
-      </tr>
-    );
-  };
-
-  const renderErrorMessage = () =>
-    renderMessage(
-      "exclamation-triangle-fill",
-      `Error loading parties: ${error?.message || "An unexpected error occurred"}`,
-      "text-danger",
-    );
-
-  const renderPartyListItems = () => {
-    if (isLoading) return renderLoadingSpinner();
-    if (!isLoading && error) return renderErrorMessage();
-    if (!isLoading && !error && parties.length === 0) return renderMessage("info-circle-fill", "No parties found.");
-    return parties.map((party) => (
-      <PartyListItem
-        key={party.partyIdentifier}
-        party={party}
-      />
-    ));
-  };
+          {party.partyIdentifier}
+        </Link>
+      ),
+    },
+    {
+      label: "Party Type",
+      sortKey: "partyType",
+      headerClassName: "comp-cell-min-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (party) => partyTypes.find((item) => item.value === party.partyTypeCode)?.label ?? "",
+      renderCell: (party) => partyTypes.find((item) => item.value === party.partyTypeCode)?.label ?? "-",
+    },
+    {
+      label: "First name",
+      sortKey: "firstName",
+      headerClassName: "comp-cell-min-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (party) => party.person?.firstName ?? "",
+      renderCell: (party) => party.person?.firstName ?? "-",
+    },
+    {
+      label: "Last name",
+      sortKey: "lastName",
+      headerClassName: "comp-cell-min-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (party) => party.person?.lastName ?? "",
+      renderCell: (party) => party.person?.lastName ?? "-",
+    },
+    {
+      label: "Business name",
+      sortKey: "name",
+      headerClassName: "comp-cell-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (party) => party.business?.name ?? "",
+      renderCell: (party) => party.business?.name ?? "-",
+    },
+    {
+      label: "Actions",
+      headerClassName: "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col",
+      cellClassName: "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col",
+      isSortable: false,
+      renderCell: (party) => (
+        <Dropdown
+          id={`party-action-button-${party.partyIdentifier}`}
+          drop="start"
+          className="comp-action-dropdown"
+        >
+          <Dropdown.Toggle
+            id={`party-action-toggle-${party.partyIdentifier}`}
+            size="sm"
+            variant="outline-primary"
+          >
+            Actions
+          </Dropdown.Toggle>
+          <Dropdown.Menu
+            popperConfig={{
+              modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
+            }}
+          >
+            <Dropdown.Item
+              as={Link}
+              to={`/party/${party.partyIdentifier}`}
+              id={`view-party-${party.partyIdentifier}`}
+            >
+              <i className="bi bi-eye" /> View Party
+            </Dropdown.Item>
+            <Dropdown.Item
+              as={Link}
+              to={`/party/${party.partyIdentifier}/edit`}
+              id={`edit-party-${party.partyIdentifier}`}
+            >
+              <i className="bi bi-pencil" /> Edit Party
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      ),
+    },
+  ];
 
   return (
-    <div className="comp-table-container">
-      <div className="comp-table-scroll-container">
-        <Table
-          className="comp-table"
-          id="party-list"
-        >
-          {renderPartyListHeader()}
-          <tbody>{renderPartyListItems()}</tbody>
-        </Table>
-      </div>
-
-      {totalItems > 0 && (
-        <Paginator
-          currentPage={searchValues.page}
-          totalItems={totalItems}
-          onPageChange={handlePageChange}
-          resultsPerPage={searchValues.pageSize}
-        />
-      )}
-    </div>
+    <CompTable
+      data={parties}
+      isFixedHeight={true}
+      tableIdentifier="party-list"
+      columns={columns}
+      getRowKey={(party) => party.partyIdentifier}
+      isLoading={isLoading}
+      error={error}
+      totalItems={totalItems}
+      currentPage={searchValues.page}
+      pageSize={searchValues.pageSize}
+      defaultSort="partyIdentifier"
+      defaultSortDirection={SORT_TYPES.DESC}
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+    />
   );
 };
