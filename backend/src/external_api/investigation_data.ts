@@ -1,18 +1,12 @@
-import { get } from "src/external_api/shared_data";
+import { get, getAppUsers } from "src/external_api/shared_data";
 
 export const getTask = async (token: string, taskId: string) => {
   const query = `{task(taskId: "${taskId}") {
-    taskIdentifier
     investigationIdentifier
     taskTypeCode
-    taskStatusCode
     assignedUserIdentifier
-    createdByUserIdentifier
-    createdDate
-    updatedDate
     taskNumber
     description
-    activeIndicator
     taskCategoryTypeCode
     remarks
     dueDate
@@ -24,5 +18,18 @@ export const getTask = async (token: string, taskId: string) => {
     throw new Error(`GraphQL errors occurred while fetching task: ${JSON.stringify(errors)}`);
   }
 
-  return data?.task;
+  // Data conversions
+  // TODO: Felt cute, might delete later
+  const task = data?.task;
+  if (task) {
+    const users = await getAppUsers(token);
+    const findUserName = (guid: string) => {
+      const user = users.find((u) => u.appUserGuid === guid);
+      return user ? `${user.lastName}, ${user.firstName}` : "Unknown officer";
+    };
+
+    task.assignedUserIdentifier = findUserName(task.assignedUserIdentifier);
+  }
+
+  return task;
 };
