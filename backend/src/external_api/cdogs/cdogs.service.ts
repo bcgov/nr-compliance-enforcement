@@ -8,6 +8,7 @@ import { constants } from "node:http2";
 import FormData = require("form-data");
 import fs = require("fs");
 import { join } from "node:path";
+import { REPORT_TYPE } from "src/types/models/reports/report-type";
 
 @Injectable()
 export class CdogsService implements ExternalApiService {
@@ -240,22 +241,22 @@ export class CdogsService implements ExternalApiService {
       ERS: {
         EPO: CONFIGURATION_CODES.CEEBTMPLATE,
         PARKS: CONFIGURATION_CODES.PRKERSTMPT,
-        ECCC: this._getExternalTemplateCode(data, type),
-        DFO: this._getExternalTemplateCode(data, type),
-        NROS: this._getExternalTemplateCode(data, type),
-        NRS: this._getExternalTemplateCode(data, type),
-        OTH: this._getExternalTemplateCode(data, type),
-        POL: this._getExternalTemplateCode(data, type),
+        ECCC: () => this._getExternalTemplateCode(data, type),
+        DFO: () => this._getExternalTemplateCode(data, type),
+        NROS: () => this._getExternalTemplateCode(data, type),
+        NRS: () => this._getExternalTemplateCode(data, type),
+        OTH: () => this._getExternalTemplateCode(data, type),
+        POL: () => this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.ERSTMPLATE,
       },
       GIR: {
         PARKS: CONFIGURATION_CODES.PRKGIRTMPT,
-        ECCC: this._getExternalTemplateCode(data, type),
-        DFO: this._getExternalTemplateCode(data, type),
-        NROS: this._getExternalTemplateCode(data, type),
-        NRS: this._getExternalTemplateCode(data, type),
-        OTH: this._getExternalTemplateCode(data, type),
-        POL: this._getExternalTemplateCode(data, type),
+        ECCC: () => this._getExternalTemplateCode(data, type),
+        DFO: () => this._getExternalTemplateCode(data, type),
+        NROS: () => this._getExternalTemplateCode(data, type),
+        NRS: () => this._getExternalTemplateCode(data, type),
+        OTH: () => this._getExternalTemplateCode(data, type),
+        POL: () => this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.GIRTMPLATE,
       },
       TASK_DEFINITION: {
@@ -263,18 +264,17 @@ export class CdogsService implements ExternalApiService {
       },
     };
 
-    templateCode = templateMap[type]?.[data.ownedBy] ?? templateMap[type]?.default;
+    const mapEntry = templateMap[type]?.[data.ownedBy] ?? templateMap[type]?.default;
+    // if the mapEntry is a function evaluate it - otherwise return the string
+    templateCode = typeof mapEntry === "function" ? mapEntry() : mapEntry;
 
     try {
       const apiToken = await this.authenticate();
-
       if (!(await this.isTemplateCached(apiToken, templateCode))) {
         await this.upload(apiToken, templateCode);
       }
-
       const uid = await this._getTemplateId(templateCode);
       const url = `${this.baseUri}/api/v2/template/${uid}/render`;
-
       const config: AxiosRequestConfig = {
         responseType: "arraybuffer",
         headers: {
@@ -282,9 +282,7 @@ export class CdogsService implements ExternalApiService {
           Authorization: `Bearer ${apiToken}`,
         },
       };
-
       const documentData = await this._applyData(data, documentName);
-
       const response = await axios.post(url, documentData, config);
       return response;
     } catch (error) {

@@ -3,6 +3,7 @@ import { CdogsService } from "../../external_api/cdogs/cdogs.service";
 import { ComplaintService } from "../complaint/complaint.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
+import { REPORT_TYPE } from "src/types/models/reports/report-type";
 import { getTask } from "src/external_api/investigation_data";
 
 @Injectable()
@@ -55,6 +56,7 @@ export class DocumentService {
   exportTask = async (taskId: string, fileName: string, tz: string, token: string) => {
     try {
       const data = await getTask(token, taskId);
+      console.log(data);
       return await this.cdogs.generate(fileName, data, REPORT_TYPE.TASK_DEFINITION);
     } catch (error) {
       this.logger.error(

@@ -42,7 +42,7 @@ export class DocumentController {
       res.end(buffer);
     } catch (error) {
       this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
-      res.status(500).send(`exception: unable to export document for complaint: ${escape(id)}`);
+      res.status(500).send(`exception: unable to export document for complaint: ${id}`);
     }
   }
 
@@ -55,7 +55,7 @@ export class DocumentController {
       const response = await this.service.exportTask(taskId, fileName, tz, token);
 
       if (!response?.data) {
-        throw new Error(`exception: unable to generate ${REPORT_TYPE.TASK_DEFINITION} document: ${taskId}`);
+        throw new Error(`exception: unable to generate task document: ${taskId}`);
       }
 
       const buffer = Buffer.from(response.data, "binary");
@@ -68,10 +68,8 @@ export class DocumentController {
 
       res.end(buffer);
     } catch (error) {
-      this.logger.error(
-        `exception: unable to generate ${REPORT_TYPE.TASK_DEFINITION} document: ${taskId} - error: ${error}`,
-      );
-      res.status(500).send(`exception: unable to generate ${REPORT_TYPE.TASK_DEFINITION} document: ${escape(taskId)}`);
+      this.logger.error(`exception: unable to generate task document: ${taskId} - error: ${error}`);
+      res.status(500).send(`exception: unable to generate task document: ${taskId}`);
     }
   }
 }
