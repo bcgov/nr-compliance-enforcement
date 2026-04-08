@@ -130,83 +130,55 @@ export const EditUser: FC<EditUserProps> = ({
     }
   }, [dispatch, notification]);
 
+  const getUserRoles = async () => {
+    const userRoles = officerData?.user_roles;
+    if (!userRoles || userRoles.length === 0 || selectedAgency !== null) return;
+
+    const currentRoles = mapRolesDropdown(userRoles);
+    setSelectedRoles(currentRoles);
+
+    const roleToAgency: Array<[string, string]> = [
+      ["CEEB", AgencyType.CEEB],
+      ["NROS", AgencyType.NROS],
+      ["COS", AgencyType.COS],
+      ["PARKS", AgencyType.PARKS],
+    ];
+
+    const primaryAgency =
+      roleToAgency.find(([keyword]) => userRoles.some((role: any) => role.includes(keyword)))?.[1] ??
+      // Fallback to sector role
+      AgencyType.SECTOR;
+
+    const currentAgency = mapValueToDropdownList(primaryAgency, agencyList);
+
+    if (primaryAgency === AgencyType.CEEB) {
+      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, {
+        appUserGuid: officerData.app_user_guid,
+      });
+      const currentTeam: any = await get(dispatch, parameters);
+      if (currentTeam?.team_guid) {
+        const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
+        setSelectedTeam(currentTeamMapped);
+      }
+    }
+
+    if ((primaryAgency === AgencyType.NROS || primaryAgency === AgencyType.COS) && officerData.office_guid) {
+      const officeGuid =
+        typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
+      const currentOffice = mapValueToDropdownList(officeGuid, offices);
+      setSelectedOffice(currentOffice);
+    }
+
+    if (primaryAgency === AgencyType.PARKS && officerData.park_area_guid) {
+      const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
+      setSelectedParkArea(currentParkArea);
+    }
+
+    setCurrentAgency(currentAgency);
+  };
+
   useEffect(() => {
-    (async () => {
-      const getUserCurrentTeam = async (appUserGuid: string) => {
-        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/team/current`, { appUserGuid });
-        const response: any = await get(dispatch, parameters);
-        return response;
-      };
-
-      const userRoles = officerData?.user_roles;
-      if (!userRoles || userRoles.length === 0 || selectedAgency !== null) return;
-
-      const currentRoles = mapRolesDropdown(userRoles);
-      setSelectedRoles(currentRoles);
-
-      const hasCEEBRole = userRoles.some((role: any) => role.includes("CEEB"));
-      const hasNROSRole = userRoles.some((role: any) => role.includes("NROS"));
-      const hasCOSRole = userRoles.some((role: any) => role.includes("COS"));
-      const hasParksRole = userRoles.some((role: any) => role.includes("PARKS"));
-
-      let currentAgency;
-
-      if (hasCEEBRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.CEEB, agencyList);
-
-        const currentTeam = await getUserCurrentTeam(officerData.app_user_guid);
-        if (currentTeam?.team_guid) {
-          const currentTeamMapped = mapValueToDropdownList(currentTeam.team_guid.team_code.team_code, teams);
-          setSelectedTeam(currentTeamMapped);
-        }
-
-        setCurrentAgency(currentAgency);
-        return;
-      }
-
-      if (hasNROSRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.NROS, agencyList);
-
-        if (officerData.office_guid) {
-          const officeGuid =
-            typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
-          const currentOffice = mapValueToDropdownList(officeGuid, offices);
-          setSelectedOffice(currentOffice);
-        }
-
-        setCurrentAgency(currentAgency);
-        return;
-      }
-
-      if (hasCOSRole) {
-        currentAgency = mapValueToDropdownList(AgencyType.COS, agencyList);
-
-        if (officerData.office_guid) {
-          const officeGuid =
-            typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
-          const currentOffice = mapValueToDropdownList(officeGuid, offices);
-          setSelectedOffice(currentOffice);
-        }
-
-        setCurrentAgency(currentAgency);
-        return;
-      }
-
-      if (hasParksRole) {
-        if (officerData.park_area_guid) {
-          const currentParkArea = mapValueToDropdownList(officerData.park_area_guid, parkAreasList);
-          setSelectedParkArea(currentParkArea);
-        }
-
-        currentAgency = mapValueToDropdownList(AgencyType.PARKS, agencyList);
-        setCurrentAgency(currentAgency);
-        return;
-      }
-
-      // Fallback to NRS if no matching role
-      currentAgency = mapValueToDropdownList(AgencyType.SECTOR, agencyList);
-      setCurrentAgency(currentAgency);
-    })();
+    getUserRoles();
   }, [officerData, offices, selectedAgency, agencyList, teams, dispatch, parkAreasList]);
 
   useEffect(() => {
