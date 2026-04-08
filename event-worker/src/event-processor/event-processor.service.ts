@@ -74,6 +74,15 @@ export class EventProcessorService implements OnModuleInit {
     }
   }
 
+  // Client flush waits for server PONG.
+  // throws if there is no live connection or the server does not respond.
+  async pingNats(): Promise<void> {
+    if (!this.natsConnection || this.natsConnection.isClosed()) {
+      throw new Error("NATS not connected");
+    }
+    await this.natsConnection.flush();
+  }
+
   private async setupStream(): Promise<void> {
     if (!this.jsm) throw new Error("JetStream management client is not initialized.");
 
