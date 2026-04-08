@@ -1,16 +1,14 @@
-import { FC, useCallback, useMemo, useState } from "react";
-import { Table } from "react-bootstrap";
-import Paginator from "@components/common/paginator";
-import { SortableHeader } from "@components/common/sortable-header";
-import { SortArrow } from "@components/common/sort-arrow";
-import { SORT_TYPES } from "@constants/sort-direction";
-import { TaskListItem } from "./task-list-item";
+import { FC } from "react";
+import { Link } from "react-router-dom";
+import { CompTable } from "@components/common/comp-table";
+import { CompColumn } from "@/app/types/app/comp-tables";
 import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
-
-const PAGE_SIZE = 25;
+import { applyStatusClass, formatDate, formatDateTime } from "@/app/common/methods";
+import { SORT_TYPES } from "@constants/sort-direction";
+import { TaskListExpandedContent } from "./task-list-item";
 
 type Props = {
   tasks: Task[];
@@ -19,204 +17,115 @@ type Props = {
 };
 
 export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = false }) => {
-  const [sortBy, setSortBy] = useState<string>("taskNumber");
-  const [sortOrder, setSortOrder] = useState<string>(SORT_TYPES.ASC);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
+  const taskStatuses = useAppSelector(selectTaskStatus);
   const officers = useAppSelector(selectOfficers);
 
-  const handleSort = useCallback(
-    (sortInput: string) => {
-      const newDirection = sortBy === sortInput && sortOrder === SORT_TYPES.ASC ? SORT_TYPES.DESC : SORT_TYPES.ASC;
-      setSortBy(sortInput);
-      setSortOrder(newDirection);
-    },
-    [sortBy, sortOrder],
-  );
-
-  const resolveCategory = useCallback(
-    (task: Task) => {
-      return taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "";
-    },
-    [taskCategories],
-  );
-
-  const resolveSubCategory = useCallback(
-    (task: Task) => taskSubCategories.find((sc) => sc.value === task.taskTypeCode)?.label ?? "",
-    [taskSubCategories],
-  );
-
-  const resolveOfficer = useCallback(
-    (task: Task) => {
-      const officer = officers?.find((o) => o.app_user_guid === task.assignedUserIdentifier);
-      return officer ? `${officer.first_name} ${officer.last_name}` : "-";
-    },
-    [officers],
-  );
-
-  const sortedTasks = useMemo(() => {
-    const sorted = [...tasks].sort((a, b) => {
-      let aVal: string | number = "";
-      let bVal: string | number = "";
-
-      switch (sortBy) {
-        case "taskNumber":
-          aVal = a.taskNumber ?? 0;
-          bVal = b.taskNumber ?? 0;
-          break;
-        case "category":
-          aVal = resolveCategory(a);
-          bVal = resolveCategory(b);
-          break;
-        case "subCategory":
-          aVal = resolveSubCategory(a);
-          bVal = resolveSubCategory(b);
-          break;
-        case "taskStatusCode":
-          aVal = a.taskStatusCode ?? "";
-          bVal = b.taskStatusCode ?? "";
-          break;
-        case "remarks":
-          aVal = a.remarks ?? "";
-          bVal = b.remarks ?? "";
-          break;
-        case "dueDate":
-          aVal = a.dueDate ?? "";
-          bVal = b.dueDate ?? "";
-          break;
-        case "assignedOfficer":
-          aVal = resolveOfficer(a);
-          bVal = resolveOfficer(b);
-          break;
-        case "updatedDate":
-          aVal = a.updatedDate ?? a.createdDate ?? "";
-          bVal = b.updatedDate ?? b.createdDate ?? "";
-          break;
-        default:
-          return 0;
-      }
-
-      if (aVal < bVal) return sortOrder === SORT_TYPES.ASC ? -1 : 1;
-      if (aVal > bVal) return sortOrder === SORT_TYPES.ASC ? 1 : -1;
-      return 0;
-    });
-    return sorted;
-  }, [tasks, sortBy, sortOrder, resolveCategory, resolveSubCategory, resolveOfficer]);
-
-  const paginatedTasks = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return sortedTasks.slice(start, start + PAGE_SIZE);
-  }, [sortedTasks, currentPage]);
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setCurrentPage(newPage);
-  }, []);
-
-  const renderSortableHeader = (title: string, sortKey: string, className?: string) => (
-    <SortableHeader
-      title={title}
-      sortFnc={handleSort}
-      sortKey={sortKey}
-      currentSort={sortBy}
-      sortDirection={sortOrder}
-      className={className}
-    />
-  );
-
-  const renderTaskListHeader = () => (
-    <thead className="sticky-table-header">
-      <tr>
-        <th className="comp-cell-width-30 comp-cell-min-width-30 text-center"></th>
-        <th
-          className="sortable-header comp-cell-width-120 comp-cell-min-width-120"
-          onClick={() => handleSort("taskNumber")}
+  const columns: CompColumn<Task>[] = [
+    {
+      label: "Task #",
+      headerClassName: "comp-cell-width-120 comp-cell-min-width-120",
+      cellClassName: "comp-cell-width-120 comp-cell-min-width-120",
+      isSortable: true,
+      getValue: (task) => task.taskNumber ?? 0,
+      renderCell: (task) => (
+        <Link
+          to={`/investigation/${investigationGuid}/task/${task.taskIdentifier}`}
+          className="comp-cell-link"
         >
-          <div className="sortable-header-inner">
-            <div className="header-label">Task #</div>
-            <div className="header-caret">
-              <SortArrow
-                sortKey="taskNumber"
-                current={sortBy}
-                direction={sortOrder}
-              />
-            </div>
-          </div>
-        </th>
-        {renderSortableHeader("Category", "category", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Sub-category", "subCategory", "comp-cell-width-60 comp-cell-min-width-160")}
-        {renderSortableHeader("Remarks", "remarks", "comp-cell-width-110")}
-        {renderSortableHeader("Status", "taskStatusCode", "comp-cell-width-110")}
-        {renderSortableHeader("Officer assigned", "assignedOfficer", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Due date", "dueDate", "comp-cell-width-160 comp-cell-min-width-160")}
-        {renderSortableHeader("Last updated", "updatedDate", "comp-cell-width-160 comp-cell-min-width-160")}
-      </tr>
-    </thead>
-  );
-
-  const renderLoadingSpinner = () => (
-    <tr>
-      <td
-        colSpan={7}
-        className="text-center p-4"
-      >
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="spinner-border spinner-border-sm me-2">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <span>Loading tasks...</span>
-        </div>
-      </td>
-    </tr>
-  );
-
-  const renderTaskListItems = () => {
-    if (isLoading) return renderLoadingSpinner();
-    if (sortedTasks.length === 0) {
-      return (
-        <tr>
-          <td
-            colSpan={7}
-            className="text-center p-4"
-          >
-            <div className="d-flex align-items-center justify-content-center">
-              <i className="bi bi-info-circle-fill me-2"></i>
-              <span>No tasks found.</span>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-    return paginatedTasks.map((task) => (
-      <TaskListItem
-        key={task.taskIdentifier}
-        data={task}
-        investigationGuid={investigationGuid}
-      />
-    ));
-  };
+          {`Task ${task.taskNumber}`}
+        </Link>
+      ),
+    },
+    {
+      label: "Category",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      isSortable: true,
+      getValue: (task) => taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "",
+      renderCell: (task) => taskCategories.find((c) => c.value === task.taskCategoryTypeCode)?.label ?? "-",
+    },
+    {
+      label: "Sub-category",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      isSortable: true,
+      getValue: (task) => taskSubCategories.find((sc) => sc.value === task.taskTypeCode)?.label ?? "",
+      renderCell: (task) => {
+        const subCategory = taskSubCategories.find((sc) => sc.value === task.taskTypeCode);
+        return subCategory?.label && subCategory.label !== "None" ? subCategory.label : "-";
+      },
+    },
+    {
+      label: "Remarks",
+      headerClassName: "comp-cell-width-160",
+      cellClassName: "comp-cell-width-160",
+      isSortable: true,
+      getValue: (task) => task.remarks ?? "",
+      renderCell: (task) => task.remarks ?? "-",
+    },
+    {
+      label: "Status",
+      headerClassName: "comp-cell-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (task) => task.taskStatusCode ?? "",
+      renderCell: (task) => {
+        const statusLabel = taskStatuses.find((s) => s.value === task.taskStatusCode)?.label ?? "";
+        return statusLabel && task.taskStatusCode ? (
+          <span className={`badge ${applyStatusClass(task.taskStatusCode)}`}>{statusLabel}</span>
+        ) : null;
+      },
+    },
+    {
+      label: "Officer assigned",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      isSortable: true,
+      getValue: (task) => {
+        const officer = officers?.find((o) => o.app_user_guid === task.assignedUserIdentifier);
+        return officer ? `${officer.last_name}, ${officer.first_name}` : "";
+      },
+      renderCell: (task) => {
+        const officer = officers?.find((o) => o.app_user_guid === task.assignedUserIdentifier);
+        return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
+      },
+    },
+    {
+      label: "Due date",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      isSortable: true,
+      getValue: (task) => task.dueDate ?? "",
+      renderCell: (task) => formatDate(task.dueDate) ?? "-",
+    },
+    {
+      label: "Last updated",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      isSortable: true,
+      getValue: (task) => task.updatedDate ?? task.createdDate ?? "",
+      renderCell: (task) => formatDateTime(task.updatedDate ?? task.createdDate),
+    },
+  ];
 
   return (
-    <div className="comp-table-container">
-      <div className="comp-table-scroll-container">
-        <Table
-          className="comp-table mb-0 border-0"
-          id="task-list"
-        >
-          {renderTaskListHeader()}
-          <tbody>{renderTaskListItems()}</tbody>
-        </Table>
-      </div>
-
-      {sortedTasks.length > 0 && (
-        <Paginator
-          currentPage={currentPage}
-          totalItems={sortedTasks.length}
-          onPageChange={handlePageChange}
-          resultsPerPage={PAGE_SIZE}
+    <CompTable
+      data={tasks}
+      tableIdentifier="task-list"
+      isFixedHeight={true}
+      columns={columns}
+      getRowKey={(task) => task.taskIdentifier}
+      renderExpandedContent={(task) => (
+        <TaskListExpandedContent
+          data={task}
+          investigationGuid={investigationGuid}
         />
       )}
-    </div>
+      isLoading={isLoading}
+      defaultSort="Task #"
+      defaultSortDirection={SORT_TYPES.ASC}
+    />
   );
 };
