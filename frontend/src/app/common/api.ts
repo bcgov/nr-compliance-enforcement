@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import config from "@/config";
-import { AUTH_TOKEN } from "@service/user-service";
+import { AUTH_TOKEN, refreshToken, doLogin } from "@service/user-service";
 import { ApiRequestParameters } from "@apptypes/app/api-request-parameters";
 import { toggleLoading, toggleNotification } from "@store/reducers/app";
 import { store } from "@store/store";
@@ -58,14 +58,24 @@ axios.interceptors.response.use(
 
 axios.interceptors.response.use(
   (response) => {
-    // Successful response, just return the data
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as NatComRequestConfig & { _retry?: boolean };
     const { response } = error;
 
-    if (response && response.status === STATUS_CODES.Unauthorized) {
-      globalThis.location.href = "/not-authorized";
+    // On 401, refresh the token and retry the request once
+    if (response && response.status === STATUS_CODES.Unauthorized && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const token = await refreshToken();
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${token}` };
+        return axios(originalRequest);
+      } catch {
+        doLogin();
+        return Promise.reject(error);
+      }
     }
 
     if (response && response.status === STATUS_CODES.Forbiden) {
@@ -78,6 +88,8 @@ axios.interceptors.response.use(
         displayBackendErrors(backendErrorText);
       }
     }
+
+    return Promise.reject(error);
   },
 );
 
