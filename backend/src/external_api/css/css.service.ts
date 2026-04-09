@@ -17,6 +17,7 @@ export class CssService implements ExternalApiService {
   readonly clientSecret: string;
   readonly grantType: string;
   readonly integrationId: string;
+  readonly provider: string;
   readonly env: string;
   readonly maxPages: number;
 
@@ -33,6 +34,7 @@ export class CssService implements ExternalApiService {
     this.clientSecret = process.env.CSS_CLIENT_SECRET;
     this.grantType = "client_credentials";
     this.integrationId = process.env.CSS_INTEGRATION_ID || "4794";
+    this.provider = process.env.CSS_PROVIDER || "idir";
     this.env = process.env.ENVIRONMENT;
     this.maxPages = 20;
   }
@@ -57,7 +59,7 @@ export class CssService implements ExternalApiService {
   getUserIdirByName = async (firstName, lastName): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?firstName=${firstName}&lastName=${lastName}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?firstName=${firstName}&lastName=${lastName}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -75,7 +77,7 @@ export class CssService implements ExternalApiService {
   getUserIdirByEmail = async (email: string): Promise<CssUser[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?email=${email}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?email=${email}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +95,7 @@ export class CssService implements ExternalApiService {
   getUserByGuid = async (userGuid: string): Promise<CssUser> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?guid=${userGuid}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?guid=${userGuid}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -170,6 +172,20 @@ export class CssService implements ExternalApiService {
     }
   };
 
+  // Maps the CSS API provider to the suffix used in usernames returned by the API.
+  private readonly getProviderUsernameSuffix = (): string => {
+    const providerSuffixMap: Record<string, string> = {
+      idir: "idir",
+      "azure-idir": "azureidir",
+      "bceid-basic": "bceidbasic",
+      "bceid-business": "bceidbusiness",
+      "bceid-basic-business": "bceidboth",
+      "github-bcgov": "githubbcgov",
+      "github-public": "githubpublic",
+    };
+    return providerSuffixMap[this.provider] ?? this.provider;
+  };
+
   private readonly clearUserRoleCache = async (): Promise<void> => {
     await this.cacheManager.del("css-users-roles-fresh");
     await this.cacheManager.del("css-users-roles-stale");
@@ -208,16 +224,15 @@ export class CssService implements ExternalApiService {
               const {
                 data: { data: users },
               } = userRes;
-              let usersRolesSinglePage = await Promise.all(
-                users.map((user) => {
-                  return {
-                    userId: user.username
-                      .replace(/@idir$/i, "")
-                      .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
-                    role: role.name,
-                  };
-                }),
-              );
+              const providerSuffix = `@${this.getProviderUsernameSuffix()}`;
+              let usersRolesSinglePage = users
+                .filter((user: any) => user.username.toLowerCase().endsWith(providerSuffix.toLowerCase()))
+                .map((user: any) => ({
+                  userId: user.username
+                    .replace(/@.*$/, "")
+                    .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
+                  role: role.name,
+                }));
               usersRolesTemp.push(...usersRolesSinglePage);
             } else {
               break;
