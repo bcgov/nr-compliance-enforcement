@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { UUID } from "node:crypto";
 import { connect, headers, JetStreamClient, JSONCodec } from "nats";
-import { STREAM_TOPICS } from "src/common/constants";
-import { ActionTaken } from "src/types/actions-taken/action-taken";
-import { ActionTakenPayload } from "src/types/actions-taken/action-taken-payload";
+import { STREAM_TOPICS } from "../common/constants";
+import { ActionTaken } from "../types/actions-taken/action-taken";
+import { ActionTakenPayload } from "../types/actions-taken/action-taken-payload";
 
 @Injectable()
 export class ActionsTakenPublisherService {
