@@ -113,7 +113,8 @@ export class CssService implements ExternalApiService {
   getUserRoles = async (userIdir): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -131,7 +132,8 @@ export class CssService implements ExternalApiService {
   updateUserRole = async (userIdir, userRoles): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -153,7 +155,8 @@ export class CssService implements ExternalApiService {
   deleteUserRole = async (userIdir, roleName): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userIdir}/roles/${roleName}`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles/${roleName}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -184,6 +187,11 @@ export class CssService implements ExternalApiService {
       "github-public": "githubpublic",
     };
     return providerSuffixMap[this.provider] ?? this.provider;
+  };
+
+  private readonly getUserIdByProvider = (username: string): string => {
+    const guidPart = username.replace(/@.{0,255}$/, "");
+    return `${guidPart}@${this.getProviderUsernameSuffix()}`;
   };
 
   private readonly clearUserRoleCache = async (): Promise<void> => {

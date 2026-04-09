@@ -296,8 +296,9 @@ export const EditUser: FC<EditUserProps> = ({
       } else {
         //update existing officer
         const selectedUserAgency = currentAgency ?? selectedAgency;
-        const selectedUserIdir = `${officerData?.auth_user_guid.split("-").join("")}@idir`;
-        const res = await updateOfficer(selectedUserAgency, selectedUserIdir, mapRoles);
+        // strip provider suffix (eg @idir)
+        const cssUserGuid = officerData?.auth_user_guid.split("-").join("");
+        const res = await updateOfficer(selectedUserAgency, cssUserGuid, mapRoles);
         if (res?.roles) {
           dispatch(getOfficers()); //refresh the officer list to get the latest changes
           ToggleSuccess("Officer updated successfully");
