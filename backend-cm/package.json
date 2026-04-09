@@ -151,6 +151,10 @@
   "overrides": {
     "minimist@<1.2.6": "1.2.6",
     "minimatch": "^10.2.3",
+    "test-exclude": {
+      "minimatch": "^3.1.2",
+      "glob": "^7.2.3"
+    },
     "multer": "^2.1.1",
     "lodash": "^4.17.21",
     "flatted": "^3.4.2",
