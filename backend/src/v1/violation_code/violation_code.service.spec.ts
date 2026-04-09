@@ -20,8 +20,8 @@ describe("ViolationCodeService", () => {
       ],
     }).compile();
 
-    service = module.get<ViolationCodeService>(ViolationCodeService);
-    repository = module.get<Repository<ViolationCode>>(getRepositoryToken(ViolationCode));
+    service = await module.resolve<ViolationCodeService>(ViolationCodeService);
+    repository = await module.resolve<Repository<ViolationCode>>(getRepositoryToken(ViolationCode));
   });
 
   it("should be defined", () => {

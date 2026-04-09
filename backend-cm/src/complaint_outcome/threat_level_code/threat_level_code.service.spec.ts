@@ -11,7 +11,7 @@ describe("ThreatLevelCodeService", () => {
       providers: [ThreatLevelCodeService],
     }).compile();
 
-    service = module.get<ThreatLevelCodeService>(ThreatLevelCodeService);
+    service = await module.resolve<ThreatLevelCodeService>(ThreatLevelCodeService);
   });
 
   it("should be defined", () => {

@@ -12,7 +12,7 @@ describe("ConfigurationResolver", () => {
       providers: [ConfigurationResolver, ConfigurationService],
     }).compile();
 
-    resolver = module.get<ConfigurationResolver>(ConfigurationResolver);
+    resolver = await module.resolve<ConfigurationResolver>(ConfigurationResolver);
   });
 
   it("should be defined", () => {

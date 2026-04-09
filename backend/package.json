@@ -176,6 +176,10 @@
   "overrides": {
     "minimist@<1.2.6": "1.2.6",
     "minimatch": "^10.2.3",
+    "test-exclude": {
+      "minimatch": "^3.1.2",
+      "glob": "^7.2.3"
+    },
     "jws": "3.2.3",
     "glob": ">=10.5.0",
     "flatted": "^3.4.2",

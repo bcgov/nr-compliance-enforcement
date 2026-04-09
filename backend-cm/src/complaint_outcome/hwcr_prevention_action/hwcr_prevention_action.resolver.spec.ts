@@ -12,7 +12,7 @@ describe("ActionTypeActionXrefResolver", () => {
       providers: [HWCRPreventionActionResolver, ActionCodeService],
     }).compile();
 
-    resolver = module.get<HWCRPreventionActionResolver>(HWCRPreventionActionResolver);
+    resolver = await module.resolve<HWCRPreventionActionResolver>(HWCRPreventionActionResolver);
   });
 
   it("should be defined", () => {

@@ -12,7 +12,7 @@ describe("EarCodeResolver", () => {
       providers: [EarCodeResolver, EarCodeService],
     }).compile();
 
-    resolver = module.get<EarCodeResolver>(EarCodeResolver);
+    resolver = await module.resolve<EarCodeResolver>(EarCodeResolver);
   });
 
   it("should be defined", () => {

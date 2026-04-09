@@ -11,7 +11,7 @@ describe("ActionCodeService", () => {
       providers: [ActionCodeService],
     }).compile();
 
-    service = module.get<ActionCodeService>(ActionCodeService);
+    service = await module.resolve<ActionCodeService>(ActionCodeService);
   });
 
   it("should be defined", () => {

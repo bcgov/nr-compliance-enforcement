@@ -11,7 +11,7 @@ describe("EarCodeService", () => {
       providers: [EarCodeService],
     }).compile();
 
-    service = module.get<EarCodeService>(EarCodeService);
+    service = await module.resolve<EarCodeService>(EarCodeService);
   });
 
   it("should be defined", () => {

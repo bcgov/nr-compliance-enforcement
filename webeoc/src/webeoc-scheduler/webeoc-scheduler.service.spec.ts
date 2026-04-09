@@ -10,7 +10,7 @@ describe("WebEOCComplaintsScheduler", () => {
       providers: [WebEocScheduler, ComplaintsPublisherService],
     }).compile();
 
-    service = module.get<WebEocScheduler>(WebEocScheduler);
+    service = await module.resolve<WebEocScheduler>(WebEocScheduler);
   });
 
   it("should be defined", () => {

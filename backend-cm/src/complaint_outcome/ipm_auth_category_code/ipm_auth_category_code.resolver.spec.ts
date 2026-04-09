@@ -12,7 +12,7 @@ describe("IpmAuthCategoryCodeResolver", () => {
       providers: [IpmAuthCategoryCodeResolver, IpmAuthCategoryCodeService],
     }).compile();
 
-    resolver = module.get<IpmAuthCategoryCodeResolver>(IpmAuthCategoryCodeResolver);
+    resolver = await module.resolve<IpmAuthCategoryCodeResolver>(IpmAuthCategoryCodeResolver);
   });
 
   it("should be defined", () => {

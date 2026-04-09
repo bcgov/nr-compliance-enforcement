@@ -25,7 +25,7 @@ describe("FeatureFlagController", () => {
       ],
     }).compile();
 
-    controller = module.get<FeatureFlagController>(FeatureFlagController);
+    controller = await module.resolve<FeatureFlagController>(FeatureFlagController);
   });
 
   it("should be defined", () => {

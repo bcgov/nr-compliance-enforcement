@@ -21,7 +21,7 @@ describe("WebeocService", () => {
       ],
     }).compile();
 
-    service = module.get<WebeocService>(WebeocService);
+    service = await module.resolve<WebeocService>(WebeocService);
   });
 
   it("should be defined", () => {

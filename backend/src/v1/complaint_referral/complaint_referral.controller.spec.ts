@@ -211,7 +211,7 @@ describe("ComplaintReferralController", () => {
       ],
     }).compile();
 
-    controller = module.get<ComplaintReferralController>(ComplaintReferralController);
+    controller = await module.resolve<ComplaintReferralController>(ComplaintReferralController);
   });
 
   it("should be defined", () => {

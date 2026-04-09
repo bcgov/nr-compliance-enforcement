@@ -12,7 +12,7 @@ describe("DrugMethodCodeResolver", () => {
       providers: [DrugMethodCodeResolver, DrugMethodCodeService],
     }).compile();
 
-    resolver = module.get<DrugMethodCodeResolver>(DrugMethodCodeResolver);
+    resolver = await module.resolve<DrugMethodCodeResolver>(DrugMethodCodeResolver);
   });
 
   it("should be defined", () => {

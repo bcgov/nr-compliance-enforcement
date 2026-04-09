@@ -11,7 +11,7 @@ describe("ConfigurationService", () => {
       providers: [ConfigurationService],
     }).compile();
 
-    service = module.get<ConfigurationService>(ConfigurationService);
+    service = await module.resolve<ConfigurationService>(ConfigurationService);
   });
 
   it("should be defined", () => {

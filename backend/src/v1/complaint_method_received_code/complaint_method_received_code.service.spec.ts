@@ -18,7 +18,7 @@ describe("ComplaintMethodReceivedCodeService", () => {
       ],
     }).compile();
 
-    service = module.get<ComplaintMethodReceivedCodeService>(ComplaintMethodReceivedCodeService);
+    service = await module.resolve<ComplaintMethodReceivedCodeService>(ComplaintMethodReceivedCodeService);
   });
 
   it("should be defined", () => {
