@@ -23,7 +23,7 @@
     "@nestjs/axios": "^4.0.1",
     "@nestjs/cli": "^11.0.14",
     "@nestjs/common": "^11.1.17",
-    "@nestjs/core": "^11.1.17",
+    "@nestjs/core": "^11.1.18",
     "@nestjs/platform-express": "^11.1.17",
     "@nestjs/schedule": "^6.1.1",
     "cron": "^3.1.6",
