@@ -43,7 +43,7 @@ jobs:
       - uses: bcgov/action-test-and-analyse@v1.4.0
         with:
           commands: |
-            npm ci
+            npm ci ${{ matrix.dir == 'backend' && '--legacy-peer-deps' || '' }}
             npm run test
           dir: ${{ matrix.dir }}
           node_version: "20"
