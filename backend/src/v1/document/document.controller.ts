@@ -6,7 +6,6 @@ import { ApiTags } from "@nestjs/swagger";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
-import { escape } from "escape-html";
 import { ExportComplaintParameters } from "../../types/models/reports/export-complaint-parameters";
 import { ExportTaskParameters } from "src/types/models/reports/export-task-parameters";
 
@@ -42,7 +41,7 @@ export class DocumentController {
       res.end(buffer);
     } catch (error) {
       this.logger.error(`exception: unable to export document for complaint: ${id} - error: ${error}`);
-      res.status(500).send(`exception: unable to export document for complaint: ${id}`);
+      res.status(500).send(`exception: unable to export document for complaint: ${encodeURIComponent(id)}`);
     }
   }
 
@@ -69,7 +68,7 @@ export class DocumentController {
       res.end(buffer);
     } catch (error) {
       this.logger.error(`exception: unable to generate task document: ${taskId} - error: ${error}`);
-      res.status(500).send(`exception: unable to generate task document: ${taskId}`);
+      res.status(500).send(`exception: unable to generate task document: ${encodeURIComponent(taskId)}`);
     }
   }
 }
