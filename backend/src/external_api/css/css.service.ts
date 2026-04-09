@@ -229,8 +229,8 @@ export class CssService implements ExternalApiService {
                 .filter((user: any) => user.username.toLowerCase().endsWith(providerSuffix.toLowerCase()))
                 .map((user: any) => ({
                   userId: user.username
-                    .replace(/@.*$/, "")
-                    .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
+                    .replace(/@.{0,255}$/, "")
+                    .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5"),
                   role: role.name,
                 }));
               usersRolesTemp.push(...usersRolesSinglePage);
