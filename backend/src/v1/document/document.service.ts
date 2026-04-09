@@ -55,8 +55,7 @@ export class DocumentService {
 
   exportTask = async (taskId: string, fileName: string, tz: string, token: string) => {
     try {
-      const data = await getTask(token, taskId);
-      console.log(data);
+      const data = await getTask(token, taskId, tz);
       return await this.cdogs.generate(fileName, data, REPORT_TYPE.TASK_DEFINITION);
     } catch (error) {
       this.logger.error(
