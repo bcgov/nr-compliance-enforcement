@@ -46,7 +46,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
   });
 
   const handleExportTask = () => {
-    dispatch(exportTask(task!.taskIdentifier, task!.taskNumber));
+    dispatch(exportTask(task!.investigationIdentifier, task!.taskIdentifier, task!.taskNumber));
   };
 
   const handleOpenStatusModal = () => setShowStatusModal(true);

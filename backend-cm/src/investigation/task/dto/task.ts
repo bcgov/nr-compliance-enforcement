@@ -47,7 +47,7 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.investigationLabel,
-      mapFrom((src) => src.investigation.name),
+      mapFrom((src) => src.investigation?.name),
     ),
     forMember(
       (dest) => dest.taskTypeCode,

@@ -10,6 +10,7 @@ import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
+import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -50,10 +51,10 @@ export const generateExportComplaintInputParams = (
   return exportComplaintInput;
 };
 
-export const generateExportTaskInputParams = (taskId: string, taskNumber: number) => {
+export const generateExportTaskInputParams = (taskId: string, taskNumber: number, attachments?: COMSObject[]) => {
   const fileName = `T${taskNumber}_Task_Report_${format(new Date(), "yyMMdd")}.pdf`;
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  return { taskId, fileName, tz } as ExportTaskInput;
+  return { taskId, fileName, tz, attachments } as ExportTaskInput;
 };
 
 //-- this is a janky solution, but as of 2024 it is still the widly
@@ -118,16 +119,25 @@ export const exportComplaint =
 //-- exports a task as a pdf document
 //--
 export const exportTask =
-  (taskId: string, taskNumber: number): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  (
+    investigationId: string,
+    taskId: string,
+    taskNumber: number,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async () => {
     try {
+      const allAttachments = await fetchAttachmentsWithMetadata(investigationId);
+      const attachments = allAttachments
+        .filter((a) => a.taskId === taskId)
+        .sort((a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime());
+
       const axiosConfig: AxiosRequestConfig = {
         responseType: "arraybuffer",
       };
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
 
-      const exportTaskInput = generateExportTaskInputParams(taskId, taskNumber);
+      const exportTaskInput = generateExportTaskInputParams(taskId, taskNumber, attachments);
 
       const url = `${config.API_BASE_URL}/v1/document/export-task`;
 
