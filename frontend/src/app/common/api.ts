@@ -52,7 +52,7 @@ axios.interceptors.response.use(
       blockingRequestCounter--;
       if (blockingRequestCounter <= 0) store.dispatch(toggleLoading(false));
     }
-    return Promise.reject(error);
+    throw error;
   },
 );
 
@@ -65,7 +65,7 @@ axios.interceptors.response.use(
     const { response } = error;
 
     // On 401, refresh the token and retry the request once
-    if (response && response.status === STATUS_CODES.Unauthorized && originalRequest && !originalRequest._retry) {
+    if (response?.status === STATUS_CODES.Unauthorized && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const token = await refreshToken();
@@ -74,22 +74,22 @@ axios.interceptors.response.use(
         return axios(originalRequest);
       } catch {
         doLogin();
-        return Promise.reject(error);
+        throw error;
       }
     }
 
-    if (response && response.status === STATUS_CODES.Forbiden) {
+    if (response?.status === STATUS_CODES.Forbiden) {
       ToggleError("User is not authorized to perform this action");
     }
 
-    if (response && response.status === STATUS_CODES.Conflict) {
+    if (response?.status === STATUS_CODES.Conflict) {
       const backendErrorText = (response.data as any)?.message;
       if (backendErrorText) {
         displayBackendErrors(backendErrorText);
       }
     }
 
-    return Promise.reject(error);
+    throw error;
   },
 );
 
