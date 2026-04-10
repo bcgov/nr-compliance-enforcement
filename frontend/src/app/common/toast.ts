@@ -17,6 +17,10 @@ export const ToggleWarning = (message: string, options?: ToastOptions) => {
   toast.warning(message, options);
 };
 
+export const UpdateToast = (toastId: Id, message: ReactNode) => {
+  toast.update(toastId, { render: message });
+};
+
 export const DismissToast = (toastId: Id) => {
   toast.dismiss(toastId);
 };

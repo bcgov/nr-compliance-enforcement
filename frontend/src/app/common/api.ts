@@ -1,5 +1,5 @@
 import { Dispatch } from "redux";
-import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosProgressEvent, AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import config from "@/config";
 import { AUTH_TOKEN, refreshToken, doLogin } from "@service/user-service";
 import { ApiRequestParameters } from "@apptypes/app/api-request-parameters";
@@ -298,8 +298,13 @@ export const putFile = <T, M = {}>(
   headers: {},
   file: File,
   toggleLoading: boolean = true,
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void,
 ): Promise<T> => {
-  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
+  let config: NatComRequestConfig = {
+    headers: headers,
+    toggleLoading: toggleLoading,
+    ...(onUploadProgress && { onUploadProgress }),
+  };
 
   const formData = new FormData();
   if (file) formData.append("file", file);

@@ -72,9 +72,10 @@ export const configureZipJs = () => {
   });
 };
 
+import { RETRY_CONFIG, categorizeError, withRetry } from "@common/attachment-utils";
+
 const CONFIG = {
-  MAX_RETRIES: 3, // Retry failed downloads up to 3 times
-  RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
+  ...RETRY_CONFIG,
   MEMORY_CLEANUP_DELAY_MS: 1500, // Pause between files for memory cleanup
   MEMORY_HIGH_THRESHOLD: 80, // Warn if memory > 80%
   PRESIGNED_URL_EXPIRY_SECONDS: 86400, // 24 hours
@@ -302,10 +303,8 @@ function logMemory() {
 async function downloadFileWithRetry(
   file: FileWithPresignedUrl,
 ): Promise<{ success: boolean; blob?: Blob; error?: Error; attempts: number }> {
-  let lastError: Error | null = null;
-
-  for (let attempt = 1; attempt <= CONFIG.MAX_RETRIES; attempt++) {
-    try {
+  const result = await withRetry(
+    async (attempt) => {
       const attemptPrefix = attempt > 1 ? `[Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}]` : "  ";
 
       // Check available memory before download
@@ -324,36 +323,22 @@ async function downloadFileWithRetry(
       const blob = await response.blob();
       validateBlobSize(blob, file, attemptPrefix);
 
-      // Success!
-      return { success: true, blob, attempts: attempt };
-    } catch (error) {
-      lastError = error as Error;
-      const errorAttemptPrefix = `[Attempt ${attempt}/${CONFIG.MAX_RETRIES}]`;
+      return blob;
+    },
+    {
+      onRetry: (attempt, error) => {
+        const { errorType } = categorizeError(error);
+        console.error(`[Attempt ${attempt}/${CONFIG.MAX_RETRIES}] ✗ Failed: ${error.message} (${errorType})`);
+      },
+    },
+  );
 
-      console.error(`${errorAttemptPrefix} ✗ Failed: ${lastError.message}`);
-
-      const { errorType, shouldRetry } = categorizeError(lastError);
-      console.error(`${errorAttemptPrefix} Error type: ${errorType}`);
-
-      if (!shouldRetry) {
-        console.error(`${errorAttemptPrefix} This error type should not be retried. Aborting.`);
-        return { success: false, error: lastError, attempts: attempt };
-      }
-
-      if (attempt < CONFIG.MAX_RETRIES) {
-        const delayMs = CONFIG.RETRY_DELAY_BASE_MS * attempt;
-        console.log(`${errorAttemptPrefix} Waiting ${(delayMs / 1000).toFixed(1)}s before retry...`);
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
-    }
+  if (result.success) {
+    return { success: true, blob: result.result, attempts: result.attempts };
   }
 
   console.error(`All ${CONFIG.MAX_RETRIES} attempts failed for ${file.name}`);
-  return {
-    success: false,
-    error: lastError || new Error("All retries failed"),
-    attempts: CONFIG.MAX_RETRIES,
-  };
+  return { success: false, error: result.error, attempts: result.attempts };
 }
 
 function validateBlobSize(blob: Blob, file: FileWithPresignedUrl, attemptPrefix: string): void {
@@ -415,26 +400,6 @@ async function processSingleFile(
   return { success: true, bytesProcessed: blob.size };
 }
 
-function categorizeError(error: Error): { errorType: string; shouldRetry: boolean } {
-  const errorMsg = error.message.toLowerCase();
-
-  const errorMap: Array<{ keywords: string[]; type: string; retry: boolean }> = [
-    { keywords: ["timeout", "timed out"], type: "TIMEOUT", retry: true },
-    { keywords: ["network", "failed to fetch"], type: "NETWORK", retry: true },
-    { keywords: ["403", "forbidden"], type: "AUTH_EXPIRED", retry: false },
-    { keywords: ["404"], type: "NOT_FOUND", retry: false },
-    { keywords: ["0 bytes", "empty"], type: "EMPTY_FILE", retry: true },
-    { keywords: ["memory", "allocation"], type: "OUT_OF_MEMORY", retry: true },
-  ];
-
-  for (const { keywords, type, retry } of errorMap) {
-    if (keywords.some((keyword) => errorMsg.includes(keyword))) {
-      return { errorType: type, shouldRetry: retry };
-    }
-  }
-
-  return { errorType: "UNKNOWN", shouldRetry: true };
-}
 
 async function addErrorPlaceholder(
   zipWriter: any,
