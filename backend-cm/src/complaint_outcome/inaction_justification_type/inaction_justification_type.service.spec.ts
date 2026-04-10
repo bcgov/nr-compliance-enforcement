@@ -11,7 +11,7 @@ describe("InactionReasonCodeService", () => {
       providers: [InactionJustificationTypeService],
     }).compile();
 
-    service = module.get<InactionJustificationTypeService>(InactionJustificationTypeService);
+    service = await module.resolve<InactionJustificationTypeService>(InactionJustificationTypeService);
   });
 
   it("should be defined", () => {

@@ -11,7 +11,7 @@ describe("LeadService", () => {
       providers: [LeadService],
     }).compile();
 
-    service = module.get<LeadService>(LeadService);
+    service = await module.resolve<LeadService>(LeadService);
   });
 
   it("should be defined", () => {

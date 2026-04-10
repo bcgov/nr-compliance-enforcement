@@ -13,7 +13,7 @@ describe("BcGeoCoderController", () => {
       imports: [HttpModule],
     }).compile();
 
-    controller = module.get<BcGeoCoderController>(BcGeoCoderController);
+    controller = await module.resolve<BcGeoCoderController>(BcGeoCoderController);
   });
 
   it("should be defined", () => {

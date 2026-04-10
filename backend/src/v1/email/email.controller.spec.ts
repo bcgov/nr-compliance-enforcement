@@ -77,7 +77,7 @@ describe("EmailController", () => {
       ],
     }).compile();
 
-    controller = module.get<EmailController>(EmailController);
+    controller = await module.resolve<EmailController>(EmailController);
   });
 
   it("should be defined", () => {

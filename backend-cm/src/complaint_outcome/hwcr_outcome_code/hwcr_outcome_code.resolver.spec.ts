@@ -12,7 +12,7 @@ describe("HwcrOutcomeCodeResolver", () => {
       providers: [HwcrOutcomeCodeResolver, HwcrOutcomeCodeService],
     }).compile();
 
-    resolver = module.get<HwcrOutcomeCodeResolver>(HwcrOutcomeCodeResolver);
+    resolver = await module.resolve<HwcrOutcomeCodeResolver>(HwcrOutcomeCodeResolver);
   });
 
   it("should be defined", () => {

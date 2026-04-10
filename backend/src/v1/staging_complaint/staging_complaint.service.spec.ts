@@ -27,7 +27,7 @@ describe("StagingComplaintService", () => {
       ],
     }).compile();
 
-    service = module.get<StagingComplaintService>(StagingComplaintService);
+    service = await module.resolve<StagingComplaintService>(StagingComplaintService);
   });
 
   it("should be defined", () => {

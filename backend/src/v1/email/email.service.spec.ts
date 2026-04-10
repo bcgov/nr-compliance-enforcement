@@ -70,7 +70,7 @@ describe("EmailService", () => {
       ],
     }).compile();
 
-    service = module.get<EmailService>(EmailService);
+    service = await module.resolve<EmailService>(EmailService);
   });
 
   it("should be defined", () => {

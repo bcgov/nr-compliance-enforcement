@@ -17,7 +17,7 @@ describe("EmailReferenceService", () => {
       ],
     }).compile();
 
-    service = module.get<EmailReferenceService>(EmailReferenceService);
+    service = await module.resolve<EmailReferenceService>(EmailReferenceService);
   });
 
   it("should be defined", () => {

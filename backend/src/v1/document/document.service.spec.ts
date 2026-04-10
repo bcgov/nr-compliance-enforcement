@@ -224,7 +224,7 @@ describe("DocumentService", () => {
       ],
     }).compile();
 
-    service = module.get<DocumentService>(DocumentService);
+    service = await module.resolve<DocumentService>(DocumentService);
   });
 
   it("should be defined", () => {

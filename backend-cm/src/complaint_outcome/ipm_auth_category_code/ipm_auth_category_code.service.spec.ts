@@ -11,7 +11,7 @@ describe("IpmAuthCategoryCodeService", () => {
       providers: [IpmAuthCategoryCodeService],
     }).compile();
 
-    service = module.get<IpmAuthCategoryCodeService>(IpmAuthCategoryCodeService);
+    service = await module.resolve<IpmAuthCategoryCodeService>(IpmAuthCategoryCodeService);
   });
 
   it("should be defined", () => {

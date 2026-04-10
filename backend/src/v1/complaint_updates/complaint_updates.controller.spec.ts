@@ -42,7 +42,7 @@ describe("ComplaintUpdatesController", () => {
       ],
     }).compile();
 
-    controller = module.get<ComplaintUpdatesController>(ComplaintUpdatesController);
+    controller = await module.resolve<ComplaintUpdatesController>(ComplaintUpdatesController);
   });
 
   it("should be defined", () => {

@@ -12,7 +12,7 @@ describe("AgeCodeResolver", () => {
       providers: [AgeCodeResolver, AgeCodeService],
     }).compile();
 
-    resolver = module.get<AgeCodeResolver>(AgeCodeResolver);
+    resolver = await module.resolve<AgeCodeResolver>(AgeCodeResolver);
   });
 
   it("should be defined", () => {

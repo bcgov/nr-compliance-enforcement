@@ -23,7 +23,7 @@ describe("FeatureFlagService", () => {
       ],
     }).compile();
 
-    service = module.get<FeatureFlagService>(FeatureFlagService);
+    service = await module.resolve<FeatureFlagService>(FeatureFlagService);
   });
 
   it("should be defined", () => {

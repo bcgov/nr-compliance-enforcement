@@ -12,7 +12,7 @@ describe("EquipmentCodeResolver", () => {
       providers: [EquipmentCodeResolver, EquipmentCodeService],
     }).compile();
 
-    resolver = module.get<EquipmentCodeResolver>(EquipmentCodeResolver);
+    resolver = await module.resolve<EquipmentCodeResolver>(EquipmentCodeResolver);
   });
 
   it("should be defined", () => {
