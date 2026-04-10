@@ -252,7 +252,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
         },
         {
           onRetry: (attempt, error) => {
-            ToggleError(`Upload failed for "${files[i].name}", retrying. Error: ${error.message}`);
+            ToggleError(`Upload failed for "${files[i].name}". Retrying upload. Error: ${error.message}`);
           },
         },
       );

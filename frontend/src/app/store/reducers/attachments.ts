@@ -1,7 +1,7 @@
 import { AppThunk } from "@store/store";
 import { deleteMethod, generateApiParameters, get, patch, put, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
-import { AxiosProgressEvent } from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
 import {
@@ -11,7 +11,6 @@ import {
   isImage,
 } from "@common/methods";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
 import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
 

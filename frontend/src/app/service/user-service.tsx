@@ -16,7 +16,7 @@ const TOKEN_REFRESH_RETRY_DELAY_MS = 1000;
 
 const decodeJwt = (token: string): KeycloakTokenParsed => {
   const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
   return JSON.parse(atob(base64));
 };
 
