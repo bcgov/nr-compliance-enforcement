@@ -5,7 +5,7 @@ import { UpdateOfficeDto } from "./dto/update-office.dto";
 import { OfficeAssignmentDto } from "../../types/models/office/office-assignment-dto";
 import {
   getOffices,
-  getCosGeoOrgUnits,
+  getGeoOrganizationUnitCodes,
   createOffice,
   updateOffice,
   getOfficesByZone,
@@ -71,13 +71,13 @@ export class OfficeService {
 
   findOffices = async (token: string): Promise<Array<OfficeAssignmentDto>> => {
     const offices = await getOffices(token);
-    const cosGeoOrgUnits = await getCosGeoOrgUnits(token);
+    const geoOrgUnitCodes = await getGeoOrganizationUnitCodes(token);
 
     const results = offices.map((office) => {
-      const geoUnit = cosGeoOrgUnits.find((unit) => unit.officeLocationCode === office.geoOrganizationUnitCode);
+      const geoUnit = geoOrgUnitCodes.find((unit) => unit.geoOrganizationUnitCode === office.geoOrganizationUnitCode);
       const record: OfficeAssignmentDto = {
         id: office.officeGuid,
-        name: geoUnit?.officeLocationName || "",
+        name: geoUnit?.shortDescription || "",
         agency: office.agencyCode,
       };
       return record;
