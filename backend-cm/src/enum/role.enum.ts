@@ -7,7 +7,8 @@ export enum Role {
   SECTOR = "SECTOR",
   GLOBAL_ADMINISTRATOR = "Global Administrator",
   AGENCY_ADMINISTRATOR = "Agency Administrator",
+  NROS = "NROS",
 }
 
-export const coreRoles: Role[] = [Role.COS, Role.CEEB, Role.PARKS, Role.SECTOR];
+export const coreRoles: Role[] = [Role.COS, Role.CEEB, Role.PARKS, Role.NROS, Role.SECTOR];
 export const adminRoles: Role[] = [Role.GLOBAL_ADMINISTRATOR, Role.AGENCY_ADMINISTRATOR];
