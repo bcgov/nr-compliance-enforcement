@@ -44,6 +44,7 @@ jobs:
         with:
           commands: |
             npm ci ${{ startsWith(matrix.dir, 'backend') && '--legacy-peer-deps' || '' }}
+            ${{ matrix.dir == 'backend-cm' && 'npm run prisma-generate-all' || '' }}
             npm run test
           dir: ${{ matrix.dir }}
           node_version: "20"
