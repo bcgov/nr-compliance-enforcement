@@ -39,7 +39,7 @@ describe("LinkedComplaintXrefController", () => {
       ],
     }).compile();
 
-    controller = module.get<LinkedComplaintXrefController>(LinkedComplaintXrefController);
+    controller = await module.resolve<LinkedComplaintXrefController>(LinkedComplaintXrefController);
   });
 
   it("should be defined", () => {

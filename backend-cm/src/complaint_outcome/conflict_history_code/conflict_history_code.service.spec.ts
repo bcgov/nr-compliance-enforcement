@@ -11,7 +11,7 @@ describe("ConflictHistoryCodeService", () => {
       providers: [ConflictHistoryCodeService],
     }).compile();
 
-    service = module.get<ConflictHistoryCodeService>(ConflictHistoryCodeService);
+    service = await module.resolve<ConflictHistoryCodeService>(ConflictHistoryCodeService);
   });
 
   it("should be defined", () => {

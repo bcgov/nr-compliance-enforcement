@@ -19,7 +19,7 @@ describe("ComplaintSequenceResetScheduler", () => {
       ],
     }).compile();
 
-    service = module.get<ComplaintSequenceResetScheduler>(ComplaintSequenceResetScheduler);
+    service = await module.resolve<ComplaintSequenceResetScheduler>(ComplaintSequenceResetScheduler);
   });
 
   it("should be defined", () => {

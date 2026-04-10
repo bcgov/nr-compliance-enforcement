@@ -19,7 +19,7 @@ describe("ConfigurationController", () => {
       ],
     }).compile();
 
-    controller = module.get<ConfigurationController>(ConfigurationController);
+    controller = await module.resolve<ConfigurationController>(ConfigurationController);
   });
 
   it("should be defined", () => {

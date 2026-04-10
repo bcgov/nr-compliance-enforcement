@@ -12,7 +12,7 @@ describe("ActionTypeActionXrefResolver", () => {
       providers: [HWCRAssessmentActionResolver, ActionCodeService],
     }).compile();
 
-    resolver = module.get<HWCRAssessmentActionResolver>(HWCRAssessmentActionResolver);
+    resolver = await module.resolve<HWCRAssessmentActionResolver>(HWCRAssessmentActionResolver);
   });
 
   it("should be defined", () => {

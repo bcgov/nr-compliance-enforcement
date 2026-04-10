@@ -40,7 +40,7 @@ describe("ConfigurationService", () => {
       ],
     }).compile();
 
-    service = module.get<ComplaintUpdatesService>(ComplaintUpdatesService);
+    service = await module.resolve<ComplaintUpdatesService>(ComplaintUpdatesService);
   });
 
   it("should be defined", () => {

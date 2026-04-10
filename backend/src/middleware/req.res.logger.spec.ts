@@ -11,7 +11,7 @@ describe("HTTPLoggerMiddleware", () => {
       providers: [HTTPLoggerMiddleware, Logger],
     }).compile();
 
-    middleware = module.get<HTTPLoggerMiddleware>(HTTPLoggerMiddleware);
+    middleware = await module.resolve<HTTPLoggerMiddleware>(HTTPLoggerMiddleware);
   });
   it("should log the correct information", () => {
     const request: Request = {

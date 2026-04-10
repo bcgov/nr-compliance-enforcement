@@ -11,7 +11,7 @@ describe("AgeCodeService", () => {
       providers: [AgeCodeService],
     }).compile();
 
-    service = module.get<AgeCodeService>(AgeCodeService);
+    service = await module.resolve<AgeCodeService>(AgeCodeService);
   });
 
   it("should be defined", () => {

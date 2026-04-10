@@ -226,7 +226,7 @@ describe("DocumentController", () => {
       ],
     }).compile();
 
-    controller = module.get<DocumentController>(DocumentController);
+    controller = await module.resolve<DocumentController>(DocumentController);
   });
 
   it("should be defined", () => {

@@ -20,7 +20,7 @@ describe("ComplaintOutcomeResolver", () => {
       ],
     }).compile();
 
-    resolver = module.get<ComplaintOutcomeResolver>(ComplaintOutcomeResolver);
+    resolver = await module.resolve<ComplaintOutcomeResolver>(ComplaintOutcomeResolver);
   });
 
   it("should be defined", () => {

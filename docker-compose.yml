@@ -165,7 +165,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i && npm run start"
+      - "npm i --legacy-peer-deps && npm run start"
     environment:
       NODE_ENV: development
     hostname: backend

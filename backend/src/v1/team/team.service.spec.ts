@@ -32,7 +32,7 @@ describe("TeamService", () => {
       ],
     }).compile();
 
-    service = module.get<TeamService>(TeamService);
+    service = await module.resolve<TeamService>(TeamService);
   });
 
   it("should be defined", () => {
