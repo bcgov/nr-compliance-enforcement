@@ -22,7 +22,8 @@ export const generateExportComplaintInputParams = (
 
   if (agency) {
     switch (agency) {
-      case AgencyType.CEEB: {
+      case AgencyType.CEEB:
+      case AgencyType.NROS: {
         fileName = `${format(dateLogged, "yyyy-MM-dd")} Complaint ${id}.pdf`;
         break;
       }
