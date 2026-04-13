@@ -1,7 +1,11 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
-import { selectCanAccessCases, selectCanAccessInspections, selectCanAccessInvestigations } from "@/app/access/module-access";
+import {
+  selectCanAccessCases,
+  selectCanAccessInspections,
+  selectCanAccessInvestigations,
+} from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -65,7 +69,7 @@ export const SideBar: FC = () => {
       name: "Parties",
       icon: "bi bi-file-earmark-image",
       route: "/parties",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.PARTIES_OF_INTEREST)),
+      hidden: !canAccessCases,
     },
   ];
 
