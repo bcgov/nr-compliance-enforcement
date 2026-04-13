@@ -34,12 +34,13 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
 
   const columns: CompColumn<Exhibit>[] = [
     {
-      label: "Exhibit #",
+      label: "Exhibit number",
       headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
       cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitNumber ?? 0,
-      renderCell: (exhibit) => exhibit.exhibitNumber ?? "-",
+      renderCell: (exhibit) =>
+        exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0"),
     },
     {
       label: "Description",
@@ -96,7 +97,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}
-      defaultSort="Exhibit #"
+      defaultSort="Exhibit number"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No exhibits found."
     />
