@@ -201,7 +201,7 @@ export class ComplaintOutcomeController {
   }
 
   @Post("/decision")
-  @Roles(Role.CEEB)
+  @Roles(Role.CEEB, Role.NROS)
   async createDecision(
     @Token() token,
     @Body() model: CreateDecisionInput,
@@ -216,13 +216,13 @@ export class ComplaintOutcomeController {
   }
 
   @Patch("/decision")
-  @Roles(Role.CEEB)
+  @Roles(Role.CEEB, Role.NROS)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<ComplaintOutcomeDto> {
     return await this.service.updateDecision(token, model);
   }
 
   @Post("/site")
-  @Roles(Role.CEEB)
+  @Roles(Role.CEEB, Role.NROS)
   async createAuthorizationOutcome(
     @Token() token,
     @Body() model: CreateAuthorizationOutcomeInput,
@@ -231,7 +231,7 @@ export class ComplaintOutcomeController {
   }
 
   @Patch("/site")
-  @Roles(Role.CEEB)
+  @Roles(Role.CEEB, Role.NROS)
   async updateAuthorizationOutcome(
     @Token() token,
     @Body() model: UpdateAuthorizationOutcomeInput,
@@ -240,7 +240,7 @@ export class ComplaintOutcomeController {
   }
 
   @Delete("/site")
-  @Roles(Role.CEEB)
+  @Roles(Role.CEEB, Role.NROS)
   async deleteAuthorizationOutcome(
     @Token() token,
     @Query("complaintOutcomeGuid") complaintOutcomeGuid: string,
