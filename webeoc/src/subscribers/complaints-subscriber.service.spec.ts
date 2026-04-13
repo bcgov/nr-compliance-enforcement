@@ -11,7 +11,7 @@ describe("ComplaintsSubscriberService", () => {
       providers: [ComplaintsSubscriberService, StagingComplaintsApiService, ComplaintsPublisherService],
     }).compile();
 
-    service = module.get<ComplaintsSubscriberService>(ComplaintsSubscriberService);
+    service = await module.resolve<ComplaintsSubscriberService>(ComplaintsSubscriberService);
   });
 
   it("should be defined", () => {

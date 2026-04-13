@@ -202,9 +202,10 @@ export class AppUserService {
 
       //remove all roles if deactivate_ind is true
       if (updateAppUserDto.deactivate_ind === true && updateAppUserDto.auth_user_guid) {
-        const userIdirUsername = `${updateAppUserDto.auth_user_guid.split("-").join("")}@idir`;
+        // strip provider suffix (eg @idir)
+        const cssUserGuid = updateAppUserDto.auth_user_guid.split("-").join("");
         for (const roleItem of userRoles) {
-          await this.cssService.deleteUserRole(userIdirUsername, roleItem);
+          await this.cssService.deleteUserRole(cssUserGuid, roleItem);
         }
       }
       return this.findOne(app_user_guid, token);

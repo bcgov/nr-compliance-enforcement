@@ -16,7 +16,7 @@ describe("ChesService", () => {
       ],
     }).compile();
 
-    service = module.get<ChesService>(ChesService);
+    service = await module.resolve<ChesService>(ChesService);
   });
 
   it("should be defined", () => {

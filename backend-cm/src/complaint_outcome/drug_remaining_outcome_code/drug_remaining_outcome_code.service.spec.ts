@@ -11,7 +11,7 @@ describe("DrugRemainingOutcomeCodeService", () => {
       providers: [DrugRemainingOutcomeCodeService],
     }).compile();
 
-    service = module.get<DrugRemainingOutcomeCodeService>(DrugRemainingOutcomeCodeService);
+    service = await module.resolve<DrugRemainingOutcomeCodeService>(DrugRemainingOutcomeCodeService);
   });
 
   it("should be defined", () => {

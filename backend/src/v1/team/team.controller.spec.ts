@@ -34,7 +34,7 @@ describe("TeamController", () => {
       ],
     }).compile();
 
-    controller = module.get<TeamController>(TeamController);
+    controller = await module.resolve<TeamController>(TeamController);
   });
 
   it("should be defined", () => {

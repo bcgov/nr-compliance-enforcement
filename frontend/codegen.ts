@@ -13,6 +13,7 @@ const config: CodegenConfig = {
         dedupeFragments: true,
         preResolveTypes: true,
         namingConvention: "keep",
+        documentMode: "string",
       },
     },
   },

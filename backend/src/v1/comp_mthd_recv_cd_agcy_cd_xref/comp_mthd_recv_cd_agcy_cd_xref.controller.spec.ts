@@ -25,7 +25,7 @@ describe("CompMthdRecvCdAgcyCdXrefController", () => {
       ],
     }).compile();
 
-    controller = module.get<CompMthdRecvCdAgcyCdXrefController>(CompMthdRecvCdAgcyCdXrefController);
+    controller = await module.resolve<CompMthdRecvCdAgcyCdXrefController>(CompMthdRecvCdAgcyCdXrefController);
   });
 
   it("should be defined", () => {

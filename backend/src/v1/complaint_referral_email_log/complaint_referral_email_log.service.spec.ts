@@ -20,7 +20,7 @@ describe("ComplaintReferralEmailLogService", () => {
       ],
     }).compile();
 
-    service = module.get<ComplaintReferralEmailLogService>(ComplaintReferralEmailLogService);
+    service = await module.resolve<ComplaintReferralEmailLogService>(ComplaintReferralEmailLogService);
   });
 
   it("should be defined", () => {

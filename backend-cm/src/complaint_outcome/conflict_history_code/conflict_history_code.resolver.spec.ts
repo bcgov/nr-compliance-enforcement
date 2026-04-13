@@ -12,7 +12,7 @@ describe("ConflictHistoryCodeResolver", () => {
       providers: [ConflictHistoryCodeResolver, ConflictHistoryCodeService],
     }).compile();
 
-    resolver = module.get<ConflictHistoryCodeResolver>(ConflictHistoryCodeResolver);
+    resolver = await module.resolve<ConflictHistoryCodeResolver>(ConflictHistoryCodeResolver);
   });
 
   it("should be defined", () => {

@@ -12,7 +12,7 @@ describe("InactionJustificationTypeResolver", () => {
       providers: [InactionJustificationTypeResolver, InactionJustificationTypeService],
     }).compile();
 
-    resolver = module.get<InactionJustificationTypeResolver>(InactionJustificationTypeService);
+    resolver = await module.resolve<InactionJustificationTypeResolver>(InactionJustificationTypeService);
   });
 
   it("should be defined", () => {

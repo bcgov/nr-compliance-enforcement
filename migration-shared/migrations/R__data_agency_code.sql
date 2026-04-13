@@ -10,7 +10,7 @@ INSERT INTO shared.agency_code (
     ('EPO', 'CEEB', 'Compliance and Environmental Enforcement Branch', 30, TRUE, 'FLYWAY', NOW(), false),
     ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 40, TRUE, 'FLYWAY', NOW(), true),
     ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 50, TRUE, 'FLYWAY', NOW(), true),
-    ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 60, TRUE, 'FLYWAY', NOW(), true),
+    ('NROS', 'Natural Resource Officer Service', 'Natural Resource Officer Service', 60, TRUE, 'FLYWAY', NOW(), false),
     ('NRS', 'Natural Resource Sector', 'Natural Resource Sector', 70, TRUE, 'FLYWAY', NOW(), false),
     ('OTH', 'Other', 'Other', 80, TRUE, 'FLYWAY', NOW(), true),
     ('POL', 'Police', 'Police', 90, TRUE, 'FLYWAY', NOW(), true)

@@ -5,7 +5,7 @@ USER root
 WORKDIR /app
 COPY *.json ./
 COPY ./src /app/src
-RUN npm ci --omit=dev && \
+RUN npm ci --omit=dev --legacy-peer-deps && \
     npm run build
 
 # Deployment container

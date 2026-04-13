@@ -21,7 +21,7 @@ describe("CssService", () => {
       ],
     }).compile();
 
-    service = module.get<CssService>(CssService);
+    service = await module.resolve<CssService>(CssService);
   });
 
   it("should be defined", () => {

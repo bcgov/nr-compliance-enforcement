@@ -12,7 +12,7 @@ describe("ThreatLevelCodeResolver", () => {
       providers: [ThreatLevelCodeResolver, ThreatLevelCodeService],
     }).compile();
 
-    resolver = module.get<ThreatLevelCodeResolver>(ThreatLevelCodeResolver);
+    resolver = await module.resolve<ThreatLevelCodeResolver>(ThreatLevelCodeResolver);
   });
 
   it("should be defined", () => {

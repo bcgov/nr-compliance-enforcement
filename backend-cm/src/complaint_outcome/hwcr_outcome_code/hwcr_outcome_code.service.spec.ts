@@ -11,7 +11,7 @@ describe("HwcrOutcomeCodeService", () => {
       providers: [HwcrOutcomeCodeService],
     }).compile();
 
-    service = module.get<HwcrOutcomeCodeService>(HwcrOutcomeCodeService);
+    service = await module.resolve<HwcrOutcomeCodeService>(HwcrOutcomeCodeService);
   });
 
   it("should be defined", () => {

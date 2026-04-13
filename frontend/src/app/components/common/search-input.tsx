@@ -16,6 +16,7 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
   const activeTab = useAppSelector(selectActiveTab);
   const userAgency = getUserAgency();
   const isCEEB = activeTab === COMPLAINT_TYPES.ERS && userAgency === "EPO";
+  const isNROS = activeTab === COMPLAINT_TYPES.ERS && userAgency === "NROS";
   const [input, setInput] = useState<string>(searchQuery ?? "");
 
   useEffect(() => {
@@ -84,7 +85,7 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
               <li>Outcome by animal: ear tag</li>
             </div>
           )}
-          {(activeTab === COMPLAINT_TYPES.ERS || isCEEB) && (
+          {(activeTab === COMPLAINT_TYPES.ERS || isCEEB || isNROS) && (
             <div>
               <li>Violation type</li>
               <li>Complaint/witness details</li>
@@ -95,7 +96,7 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
           {activeTab === COMPLAINT_TYPES.GIR && <li>GIR type</li>}
 
           {/* CEEB agency */}
-          {isCEEB && (
+          {(isCEEB || isNROS) && (
             <div>
               <li>Authorization ID</li>
               <li>Unauthorized site ID</li>

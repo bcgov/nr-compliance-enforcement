@@ -3,8 +3,8 @@ import { AckPolicy, connect, JetStreamManager, NatsConnection, StorageType, Stri
 import { NATS_DURABLE_COMPLAINTS, STREAMS, STREAM_TOPICS } from "../common/constants";
 import { StagingComplaintsApiService } from "../staging-complaints-api-service/staging-complaints-api-service.service";
 import { Complaint } from "../types/complaint-type";
-import { ComplaintsPublisherService } from "src/publishers/complaints-publisher.service";
-import { ComplaintUpdate } from "src/types/complaint-update-type";
+import { ComplaintsPublisherService } from "../publishers/complaints-publisher.service";
+import { ComplaintUpdate } from "../types/complaint-update-type";
 
 @Injectable()
 export class ComplaintsSubscriberService implements OnModuleInit {

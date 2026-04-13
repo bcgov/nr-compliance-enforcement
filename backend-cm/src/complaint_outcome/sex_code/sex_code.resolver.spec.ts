@@ -12,7 +12,7 @@ describe("SexCodeResolver", () => {
       providers: [SexCodeResolver, SexCodeService],
     }).compile();
 
-    resolver = module.get<SexCodeResolver>(SexCodeResolver);
+    resolver = await module.resolve<SexCodeResolver>(SexCodeResolver);
   });
 
   it("should be defined", () => {

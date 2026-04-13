@@ -23,7 +23,7 @@ describe("AttractantHwcrXrefService", () => {
       ],
     }).compile();
 
-    service = module.get<AttractantHwcrXrefService>(AttractantHwcrXrefService);
+    service = await module.resolve<AttractantHwcrXrefService>(AttractantHwcrXrefService);
   });
 
   it("should be defined", () => {

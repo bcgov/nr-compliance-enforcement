@@ -12,7 +12,7 @@ describe("OutcomeAgencyCodeResolver", () => {
       providers: [OutcomeAgencyCodeResolver, OutcomeAgencyCodeService],
     }).compile();
 
-    resolver = module.get<OutcomeAgencyCodeResolver>(OutcomeAgencyCodeResolver);
+    resolver = await module.resolve<OutcomeAgencyCodeResolver>(OutcomeAgencyCodeResolver);
   });
 
   it("should be defined", () => {
