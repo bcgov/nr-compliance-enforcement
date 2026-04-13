@@ -4,6 +4,7 @@ export enum Role {
   CEEB = "CEEB",
   CEEB_COMPLIANCE_COORDINATOR = "CEEB Compliance Coordinator",
   CEEB_SECTION_HEAD = "CEEB Section Head",
+  NROS = "NROS",
   GLOBAL_ADMINISTRATOR = "Global Administrator",
   AGENCY_ADMINISTRATOR = "Agency Administrator",
   READ_ONLY = "READ ONLY",
@@ -11,6 +12,6 @@ export enum Role {
   SECTOR = "SECTOR",
 }
 
-export const coreRoles: Role[] = [Role.COS, Role.CEEB, Role.PARKS, Role.SECTOR];
+export const coreRoles: Role[] = [Role.COS, Role.CEEB, Role.PARKS, Role.NROS, Role.SECTOR];
 
 export const adminRoles: Role[] = [Role.GLOBAL_ADMINISTRATOR, Role.AGENCY_ADMINISTRATOR];

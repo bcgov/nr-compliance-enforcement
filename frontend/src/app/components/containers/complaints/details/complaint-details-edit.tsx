@@ -71,6 +71,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "@components/containers/complaints/webeoc-complaint-updates/webeoc-complaint-update-list";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ceeb/ceeb-outcome-report";
+import { NrosOutcomeReport } from "@components/containers/complaints/outcomes/nros/nros-outcome-report";
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
@@ -207,8 +208,8 @@ export const ComplaintDetailsEdit: FC = () => {
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
-  const enablePrivacyFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency === AgencyType.CEEB;
-  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB;
+  const enablePrivacyFeature = ownedByAgencyCode?.agency && (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS);
+  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB && ownedByAgencyCode?.agency !== AgencyType.NROS;
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -1659,12 +1660,17 @@ export const ComplaintDetailsEdit: FC = () => {
         <CeebOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
+      {/* NROS ERS Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.NROS && (
+        <NrosOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
+      )}
+
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
         <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
       {/* COS ERS File Linkage */}
-      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
+      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && ownedByAgencyCode?.agency !== AgencyType.NROS && (
         <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
       )}
     </div>

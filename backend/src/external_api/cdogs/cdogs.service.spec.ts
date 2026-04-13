@@ -19,7 +19,7 @@ describe("CdogsService", () => {
       ],
     }).compile();
 
-    service = module.get<CdogsService>(CdogsService);
+    service = await module.resolve<CdogsService>(CdogsService);
   });
 
   it("should be defined", () => {

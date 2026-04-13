@@ -512,7 +512,7 @@ describe("Testing: Complaint Service", () => {
     }).compile();
 
     service = await module.resolve<ComplaintService>(ComplaintService);
-    mapper = module.get<Mapper>(getMapperToken());
+    mapper = await module.resolve<Mapper>(getMapperToken());
   });
 
   it("should update complaint status by id:", async () => {

@@ -25,7 +25,7 @@ describe("AttractantHwcrXrefController", () => {
       ],
     }).compile();
 
-    controller = module.get<AttractantHwcrXrefController>(AttractantHwcrXrefController);
+    controller = await module.resolve<AttractantHwcrXrefController>(AttractantHwcrXrefController);
   });
 
   it("should be defined", () => {

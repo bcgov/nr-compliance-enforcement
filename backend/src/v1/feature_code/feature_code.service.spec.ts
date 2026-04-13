@@ -20,8 +20,8 @@ describe("FeatureCodeService", () => {
       ],
     }).compile();
 
-    service = module.get<FeatureCodeService>(FeatureCodeService);
-    repository = module.get<Repository<FeatureCode>>(getRepositoryToken(FeatureCode));
+    service = await module.resolve<FeatureCodeService>(FeatureCodeService);
+    repository = await module.resolve<Repository<FeatureCode>>(getRepositoryToken(FeatureCode));
   });
 
   it("should be defined", () => {

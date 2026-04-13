@@ -17,7 +17,7 @@ describe("HwcrComplaintNatureCodeService", () => {
       ],
     }).compile();
 
-    service = module.get<HwcrComplaintNatureCodeService>(HwcrComplaintNatureCodeService);
+    service = await module.resolve<HwcrComplaintNatureCodeService>(HwcrComplaintNatureCodeService);
   });
 
   it("should be defined", () => {
