@@ -1,5 +1,6 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { exhibit } from "../../../../prisma/investigation/generated/exhibit";
+import { PaginatedResult, PaginationMetadata } from "../../../common/pagination.utility";
 
 export class Exhibit {
   exhibitGuid: string;
@@ -22,6 +23,19 @@ export class CreateUpdateExhibitInput {
   dateCollected?: Date;
   collectedAppUserGuidRef?: string;
   appUserIdentifier?: string;
+}
+
+export class ExhibitFilters {
+  investigationGuid: string;
+  search?: string;
+  taskFilter?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}
+
+export class ExhibitResult implements PaginatedResult<Exhibit> {
+  items: Exhibit[];
+  pageInfo: PaginationMetadata;
 }
 
 export const mapPrismaExhibitToExhibit = (mapper: Mapper) => {

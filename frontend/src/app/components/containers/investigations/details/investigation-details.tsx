@@ -9,6 +9,7 @@ import { InvestigationContraventions } from "@/app/components/containers/investi
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
 import { InvestigationDocumentation } from "@/app/components/containers/investigations/details/investigation-documentation";
+import { InvestigationExhibits } from "@/app/components/containers/investigations/details/investigation-exhibits";
 import { InvestigationTasksNew } from "@/app/components/containers/investigations/details/investigation-task";
 import InvestigationSummary from "@/app/components/containers/investigations/details/investigation-summary";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
@@ -157,6 +158,13 @@ export const InvestigationDetails: FC = () => {
             tasks={(investigationData?.tasks as Task[]) ?? []}
           />
         );
+      case "exhibits":
+        return (
+          <InvestigationExhibits
+            investigationGuid={investigationGuid}
+            tasks={(investigationData?.tasks as Task[]) ?? []}
+          />
+        );
       case "continuation":
         return (
           <InvestigationContinuation
@@ -182,7 +190,7 @@ export const InvestigationDetails: FC = () => {
     );
   }
 
-  const isListView = currentTab === "documents" || currentTab === "tasks";
+  const isListView = currentTab === "documents" || currentTab === "tasks" || currentTab === "exhibits";
   const containerClass = isListView
     ? "comp-complaint-details comp-complaint-details--list-view"
     : "comp-complaint-details";
