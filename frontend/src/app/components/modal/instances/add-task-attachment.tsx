@@ -1,22 +1,21 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Modal, ProgressBar } from "react-bootstrap";
+import { Alert, Button, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
-import { DismissToast, ToggleError, ToggleInformation, UpdateToast } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
 import {
   fileListToCOMSObjects,
   getDisplayFilename,
   handlePersistAttachments,
-  RETRY_CONFIG,
-  withRetry,
 } from "@/app/common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
@@ -194,81 +193,20 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       return existingSequence ?? String(baseSequence + i + 1).padStart(4, "0");
     });
 
-    const totalSize = files.reduce((sum, f) => sum + f.size, 0);
-    let completedBytes = 0;
-    let currentFilePercentage = 0;
-    const failedFiles: string[] = [];
-
-    const updateToast = (fileSize: number, status?: string) => {
-      const overall =
-        totalSize > 0 ? Math.round(((completedBytes + (currentFilePercentage / 100) * fileSize) / totalSize) * 100) : 0;
-      UpdateToast(
-        toastId,
-        <>
-          <div>Upload in progress, do not close the NatSuite application.</div>
-          <ProgressBar
-            now={overall}
-            label={`${overall}%`}
-            className="mt-3"
-          />
-          {status && <div className="text-muted mt-1 small">{status}</div>}
-        </>,
-      );
-    };
-
-    for (let i = 0; i < files.length; i++) {
-      currentFilePercentage = 0;
-      const fileLabel = files.length > 1 ? `File ${i + 1} of ${files.length}` : "";
-
-      const result = await withRetry(
-        async (attempt) => {
-          currentFilePercentage = 0;
-          const retryLabel = attempt > 1 ? `Retry attempt ${attempt - 1} of ${RETRY_CONFIG.MAX_RETRIES}` : "";
-          updateToast(files[i].size, [fileLabel, retryLabel].filter(Boolean).join(" - ") || undefined);
-
-          await handlePersistAttachments({
-            dispatch,
-            attachmentsToAdd: [files[i]],
-            attachmentsToDelete: null,
-            identifier: investigationIdentifier,
-            subIdentifier: taskIdentifier,
-            setAttachmentsToAdd: () => {},
-            setAttachmentsToDelete: () => {},
-            attachmentType: AttachmentEnum.TASK_ATTACHMENT,
-            isSynchronous: false,
-            extendedMeta: {
-              ...buildExtendedMeta(value),
-              "sequence-number": fileSequences[i],
-            },
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.total) {
-                currentFilePercentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                const retryLabel = attempt > 1 ? `Retry attempt ${attempt - 1} of ${RETRY_CONFIG.MAX_RETRIES}` : "";
-                updateToast(files[i].size, [fileLabel, retryLabel].filter(Boolean).join(" - ") || undefined);
-              }
-            },
-            throwOnError: true,
-          });
-        },
-        {
-          onRetry: (attempt, error) => {
-            ToggleError(`Upload failed for "${files[i].name}". Retrying upload. Error: ${error.message}`);
-          },
-        },
-      );
-
-      completedBytes += result.success ? files[i].size : (currentFilePercentage / 100) * files[i].size;
-      if (!result.success) {
-        failedFiles.push(files[i].name);
-      }
-    }
+    await uploadAttachmentsWithProgress({
+      dispatch,
+      files,
+      identifier: investigationIdentifier,
+      subIdentifier: taskIdentifier,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      toastId,
+      buildExtendedMeta: (_file: File, i: number) => ({
+        ...buildExtendedMeta(value),
+        "sequence-number": fileSequences[i],
+      }),
+    });
 
     DismissToast(toastId);
-
-    if (failedFiles.length > 0) {
-      ToggleError(`Failed to upload: ${failedFiles.join(", ")}`);
-    }
-
     attachmentUploadComplete$.next(taskIdentifier);
   };
 
