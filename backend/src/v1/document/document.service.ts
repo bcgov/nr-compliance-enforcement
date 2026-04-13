@@ -70,7 +70,6 @@ export class DocumentService {
   exportContinuationReport = async (investigationGuid: string, fileName: string, tz: string, token: string) => {
     try {
       const data = await getContinuationReportActivities(token, investigationGuid, tz);
-      this.logger.log(`Continuation report data: ${JSON.stringify(data, null, 2)}`);
       return await this.cdogs.generate(fileName, data, REPORT_TYPE.CONTINUATION);
     } catch (error) {
       this.logger.error(
