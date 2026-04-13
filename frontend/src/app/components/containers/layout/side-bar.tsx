@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
+import { selectCanAccessCases, selectCanAccessInspections, selectCanAccessInvestigations } from "@/app/access/module-access";
 import MenuItem from "@apptypes/app/menu-item";
 import { Link } from "react-router-dom";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -13,6 +14,9 @@ import { FEATURE_TYPES } from "@constants/feature-flag-types";
 export const SideBar: FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(isSidebarOpen);
+  const canAccessCases = useAppSelector(selectCanAccessCases);
+  const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
+  const canAccessInspections = useAppSelector(selectCanAccessInspections);
 
   const menuItems: Array<MenuItem> = [
     {
@@ -20,7 +24,7 @@ export const SideBar: FC = () => {
       name: "Cases",
       icon: "bi bi-folder",
       route: "/cases",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.CASES)),
+      hidden: !canAccessCases,
     },
     {
       id: "complaints-link",
@@ -33,14 +37,14 @@ export const SideBar: FC = () => {
       name: "Investigations",
       icon: "bi bi-incognito",
       route: "/investigations",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)),
+      hidden: !canAccessInvestigations,
     },
     {
       id: "inspections-link",
       name: "Inspections",
       icon: "bi bi-ui-checks",
       route: "/inspections",
-      hidden: !useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS)),
+      hidden: !canAccessInspections,
     },
     {
       id: "zone-at-a-glance-link",
