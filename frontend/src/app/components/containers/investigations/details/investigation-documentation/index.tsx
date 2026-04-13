@@ -54,7 +54,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
     [officers],
   );
 
-  const handleExportAttachmentsAndCsv = useCallback(() => {
+  const handleExportAttachmentsAndCsv = useCallback(async () => {
     let toastDownloadInfo: any;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
@@ -97,7 +97,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
         size: blob.size,
         url: csvUrl,
       };
-      dispatch(
+      await dispatch(
         bulkDownload(
           investigationGuid,
           investigationName || "",
