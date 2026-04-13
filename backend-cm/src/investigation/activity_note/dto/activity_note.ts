@@ -8,6 +8,7 @@ export class ActivityNote {
   activityNoteGuid: string;
   taskGuid: string;
   investigationGuid: string;
+  investigationLabel: string;
   activityNoteCode: string;
   contentJson: string;
   contentText: string;
@@ -101,6 +102,10 @@ export const mapPrismaActivityNoteToActivityNote = (mapper: Mapper) => {
     forMember(
       (dest) => dest.actionedAppUserGuidRef,
       mapFrom((src) => src.actioned_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.investigationLabel,
+      mapFrom((src) => src.investigation?.name),
     ),
     forMember(
       (dest) => dest.reportedAppUserGuidRef,
