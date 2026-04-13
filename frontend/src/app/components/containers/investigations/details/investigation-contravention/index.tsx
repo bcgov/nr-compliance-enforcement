@@ -155,14 +155,7 @@ function groupContraventionsByParty(
   for (const contravention of contraventions) {
     const parties = contravention.investigationParty as InvestigationParty[] | undefined;
 
-    if (!parties?.length) {
-      const key = "Unknown Party";
-      const existing = map.get(key);
-      map.set(key, {
-        partyGuid: null,
-        contraventions: [...(existing?.contraventions ?? []), contravention],
-      });
-    } else {
+    if (parties?.length) {
       for (const party of parties) {
         const key = getPartyLabel(party);
         const existing = map.get(key);
@@ -171,6 +164,13 @@ function groupContraventionsByParty(
           contraventions: [...(existing?.contraventions ?? []), contravention],
         });
       }
+    } else {
+      const key = "Unknown Party";
+      const existing = map.get(key);
+      map.set(key, {
+        partyGuid: null,
+        contraventions: [...(existing?.contraventions ?? []), contravention],
+      });
     }
   }
 

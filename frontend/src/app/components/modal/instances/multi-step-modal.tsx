@@ -11,7 +11,7 @@ type MultiStepModalProps = {
 
 export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { titles, totalSteps, content, isEdit, contraventionNumber } = modalData;
+  const { titles, totalSteps, content, isEdit } = modalData;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [validateFn, setValidateFn] = useState<((step: number) => Promise<boolean>) | null>(null);

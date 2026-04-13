@@ -159,6 +159,11 @@ export const AddEditContraventionModal: FC<AddEditContraventionModalProps> = ({ 
           onPrevious={handlePrevious}
           onNext={handleNext}
           onSave={handleSave}
+          isEdit={false}
+          showDeleteConfirm={false}
+          onDelete={function (): void {
+            throw new Error("Function not implemented.");
+          }}
         />
       </Modal.Footer>
     </>
