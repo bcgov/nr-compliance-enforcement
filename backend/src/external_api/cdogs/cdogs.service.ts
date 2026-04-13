@@ -240,7 +240,6 @@ export class CdogsService implements ExternalApiService {
       },
       ERS: {
         EPO: CONFIGURATION_CODES.CEEBTMPLATE,
-        NROS: CONFIGURATION_CODES.CEEBTMPLATE,
         PARKS: CONFIGURATION_CODES.PRKERSTMPT,
         ECCC: () => this._getExternalTemplateCode(data, type),
         DFO: () => this._getExternalTemplateCode(data, type),
