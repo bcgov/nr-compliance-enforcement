@@ -1,0 +1,7 @@
+type Ticket {
+  ticketIdentifier: String!
+  enforcementActionIdentifier: String!
+  ticketOutcomeCode: String!
+  ticketAmount: Float!
+  activeIndicator: Boolean!
+}
