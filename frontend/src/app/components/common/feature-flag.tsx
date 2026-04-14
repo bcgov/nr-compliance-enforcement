@@ -7,14 +7,14 @@ import { Roles } from "@apptypes/app/roles";
 type props = {
   feature: string;
   children: React.ReactNode;
-  bypassingRoles?: Array<Roles>; // If set, children render when the feature is on or the user has any of these roles
+  requiredRole?: Roles; // If set, children render only when the feature is on AND the user has the required role
 };
 
-export const FeatureFlag: FC<props> = ({ feature, children, bypassingRoles }) => {
+export const FeatureFlag: FC<props> = ({ feature, children, requiredRole }) => {
   const isEnabled = useAppSelector(isFeatureActive(feature));
-  const hasBypassingRole = bypassingRoles && bypassingRoles.length > 0 && UserService.hasRole(bypassingRoles);
+  const hasRequiredRole = requiredRole ? UserService.hasRole(requiredRole) : true;
 
-  if (isEnabled || hasBypassingRole) {
+  if (isEnabled && hasRequiredRole) {
     return <>{children}</>;
   }
 
