@@ -22,6 +22,8 @@ import { formatDistanceToNow } from "date-fns";
 
 type Coordinate = number[] | string[] | undefined;
 
+type OptionalDateTimeInput = string | Date | null | undefined;
+
 const SLIDE_HEIGHT = 130;
 const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
 
@@ -562,10 +564,7 @@ export function getDropdownOption(matchValue: string | undefined | null, options
  * When only a date is provided (no time), constructs a local-midnight Date
  * to avoid UTC-to-local day rollback (e.g. July 1 UTC becoming June 30 local).
  */
-export const parseUTCDateTimeToLocal = (
-  date: string | Date | null | undefined,
-  time: string | Date | null | undefined,
-): Date | null => {
+export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: OptionalDateTimeInput): Date | null => {
   if (!date) return null;
   const dateStr =
     date instanceof Date
@@ -585,7 +584,7 @@ export const parseUTCDateTimeToLocal = (
  *
  * @param whenAbsent returned when the input is missing or cannot be parsed (e.g. "-" in tables, "" in CSV)
  */
-export const formatDateStr = (inputDate: string | Date | null | undefined, whenAbsent: string = "-"): string => {
+export const formatDateStr = (inputDate: OptionalDateTimeInput, whenAbsent: string = "-"): string => {
   const d = parseUTCDateTimeToLocal(inputDate, null);
   if (!d) return whenAbsent;
   const s = d.toISOString?.() ?? d.toString();
