@@ -4,12 +4,15 @@ import { Task } from "@/generated/graphql";
 import { formatDate, escapeCsvCell } from "@common/methods";
 import { getDisplayFilename } from "@common/attachment-utils";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { DocumentationFilter } from "./documentation-filter";
 import { DocumentationFilterBar } from "./documentation-filter-bar";
 import { DocumentationList } from "./documentation-list";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { useInvestigationAttachments, Attachment } from "./hooks/use-investigation-attachments";
+import { bulkDownload } from "@/app/store/reducers/bulk-download";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DownloadType } from "@/app/constants/download-type";
 
 type Props = {
   investigationGuid: string;
@@ -18,6 +21,7 @@ type Props = {
 };
 
 export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, investigationName, tasks = [] }) => {
+  const dispatch = useAppDispatch();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
@@ -26,19 +30,18 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
   const { searchValues } = useDocumentationSearch();
 
   // Fetch and process attachments (with client-side filtering, sorting, pagination)
-  const { attachments, filteredAttachments, totalCount, isLoading, error } =
-    useInvestigationAttachments({
-      investigationIdentifier: investigationGuid,
-      tasks,
-      search: searchValues.search,
-      taskFilter: searchValues.taskFilter,
-      fileTypeFilter: searchValues.fileTypeFilter,
-      sortBy: searchValues.sortBy,
-      sortOrder: searchValues.sortOrder,
-      page: searchValues.page,
-      pageSize: searchValues.pageSize,
-      enabled: !!investigationGuid,
-    });
+  const { attachments, filteredAttachments, totalCount, isLoading, error } = useInvestigationAttachments({
+    investigationIdentifier: investigationGuid,
+    tasks,
+    search: searchValues.search,
+    taskFilter: searchValues.taskFilter,
+    fileTypeFilter: searchValues.fileTypeFilter,
+    sortBy: searchValues.sortBy,
+    sortOrder: searchValues.sortOrder,
+    page: searchValues.page,
+    pageSize: searchValues.pageSize,
+    enabled: !!investigationGuid,
+  });
 
   const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prev) => !prev), []);
   const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prev) => !prev), []);
@@ -51,43 +54,65 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
     [officers],
   );
 
-  const handleExportCsv = useCallback(() => {
-    const headers = ["File type", "ID", "Description", "Title", "Date", "Taken By", "Location", "Task", "File Name"];
+  const handleExportAttachmentsAndCsv = useCallback(async () => {
+    let toastDownloadInfo: any;
+    try {
+      toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+      const headers = ["File type", "ID", "Description", "Title", "Date", "Taken By", "Location", "Task", "File Name"];
 
-    const sorted = [...filteredAttachments].sort(
-      (a, b) => (Number.parseInt(a.sequenceNumber ?? "0") || 0) - (Number.parseInt(b.sequenceNumber ?? "0") || 0),
-    );
+      const sorted = [...filteredAttachments].sort(
+        (a, b) => (Number.parseInt(a.sequenceNumber ?? "0") || 0) - (Number.parseInt(b.sequenceNumber ?? "0") || 0),
+      );
 
-    const rows = sorted.map((a: Attachment) => {
-      const task = a.taskId ? tasks.find((t) => t.taskIdentifier === a.taskId) : undefined;
-      return [
-        a.fileType,
-        a.sequenceNumber,
-        a.description,
-        a.title,
-        a.date ? formatDate(a.date) : "",
-        getOfficerName(a.takenBy ?? ""),
-        a.location,
-        task ? `Task ${task.taskNumber}` : "",
-        getDisplayFilename(a.name),
-      ]
-        .map((v) => escapeCsvCell(v ?? ""))
-        .join(",");
-    });
+      const rows = sorted.map((a: Attachment) => {
+        const task = a.taskId ? tasks.find((t) => t.taskIdentifier === a.taskId) : undefined;
+        return [
+          a.fileType,
+          a.sequenceNumber,
+          a.description,
+          a.title,
+          a.date ? formatDate(a.date) : "",
+          getOfficerName(a.takenBy ?? ""),
+          a.location,
+          task ? `Task ${task.taskNumber}` : "",
+          getDisplayFilename(a.name),
+        ]
+          .map((v) => escapeCsvCell(v ?? ""))
+          .join(",");
+      });
 
-    const csv = [headers.join(","), ...rows].join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    const today = new Date().toISOString().split("T")[0];
-    link.download = `Investigation ${investigationName || investigationGuid} ${today}.csv`;
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  }, [filteredAttachments, tasks, investigationName, getOfficerName]);
+      const csv = [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const csvUrl = URL.createObjectURL(blob);
+      const today = new Date().toISOString().split("T")[0];
+      const csvFile = {
+        id: undefined,
+        name: `Investigation ${investigationName || investigationGuid} ${today}.csv`,
+        size: blob.size,
+        url: csvUrl,
+      };
+      await dispatch(
+        bulkDownload(
+          investigationGuid,
+          investigationName || "",
+          filteredAttachments,
+          [csvFile],
+          DownloadType.INVESTIGATION,
+        ),
+      );
+    } catch (error) {
+      console.error("Bulk download error:", error);
+      ToggleError("Download failed. Please try again.");
+    } finally {
+      DismissToast(toastDownloadInfo);
+    }
+  }, [filteredAttachments, tasks, investigationName, investigationGuid, getOfficerName]);
 
   const renderDesktopFilterSection = () => (
     <Collapse
@@ -130,10 +155,11 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
   return (
     <div className="comp-details-section--list-view">
       <DocumentationFilterBar
+        investigationId={investigationGuid}
         tasks={tasks}
         toggleShowMobileFilters={toggleShowMobileFilters}
         toggleShowDesktopFilters={toggleShowDesktopFilters}
-        onExport={handleExportCsv}
+        onExport={handleExportAttachmentsAndCsv}
         isExportDisabled={isLoading || filteredAttachments.length === 0}
       />
 
