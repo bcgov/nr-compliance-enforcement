@@ -63,10 +63,11 @@ const tokenRefresh = async (): Promise<string> => {
   }
 
   const token = data.access_token;
-  if (!isValidToken(token)) {
+  if (isValidToken(token)) {
+    localStorage.setItem(AUTH_TOKEN, token);
+  } else {
     throw new Error("token refresh returned an invalid access token");
   }
-  localStorage.setItem(AUTH_TOKEN, token);
   return token;
 };
 
@@ -130,11 +131,12 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     })
     .then((authenticated) => {
       if (authenticated) {
-        if (!isValidToken(_kc.token)) {
+        if (isValidToken(_kc.token)) {
+          localStorage.setItem(AUTH_TOKEN, _kc.token);
+        } else {
           console.error("Keycloak returned an invalid access token");
           return;
         }
-        localStorage.setItem(AUTH_TOKEN, _kc.token);
         startRefresh();
       } else {
         console.log("User is not authenticated.");
