@@ -13,21 +13,10 @@ let refreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
 const TOKEN_REFRESH_RETRIES = 2;
 const TOKEN_REFRESH_RETRY_DELAY_MS = 1000;
-const TOKEN_FORMAT = /^([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)$/;
-const MAX_TOKEN_LENGTH = 8192;
+const TOKEN_FORMAT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
 
-// Rebuilds the token so the value written to local storage is a fresh string
-// not the original network payload.
-const sanitizeToken = (value: unknown): string | null => {
-  if (typeof value !== "string" || value.length === 0 || value.length > MAX_TOKEN_LENGTH) {
-    return null;
-  }
-  const match = TOKEN_FORMAT.exec(value);
-  if (!match) {
-    return null;
-  }
-  return `${match[1]}.${match[2]}.${match[3]}`;
-};
+const isValidToken = (token: unknown): token is string =>
+  typeof token === "string" && token.length > 0 && token.length <= 8192 && TOKEN_FORMAT.test(token);
 
 const decodeJwt = (token: string): KeycloakTokenParsed => {
   const base64Url = token.split(".")[1];
@@ -73,12 +62,14 @@ const tokenRefresh = async (): Promise<string> => {
     _kc.idTokenParsed = decodeJwt(data.id_token);
   }
 
-  const sanitized = sanitizeToken(data.access_token);
-  if (!sanitized) {
+  const token = data.access_token;
+  if (isValidToken(token)) {
+    // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
+    localStorage.setItem(AUTH_TOKEN, token);
+  } else {
     throw new Error("token refresh returned an invalid access token");
   }
-  localStorage.setItem(AUTH_TOKEN, sanitized);
-  return sanitized;
+  return token;
 };
 
 // refreshes the Keycloak token and updates localStorage
@@ -141,12 +132,13 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     })
     .then((authenticated) => {
       if (authenticated) {
-        const sanitized = sanitizeToken(_kc.token);
-        if (!sanitized) {
+        if (isValidToken(_kc.token)) {
+          // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
+          localStorage.setItem(AUTH_TOKEN, _kc.token);
+        } else {
           console.error("Keycloak returned an invalid access token");
           return;
         }
-        localStorage.setItem(AUTH_TOKEN, sanitized);
         startRefresh();
       } else {
         console.log("User is not authenticated.");
