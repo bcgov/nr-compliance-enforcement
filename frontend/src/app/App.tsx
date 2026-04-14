@@ -38,8 +38,11 @@ import { LegislationSourceManagement } from "./components/containers/admin/legis
 import { AppUpdate } from "./AppUpdate";
 import Investigations from "@/app/components/containers/investigations/investigations";
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
-import { isFeatureActive } from "@store/reducers/app";
-import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import {
+  selectCanAccessCases,
+  selectCanAccessInspections,
+  selectCanAccessInvestigations,
+} from "@/app/access/module-access";
 import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
 import config from "@/config";
@@ -67,8 +70,9 @@ const App: FC = () => {
     dispatch(getTokenProfile());
   }, [dispatch]);
 
-  const investigationsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INVESTIGATIONS));
-  const inspectionsActive = useAppSelector(isFeatureActive(FEATURE_TYPES.INSPECTIONS));
+  const casesModuleActive = useAppSelector(selectCanAccessCases);
+  const investigationsActive = useAppSelector(selectCanAccessInvestigations);
+  const inspectionsActive = useAppSelector(selectCanAccessInspections);
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -103,26 +107,36 @@ const App: FC = () => {
                   path="/complaints/:type?"
                   element={<ComplaintsRouteWrapper />}
                 />
-                <Route
-                  path="/cases"
-                  element={<Cases />}
-                />
-                <Route
-                  path="/case/create"
-                  element={<CaseEdit />}
-                />
-                <Route
-                  path="/case/:id"
-                  element={<CaseView />}
-                />
-                <Route
-                  path="/case/:id/:tabKey"
-                  element={<CaseView />}
-                />
-                <Route
-                  path="/case/:id/edit"
-                  element={<CaseEdit />}
-                />
+                {casesModuleActive && (
+                  <Route
+                    path="/cases"
+                    element={<Cases />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/case/create"
+                    element={<CaseEdit />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/case/:id"
+                    element={<CaseView />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/case/:id/:tabKey"
+                    element={<CaseView />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/case/:id/edit"
+                    element={<CaseEdit />}
+                  />
+                )}
                 <Route
                   path="/compliments"
                   element={<Compliments />}

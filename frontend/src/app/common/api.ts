@@ -1,7 +1,7 @@
 import { Dispatch } from "redux";
-import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosProgressEvent, AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
 import config from "@/config";
-import { AUTH_TOKEN } from "@service/user-service";
+import { AUTH_TOKEN, refreshToken, doLogin } from "@service/user-service";
 import { ApiRequestParameters } from "@apptypes/app/api-request-parameters";
 import { toggleLoading, toggleNotification } from "@store/reducers/app";
 import { store } from "@store/store";
@@ -52,32 +52,44 @@ axios.interceptors.response.use(
       blockingRequestCounter--;
       if (blockingRequestCounter <= 0) store.dispatch(toggleLoading(false));
     }
-    return Promise.reject(error);
+    throw error;
   },
 );
 
 axios.interceptors.response.use(
   (response) => {
-    // Successful response, just return the data
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const originalRequest = error.config as NatComRequestConfig & { _retry?: boolean };
     const { response } = error;
 
-    if (response && response.status === STATUS_CODES.Unauthorized) {
-      globalThis.location.href = "/not-authorized";
+    // On 401, refresh the token and retry the request once
+    if (response?.status === STATUS_CODES.Unauthorized && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const token = await refreshToken();
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${token}` };
+        return axios(originalRequest);
+      } catch {
+        doLogin();
+        throw error;
+      }
     }
 
-    if (response && response.status === STATUS_CODES.Forbiden) {
+    if (response?.status === STATUS_CODES.Forbiden) {
       ToggleError("User is not authorized to perform this action");
     }
 
-    if (response && response.status === STATUS_CODES.Conflict) {
+    if (response?.status === STATUS_CODES.Conflict) {
       const backendErrorText = (response.data as any)?.message;
       if (backendErrorText) {
         displayBackendErrors(backendErrorText);
       }
     }
+
+    throw error;
   },
 );
 
@@ -286,8 +298,13 @@ export const putFile = <T, M = {}>(
   headers: {},
   file: File,
   toggleLoading: boolean = true,
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void,
 ): Promise<T> => {
-  let config: NatComRequestConfig = { headers: headers, toggleLoading: toggleLoading };
+  let config: NatComRequestConfig = {
+    headers: headers,
+    toggleLoading: toggleLoading,
+    ...(onUploadProgress && { onUploadProgress }),
+  };
 
   const formData = new FormData();
   if (file) formData.append("file", file);

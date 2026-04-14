@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
@@ -72,21 +73,39 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
 
     let toastId: Id | undefined;
 
-    if (attachmentsToAdd?.length) {
-      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", { autoClose: false });
+    if (attachmentsToDelete?.length) {
+      await handlePersistAttachments({
+        dispatch,
+        attachmentsToAdd: null,
+        attachmentsToDelete,
+        identifier: id,
+        subIdentifier: undefined,
+        setAttachmentsToAdd,
+        setAttachmentsToDelete,
+        attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
+        isSynchronous: false,
+      });
     }
 
-    await handlePersistAttachments({
-      dispatch,
-      attachmentsToAdd,
-      attachmentsToDelete,
-      identifier: id,
-      subIdentifier: undefined,
-      setAttachmentsToAdd,
-      setAttachmentsToDelete,
-      attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
-      isSynchronous: false,
-    });
+    if (attachmentsToAdd?.length) {
+      toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+
+      await uploadAttachmentsWithProgress({
+        dispatch,
+        files: attachmentsToAdd,
+        identifier: id,
+        attachmentType: AttachmentEnum.OUTCOME_ATTACHMENT,
+        toastId,
+      });
+
+      setAttachmentsToAdd(null);
+    }
 
     if (toastId) DismissToast(toastId);
     setAttachmentRefreshKey((k) => k + 1);

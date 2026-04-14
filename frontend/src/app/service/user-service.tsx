@@ -1,7 +1,121 @@
 import _kc from "@/app/keycloak";
+import config from "@/config";
 import { AgencyType } from "@apptypes/app/agency-types";
+import type { KeycloakTokenParsed } from "keycloak-js";
 
 export const AUTH_TOKEN = "__auth_token";
+
+const REFRESH_BUFFER_SECONDS = 60;
+const REFRESH_CHECK_INTERVAL_MS = 30000;
+
+let activeRefreshPromise: Promise<string> | null = null;
+let refreshIntervalId: ReturnType<typeof setInterval> | null = null;
+
+const TOKEN_REFRESH_RETRIES = 2;
+const TOKEN_REFRESH_RETRY_DELAY_MS = 1000;
+const TOKEN_FORMAT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
+const isValidToken = (token: unknown): token is string =>
+  typeof token === "string" && token.length > 0 && token.length <= 8192 && TOKEN_FORMAT.test(token);
+
+const decodeJwt = (token: string): KeycloakTokenParsed => {
+  const base64Url = token.split(".")[1];
+  const base64 = base64Url.replaceAll("-", "+").replaceAll("_", "/");
+  return JSON.parse(atob(base64));
+};
+
+// calls the Keycloak token endpoint directly via bypassing keycloak-js to avoid issues with long-running uploads and token refresh.  This is used as part of the refreshToken function which is called by the 401 interceptor and the refresh interval timer.
+const tokenRefresh = async (): Promise<string> => {
+  if (!_kc.refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  const tokenUrl = `${config.KEYCLOAK_URL}/realms/${config.KEYCLOAK_REALM}/protocol/openid-connect/token`;
+
+  const response = await fetch(tokenUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: _kc.refreshToken,
+      client_id: config.KEYCLOAK_CLIENT_ID,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`token refresh failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  // sync keycloak-js state
+  if (data.access_token) {
+    _kc.token = data.access_token;
+    _kc.tokenParsed = decodeJwt(data.access_token);
+  }
+  if (data.refresh_token) {
+    _kc.refreshToken = data.refresh_token;
+    _kc.refreshTokenParsed = decodeJwt(data.refresh_token);
+  }
+  if (data.id_token) {
+    _kc.idToken = data.id_token;
+    _kc.idTokenParsed = decodeJwt(data.id_token);
+  }
+
+  const token = data.access_token;
+  if (isValidToken(token)) {
+    localStorage.setItem(AUTH_TOKEN, token); // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
+  } else {
+    throw new Error("token refresh returned an invalid access token");
+  }
+  return token;
+};
+
+// refreshes the Keycloak token and updates localStorage
+export const refreshToken = (): Promise<string> => {
+  if (activeRefreshPromise) {
+    return activeRefreshPromise;
+  }
+
+  const attemptRefresh = async (): Promise<string> => {
+    // Check if token actually needs refreshing
+    if (_kc.tokenParsed?.exp) {
+      const expiresIn = _kc.tokenParsed.exp - Math.ceil(Date.now() / 1000) + (_kc.timeSkew ?? 0);
+      if (expiresIn > REFRESH_BUFFER_SECONDS) {
+        return _kc.token!;
+      }
+    }
+
+    for (let attempt = 0; attempt <= TOKEN_REFRESH_RETRIES; attempt++) {
+      if (attempt > 0) {
+        await new Promise((resolve) => setTimeout(resolve, TOKEN_REFRESH_RETRY_DELAY_MS));
+      }
+      try {
+        return await tokenRefresh();
+      } catch {
+        // continue
+      }
+    }
+
+    throw new Error("Token refresh failed after all attempts");
+  };
+
+  activeRefreshPromise = attemptRefresh().finally(() => {
+    activeRefreshPromise = null;
+  });
+
+  return activeRefreshPromise;
+};
+
+const startRefresh = () => {
+  if (refreshIntervalId) return;
+  refreshIntervalId = setInterval(() => {
+    refreshToken().catch(() => {
+      // Bypass redirect here as the 401 interceptor handles login redirect as a last resort
+      console.warn("token refresh failed, will retry next interval");
+    });
+  }, REFRESH_CHECK_INTERVAL_MS);
+};
 
 /**
  * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
@@ -16,25 +130,30 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
       checkLoginIframe: false,
     })
     .then((authenticated) => {
-      if (!authenticated) {
-        console.log("User is not authenticated.");
+      if (authenticated) {
+        if (isValidToken(_kc.token)) {
+          localStorage.setItem(AUTH_TOKEN, _kc.token); // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
+        } else {
+          console.error("Keycloak returned an invalid access token");
+          return;
+        }
+        startRefresh();
       } else {
-        localStorage.setItem(AUTH_TOKEN, `${_kc.token}`);
+        console.log("User is not authenticated.");
       }
       onAuthenticatedCallback();
     })
     .catch(console.error);
 
   _kc.onTokenExpired = () => {
-    _kc.updateToken(5).then((refreshed) => {
-      if (refreshed) {
-        localStorage.setItem(AUTH_TOKEN, `${_kc.token}`);
-      }
+    refreshToken().catch(() => {
+      // bypass redirect here as the 401 interceptor handles login redirect as a last resort
+      console.warn("token refresh failed, will retry on next 401");
     });
   };
 };
 
-const doLogin = _kc.login;
+export const doLogin = () => _kc.login();
 
 const doLogout = _kc.logout;
 

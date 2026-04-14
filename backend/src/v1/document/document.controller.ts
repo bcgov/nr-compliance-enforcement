@@ -8,6 +8,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { Token } from "../../auth/decorators/token.decorator";
 import { ExportComplaintParameters } from "../../types/models/reports/export-complaint-parameters";
 import { ExportTaskParameters } from "src/types/models/reports/export-task-parameters";
+import { ExportContinuationReportParameters } from "src/types/models/reports/export-continuation-report";
 
 @UseGuards(JwtRoleGuard)
 @ApiTags("document")
@@ -69,6 +70,36 @@ export class DocumentController {
     } catch (error) {
       this.logger.error(`exception: unable to generate task document: ${taskId} - error: ${error}`);
       res.status(500).send(`exception: unable to generate task document: ${encodeURIComponent(taskId)}`);
+    }
+  }
+
+  @Post("/export-continuation-report")
+  @Roles(coreRoles)
+  async exportContinuationReport(
+    @Body() model: ExportContinuationReportParameters,
+    @Token() token,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { investigationGuid, fileName, tz } = model;
+    try {
+      const response = await this.service.exportContinuationReport(investigationGuid, fileName, tz, token);
+
+      if (!response?.data) {
+        throw new Error(`exception: unable to generate task document: ${investigationGuid}`);
+      }
+
+      const buffer = Buffer.from(response.data, "binary");
+
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=${fileName}`,
+        "Content-Length": buffer.length,
+      });
+
+      res.end(buffer);
+    } catch (error) {
+      this.logger.error(`exception: unable to generate task document: ${investigationGuid} - error: ${error}`);
+      res.status(500).send(`exception: unable to generate task document: ${encodeURIComponent(investigationGuid)}`);
     }
   }
 }
