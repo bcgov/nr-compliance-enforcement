@@ -64,8 +64,7 @@ const tokenRefresh = async (): Promise<string> => {
 
   const token = data.access_token;
   if (isValidToken(token)) {
-    // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
-    localStorage.setItem(AUTH_TOKEN, token);
+    localStorage.setItem(AUTH_TOKEN, token); // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
   } else {
     throw new Error("token refresh returned an invalid access token");
   }
@@ -133,8 +132,7 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     .then((authenticated) => {
       if (authenticated) {
         if (isValidToken(_kc.token)) {
-          // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
-          localStorage.setItem(AUTH_TOKEN, _kc.token);
+          localStorage.setItem(AUTH_TOKEN, _kc.token); // NOSONAR storing token in localStorage is necessary and the validaiton above is sufficient
         } else {
           console.error("Keycloak returned an invalid access token");
           return;
