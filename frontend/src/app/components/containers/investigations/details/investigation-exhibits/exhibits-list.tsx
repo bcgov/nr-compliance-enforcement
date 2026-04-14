@@ -110,9 +110,9 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       renderCell: (exhibit) => {
         const taskNumber = getTaskNumber(exhibit.taskGuid ?? "");
         const taskLabel = taskNumber ? `Task ${taskNumber}` : "-";
-        return taskNumber ? (
+        return taskNumber && exhibit.taskGuid ? (
           <Link
-            to={`/investigation/${investigationGuid}/tasks?section=task-item-${taskNumber}`}
+            to={`/investigation/${investigationGuid}/task/${exhibit.taskGuid}`}
             className="comp-cell-link"
           >
             {taskLabel}

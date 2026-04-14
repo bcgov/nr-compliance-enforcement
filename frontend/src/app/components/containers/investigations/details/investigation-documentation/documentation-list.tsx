@@ -151,7 +151,7 @@ export const DocumentationList: FC<Props> = ({
         const taskLabel = attachment.task ? `Task ${attachment.task.taskNumber}` : "-";
         return attachment.task ? (
           <Link
-            to={`/investigation/${investigationGuid}/tasks?section=task-item-${attachment.task.taskNumber}`}
+            to={`/investigation/${investigationGuid}/task/${attachment.task.taskIdentifier}`}
             className="comp-cell-link"
           >
             {taskLabel}
