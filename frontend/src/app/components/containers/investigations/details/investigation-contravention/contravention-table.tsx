@@ -94,32 +94,35 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => (
-        <Dropdown
-          id={`contravention-action-button-${c.contraventionIdentifier}`}
-          drop="start"
-          className="comp-action-dropdown"
-        >
-          <Dropdown.Toggle
-            id={`contravention-action-toggle-${c.contraventionIdentifier}`}
-            size="sm"
-            variant="outline-primary"
-            bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
+        <div className="d-flex justify-content-end">
+          <Dropdown
+            id={`contravention-action-button-${c.contraventionIdentifier}`}
+            drop="start"
+            className="comp-action-dropdown"
           >
-            <i className="bi bi-three-dots-vertical" />
-          </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              modifiers: [{ name: "offset", options: { offset: [0, 8], placement: "start" } }],
-            }}
-          >
-            <Dropdown.Item
-              id={`edit-contravention-${c.contraventionIdentifier}`}
-              onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
+            <Dropdown.Toggle
+              id={`contravention-action-toggle-${c.contraventionIdentifier}`}
+              size="sm"
+              variant="outline-primary"
+              bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
+              className="comp-cell-width-30 comp-cell-height-30 d-flex align-items-center justify-content-center"
             >
-              <i className="bi bi-pencil" /> Edit
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+              <i className="bi bi-three-dots-vertical comp-padding-left-6" />
+            </Dropdown.Toggle>
+            <Dropdown.Menu
+              popperConfig={{
+                modifiers: [{ name: "offset", options: { offset: [0, 8], placement: "start" } }],
+              }}
+            >
+              <Dropdown.Item
+                id={`edit-contravention-${c.contraventionIdentifier}`}
+                onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
+              >
+                <i className="bi bi-pencil" /> Edit
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       ),
     },
   ];

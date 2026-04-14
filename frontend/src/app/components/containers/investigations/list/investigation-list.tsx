@@ -160,7 +160,6 @@ export const InvestigationList: FC<Props> = ({
       ),
     },
   ];
-  console.log(investigations);
 
   return (
     <CompTable
