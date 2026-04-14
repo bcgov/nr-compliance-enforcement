@@ -1,4 +1,4 @@
-import { COMPLAINT_TYPE } from "./complaint-type";
+import { COMPLAINT_TYPE } from "../complaints/complaint-type";
 
 export interface ExportComplaintParameters {
   id: string;

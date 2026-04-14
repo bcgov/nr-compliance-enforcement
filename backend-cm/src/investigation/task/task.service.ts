@@ -33,6 +33,11 @@ export class TaskService {
         task_category_type_code: true,
         remarks: true,
         due_date: true,
+        investigation: {
+          select: {
+            name: true,
+          },
+        },
       },
       where: {
         active_ind: true,
@@ -62,6 +67,11 @@ export class TaskService {
         task_category_type_code: true,
         remarks: true,
         due_date: true,
+        investigation: {
+          select: {
+            name: true,
+          },
+        },
       },
       where: {
         task_guid: taskIdentifier,

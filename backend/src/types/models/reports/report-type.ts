@@ -1,0 +1,6 @@
+export enum REPORT_TYPE {
+  HWCR = "HWCR",
+  ERS = "ERS",
+  GIR = "GIR",
+  TASK_DEFINITION = "TASK_DEFINITION",
+}
