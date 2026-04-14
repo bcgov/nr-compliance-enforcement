@@ -7,6 +7,7 @@ import * as zip from "@zip.js/zip.js";
 import { AUTH_TOKEN } from "@/app/service/user-service";
 import { BulkDownloadState, CurrentDownload } from "@/app/types/state/bulk-download-state";
 import { createSlice } from "@reduxjs/toolkit";
+import { DownloadType } from "@/app/constants/download-type";
 
 const initialState: BulkDownloadState = {
   isBulkDownloadInProgress: false,
@@ -20,14 +21,14 @@ export const bulkDownloadSlice = createSlice({
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     setBulkDownloadInProgress: (state, action) => {
-      const { isInProgress, taskId } = action.payload;
+      const { isInProgress, downloadId } = action.payload;
 
       state.isBulkDownloadInProgress = isInProgress;
 
-      if (isInProgress && taskId !== undefined) {
+      if (isInProgress && downloadId !== undefined) {
         // Start new download
         state.currentDownload = {
-          taskId,
+          downloadId,
         };
       } else if (!isInProgress) {
         state.currentDownload = null;
@@ -85,7 +86,13 @@ const CONFIG = {
  * Main bulk download function thunk
  */
 export const bulkDownload =
-  (taskId: string, taskNumber: number, attachments: COMSObject[]): AppThunk =>
+  (
+    downloadId: string,
+    downloadNumber: string | number,
+    attachments: COMSObject[],
+    additionalFiles?: FileWithPresignedUrl[],
+    downloadType?: DownloadType,
+  ): AppThunk =>
   async (dispatch, getState) => {
     const isBulkDownloadInProgress = selectIsBulkDownloadInProgress(getState());
 
@@ -99,7 +106,7 @@ export const bulkDownload =
       dispatch(
         setBulkDownloadInProgress({
           isInProgress: true,
-          taskId,
+          downloadId,
         }),
       );
 
@@ -110,7 +117,7 @@ export const bulkDownload =
       }
 
       // Start download
-      await bulkDownloadWithZipJs(taskId, taskNumber, attachments, authToken, dispatch);
+      await bulkDownloadWithZipJs(downloadNumber, attachments, authToken, dispatch, additionalFiles, downloadType);
     } catch (error) {
       console.error("Bulk download error:", error);
 
@@ -141,11 +148,12 @@ export const bulkDownload =
  * Download and ZIP files using zip.js
  */
 async function bulkDownloadWithZipJs(
-  taskId: string,
-  taskNumber: number,
+  downloadNumber: string | number,
   attachments: COMSObject[],
   authToken: string,
   dispatch?: any,
+  additionalFiles?: FileWithPresignedUrl[],
+  downloadType?: DownloadType,
 ): Promise<void> {
   // Get presigned URLs for all files concurrently
   const urlPromises = attachments.map(async (attachment, index) => {
@@ -190,12 +198,11 @@ async function bulkDownloadWithZipJs(
       `Failed to get download URLs from COMS API. ${error instanceof Error ? error.message : "Please try again."}`,
     );
   }
-
-  const totalSize = files.reduce((sum, f) => sum + f.size, 0);
-  const totalSizeMB = totalSize / (1024 * 1024);
+  const additionalFileObjects: FileWithPresignedUrl[] = additionalFiles || [];
+  files = [...files, ...additionalFileObjects];
 
   //Create ZIP using zip.js
-  await createZipWithZipJs(files, taskNumber, totalSizeMB);
+  await createZipWithZipJs(files, downloadNumber, downloadType);
 }
 
 /**
@@ -203,8 +210,8 @@ async function bulkDownloadWithZipJs(
  */
 async function createZipWithZipJs(
   files: FileWithPresignedUrl[],
-  taskNumber: number,
-  totalSizeMB: number,
+  downloadNumber: string | number,
+  downloadType?: DownloadType,
 ): Promise<void> {
   // Create ZIP writer
   const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"), {
@@ -263,7 +270,8 @@ async function createZipWithZipJs(
   const downloadUrl = globalThis.URL.createObjectURL(zipBlob);
   const link = document.createElement("a");
   link.href = downloadUrl;
-  link.download = `Task_${taskNumber}_Attachments.zip`;
+  const prefix = downloadType === DownloadType.INVESTIGATION ? "Investigation" : "Task";
+  link.download = `${prefix}_${downloadNumber}_Attachments.zip`;
   link.style.display = "none";
 
   document.body.appendChild(link);
