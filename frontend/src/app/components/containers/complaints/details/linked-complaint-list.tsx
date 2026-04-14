@@ -9,14 +9,14 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { complaintTypeToName } from "@apptypes/app/complaint-types";
-import { openModal, isFeatureActive } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
 import { getLinkedComplaints } from "@store/reducers/complaints";
 import { generateApiParameters, post } from "@common/api";
 import config from "@/config";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { CaseFile } from "@/generated/graphql";
-import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { selectCanAccessCases } from "@/app/access/module-access";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];
@@ -30,7 +30,7 @@ type AssociatedDataType = "DUPLICATE" | "LINK" | "CASES";
 export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associatedCaseFiles, id, canUnlink = true }) => {
   const dispatch = useAppDispatch();
 
-  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const casesActive = useAppSelector(selectCanAccessCases);
 
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
@@ -143,14 +143,14 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
   const showTabs = [hasLinkedComplaints, hasDuplicateComplaints, hasAssociatedCaseFiles].filter(Boolean).length > 1;
 
   useEffect(() => {
-    if (hasAssociatedCaseFiles) {
+    if (hasAssociatedCaseFiles && casesActive) {
       setActiveTab("CASES");
     } else if (hasLinkedComplaints) {
       setActiveTab("LINK");
     } else if (hasDuplicateComplaints) {
       setActiveTab("DUPLICATE");
     }
-  }, [hasAssociatedCaseFiles, hasLinkedComplaints, hasDuplicateComplaints, showTabs]);
+  }, [hasAssociatedCaseFiles, hasLinkedComplaints, hasDuplicateComplaints, showTabs, casesActive]);
 
   const renderComplaintList = (complaints: LinkedComplaint[], type: "DUPLICATE" | "LINK") => {
     const viewMore = type === "DUPLICATE" ? viewMoreDuplicates : viewMoreLinked;

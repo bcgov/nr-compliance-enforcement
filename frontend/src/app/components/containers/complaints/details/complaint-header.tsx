@@ -26,6 +26,7 @@ import {
 } from "@apptypes/modal/modal-types";
 import { exportComplaint } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { selectCanAccessCases } from "@/app/access/module-access";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
@@ -66,7 +67,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
-  const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const showCreateAddCase = useAppSelector(selectCanAccessCases);
   const userGuid = useAppSelector(appUserGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectActiveComplaintCollaborators);

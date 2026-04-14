@@ -48,7 +48,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, isFeatureActive } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
@@ -88,7 +88,7 @@ import { isValidEmail } from "@/app/common/validate-email";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
-import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { selectCanAccessCases } from "@/app/access/module-access";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -135,7 +135,7 @@ export const ComplaintDetailsEdit: FC = () => {
     navigate("/not-found");
   }
 
-  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const casesActive = useAppSelector(selectCanAccessCases);
   const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
     queryKey: ["caseFilesByActivityIds", id],
     variables: { activityIdentifiers: [id] },
@@ -209,8 +209,13 @@ export const ComplaintDetailsEdit: FC = () => {
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
-  const enablePrivacyFeature = ownedByAgencyCode?.agency && (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS);
-  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB && ownedByAgencyCode?.agency !== AgencyType.NROS;
+  const enablePrivacyFeature =
+    ownedByAgencyCode?.agency &&
+    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS);
+  const enableOfficeFeature =
+    ownedByAgencyCode?.agency &&
+    ownedByAgencyCode?.agency !== AgencyType.CEEB &&
+    ownedByAgencyCode?.agency !== AgencyType.NROS;
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -1681,9 +1686,12 @@ export const ComplaintDetailsEdit: FC = () => {
       )}
 
       {/* COS ERS File Linkage */}
-      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && ownedByAgencyCode?.agency !== AgencyType.NROS && (
-        <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
-      )}
+      {readOnly &&
+        complaintType !== COMPLAINT_TYPES.GIR &&
+        ownedByAgencyCode?.agency !== AgencyType.CEEB &&
+        ownedByAgencyCode?.agency !== AgencyType.NROS && (
+          <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
+        )}
     </div>
   );
 };
