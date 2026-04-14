@@ -140,6 +140,7 @@ export const getContinuationReportActivities = async (token: string, investigati
     getInvestigation(investigationGuid: "${investigation_guid}") {
       name
       description
+      leadAgency
     }
     getActivityNotes(investigationGuid: "${investigation_guid}", activityNoteCode: "CONTREP") {
       contentText
@@ -152,6 +153,10 @@ export const getContinuationReportActivities = async (token: string, investigati
       lastName
       firstName
     }
+    agencyCodes {
+      agencyCode
+      longDescription
+    }
   }`;
 
   const { data, errors } = await get(token, { query });
@@ -160,14 +165,18 @@ export const getContinuationReportActivities = async (token: string, investigati
     throw new Error(`GraphQL errors occurred while fetching task: ${JSON.stringify(errors)}`);
   }
 
-  const { getInvestigation, getActivityNotes, appUsers } = data;
+  const { getInvestigation, getActivityNotes, appUsers, agencyCodes } = data;
 
   // Convert data into report readable format
   const userMap = new Map(appUsers.map((u) => [u.appUserGuid, { firstName: u.firstName, lastName: u.lastName }]));
   const _resolveUser = (guid: string) => userMap.get(guid) ?? { firstName: "Unknown", lastName: "User" };
 
+  const agencyMap = new Map<string, string>(agencyCodes.map((a) => [a.agencyCode, a.longDescription]));
+  const agencyName = (agencyMap.get(getInvestigation.leadAgency) ?? "").toUpperCase();
+
   return {
     investigation: getInvestigation,
+    agencyName,
     activityNotes: [...getActivityNotes]
       .sort((a, b) => {
         const dateA = new Date(combineDateAndTime(a.actionedDate, a.actionedTime));
