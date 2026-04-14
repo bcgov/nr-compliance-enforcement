@@ -221,7 +221,7 @@ export class CssService implements ExternalApiService {
 
       //Get all users for each role
       let usersUrl: string = "";
-      const pages = Array.from(Array(this.maxPages), (_, i) => i + 1);
+      const pages = Array.from(new Array(this.maxPages), (_, i) => i + 1);
       const usersRoles = await Promise.all(
         roleList.map(async (role) => {
           let usersRolesTemp = [];

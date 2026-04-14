@@ -12,6 +12,7 @@ export const ROLE_OPTIONS: Array<Option> = [
   { value: "Province-wide", label: "Province-wide" },
   { value: "HWCR only", label: "HWCR only" },
   { value: "SECTOR", label: "SECTOR" },
+  { value: "Case Access", label: "Case Access" },
 ];
 
 export const CEEB_ROLE_OPTIONS: Array<Option> = [
@@ -20,6 +21,7 @@ export const CEEB_ROLE_OPTIONS: Array<Option> = [
   { value: "CEEB Compliance Coordinator", label: "Compliance Coordinator" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
+  { value: "Case Access", label: "Case Access" },
 ];
 
 export const COS_ROLE_OPTIONS: Array<Option> = [
@@ -28,18 +30,24 @@ export const COS_ROLE_OPTIONS: Array<Option> = [
   { value: "Inspector", label: "Inspector" },
   { value: "Province-wide", label: "Province-wide" },
   { value: "HWCR only", label: "HWCR only" },
+  { value: "Case Access", label: "Case Access" },
 ];
 
 export const NROS_ROLE_OPTIONS: Array<Option> = [
   { value: "NROS", label: "NROS User" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
+  { value: "Case Access", label: "Case Access" },
 ];
 
 export const PARKS_ROLE_OPTIONS: Array<Option> = [
   { value: "PARKS", label: "PARKS" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
+  { value: "Case Access", label: "Case Access" },
 ];
 
-export const SECTOR_ROLE_OPTIONS: Array<Option> = [{ value: "SECTOR", label: "SECTOR" }];
+export const SECTOR_ROLE_OPTIONS: Array<Option> = [
+  { value: "SECTOR", label: "SECTOR" },
+  { value: "Case Access", label: "Case Access" },
+];
