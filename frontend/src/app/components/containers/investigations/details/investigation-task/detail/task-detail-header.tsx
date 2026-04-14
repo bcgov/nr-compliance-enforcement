@@ -4,12 +4,13 @@ import { gql } from "graphql-request";
 import { Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { applyStatusClass } from "@/app/common/methods";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Button } from "react-bootstrap";
 import { TaskStatusModal } from "./task-status-modal";
+import { exportTask } from "@/app/store/reducers/documents-thunks";
 
 const UPDATE_TASK = gql`
   mutation UpdateTask($input: CreateUpdateTaskInput!) {
@@ -26,6 +27,7 @@ interface TaskDetailHeaderProps {
 }
 
 export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigationGuid, onStatusUpdated }) => {
+  const dispatch = useAppDispatch();
   const taskStatuses = useAppSelector(selectTaskStatus);
   const status = taskStatuses.find((s) => s.value === task?.taskStatusCode);
   const taskDisplay = task ? `Task #${task.taskNumber}` : "Task";
@@ -42,6 +44,10 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
       ToggleError("Failed to update task status");
     },
   });
+
+  const handleExportTask = () => {
+    dispatch(exportTask(task!.investigationIdentifier, task!.taskIdentifier, task!.taskNumber));
+  };
 
   const handleOpenStatusModal = () => setShowStatusModal(true);
   const handleCloseStatusModal = () => setShowStatusModal(false);
@@ -91,6 +97,16 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
               >
                 <i className="bi bi-arrow-repeat" />
                 <span>Update status</span>
+              </Button>
+              <Button
+                id="task-details-export-task-button"
+                title="Export task"
+                variant="outline-light"
+                size="sm"
+                onClick={handleExportTask}
+              >
+                <i className="bi bi-file-earmark-pdf" />
+                <span>Export task</span>
               </Button>
             </div>
           )}

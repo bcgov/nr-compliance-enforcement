@@ -1,7 +1,7 @@
-import { format } from "date-fns";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Role } from "../enum/role.enum";
 import { UUID } from "node:crypto";
+import { toDate, toZonedTime, format } from "date-fns-tz";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -22,12 +22,20 @@ export const formatDate = (input: string | undefined): string => {
   }
 };
 
-export const formatTime = (input: string | undefined): string => {
+export const formatTime = (input: string | undefined, tz?: string): string => {
   if (!input) {
     return "";
   }
 
-  return format(Date.parse(input), "HH:mm");
+  const parsedDate = new Date(input);
+
+  if (tz) {
+    const utcDate = toDate(parsedDate, { timeZone: "UTC" });
+    const zonedDate = toZonedTime(utcDate, tz);
+    return format(zonedDate, "HH:mm", { timeZone: tz });
+  }
+
+  return format(parsedDate, "HH:mm");
 };
 
 export const formatDateTime = (input: string | undefined): string => {

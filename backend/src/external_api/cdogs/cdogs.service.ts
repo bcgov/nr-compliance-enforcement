@@ -3,12 +3,12 @@ import { ExternalApiService } from "../external-api-service";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { get, post } from "../../helpers/axios-api";
 import { ConfigurationService } from "../../v1/configuration/configuration.service";
-import { COMPLAINT_TYPE } from "../../types/models/complaints/complaint-type";
 import { CONFIGURATION_CODES } from "../../types/configuration-codes";
-import { constants } from "http2";
+import { constants } from "node:http2";
 import FormData = require("form-data");
 import fs = require("fs");
-import { join } from "path";
+import { join } from "node:path";
+import { REPORT_TYPE } from "src/types/models/reports/report-type";
 
 @Injectable()
 export class CdogsService implements ExternalApiService {
@@ -31,7 +31,7 @@ export class CdogsService implements ExternalApiService {
     this.grantType = "client_credentials";
   }
 
-  private _isCachedTemplateValid = async (apiToken: string, uid: string): Promise<boolean> => {
+  private readonly _isCachedTemplateValid = async (apiToken: string, uid: string): Promise<boolean> => {
     let url = `${this.baseUri}/api/v2/template/${uid}`;
     const headers: any = {
       "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export class CdogsService implements ExternalApiService {
     }
   };
 
-  private _getTemplateId = async (code: string) => {
+  private readonly _getTemplateId = async (code: string) => {
     try {
       const config = await this.configService.findByCode(code);
 
@@ -58,11 +58,11 @@ export class CdogsService implements ExternalApiService {
       }
     } catch (error) {
       this.logger.error(`Unable to retrieve template ${code} hash`);
-      throw Error(`Unable to retrieve template ${code} hash`);
+      throw new Error(`Unable to retrieve template ${code} hash`, { cause: error });
     }
   };
 
-  private _applyData = async (data: any, name: string) => {
+  private readonly _applyData = async (data: any, name: string) => {
     return {
       data: {
         ...data,
@@ -120,7 +120,7 @@ export class CdogsService implements ExternalApiService {
   //-- need to be stored for the next time the document needs to be
   //-- generated
   //--
-  upload = async (apiToken: string, type: string, templateCode: string) => {
+  upload = async (apiToken: string, templateCode: string) => {
     const url = `${this.baseUri}/api/v2/template`;
 
     let template: string;
@@ -162,6 +162,9 @@ export class CdogsService implements ExternalApiService {
         break;
       case "EXTGIRT":
         template = "templates/complaint/CDOGS-EXT-GIR-COMPLAINT-TEMPLATE-v1.docx";
+        break;
+      case "TDRTMPLT":
+        template = "templates/task/CDOGS-TDR-TEMPLATE-v1.docx";
         break;
       default:
         this.logger.error(`exception: unable to find template: ${template}`);
@@ -227,7 +230,7 @@ export class CdogsService implements ExternalApiService {
   //--
   //-- render complaint to pdf
   //--
-  generate = async (documentName: string, data: any, type: COMPLAINT_TYPE): Promise<AxiosResponse> => {
+  generate = async (documentName: string, data: any, type: REPORT_TYPE): Promise<AxiosResponse> => {
     //-- Determine template to use
     let templateCode: string;
     const templateMap = {
@@ -237,38 +240,41 @@ export class CdogsService implements ExternalApiService {
       },
       ERS: {
         EPO: CONFIGURATION_CODES.CEEBTMPLATE,
-        NROS: CONFIGURATION_CODES.CEEBTMPLATE,
         PARKS: CONFIGURATION_CODES.PRKERSTMPT,
-        ECCC: this._getExternalTemplateCode(data, type),
-        DFO: this._getExternalTemplateCode(data, type),
-        NRS: this._getExternalTemplateCode(data, type),
-        OTH: this._getExternalTemplateCode(data, type),
-        POL: this._getExternalTemplateCode(data, type),
+        ECCC: () => this._getExternalTemplateCode(data, type),
+        DFO: () => this._getExternalTemplateCode(data, type),
+        NROS: () => this._getExternalTemplateCode(data, type),
+        NRS: () => this._getExternalTemplateCode(data, type),
+        OTH: () => this._getExternalTemplateCode(data, type),
+        POL: () => this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.ERSTMPLATE,
       },
       GIR: {
         PARKS: CONFIGURATION_CODES.PRKGIRTMPT,
-        ECCC: this._getExternalTemplateCode(data, type),
-        DFO: this._getExternalTemplateCode(data, type),
-        NRS: this._getExternalTemplateCode(data, type),
-        OTH: this._getExternalTemplateCode(data, type),
-        POL: this._getExternalTemplateCode(data, type),
+        ECCC: () => this._getExternalTemplateCode(data, type),
+        DFO: () => this._getExternalTemplateCode(data, type),
+        NROS: () => this._getExternalTemplateCode(data, type),
+        NRS: () => this._getExternalTemplateCode(data, type),
+        OTH: () => this._getExternalTemplateCode(data, type),
+        POL: () => this._getExternalTemplateCode(data, type),
         default: CONFIGURATION_CODES.GIRTMPLATE,
+      },
+      TASK_DEFINITION: {
+        default: CONFIGURATION_CODES.TDR_TEMPLATE,
       },
     };
 
-    templateCode = templateMap[type]?.[data.ownedBy] ?? templateMap[type]?.default;
+    const mapEntry = templateMap[type]?.[data.ownedBy] ?? templateMap[type]?.default;
+    // if the mapEntry is a function evaluate it - otherwise return the string
+    templateCode = typeof mapEntry === "function" ? mapEntry() : mapEntry;
 
     try {
       const apiToken = await this.authenticate();
-
       if (!(await this.isTemplateCached(apiToken, templateCode))) {
-        await this.upload(apiToken, type, templateCode);
+        await this.upload(apiToken, templateCode);
       }
-
       const uid = await this._getTemplateId(templateCode);
       const url = `${this.baseUri}/api/v2/template/${uid}/render`;
-
       const config: AxiosRequestConfig = {
         responseType: "arraybuffer",
         headers: {
@@ -276,14 +282,12 @@ export class CdogsService implements ExternalApiService {
           Authorization: `Bearer ${apiToken}`,
         },
       };
-
       const documentData = await this._applyData(data, documentName);
-
       const response = await axios.post(url, documentData, config);
       return response;
     } catch (error) {
-      this.logger.error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
-      throw new Error(`exception: unable to export document for complaint: ${data.id} - error: ${error}`);
+      this.logger.error(`exception: unable to generate ${type} document: ${data.id} - error: ${error}`);
+      throw new Error(`exception: unable to generate ${type} document: ${data.id} - error: ${error}`);
     }
   };
 }
