@@ -4,7 +4,7 @@ import { ComplaintService } from "../complaint/complaint.service";
 import { Attachment, AttachmentType } from "../../types/models/general/attachment";
 import { COMPLAINT_TYPE } from "src/types/models/complaints/complaint-type";
 import { REPORT_TYPE } from "src/types/models/reports/report-type";
-import { getTask } from "src/external_api/investigation_data";
+import { getTask, getContinuationReportActivities } from "src/external_api/investigation_data";
 
 @Injectable()
 export class DocumentService {
@@ -63,6 +63,20 @@ export class DocumentService {
       );
       throw new Error(
         `exception: unable to generate ${REPORT_TYPE.TASK_DEFINITION} document: ${taskId} - error: ${error}`,
+      );
+    }
+  };
+
+  exportContinuationReport = async (investigationGuid: string, fileName: string, tz: string, token: string) => {
+    try {
+      const data = await getContinuationReportActivities(token, investigationGuid, tz);
+      return await this.cdogs.generate(fileName, data, REPORT_TYPE.CONTINUATION);
+    } catch (error) {
+      this.logger.error(
+        `exception: unable to generate ${REPORT_TYPE.CONTINUATION} document: ${investigationGuid} - error: ${error}`,
+      );
+      throw new Error(
+        `exception: unable to generate ${REPORT_TYPE.CONTINUATION} document: ${investigationGuid} - error: ${error}`,
       );
     }
   };

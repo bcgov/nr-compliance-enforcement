@@ -2,6 +2,13 @@ import { formatDate, formatTime } from "src/common/methods";
 import { get } from "src/external_api/shared_data";
 import { Attachment } from "src/types/models/general/attachment";
 
+// Combine separate date and time ISO strings into a single ISO string
+const combineDateAndTime = (date: string, time?: string): string => {
+  const dateStr = date.split("T")[0];
+  const timeStr = time ? time.split("T")[1] : "00:00:00.000Z";
+  return `${dateStr}T${timeStr}`;
+};
+
 // Used for Report generation
 export const getTask = async (token: string, taskId: string, tz: string, attachments: Attachment[]) => {
   const query = `{
@@ -78,13 +85,6 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
   const typeMap = new Map(taskTypeCodes.map((tt) => [tt.taskTypeCode, { longDescription: tt.longDescription }]));
   const _resolveTaskType = (typeCode: string) => typeMap.get(typeCode) ?? { longDescription: "" };
 
-  // Need to combine dates and times for proper formatting and timezone resolution
-  const combineDateAndTime = (date: string, time: string): string => {
-    const dateStr = date.split("T")[0];
-    const timeStr = time.split("T")[1];
-    return `${dateStr}T${timeStr}`;
-  };
-
   // Attachment file name formatting
   const _getDisplayFilename = (storedName: string): string => {
     let decoded: string;
@@ -131,5 +131,64 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     generatedOn: formatDate(new Date().toISOString()),
     hasDiaryDates: (diaryDatesByTask?.length ?? 0) > 0,
     hasActivityNotes: (getActivityNotesByTask?.length ?? 0) > 0,
+  };
+};
+
+// Used for Continuation Report generation
+export const getContinuationReportActivities = async (token: string, investigation_guid: string, tz: string) => {
+  const query = `{
+    getInvestigation(investigationGuid: "${investigation_guid}") {
+      name
+      description
+      leadAgency
+    }
+    getActivityNotes(investigationGuid: "${investigation_guid}", activityNoteCode: "CONTREP") {
+      contentText
+      actionedDate
+      actionedTime
+      actionedAppUserGuidRef
+    }
+    appUsers {
+      appUserGuid
+      lastName
+      firstName
+    }
+    agencyCodes {
+      agencyCode
+      longDescription
+    }
+  }`;
+
+  const { data, errors } = await get(token, { query });
+
+  if (errors) {
+    throw new Error(`GraphQL errors occurred while fetching task: ${JSON.stringify(errors)}`);
+  }
+
+  const { getInvestigation, getActivityNotes, appUsers, agencyCodes } = data;
+
+  // Convert data into report readable format
+  const userMap = new Map(appUsers.map((u) => [u.appUserGuid, { firstName: u.firstName, lastName: u.lastName }]));
+  const _resolveUser = (guid: string) => userMap.get(guid) ?? { firstName: "Unknown", lastName: "User" };
+
+  const agencyMap = new Map<string, string>(agencyCodes.map((a) => [a.agencyCode, a.longDescription]));
+  const agencyName = (agencyMap.get(getInvestigation.leadAgency) ?? "").toUpperCase();
+
+  return {
+    investigation: getInvestigation,
+    agencyName,
+    activityNotes: [...getActivityNotes]
+      .sort((a, b) => {
+        const dateA = new Date(combineDateAndTime(a.actionedDate, a.actionedTime));
+        const dateB = new Date(combineDateAndTime(b.actionedDate, b.actionedTime));
+        return dateA.getTime() - dateB.getTime();
+      })
+      .map((note) => ({
+        ...note,
+        actionedDate: formatDate(note.actionedDate),
+        actionedTime: note.actionedTime ? formatTime(combineDateAndTime(note.actionedDate, note.actionedTime), tz) : "",
+        actionedBy: _resolveUser(note.actionedAppUserGuidRef),
+      })),
+    generatedOn: formatDate(new Date().toISOString()),
   };
 };

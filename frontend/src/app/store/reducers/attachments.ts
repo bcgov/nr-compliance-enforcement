@@ -1,6 +1,7 @@
 import { AppThunk } from "@store/store";
 import { deleteMethod, generateApiParameters, get, patch, put, putFile } from "@common/api";
 import { from } from "linq-to-typescript";
+import axios, { AxiosProgressEvent } from "axios";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
 import {
@@ -10,7 +11,6 @@ import {
   isImage,
 } from "@common/methods";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import axios from "axios";
 import AttachmentEnum from "@constants/attachment-enum";
 import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
 
@@ -25,6 +25,7 @@ interface SaveAttachmentParams {
   isComplaintAttachment: boolean;
   attachmentConfig: AttachmentTypeConfig;
   extendedMeta?: Record<string, string>;
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
 }
 
 interface DeleteAttachmentParams {
@@ -216,6 +217,7 @@ const saveSingleAttachment = async ({
   isComplaintAttachment,
   attachmentConfig,
   extendedMeta,
+  onUploadProgress,
 }: SaveAttachmentParams) => {
   const attachmentIdentifier = subIdentifier ?? identifier;
   const attachmentName = injectIdentifierToFilename(attachment.name, attachmentIdentifier, attachmentType);
@@ -238,7 +240,7 @@ const saveSingleAttachment = async ({
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
     : generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
-  const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous);
+  const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous, onUploadProgress);
 
   if (isImage(attachment.name) && attachmentType !== AttachmentEnum.TASK_ATTACHMENT) {
     const historicalThumbHeader = buildAttachmentHeader({
@@ -294,15 +296,28 @@ const saveSingleAttachment = async ({
   }
 };
 
+interface SaveAttachmentsParams {
+  attachments: File[];
+  identifier: string;
+  subIdentifier: string | undefined;
+  attachmentType: AttachmentEnum;
+  isSynchronous: boolean;
+  extendedMeta?: Record<string, string>;
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
+  throwOnError?: boolean;
+}
+
 export const saveAttachments =
-  (
-    attachments: File[],
-    identifier: string,
-    subIdentifier: string | undefined,
-    attachmentType: AttachmentEnum,
-    isSynchronous: boolean,
-    extendedMeta?: Record<string, string>,
-  ): AppThunk<Promise<void>> =>
+  ({
+    attachments,
+    identifier,
+    subIdentifier,
+    attachmentType,
+    isSynchronous,
+    extendedMeta,
+    onUploadProgress,
+    throwOnError,
+  }: SaveAttachmentsParams): AppThunk<Promise<void>> =>
   async (dispatch) => {
     if (!attachments) {
       return;
@@ -339,8 +354,12 @@ export const saveAttachments =
           isComplaintAttachment,
           attachmentConfig,
           extendedMeta,
+          onUploadProgress,
         });
       } catch (error) {
+        if (throwOnError) {
+          throw error;
+        }
         handleError(attachment, error);
       }
     }
