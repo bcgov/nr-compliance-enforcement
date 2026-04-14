@@ -11,8 +11,9 @@ import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
-import { useAppSelector } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid } from "@/app/store/reducers/app";
+import { exportContinuationReport } from "@/app/store/reducers/documents-thunks";
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
@@ -39,6 +40,7 @@ interface InvestigationContinuationProps {
 }
 
 export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData, onDirtyChange }) => {
+  const dispatch = useAppDispatch();
   const { investigationGuid = "" } = useParams<{ investigationGuid: string }>();
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
@@ -139,9 +141,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         <Button
           variant="outline-primary"
           size="sm"
-          id="details-screen-edit-button"
-          onClick={() => {}}
-          disabled={true}
+          id="details-screen-export-continuation-report-button"
+          onClick={() => dispatch(exportContinuationReport(investigationGuid))}
+          disabled={!investigationGuid || reports?.length === 0}
         >
           <i className="bi bi-download"></i>
           <span>Download report</span>
