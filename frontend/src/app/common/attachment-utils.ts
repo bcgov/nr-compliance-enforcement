@@ -1,10 +1,79 @@
 import AttachmentEnum from "@constants/attachment-enum";
 import { deleteAttachments, saveAttachments } from "@store/reducers/attachments";
 import { COMSObject } from "@apptypes/coms/object";
-import axios from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 import config from "@/config";
 import { AUTH_TOKEN } from "@service/user-service";
 import { getAttachmentConfig } from "@apptypes/app/attachment-config";
+
+export const RETRY_CONFIG = {
+  MAX_RETRIES: 3,
+  RETRY_DELAY_BASE_MS: 2000, // Base delay: 2s, 4s, 6s
+};
+
+interface CategorizedError {
+  errorType: string;
+  shouldRetry: boolean;
+}
+
+export function categorizeError(error: Error): CategorizedError {
+  const errorMsg = error.message.toLowerCase();
+
+  const errorMap: Array<{ keywords: string[]; type: string; retry: boolean }> = [
+    { keywords: ["timeout", "timed out"], type: "TIMEOUT", retry: true },
+    { keywords: ["network", "failed to fetch"], type: "NETWORK", retry: true },
+    { keywords: ["403", "forbidden"], type: "AUTH_EXPIRED", retry: false },
+    { keywords: ["404"], type: "NOT_FOUND", retry: false },
+    { keywords: ["0 bytes", "empty"], type: "EMPTY_FILE", retry: true },
+    { keywords: ["memory", "allocation"], type: "OUT_OF_MEMORY", retry: true },
+  ];
+
+  for (const { keywords, type, retry } of errorMap) {
+    if (keywords.some((keyword) => errorMsg.includes(keyword))) {
+      return { errorType: type, shouldRetry: retry };
+    }
+  }
+
+  return { errorType: "UNKNOWN", shouldRetry: true };
+}
+
+// Download or upload with retry logic and backoff delay
+export async function withRetry<T>(
+  operation: (attempt: number) => Promise<T>,
+  options?: {
+    maxRetries?: number;
+    onRetry?: (attempt: number, error: Error) => void;
+  },
+): Promise<{ success: true; result: T; attempts: number } | { success: false; error: Error; attempts: number }> {
+  const maxRetries = options?.maxRetries ?? RETRY_CONFIG.MAX_RETRIES;
+  let lastError: Error | null = null;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await operation(attempt);
+      return { success: true, result, attempts: attempt };
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
+
+      const { shouldRetry } = categorizeError(lastError);
+      if (!shouldRetry) {
+        return { success: false, error: lastError, attempts: attempt };
+      }
+
+      if (attempt < maxRetries) {
+        options?.onRetry?.(attempt, lastError);
+        const delayMs = RETRY_CONFIG.RETRY_DELAY_BASE_MS * attempt;
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+  }
+
+  return {
+    success: false,
+    error: lastError || new Error("All retries failed"),
+    attempts: maxRetries,
+  };
+}
 
 // used to update the state of attachments that are to be added to a complaint
 export const handleAddAttachments = (
@@ -46,6 +115,8 @@ interface PersistAttachmentsParams {
   isSynchronous: boolean;
   complaintType?: string;
   extendedMeta?: Record<string, string>;
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void;
+  throwOnError?: boolean;
 }
 
 // Given a list of attachments to add/delete, call COMS to add/delete those attachments
@@ -60,6 +131,8 @@ export async function handlePersistAttachments({
   attachmentType,
   isSynchronous,
   extendedMeta,
+  onUploadProgress,
+  throwOnError,
 }: PersistAttachmentsParams): Promise<void> {
   const tasks: Promise<unknown>[] = [];
   if (attachmentsToDelete) {
@@ -69,7 +142,16 @@ export async function handlePersistAttachments({
   if (attachmentsToAdd) {
     tasks.push(
       dispatch(
-        saveAttachments(attachmentsToAdd, identifier, subIdentifier, attachmentType, isSynchronous, extendedMeta),
+        saveAttachments({
+          attachments: attachmentsToAdd,
+          identifier,
+          subIdentifier,
+          attachmentType,
+          isSynchronous,
+          extendedMeta,
+          onUploadProgress,
+          throwOnError,
+        }),
       ),
     );
   }

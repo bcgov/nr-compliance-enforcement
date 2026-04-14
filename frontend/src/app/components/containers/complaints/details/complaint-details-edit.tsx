@@ -59,6 +59,7 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
@@ -364,34 +365,44 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      let toastId: Id;
+      (async () => {
+        if (attachmentsToDelete?.length) {
+          await handlePersistAttachments({
+            dispatch,
+            attachmentsToAdd: null,
+            attachmentsToDelete,
+            identifier: id,
+            subIdentifier: undefined,
+            setAttachmentsToAdd,
+            setAttachmentsToDelete,
+            attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+            isSynchronous: false,
+          });
+        }
 
-      if (attachmentsToAdd) {
-        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-          position: "top-right",
-          autoClose: false,
-          closeOnClick: false,
-          closeButton: false,
-          draggable: false,
-        });
-      }
+        if (attachmentsToAdd?.length) {
+          const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+            position: "top-right",
+            autoClose: false,
+            closeOnClick: false,
+            closeButton: false,
+            draggable: false,
+          });
 
-      handlePersistAttachments({
-        dispatch,
-        attachmentsToAdd,
-        attachmentsToDelete,
-        identifier: id,
-        subIdentifier: undefined,
-        setAttachmentsToAdd,
-        setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        isSynchronous: false,
-      }).then(() => {
-        if (attachmentsToAdd) {
+          await uploadAttachmentsWithProgress({
+            dispatch,
+            files: attachmentsToAdd,
+            identifier: id,
+            attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+            toastId,
+          });
+
+          setAttachmentsToAdd(null);
           DismissToast(toastId);
         }
+
         setAttachmentRefreshKey((k) => k + 1);
-      });
+      })();
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
