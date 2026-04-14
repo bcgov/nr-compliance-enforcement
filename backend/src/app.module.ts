@@ -153,6 +153,7 @@ export class AppModule {
       "v1/complaint/map/search",
       "v1/complaint/:complaint_id/add-collaborator/:app_user_guid",
       "v1/document/export-complaint",
+      "v1/document/export-task",
     );
   }
 }

@@ -9,6 +9,8 @@ import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-in
 import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
+import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
+import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -50,6 +52,26 @@ export const generateExportComplaintInputParams = (
   return exportComplaintInput;
 };
 
+export const generateExportTaskInputParams = (taskId: string, taskNumber: number, attachments?: COMSObject[]) => {
+  const fileName = `T${taskNumber}_Task_Report_${format(new Date(), "yyMMdd")}.pdf`;
+  const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return { taskId, fileName, tz, attachments } as ExportTaskInput;
+};
+
+//-- this is a janky solution, but as of 2024 it is still the widly
+//-- accepted solution to download a file from a service
+const downloadPdf = (data: ArrayBuffer, fileName: string, elementId: string) => {
+  const file = new Blob([data], { type: "application/pdf" });
+  const fileURL = URL.createObjectURL(file);
+  let link = document.createElement("a");
+  link.id = elementId;
+  link.href = fileURL;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
 //--
 //-- exports a complaint as a pdf document
 //--
@@ -60,7 +82,7 @@ export const exportComplaint =
     dateLogged: Date,
     forAgency?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
-  async (dispatch, getState) => {
+  async (dispatch) => {
     const complaintAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT));
     const outcomeAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT));
     try {
@@ -85,22 +107,48 @@ export const exportComplaint =
 
       const response = await axios.post(url, exportComplaintInput, axiosConfig);
 
-      //-- this is a janky solution, but as of 2024 it is still the widly
-      //-- accepted solution to download a file from a service
-      const file = new Blob([response.data], { type: "application/pdf" });
-      const fileURL = URL.createObjectURL(file);
-      let link = document.createElement("a");
-      link.id = "hidden-details-screen-export-complaint";
-      link.href = fileURL;
-      link.download = exportComplaintInput.fileName;
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      downloadPdf(response.data, exportComplaintInput.fileName, "hidden-details-screen-export-complaint");
 
       return "success";
     } catch (error) {
       console.error("Error exporting complaint:", error);
+      return "error";
+    }
+  };
+
+//--
+//-- exports a task as a pdf document
+//--
+export const exportTask =
+  (
+    investigationId: string,
+    taskId: string,
+    taskNumber: number,
+  ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
+  async () => {
+    try {
+      const allAttachments = await fetchAttachmentsWithMetadata(investigationId);
+      const attachments = allAttachments
+        .filter((a) => a.taskId === taskId)
+        .sort((a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime());
+
+      const axiosConfig: AxiosRequestConfig = {
+        responseType: "arraybuffer",
+      };
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+
+      const exportTaskInput = generateExportTaskInputParams(taskId, taskNumber, attachments);
+
+      const url = `${config.API_BASE_URL}/v1/document/export-task`;
+
+      const response = await axios.post(url, exportTaskInput, axiosConfig);
+
+      downloadPdf(response.data, exportTaskInput.fileName, "hidden-details-screen-export-task");
+
+      return "success";
+    } catch (error) {
+      console.error("Error exporting task:", error);
       return "error";
     }
   };

@@ -19,7 +19,7 @@ export const BulkDownloadButton = ({
   const dispatch = useAppDispatch();
   const currentDownload = useSelector(selectCurrentDownload);
 
-  const isCurrentTaskDownload = currentDownload?.taskId === taskId;
+  const isCurrentTaskDownload = currentDownload?.downloadId === taskId;
   let toastDownloadInfo: Id;
 
   const handleBulkDownload = async () => {

@@ -1,0 +1,1 @@
+INSERT INTO complaint.configuration VALUES ('TDRTMPLT', '', 'CDOGS Hash for Task Definition Report Template', true, 'postgres', NOW(), 'postgres', NOW());
