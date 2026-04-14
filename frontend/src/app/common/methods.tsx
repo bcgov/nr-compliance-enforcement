@@ -581,6 +581,18 @@ export const parseUTCDateTimeToLocal = (
 };
 
 /**
+ * Formats a GraphQL DateTime (or date-like value) as yyyy-MM-dd using parseUTCDateTimeToLocal
+ *
+ * @param whenAbsent returned when the input is missing or cannot be parsed (e.g. "-" in tables, "" in CSV)
+ */
+export const formatDateStr = (inputDate: string | Date | null | undefined, whenAbsent: string = "-"): string => {
+  const d = parseUTCDateTimeToLocal(inputDate, null);
+  if (!d) return whenAbsent;
+  const s = d.toISOString?.() ?? d.toString();
+  return formatDate(s);
+};
+
+/**
  * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
  */
 export const formatLocalDateTimeToUTC = (
