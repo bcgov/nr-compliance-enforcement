@@ -1,0 +1,1 @@
+INSERT INTO complaint.configuration VALUES ('CRTMPLT', '', 'CDOGS Hash for Continuation Report Template', true, 'postgres', NOW(), 'postgres', NOW());
