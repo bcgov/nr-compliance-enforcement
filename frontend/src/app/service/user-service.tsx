@@ -13,6 +13,10 @@ let refreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
 const TOKEN_REFRESH_RETRIES = 2;
 const TOKEN_REFRESH_RETRY_DELAY_MS = 1000;
+const TOKEN_FORMAT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+
+const isValidToken = (token: unknown): token is string =>
+  typeof token === "string" && token.length > 0 && token.length <= 8192 && TOKEN_FORMAT.test(token);
 
 const decodeJwt = (token: string): KeycloakTokenParsed => {
   const base64Url = token.split(".")[1];
@@ -59,6 +63,9 @@ const tokenRefresh = async (): Promise<string> => {
   }
 
   const token = data.access_token;
+  if (!isValidToken(token)) {
+    throw new Error("token refresh returned an invalid access token");
+  }
   localStorage.setItem(AUTH_TOKEN, token);
   return token;
 };
@@ -123,7 +130,11 @@ const initKeycloak = (onAuthenticatedCallback: () => void) => {
     })
     .then((authenticated) => {
       if (authenticated) {
-        localStorage.setItem(AUTH_TOKEN, `${_kc.token}`);
+        if (!isValidToken(_kc.token)) {
+          console.error("Keycloak returned an invalid access token");
+          return;
+        }
+        localStorage.setItem(AUTH_TOKEN, _kc.token);
         startRefresh();
       } else {
         console.log("User is not authenticated.");
