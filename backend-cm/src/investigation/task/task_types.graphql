@@ -1,6 +1,7 @@
 type Task {
   taskIdentifier: String!
   investigationIdentifier: String!
+  investigationLabel: String
   taskTypeCode: String
   taskStatusCode: String!
   assignedUserIdentifier: String

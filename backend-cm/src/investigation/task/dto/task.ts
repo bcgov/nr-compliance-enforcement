@@ -4,6 +4,7 @@ import { task } from "../../../../prisma/investigation/generated/task";
 export class Task {
   taskIdentifier: string;
   investigationIdentifier: string;
+  investigationLabel: string;
   taskTypeCode: string;
   taskStatusCode: string;
   assignedUserIdentifier: string;
@@ -43,6 +44,10 @@ export const mapPrismaTaskToTask = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationIdentifier,
       mapFrom((src) => src.investigation_guid),
+    ),
+    forMember(
+      (dest) => dest.investigationLabel,
+      mapFrom((src) => src.investigation?.name),
     ),
     forMember(
       (dest) => dest.taskTypeCode,
