@@ -8,10 +8,10 @@ import UserService from "@service/user-service";
 const casesRoleBypass = (): boolean => UserService.hasRole(Roles.CASE_ACCESS);
 
 export const selectCanAccessCases = (state: RootState): boolean =>
-  isFeatureActive(FEATURE_TYPES.CASES)(state) || casesRoleBypass();
+  isFeatureActive(FEATURE_TYPES.CASES)(state) && casesRoleBypass();
 
 export const selectCanAccessInvestigations = (state: RootState): boolean =>
-  isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)(state) || casesRoleBypass();
+  isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)(state) && casesRoleBypass();
 
 export const selectCanAccessInspections = (state: RootState): boolean =>
-  isFeatureActive(FEATURE_TYPES.INSPECTIONS)(state) || casesRoleBypass();
+  isFeatureActive(FEATURE_TYPES.INSPECTIONS)(state) && casesRoleBypass();
