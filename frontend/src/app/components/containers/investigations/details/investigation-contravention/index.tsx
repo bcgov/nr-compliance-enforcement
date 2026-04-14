@@ -5,7 +5,7 @@ import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
 
 interface InvestigationContraventionProps {
@@ -69,25 +69,44 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   };
 
   // Group contraventions by party name
-  const grouped = groupContraventionsByParty(contraventions as Contravention[]);
-  const groupedPartyGuids = new Set(grouped.map((g) => g.partyGuid));
+  const allGroups = useMemo(() => {
+    const grouped = groupContraventionsByParty(contraventions as Contravention[]);
+    const groupedByPartyGuid = new Map(grouped.map((g) => [g.partyGuid, g]));
+    // Order by parties of interest
+    const knownGroups = parties.map((party) => {
+      const existing = groupedByPartyGuid.get(party.partyIdentifier ?? null);
+      return {
+        partyName: getPartyLabel(party),
+        partyGuid: party.partyIdentifier ?? null,
+        contraventions: existing?.contraventions ?? [],
+      };
+    });
+    // Unknown group always last
+    const unknownGroups = groupedByPartyGuid.has(null)
+      ? [
+          {
+            partyName: "Unknown Party",
+            partyGuid: null,
+            contraventions: groupedByPartyGuid.get(null)?.contraventions ?? [],
+          },
+        ]
+      : [];
 
-  const emptyPartyGroups = parties
-    .filter((party) => !groupedPartyGuids.has(party.partyIdentifier))
-    .map((party) => ({
-      partyName: getPartyLabel(party),
-      partyGuid: party.partyIdentifier ?? null,
-      contraventions: [] as Contravention[],
-    }));
+    return { knownGroups, unknownGroups };
+  }, [contraventions, parties]);
 
-  const allGroups = [...grouped, ...emptyPartyGroups];
-  const knownGroups = allGroups.filter((g) => g.partyGuid !== null);
-  const unknownGroups = allGroups.filter((g) => g.partyGuid === null);
+  const { knownGroups, unknownGroups } = allGroups;
 
   return (
     <div className="comp-details-view">
       <div className="row">
-        <div className={allGroups.length > 0 ? "d-flex align-items-center justify-content-between my-2" : "col-12"}>
+        <div
+          className={
+            knownGroups.length > 0 || unknownGroups.length > 0
+              ? "d-flex align-items-center justify-content-between my-2"
+              : "col-12"
+          }
+        >
           <h3>Outcomes</h3>
           <Button
             variant="primary"
