@@ -51,81 +51,146 @@ export class ContraventionService {
     return await this.investigationService.findOne(contraventionInput.investigationGuid);
   }
 
-  async remove(investigationGuid: string, contraventionGuid: string): Promise<Investigation> {
+  async remove(investigationGuid: string, contraventionGuid: string, partyGuid: string | null): Promise<Investigation> {
     try {
-      await this.prisma.contravention.update({
-        where: {
-          contravention_guid: contraventionGuid,
-        },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await this.prisma.$transaction(async (tx) => {
+        const contravention = await tx.contravention.findUnique({
+          where: { contravention_guid: contraventionGuid },
+          include: {
+            contravention_party_xref: {
+              where: { active_ind: true },
+            },
+          },
+        });
+
+        if (!contravention) throw new Error("Contravention not found");
+
+        const otherParties = contravention.contravention_party_xref.filter(
+          (xref) => xref.investigation_party_guid !== partyGuid,
+        );
+
+        if (otherParties.length > 0) {
+          //Shared contravention — only deactivate this party's xref
+          await tx.contravention_party_xref.updateMany({
+            where: {
+              contravention_guid: contraventionGuid,
+              investigation_party_guid: partyGuid,
+              active_ind: true,
+            },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+
+          //Check if any active xrefs remain after deactivation
+          const remainingXrefs = await tx.contravention_party_xref.count({
+            where: {
+              contravention_guid: contraventionGuid,
+              active_ind: true,
+            },
+          });
+
+          //If no parties left, deactivate the contravention itself
+          if (remainingXrefs === 0) {
+            await tx.contravention.update({
+              where: { contravention_guid: contraventionGuid },
+              data: {
+                active_ind: false,
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+              },
+            });
+          }
+        } else {
+          //This is the only party — deactivate the contravention itself
+          await tx.contravention.update({
+            where: { contravention_guid: contraventionGuid },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
+        }
       });
     } catch (error) {
       this.logger.error("Error removing contravention:", error);
       throw error;
     }
+
     return await this.investigationService.findOne(investigationGuid);
   }
 
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
     try {
-      const contraventionParties = await this.prisma.contravention_party_xref.findMany({
-        select: {
-          investigation_party_guid: true,
-        },
-        where: {
-          contravention_guid: contraventionGuid,
-          active_ind: true,
-        },
-      });
-
-      const partiesToRemove = contraventionParties
-        .map((p) => p.investigation_party_guid)
-        .filter((guid) => !input.investigationPartyGuids.includes(guid));
-
-      const partiesToAdd = input.investigationPartyGuids.filter(
-        (guid) => !contraventionParties.some((p) => p.investigation_party_guid === guid),
-      );
-
       await this.prisma.$transaction(async (tx) => {
-        // Update the legislation ref if required
-        await tx.contravention.update({
-          where: {
-            contravention_guid: contraventionGuid,
-          },
-          data: {
-            legislation_guid_ref: input.legislationReference,
-            contravention_date: input.date,
-            geo_organization_unit_code_ref: input.community,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
+        const originalContravention = await tx.contravention.findUnique({
+          where: { contravention_guid: contraventionGuid },
+          include: {
+            contravention_party_xref: {
+              where: { active_ind: true },
+            },
           },
         });
 
-        // Remove any parties that we don't want
-        for (const party of partiesToRemove) {
+        if (!originalContravention) throw new Error("Contravention not found");
+
+        const otherParties = originalContravention.contravention_party_xref.filter(
+          (xref) => xref.investigation_party_guid !== input.selectedPartyGuid,
+        );
+        const isShared = otherParties.length > 0;
+
+        if (isShared) {
+          // Contravention is shared with other parties — split it:
+          //Deactivate selectedPartyGuid xref on the original contravention
           await tx.contravention_party_xref.updateMany({
             where: {
-              investigation_party_guid: party,
               contravention_guid: contraventionGuid,
+              investigation_party_guid: input.selectedPartyGuid,
+              active_ind: true,
             },
             data: {
               active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
             },
           });
-        }
 
-        // Add the new parties
-        for (const party of partiesToAdd) {
-          await tx.contravention_party_xref.create({
+          //Create a new contravention with the updated legislation for selectedPartyGuid only
+          const newContravention = await tx.contravention.create({
             data: {
-              contravention_guid: contraventionGuid,
-              investigation_party_guid: party,
+              investigation_guid: originalContravention.investigation_guid,
+              legislation_guid_ref: input.legislationReference,
+              contravention_date: input.date,
+              geo_organization_unit_code_ref: input.community,
               create_user_id: this.user.getIdirUsername(),
               create_utc_timestamp: new Date(),
+            },
+          });
+
+          //Link selectedPartyGuid to the new contravention
+          if (input.selectedPartyGuid) {
+            await tx.contravention_party_xref.create({
+              data: {
+                contravention_guid: newContravention.contravention_guid,
+                investigation_party_guid: input.selectedPartyGuid,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              },
+            });
+          }
+        } else {
+          // Contravention belongs to selectedPartyGuid only — update in place as before
+          await tx.contravention.update({
+            where: { contravention_guid: contraventionGuid },
+            data: {
+              legislation_guid_ref: input.legislationReference,
+              contravention_date: input.date,
+              geo_organization_unit_code_ref: input.community,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
             },
           });
         }
@@ -134,6 +199,7 @@ export class ContraventionService {
       this.logger.error("Error updating contravention:", error);
       throw error;
     }
+
     return await this.investigationService.findOne(input.investigationGuid);
   }
 }

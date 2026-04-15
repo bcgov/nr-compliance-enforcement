@@ -557,6 +557,7 @@ export type CreateUpdateContraventionInput = {
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   legislationReference: Scalars['String']['input'];
+  selectedPartyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateUpdateExhibitInput = {
