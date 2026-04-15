@@ -8,12 +8,18 @@ type Props = {
   tasks?: Task[];
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
+  onExport: () => void;
+  isExportDisabled: boolean;
+  isExportInProgress: boolean;
 };
 
 export const ExhibitsFilterBar: FC<Props> = ({
   tasks = [],
   toggleShowMobileFilters,
   toggleShowDesktopFilters,
+  onExport,
+  isExportDisabled,
+  isExportInProgress,
 }) => {
   const { searchValues, setValues, clearValues } = useExhibitsSearch();
   const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
@@ -123,6 +129,18 @@ export const ExhibitsFilterBar: FC<Props> = ({
             clear={removeFilter}
           />
         )}
+
+        <Button
+          id="exhibits-export-btn"
+          variant="outline-primary"
+          size="sm"
+          className="icon-start ms-auto"
+          onClick={onExport}
+          disabled={isExportDisabled || isExportInProgress}
+        >
+          <i className="bi bi-download"></i>
+          <span className="ms-1">{isExportInProgress ? "Exporting..." : "Export exhibit data"}</span>
+        </Button>
       </div>
     </div>
   );
