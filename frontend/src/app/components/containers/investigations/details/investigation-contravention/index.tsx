@@ -145,12 +145,14 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       {(parties.length > 0 || unknownGroups.length > 0) && (
         <div className="mb-4">
           <h4 className="mb-3">Unknown parties</h4>
-          <ContraventionTable
-            contraventions={unknownGroups.flatMap((g) => g.contraventions)}
-            investigationGuid={investigationGuid}
-            partyGuid={null}
-            onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
-          />
+          {unknownGroups.length > 0 && (
+            <ContraventionTable
+              contraventions={unknownGroups.flatMap((g) => g.contraventions)}
+              investigationGuid={investigationGuid}
+              partyGuid={null}
+              onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+            />
+          )}
         </div>
       )}
     </div>
