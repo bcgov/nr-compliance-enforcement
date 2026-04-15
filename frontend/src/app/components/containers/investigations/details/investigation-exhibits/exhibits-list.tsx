@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDate, parseUTCDateTimeToLocal } from "@common/methods";
+import { formatDateStr } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -15,13 +15,6 @@ type Props = {
   totalItems: number;
   isLoading: boolean;
   investigationGuid: string;
-};
-
-const formatDateStr = (inputDate: any): string => {
-  const d = parseUTCDateTimeToLocal(inputDate, null);
-  if (!d) return "-";
-  const s = d.toISOString?.() ?? d.toString();
-  return formatDate(s);
 };
 
 export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading, investigationGuid }) => {

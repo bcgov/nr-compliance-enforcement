@@ -11,6 +11,7 @@ export class Contravention {
   isActive: boolean;
   date: Date;
   community: string;
+  selectedPartyGuid?: string;
 }
 
 @InputType()
@@ -29,6 +30,9 @@ export class CreateUpdateContraventionInput {
 
   @Field(() => String)
   community: string;
+
+  @Field(() => String, { nullable: true })
+  selectedPartyGuid?: string | null;
 }
 
 export const mapPrismaContreventionToContravention = (mapper: Mapper) => {

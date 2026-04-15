@@ -6,19 +6,12 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { formatDateStr } from "@/app/common/methods";
 
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
   isLoading?: boolean;
   onEdit: (exhibit: Exhibit) => void;
-};
-
-const formatDateStr = (inputDate: any): string => {
-  const d = parseUTCDateTimeToLocal(inputDate, null);
-  if (!d) return "-";
-  const s = d.toISOString?.() ?? d.toString();
-  return formatDate(s);
 };
 
 export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading = false, onEdit }) => {
