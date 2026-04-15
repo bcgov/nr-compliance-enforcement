@@ -141,22 +141,30 @@ const App: FC = () => {
                   path="/compliments"
                   element={<Compliments />}
                 />
-                <Route
-                  path="/parties"
-                  element={<Parties />}
-                />
-                <Route
-                  path="/party/:id"
-                  element={<PartyView />}
-                />
-                <Route
-                  path="/party/create"
-                  element={<PartyEdit />}
-                />
-                <Route
-                  path="/party/:id/edit"
-                  element={<PartyEdit />}
-                />
+                {casesModuleActive && (
+                  <Route
+                    path="/parties"
+                    element={<Parties />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/party/:id"
+                    element={<PartyView />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/party/create"
+                    element={<PartyEdit />}
+                  />
+                )}
+                {casesModuleActive && (
+                  <Route
+                    path="/party/:id/edit"
+                    element={<PartyEdit />}
+                  />
+                )}
                 {investigationsActive && (
                   <Route
                     path="/investigations"
