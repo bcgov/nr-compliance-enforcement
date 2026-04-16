@@ -4,5 +4,5 @@ export interface BulkDownloadState {
 }
 
 export interface CurrentDownload {
-  taskId: string;
+  downloadId: string;
 }

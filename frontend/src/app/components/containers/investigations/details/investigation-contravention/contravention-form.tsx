@@ -12,9 +12,11 @@ interface ContraventionFormProps {
   activityGuid: string;
   contravention?: Contravention;
   parties?: InvestigationParty[];
+  partyGuid?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;
+  onRequestDelete?: (fn: () => Promise<void>) => void;
   onClose: () => void;
 }
 
@@ -34,14 +36,28 @@ const UPDATE_CONTRAVENTION = gql`
   }
 `;
 
+const REMOVE_CONTRAVENTION = gql`
+  mutation RemoveContravention($investigationGuid: String!, $contraventionGuid: String!, $partyGuid: String) {
+    removeContravention(
+      investigationGuid: $investigationGuid
+      contraventionGuid: $contraventionGuid
+      partyGuid: $partyGuid
+    ) {
+      investigationGuid
+    }
+  }
+`;
+
 export const ContraventionForm: FC<ContraventionFormProps> = ({
   currentStep,
   activityGuid,
   contravention,
   parties,
+  partyGuid,
   onDirtyChange,
   onRequestValidate,
   onRequestSave,
+  onRequestDelete,
   onClose,
 }) => {
   const isEditMode = !!contravention;
@@ -73,10 +89,20 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     },
   });
 
-  // Expose save to MultiStepModal
+  const deleteContraventionMutation = useGraphQLMutation(REMOVE_CONTRAVENTION, {
+    onSuccess: () => {
+      ToggleSuccess("Contravention deleted successfully");
+      onClose();
+    },
+    onError: (error: any) => {
+      console.error("Error deleting contravention:", error);
+      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to delete contravention");
+    },
+  });
+
   useEffect(() => {
     onRequestSave(async () => {
-      const isValid = await validateStep(1);
+      const isValid = await validateStep(0);
       if (!isValid) return;
 
       const step1Values = getStepValues<ContraventionDetailsFormValues>(0);
@@ -88,19 +114,42 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         legislationReference: step1Values.selectedSection,
         date: step1Values.contraventionDate,
         community: step1Values.communityCode || null,
-        investigationPartyGuids: step2Values.partyType === "unknown" ? [] : step2Values.selectedParties,
+        ...(isEditMode
+          ? {
+              selectedPartyGuid: partyGuid ?? null,
+            }
+          : {
+              investigationPartyGuids: step2Values?.partyType === "unknown" ? [] : (step2Values?.selectedParties ?? []),
+            }),
       };
 
       if (isEditMode) {
-        editContraventionMutation.mutate({
-          contraventionGuid: contravention?.contraventionIdentifier,
-          input,
-        });
+        editContraventionMutation.mutate({ contraventionGuid: contravention!.contraventionIdentifier, input });
       } else {
-        addContraventionMutation.mutate({ input });
+        const step2Values = getStepValues<ContraventionPartyFormValues>(1);
+        if (!step2Values) return;
+        addContraventionMutation.mutate({
+          input: {
+            ...input,
+            investigationPartyGuids: step2Values.partyType === "unknown" ? [] : step2Values.selectedParties,
+          },
+        });
       }
     });
-  }, [onRequestSave, getStepValues, activityGuid, isEditMode, contravention]);
+  }, [onRequestSave, getStepValues, activityGuid, isEditMode, contravention, partyGuid]);
+
+  useEffect(() => {
+    if (!onRequestDelete || !isEditMode) return;
+
+    onRequestDelete(async () => {
+      if (!contravention?.contraventionIdentifier) return;
+      await deleteContraventionMutation.mutateAsync({
+        investigationGuid: activityGuid,
+        contraventionGuid: contravention.contraventionIdentifier,
+        partyGuid: partyGuid ?? null,
+      });
+    });
+  }, [onRequestDelete, contravention, activityGuid, isEditMode, partyGuid]);
 
   // Note: The forms are hidden when not active in order to prevent them from unmounting and losing state
   return (

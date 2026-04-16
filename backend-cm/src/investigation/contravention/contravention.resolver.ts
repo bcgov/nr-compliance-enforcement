@@ -32,9 +32,10 @@ export class ContraventionResolver {
   async remove(
     @Args("investigationGuid") investigationGuid: string,
     @Args("contraventionGuid") contraventionGuid: string,
+    @Args("partyGuid") partyGuid: string,
   ) {
     try {
-      return await this.contraventionService.remove(investigationGuid, contraventionGuid);
+      return await this.contraventionService.remove(investigationGuid, contraventionGuid, partyGuid);
     } catch (error) {
       this.logger.error("Remove investigation contravention error:", error);
       throw new GraphQLError("Error removing contravention from investigation", {

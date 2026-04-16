@@ -11,6 +11,28 @@ type Exhibit {
   updatedDate: DateTime
 }
 
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  totalCount: Int!
+  totalPages: Int!
+  currentPage: Int!
+  pageSize: Int!
+}
+
+type ExhibitResult {
+  items: [Exhibit!]!
+  pageInfo: PageInfo!
+}
+
+input ExhibitFilters {
+  investigationGuid: String!
+  search: String
+  taskFilter: String
+  sortBy: String
+  sortOrder: String
+}
+
 input CreateUpdateExhibitInput {
   exhibitGuid: String
   taskGuid: String

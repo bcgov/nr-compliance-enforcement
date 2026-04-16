@@ -10,7 +10,12 @@ import { FormField } from "@components/common/form-field";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
-import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
+import {
+  fileListToCOMSObjects,
+  getDisplayFilename,
+  handlePersistAttachments,
+} from "@/app/common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import format from "date-fns/format";
@@ -188,25 +193,18 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       return existingSequence ?? String(baseSequence + i + 1).padStart(4, "0");
     });
 
-    await Promise.all(
-      files.map((file, i) =>
-        handlePersistAttachments({
-          dispatch,
-          attachmentsToAdd: [file],
-          attachmentsToDelete: null,
-          identifier: investigationIdentifier,
-          subIdentifier: taskIdentifier,
-          setAttachmentsToAdd: () => {},
-          setAttachmentsToDelete: () => {},
-          attachmentType: AttachmentEnum.TASK_ATTACHMENT,
-          isSynchronous: false,
-          extendedMeta: {
-            ...buildExtendedMeta(value),
-            "sequence-number": fileSequences[i],
-          },
-        }),
-      ),
-    );
+    await uploadAttachmentsWithProgress({
+      dispatch,
+      files,
+      identifier: investigationIdentifier,
+      subIdentifier: taskIdentifier,
+      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
+      toastId,
+      buildExtendedMeta: (_file: File, i: number) => ({
+        ...buildExtendedMeta(value),
+        "sequence-number": fileSequences[i],
+      }),
+    });
 
     DismissToast(toastId);
     attachmentUploadComplete$.next(taskIdentifier);

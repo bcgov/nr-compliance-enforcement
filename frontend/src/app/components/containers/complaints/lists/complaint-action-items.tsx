@@ -11,6 +11,7 @@ import {
 import { Dropdown } from "react-bootstrap";
 import { getAssessment, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
+import { selectCanAccessCases } from "@/app/access/module-access";
 import { getComplaintById, getLinkedComplaints } from "@/app/store/reducers/complaints";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -33,7 +34,7 @@ export const ComplaintActionItems: FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
-  const showCreateAddCase = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const showCreateAddCase = useAppSelector(selectCanAccessCases);
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 

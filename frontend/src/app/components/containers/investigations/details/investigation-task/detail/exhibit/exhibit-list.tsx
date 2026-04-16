@@ -6,19 +6,12 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { formatDateStr } from "@/app/common/methods";
 
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
   isLoading?: boolean;
   onEdit: (exhibit: Exhibit) => void;
-};
-
-const formatDateStr = (inputDate: any): string => {
-  const d = parseUTCDateTimeToLocal(inputDate, null);
-  if (!d) return "-";
-  const s = d.toISOString?.() ?? d.toString();
-  return formatDate(s);
 };
 
 export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading = false, onEdit }) => {
@@ -34,12 +27,13 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
 
   const columns: CompColumn<Exhibit>[] = [
     {
-      label: "Exhibit #",
+      label: "Exhibit number",
       headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
       cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitNumber ?? 0,
-      renderCell: (exhibit) => exhibit.exhibitNumber ?? "-",
+      renderCell: (exhibit) =>
+        exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0"),
     },
     {
       label: "Description",
@@ -96,7 +90,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}
-      defaultSort="Exhibit #"
+      defaultSort="Exhibit number"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No exhibits found."
     />
