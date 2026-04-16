@@ -12,11 +12,13 @@ import { CardOption, CardOptionSelector } from "@/app/components/common/card-opt
 export interface ContraventionPartyFormValues {
   partyType: string;
   selectedParties: string[];
+  partyGuid?: string | null;
 }
 
 interface ContraventionPartyFormProps {
   contravention?: Contravention;
   parties?: InvestigationParty[];
+  partyGuid?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate?: (validateFn: () => Promise<boolean>) => void;
   onRequestValues?: (valuesFn: () => ContraventionPartyFormValues) => void;
@@ -25,6 +27,7 @@ interface ContraventionPartyFormProps {
 export const ContraventionPartyForm = ({
   contravention,
   parties,
+  partyGuid,
   onDirtyChange,
   onRequestValidate,
   onRequestValues,
@@ -33,6 +36,7 @@ export const ContraventionPartyForm = ({
     defaultValues: {
       partyType: "",
       selectedParties: [] as Option[],
+      selectedParty: partyGuid ?? "",
     },
     onSubmit: async () => {},
   });

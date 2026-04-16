@@ -15,8 +15,8 @@ describe("BcGeoCoderService", () => {
       imports: [HttpModule],
     }).compile();
 
-    service = module.get<BcGeoCoderService>(BcGeoCoderService);
-    httpService = module.get<HttpService>(HttpService);
+    service = await module.resolve<BcGeoCoderService>(BcGeoCoderService);
+    httpService = await module.resolve<HttpService>(HttpService);
   });
 
   it("should be defined", () => {

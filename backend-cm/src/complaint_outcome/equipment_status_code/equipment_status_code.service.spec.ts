@@ -11,7 +11,7 @@ describe("EquipmentCodeService", () => {
       providers: [EquipmentStatusCodeService],
     }).compile();
 
-    service = module.get<EquipmentStatusCodeService>(EquipmentStatusCodeService);
+    service = await module.resolve<EquipmentStatusCodeService>(EquipmentStatusCodeService);
   });
 
   it("should be defined", () => {

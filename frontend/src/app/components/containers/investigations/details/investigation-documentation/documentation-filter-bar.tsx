@@ -3,8 +3,11 @@ import { Button, CloseButton, InputGroup } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Task } from "@/generated/graphql";
+import { useSelector } from "react-redux";
+import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 
 type Props = {
+  investigationId: string;
   tasks?: Task[];
   toggleShowMobileFilters: MouseEventHandler;
   toggleShowDesktopFilters: MouseEventHandler;
@@ -13,12 +16,15 @@ type Props = {
 };
 
 export const DocumentationFilterBar: FC<Props> = ({
+  investigationId,
   tasks = [],
   toggleShowMobileFilters,
   toggleShowDesktopFilters,
   onExport,
   isExportDisabled,
 }) => {
+  const currentDownload = useSelector(selectCurrentDownload);
+  const isDownloadInProgress = currentDownload?.downloadId === investigationId;
   const { searchValues, setValues, clearValues } = useDocumentationSearch();
   const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
 
@@ -147,10 +153,10 @@ export const DocumentationFilterBar: FC<Props> = ({
           size="sm"
           className="icon-start ms-auto"
           onClick={onExport}
-          disabled={isExportDisabled}
+          disabled={isExportDisabled || isDownloadInProgress}
         >
           <i className="bi bi-download"></i>
-          <span>Export data</span>
+          <span className="ms-1">{isDownloadInProgress ? "Downloading..." : "Download and export data"}</span>
         </Button>
       </div>
     </div>

@@ -16,6 +16,8 @@ export class CssService implements ExternalApiService {
   readonly clientId: string;
   readonly clientSecret: string;
   readonly grantType: string;
+  readonly integrationId: string;
+  readonly provider: string;
   readonly env: string;
   readonly maxPages: number;
 
@@ -31,6 +33,8 @@ export class CssService implements ExternalApiService {
     this.clientId = process.env.CSS_CLIENT_ID;
     this.clientSecret = process.env.CSS_CLIENT_SECRET;
     this.grantType = "client_credentials";
+    this.integrationId = process.env.CSS_INTEGRATION_ID || "4794";
+    this.provider = process.env.CSS_PROVIDER || "idir";
     this.env = process.env.ENVIRONMENT;
     this.maxPages = 20;
   }
@@ -55,7 +59,7 @@ export class CssService implements ExternalApiService {
   getUserIdirByName = async (firstName, lastName): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?firstName=${firstName}&lastName=${lastName}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?firstName=${firstName}&lastName=${lastName}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -73,7 +77,7 @@ export class CssService implements ExternalApiService {
   getUserIdirByEmail = async (email: string): Promise<CssUser[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?email=${email}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?email=${email}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +95,7 @@ export class CssService implements ExternalApiService {
   getUserByGuid = async (userGuid: string): Promise<CssUser> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/${this.env}/idir/users?guid=${userGuid}`;
+      const url = `${this.baseUri}/api/v1/${this.env}/${this.provider}/users?guid=${userGuid}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +113,8 @@ export class CssService implements ExternalApiService {
   getUserRoles = async (userIdir): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +132,8 @@ export class CssService implements ExternalApiService {
   updateUserRole = async (userIdir, userRoles): Promise<{ name: string; composite: string }[]> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +155,8 @@ export class CssService implements ExternalApiService {
   deleteUserRole = async (userIdir, roleName): Promise<AxiosResponse> => {
     try {
       const apiToken = await this.authenticate();
-      const url = `${this.baseUri}/api/v1/integrations/4794/${this.env}/users/${userIdir}/roles/${roleName}`;
+      const userid = this.getUserIdByProvider(userIdir);
+      const url = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/users/${userid}/roles/${roleName}`;
       const config: AxiosRequestConfig = {
         headers: {
           "Content-Type": "application/json",
@@ -168,6 +175,25 @@ export class CssService implements ExternalApiService {
     }
   };
 
+  // Maps the CSS API provider to the suffix used in usernames returned by the API.
+  private readonly getProviderUsernameSuffix = (): string => {
+    const providerSuffixMap: Record<string, string> = {
+      idir: "idir",
+      "azure-idir": "azureidir",
+      "bceid-basic": "bceidbasic",
+      "bceid-business": "bceidbusiness",
+      "bceid-basic-business": "bceidboth",
+      "github-bcgov": "githubbcgov",
+      "github-public": "githubpublic",
+    };
+    return providerSuffixMap[this.provider] ?? this.provider;
+  };
+
+  private readonly getUserIdByProvider = (username: string): string => {
+    const guidPart = username.replace(/@.{0,255}$/, "");
+    return `${guidPart}@${this.getProviderUsernameSuffix()}`;
+  };
+
   private readonly clearUserRoleCache = async (): Promise<void> => {
     await this.cacheManager.del("css-users-roles-fresh");
     await this.cacheManager.del("css-users-roles-stale");
@@ -180,7 +206,7 @@ export class CssService implements ExternalApiService {
 
     const apiToken = await this.authenticate();
     //Get all roles from NatCom CSS integration
-    const rolesUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles`;
+    const rolesUrl = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/roles`;
     const config: AxiosRequestConfig = {
       headers: {
         "Content-Type": "application/json",
@@ -195,27 +221,26 @@ export class CssService implements ExternalApiService {
 
       //Get all users for each role
       let usersUrl: string = "";
-      const pages = Array.from(Array(this.maxPages), (_, i) => i + 1);
+      const pages = Array.from(new Array(this.maxPages), (_, i) => i + 1);
       const usersRoles = await Promise.all(
         roleList.map(async (role) => {
           let usersRolesTemp = [];
           for (const page of pages) {
-            usersUrl = `${this.baseUri}/api/v1/integrations/4794/${this.env}/roles/${role.name}/users?page=${page}`;
+            usersUrl = `${this.baseUri}/api/v1/integrations/${this.integrationId}/${this.env}/roles/${role.name}/users?page=${page}`;
             const userRes = await get(apiToken, encodeURI(usersUrl), config);
             if (userRes?.data.data.length > 0) {
               const {
                 data: { data: users },
               } = userRes;
-              let usersRolesSinglePage = await Promise.all(
-                users.map((user) => {
-                  return {
-                    userId: user.username
-                      .replace(/@idir$/i, "")
-                      .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5"),
-                    role: role.name,
-                  };
-                }),
-              );
+              const providerSuffix = `@${this.getProviderUsernameSuffix()}`;
+              let usersRolesSinglePage = users
+                .filter((user: any) => user.username.toLowerCase().endsWith(providerSuffix.toLowerCase()))
+                .map((user: any) => ({
+                  userId: user.username
+                    .replace(/@.{0,255}$/, "")
+                    .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5"),
+                  role: role.name,
+                }));
               usersRolesTemp.push(...usersRolesSinglePage);
             } else {
               break;

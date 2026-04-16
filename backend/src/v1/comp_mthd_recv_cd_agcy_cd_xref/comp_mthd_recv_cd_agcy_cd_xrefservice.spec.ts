@@ -23,7 +23,7 @@ describe("CompMthdRecvCdAgcyCdXrefService", () => {
       ],
     }).compile();
 
-    service = module.get<CompMthdRecvCdAgcyCdXrefService>(CompMthdRecvCdAgcyCdXrefService);
+    service = await module.resolve<CompMthdRecvCdAgcyCdXrefService>(CompMthdRecvCdAgcyCdXrefService);
   });
 
   it("should be defined", () => {

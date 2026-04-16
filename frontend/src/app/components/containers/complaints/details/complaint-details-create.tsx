@@ -37,6 +37,7 @@ import { useNavigate } from "react-router-dom";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
@@ -103,15 +104,15 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = agency && agency === AgencyType.CEEB;
-  const enableOfficeFeature = agency && agency !== AgencyType.CEEB;
+  const enablePrivacyFeature = agency && (agency === AgencyType.CEEB || agency === AgencyType.NROS);
+  const enableOfficeFeature = agency && agency !== AgencyType.CEEB && agency !== AgencyType.NROS;
 
   const currentDate = useMemo(() => new Date(), []);
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
   let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
-  if (agency === AgencyType.CEEB) {
+  if (agency === AgencyType.CEEB || agency === AgencyType.NROS) {
     initialComplaintType = COMPLAINT_TYPES.ERS;
   } else if (agency === AgencyType.COS || agency === AgencyType.PARKS) {
     switch (activeTab) {
@@ -707,10 +708,8 @@ export const CreateComplaint: FC = () => {
     let complaintId = await handleHwcrComplaint(complaint);
 
     if (complaintId) {
-      if (attachmentsToAdd) {
-        let toastId: Id;
-
-        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+      if (attachmentsToAdd?.length) {
+        const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
           position: "top-right",
           autoClose: false,
           closeOnClick: false,
@@ -718,22 +717,19 @@ export const CreateComplaint: FC = () => {
           draggable: false,
         });
 
-        handlePersistAttachments({
-          dispatch,
-          attachmentsToAdd,
-          attachmentsToDelete,
-          identifier: complaintId,
-          subIdentifier: undefined,
-          setAttachmentsToAdd,
-          setAttachmentsToDelete,
-          attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-          isSynchronous: false,
-        }).then(() => {
-          if (attachmentsToAdd) {
-            DismissToast(toastId);
-          }
+        (async () => {
+          await uploadAttachmentsWithProgress({
+            dispatch,
+            files: attachmentsToAdd,
+            identifier: complaintId,
+            attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+            toastId,
+          });
+
+          setAttachmentsToAdd(null);
+          DismissToast(toastId);
           attachmentUploadComplete$.next(complaintId);
-        });
+        })();
       }
     }
 

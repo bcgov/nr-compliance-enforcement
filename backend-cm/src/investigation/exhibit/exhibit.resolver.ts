@@ -17,6 +17,16 @@ export class ExhibitResolver {
     return await this.exhibitService.findMany(taskId);
   }
 
+  @Query("searchExhibitsByInvestigation")
+  @Roles(coreRoles)
+  async searchByInvestigation(
+    @Args("page") page: number,
+    @Args("pageSize") pageSize: number,
+    @Args("filters") filters: any,
+  ) {
+    return await this.exhibitService.search(page, pageSize, filters);
+  }
+
   @Query("getExhibit")
   @Roles(coreRoles)
   async findOne(@Args("exhibitGuid") exhibitGuid: string) {

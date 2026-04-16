@@ -542,7 +542,6 @@ button.modal-buttons {
   padding: 12px 16px;
   gap: 8px;
   min-height: 63px;
-  border-top: 1px solid $gray-300;
 
   * {
     font-size: 0.875rem;
@@ -783,6 +782,15 @@ p {
 .comp-table {
   font-size: 0.875rem;
 
+  tbody {
+    font-weight: 400;
+    tr:last-child {
+      td {
+        border-bottom: none;
+      }
+    }
+  }
+
   thead {
     font-weight: 600;
     height: 44px;
@@ -819,9 +827,15 @@ p {
   a {
     color: #1a5a96;
   }
+}
 
+.comp-table--partial {
   tbody {
-    font-weight: 400;
+    tr:last-child {
+      td {
+        border-bottom: 1px solid $gray-300;
+      }
+    }
   }
 }
 
@@ -859,17 +873,11 @@ p {
 
   &--left {
     left: 0;
-    border-right: 1px solid $gray-300;
   }
 
   &--right {
     right: 0;
-    border-left: 1px solid $gray-300;
   }
-}
-
-th.sticky-col + th {
-  border-left: none;
 }
 
 td.sticky-col {
@@ -879,9 +887,7 @@ td.sticky-col {
 td.actions-col {
   padding-top: 0;
   padding-bottom: 0;
-  .btn {
-    margin-top: 4px;
-  }
+  vertical-align: middle;
 
   .btn + .btn {
     margin-left: 8px;

@@ -23,7 +23,7 @@ describe("AppUserComplaintXrefCodeService", () => {
       ],
     }).compile();
 
-    service = module.get<AppUserComplaintXrefCodeService>(AppUserComplaintXrefCodeService);
+    service = await module.resolve<AppUserComplaintXrefCodeService>(AppUserComplaintXrefCodeService);
   });
 
   it("should be defined", () => {

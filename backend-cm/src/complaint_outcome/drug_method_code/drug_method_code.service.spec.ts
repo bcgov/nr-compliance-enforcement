@@ -11,7 +11,7 @@ describe("DrugMethodCodeService", () => {
       providers: [DrugMethodCodeService],
     }).compile();
 
-    service = module.get<DrugMethodCodeService>(DrugMethodCodeService);
+    service = await module.resolve<DrugMethodCodeService>(DrugMethodCodeService);
   });
 
   it("should be defined", () => {

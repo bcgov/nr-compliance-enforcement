@@ -5,6 +5,7 @@ export interface Attachment {
   user: string;
   sequenceId: number;
   fileType: string;
+  takenBy?: string;
 }
 
 export enum AttachmentType {

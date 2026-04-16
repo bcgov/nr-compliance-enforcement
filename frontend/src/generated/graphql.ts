@@ -1,5 +1,4 @@
 import { GraphQLClient, RequestOptions } from 'graphql-request';
-import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -558,6 +557,7 @@ export type CreateUpdateContraventionInput = {
   investigationGuid: Scalars['String']['input'];
   investigationPartyGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   legislationReference: Scalars['String']['input'];
+  selectedPartyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateUpdateExhibitInput = {
@@ -2336,6 +2336,7 @@ export type Task = {
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['DateTime']['output'];
   investigationIdentifier: Scalars['String']['output'];
+  investigationLabel?: Maybe<Scalars['String']['output']>;
   remarks: Scalars['String']['output'];
   taskCategoryTypeCode: Scalars['String']['output'];
   taskIdentifier: Scalars['String']['output'];

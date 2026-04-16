@@ -11,7 +11,7 @@ describe("HWCRAssessmentActionService", () => {
       providers: [CaseFileActionService],
     }).compile();
 
-    service = module.get<CaseFileActionService>(CaseFileActionService);
+    service = await module.resolve<CaseFileActionService>(CaseFileActionService);
   });
 
   it("should be defined", () => {

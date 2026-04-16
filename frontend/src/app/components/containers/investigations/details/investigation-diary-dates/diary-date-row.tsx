@@ -45,12 +45,12 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
             <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
-          {showTaskBadge && taskNumber && (
+          {showTaskBadge && taskNumber && diaryDate.taskGuid && (
             <button
               className="badge comp-status-badge-conflict-history"
               style={{ maxHeight: "20px", border: "none" }}
               onClick={() => {
-                navigate(`/investigation/${investigationGuid}/tasks?section=task-item-${taskNumber}`);
+                navigate(`/investigation/${investigationGuid}/task/${diaryDate.taskGuid}`);
               }}
             >
               Task {taskNumber}

@@ -88,7 +88,7 @@ describe("Testing: CodeTable Service", () => {
       ],
     }).compile();
 
-    service = module.get<CodeTableService>(CodeTableService);
+    service = await module.resolve<CodeTableService>(CodeTableService);
   });
 
   it("should be defined", () => {
@@ -299,7 +299,7 @@ describe("Testing: CodeTable service", () => {
       ],
     }).compile();
 
-    service = module.get<CodeTableService>(CodeTableService);
+    service = await module.resolve<CodeTableService>(CodeTableService);
   });
 
   it("should be defined", () => {
@@ -380,7 +380,7 @@ describe("Testing: CodeTable service", () => {
       ],
     }).compile();
 
-    service = module.get<CodeTableService>(CodeTableService);
+    service = await module.resolve<CodeTableService>(CodeTableService);
   });
 
   it("should be defined", () => {
@@ -461,7 +461,7 @@ describe("Testing: CodeTable service", () => {
       ],
     }).compile();
 
-    service = module.get<CodeTableService>(CodeTableService);
+    service = await module.resolve<CodeTableService>(CodeTableService);
   });
 
   it("should be defined", () => {

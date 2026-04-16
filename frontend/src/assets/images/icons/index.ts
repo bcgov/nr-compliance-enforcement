@@ -1,6 +1,7 @@
 import COS from "./ce-cos-icon.svg";
 import PARKS from "./ce-parks-icon.svg";
 import EPO from "./ce-ceeb-icon.svg";
+import NROS from "./ce-nros-icon.svg";
 import EXTERNAL from "./ce-external-icon.svg";
 
 const agencyIcons: { [key: string]: any } = {
@@ -11,7 +12,7 @@ const agencyIcons: { [key: string]: any } = {
   DFO: EXTERNAL,
   ECCC: EXTERNAL,
   POL: EXTERNAL,
-  NROS: EXTERNAL,
+  NROS: NROS,
   OTH: EXTERNAL,
 };
 

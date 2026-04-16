@@ -229,6 +229,12 @@
   overflow: auto;
 }
 
+.comp-table-scroll-container--fixed {
+  flex: 1 1 auto;
+  overflow: auto;
+  border-bottom: 1px solid $gray-300;
+}
+
 .comp-map-container {
   flex: 1 1 auto;
   display: flex;
@@ -340,6 +346,19 @@
   tbody {
     td:nth-child(2) {
       border-left: none;
+    }
+  }
+}
+
+// EXHIBITS LIST TABLE
+#exhibits-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  thead {
+    th + th {
+      border-left: 1px solid $gray-300;
     }
   }
 }
@@ -536,6 +555,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    gap: 0.5rem;
   }
 
   .comp-header-actions-mobile {

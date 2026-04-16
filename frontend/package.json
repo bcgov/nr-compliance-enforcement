@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.239",
+  "version": "2.0.252",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -9,10 +9,6 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@graphql-codegen/cli": "^5.0.7",
-    "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-graphql-request": "^6.3.0",
-    "@graphql-codegen/typescript-operations": "^4.6.1",
     "@popperjs/core": "^2.11.7",
     "@react-aria/ssr": "^3.6.0",
     "@reduxjs/toolkit": "^2.5.1",
@@ -178,6 +174,11 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.25.9",
+    "@graphql-codegen/cli": "^6.2.1",
+    "@graphql-codegen/client-preset": "^5.2.4",
+    "@graphql-codegen/typescript": "^5.0.9",
+    "@graphql-codegen/typescript-graphql-request": "^7.0.0",
+    "@graphql-codegen/typescript-operations": "^5.0.9",
     "@playwright/test": "^1.52.0",
     "@tsconfig/node22": "^22.0.0",
     "@types/jest": "^29.5.1",

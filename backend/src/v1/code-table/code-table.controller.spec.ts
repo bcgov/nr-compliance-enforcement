@@ -108,7 +108,7 @@ describe("Testing: CodeTable Controller", () => {
     app = module.createNestApplication();
     await app.init();
 
-    controller = module.get<CodeTableController>(CodeTableController);
+    controller = await module.resolve<CodeTableController>(CodeTableController);
   });
 
   it("should be defined", () => {

@@ -48,7 +48,7 @@ import notificationInvalid from "@assets/images/notification-invalid.png";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { from } from "linq-to-typescript";
-import { openModal, isFeatureActive } from "@store/reducers/app";
+import { openModal } from "@store/reducers/app";
 import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
@@ -59,6 +59,7 @@ import { SuspectWitnessDetails } from "./suspect-witness-details";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 import { Complaint } from "@apptypes/app/complaints/complaint";
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
@@ -71,6 +72,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { WebEOCComplaintUpdateList } from "@components/containers/complaints/webeoc-complaint-updates/webeoc-complaint-update-list";
 import { AgencyType } from "@apptypes/app/agency-types";
 import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ceeb/ceeb-outcome-report";
+import { NrosOutcomeReport } from "@components/containers/complaints/outcomes/nros/nros-outcome-report";
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
@@ -86,7 +88,7 @@ import { isValidEmail } from "@/app/common/validate-email";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
-import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { selectCanAccessCases } from "@/app/access/module-access";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -133,7 +135,7 @@ export const ComplaintDetailsEdit: FC = () => {
     navigate("/not-found");
   }
 
-  const casesActive = useAppSelector(isFeatureActive(FEATURE_TYPES.CASES));
+  const casesActive = useAppSelector(selectCanAccessCases);
   const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(GET_ASSOCIATED_CASE_FILES, {
     queryKey: ["caseFilesByActivityIds", id],
     variables: { activityIdentifiers: [id] },
@@ -207,8 +209,13 @@ export const ComplaintDetailsEdit: FC = () => {
     isPrivacyRequested,
   } = useAppSelector(selectComplaintCallerInformation);
 
-  const enablePrivacyFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency === AgencyType.CEEB;
-  const enableOfficeFeature = ownedByAgencyCode?.agency && ownedByAgencyCode?.agency !== AgencyType.CEEB;
+  const enablePrivacyFeature =
+    ownedByAgencyCode?.agency &&
+    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS);
+  const enableOfficeFeature =
+    ownedByAgencyCode?.agency &&
+    ownedByAgencyCode?.agency !== AgencyType.CEEB &&
+    ownedByAgencyCode?.agency !== AgencyType.NROS;
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -358,34 +365,44 @@ export const ComplaintDetailsEdit: FC = () => {
       setErrorNotificationClass("comp-complaint-error display-none");
       setReadOnly(true);
 
-      let toastId: Id;
+      (async () => {
+        if (attachmentsToDelete?.length) {
+          await handlePersistAttachments({
+            dispatch,
+            attachmentsToAdd: null,
+            attachmentsToDelete,
+            identifier: id,
+            subIdentifier: undefined,
+            setAttachmentsToAdd,
+            setAttachmentsToDelete,
+            attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+            isSynchronous: false,
+          });
+        }
 
-      if (attachmentsToAdd) {
-        toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-          position: "top-right",
-          autoClose: false,
-          closeOnClick: false,
-          closeButton: false,
-          draggable: false,
-        });
-      }
+        if (attachmentsToAdd?.length) {
+          const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
+            position: "top-right",
+            autoClose: false,
+            closeOnClick: false,
+            closeButton: false,
+            draggable: false,
+          });
 
-      handlePersistAttachments({
-        dispatch,
-        attachmentsToAdd,
-        attachmentsToDelete,
-        identifier: id,
-        subIdentifier: undefined,
-        setAttachmentsToAdd,
-        setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
-        isSynchronous: false,
-      }).then(() => {
-        if (attachmentsToAdd) {
+          await uploadAttachmentsWithProgress({
+            dispatch,
+            files: attachmentsToAdd,
+            identifier: id,
+            attachmentType: AttachmentEnum.COMPLAINT_ATTACHMENT,
+            toastId,
+          });
+
+          setAttachmentsToAdd(null);
           DismissToast(toastId);
         }
+
         setAttachmentRefreshKey((k) => k + 1);
-      });
+      })();
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
@@ -1659,14 +1676,22 @@ export const ComplaintDetailsEdit: FC = () => {
         <CeebOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
+      {/* NROS ERS Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.NROS && (
+        <NrosOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
+      )}
+
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
         <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
       {/* COS ERS File Linkage */}
-      {readOnly && complaintType !== COMPLAINT_TYPES.GIR && ownedByAgencyCode?.agency !== AgencyType.CEEB && (
-        <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
-      )}
+      {readOnly &&
+        complaintType !== COMPLAINT_TYPES.GIR &&
+        ownedByAgencyCode?.agency !== AgencyType.CEEB &&
+        ownedByAgencyCode?.agency !== AgencyType.NROS && (
+          <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
+        )}
     </div>
   );
 };
