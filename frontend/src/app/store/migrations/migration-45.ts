@@ -5,6 +5,7 @@ export const AddEnforcementActions = {
       codeTables: {
         ...state.codeTables,
         "enforcement-action-type": [],
+        "ticket-outcome-type": [],
       },
     };
   },

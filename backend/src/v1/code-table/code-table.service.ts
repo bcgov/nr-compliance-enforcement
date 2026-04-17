@@ -909,6 +909,15 @@ export class CodeTableService {
         const results = data.enforcementActionCodes;
         return results;
       }
+
+      case "ticket-outcome-type": {
+        const { data } = await get(token, {
+          query:
+            "{ ticketOutcomeCodes { ticketOutcomeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.ticketOutcomeCodes;
+        return results;
+      }
     }
   };
 

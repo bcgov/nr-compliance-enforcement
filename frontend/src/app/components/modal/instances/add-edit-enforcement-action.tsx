@@ -15,7 +15,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { selectEnforcementActionsByAgency } from "@/app/store/reducers/code-table-selectors";
+import { selectEnforcementActionsByAgency, selectTicketOutcomes } from "@/app/store/reducers/code-table-selectors";
 import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
 
 const VIOLATION_TICKET_CODES = ["FDVT", "PRVT"];
@@ -47,14 +47,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
-
-  // TODO get these from the back end
-  const ticketOutcomeOptions = [
-    { value: "APPEALED", label: "Appealed" },
-    { value: "CANCELLED", label: "Cancelled" },
-    { value: "ISSUED", label: "Issued" },
-    { value: "PAID", label: "Paid" },
-  ];
+  const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
 
   const communityOptions = areaCodes.map((c) => ({
     value: c.area ?? "",
