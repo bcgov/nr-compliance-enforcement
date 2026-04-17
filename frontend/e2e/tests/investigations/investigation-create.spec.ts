@@ -74,6 +74,7 @@ test.describe("Investigation Create Form", () => {
     const investigationIdInput = page.locator("#display-name");
     await investigationIdInput.fill(uniqueId);
 
+    await selectItemById("community-select", "100 Mile House", page);
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
