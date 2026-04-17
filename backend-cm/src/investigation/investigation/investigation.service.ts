@@ -239,15 +239,33 @@ export class InvestigationService {
   }
 
   async create(input: CreateInvestigationInput): Promise<Investigation> {
+    let caseIdentifier = input.caseIdentifier;
+    const leadAgency = input.leadAgency;
+    const investigationStatus = input.investigationStatus ?? "OPEN";
+
+    // Automatically open a case file if one is not provided
+    if (!caseIdentifier) {
+      const today = new Date().toISOString().slice(0, 10);
+      const caseName = `Investigation ${input.name} (${today})`;
+      const newCase = await this.caseFileService.create({
+        leadAgency,
+        caseStatus: "OPEN",
+        name: caseName,
+        description: "Auto-generated case file for investigation",
+        createdByAppUserGuid: input.createdByAppUserGuid,
+      });
+      caseIdentifier = newCase.caseIdentifier;
+    }
+
     // Verify case file exists
     const caseFile = await this.shared.case_file.findUnique({
       where: {
-        case_file_guid: input.caseIdentifier,
+        case_file_guid: caseIdentifier,
       },
     });
 
     if (!caseFile) {
-      throw new Error(`Case file with guid ${input.caseIdentifier} not found`);
+      throw new Error(`Case file with guid ${caseIdentifier} not found`);
     }
 
     // Create the investigation
@@ -256,9 +274,9 @@ export class InvestigationService {
       try {
         investigation = await this.prisma.investigation.create({
           data: {
-            investigation_status: input.investigationStatus,
+            investigation_status: investigationStatus,
             investigation_description: input.description,
-            owned_by_agency_ref: input.leadAgency,
+            owned_by_agency_ref: leadAgency,
             name: input.name,
             investigation_opened_utc_timestamp: new Date(),
             primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
@@ -266,6 +284,7 @@ export class InvestigationService {
             file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
             discovery_date_utc_date: input.discoveryDate,
             discovery_date_utc_time: input.discoveryTime,
+            community_code_ref: input.community || null,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -284,7 +303,7 @@ export class InvestigationService {
     // Try to create case activity record, and if it fails, delete the investigation
     try {
       await this.caseActivityService.create({
-        caseFileGuid: input.caseIdentifier,
+        caseFileGuid: caseIdentifier,
         activityType: "INVSTGTN",
         activityIdentifier: investigation.investigation_guid,
       });
@@ -377,6 +396,9 @@ export class InvestigationService {
         }
         if (input.discoveryTime !== undefined) {
           updateData.discovery_date_utc_time = input.discoveryTime;
+        }
+        if (input.community !== undefined) {
+          updateData.community_code_ref = input.community || null;
         }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({

@@ -28,6 +28,7 @@ export class Investigation {
   fileCoordinatorGuid?: string;
   discoveryDate: Date;
   discoveryTime?: Date;
+  community?: string;
   parties: [InvestigationParty];
   contraventions: [Contravention];
   tasks: [Task];
@@ -66,8 +67,9 @@ export class InvestigationFilters {
 
 @InputType()
 export class CreateInvestigationInput {
-  @Field(() => String)
-  caseIdentifier: string;
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  caseIdentifier?: string;
 
   @Field(() => String)
   leadAgency: string;
@@ -75,8 +77,9 @@ export class CreateInvestigationInput {
   @Field(() => String)
   description: string;
 
-  @Field(() => String)
-  investigationStatus: string;
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  investigationStatus?: string;
 
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
@@ -113,6 +116,10 @@ export class CreateInvestigationInput {
   @Field(() => Date, { nullable: true })
   @IsOptional()
   discoveryTime?: Date;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  community?: string;
 }
 
 @InputType()
@@ -158,6 +165,10 @@ export class UpdateInvestigationInput {
   @Field(() => Date, { nullable: true })
   @IsOptional()
   discoveryTime?: Date;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  community?: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -226,6 +237,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.discoveryTime,
       mapFrom((src) => src.discovery_date_utc_time),
+    ),
+    forMember(
+      (dest) => dest.community,
+      mapFrom((src) => src.community_code_ref ?? undefined),
     ),
     forMember(
       (dest) => dest.parties,
