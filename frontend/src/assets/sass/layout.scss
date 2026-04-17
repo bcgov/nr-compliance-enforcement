@@ -50,6 +50,7 @@ a {
   padding: 0 24px;
   color: $white;
   background: $bc-gov-primary;
+  z-index: 9000;
 
   .comp-header-logo {
     display: flex;
@@ -947,6 +948,8 @@ td.actions-col {
   font-size: 16px;
   height: 36px;
   color: $bc-gov-primary-700;
+  position: sticky;
+  z-index: 9000;
 }
 
 // TABS

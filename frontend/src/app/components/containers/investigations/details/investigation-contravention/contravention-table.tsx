@@ -118,9 +118,21 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
             </Dropdown.Toggle>
             <Dropdown.Menu
               popperConfig={{
-                modifiers: [{ name: "offset", options: { offset: [0, 8], placement: "start" } }],
+                strategy: "fixed",
+                modifiers: [
+                  { name: "offset", options: { offset: [0, 8] } },
+                  { name: "preventOverflow", options: { boundary: "viewport" } },
+                ],
               }}
             >
+              {partyGuid && (
+                <Dropdown.Item
+                  id={`add-enforcement-contravention-${c.contraventionIdentifier}`}
+                  onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+                >
+                  <i className="bi bi-plus-circle" /> Add enforcement action
+                </Dropdown.Item>
+              )}
               <Dropdown.Item
                 id={`edit-contravention-${c.contraventionIdentifier}`}
                 onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
