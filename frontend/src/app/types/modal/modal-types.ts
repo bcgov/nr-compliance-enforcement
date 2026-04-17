@@ -24,6 +24,7 @@ export const ADD_EDIT_DIARY_DATE = "ADD_EDIT_DIARY_DATE";
 export const ADD_EDIT_TASK_ACTION = "ADD_EDIT_TASK_ACTION";
 export const MULTI_STEP_MODAL = "MULTI_STEP_MODAL";
 export const ADD_EDIT_TASK_EXHIBIT = "ADD_EDIT_TASK_EXHIBIT";
+export const ADD_EDIT_ENFORCEMENT_ACTION = "ADD_EDIT_ENFORCEMENT_ACTION";
 
 export interface ModalProps {
   modalType: string;

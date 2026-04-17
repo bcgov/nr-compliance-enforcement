@@ -4,4 +4,5 @@ type EnforcementActionCode {
   longDescription: String
   displayOrder: Int
   activeIndicator: Boolean
+  agencyCode: String
 }

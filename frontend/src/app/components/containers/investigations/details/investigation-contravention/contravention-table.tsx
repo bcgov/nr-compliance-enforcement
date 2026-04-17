@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention } from "@/generated/graphql";
@@ -15,6 +15,7 @@ interface ContraventionTableProps {
   investigationGuid: string;
   partyGuid: string | null;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
+  onAddEnforcementAction: (contraventionId: string) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -37,6 +38,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   investigationGuid,
   partyGuid,
   onEdit,
+  onAddEnforcementAction,
 }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
 
@@ -70,12 +72,24 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       },
     },
     {
-      label: "Enforcement Action",
+      label: "Enforcement action",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: false,
       getValue: () => "",
-      renderCell: () => "-",
+      renderCell: (c) => {
+        if (!partyGuid) return <span>-</span>;
+        return (
+          <Button
+            id={`add-enforcement-action-${c.contraventionIdentifier}`}
+            variant="outline-primary"
+            size="sm"
+            onClick={() => onAddEnforcementAction(c.contraventionIdentifier)}
+          >
+            <i className="bi bi-plus-circle" /> Add enforcement action
+          </Button>
+        );
+      },
     },
     {
       label: "Status",

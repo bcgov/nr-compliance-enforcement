@@ -1,5 +1,5 @@
 import { Logger } from "@nestjs/common";
-import { Args, Query, Resolver } from "@nestjs/graphql";
+import { Query, Resolver } from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
@@ -12,9 +12,9 @@ export class EnforcementActionCodeResolver {
 
   @Query("enforcementActionCodes")
   @Roles(coreRoles)
-  async findEnforcementActionCodes(@Args("agencyCode") agencyCode: string) {
+  async findEnforcementActionCodes() {
     try {
-      return await this.enforcementActionCodeService.findEnforcementActionCodes(agencyCode);
+      return await this.enforcementActionCodeService.findEnforcementActionCodes();
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error fetching enforcement action codes", {

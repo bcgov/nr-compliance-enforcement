@@ -3,7 +3,7 @@ import { ContraventionTable } from "@/app/components/containers/investigations/d
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
-import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
+import { ADD_EDIT_ENFORCEMENT_ACTION, MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
@@ -62,6 +62,25 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             />
           ),
           handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
+
+  const onAddEnforcementAction = (contraventionId?: string) => {
+    const contravention = contraventionId
+      ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
+      : undefined;
+
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
+        modalSize: "lg",
+        data: {
+          contravention,
+          partyName: "TODO",
+          onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,
       }),
@@ -137,6 +156,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             contraventions={groupedContraventions}
             investigationGuid={investigationGuid}
             partyGuid={partyGuid}
+            onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
             onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
           />
         </div>
@@ -150,6 +170,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contraventions={unknownGroups.flatMap((g) => g.contraventions)}
               investigationGuid={investigationGuid}
               partyGuid={null}
+              onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
               onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
             />
           )}

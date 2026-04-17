@@ -50,6 +50,7 @@ import {
   fetchTaskCategoryTypes,
   fetchTaskTypes,
   fetchLegislationTypes,
+  fetchEnforcementActionTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -106,6 +107,7 @@ const initialState: CodeTableState = {
   "task-category-type": [],
   "task-type": [],
   "legislation-type": [],
+  "enforcement-action-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -180,6 +182,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "task-category-type": taskCategoryType,
       "task-type": taskType,
       "legislation-type": legislationType,
+      "enforcement-action-type": enforcementActionType,
     },
   } = state;
 
@@ -338,7 +341,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(legislationType).any()) {
       dispatch(fetchLegislationTypes());
     }
-  } catch (error) {}
+    if (!from(enforcementActionType).any()) {
+      dispatch(fetchLegislationTypes());
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 export const fetchComplaintCodeTables = (): AppThunk => async (dispatch) => {
@@ -398,6 +406,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchTaskCategoryTypes());
     dispatch(fetchTaskTypes());
     dispatch(fetchLegislationTypes());
+    dispatch(fetchEnforcementActionTypes());
   } catch (error) {
     console.error(error);
   }
