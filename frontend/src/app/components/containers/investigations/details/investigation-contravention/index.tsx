@@ -68,10 +68,12 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
-  const onAddEnforcementAction = (contraventionId?: string) => {
+  const onAddEnforcementAction = (contraventionId: string, partyGuid: string) => {
     const contravention = contraventionId
       ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
       : undefined;
+
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
 
     dispatch(
       openModal({
@@ -79,7 +81,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         modalSize: "lg",
         data: {
           contravention,
-          partyName: "TODO",
+          party,
           onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,
@@ -157,7 +159,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contraventions={groupedContraventions}
               investigationGuid={investigationGuid}
               partyGuid={partyGuid}
-              onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
+              onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
               onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
             />
           </div>
@@ -168,13 +170,15 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         <div className="mb-4">
           <h3 className="mb-3">Unknown parties</h3>
           {unknownGroups.length > 0 && (
-            <ContraventionTable
-              contraventions={unknownGroups.flatMap((g) => g.contraventions)}
-              investigationGuid={investigationGuid}
-              partyGuid={null}
-              onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
-              onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
-            />
+            <div className="comp-data-container">
+              <ContraventionTable
+                contraventions={unknownGroups.flatMap((g) => g.contraventions)}
+                investigationGuid={investigationGuid}
+                partyGuid={null}
+                onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
+                onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+              />
+            </div>
           )}
         </div>
       )}
@@ -183,7 +187,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 };
 
 // Helper
-function getPartyLabel(party: InvestigationParty): string {
+export function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
   if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
   return "Unknown parties";

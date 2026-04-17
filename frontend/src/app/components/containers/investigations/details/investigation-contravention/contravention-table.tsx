@@ -15,7 +15,7 @@ interface ContraventionTableProps {
   investigationGuid: string;
   partyGuid: string | null;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
-  onAddEnforcementAction: (contraventionId: string) => void;
+  onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -74,29 +74,30 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
     {
       label: "Enforcement action",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => {
-        if (!partyGuid) return <span>-</span>;
+        if (!partyGuid) return "";
         return (
-          <Button
-            id={`add-enforcement-action-${c.contraventionIdentifier}`}
-            variant="outline-primary"
-            size="sm"
-            onClick={() => onAddEnforcementAction(c.contraventionIdentifier)}
-          >
-            <i className="bi bi-plus-circle" /> Add enforcement action
-          </Button>
+          <div className="d-flex justify-content-center">
+            <Button
+              id={`add-enforcement-action-${c.contraventionIdentifier}`}
+              variant="outline-primary"
+              size="sm"
+              onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+            >
+              <i className="bi bi-plus-circle" /> Add enforcement action
+            </Button>
+          </div>
         );
       },
     },
     {
       label: "Actions",
-      headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-25 comp-cell-min-width-25 actions-col case-table-actions-cell",
+      headerClassName: "sticky-col sticky-col--right comp-cell-width-25 comp-cell-min-width-25 case-table-actions-cell",
       cellClassName:
-        "comp-cell-width-25 comp-cell-min-width-25 sticky-col sticky-col--right actions-col case-table-actions-cell",
+        "comp-cell-width-25 comp-cell-min-width-25 sticky-col sticky-col--right case-table-actions-cell align-middle",
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => (
@@ -111,7 +112,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
               size="sm"
               variant="outline-primary"
               bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
-              className="comp-cell-width-30 comp-cell-height-30 d-flex align-items-center justify-content-center"
+              className="comp-cell-width-30 comp-cell-height-34 d-flex align-items-center justify-content-center"
             >
               <i className="bi bi-three-dots-vertical ms-1 me-1" />
             </Dropdown.Toggle>

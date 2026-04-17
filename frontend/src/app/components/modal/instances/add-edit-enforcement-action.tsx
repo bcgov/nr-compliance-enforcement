@@ -16,6 +16,7 @@ import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { selectEnforcementActionsByAgency } from "@/app/store/reducers/code-table-selectors";
+import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
 
 const VIOLATION_TICKET_CODES = ["FDVT", "PRVT"];
 
@@ -38,7 +39,7 @@ const LegislationDisplay: FC<{ legislationIdentifierRef: string }> = ({ legislat
 
 export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { contravention, partyName, onDirtyChange } = modalData ?? {};
+  const { contravention, party, onDirtyChange } = modalData ?? {};
 
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const agency = useAppSelector(selectOfficerAgency);
@@ -60,16 +61,10 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
     label: c.areaName ?? "",
   }));
 
-  const officerOptions = [...(officersInAgency ?? [])]
-    .sort((a, b) =>
-      `${a.last_name}, ${a.first_name}`.localeCompare(`${b.last_name}, ${b.first_name}`, undefined, {
-        sensitivity: "base",
-      }),
-    )
-    .map((o) => ({
-      value: o.app_user_guid,
-      label: `${o.last_name}, ${o.first_name}`,
-    }));
+  const officerOptions = [...(officersInAgency ?? [])].map((o) => ({
+    value: o.app_user_guid,
+    label: `${o.last_name}, ${o.first_name}`,
+  }));
 
   const [isViolationTicket, setIsViolationTicket] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -138,26 +133,27 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
       </Modal.Header>
       <Modal.Body>
         {/* View-only fields */}
-        <div className="enforcement-action-view-field mb-2">
-          <span className="enforcement-action-view-field__label">Party</span>
-          <span className="enforcement-action-view-field__value">{partyName}</span>
+        <div className="comp-view-field mb-3">
+          <div className="mb-2">
+            <span className="comp-view-field__label">Party</span>
+            <span className="comp-view-field__value">{getPartyLabel(party)}</span>
+          </div>
+          <div>
+            <span className="comp-view-field__label">Contravention</span>
+            <span className="comp-view-field__value">
+              <LegislationDisplay
+                legislationIdentifierRef={(contravention as Contravention)?.legislationIdentifierRef}
+              />
+            </span>
+          </div>
         </div>
-        <div className="enforcement-action-view-field mb-3">
-          <span className="enforcement-action-view-field__label">Contravention</span>
-          <span className="enforcement-action-view-field__value">
-            <LegislationDisplay legislationIdentifierRef={(contravention as Contravention)?.legislationIdentifierRef} />
-          </span>
-        </div>
-
-        <hr />
-
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
         >
-          <div className="row">
+          <div className="row mb-3">
             <div className="col-6">
               <FormField
                 form={form}
@@ -210,7 +206,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
             </div>
           </div>
 
-          <div className="row">
+          <div className="row mb-3">
             <div className="col-6">
               <FormField
                 form={form}
