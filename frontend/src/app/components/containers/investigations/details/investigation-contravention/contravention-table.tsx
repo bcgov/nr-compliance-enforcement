@@ -45,17 +45,17 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   const columns: CompColumn<Contravention>[] = [
     {
       label: "Contravention",
-      headerClassName: "",
-      cellClassName: "",
-      isSortable: false,
+      headerClassName: "comp-cell-width-percent-60",
+      cellClassName: "comp-cell-width-percent-60",
+      isSortable: true,
       getValue: (c) => c.legislationIdentifierRef ?? "",
       renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,
     },
     {
       label: "Date",
       sortKey: "date",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
+      cellClassName: "comp-cell-width-80 comp-cell-min-width-80",
       isSortable: true,
       getValue: (c) => c.date ?? "",
       renderCell: (c) => formatDate(parseUTCDateTimeToLocal(c.date, null)?.toString()),
@@ -64,7 +64,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       label: "Community",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      isSortable: false,
+      isSortable: true,
       getValue: (c) => c.community ?? "",
       renderCell: (c) => {
         const community = areaCodes.find((item) => item.area === c.community);
@@ -92,23 +92,15 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       },
     },
     {
-      label: "Status",
-      headerClassName: "comp-cell-width-110",
-      cellClassName: "comp-cell-width-110",
-      isSortable: false,
-      getValue: () => "",
-      renderCell: () => "-",
-    },
-    {
       label: "Actions",
       headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell",
+        "sticky-col sticky-col--right comp-cell-width-25 comp-cell-min-width-25 actions-col case-table-actions-cell",
       cellClassName:
-        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell",
+        "comp-cell-width-25 comp-cell-min-width-25 sticky-col sticky-col--right actions-col case-table-actions-cell",
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => (
-        <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-center">
           <Dropdown
             id={`contravention-action-button-${c.contraventionIdentifier}`}
             drop="start"
@@ -121,7 +113,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
               bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
               className="comp-cell-width-30 comp-cell-height-30 d-flex align-items-center justify-content-center"
             >
-              <i className="bi bi-three-dots-vertical comp-padding-left-6" />
+              <i className="bi bi-three-dots-vertical ms-1 me-1" />
             </Dropdown.Toggle>
             <Dropdown.Menu
               popperConfig={{
@@ -149,7 +141,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       isFixedHeight={false}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}
-      emptyMessage="No contraventions found."
+      emptyMessage="No contraventions added."
     />
   );
 };

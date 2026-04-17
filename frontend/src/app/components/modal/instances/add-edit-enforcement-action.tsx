@@ -47,8 +47,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
 
-  console.log(enforcementActionOptions);
-
+  // TODO get these from the back end
   const ticketOutcomeOptions = [
     { value: "APPEALED", label: "Appealed" },
     { value: "CANCELLED", label: "Cancelled" },

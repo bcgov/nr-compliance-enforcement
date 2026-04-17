@@ -166,7 +166,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <div className="comp-details-view">
         <div className="comp-details-content">
           <div className="d-flex align-items-center justify-content-between mb-3">
-            <h3 className="mb-0">Investigation summary</h3>
+            <h2 className="mb-0">Investigation summary</h2>
             <Button
               variant="outline-primary"
               size="sm"

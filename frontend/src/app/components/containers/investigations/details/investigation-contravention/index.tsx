@@ -126,7 +126,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               : "col-12"
           }
         >
-          <h3>Outcomes</h3>
+          <h2>Outcomes</h2>
           <Button
             variant="primary"
             size="sm"
@@ -141,7 +141,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
       {knownGroups.length > 0 && (
         <div className="row mb-4">
-          <h4>Known parties</h4>
+          <h3>Known parties</h3>
         </div>
       )}
       {knownGroups.map(({ partyName, contraventions: groupedContraventions, partyGuid }) => (
@@ -152,19 +152,21 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           <h5 className="mb-3 fw-bold">
             {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
           </h5>
-          <ContraventionTable
-            contraventions={groupedContraventions}
-            investigationGuid={investigationGuid}
-            partyGuid={partyGuid}
-            onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
-            onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-          />
+          <div className="comp-data-container">
+            <ContraventionTable
+              contraventions={groupedContraventions}
+              investigationGuid={investigationGuid}
+              partyGuid={partyGuid}
+              onAddEnforcementAction={(id) => onAddEnforcementAction(id)}
+              onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
+            />
+          </div>
         </div>
       ))}
 
       {(parties.length > 0 || unknownGroups.length > 0) && (
         <div className="mb-4">
-          <h4 className="mb-3">Unknown parties</h4>
+          <h3 className="mb-3">Unknown parties</h3>
           {unknownGroups.length > 0 && (
             <ContraventionTable
               contraventions={unknownGroups.flatMap((g) => g.contraventions)}
