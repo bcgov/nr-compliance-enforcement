@@ -142,7 +142,7 @@ export const InvestigationForm = ({
               </div>
             )}
           />
-          {!isEditMode && (
+          {isEditMode && (
             <>
               <FormField
                 form={form}
