@@ -210,7 +210,7 @@ export const CompTable = <T,>({
         </Table>
       </div>
 
-      {totalCount > pageSize && (
+      {totalCount > 0 && (
         <Paginator
           currentPage={currentPage}
           totalItems={totalCount}
