@@ -185,6 +185,18 @@ const App: FC = () => {
                 )}
                 {investigationsActive && (
                   <Route
+                    path="/investigation/create"
+                    element={<InvestigationCreate />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
+                    path="/investigation/:investigationGuid/edit"
+                    element={<InvestigationCreate />}
+                  />
+                )}
+                {investigationsActive && (
+                  <Route
                     path="/investigation/:investigationGuid/task/create"
                     element={<TaskCreate />}
                   />
