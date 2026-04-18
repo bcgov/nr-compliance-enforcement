@@ -1289,7 +1289,7 @@ export class ComplaintService {
     try {
       builder = this._generateQueryBuilder("SECTOR");
 
-      builder.where({ complaint_identifier: In(Array.isArray(ids) && ids.length ? ids : [null]) });
+      builder.where({ complaint_identifier: In(ids) });
       const complaints = await builder.getMany();
       const sectorComplaints = this.mapper.mapArray<Complaint, SectorComplaintDto>(
         complaints as Array<Complaint>,
