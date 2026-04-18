@@ -51,7 +51,8 @@ export class ComplaintController {
     @Query("ids") complaintIds: string[],
     @Token() token: string,
   ): Promise<SectorComplaintDto[]> {
-    return await this.service.getSectorComplaintsByIds(complaintIds, token);
+    const normalizedIds = !complaintIds ? [] : Array.isArray(complaintIds) ? complaintIds : [complaintIds];
+    return await this.service.getSectorComplaintsByIds(normalizedIds, token);
   }
 
   @Get(":complaintType")
