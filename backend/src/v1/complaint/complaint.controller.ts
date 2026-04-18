@@ -59,6 +59,7 @@ export class ComplaintController {
     } else {
       normalizedIds = [complaintIds];
     }
+    console.log(normalizedIds);
     return await this.service.getSectorComplaintsByIds(normalizedIds, token);
   }
 
