@@ -133,7 +133,20 @@ export const get = <T, M = {}>(
     }
 
     axios
-      .get(url, config)
+      .get(url, {
+        ...config,
+        paramsSerializer: (params) => {
+          const searchParams = new URLSearchParams();
+          Object.entries(params).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              value.forEach((v) => searchParams.append(key, v));
+            } else if (value !== undefined && value !== null) {
+              searchParams.append(key, String(value));
+            }
+          });
+          return searchParams.toString();
+        },
+      })
       .then((response: AxiosResponse) => {
         if (!response) {
           return reject(new Error("No response"));

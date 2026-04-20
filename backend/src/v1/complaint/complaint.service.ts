@@ -1284,7 +1284,6 @@ export class ComplaintService {
   };
 
   getSectorComplaintsByIds = async (ids: string[], token: string): Promise<SectorComplaintDto[]> => {
-    console.log(ids);
     let builder: SelectQueryBuilder<complaintAlias> | SelectQueryBuilder<Complaint>;
 
     try {
@@ -1292,18 +1291,15 @@ export class ComplaintService {
 
       builder.where({ complaint_identifier: In(ids) });
       const complaints = await builder.getMany();
-      console.log(complaints);
       const sectorComplaints = this.mapper.mapArray<Complaint, SectorComplaintDto>(
         complaints as Array<Complaint>,
         "Complaint",
         "SectorComplaintDto",
       );
-      console.log(sectorComplaints);
       await this.setSectorComplaintIssueType(sectorComplaints);
       await this.setOrganization(sectorComplaints, token);
       return sectorComplaints;
     } catch (error) {
-      console.log(error);
       this.logger.error(error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
     }
@@ -1568,7 +1564,6 @@ export class ComplaintService {
     const getComplaintsByType = (type: string) => {
       const builder = this._generateQueryBuilder(type as COMPLAINT_TYPE);
       const complaintIds: string[] = items.filter((item) => item.type === type).map((item) => item.id);
-      console.log("in setSectorComplaintIssueType, complaintIds: ", complaintIds);
       builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
         complaint_identifiers: complaintIds,
       });
@@ -1666,7 +1661,6 @@ export class ComplaintService {
         }
       }
     } catch (error) {
-      console.log("Error in setOrganization: ", error);
       this.logger.error(`Error adding organization data to complaints: ${error}`);
     }
   };
