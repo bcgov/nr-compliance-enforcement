@@ -99,7 +99,7 @@ export const CompTable = <T,>({
   const totalCount = isServerPagination ? (totalItems ?? 0) : sortedData.length;
 
   const renderHeader = () => (
-    <thead className="sticky-table-header">
+    <thead className={`${isFixedHeight ? "sticky-table-header" : "sticky-table-header--variable"}`}>
       <tr>
         {/* Chevron column header - only rendered when table is expandable */}
         {isExpandable && <th className="comp-cell-width-30 comp-cell-min-width-30" />}

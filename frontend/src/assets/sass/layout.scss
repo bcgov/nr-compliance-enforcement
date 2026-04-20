@@ -869,6 +869,12 @@ p {
   z-index: 999;
 }
 
+.sticky-table-header--variable {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+}
+
 .sticky-col {
   position: sticky;
 

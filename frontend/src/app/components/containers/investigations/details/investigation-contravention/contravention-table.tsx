@@ -118,10 +118,14 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
             </Dropdown.Toggle>
             <Dropdown.Menu
               popperConfig={{
-                strategy: "fixed",
                 modifiers: [
-                  { name: "offset", options: { offset: [0, 8] } },
-                  { name: "preventOverflow", options: { boundary: "viewport" } },
+                  {
+                    name: "offset",
+                    options: {
+                      offset: [0, 8],
+                      placement: "start",
+                    },
+                  },
                 ],
               }}
             >
