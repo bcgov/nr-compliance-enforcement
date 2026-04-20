@@ -93,6 +93,9 @@ export class InvestigationService {
                   where: {
                     active_ind: true,
                   },
+                  orderBy: {
+                    create_utc_timestamp: "asc",
+                  },
                   include: {
                     ticket: {
                       where: {

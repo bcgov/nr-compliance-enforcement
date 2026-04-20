@@ -2,7 +2,13 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
-import { Contravention, CreateEnforcementActionInput, InvestigationParty } from "@/generated/graphql";
+import {
+  Contravention,
+  CreateEnforcementActionInput,
+  EnforcementAction,
+  InvestigationParty,
+  UpdateEnforcementActionInput,
+} from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
@@ -19,6 +25,7 @@ import { selectEnforcementActionsByAgency, selectTicketOutcomes } from "@/app/st
 import {
   CREATE_ENFORCEMENT_ACTION,
   getPartyLabel,
+  UPDATE_ENFORCEMENT_ACTION,
 } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { CompInput } from "@/app/components/common/comp-input";
@@ -44,7 +51,9 @@ const LegislationDisplay: FC<{ legislationIdentifierRef: string }> = ({ legislat
 
 export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { contravention, party, onDirtyChange } = modalData ?? {};
+  const { contravention, party, enforcementAction, onDirtyChange } = modalData ?? {};
+
+  const isEdit = !!enforcementAction;
 
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const agency = useAppSelector(selectOfficerAgency);
@@ -64,7 +73,11 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
     label: `${o.last_name}, ${o.first_name}`,
   }));
 
-  const [isViolationTicket, setIsViolationTicket] = useState(false);
+  const [isViolationTicket, setIsViolationTicket] = useState(
+    VIOLATION_TICKET_CODES.includes(
+      (enforcementAction as EnforcementAction)?.enforcementActionCode?.enforcementActionCode ?? "",
+    ),
+  );
 
   const saveMutation = useGraphQLMutation(CREATE_ENFORCEMENT_ACTION, {
     onSuccess: () => {
@@ -76,33 +89,59 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
     },
   });
 
-  const isSaving = saveMutation.isPending;
+  const updateMutation = useGraphQLMutation(UPDATE_ENFORCEMENT_ACTION, {
+    onSuccess: () => {
+      ToggleSuccess("Enforcement action updated successfully");
+      submit();
+    },
+    onError: () => {
+      ToggleError("Failed to update enforcement action");
+    },
+  });
+
+  const isSaving = saveMutation.isPending || updateMutation.isPending;
 
   const form = useForm({
     defaultValues: {
-      dateIssued: new Date(),
-      community: (contravention as Contravention)?.community ?? "",
-      servingOfficer: currentUserGuid ?? "",
-      enforcementActionCode: "",
-      ticketAmount: "",
-      ticketNumber: "",
-      ticketOutcomeCode: "ISSUED",
+      dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
+      community: enforcementAction?.geoOrganizationUnitCode ?? (contravention as Contravention)?.community ?? "",
+      servingOfficer: enforcementAction?.appUserIdentifier ?? currentUserGuid ?? "",
+      enforcementActionCode: enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
+      ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
+      ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
+      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "ISSUED",
     },
     onSubmit: async ({ value }) => {
-      const input: CreateEnforcementActionInput = {
-        contraventionIdentifier: (contravention as Contravention)?.contraventionIdentifier,
-        partyIdentifier: (party as InvestigationParty)?.partyIdentifier,
-        enforcementActionCode: value.enforcementActionCode,
-        dateIssued: value.dateIssued,
-        geoOrganizationUnitCode: value.community,
-        appUserIdentifier: value.servingOfficer,
-        ...(isViolationTicket && {
-          ticketOutcomeCode: value.ticketOutcomeCode,
-          ticketAmount: Number.parseFloat(value.ticketAmount),
-          ticketNumber: value.ticketNumber,
-        }),
-      };
-      await saveMutation.mutateAsync({ input });
+      if (isEdit) {
+        const input: UpdateEnforcementActionInput = {
+          enforcementActionIdentifier: enforcementAction.enforcementActionIdentifier,
+          enforcementActionCode: value.enforcementActionCode,
+          dateIssued: value.dateIssued,
+          geoOrganizationUnitCode: value.community,
+          appUserIdentifier: value.servingOfficer,
+          ...(isViolationTicket && {
+            ticketOutcomeCode: value.ticketOutcomeCode,
+            ticketAmount: Number.parseFloat(value.ticketAmount),
+            ticketNumber: value.ticketNumber,
+          }),
+        };
+        await updateMutation.mutateAsync({ input });
+      } else {
+        const input: CreateEnforcementActionInput = {
+          contraventionIdentifier: (contravention as Contravention)?.contraventionIdentifier,
+          partyIdentifier: (party as InvestigationParty)?.partyIdentifier,
+          enforcementActionCode: value.enforcementActionCode,
+          dateIssued: value.dateIssued,
+          geoOrganizationUnitCode: value.community,
+          appUserIdentifier: value.servingOfficer,
+          ...(isViolationTicket && {
+            ticketOutcomeCode: value.ticketOutcomeCode,
+            ticketAmount: Number.parseFloat(value.ticketAmount),
+            ticketNumber: value.ticketNumber,
+          }),
+        };
+        await saveMutation.mutateAsync({ input });
+      }
     },
   });
 
@@ -142,7 +181,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
         closeButton
         className="pb-0"
       >
-        <Modal.Title>Add enforcement action</Modal.Title>
+        <Modal.Title>{isEdit ? "Edit enforcement action" : "Add enforcement action"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {/* View-only fields */}

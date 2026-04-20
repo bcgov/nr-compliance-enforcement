@@ -35,6 +35,9 @@ export class EnforcementActionService {
         active_ind: true,
         contravention_party_xref_guid: xref.contravention_party_xref_guid,
       },
+      orderBy: {
+        create_utc_timestamp: "asc",
+      },
       include: {
         ticket: {
           where: {
