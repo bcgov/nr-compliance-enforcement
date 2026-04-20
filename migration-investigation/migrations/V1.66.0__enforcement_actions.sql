@@ -260,6 +260,7 @@ CREATE TABLE ticket (
     enforcement_action_guid             UUID NOT NULL REFERENCES enforcement_action (enforcement_action_guid),
     ticket_outcome_code                 VARCHAR(16) NOT NULL REFERENCES ticket_outcome_code (ticket_outcome_code),
     ticket_amount                       NUMERIC(10,2) NOT NULL,
+    ticket_number                       VARCHAR(32) NOT NULL,
     active_ind                          BOOLEAN DEFAULT true NOT NULL,
     create_user_id                      VARCHAR(32) NOT NULL,
     create_utc_timestamp                TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
@@ -281,6 +282,9 @@ COMMENT ON COLUMN ticket.ticket_outcome_code IS
 
 COMMENT ON COLUMN ticket.ticket_amount IS
     'The monetary amount of the violation ticket.';
+
+COMMENT ON COLUMN ticket.ticket_number IS
+    'The identification number of the ticket.';
 
 COMMENT ON COLUMN ticket.active_ind IS
     'A boolean indicator to determine if the ticket is active. Inactive values are retained for legacy data integrity and history.';

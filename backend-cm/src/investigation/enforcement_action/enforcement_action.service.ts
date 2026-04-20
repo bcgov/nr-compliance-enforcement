@@ -58,9 +58,23 @@ export class EnforcementActionService {
 
   async create(input: CreateEnforcementActionInput): Promise<EnforcementAction> {
     try {
+      const xref = await this.prisma.contravention_party_xref.findFirst({
+        where: {
+          contravention_guid: input.contraventionIdentifier,
+          investigation_party_guid: input.partyIdentifier,
+          active_ind: true,
+        },
+      });
+
+      if (!xref) {
+        throw new Error(
+          `No contravention party xref found for contravention ${input.contraventionIdentifier} and party ${input.partyIdentifier}`,
+        );
+      }
+
       const enforcementAction = await this.prisma.enforcement_action.create({
         data: {
-          contravention_party_xref_guid: input.contraventionPartyXrefIdentifier,
+          contravention_party_xref_guid: xref.contravention_party_xref_guid,
           enforcement_action_code: input.enforcementActionCode,
           date_issued: input.dateIssued,
           geo_organization_unit_code_ref: input.geoOrganizationUnitCode,
@@ -74,6 +88,7 @@ export class EnforcementActionService {
                 create: {
                   ticket_outcome_code: input.ticketOutcomeCode,
                   ticket_amount: input.ticketAmount,
+                  ticket_number: input.ticketNumber,
                   active_ind: true,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
@@ -124,6 +139,7 @@ export class EnforcementActionService {
               data: {
                 ticket_outcome_code: input.ticketOutcomeCode,
                 ticket_amount: input.ticketAmount,
+                ticket_number: input.ticketNumber,
                 update_user_id: this.user.getIdirUsername(),
                 update_utc_timestamp: new Date(),
               },
@@ -134,6 +150,7 @@ export class EnforcementActionService {
                 enforcement_action_guid: input.enforcementActionIdentifier,
                 ticket_outcome_code: input.ticketOutcomeCode,
                 ticket_amount: input.ticketAmount,
+                ticket_number: input.ticketNumber,
                 active_ind: true,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),

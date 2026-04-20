@@ -5,6 +5,7 @@ import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_ENFORCEMENT_ACTION, MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
+import { gql } from "graphql-request";
 import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
 
@@ -13,6 +14,28 @@ interface InvestigationContraventionProps {
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
+
+export const CREATE_ENFORCEMENT_ACTION = gql`
+  mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
+    createEnforcementAction(input: $input) {
+      enforcementActionIdentifier
+      enforcementActionCode {
+        enforcementActionCode
+        shortDescription
+      }
+      dateIssued
+      geoOrganizationUnitCode
+      appUserIdentifier
+      activeIndicator
+      ticket {
+        ticketIdentifier
+        ticketOutcomeCode
+        ticketAmount
+        ticketNumber
+      }
+    }
+  }
+`;
 
 export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
   investigationGuid,

@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
-import { Contravention } from "@/generated/graphql";
+import { Contravention, CreateEnforcementActionInput, InvestigationParty } from "@/generated/graphql";
 import { FormField } from "@/app/components/common/form-field";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
@@ -16,7 +16,12 @@ import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { selectEnforcementActionsByAgency, selectTicketOutcomes } from "@/app/store/reducers/code-table-selectors";
-import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
+import {
+  CREATE_ENFORCEMENT_ACTION,
+  getPartyLabel,
+} from "@/app/components/containers/investigations/details/investigation-contravention";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { CompInput } from "@/app/components/common/comp-input";
 
 const VIOLATION_TICKET_CODES = ["FDVT", "PRVT"];
 
@@ -60,7 +65,18 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   }));
 
   const [isViolationTicket, setIsViolationTicket] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+
+  const saveMutation = useGraphQLMutation(CREATE_ENFORCEMENT_ACTION, {
+    onSuccess: () => {
+      ToggleSuccess("Enforcement action saved successfully");
+      submit();
+    },
+    onError: () => {
+      ToggleError("Failed to save enforcement action");
+    },
+  });
+
+  const isSaving = saveMutation.isPending;
 
   const form = useForm({
     defaultValues: {
@@ -69,20 +85,24 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
       servingOfficer: currentUserGuid ?? "",
       enforcementActionCode: "",
       ticketAmount: "",
+      ticketNumber: "",
       ticketOutcomeCode: "ISSUED",
     },
     onSubmit: async ({ value }) => {
-      try {
-        setIsSaving(true);
-        // TODO: Wire up createEnforcementAction mutation
-        console.log("save", value);
-        ToggleSuccess("Enforcement action saved successfully");
-        submit();
-      } catch {
-        ToggleError("Failed to save enforcement action");
-      } finally {
-        setIsSaving(false);
-      }
+      const input: CreateEnforcementActionInput = {
+        contraventionIdentifier: (contravention as Contravention)?.contraventionIdentifier,
+        partyIdentifier: (party as InvestigationParty)?.partyIdentifier,
+        enforcementActionCode: value.enforcementActionCode,
+        dateIssued: value.dateIssued,
+        geoOrganizationUnitCode: value.community,
+        appUserIdentifier: value.servingOfficer,
+        ...(isViolationTicket && {
+          ticketOutcomeCode: value.ticketOutcomeCode,
+          ticketAmount: Number.parseFloat(value.ticketAmount),
+          ticketNumber: value.ticketNumber,
+        }),
+      };
+      await saveMutation.mutateAsync({ input });
     },
   });
 
@@ -260,58 +280,86 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
           </div>
 
           {isViolationTicket && (
-            <div className="row">
-              <div className="col-6">
-                <FormField
-                  form={form}
-                  name="ticketAmount"
-                  label="Ticket amount"
-                  required
-                  validators={{
-                    onChange: z.string().min(1, "Ticket amount is required"),
-                    onSubmit: z.string().min(1, "Ticket amount is required"),
-                  }}
-                  render={(field) => (
-                    <input
-                      id="enforcement-action-ticket-amount"
-                      type="number"
-                      className="form-control comp-details-input"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      placeholder="Enter ticket amount"
-                      min={0}
-                    />
-                  )}
-                />
+            <>
+              <div className="row">
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketAmount"
+                    label="Ticket amount"
+                    required
+                    validators={{
+                      onChange: z.string().min(1, "Ticket amount is required"),
+                      onSubmit: z.string().min(1, "Ticket amount is required"),
+                    }}
+                    render={(field) => (
+                      <input
+                        id="enforcement-action-ticket-amount"
+                        type="number"
+                        className="form-control comp-details-input"
+                        value={field.state.value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        placeholder="Enter ticket amount"
+                        min={0}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketOutcomeCode"
+                    label="Ticket outcome"
+                    required
+                    validators={{
+                      onChange: z.string().min(1, "Ticket outcome is required"),
+                      onSubmit: z.string().min(1, "Ticket outcome is required"),
+                    }}
+                    render={(field) => (
+                      <CompSelect
+                        id="enforcement-action-ticket-outcome"
+                        classNamePrefix="comp-select"
+                        className="comp-details-input"
+                        options={ticketOutcomeOptions}
+                        value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
+                        onChange={(option) => field.handleChange(option?.value ?? "")}
+                        placeholder="Select outcome"
+                        isClearable={false}
+                        showInactive={false}
+                        enableValidation
+                        errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+                      />
+                    )}
+                  />
+                </div>
               </div>
-              <div className="col-6">
-                <FormField
-                  form={form}
-                  name="ticketOutcomeCode"
-                  label="Ticket outcome"
-                  required
-                  validators={{
-                    onChange: z.string().min(1, "Ticket outcome is required"),
-                    onSubmit: z.string().min(1, "Ticket outcome is required"),
-                  }}
-                  render={(field) => (
-                    <CompSelect
-                      id="enforcement-action-ticket-outcome"
-                      classNamePrefix="comp-select"
-                      className="comp-details-input"
-                      options={ticketOutcomeOptions}
-                      value={ticketOutcomeOptions.find((opt) => opt.value === field.state.value)}
-                      onChange={(option) => field.handleChange(option?.value ?? "")}
-                      placeholder="Select outcome"
-                      isClearable={false}
-                      showInactive={false}
-                      enableValidation
-                      errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
-                    />
-                  )}
-                />
+              <div className="row">
+                <div className="col-6">
+                  <FormField
+                    form={form}
+                    name="ticketNumber"
+                    label="Ticket number"
+                    required
+                    validators={{
+                      onChange: z.string().min(1, "Ticket number is required"),
+                      onSubmit: z.string().min(1, "Ticket number is required"),
+                    }}
+                    render={(field) => (
+                      <CompInput
+                        id="enforcement-action-ticket-number"
+                        divid="enforcement-action-ticket-number-value"
+                        type="input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors?.[0]?.message ?? ""}
+                        onChange={(evt: any) => field.handleChange(evt.target.value)}
+                        value={field.state.value}
+                        placeholder="Enter ticket number"
+                      />
+                    )}
+                  />
+                </div>
               </div>
-            </div>
+            </>
           )}
         </form>
       </Modal.Body>

@@ -15,6 +15,9 @@ export class ticket {
   @ApiProperty({ type: Number })
   ticket_amount: number;
 
+  @ApiProperty({ type: String })
+  ticket_number: string;
+
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 

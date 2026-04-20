@@ -445,11 +445,13 @@ export type CreateDecisionInput = {
 
 export type CreateEnforcementActionInput = {
   appUserIdentifier: Scalars['String']['input'];
-  contraventionPartyXrefIdentifier: Scalars['String']['input'];
+  contraventionIdentifier: Scalars['String']['input'];
   dateIssued: Scalars['DateTime']['input'];
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
+  ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2493,6 +2495,7 @@ export type Ticket = {
   enforcementActionIdentifier: Scalars['String']['output'];
   ticketAmount: Scalars['Float']['output'];
   ticketIdentifier: Scalars['String']['output'];
+  ticketNumber: Scalars['String']['output'];
   ticketOutcomeCode: Scalars['String']['output'];
 };
 
@@ -2552,6 +2555,7 @@ export type UpdateEnforcementActionInput = {
   enforcementActionIdentifier: Scalars['String']['input'];
   geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
+  ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
 };
 

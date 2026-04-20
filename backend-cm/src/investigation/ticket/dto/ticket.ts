@@ -6,6 +6,7 @@ export class Ticket {
   enforcementActionIdentifier: string;
   ticketOutcomeCode: string;
   ticketAmount: number;
+  ticketNumber: string;
   activeIndicator: boolean;
 }
 
@@ -29,6 +30,10 @@ export const mapPrismaTicketToTicket = (mapper: Mapper) => {
     forMember(
       (dest) => dest.ticketAmount,
       mapFrom((src) => src.ticket_amount),
+    ),
+    forMember(
+      (dest) => dest.ticketNumber,
+      mapFrom((src) => src.ticket_number),
     ),
     forMember(
       (dest) => dest.activeIndicator,

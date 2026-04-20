@@ -10,13 +10,15 @@ type EnforcementAction {
 }
 
 input CreateEnforcementActionInput {
-  contraventionPartyXrefIdentifier: String!
+  contraventionIdentifier: String!
+  partyIdentifier: String!
   enforcementActionCode: String!
   dateIssued: DateTime!
   geoOrganizationUnitCode: String!
   appUserIdentifier: String!
   ticketOutcomeCode: String
   ticketAmount: Float
+  ticketNumber: String
 }
 
 input UpdateEnforcementActionInput {
@@ -27,4 +29,5 @@ input UpdateEnforcementActionInput {
   appUserIdentifier: String
   ticketOutcomeCode: String
   ticketAmount: Float
+  ticketNumber: String
 }

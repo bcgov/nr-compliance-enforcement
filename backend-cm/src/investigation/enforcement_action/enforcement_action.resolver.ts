@@ -20,7 +20,7 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.findMany(contraventionPartyXrefId);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error("Error fetching enforcement actions:", error?.message ?? error);
       throw new GraphQLError("Error fetching enforcement actions", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
@@ -33,7 +33,7 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.findOne(enforcementActionId);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error("Error fetching enforcement action:", error?.message ?? error);
       throw new GraphQLError("Error fetching enforcement action", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
@@ -46,7 +46,7 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.create(input);
     } catch (error) {
-      this.logger.error("Create enforcement action error:", error);
+      this.logger.error("Create enforcement action error:", error?.message ?? error);
       throw new GraphQLError("Error creating enforcement action", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
@@ -59,7 +59,7 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.update(input);
     } catch (error) {
-      this.logger.error("Update enforcement action error:", error);
+      this.logger.error("Update enforcement action error:", error?.message ?? error);
       throw new GraphQLError("Error updating enforcement action", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });
@@ -72,7 +72,7 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.remove(enforcementActionId);
     } catch (error) {
-      this.logger.error("Remove enforcement action error:", error);
+      this.logger.error("Remove enforcement action error:", error?.message ?? error);
       throw new GraphQLError("Error removing enforcement action", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });

@@ -542,6 +542,7 @@ model ticket {
   enforcement_action_guid                                             String              @db.Uuid
   ticket_outcome_code                                                 String              @db.VarChar(16)
   ticket_amount                                                       Decimal             @db.Decimal(10, 2)
+  ticket_number                                                       String              @db.VarChar(32)
   active_ind                                                          Boolean             @default(true)
   create_user_id                                                      String              @db.VarChar(32)
   create_utc_timestamp                                                DateTime            @default(now()) @db.Timestamp(6)
