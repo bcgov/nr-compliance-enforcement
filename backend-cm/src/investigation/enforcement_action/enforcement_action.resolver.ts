@@ -16,11 +16,14 @@ export class EnforcementActionResolver {
 
   @Query("enforcementActions")
   @Roles(coreRoles)
-  async findMany(@Args("contraventionPartyXrefId") contraventionPartyXrefId: string) {
+  async findMany(
+    @Args("contraventionIdentifier") contraventionIdentifier: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+  ) {
     try {
-      return await this.enforcementActionService.findMany(contraventionPartyXrefId);
+      return await this.enforcementActionService.findMany(contraventionIdentifier, partyIdentifier);
     } catch (error) {
-      this.logger.error("Error fetching enforcement actions:", error?.message ?? error);
+      this.logger.error(error);
       throw new GraphQLError("Error fetching enforcement actions", {
         extensions: { code: "INTERNAL_SERVER_ERROR" },
       });

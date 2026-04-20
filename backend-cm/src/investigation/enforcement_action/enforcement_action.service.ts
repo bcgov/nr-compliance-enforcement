@@ -19,16 +19,33 @@ export class EnforcementActionService {
 
   private readonly logger = new Logger(EnforcementActionService.name);
 
-  async findMany(contraventionPartyXrefIdentifier: string): Promise<EnforcementAction[]> {
+  async findMany(contraventionIdentifier: string, partyIdentifier: string): Promise<EnforcementAction[]> {
+    const xref = await this.prisma.contravention_party_xref.findFirst({
+      where: {
+        contravention_guid: contraventionIdentifier,
+        investigation_party_guid: partyIdentifier,
+        active_ind: true,
+      },
+    });
+
+    if (!xref) return [];
+
     const prismaEnforcementActions = await this.prisma.enforcement_action.findMany({
       where: {
         active_ind: true,
-        contravention_party_xref_guid: contraventionPartyXrefIdentifier,
+        contravention_party_xref_guid: xref.contravention_party_xref_guid,
       },
       include: {
         ticket: {
           where: {
             active_ind: true,
+          },
+        },
+        enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+        contravention_party_xref: {
+          include: {
+            contravention: true,
+            enforcement_action: true,
           },
         },
       },

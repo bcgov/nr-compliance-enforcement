@@ -1,5 +1,5 @@
 type Query {
-  enforcementActions(contraventionPartyXrefId: String!): [EnforcementAction]!
+  enforcementActions(contraventionIdentifier: String!, partyIdentifier: String!): [EnforcementAction]!
   enforcementAction(enforcementActionId: String!): EnforcementAction
 }
 

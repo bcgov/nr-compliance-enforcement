@@ -1122,6 +1122,7 @@ export type InvestigationFilters = {
 export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   business?: Maybe<InvestigationBusiness>;
+  enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;
   investigationGuid: Scalars['String']['output'];
   partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
@@ -2083,7 +2084,8 @@ export type QueryenforcementActionArgs = {
 
 
 export type QueryenforcementActionsArgs = {
-  contraventionPartyXrefId: Scalars['String']['input'];
+  contraventionIdentifier: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
 };
 
 

@@ -112,6 +112,28 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     );
   };
 
+  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string) => {
+    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
+    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
+    const enforcementAction = party?.enforcementActions?.find(
+      (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
+    );
+
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
+        modalSize: "lg",
+        data: {
+          contravention,
+          party,
+          enforcementAction,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
+
   // Group contraventions by party name
   const allGroups = useMemo(() => {
     const grouped = groupContraventionsByParty(contraventions as Contravention[]);
@@ -184,6 +206,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               partyGuid={partyGuid}
               onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
               onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
+              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                onEditEnforcementAction(eaId, contraventionId, pGuid)
+              }
             />
           </div>
         </div>
@@ -200,6 +225,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 partyGuid={null}
                 onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
                 onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+                onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                  onEditEnforcementAction(eaId, contraventionId, pGuid)
+                }
               />
             </div>
           )}

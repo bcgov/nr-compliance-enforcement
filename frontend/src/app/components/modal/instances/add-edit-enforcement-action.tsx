@@ -281,7 +281,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
 
           {isViolationTicket && (
             <>
-              <div className="row">
+              <div className="row mb-3">
                 <div className="col-6">
                   <FormField
                     form={form}

@@ -68,6 +68,23 @@ export const GET_INVESTIGATION = gql`
           business {
             name
           }
+          enforcementActions {
+            enforcementActionIdentifier
+            enforcementActionCode {
+              enforcementActionCode
+              shortDescription
+            }
+            dateIssued
+            geoOrganizationUnitCode
+            appUserIdentifier
+            activeIndicator
+            ticket {
+              ticketIdentifier
+              ticketOutcomeCode
+              ticketAmount
+              ticketNumber
+            }
+          }
         }
         date
         community

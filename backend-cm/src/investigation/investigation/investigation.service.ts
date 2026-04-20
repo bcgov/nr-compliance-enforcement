@@ -76,7 +76,6 @@ export class InvestigationService {
             contravention_party_xref: {
               include: {
                 investigation_party: {
-                  // Allows the person info to be mapped on the contravention object directly
                   include: {
                     investigation_person: {
                       where: {
@@ -90,21 +89,35 @@ export class InvestigationService {
                     },
                   },
                 },
+                enforcement_action: {
+                  where: {
+                    active_ind: true,
+                  },
+                  include: {
+                    ticket: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                    enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                    contravention_party_xref: {
+                      include: {
+                        contravention: true,
+                        enforcement_action: true,
+                      },
+                    },
+                  },
+                },
               },
               where: {
                 active_ind: true,
               },
             },
           },
-          where: {
-            active_ind: true,
-          },
-          orderBy: {
-            create_utc_timestamp: "asc",
-          },
         },
       },
     });
+
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }

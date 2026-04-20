@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Button, Dropdown } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { Contravention } from "@/generated/graphql";
+import { Contravention, EnforcementAction } from "@/generated/graphql";
 import { formatDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
@@ -16,6 +16,7 @@ interface ContraventionTableProps {
   partyGuid: string | null;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
+  onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string) => void;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -39,8 +40,11 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   partyGuid,
   onEdit,
   onAddEnforcementAction,
+  onEditEnforcementAction,
 }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
+  const enforcementActionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE));
+  const ticketOutcomeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE));
 
   const columns: CompColumn<Contravention>[] = [
     {
@@ -78,17 +82,51 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => {
-        if (!partyGuid) return "";
+        if (!partyGuid) return <span>-</span>;
+
+        const party = c.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
+        const enforcementActions = (party?.enforcementActions ?? []) as EnforcementAction[];
+
+        if (enforcementActions.length === 0) {
+          return (
+            <div className="d-flex justify-content-center">
+              <Button
+                id={`add-enforcement-action-${c.contraventionIdentifier}`}
+                variant="outline-primary"
+                size="sm"
+                onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+              >
+                <i className="bi bi-plus-circle" /> Add enforcement action
+              </Button>
+            </div>
+          );
+        }
+
         return (
-          <div className="d-flex justify-content-center">
-            <Button
-              id={`add-enforcement-action-${c.contraventionIdentifier}`}
-              variant="outline-primary"
-              size="sm"
-              onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
-            >
-              <i className="bi bi-plus-circle" /> Add enforcement action
-            </Button>
+          <div className="d-flex flex-column gap-1">
+            {enforcementActions.filter(Boolean).map((ea) => {
+              const actionLabel = enforcementActionCodes.find(
+                (c) => c.enforcementActionCode === ea.enforcementActionCode?.enforcementActionCode,
+              )?.shortDescription;
+
+              const outcomeLabel = ticketOutcomeCodes.find(
+                (c) => c.ticketOutcomeCode === ea.ticket?.ticketOutcomeCode,
+              )?.shortDescription;
+
+              const label = ea.ticket ? `${actionLabel} (${outcomeLabel})` : actionLabel;
+
+              return (
+                <button
+                  key={ea.enforcementActionIdentifier}
+                  className="btn btn-link p-0 text-start"
+                  onClick={() =>
+                    onEditEnforcementAction(ea.enforcementActionIdentifier, c.contraventionIdentifier, partyGuid)
+                  }
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         );
       },
