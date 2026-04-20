@@ -216,7 +216,7 @@ const InvestigationCreate: FC = () => {
     } else if (caseIdentifier) {
       navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate(-1);
+      navigate("/investigations");
     }
   }, [navigate, caseIdentifier, investigationGuid, isEditMode, form, allowNavigation]);
 
