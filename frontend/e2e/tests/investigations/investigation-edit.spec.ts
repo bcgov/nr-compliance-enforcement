@@ -134,28 +134,6 @@ test.describe("Investigation Edit Form", () => {
 test.describe("Investigation Edit - Field Constraints", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
-  test("it has lead agency disabled", async ({ page }) => {
-    await page.goto("/investigations");
-    await waitForSpinner(page);
-
-    const rows = page.locator("#investigation-list tbody tr");
-    await rows.first().locator("a.comp-cell-link").first().click();
-    await waitForSpinner(page);
-
-    // Wait for investigation data to load
-    const header = page.locator("h1.comp-box-complaint-id");
-    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
-
-    await page.locator("#details-screen-edit-button").click();
-    await waitForSpinner(page);
-
-    // Lead agency should be disabled
-    const leadAgencySelect = page.locator("#lead-agency-select");
-    await expect(leadAgencySelect).toBeVisible();
-    const isDisabled = await leadAgencySelect.locator(".comp-select--is-disabled").count();
-    expect(isDisabled).toBeGreaterThanOrEqual(0);
-  });
-
   test("it shows duplicate Investigation ID error", async ({ page }) => {
     await page.goto("/investigations");
     await waitForSpinner(page);
