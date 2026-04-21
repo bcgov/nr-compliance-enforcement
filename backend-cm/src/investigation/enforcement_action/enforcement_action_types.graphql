@@ -19,6 +19,7 @@ input CreateEnforcementActionInput {
   ticketOutcomeCode: String
   ticketAmount: Float
   ticketNumber: String
+  paidDate: DateTime
 }
 
 input UpdateEnforcementActionInput {
@@ -30,4 +31,5 @@ input UpdateEnforcementActionInput {
   ticketOutcomeCode: String
   ticketAmount: Float
   ticketNumber: String
+  paidDate: DateTime
 }

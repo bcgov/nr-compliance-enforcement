@@ -18,6 +18,9 @@ export class ticket {
   @ApiProperty({ type: String })
   ticket_number: string;
 
+  @ApiPropertyOptional({ type: Date })
+  paid_date?: Date;
+
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 

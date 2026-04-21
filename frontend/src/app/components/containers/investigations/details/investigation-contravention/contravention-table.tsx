@@ -82,7 +82,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       isSortable: false,
       getValue: () => "",
       renderCell: (c) => {
-        if (!partyGuid) return <span>-</span>;
+        if (!partyGuid) return <span></span>;
 
         const party = c.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
         const enforcementActions = (party?.enforcementActions ?? []) as EnforcementAction[];
@@ -194,9 +194,11 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       defaultSort="date"
       tableIdentifier={`contravention-table-${investigationGuid}`}
       isFixedHeight={false}
+      pageSize={5}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}
       emptyMessage="No contraventions added."
+      alwaysShowFooter={false}
     />
   );
 };

@@ -8,6 +8,7 @@ export class Ticket {
   ticketAmount: number;
   ticketNumber: string;
   activeIndicator: boolean;
+  paidDate?: Date;
 }
 
 export const mapPrismaTicketToTicket = (mapper: Mapper) => {
@@ -38,6 +39,10 @@ export const mapPrismaTicketToTicket = (mapper: Mapper) => {
     forMember(
       (dest) => dest.activeIndicator,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.paidDate,
+      mapFrom((src) => src.paid_date),
     ),
   );
 };

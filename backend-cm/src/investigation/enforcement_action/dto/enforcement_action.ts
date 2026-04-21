@@ -25,6 +25,7 @@ export class CreateEnforcementActionInput {
   ticketOutcomeCode?: string;
   ticketAmount?: number;
   ticketNumber?: string;
+  paidDate?: Date;
 }
 
 export class UpdateEnforcementActionInput {
@@ -36,6 +37,7 @@ export class UpdateEnforcementActionInput {
   ticketOutcomeCode?: string;
   ticketAmount?: number;
   ticketNumber?: string;
+  paidDate?: Date;
 }
 
 export const mapPrismaEnforcementActionToEnforcementAction = (mapper: Mapper) => {

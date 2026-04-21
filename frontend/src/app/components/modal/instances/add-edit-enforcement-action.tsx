@@ -112,7 +112,6 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   });
 
   const isSaving = saveMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
-
   const form = useForm({
     defaultValues: {
       dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
@@ -121,7 +120,8 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
       enforcementActionCode: enforcementAction?.enforcementActionCode?.enforcementActionCode ?? "",
       ticketAmount: enforcementAction?.ticket?.ticketAmount?.toString() ?? "",
       ticketNumber: enforcementAction?.ticket?.ticketNumber ?? "",
-      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "ISSUED",
+      ticketOutcomeCode: enforcementAction?.ticket?.ticketOutcomeCode ?? "ISUD",
+      paidDate: enforcementAction?.ticket?.paidDate ? new Date(enforcementAction.ticket.paidDate) : null,
     },
     onSubmit: async ({ value }) => {
       if (isEdit) {
@@ -135,6 +135,8 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
             ticketOutcomeCode: value.ticketOutcomeCode,
             ticketAmount: Number.parseFloat(value.ticketAmount),
             ticketNumber: value.ticketNumber,
+            paidDate:
+              value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
           }),
         };
         await updateMutation.mutateAsync({ input });
@@ -150,6 +152,8 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
             ticketOutcomeCode: value.ticketOutcomeCode,
             ticketAmount: Number.parseFloat(value.ticketAmount),
             ticketNumber: value.ticketNumber,
+            paidDate:
+              value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
           }),
         };
         await saveMutation.mutateAsync({ input });
@@ -353,14 +357,15 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                       onSubmit: z.string().min(1, "Ticket amount is required"),
                     }}
                     render={(field) => (
-                      <input
+                      <CompInput
                         id="enforcement-action-ticket-amount"
+                        divid="enforcement-action-ticket-amount-value"
                         type="number"
-                        className="form-control comp-details-input"
+                        inputClass="comp-form-control"
+                        error={field.state.meta.errors?.[0]?.message ?? ""}
+                        onChange={(evt: any) => field.handleChange(evt.target.value)}
                         value={field.state.value}
-                        onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="Enter ticket amount"
-                        min={0}
                       />
                     )}
                   />
@@ -418,6 +423,35 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                     )}
                   />
                 </div>
+                <form.Subscribe selector={(state) => state.values.ticketOutcomeCode}>
+                  {(ticketOutcomeCode) =>
+                    ticketOutcomeCode === "PAID" && (
+                      <div className="col-6">
+                        <FormField
+                          form={form}
+                          name="paidDate"
+                          label="Date paid"
+                          required
+                          validators={{
+                            onChange: dateValidator,
+                            onSubmit: dateValidator,
+                          }}
+                          render={(field) => (
+                            <ValidationDatePicker
+                              classNamePrefix="comp-details-edit-calendar-input"
+                              className="comp-details-input full-width"
+                              id="enforcement-action-date-paid"
+                              onChange={(date: Date, _time: string | null) => field.handleChange(date)}
+                              selectedDate={field.state.value}
+                              errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                              vertical={true}
+                            />
+                          )}
+                        />
+                      </div>
+                    )
+                  }
+                </form.Subscribe>
               </div>
             </>
           )}

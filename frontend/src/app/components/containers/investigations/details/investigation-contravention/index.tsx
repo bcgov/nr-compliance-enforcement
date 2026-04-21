@@ -32,6 +32,7 @@ export const CREATE_ENFORCEMENT_ACTION = gql`
         ticketOutcomeCode
         ticketAmount
         ticketNumber
+        paidDate
       }
     }
   }
@@ -54,6 +55,7 @@ export const UPDATE_ENFORCEMENT_ACTION = gql`
         ticketOutcomeCode
         ticketAmount
         ticketNumber
+        paidDate
       }
     }
   }

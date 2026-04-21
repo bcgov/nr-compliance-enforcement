@@ -5,4 +5,5 @@ type Ticket {
   ticketAmount: Float!
   ticketNumber: String!
   activeIndicator: Boolean!
+  paidDate: Date
 }

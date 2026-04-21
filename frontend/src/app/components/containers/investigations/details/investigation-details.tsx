@@ -83,6 +83,7 @@ export const GET_INVESTIGATION = gql`
               ticketOutcomeCode
               ticketAmount
               ticketNumber
+              paidDate
             }
           }
         }

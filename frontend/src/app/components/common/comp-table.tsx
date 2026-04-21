@@ -25,6 +25,7 @@ export const CompTable = <T,>({
   totalItems,
   currentPage: externalCurrentPage,
   emptyMessage,
+  alwaysShowFooter = true,
 }: CompTableProps<T>) => {
   const [sortBy, setSortBy] = useState<string>(defaultSort);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
@@ -210,7 +211,7 @@ export const CompTable = <T,>({
         </Table>
       </div>
 
-      {totalCount > 0 && (
+      {(alwaysShowFooter || totalCount > pageSize) && (
         <Paginator
           currentPage={currentPage}
           totalItems={totalCount}
