@@ -120,7 +120,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
     <CompTable
       data={exhibits}
       tableIdentifier="exhibits-list"
-      isFixedHeight={false}
+      isFixedHeight={true}
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}

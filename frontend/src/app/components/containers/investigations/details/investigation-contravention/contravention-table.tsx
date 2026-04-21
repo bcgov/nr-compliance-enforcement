@@ -193,7 +193,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       data={contraventions}
       defaultSort="date"
       tableIdentifier={`contravention-table-${investigationGuid}`}
-      isFixedHeight={false}
+      isFixedHeight={true}
       pageSize={5}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}

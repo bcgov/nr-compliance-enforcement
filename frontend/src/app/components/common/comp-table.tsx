@@ -36,9 +36,6 @@ export const CompTable = <T,>({
   const isServerSort = !!onSort && !!onPageChange;
   const isServerPagination = !!onPageChange;
 
-  // Determine height of table
-  const isPartial = data.length < pageSize;
-
   const currentPage = isServerPagination ? (externalCurrentPage ?? 1) : internalCurrentPage;
 
   const isExpandable = !!renderExpandedContent;
@@ -201,10 +198,10 @@ export const CompTable = <T,>({
 
   return (
     <div className="comp-table-container">
-      <div className={`comp-table-scroll-container ${isFixedHeight ? "comp-table-scroll-container--fixed" : ""}`}>
+      <div className="comp-table-scroll-container">
         <Table
           id={tableIdentifier}
-          className={`comp-table mb-0 border-0 ${isPartial ? "comp-table--partial" : ""}`}
+          className="comp-table mb-0 border-0"
         >
           {renderHeader()}
           <tbody>{renderBody()}</tbody>
