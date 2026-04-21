@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoutes from "./components/routing";
+import { caseManagementPilotRestrictedRouteElements } from "./components/routing/case-management-pilot-restricted-routes";
 import ScrollToTop from "./common/scroll-to-top";
 import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
@@ -42,6 +43,9 @@ import {
   selectCanAccessCases,
   selectCanAccessInspections,
   selectCanAccessInvestigations,
+  selectIsCasesFeatureEnabled,
+  selectIsInspectionsFeatureEnabled,
+  selectIsInvestigationsFeatureEnabled,
 } from "@/app/access/module-access";
 import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
@@ -70,9 +74,13 @@ const App: FC = () => {
     dispatch(getTokenProfile());
   }, [dispatch]);
 
-  const casesModuleActive = useAppSelector(selectCanAccessCases);
-  const investigationsActive = useAppSelector(selectCanAccessInvestigations);
-  const inspectionsActive = useAppSelector(selectCanAccessInspections);
+  const casesModuleAccess = useAppSelector(selectCanAccessCases);
+  const investigationsAccess = useAppSelector(selectCanAccessInvestigations);
+  const inspectionsAccess = useAppSelector(selectCanAccessInspections);
+  const casesFeatureOn = useAppSelector(selectIsCasesFeatureEnabled);
+  const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled);
+  const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled);
+  const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -99,6 +107,11 @@ const App: FC = () => {
           ) : (
             <>
               <Route element={<ProtectedRoutes roles={coreRoles} />}>
+                {caseManagementPilotRestrictedRouteElements({
+                  casesFeatureWithoutCaseAccess: casesFeatureOn && !hasCaseAccess,
+                  investigationsFeatureWithoutCaseAccess: investigationsFeatureOn && !hasCaseAccess,
+                  inspectionsFeatureWithoutCaseAccess: inspectionsFeatureOn && !hasCaseAccess,
+                })}
                 <Route
                   path="/"
                   element={<ComplaintsRouteWrapper />}
@@ -107,31 +120,31 @@ const App: FC = () => {
                   path="/complaints/:type?"
                   element={<ComplaintsRouteWrapper />}
                 />
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/cases"
                     element={<Cases />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/case/create"
                     element={<CaseEdit />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/case/:id"
                     element={<CaseView />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/case/:id/:tabKey"
                     element={<CaseView />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/case/:id/edit"
                     element={<CaseEdit />}
@@ -141,97 +154,97 @@ const App: FC = () => {
                   path="/compliments"
                   element={<Compliments />}
                 />
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/parties"
                     element={<Parties />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/party/:id"
                     element={<PartyView />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/party/create"
                     element={<PartyEdit />}
                   />
                 )}
-                {casesModuleActive && (
+                {casesModuleAccess && (
                   <Route
                     path="/party/:id/edit"
                     element={<PartyEdit />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigations"
                     element={<Investigations />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigation/:investigationGuid"
                     element={<InvestigationDetails />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/case/:caseIdentifier/createInvestigation"
                     element={<InvestigationCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigation/:investigationGuid/task/create"
                     element={<TaskCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigation/:investigationGuid/task/:taskId/edit"
                     element={<TaskCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigation/:investigationGuid/task/:taskId"
                     element={<TaskDetail />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsAccess && (
                   <Route
                     path="/investigation/:investigationGuid/:tabKey"
                     element={<InvestigationDetails />}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsAccess && (
                   <Route
                     path="/inspections"
                     element={<Inspections />}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsAccess && (
                   <Route
                     path="/inspection/:inspectionGuid"
                     element={<InspectionDetails />}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsAccess && (
                   <Route
                     path="/case/:caseIdentifier/createInspection"
                     element={<InspectionEdit />}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsAccess && (
                   <Route
                     path="/inspection/:id/edit"
                     element={<InspectionEdit />}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsAccess && (
                   <Route
                     path="/inspection/:inspectionGuid/:tabKey"
                     element={<InspectionDetails />}

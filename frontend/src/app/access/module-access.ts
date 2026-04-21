@@ -7,6 +7,14 @@ import UserService from "@service/user-service";
 // Role that grant access to cases / investigations / inspections when the agency feature flag is off
 const casesRoleBypass = (): boolean => UserService.hasRole(Roles.CASE_ACCESS);
 
+export const selectIsCasesFeatureEnabled = (state: RootState): boolean => isFeatureActive(FEATURE_TYPES.CASES)(state);
+
+export const selectIsInvestigationsFeatureEnabled = (state: RootState): boolean =>
+  isFeatureActive(FEATURE_TYPES.INVESTIGATIONS)(state);
+
+export const selectIsInspectionsFeatureEnabled = (state: RootState): boolean =>
+  isFeatureActive(FEATURE_TYPES.INSPECTIONS)(state);
+
 export const selectCanAccessCases = (state: RootState): boolean =>
   isFeatureActive(FEATURE_TYPES.CASES)(state) && casesRoleBypass();
 
