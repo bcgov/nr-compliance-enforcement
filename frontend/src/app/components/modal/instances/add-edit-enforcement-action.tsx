@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Alert } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import {
@@ -25,6 +25,7 @@ import { selectEnforcementActionsByAgency, selectTicketOutcomes } from "@/app/st
 import {
   CREATE_ENFORCEMENT_ACTION,
   getPartyLabel,
+  REMOVE_ENFORCEMENT_ACTION,
   UPDATE_ENFORCEMENT_ACTION,
 } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -62,6 +63,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   const enforcementActionSelector = useMemo(() => selectEnforcementActionsByAgency(agency), [agency]);
   const enforcementActionOptions = useAppSelector(enforcementActionSelector);
   const ticketOutcomeOptions = useAppSelector(selectTicketOutcomes);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const communityOptions = areaCodes.map((c) => ({
     value: c.area ?? "",
@@ -99,7 +101,17 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
     },
   });
 
-  const isSaving = saveMutation.isPending || updateMutation.isPending;
+  const deleteMutation = useGraphQLMutation(REMOVE_ENFORCEMENT_ACTION, {
+    onSuccess: () => {
+      ToggleSuccess("Enforcement action deleted successfully");
+      submit();
+    },
+    onError: () => {
+      ToggleError("Failed to delete enforcement action");
+    },
+  });
+
+  const isSaving = saveMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
   const form = useForm({
     defaultValues: {
@@ -158,9 +170,18 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   }, [isFormDirty, markDirty]);
 
   const handleClose = () => {
+    if (showDeleteConfirm) {
+      setShowDeleteConfirm(false);
+      return;
+    }
     markClean();
     form.reset();
     close();
+  };
+
+  const handleConfirmDelete = async () => {
+    await deleteMutation.mutateAsync({ enforcementActionId: enforcementAction.enforcementActionIdentifier });
+    setShowDeleteConfirm(false);
   };
 
   const dateValidator = z.preprocess(
@@ -401,23 +422,67 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
             </>
           )}
         </form>
+        {isEdit && showDeleteConfirm && (
+          <Alert
+            variant="danger"
+            className="comp-complaint-details-alert mt-3"
+          >
+            <div className="d-flex align-items-start gap-2">
+              <i className="bi bi-info-circle mt-2" />
+              <span>
+                <strong>Delete enforcement action</strong>
+                <p className="mb-3">
+                  Are you sure you want to delete this enforcement action? This action cannot be undone.
+                </p>
+              </span>
+            </div>
+            <div className="d-flex justify-content-end gap-2">
+              <Button
+                variant="outline-primary"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleConfirmDelete}
+                disabled={isSaving}
+              >
+                <i className="bi bi-trash me-1" />
+                <span>Confirm Delete</span>
+              </Button>
+            </div>
+          </Alert>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <div className="d-flex gap-2 ms-auto">
-          <Button
-            variant="outline-primary"
-            onClick={handleClose}
-            disabled={isSaving}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => form.handleSubmit()}
-            disabled={isSaving}
-          >
-            {isSaving ? "Saving..." : "Save"}
-          </Button>
+        <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
+          {isEdit && (
+            <Button
+              variant="outline-danger"
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={isSaving || showDeleteConfirm}
+            >
+              <i className="bi bi-trash me-1" />
+              <span>Delete</span>
+            </Button>
+          )}
+          <div className="d-flex gap-2 ms-auto">
+            <Button
+              variant="outline-primary"
+              onClick={handleClose}
+              disabled={isSaving}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => form.handleSubmit()}
+              disabled={isSaving || showDeleteConfirm}
+            >
+              {isSaving ? "Saving..." : "Save"}
+            </Button>
+          </div>
         </div>
       </Modal.Footer>
     </>

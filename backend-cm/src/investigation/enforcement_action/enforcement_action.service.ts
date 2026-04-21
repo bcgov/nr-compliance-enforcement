@@ -142,8 +142,9 @@ export class EnforcementActionService {
           },
         });
 
-        // If ticket fields are provided, upsert the ticket
-        if (input.ticketOutcomeCode !== undefined && input.ticketAmount !== undefined) {
+        const isViolationTicket = input.ticketOutcomeCode !== undefined && input.ticketAmount !== undefined;
+
+        if (isViolationTicket) {
           const existingTicket = await tx.ticket.findFirst({
             where: {
               enforcement_action_guid: input.enforcementActionIdentifier,
@@ -153,9 +154,7 @@ export class EnforcementActionService {
 
           if (existingTicket) {
             await tx.ticket.update({
-              where: {
-                ticket_guid: existingTicket.ticket_guid,
-              },
+              where: { ticket_guid: existingTicket.ticket_guid },
               data: {
                 ticket_outcome_code: input.ticketOutcomeCode,
                 ticket_amount: input.ticketAmount,
@@ -177,6 +176,19 @@ export class EnforcementActionService {
               },
             });
           }
+        } else {
+          // Soft delete any existing ticket if switching to non-ticket type
+          await tx.ticket.updateMany({
+            where: {
+              enforcement_action_guid: input.enforcementActionIdentifier,
+              active_ind: true,
+            },
+            data: {
+              active_ind: false,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+            },
+          });
         }
       });
 

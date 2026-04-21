@@ -59,6 +59,14 @@ export const UPDATE_ENFORCEMENT_ACTION = gql`
   }
 `;
 
+export const REMOVE_ENFORCEMENT_ACTION = gql`
+  mutation RemoveEnforcementAction($enforcementActionId: String!) {
+    removeEnforcementAction(enforcementActionId: $enforcementActionId) {
+      enforcementActionIdentifier
+    }
+  }
+`;
+
 export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
   investigationGuid,
   investigationData,
