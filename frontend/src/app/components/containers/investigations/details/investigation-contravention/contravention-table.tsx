@@ -103,7 +103,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
         }
 
         return (
-          <div className="d-flex flex-column gap-1">
+          <div className="d-flex flex-column gap-1 align-items-center">
             {enforcementActions.filter(Boolean).map((ea) => {
               const actionLabel = enforcementActionCodes.find(
                 (c) => c.enforcementActionCode === ea.enforcementActionCode?.enforcementActionCode,
@@ -155,6 +155,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
               <i className="bi bi-three-dots-vertical ms-1 me-1" />
             </Dropdown.Toggle>
             <Dropdown.Menu
+              renderOnMount
               popperConfig={{
                 modifiers: [
                   {
@@ -193,7 +194,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       data={contraventions}
       defaultSort="date"
       tableIdentifier={`contravention-table-${investigationGuid}`}
-      isFixedHeight={true}
+      isFixedHeight={false}
       pageSize={5}
       columns={columns}
       getRowKey={(c) => c.contraventionIdentifier ?? ""}

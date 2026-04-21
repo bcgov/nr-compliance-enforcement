@@ -360,10 +360,15 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                       <CompInput
                         id="enforcement-action-ticket-amount"
                         divid="enforcement-action-ticket-amount-value"
-                        type="number"
+                        type="input"
                         inputClass="comp-form-control"
                         error={field.state.meta.errors?.[0]?.message ?? ""}
-                        onChange={(evt: any) => field.handleChange(evt.target.value)}
+                        onChange={(evt: any) => {
+                          const value = evt.target.value;
+                          if (/^\d*\.?\d{0,2}$/.test(value)) {
+                            field.handleChange(value);
+                          }
+                        }}
                         value={field.state.value}
                         placeholder="Enter ticket amount"
                       />
