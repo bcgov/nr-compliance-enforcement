@@ -63,8 +63,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitNumber ?? 0,
-      renderCell: (exhibit) =>
-        exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0"),
+      renderCell: (exhibit) => (exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0")),
     },
     {
       label: "Description",
@@ -103,9 +102,9 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       renderCell: (exhibit) => {
         const taskNumber = getTaskNumber(exhibit.taskGuid ?? "");
         const taskLabel = taskNumber ? `Task ${taskNumber}` : "-";
-        return taskNumber ? (
+        return taskNumber && exhibit.taskGuid ? (
           <Link
-            to={`/investigation/${investigationGuid}/tasks?section=task-item-${taskNumber}`}
+            to={`/investigation/${investigationGuid}/task/${exhibit.taskGuid}`}
             className="comp-cell-link"
           >
             {taskLabel}
