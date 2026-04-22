@@ -112,6 +112,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   });
 
   const isSaving = saveMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+
   const form = useForm({
     defaultValues: {
       dateIssued: enforcementAction?.dateIssued ? new Date(enforcementAction.dateIssued) : new Date(),
@@ -246,6 +247,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                     classNamePrefix="comp-details-edit-calendar-input"
                     className="comp-details-input full-width"
                     id="enforcement-action-date-issued"
+                    maxDate={new Date()}
                     onChange={(date: Date, _time: string | null) => field.handleChange(date)}
                     selectedDate={field.state.value}
                     errMsg={field.state.meta.errors?.[0]?.message ?? ""}
@@ -445,6 +447,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                             <ValidationDatePicker
                               classNamePrefix="comp-details-edit-calendar-input"
                               className="comp-details-input full-width"
+                              maxDate={new Date()}
                               id="enforcement-action-date-paid"
                               onChange={(date: Date, _time: string | null) => field.handleChange(date)}
                               selectedDate={field.state.value}

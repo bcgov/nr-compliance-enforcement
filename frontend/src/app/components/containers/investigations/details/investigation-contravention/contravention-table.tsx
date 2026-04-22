@@ -49,8 +49,8 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   const columns: CompColumn<Contravention>[] = [
     {
       label: "Contravention",
-      headerClassName: "comp-cell-width-percent-60",
-      cellClassName: "comp-cell-width-percent-60",
+      headerClassName: "comp-cell-width-percent-50",
+      cellClassName: "comp-cell-width-percent-50",
       isSortable: true,
       getValue: (c) => c.legislationIdentifierRef ?? "",
       renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,

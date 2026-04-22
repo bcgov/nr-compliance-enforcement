@@ -101,6 +101,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestSave: (fn: () => Promise<void>) => void,
             onRequestDelete: (fn: () => Promise<void>) => void,
             onClose: () => void,
+            onIsSavingChange: (isSaving: boolean) => void,
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
@@ -113,6 +114,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
               onRequestDelete={onRequestDelete}
+              onIsSavingChange={onIsSavingChange}
               onClose={onClose}
             />
           ),
