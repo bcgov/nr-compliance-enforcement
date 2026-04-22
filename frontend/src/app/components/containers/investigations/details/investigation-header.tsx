@@ -1,16 +1,58 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Link } from "react-router-dom";
-import { Dropdown } from "react-bootstrap";
-import { Investigation } from "@/generated/graphql";
+import { Button, Dropdown } from "react-bootstrap";
+import { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import { applyStatusClass } from "@/app/common/methods";
+import { useAppDispatch } from "@/app/hooks/hooks";
+import { openModal } from "@/app/store/reducers/app";
+import { CHANGE_STATUS } from "@/app/types/modal/modal-types";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { InvestigationStatusModal } from "@/app/components/containers/investigations/details/investigation-status-modal";
+
+const UPDATE_INVESTIGATION = gql`
+  mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
+    updateInvestigation(investigationGuid: $investigationGuid, input: $input) {
+      investigationGuid
+      investigationStatus {
+        investigationStatusCode
+        shortDescription
+        longDescription
+      }
+    }
+  }
+`;
 
 interface InvestigationHeaderProps {
   investigation?: Investigation;
+  onStatusUpdated?: () => void;
 }
 
-export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation }) => {
+export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
+  const dispatch = useAppDispatch();
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
+
+  const [showStatusModal, setShowStatusModal] = useState(false);
+
+  const updateStatusMutation = useGraphQLMutation(UPDATE_INVESTIGATION, {
+    onSuccess: () => {
+      ToggleSuccess("Investigation status updated successfully");
+      setShowStatusModal(false);
+      onStatusUpdated?.();
+    },
+    onError: () => {
+      ToggleError("Failed to update investigation status");
+    },
+  });
+
+  const handleOpenStatusModal = () => setShowStatusModal(true);
+  const handleCloseStatusModal = () => setShowStatusModal(false);
+  const handleSaveStatus = async (investigationGuid: string, input: UpdateInvestigationInput) => {
+    await updateStatusMutation.mutateAsync({ investigationGuid, input });
+  };
+
   return (
     <>
       <div className="comp-details-header">
@@ -64,6 +106,14 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   <Dropdown.Menu align="end">
                     <Dropdown.Item
                       as="button"
+                      id="update-status-button"
+                      onClick={handleOpenStatusModal}
+                    >
+                      <i className="bi bi-arrow-repeat"></i>
+                      <span>Update Status</span>
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      as="button"
                       disabled={true}
                     >
                       <i className="bi bi-gear"></i>
@@ -73,6 +123,16 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                 </Dropdown>
               </div>
               <div className="comp-header-actions-desktop">
+                <Button
+                  id="details-screen-update-status-button"
+                  title="Update status"
+                  variant="outline-light"
+                  onClick={handleOpenStatusModal}
+                >
+                  <i className="bi bi-arrow-repeat"></i>
+                  <span>Update status</span>
+                </Button>
+
                 <Dropdown className="comp-header-kebab-menu">
                   <Dropdown.Toggle
                     aria-label="Actions Menu"
@@ -99,6 +159,13 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
         </div>
       </div>
       <InvestigationTabs />
+      <InvestigationStatusModal
+        show={showStatusModal}
+        onHide={handleCloseStatusModal}
+        onSave={handleSaveStatus}
+        investigation={investigation}
+        isSaving={updateStatusMutation.isPending}
+      />
     </>
   );
 };

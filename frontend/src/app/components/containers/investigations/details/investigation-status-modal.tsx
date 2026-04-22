@@ -3,24 +3,21 @@ import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { CompSelect } from "@/app/components/common/comp-select";
-import { Task } from "@/generated/graphql";
-import type { CreateUpdateTaskInput } from "@/generated/graphql";
+import type { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 
-interface TaskStatusModalProps {
+interface InvestigationStatusModalProps {
   show: boolean;
   onHide: () => void;
-  onSave: (input: CreateUpdateTaskInput) => Promise<void>;
-  task: Task | undefined;
-  investigationGuid: string;
+  onSave: (investigationGuid: string, input: UpdateInvestigationInput) => Promise<void>;
+  investigation: Investigation | undefined;
   isSaving: boolean;
 }
 
-export const TaskStatusModal: FC<TaskStatusModalProps> = ({
+export const InvestigationStatusModal: FC<InvestigationStatusModalProps> = ({
   show,
   onHide,
   onSave,
-  task,
-  investigationGuid,
+  investigation,
   isSaving,
 }) => {
   const taskStatuses = useAppSelector(selectTaskStatus);
@@ -30,7 +27,7 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   }));
 
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const initialStatus = task?.taskStatusCode ?? "";
+  const initialStatus = investigation?.investigationStatus?.investigationStatusCode ?? "";
   const isDirty = selectedStatus !== initialStatus;
 
   useEffect(() => {
@@ -51,16 +48,12 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   };
 
   const handleSave = async () => {
-    const input: CreateUpdateTaskInput = {
-      taskIdentifier: task?.taskIdentifier,
-      investigationIdentifier: investigationGuid,
-      taskTypeCode: task?.taskTypeCode ?? undefined,
-      taskStatusCode: selectedStatus || undefined,
-      assignedUserIdentifier: task?.assignedUserIdentifier ?? undefined,
-      appUserIdentifier: task?.createdByUserIdentifier ?? undefined,
-      description: task?.description ?? undefined,
-    };
-    await onSave(input);
+    if (investigation?.investigationGuid) {
+      const input: UpdateInvestigationInput = {
+        investigationStatus: selectedStatus || undefined,
+      };
+      await onSave(investigation?.investigationGuid, input);
+    }
   };
 
   return (
