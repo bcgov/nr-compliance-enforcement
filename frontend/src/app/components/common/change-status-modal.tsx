@@ -73,7 +73,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
           await onSave(input, (data as Investigation)?.investigationGuid);
         }
         break;
-      case "task":
+      case "task": {
         const input: CreateUpdateTaskInput = {
           taskIdentifier: (data as Task)?.taskIdentifier,
           investigationIdentifier: (data as Task)?.investigationIdentifier,
@@ -85,6 +85,7 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, on
         };
         await onSave(input);
         break;
+      }
       case "inspection":
         if ((data as Inspection)?.inspectionGuid) {
           const input: UpdateInspectionInput = {

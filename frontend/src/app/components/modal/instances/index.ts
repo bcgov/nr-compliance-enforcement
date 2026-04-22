@@ -1,6 +1,5 @@
 import { SampleModal } from "./sample-modal";
 import { AssignOfficerModal } from "./assign-officer-modal";
-import { ComplaintChangeStatusModal } from "./complaint-change-status-modal";
 import { DeleteNoteModal } from "./delete-note-modal";
 import { DeleteAnimalOutcomeModal } from "./delete-animal-outcome-modal";
 import { DeleteConfirmModalV2 } from "./delete-confirm-modal-v2";
@@ -13,7 +12,6 @@ import { LinkComplaintModal } from "./link-complaint-modal";
 export {
   SampleModal,
   AssignOfficerModal,
-  ComplaintChangeStatusModal,
   DeleteNoteModal,
   DeleteAnimalOutcomeModal,
   DeleteConfirmModalV2,
@@ -25,3 +23,4 @@ export {
 };
 
 export { RemovePartyModal } from "./remove-party";
+export { ComplaintChangeStatusModal } from "./complaint-change-status-modal";
