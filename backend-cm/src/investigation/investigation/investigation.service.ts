@@ -284,7 +284,7 @@ export class InvestigationService {
             file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
             discovery_date_utc_date: input.discoveryDate,
             discovery_date_utc_time: input.discoveryTime,
-            community_code_ref: input.community || null,
+            geo_organization_unit_code_ref: input.community || null,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -398,7 +398,7 @@ export class InvestigationService {
           updateData.discovery_date_utc_time = input.discoveryTime;
         }
         if (input.community !== undefined) {
-          updateData.community_code_ref = input.community || null;
+          updateData.geo_organization_unit_code_ref = input.community || null;
         }
         // Perform the update
         updatedInvestigation = await tx.investigation.update({
@@ -461,6 +461,7 @@ export class InvestigationService {
     leadAgency: "owned_by_agency_ref",
     investigationStatus: "investigation_status",
     name: "name",
+    community: "geo_organization_unit_code_ref",
   };
 
   private _buildInvestigationWhereClause(filters?: InvestigationFilters): any {
@@ -476,6 +477,10 @@ export class InvestigationService {
 
     if (filters?.investigationStatus) {
       where.investigation_status = filters.investigationStatus;
+    }
+
+    if (filters?.community) {
+      where.geo_organization_unit_code_ref = filters.community;
     }
 
     if (filters?.startDate || filters?.endDate) {

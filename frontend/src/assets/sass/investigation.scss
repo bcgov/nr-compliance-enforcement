@@ -4,6 +4,30 @@
     color: $gray-600;
   }
 }
+
+#investigation-list {
+  border-collapse: initial;
+  border-spacing: 0px;
+  font-style: normal;
+
+  thead > tr > th:not(:first-child) {
+    border-left: 1px solid $gray-300;
+  }
+
+  tbody {
+    tr {
+      cursor: pointer;
+
+      &:hover {
+        background-color: $gray-110;
+      }
+    }
+
+    .comp-table-row-hover-style {
+      background-color: $gray-110;
+    }
+  }
+}
 .scroll-target {
   scroll-margin-top: 8em;
 }

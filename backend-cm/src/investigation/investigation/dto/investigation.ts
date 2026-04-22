@@ -48,6 +48,10 @@ export class InvestigationFilters {
   @IsOptional()
   investigationStatus?: string;
 
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  community?: string;
+
   @Field(() => Date, { nullable: true })
   @IsOptional()
   startDate?: Date;
@@ -240,7 +244,7 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.community,
-      mapFrom((src) => src.community_code_ref ?? undefined),
+      mapFrom((src) => src.geo_organization_unit_code_ref ?? undefined),
     ),
     forMember(
       (dest) => dest.parties,

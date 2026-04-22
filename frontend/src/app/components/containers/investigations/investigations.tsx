@@ -20,6 +20,7 @@ const SEARCH_INVESTIGATIONS = gql`
         name
         openedTimestamp
         leadAgency
+        community
         caseIdentifier
         locationGeometry
         investigationStatus {
@@ -65,6 +66,7 @@ const Investigations: FC = () => {
         searchValues.search,
         searchValues.investigationStatus,
         searchValues.leadAgency,
+        searchValues.community,
         searchValues.startDate,
         searchValues.endDate,
         searchValues.sortBy,

@@ -62,6 +62,7 @@ input InvestigationFilters {
   search: String
   leadAgency: String
   investigationStatus: String
+  community: String
   startDate: DateTime
   endDate: DateTime
   sortBy: String

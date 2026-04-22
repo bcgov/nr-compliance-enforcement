@@ -64,7 +64,7 @@ export class investigation {
   discovery_date_utc_time?: Date;
 
   @ApiPropertyOptional({ type: String })
-  community_code_ref?: string;
+  geo_organization_unit_code_ref?: string;
 
   @ApiProperty({ isArray: true, type: () => activity_note })
   activity_note: activity_note[];
