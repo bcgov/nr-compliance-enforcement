@@ -1,4 +1,4 @@
-import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
+import { Mapper, createMap, forMember, mapFrom, preCondition } from "@automapper/core";
 import { AttractantXrefDto } from "../../types/models/complaints/attractant-ref";
 import { ComplaintDto } from "../../types/models/complaints/dtos/complaint";
 import { DelegateDto } from "../../types/models/app_user/delegate";
@@ -83,8 +83,9 @@ export const mapComplaintDtoToComplaintTable = (mapper: Mapper) => {
         return src.ownedBy;
       }),
     ),
-    forMember(
+    forMember<ComplaintDto, UpdateComplaintDto, any>(
       (dest) => dest.complaint_status_code,
+      preCondition((src) => !!src.status), // If status is falsy do not update status (eg partial DTO without status field)
       mapFrom((src) => {
         return {
           complaint_status_code: src.status,
