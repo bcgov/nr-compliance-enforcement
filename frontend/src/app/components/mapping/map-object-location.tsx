@@ -2,7 +2,6 @@ import { FC } from "react";
 import LeafletMapWithPoint from "@components/mapping/leaflet-map-with-point";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 
-
 type Props = {
   map_object_type: MapObjectType;
   locationCoordinates?: { lat: number; lng: number };
@@ -45,8 +44,9 @@ export const MapObjectLocation: FC<Props> = ({
         mapElements={mapElements}
         draggable={draggable}
         onMarkerMove={onMarkerMove}
-        geocodedLocation={defaultCenter}
+        {...(mapElements?.length === 0 && { geocodedLocation: defaultCenter })}
         defaultZoom={defaultZoom}
+        mapType={map_object_type}
       />
     </section>
   );

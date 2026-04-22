@@ -25,13 +25,21 @@ type Props = {
   mapElements: MapElement[];
   geocodedLocation?: { lat: number; lng: number };
   defaultZoom?: number;
+  mapType: string;
 };
 
 /**
  * Renders a map with a marker at the supplied location
  *
  */
-const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, geocodedLocation, defaultZoom = 12 }) => {
+const LeafletMapWithPoint: FC<Props> = ({
+  draggable,
+  onMarkerMove,
+  mapElements,
+  geocodedLocation,
+  defaultZoom = 12,
+  mapType,
+}) => {
   const iconHTML = ReactDOMServer.renderToString(<FontAwesomeIcon icon={faMapMarkerAlt} />);
   const [mapCenterPosition, setMapCenterPosition] = useState<{
     lat: number;
@@ -41,7 +49,12 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
   // update the marker poisition when the coordinates are updated (occurs when geocoded).
   // but don't update them if the marker position has already been set manually
   useEffect(() => {
-    let mapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint || item.objectType === MapObjectType.Investigation || item.objectType === MapObjectType.Inspection);
+    let mapElement = mapElements.find(
+      (item) =>
+        item.objectType === MapObjectType.Complaint ||
+        item.objectType === MapObjectType.Investigation ||
+        item.objectType === MapObjectType.Inspection,
+    );
     const mapElementLocation = mapElement?.location;
     if (mapElementLocation && areCoordinatesValid(mapElementLocation)) {
       setMapCenterPosition(mapElementLocation);
@@ -163,7 +176,7 @@ const LeafletMapWithPoint: FC<Props> = ({ draggable, onMarkerMove, mapElements, 
 
   return (
     <Card className="comp-map-container">
-      {geocodedLocation && areCoordinatesValid(geocodedLocation) && <NonDismissibleAlert />}
+      {geocodedLocation && areCoordinatesValid(geocodedLocation) && <NonDismissibleAlert mapType={mapType} />}
       {unmappedEquipment > 0 && (
         <Alert
           variant="warning"
