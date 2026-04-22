@@ -39,7 +39,7 @@ export class Complaint {
     example: "Open",
     description: "The complaint status code",
   })
-  @ManyToOne(() => ComplaintStatusCode)
+  @ManyToOne(() => ComplaintStatusCode, { nullable: false })
   @JoinColumn({ name: "complaint_status_code" })
   complaint_status_code: ComplaintStatusCode;
 
