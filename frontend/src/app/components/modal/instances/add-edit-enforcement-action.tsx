@@ -31,7 +31,7 @@ import {
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { CompInput } from "@/app/components/common/comp-input";
 
-const VIOLATION_TICKET_CODES = ["FDVT", "PRVT"];
+const VIOLATION_TICKET_CODES = new Set(["FDVT", "PRVT"]);
 
 type AddEditEnforcementActionModalProps = {
   close: () => void;
@@ -76,7 +76,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
   }));
 
   const [isViolationTicket, setIsViolationTicket] = useState(
-    VIOLATION_TICKET_CODES.includes(
+    VIOLATION_TICKET_CODES.has(
       (enforcementAction as EnforcementAction)?.enforcementActionCode?.enforcementActionCode ?? "",
     ),
   );
@@ -332,7 +332,7 @@ export const AddEditEnforcementActionModal: FC<AddEditEnforcementActionModalProp
                     value={enforcementActionOptions.find((opt) => opt.value === field.state.value)}
                     onChange={(option) => {
                       field.handleChange(option?.value ?? "");
-                      setIsViolationTicket(VIOLATION_TICKET_CODES.includes(option?.value ?? ""));
+                      setIsViolationTicket(VIOLATION_TICKET_CODES.has(option?.value ?? ""));
                     }}
                     placeholder="Select enforcement action"
                     isClearable
