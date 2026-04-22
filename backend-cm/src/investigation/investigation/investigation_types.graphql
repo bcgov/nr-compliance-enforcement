@@ -18,13 +18,14 @@ type Investigation {
   fileCoordinatorGuid: String
   discoveryDate: DateTime
   discoveryTime: DateTime
+  community: String
   parties: [InvestigationParty]
   contraventions: [Contravention]
   tasks: [Task]
 }
 
 input CreateInvestigationInput {
-  caseIdentifier: String!
+  caseIdentifier: String
   leadAgency: String!
   description: String
   investigationStatus: String
@@ -38,6 +39,7 @@ input CreateInvestigationInput {
   fileCoordinatorGuid: String
   discoveryDate: DateTime
   discoveryTime: DateTime
+  community: String
 }
 
 input UpdateInvestigationInput {
@@ -53,12 +55,14 @@ input UpdateInvestigationInput {
   fileCoordinatorGuid: String
   discoveryDate: DateTime
   discoveryTime: DateTime
+  community: String
 }
 
 input InvestigationFilters {
   search: String
   leadAgency: String
   investigationStatus: String
+  community: String
   startDate: DateTime
   endDate: DateTime
   sortBy: String

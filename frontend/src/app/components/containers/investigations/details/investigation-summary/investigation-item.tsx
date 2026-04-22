@@ -5,6 +5,8 @@ import { Investigation } from "@/generated/graphql";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import Option from "@apptypes/app/option";
 
 interface InvestigationItemProps {
   investigationData: Investigation;
@@ -15,6 +17,10 @@ interface InvestigationItemProps {
 export const InvestigationItem = ({ investigationData, caseGuid, caseName }: InvestigationItemProps) => {
   const createdByObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.createdByAppUserGuid));
   const createdBy = createdByObj ? `${createdByObj?.last_name}, ${createdByObj?.first_name}` : "Not Assigned";
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const communityLabel = investigationData.community
+    ? (communityOptions.find((o: Option) => o.value === investigationData.community)?.label ?? investigationData.community)
+    : "";
   return (
     <section className="comp-details-section">
       <Card
@@ -62,6 +68,10 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
             <div>
               <dt>Location description</dt>
               <dd id="comp-details-location-description">{investigationData.locationDescription}</dd>
+            </div>
+            <div>
+              <dt>Community</dt>
+              <dd id="investigation-summary-community">{communityLabel}</dd>
             </div>
 
             <CompLocationInfo

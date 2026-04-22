@@ -20,6 +20,7 @@ const SEARCH_INVESTIGATIONS = gql`
         name
         openedTimestamp
         leadAgency
+        community
         caseIdentifier
         locationGeometry
         investigationStatus {
@@ -65,6 +66,7 @@ const Investigations: FC = () => {
         searchValues.search,
         searchValues.investigationStatus,
         searchValues.leadAgency,
+        searchValues.community,
         searchValues.startDate,
         searchValues.endDate,
         searchValues.sortBy,
@@ -172,6 +174,12 @@ const Investigations: FC = () => {
       <div className="comp-page-header">
         <div className="comp-page-title-container">
           <h1>Investigations</h1>
+          <Button
+            id="start-investigation-button"
+            onClick={() => navigate("/investigation/create")}
+          >
+            <i className="bi bi-plus-circle"></i>Create investigation
+          </Button>
         </div>
 
         <InvestigationFilterBar
