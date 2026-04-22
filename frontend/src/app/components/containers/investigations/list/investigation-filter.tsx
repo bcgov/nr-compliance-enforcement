@@ -3,13 +3,18 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
 import { useAppSelector } from "@hooks/hooks";
-import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import {
+  selectAgencyDropdown,
+  selectCommunityCodeDropdown,
+  selectComplaintStatusWithPendingCodeDropdown,
+} from "@store/reducers/code-table";
 import { useInvestigationSearch, InvestigationSearchParams } from "../hooks/use-investigation-search";
 
 export const InvestigationFilter: FC = () => {
   const { searchValues, setValues } = useInvestigationSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
 
   const handleFieldChange = (fieldName: keyof InvestigationSearchParams) => (option: Option | null) => {
     setValues({ [fieldName]: option?.value });
@@ -78,6 +83,15 @@ export const InvestigationFilter: FC = () => {
         "Select agency",
         leadAgencyOptions.find((option) => option.value === searchValues.leadAgency) || null,
         handleFieldChange("leadAgency"),
+      )}
+
+      {renderSelectFilter(
+        "community",
+        "Community",
+        communityOptions,
+        "Select community",
+        communityOptions.find((option) => option.value === searchValues.community) || null,
+        handleFieldChange("community"),
       )}
 
       <FilterDate

@@ -6,13 +6,22 @@ interface InvestigationEditHeaderProps {
   cancelButtonClick: () => void;
   saveButtonClick: () => void;
   caseIdentifier?: string;
+  isEditMode?: boolean;
+  investigationGuid?: string;
+  investigationName?: string;
 }
 
 export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
   caseIdentifier,
+  isEditMode = false,
+  investigationGuid,
+  investigationName,
 }) => {
+  const pageTitle = isEditMode ? "Edit investigation" : "Create investigation";
+  const cancelTitle = isEditMode ? "Cancel edit investigation" : "Cancel create investigation";
+
   return (
     <div className="comp-details-header">
       <div className="comp-container">
@@ -23,11 +32,16 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to="/investigations">Investigations</Link>
               </li>
+              {isEditMode && investigationGuid && (
+                <li className="breadcrumb-item comp-nav-item-name-inverted">
+                  <Link to={`/investigation/${investigationGuid}`}>{investigationName || "Investigation"}</Link>
+                </li>
+              )}
               <li
                 className="breadcrumb-item"
                 aria-current="page"
               >
-                {"Create investigation"}
+                {pageTitle}
               </li>
             </ol>
           </nav>
@@ -37,13 +51,13 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              <span>{"Create investigation"} </span>
+              <span>{pageTitle} </span>
             </h1>
           </div>
           <div className="comp-header-actions">
             <Button
               id="details-screen-cancel-edit-button-top"
-              title={"Cancel create investigation"}
+              title={cancelTitle}
               variant="outline-light"
               onClick={cancelButtonClick}
             >
@@ -51,7 +65,7 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
             </Button>
             <Button
               id="details-screen-save-button-top"
-              title="Save Case"
+              title="Save Investigation"
               variant="outline-light"
               onClick={saveButtonClick}
             >

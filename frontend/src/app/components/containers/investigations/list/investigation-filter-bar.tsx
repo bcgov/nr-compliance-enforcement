@@ -4,7 +4,11 @@ import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
-import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import {
+  selectAgencyDropdown,
+  selectCommunityCodeDropdown,
+  selectComplaintStatusWithPendingCodeDropdown,
+} from "@store/reducers/code-table";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
 
 type Props = {
@@ -16,6 +20,7 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
   const { searchValues, setValues, clearValues } = useInvestigationSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
 
   const removeFilter = useCallback(
     (filterName: string) => {
@@ -109,6 +114,15 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
             id="investigation-agency-filter-pill"
             label={leadAgencyOptions.find((option) => option.value === searchValues.leadAgency)?.label || "Agency"}
             name="leadAgency"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("community") && (
+          <FilterButton
+            id="investigation-community-filter-pill"
+            label={communityOptions.find((option) => option.value === searchValues.community)?.label || "Community"}
+            name="community"
             clear={removeFilter}
           />
         )}

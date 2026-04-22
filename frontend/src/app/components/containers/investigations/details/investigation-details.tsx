@@ -81,6 +81,7 @@ export const GET_INVESTIGATION = gql`
       fileCoordinatorGuid
       discoveryDate
       discoveryTime
+      community
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier
