@@ -193,13 +193,13 @@ const App: FC = () => {
                     element={<InvestigationCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/edit"
                     element={<InvestigationCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/task/create"
                     element={pilotGate(<TaskCreate />)}
