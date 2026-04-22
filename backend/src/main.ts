@@ -1,4 +1,5 @@
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { VersioningType } from "@nestjs/common";
@@ -6,12 +7,14 @@ import { customLogger } from "./common/logger.config";
 import * as bodyParser from "body-parser";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { logger: customLogger });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { logger: customLogger });
   app.setGlobalPrefix("api");
   app.enableVersioning({
     type: VersioningType.URI,
   });
   app.enableCors();
+
+  app.set("query parser", "extended");
 
   app.use(bodyParser.json({ limit: "10mb" }));
   app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));

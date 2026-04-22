@@ -48,10 +48,18 @@ export class ComplaintController {
   @Get("/sector-complaints-by-ids")
   @Roles(coreRoles)
   async findSectorComplaintsByIds(
-    @Query("ids") complaintIds: string[],
+    @Query("ids") complaintIds: string | string[],
     @Token() token: string,
   ): Promise<SectorComplaintDto[]> {
-    return await this.service.getSectorComplaintsByIds(complaintIds, token);
+    let normalizedIds: string[];
+    if (!complaintIds) {
+      normalizedIds = [];
+    } else if (Array.isArray(complaintIds)) {
+      normalizedIds = complaintIds;
+    } else {
+      normalizedIds = [complaintIds];
+    }
+    return await this.service.getSectorComplaintsByIds(normalizedIds, token);
   }
 
   @Get(":complaintType")
