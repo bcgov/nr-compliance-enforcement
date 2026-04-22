@@ -6,6 +6,7 @@ export interface InvestigationSearchParams {
   search: string;
   investigationStatus: string | null;
   leadAgency: string | null;
+  community: string | null;
   startDate: Date | null;
   endDate: Date | null;
   sortBy: string;
@@ -19,6 +20,7 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   search: "",
   investigationStatus: null,
   leadAgency: null,
+  community: null,
   startDate: null,
   endDate: null,
   sortBy: "openedTimestamp",
@@ -66,6 +68,7 @@ export const useInvestigationSearch = () => {
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       investigationStatus: searchParams.get("investigationStatus"),
       leadAgency: searchParams.get("leadAgency"),
+      community: searchParams.get("community"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
