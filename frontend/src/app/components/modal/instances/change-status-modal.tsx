@@ -141,8 +141,10 @@ export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, c
             !statusChangeDisabledInd && (is_officer_assigned || selectedStatus === "OPEN") ? "" : "inactive-button"
           }
           disabled={
-            (!is_officer_assigned || !validationResults.validationDetails.referenceNumberCriteria) &&
-            selectedStatus === "CLOSED"
+            !selectedStatus ||
+            statusChangeDisabledInd ||
+            ((!is_officer_assigned || !validationResults.validationDetails.referenceNumberCriteria) &&
+              selectedStatus === "CLOSED")
           }
         >
           Update

@@ -502,7 +502,8 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationInput = {
-  caseIdentifier: Scalars['String']['input'];
+  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  community?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1082,6 +1083,7 @@ export type InspectionStatusCode = {
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  community?: Maybe<Scalars['String']['output']>;
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
@@ -2582,6 +2584,7 @@ export type UpdateInspectionInput = {
 };
 
 export type UpdateInvestigationInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;

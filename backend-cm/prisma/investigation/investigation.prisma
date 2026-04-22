@@ -72,6 +72,7 @@ model investigation {
   file_coordinator_guid_ref          String?                      @db.Uuid
   discovery_date_utc_date            DateTime?                    @db.Date
   discovery_date_utc_time            DateTime?                    @db.Time(6)
+  geo_organization_unit_code_ref     String?                      @db.VarChar(10)
   activity_note                      activity_note[]
   contravention                      contravention[]
   diary_date                         diary_date[]
