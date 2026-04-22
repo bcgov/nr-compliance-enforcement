@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 const CaseManagementPilotRestricted: FC = () => {
   return (
     <div className="comp-app-container">
-      <Header />
-
       <div className="error-container">
         <div className="message">
           <BsPersonFillSlash />
