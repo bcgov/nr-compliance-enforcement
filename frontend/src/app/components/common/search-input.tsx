@@ -63,9 +63,9 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
       className="comp-tooltip"
       {...props}
     >
-      <div style={{ textAlign: "left", fontSize: "10px", padding: "6px 8px" }}>
-        Searchable fields:
-        <ul style={{ padding: "0px 10px", margin: 0 }}>
+      <div className="complaint-search-fields-tooltip">
+        <div className="complaint-search-fields-tooltip-title">Searchable fields:</div>
+        <ul className="complaint-search-fields-tooltip-list">
           <li>Complaint #</li>
           <li>Complaint description</li>
           <li>Officer assigned</li>
@@ -108,6 +108,67 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
     </Tooltip>
   );
 
+  const renderSectorTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <div className="complaint-search-fields-tooltip complaint-search-fields-tooltip-sector">
+        <div className="complaint-search-fields-tooltip-title">Searchable fields</div>
+        <div className="complaint-search-fields-tooltip-columns">
+          <div className="complaint-search-fields-tooltip-column">
+            <div className="complaint-search-fields-tooltip-section-heading">All complaint types</div>
+            <ul className="complaint-search-fields-tooltip-list-sector">
+              <li>Complaint #</li>
+              <li>Complaint description</li>
+              <li>Officer assigned</li>
+              <li>Location summary</li>
+              <li>Location address (detailed)</li>
+              <li>Community</li>
+              <li>Office</li>
+              <li>Zone</li>
+              <li>Region</li>
+              <li>Caller name</li>
+              <li>Caller address</li>
+              <li>Caller email</li>
+              <li>Caller phone numbers</li>
+              <li>Organization reporting</li>
+              <li>Other reporting details</li>
+              <li>Reference number</li>
+              <li>Owning agency</li>
+              <li>Complaint update</li>
+              <li>Call center action update</li>
+            </ul>
+          </div>
+          <div className="complaint-search-fields-tooltip-column complaint-search-fields-tooltip-column-bordered">
+            <div className="complaint-search-fields-tooltip-filter-heading complaint-search-fields-tooltip-filter-heading-compact">
+              When ERS filter is selected:
+            </div>
+            <ul className="complaint-search-fields-tooltip-list-sector">
+              <li>Violation type</li>
+              <li>Complaint/witness details</li>
+              <li>Authorization ID</li>
+              <li>Unauthorized site ID</li>
+              <li>NRIS inspection number</li>
+            </ul>
+            <div className="complaint-search-fields-tooltip-filter-heading">When HWCR filter is selected:</div>
+            <ul className="complaint-search-fields-tooltip-list-sector">
+              <li>Species</li>
+              <li>Nature of complaint</li>
+              <li>Attractants</li>
+              <li>Outcome by animal: ear tag</li>
+            </ul>
+            <div className="complaint-search-fields-tooltip-filter-heading">When GIR filter is selected:</div>
+            <ul className="complaint-search-fields-tooltip-list-sector">
+              <li>GIR type</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Tooltip>
+  );
+
   return (
     <InputGroup className="search-input-group">
       <input
@@ -131,7 +192,7 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
       <OverlayTrigger
         placement="bottom"
         delay={{ show: 250, hide: 400 }}
-        overlay={activeTab !== COMPLAINT_TYPES.SECTOR ? renderTooltip : <></>}
+        overlay={activeTab === COMPLAINT_TYPES.SECTOR ? renderSectorTooltip : renderTooltip}
       >
         <button
           id="search-button"
