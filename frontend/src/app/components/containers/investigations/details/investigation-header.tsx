@@ -4,13 +4,10 @@ import { Button, Dropdown } from "react-bootstrap";
 import { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import { applyStatusClass } from "@/app/common/methods";
-import { useAppDispatch } from "@/app/hooks/hooks";
-import { openModal } from "@/app/store/reducers/app";
-import { CHANGE_STATUS } from "@/app/types/modal/modal-types";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
-import { InvestigationStatusModal } from "@/app/components/containers/investigations/details/investigation-status-modal";
+import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
 
 const UPDATE_INVESTIGATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
@@ -31,7 +28,6 @@ interface InvestigationHeaderProps {
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
-  const dispatch = useAppDispatch();
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
 
   const [showStatusModal, setShowStatusModal] = useState(false);
@@ -49,7 +45,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
 
   const handleOpenStatusModal = () => setShowStatusModal(true);
   const handleCloseStatusModal = () => setShowStatusModal(false);
-  const handleSaveStatus = async (investigationGuid: string, input: UpdateInvestigationInput) => {
+  const handleSaveStatus = async (input: UpdateInvestigationInput, investigationGuid?: string | null) => {
     await updateStatusMutation.mutateAsync({ investigationGuid, input });
   };
 
@@ -159,11 +155,12 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
         </div>
       </div>
       <InvestigationTabs />
-      <InvestigationStatusModal
+      <ChangeStatusModal
         show={showStatusModal}
         onHide={handleCloseStatusModal}
         onSave={handleSaveStatus}
-        investigation={investigation}
+        data={investigation}
+        type="investigation"
         isSaving={updateStatusMutation.isPending}
       />
     </>

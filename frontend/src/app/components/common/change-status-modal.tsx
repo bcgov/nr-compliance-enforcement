@@ -3,26 +3,28 @@ import { Modal, Button } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { CompSelect } from "@/app/components/common/comp-select";
-import { Task } from "@/generated/graphql";
-import type { CreateUpdateTaskInput } from "@/generated/graphql";
+import type {
+  CreateUpdateTaskInput,
+  Inspection,
+  Investigation,
+  Task,
+  UpdateInspectionInput,
+  UpdateInvestigationInput,
+} from "@/generated/graphql";
 
-interface TaskStatusModalProps {
+interface ChangeStatusModalProps {
   show: boolean;
   onHide: () => void;
-  onSave: (input: CreateUpdateTaskInput) => Promise<void>;
-  task: Task | undefined;
-  investigationGuid: string;
+  onSave: (
+    input: UpdateInvestigationInput | CreateUpdateTaskInput | UpdateInspectionInput,
+    investigationGuid?: string | null,
+  ) => Promise<void>;
+  data: Investigation | Task | Inspection | undefined;
+  type: "investigation" | "task" | "inspection";
   isSaving: boolean;
 }
 
-export const TaskStatusModal: FC<TaskStatusModalProps> = ({
-  show,
-  onHide,
-  onSave,
-  task,
-  investigationGuid,
-  isSaving,
-}) => {
+export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ show, onHide, onSave, data, type, isSaving }) => {
   const taskStatuses = useAppSelector(selectTaskStatus);
   const statusOptions = taskStatuses.map((s) => ({
     value: String(s.value ?? ""),
@@ -30,7 +32,18 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   }));
 
   const [selectedStatus, setSelectedStatus] = useState<string>("");
-  const initialStatus = task?.taskStatusCode ?? "";
+  let initialStatus = "";
+  switch (type) {
+    case "investigation":
+      initialStatus = (data as Investigation)?.investigationStatus?.investigationStatusCode ?? "";
+      break;
+    case "task":
+      initialStatus = (data as Task)?.taskStatusCode ?? "";
+      break;
+    case "inspection":
+      initialStatus = (data as Inspection)?.inspectionStatus?.inspectionStatusCode ?? "";
+      break;
+  }
   const isDirty = selectedStatus !== initialStatus;
 
   useEffect(() => {
@@ -51,16 +64,36 @@ export const TaskStatusModal: FC<TaskStatusModalProps> = ({
   };
 
   const handleSave = async () => {
-    const input: CreateUpdateTaskInput = {
-      taskIdentifier: task?.taskIdentifier,
-      investigationIdentifier: investigationGuid,
-      taskTypeCode: task?.taskTypeCode ?? undefined,
-      taskStatusCode: selectedStatus || undefined,
-      assignedUserIdentifier: task?.assignedUserIdentifier ?? undefined,
-      appUserIdentifier: task?.createdByUserIdentifier ?? undefined,
-      description: task?.description ?? undefined,
-    };
-    await onSave(input);
+    switch (type) {
+      case "investigation":
+        if ((data as Investigation)?.investigationGuid) {
+          const input: UpdateInvestigationInput = {
+            investigationStatus: selectedStatus || undefined,
+          };
+          await onSave(input, (data as Investigation)?.investigationGuid);
+        }
+        break;
+      case "task":
+        const input: CreateUpdateTaskInput = {
+          taskIdentifier: (data as Task)?.taskIdentifier,
+          investigationIdentifier: (data as Task)?.investigationIdentifier,
+          taskTypeCode: (data as Task)?.taskTypeCode ?? undefined,
+          taskStatusCode: selectedStatus || undefined,
+          assignedUserIdentifier: (data as Task)?.assignedUserIdentifier ?? undefined,
+          appUserIdentifier: (data as Task)?.createdByUserIdentifier ?? undefined,
+          description: (data as Task)?.description ?? undefined,
+        };
+        await onSave(input);
+        break;
+      case "inspection":
+        if ((data as Inspection)?.inspectionGuid) {
+          const input: UpdateInspectionInput = {
+            inspectionStatus: selectedStatus || undefined,
+          };
+          await onSave(input, (data as Inspection)?.inspectionGuid);
+        }
+        break;
+    }
   };
 
   return (
