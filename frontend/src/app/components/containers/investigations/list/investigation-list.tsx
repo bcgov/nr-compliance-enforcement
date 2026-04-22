@@ -5,7 +5,7 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { CaseFile, Investigation } from "@/generated/graphql";
 import { applyStatusClass, formatDateTime } from "@common/methods";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -28,6 +28,7 @@ export const InvestigationList: FC<Props> = ({
 }) => {
   const { searchValues, setValues, setSort } = useInvestigationSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
 
   const handleSort = useCallback(
     (sortKey: string, sortDirection: string) => {
@@ -113,6 +114,21 @@ export const InvestigationList: FC<Props> = ({
       renderCell: (investigation) => {
         const agency = leadAgencyOptions.find((o: Option) => o.value === investigation.leadAgency);
         return agency?.label ?? "-";
+      },
+    },
+    {
+      label: "Community",
+      sortKey: "community",
+      headerClassName: "",
+      cellClassName: "",
+      isSortable: true,
+      getValue: (investigation) => {
+        const community = communityOptions.find((o: Option) => o.value === investigation.community);
+        return community?.label ?? "";
+      },
+      renderCell: (investigation) => {
+        const community = communityOptions.find((o: Option) => o.value === investigation.community);
+        return community?.label ?? "-";
       },
     },
     {

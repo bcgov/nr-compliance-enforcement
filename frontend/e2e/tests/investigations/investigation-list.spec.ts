@@ -25,7 +25,8 @@ test.describe("Investigation List View", () => {
     await expect(tableHeaders.nth(2)).toContainText("Date Opened");
     await expect(tableHeaders.nth(3)).toContainText("Status");
     await expect(tableHeaders.nth(4)).toContainText("Agency");
-    await expect(tableHeaders.nth(5)).toContainText("Actions");
+    await expect(tableHeaders.nth(5)).toContainText("Community");
+    await expect(tableHeaders.nth(6)).toContainText("Actions");
   });
 
   test("it navigates to investigation details", async ({ page }) => {

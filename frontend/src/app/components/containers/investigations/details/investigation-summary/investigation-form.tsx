@@ -7,7 +7,7 @@ import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { FormField } from "@/app/components/common/form-field";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { getUserAgency } from "@/app/service/user-service";
-import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
+import { selectCommunityCodeDropdown, selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
 import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
@@ -26,6 +26,7 @@ interface InvestigationFormProps {
   discoveryDate?: string;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   discoveryTime?: string;
+  isEditMode?: boolean;
 }
 
 const CHECK_INVESTIGATION_NAME_EXISTS = gql`
@@ -38,10 +39,18 @@ const CHECK_INVESTIGATION_NAME_EXISTS = gql`
   }
 `;
 
-export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirtyChange, discoveryTime }: InvestigationFormProps) => {
-  const agencyOptions = useAppSelector(selectAgencyDropdown);
-  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(
-    () => parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
+export const InvestigationForm = ({
+  form,
+  id,
+  isDisabled,
+  discoveryDate,
+  onDirtyChange,
+  discoveryTime,
+  isEditMode = false,
+}: InvestigationFormProps) => {
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() =>
+    parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
   );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
     const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
@@ -128,51 +137,30 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirty
               </div>
             )}
           />
-          <FormField
-            form={form}
-            name="investigationStatus"
-            label="Investigation status"
-            required
-            validators={{ onChange: z.string().min(1, "Investigation status is required") }}
-            render={(field) => (
-              <CompSelect
-                id="investigation-status-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={statusOptions}
-                value={statusOptions.find((opt) => opt.value === field.state.value)}
-                onChange={(option) => field.handleChange(option?.value || "")}
-                placeholder="Select investigation status"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={true}
-                errorMessage={field.state.meta.errors?.[0]?.message || ""}
-              />
-            )}
-          />
-          <FormField
-            form={form}
-            name="leadAgency"
-            label="Lead agency"
-            required
-            validators={{ onChange: z.string().min(1, "Lead agency is required") }}
-            render={(field) => (
-              <CompSelect
-                id="lead-agency-select"
-                classNamePrefix="comp-select"
-                className="comp-details-input"
-                options={agencyOptions}
-                value={agencyOptions.find((opt) => opt.value === field.state.value)}
-                onChange={(option) => field.handleChange(option?.value || "")}
-                placeholder="Select lead agency"
-                isClearable={true}
-                showInactive={false}
-                enableValidation={true}
-                errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                isDisabled={true}
-              />
-            )}
-          />
+          {isEditMode && (
+            <FormField
+              form={form}
+              name="investigationStatus"
+              label="Investigation status"
+              required
+              validators={{ onChange: z.string().min(1, "Investigation status is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="investigation-status-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={statusOptions}
+                  value={statusOptions.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select investigation status"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+          )}
           <FormField
             form={form}
             name="primaryInvestigator"
@@ -279,7 +267,9 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirty
                   maxDate={new Date()}
                   showTimePicker={true}
                   nullableTime={true}
-                  onTimeWithoutDate={() => field.setMeta({ errorMap: { onChange: "Select a date before entering a time" } })}
+                  onTimeWithoutDate={() =>
+                    field.setMeta({ errorMap: { onChange: "Select a date before entering a time" } })
+                  }
                 />
               );
             }}
@@ -382,6 +372,28 @@ export const InvestigationForm = ({ form, id, isDisabled, discoveryDate, onDirty
             }}
           />
         </fieldset>
+        <FormField
+          form={form}
+          name="community"
+          label="Community"
+          required
+          validators={{ onChange: z.string().min(1, "Community is required") }}
+          render={(field) => (
+            <CompSelect
+              id="community-select"
+              classNamePrefix="comp-select"
+              className="comp-details-input pt-2"
+              options={communityOptions}
+              value={communityOptions.find((opt) => opt.value === field.state.value)}
+              onChange={(option) => field.handleChange(option?.value || "")}
+              placeholder="Select community"
+              isClearable={true}
+              showInactive={false}
+              enableValidation={true}
+              errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            />
+          )}
+        />
       </form>
     </>
   );
