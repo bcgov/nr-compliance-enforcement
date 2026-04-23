@@ -19,6 +19,8 @@ import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
 import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 import { LegislationType } from "@/app/types/app/code-tables/legislation-type";
+import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
+import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -165,6 +167,28 @@ export const fetchLegislationTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<LegislationType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.LEGISLATION_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEnforcementActionTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE}`,
+  );
+  const response = await get<Array<EnforcementActionType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchTicketOutcomeTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE}`,
+  );
+  const response = await get<Array<TicketOutcomeType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

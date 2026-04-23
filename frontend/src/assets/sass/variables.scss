@@ -265,6 +265,8 @@ $cell-heights: (
   330
 );
 
+$cell-width-percentages: (10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90);
+
 @import "../../../node_modules/bootstrap/scss/mixins";
 @import "../../../node_modules/bootstrap/scss/variables";
 @import "../../../node_modules/bootstrap/scss/maps";
