@@ -196,6 +196,7 @@ test.describe("Case Filter Logic", () => {
 
     // Verify both filter pills appear
     await expect(page.locator("#case-status-filter-pill")).toBeVisible();
+    // NOSONAR - awaiting decision on final list view
     //await expect(page.locator("#case-agency-filter-pill")).toBeVisible();
 
     // Verify filtered results match both criteria

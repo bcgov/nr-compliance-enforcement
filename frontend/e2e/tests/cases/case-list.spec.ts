@@ -23,6 +23,7 @@ test.describe("Case List View", () => {
     await expect(tableHeaders.nth(0)).toContainText("Case ID");
     await expect(tableHeaders.nth(1)).toContainText("Date Opened");
     await expect(tableHeaders.nth(2)).toContainText("Status");
+    // NOSONAR - awaiting decision on final list view
     //await expect(tableHeaders.nth(3)).toContainText("Agency");
     //await expect(tableHeaders.nth(4)).toContainText("Actions");
   });
