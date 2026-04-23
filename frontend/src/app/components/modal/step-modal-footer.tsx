@@ -5,6 +5,7 @@ interface StepModalFooterProps {
   currentStep: number;
   totalSteps: number;
   isEdit: boolean;
+  isSaving: boolean;
   showDeleteConfirm: boolean;
   onCancel: () => void;
   onPrevious: () => void;
@@ -17,6 +18,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
   currentStep,
   totalSteps,
   isEdit,
+  isSaving,
   showDeleteConfirm,
   onCancel,
   onPrevious,
@@ -33,7 +35,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
           <Button
             variant="outline-danger"
             onClick={onDelete}
-            disabled={showDeleteConfirm}
+            disabled={showDeleteConfirm || isSaving}
           >
             <i className="bi bi-trash me-1" />
             <span>Delete</span>
@@ -43,7 +45,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
           <Button
             variant="outline-primary"
             onClick={onPrevious}
-            disabled={showDeleteConfirm}
+            disabled={showDeleteConfirm || isSaving}
           >
             <i className="bi bi-arrow-left-circle" />
             <span>Previous</span>
@@ -56,7 +58,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
         <Button
           variant="outline-primary"
           onClick={onCancel}
-          disabled={showDeleteConfirm}
+          disabled={showDeleteConfirm || isSaving}
         >
           Cancel
         </Button>
@@ -64,7 +66,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
           <Button
             variant="primary"
             onClick={onSave}
-            disabled={showDeleteConfirm}
+            disabled={showDeleteConfirm || isSaving}
           >
             <i className="bi bi-check-circle" />
             <span>Save</span>
@@ -73,7 +75,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
           <Button
             variant="primary"
             onClick={onNext}
-            disabled={showDeleteConfirm}
+            disabled={showDeleteConfirm || isSaving}
           >
             <span>Next</span>
             <i className="bi bi-arrow-right-circle ms-1" />

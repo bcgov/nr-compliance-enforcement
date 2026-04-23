@@ -233,6 +233,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
 
   return (
     <div className="comp-details-section--list-view">
+      <h2>Exhibits</h2>
       <ExhibitsFilterBar
         tasks={tasks}
         toggleShowMobileFilters={toggleShowMobileFilters}

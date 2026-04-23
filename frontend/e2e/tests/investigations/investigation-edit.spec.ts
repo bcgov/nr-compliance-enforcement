@@ -66,6 +66,12 @@ test.describe("Investigation Edit Form", () => {
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
+    // Set community if not already set - test seed data is missing community
+    const communityValue = page.locator("#community-select .comp-select__single-value");
+    if ((await communityValue.count()) === 0) {
+      await selectItemById("community-select", "100 Mile House", page);
+    }
+
     await enterDateTimeInDatePicker(page, "investigation-discovery-date", "01", "13", "45");
 
     // Make a change

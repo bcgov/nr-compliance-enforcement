@@ -42,11 +42,15 @@ import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
 import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investigation/task_category_type_code/dto/task_category_type_code";
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
-import { mapPrismaAliasToAlias } from "src/shared/alias/dto/alias";
-import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "src/shared/business_identifier_code/dto/business_identifier_code";
-import { mapPrismaBusinessIdentifierToIdentifier } from "src/shared/business_identifier/dto/business_identifier";
-import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
-import { mapPrismaExhibitToExhibit } from "src/investigation/exhibit/dto/exhibit";
+import { mapPrismaAliasToAlias } from "../shared/alias/dto/alias";
+import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "../shared/business_identifier_code/dto/business_identifier_code";
+import { mapPrismaBusinessIdentifierToIdentifier } from "../shared/business_identifier/dto/business_identifier";
+import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "../shared/business_person_xref/dto/business_person_xref";
+import { mapPrismaExhibitToExhibit } from "../investigation/exhibit/dto/exhibit";
+import { mapPrismaTicketOutcomeCodeToTicketOutcomeCode } from "../investigation/ticket_outcome_code/dto/ticket_outcome_code";
+import { mapPrismaEnforcementActionCodeToEnforcementActionCode } from "../investigation/enforcement_action_code/dto/enforcement_action_code";
+import { mapPrismaTicketToTicket } from "../investigation/ticket/dto/ticket";
+import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/enforcement_action/dto/enforcement_action";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -96,6 +100,10 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaTaskToTask(mapper);
   mapPrismaDiaryDateToDiaryDate(mapper);
   mapPrismaExhibitToExhibit(mapper);
+  mapPrismaTicketOutcomeCodeToTicketOutcomeCode(mapper);
+  mapPrismaEnforcementActionCodeToEnforcementActionCode(mapper);
+  mapPrismaTicketToTicket(mapper);
+  mapPrismaEnforcementActionToEnforcementAction(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

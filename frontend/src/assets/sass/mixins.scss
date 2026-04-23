@@ -219,3 +219,9 @@
     height: #{$height}px;
   }
 }
+
+@each $width in $cell-width-percentages {
+  .comp-cell-width-percent-#{$width} {
+    width: unquote("#{$width}%");
+  }
+}

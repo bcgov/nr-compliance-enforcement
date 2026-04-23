@@ -63,8 +63,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitNumber ?? 0,
-      renderCell: (exhibit) =>
-        exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0"),
+      renderCell: (exhibit) => (exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0")),
     },
     {
       label: "Description",
@@ -121,7 +120,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
     <CompTable
       data={exhibits}
       tableIdentifier="exhibits-list"
-      isFixedHeight={false}
+      isFixedHeight={true}
       columns={columns}
       getRowKey={(exhibit) => exhibit.exhibitGuid}
       isLoading={isLoading}
