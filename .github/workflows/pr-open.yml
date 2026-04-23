@@ -10,6 +10,8 @@ on:
   pull_request:
     branches:
       - main
+      # enables the hotfix flow
+      - release/**
     types:
       - opened
       - reopened
@@ -88,7 +90,7 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: latest
           # triggers: ('${{ matrix.package }}/')
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
