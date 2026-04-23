@@ -1,5 +1,6 @@
 import { Investigation } from "@/generated/graphql";
-import { FC, useState } from "react";
+import { FC } from "react";
+import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { parseUTCDateTimeToLocal, formatDate, formatTime, getAvatarInitials } from "@common/methods";
@@ -9,7 +10,6 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import { InvestigationEditForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-edit";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -28,6 +28,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   caseName,
   onDirtyChange,
 }) => {
+  const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
@@ -52,15 +53,10 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const supervisorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.supervisorGuid));
   const supervisor = supervisorObj ? `${supervisorObj?.last_name}, ${supervisorObj?.first_name}` : "Not Assigned";
 
-  const [isEdit, setisEdit] = useState(false);
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   const editButtonClick = () => {
-    setisEdit(true);
-  };
-
-  const handleCloseForm = () => {
-    setisEdit(false);
+    navigate(`/investigation/${investigationGuid}/edit`);
   };
 
   return (
@@ -166,7 +162,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <div className="comp-details-view">
         <div className="comp-details-content">
           <div className="d-flex align-items-center justify-content-between mb-3">
-            <h3 className="mb-0">Investigation summary</h3>
+            <h2 className="mb-0">Investigation summary</h2>
             <Button
               variant="outline-primary"
               size="sm"
@@ -174,27 +170,18 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               onClick={editButtonClick}
             >
               <i className="bi bi-pencil"></i>
-              <span>Edit summary</span>
+              <span>Edit Investigation</span>
             </Button>
           </div>
 
           {!investigationData && <p>No data found for ID: {investigationGuid}</p>}
 
-          {investigationData && !isEdit && (
+          {investigationData && (
             <InvestigationItem
               investigationData={investigationData}
               caseGuid={caseGuid}
               caseName={caseName ?? ""}
             ></InvestigationItem>
-          )}
-
-          {investigationData && isEdit && (
-            <InvestigationEditForm
-              caseIdentifier={caseGuid}
-              id={investigationData.investigationGuid ?? ""}
-              onClose={handleCloseForm}
-              onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
-            ></InvestigationEditForm>
           )}
 
           <DiaryDates

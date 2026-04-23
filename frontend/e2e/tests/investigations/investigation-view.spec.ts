@@ -59,7 +59,7 @@ test.describe("Investigation Details", () => {
   });
 
   test("it displays investigation details section", async ({ page }) => {
-    await expect(page.locator("h3", { hasText: "Investigation summary" })).toBeVisible();
+    await expect(page.locator("h2", { hasText: "Investigation summary" })).toBeVisible();
 
     const investigationIdLabel = page.locator("span", { hasText: "Investigation #" });
     await expect(investigationIdLabel).toBeVisible();
@@ -88,16 +88,15 @@ test.describe("Investigation Details", () => {
     // Click Edit
     await editButton.click();
     await waitForSpinner(page);
+    await expect(page).toHaveURL(/\/investigation\/[^/]+\/edit$/);
 
     // Click Cancel
-    const cancelButton = page.locator("#investigation-cancel-button");
+    const cancelButton = page.locator("#details-screen-cancel-edit-button-top");
     await cancelButton.click();
+    await waitForSpinner(page);
 
-    // Confirm Cancel
-    await page.locator(".modal-footer .btn-primary").click();
-
-    // Confirm save Button not present
-    const saveButton = page.locator("#investigation-save-button");
-    await expect(saveButton).not.toBeVisible();
+    // Should navigate back to investigation view
+    await expect(page).toHaveURL(/\/investigation\/[^/]+$/);
+    expect(page.url()).not.toContain("/edit");
   });
 });

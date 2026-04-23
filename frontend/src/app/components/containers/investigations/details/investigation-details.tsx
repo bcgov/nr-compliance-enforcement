@@ -68,6 +68,24 @@ export const GET_INVESTIGATION = gql`
           business {
             name
           }
+          enforcementActions {
+            enforcementActionIdentifier
+            enforcementActionCode {
+              enforcementActionCode
+              shortDescription
+            }
+            dateIssued
+            geoOrganizationUnitCode
+            appUserIdentifier
+            activeIndicator
+            ticket {
+              ticketIdentifier
+              ticketOutcomeCode
+              ticketAmount
+              ticketNumber
+              paidDate
+            }
+          }
         }
         date
         community
@@ -81,6 +99,7 @@ export const GET_INVESTIGATION = gql`
       fileCoordinatorGuid
       discoveryDate
       discoveryTime
+      community
     }
     caseFilesByActivityIds(activityIdentifiers: [$investigationGuid]) {
       caseIdentifier

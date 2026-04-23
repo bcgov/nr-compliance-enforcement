@@ -443,6 +443,19 @@ export type CreateDecisionInput = {
   outcomeAgencyCode?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateEnforcementActionInput = {
+  appUserIdentifier: Scalars['String']['input'];
+  contraventionIdentifier: Scalars['String']['input'];
+  dateIssued: Scalars['DateTime']['input'];
+  enforcementActionCode: Scalars['String']['input'];
+  geoOrganizationUnitCode: Scalars['String']['input'];
+  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  partyIdentifier: Scalars['String']['input'];
+  ticketAmount?: InputMaybe<Scalars['Float']['input']>;
+  ticketNumber?: InputMaybe<Scalars['String']['input']>;
+  ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateEquipmentInput = {
   complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
@@ -489,7 +502,8 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationInput = {
-  caseIdentifier: Scalars['String']['input'];
+  caseIdentifier?: InputMaybe<Scalars['String']['input']>;
+  community?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -768,6 +782,28 @@ export type EarTagInput = {
   order?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type EnforcementAction = {
+  __typename?: 'EnforcementAction';
+  activeIndicator: Scalars['Boolean']['output'];
+  appUserIdentifier: Scalars['String']['output'];
+  contraventionPartyXrefIdentifier: Scalars['String']['output'];
+  dateIssued: Scalars['DateTime']['output'];
+  enforcementActionCode: EnforcementActionCode;
+  enforcementActionIdentifier: Scalars['String']['output'];
+  geoOrganizationUnitCode: Scalars['String']['output'];
+  ticket?: Maybe<Ticket>;
+};
+
+export type EnforcementActionCode = {
+  __typename?: 'EnforcementActionCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  agencyCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  enforcementActionCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type EquipmentActionInput = {
   actionCode?: InputMaybe<Scalars['String']['input']>;
   actionGuid?: InputMaybe<Scalars['String']['input']>;
@@ -895,6 +931,20 @@ export type Exhibit = {
   investigationGuid: Scalars['String']['output'];
   taskGuid: Scalars['String']['output'];
   updatedDate?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ExhibitFilters = {
+  investigationGuid: Scalars['String']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  taskFilter?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ExhibitResult = {
+  __typename?: 'ExhibitResult';
+  items: Array<Exhibit>;
+  pageInfo: PageInfo;
 };
 
 export type GeoOrgUnitTypeCode = {
@@ -1033,6 +1083,7 @@ export type InspectionStatusCode = {
 export type Investigation = {
   __typename?: 'Investigation';
   caseIdentifier?: Maybe<Scalars['String']['output']>;
+  community?: Maybe<Scalars['String']['output']>;
   contraventions?: Maybe<Array<Maybe<Contravention>>>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
@@ -1074,6 +1125,7 @@ export type InvestigationFilters = {
 export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   business?: Maybe<InvestigationBusiness>;
+  enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;
   investigationGuid: Scalars['String']['output'];
   partyAssociationRole?: Maybe<Scalars['String']['output']>;
   partyIdentifier: Scalars['String']['output'];
@@ -1180,6 +1232,7 @@ export type Mutation = {
   createCaseFile: CaseFile;
   createContravention: Investigation;
   createDecision: ComplaintOutcome;
+  createEnforcementAction: EnforcementAction;
   createEquipment: ComplaintOutcome;
   createEvent: Event;
   createExhibit: Exhibit;
@@ -1211,6 +1264,7 @@ export type Mutation = {
   deleteWildlife: ComplaintOutcome;
   removeCaseActivity: CaseActivity;
   removeContravention: Investigation;
+  removeEnforcementAction: EnforcementAction;
   removeExhibit: Exhibit;
   removePartyFromInspection: Inspection;
   removePartyFromInvestigation: Investigation;
@@ -1225,6 +1279,7 @@ export type Mutation = {
   updateCaseFile: CaseFile;
   updateContravention: Investigation;
   updateDecision: ComplaintOutcome;
+  updateEnforcementAction: EnforcementAction;
   updateEquipment: ComplaintOutcome;
   updateExhibit: Exhibit;
   updateInspection: Inspection;
@@ -1293,6 +1348,11 @@ export type MutationcreateContraventionArgs = {
 
 export type MutationcreateDecisionArgs = {
   input: CreateDecisionInput;
+};
+
+
+export type MutationcreateEnforcementActionArgs = {
+  input: CreateEnforcementActionInput;
 };
 
 
@@ -1449,6 +1509,12 @@ export type MutationremoveCaseActivityArgs = {
 export type MutationremoveContraventionArgs = {
   contraventionGuid: Scalars['String']['input'];
   investigationGuid: Scalars['String']['input'];
+  partyGuid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationremoveEnforcementActionArgs = {
+  enforcementActionId: Scalars['String']['input'];
 };
 
 
@@ -1525,6 +1591,11 @@ export type MutationupdateContraventionArgs = {
 
 export type MutationupdateDecisionArgs = {
   input: UpdateDecisionInput;
+};
+
+
+export type MutationupdateEnforcementActionArgs = {
+  input: UpdateEnforcementActionInput;
 };
 
 
@@ -1847,6 +1918,9 @@ export type Query = {
   drugMethodCodes: Array<Maybe<DrugMethodCode>>;
   drugRemainingOutcomeCodes: Array<Maybe<DrugRemainingOutcomeCode>>;
   earCodes: Array<Maybe<EarCode>>;
+  enforcementAction?: Maybe<EnforcementAction>;
+  enforcementActionCodes: Array<Maybe<EnforcementActionCode>>;
+  enforcementActions: Array<Maybe<EnforcementAction>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
   geoOrgUnitTypeCodes: Array<Maybe<GeoOrgUnitTypeCode>>;
@@ -1900,6 +1974,7 @@ export type Query = {
   searchCaseFiles: CaseFileResult;
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
+  searchExhibitsByInvestigation: ExhibitResult;
   searchInspections: InspectionResult;
   searchInspectionsMap: SearchMapResults;
   searchInvestigations: InvestigationResult;
@@ -1916,6 +1991,7 @@ export type Query = {
   teamCodes: Array<Maybe<TeamCode>>;
   teams: Array<Maybe<Team>>;
   threatLevelCodes: Array<Maybe<ThreatLevelCode>>;
+  ticketOutcomeCodes: Array<Maybe<TicketOutcomeCode>>;
 };
 
 
@@ -2002,6 +2078,17 @@ export type QuerydiaryDatesArgs = {
 
 export type QuerydiaryDatesByTaskArgs = {
   taskGuid: Scalars['String']['input'];
+};
+
+
+export type QueryenforcementActionArgs = {
+  enforcementActionId: Scalars['String']['input'];
+};
+
+
+export type QueryenforcementActionsArgs = {
+  contraventionIdentifier: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
 };
 
 
@@ -2213,6 +2300,13 @@ export type QuerysearchEventsArgs = {
 };
 
 
+export type QuerysearchExhibitsByInvestigationArgs = {
+  filters: ExhibitFilters;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QuerysearchInspectionsArgs = {
   filters?: InputMaybe<InspectionFilters>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -2400,6 +2494,26 @@ export type ThreatLevelCode = {
   threatLevelCode?: Maybe<Scalars['String']['output']>;
 };
 
+export type Ticket = {
+  __typename?: 'Ticket';
+  activeIndicator: Scalars['Boolean']['output'];
+  enforcementActionIdentifier: Scalars['String']['output'];
+  paidDate?: Maybe<Scalars['Date']['output']>;
+  ticketAmount: Scalars['Float']['output'];
+  ticketIdentifier: Scalars['String']['output'];
+  ticketNumber: Scalars['String']['output'];
+  ticketOutcomeCode: Scalars['String']['output'];
+};
+
+export type TicketOutcomeCode = {
+  __typename?: 'TicketOutcomeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+  ticketOutcomeCode?: Maybe<Scalars['String']['output']>;
+};
+
 export type UpdateAppUserInput = {
   agencyCode?: InputMaybe<Scalars['String']['input']>;
   authUserGuid?: InputMaybe<Scalars['String']['input']>;
@@ -2440,6 +2554,18 @@ export type UpdateDecisionInput = {
   updateUserId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateEnforcementActionInput = {
+  appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
+  dateIssued?: InputMaybe<Scalars['DateTime']['input']>;
+  enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
+  enforcementActionIdentifier: Scalars['String']['input'];
+  geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
+  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  ticketAmount?: InputMaybe<Scalars['Float']['input']>;
+  ticketNumber?: InputMaybe<Scalars['String']['input']>;
+  ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateEquipmentInput = {
   complaintId: Scalars['String']['input'];
   equipment: Array<InputMaybe<EquipmentDetailsInput>>;
@@ -2458,6 +2584,7 @@ export type UpdateInspectionInput = {
 };
 
 export type UpdateInvestigationInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;

@@ -29,11 +29,12 @@ test.describe("Investigation Edit Form", () => {
     const editButton = page.locator("#details-screen-edit-button");
     await editButton.click();
     await waitForSpinner(page);
+    await expect(page).toHaveURL(/\/investigation\/[^/]+\/edit$/);
   });
 
   test("it loads existing data", async ({ page }) => {
     // Verify we're on edit page
-    const saveButton = page.locator("#investigation-save-button");
+    const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeVisible();
 
     // Wait for form data to load
@@ -65,6 +66,12 @@ test.describe("Investigation Edit Form", () => {
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
+    // Set community if not already set - test seed data is missing community
+    const communityValue = page.locator("#community-select .comp-select__single-value");
+    if ((await communityValue.count()) === 0) {
+      await selectItemById("community-select", "100 Mile House", page);
+    }
+
     await enterDateTimeInDatePicker(page, "investigation-discovery-date", "01", "13", "45");
 
     // Make a change
@@ -73,7 +80,7 @@ test.describe("Investigation Edit Form", () => {
     await descriptionInput.fill(newDescription);
 
     // Save
-    const saveButton = page.locator("#investigation-save-button");
+    const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
     await saveButton.click();
     await waitForSpinner(page);
@@ -91,7 +98,7 @@ test.describe("Investigation Edit Form", () => {
     await nameInput.clear();
 
     // Try to save
-    const saveButton = page.locator("#investigation-save-button");
+    const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
     await saveButton.click();
 
@@ -104,13 +111,13 @@ test.describe("Investigation Edit Form", () => {
     const nameInput = page.locator("#display-name");
     await expect(nameInput).not.toHaveValue("", { timeout: 10000 });
 
-    // Make a change
+    // Make a change to trigger dirty state
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Changed description");
 
     // Click cancel
-    const cancelButton = page.locator("#investigation-cancel-button");
-    cancelButton.click();
+    const cancelButton = page.locator("#details-screen-cancel-edit-button-top");
+    await cancelButton.click();
 
     // Confirmation modal should appear
     const modal = page.locator(".modal");
@@ -132,28 +139,6 @@ test.describe("Investigation Edit Form", () => {
 
 test.describe("Investigation Edit - Field Constraints", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
-
-  test("it has lead agency disabled", async ({ page }) => {
-    await page.goto("/investigations");
-    await waitForSpinner(page);
-
-    const rows = page.locator("#investigation-list tbody tr");
-    await rows.first().locator("a.comp-cell-link").first().click();
-    await waitForSpinner(page);
-
-    // Wait for investigation data to load
-    const header = page.locator("h1.comp-box-complaint-id");
-    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
-
-    await page.locator("#details-screen-edit-button").click();
-    await waitForSpinner(page);
-
-    // Lead agency should be disabled
-    const leadAgencySelect = page.locator("#lead-agency-select");
-    await expect(leadAgencySelect).toBeVisible();
-    const isDisabled = await leadAgencySelect.locator(".comp-select--is-disabled").count();
-    expect(isDisabled).toBeGreaterThanOrEqual(0);
-  });
 
   test("it shows duplicate Investigation ID error", async ({ page }) => {
     await page.goto("/investigations");

@@ -50,6 +50,7 @@ a {
   padding: 0 24px;
   color: $white;
   background: $bc-gov-primary;
+  z-index: 9000;
 
   .comp-header-logo {
     display: flex;
@@ -542,6 +543,7 @@ button.modal-buttons {
   padding: 12px 16px;
   gap: 8px;
   min-height: 63px;
+  border-top: 1px solid #c7c7c7;
 
   * {
     font-size: 0.875rem;
@@ -829,16 +831,6 @@ p {
   }
 }
 
-.comp-table--partial {
-  tbody {
-    tr:last-child {
-      td {
-        border-bottom: 1px solid $gray-300;
-      }
-    }
-  }
-}
-
 #task-list {
   border-collapse: separate;
   border-spacing: 0;
@@ -866,6 +858,12 @@ p {
   position: sticky;
   top: 0;
   z-index: 999;
+}
+
+.sticky-table-header--variable {
+  position: sticky;
+  top: 0;
+  z-index: 0;
 }
 
 .sticky-col {
@@ -947,6 +945,8 @@ td.actions-col {
   font-size: 16px;
   height: 36px;
   color: $bc-gov-primary-700;
+  position: sticky;
+  z-index: 9000;
 }
 
 // TABS
@@ -1181,5 +1181,26 @@ td.actions-col {
     .card-option-selector-label {
       color: var(--bs-secondary-color);
     }
+  }
+}
+
+.comp-view-field {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  background-color: #f8f8f8;
+  border-radius: 4px;
+
+  &__label {
+    display: block;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+  }
+
+  &__value {
+    display: block;
+    font-size: 1rem;
+    color: #212529;
   }
 }

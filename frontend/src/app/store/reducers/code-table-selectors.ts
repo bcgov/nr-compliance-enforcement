@@ -112,3 +112,21 @@ export const selectLegislationTypeLabels = createSelector([selectCodeTables], (c
     {} as Record<string, string>,
   );
 });
+
+export const selectEnforcementActions = createSelector([selectCodeTables], (codeTables) => {
+  const { "enforcement-action-type": items } = codeTables;
+  return items.map(({ enforcementActionCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectEnforcementActionsByAgency = (agencyCode: string) =>
+  createSelector([selectCodeTables], (codeTables) => {
+    const { "enforcement-action-type": items } = codeTables;
+    return items
+      .filter((item) => item.agencyCode === agencyCode)
+      .map(({ enforcementActionCode: value, longDescription: label }) => ({ label, value }));
+  });
+
+export const selectTicketOutcomes = createSelector([selectCodeTables], (codeTables) => {
+  const { "ticket-outcome-type": items } = codeTables;
+  return items.map(({ ticketOutcomeCode: value, longDescription: label }) => ({ label, value }));
+});

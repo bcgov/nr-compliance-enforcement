@@ -229,12 +229,6 @@
   overflow: auto;
 }
 
-.comp-table-scroll-container--fixed {
-  flex: 1 1 auto;
-  overflow: auto;
-  border-bottom: 1px solid $gray-300;
-}
-
 .comp-map-container {
   flex: 1 1 auto;
   display: flex;
@@ -379,7 +373,6 @@
     .comp-details-section--list-view {
       display: flex;
       flex-direction: column;
-      flex: 1 1 auto;
       overflow: hidden;
       padding: 24px;
 

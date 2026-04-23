@@ -2035,6 +2035,13 @@ export class ComplaintService {
         "UpdateComplaintDto",
       );
 
+      if (!model.status || !complaintTable.complaint_status_code) {
+        throw new HttpException(
+          `Unable to update complaint ${id}: complaint_status_code is required`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       if (!model.parkGuid) {
         complaintTable.park_guid = null;
       }

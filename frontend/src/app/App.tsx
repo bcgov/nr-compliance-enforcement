@@ -1,10 +1,11 @@
-import { FC, useEffect } from "react";
+import { FC, ReactElement, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoutes from "./components/routing";
 import ScrollToTop from "./common/scroll-to-top";
+import CaseManagementPilotRestricted from "./components/containers/pages/case-management-pilot-restricted";
 import { NotAuthorized, NotFound } from "./components/containers/pages";
 import { ComplaintDetailsEdit } from "./components/containers/complaints/details/complaint-details-edit";
 import { CaseView } from "./components/containers/cases/view/case-view";
@@ -39,9 +40,9 @@ import { AppUpdate } from "./AppUpdate";
 import Investigations from "@/app/components/containers/investigations/investigations";
 import { InvestigationDetails } from "@/app/components/containers/investigations/details/investigation-details";
 import {
-  selectCanAccessCases,
-  selectCanAccessInspections,
-  selectCanAccessInvestigations,
+  selectIsCasesFeatureEnabled,
+  selectIsInspectionsFeatureEnabled,
+  selectIsInvestigationsFeatureEnabled,
 } from "@/app/access/module-access";
 import { PartyView } from "./components/containers/parties/view";
 import Redirect from "./components/containers/pages/redirect";
@@ -70,9 +71,12 @@ const App: FC = () => {
     dispatch(getTokenProfile());
   }, [dispatch]);
 
-  const casesModuleActive = useAppSelector(selectCanAccessCases);
-  const investigationsActive = useAppSelector(selectCanAccessInvestigations);
-  const inspectionsActive = useAppSelector(selectCanAccessInspections);
+  const casesFeatureOn = useAppSelector(selectIsCasesFeatureEnabled);
+  const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled);
+  const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled);
+  const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
+  const pilotGate = (element: ReactElement) =>
+    hasCaseAccess ? element : <CaseManagementPilotRestricted />;
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -107,134 +111,146 @@ const App: FC = () => {
                   path="/complaints/:type?"
                   element={<ComplaintsRouteWrapper />}
                 />
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/cases"
-                    element={<Cases />}
+                    element={pilotGate(<Cases />)}
                   />
                 )}
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/case/create"
-                    element={<CaseEdit />}
+                    element={pilotGate(<CaseEdit />)}
                   />
                 )}
-                {casesModuleActive && (
+                {investigationsFeatureOn && (
                   <Route
-                    path="/case/:id"
-                    element={<CaseView />}
+                    path="/case/:caseIdentifier/createInvestigation"
+                    element={pilotGate(<InvestigationCreate />)}
                   />
                 )}
-                {casesModuleActive && (
+                {inspectionsFeatureOn && (
                   <Route
-                    path="/case/:id/:tabKey"
-                    element={<CaseView />}
+                    path="/case/:caseIdentifier/createInspection"
+                    element={pilotGate(<InspectionEdit />)}
                   />
                 )}
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/case/:id/edit"
-                    element={<CaseEdit />}
+                    element={pilotGate(<CaseEdit />)}
+                  />
+                )}
+                {casesFeatureOn && (
+                  <Route
+                    path="/case/:id/:tabKey"
+                    element={pilotGate(<CaseView />)}
+                  />
+                )}
+                {casesFeatureOn && (
+                  <Route
+                    path="/case/:id"
+                    element={pilotGate(<CaseView />)}
                   />
                 )}
                 <Route
                   path="/compliments"
                   element={<Compliments />}
                 />
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/parties"
-                    element={<Parties />}
+                    element={pilotGate(<Parties />)}
                   />
                 )}
-                {casesModuleActive && (
-                  <Route
-                    path="/party/:id"
-                    element={<PartyView />}
-                  />
-                )}
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/party/create"
-                    element={<PartyEdit />}
+                    element={pilotGate(<PartyEdit />)}
                   />
                 )}
-                {casesModuleActive && (
+                {casesFeatureOn && (
                   <Route
                     path="/party/:id/edit"
-                    element={<PartyEdit />}
+                    element={pilotGate(<PartyEdit />)}
                   />
                 )}
-                {investigationsActive && (
+                {casesFeatureOn && (
+                  <Route
+                    path="/party/:id"
+                    element={pilotGate(<PartyView />)}
+                  />
+                )}
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigations"
-                    element={<Investigations />}
+                    element={pilotGate(<Investigations />)}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
-                    path="/investigation/:investigationGuid"
-                    element={<InvestigationDetails />}
-                  />
-                )}
-                {investigationsActive && (
-                  <Route
-                    path="/case/:caseIdentifier/createInvestigation"
+                    path="/investigation/create"
                     element={<InvestigationCreate />}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
+                  <Route
+                    path="/investigation/:investigationGuid/edit"
+                    element={<InvestigationCreate />}
+                  />
+                )}
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/task/create"
-                    element={<TaskCreate />}
+                    element={pilotGate(<TaskCreate />)}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/task/:taskId/edit"
-                    element={<TaskCreate />}
+                    element={pilotGate(<TaskCreate />)}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/task/:taskId"
-                    element={<TaskDetail />}
+                    element={pilotGate(<TaskDetail />)}
                   />
                 )}
-                {investigationsActive && (
+                {investigationsFeatureOn && (
                   <Route
                     path="/investigation/:investigationGuid/:tabKey"
-                    element={<InvestigationDetails />}
+                    element={pilotGate(<InvestigationDetails />)}
                   />
                 )}
-                {inspectionsActive && (
+                {investigationsFeatureOn && (
+                  <Route
+                    path="/investigation/:investigationGuid"
+                    element={pilotGate(<InvestigationDetails />)}
+                  />
+                )}
+                {inspectionsFeatureOn && (
                   <Route
                     path="/inspections"
-                    element={<Inspections />}
+                    element={pilotGate(<Inspections />)}
                   />
                 )}
-                {inspectionsActive && (
-                  <Route
-                    path="/inspection/:inspectionGuid"
-                    element={<InspectionDetails />}
-                  />
-                )}
-                {inspectionsActive && (
-                  <Route
-                    path="/case/:caseIdentifier/createInspection"
-                    element={<InspectionEdit />}
-                  />
-                )}
-                {inspectionsActive && (
+                {inspectionsFeatureOn && (
                   <Route
                     path="/inspection/:id/edit"
-                    element={<InspectionEdit />}
+                    element={pilotGate(<InspectionEdit />)}
                   />
                 )}
-                {inspectionsActive && (
+                {inspectionsFeatureOn && (
                   <Route
                     path="/inspection/:inspectionGuid/:tabKey"
-                    element={<InspectionDetails />}
+                    element={pilotGate(<InspectionDetails />)}
+                  />
+                )}
+                {inspectionsFeatureOn && (
+                  <Route
+                    path="/inspection/:inspectionGuid"
+                    element={pilotGate(<InspectionDetails />)}
                   />
                 )}
                 <Route
