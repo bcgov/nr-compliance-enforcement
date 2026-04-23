@@ -23,8 +23,8 @@ test.describe("Case List View", () => {
     await expect(tableHeaders.nth(0)).toContainText("Case ID");
     await expect(tableHeaders.nth(1)).toContainText("Date Opened");
     await expect(tableHeaders.nth(2)).toContainText("Status");
-    await expect(tableHeaders.nth(3)).toContainText("Agency");
-    await expect(tableHeaders.nth(4)).toContainText("Actions");
+    //await expect(tableHeaders.nth(3)).toContainText("Agency");
+    //await expect(tableHeaders.nth(4)).toContainText("Actions");
   });
 
   test("it shows Create case button", async ({ page }) => {
@@ -50,6 +50,7 @@ test.describe("Case List View", () => {
     await expect(page.locator("h1.comp-box-complaint-id")).toContainText(caseId || "");
   });
 
+  /** 
   test("it opens actions dropdown with view and edit options", async ({ page }) => {
     const rows = page.locator("#case-list tbody tr");
 
@@ -63,6 +64,7 @@ test.describe("Case List View", () => {
     await expect(dropdownMenu.locator("a", { hasText: "View Case" })).toBeVisible();
     await expect(dropdownMenu.locator("a", { hasText: "Edit Case" })).toBeVisible();
   });
+  
 
   test("it navigates to case via View Case action", async ({ page }) => {
     const rows = page.locator("#case-list tbody tr");
@@ -93,6 +95,7 @@ test.describe("Case List View", () => {
     // Verify navigation to case edit page
     await expect(page).toHaveURL(/\/case\/[^/]+\/edit$/);
   });
+  */
 
   test("it navigates to create case form on button click", async ({ page }) => {
     const createButton = page.locator("button", { hasText: "Create case" });

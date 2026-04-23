@@ -41,6 +41,10 @@ test.describe("Case Filter Logic", () => {
     await expect(statusSelect).toBeVisible();
   });
 
+  // Agency tests commented out as this has been featured flagged off
+  // remove comments if agency gets added back in at some point.
+
+  /** 
   test("it displays lead agency filter in panel", async ({ page }) => {
     await page.locator("#case-filter-btn").click();
 
@@ -53,6 +57,7 @@ test.describe("Case Filter Logic", () => {
     const agencySelect = page.locator("#case-lead-agency-select-id");
     await expect(agencySelect).toBeVisible();
   });
+  */
 
   test("it displays date range filter in panel", async ({ page }) => {
     await page.locator("#case-filter-btn").click();
@@ -113,6 +118,7 @@ test.describe("Case Filter Logic", () => {
     }
   });
 
+  /** 
   test("it filters cases by lead agency", async ({ page }) => {
     // Open filter panel
     await page.locator("#case-filter-btn").click();
@@ -136,6 +142,7 @@ test.describe("Case Filter Logic", () => {
       }
     }
   });
+  */
 
   test("it clears status filter when clicking filter pill", async ({ page }) => {
     // Open filter panel and apply status filter
@@ -155,6 +162,7 @@ test.describe("Case Filter Logic", () => {
     await expect(filterPill).not.toBeVisible();
   });
 
+  /** 
   test("it clears agency filter when clicking filter pill", async ({ page }) => {
     // Open filter panel and apply agency filter
     await page.locator("#case-filter-btn").click();
@@ -172,6 +180,7 @@ test.describe("Case Filter Logic", () => {
     // Verify filter pill is removed
     await expect(filterPill).not.toBeVisible();
   });
+  */
 
   test("it combines multiple filters", async ({ page }) => {
     // Open filter panel
@@ -182,12 +191,12 @@ test.describe("Case Filter Logic", () => {
     await waitForSpinner(page);
 
     // Apply agency filter
-    await selectItemById("case-lead-agency-select-id", "Conservation Officer Service", page);
-    await waitForSpinner(page);
+    //await selectItemById("case-lead-agency-select-id", "Conservation Officer Service", page);
+    //await waitForSpinner(page);
 
     // Verify both filter pills appear
     await expect(page.locator("#case-status-filter-pill")).toBeVisible();
-    await expect(page.locator("#case-agency-filter-pill")).toBeVisible();
+    //await expect(page.locator("#case-agency-filter-pill")).toBeVisible();
 
     // Verify filtered results match both criteria
     const filteredRows = page.locator("#case-list tbody tr");
@@ -198,7 +207,7 @@ test.describe("Case Filter Logic", () => {
       // Check status is Open
       await expect(firstRow.locator("td").nth(2).locator(".badge")).toContainText("Open");
       // Check agency is COS
-      await expect(firstRow.locator("td").nth(3)).toContainText("Conservation Officer Service");
+      //await expect(firstRow.locator("td").nth(3)).toContainText("Conservation Officer Service");
     }
   });
 
