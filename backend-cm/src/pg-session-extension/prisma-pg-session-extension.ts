@@ -52,34 +52,32 @@ function createPgSessionExtension(client: any) {
           }
 
           try {
-            let rolesString: string | null = null;
-            if (user.client_roles) {
-              // Join roles with comma instead of JSON stringify to avoid double encoding
-              rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-            }
+            // Set JWT claims in a transaction, then execute the query
+            return await client.$transaction(async (tx: any) => {
+              // Set JWT claims as session variables
+              if (user.idir_user_guid) {
+                await tx.$executeRawUnsafe(
+                  `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
+                );
+              }
 
-            const batch: any[] = [
-              ...(user.idir_user_guid
-                ? [
-                    client.$executeRawUnsafe(
-                      `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
-                    ),
-                  ]
-                : []),
-              ...(rolesString
-                ? [
-                    client.$executeRawUnsafe(
-                      `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
-                    ),
-                  ]
-                : []),
+              if (user.client_roles) {
+                // Join roles with comma instead of JSON stringify to avoid double encoding
+                const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
+                await tx.$executeRawUnsafe(
+                  `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
+                );
+              }
+
               // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-              client.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`),
-              query(args),
-            ];
+              await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
 
-            const results = await client.$transaction(batch);
-            return results[results.length - 1];
+              // Execute the original query using the transaction client
+              // We need to call the same operation on the transaction client
+              // The transaction client should have the same structure as the original client
+              const result = await tx[model][operation](args);
+              return result;
+            });
           } catch (error) {
             throw new Error(
               `[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`,
