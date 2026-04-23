@@ -31,7 +31,7 @@ echo "Resolved PR:    $pr"
 tag=$(git tag --points-at "$sha" "v*.*.*" | sort -V | tail -n1 || true)
 echo "Tag at SHA:     ${tag:-<none>}"
 
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   {
     echo "sha=$sha"
     echo "pr=$pr"

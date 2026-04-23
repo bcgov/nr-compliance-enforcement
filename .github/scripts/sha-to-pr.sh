@@ -23,10 +23,10 @@ pr=$(gh api "repos/${repo}/commits/${sha}/pulls" \
   --jq ".[] | select(.merge_commit_sha == \"${sha}\") | .number" \
   | head -n1)
 
-if [ -z "${pr}" ]; then
+if [[ -z "${pr}" ]]; then
   subject=$(git log -1 --format=%s "${sha}" 2>/dev/null || true)
   pr=$(echo "$subject" | grep -oP '\(#\K\d+(?=\)\s*$)') || true
-  [ -z "$pr" ] && pr=$(echo "$subject" | grep -oP '^Merge pull request #\K\d+') || true
+  [[ -z "$pr" ]] && pr=$(echo "$subject" | grep -oP '^Merge pull request #\K\d+') || true
 fi
 
 if [[ ! "${pr}" =~ ^[0-9]+$ ]]; then
