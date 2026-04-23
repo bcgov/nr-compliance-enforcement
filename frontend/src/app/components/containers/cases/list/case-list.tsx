@@ -6,6 +6,10 @@ import { CompColumn } from "@/app/types/app/comp-tables";
 import { applyStatusClass, formatDateTime } from "@common/methods";
 import { useCaseSearch } from "../hooks/use-case-search";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { isFeatureActive } from "@/app/store/reducers/app";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { CaseFile } from "@/generated/graphql";
 
 type Props = {
   cases: any[];
@@ -16,6 +20,7 @@ type Props = {
 
 export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, error = null }) => {
   const { searchValues, setValues, setSort } = useCaseSearch();
+  const showLegacyColumns = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
 
   const handleSort = useCallback(
     (sortKey: string, sortDirection: string) => {
@@ -71,56 +76,64 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
           </span>
         ) : null,
     },
-    {
-      label: "Agency",
-      sortKey: "leadAgency",
-      isSortable: true,
-      getValue: (caseFile) => caseFile.leadAgency?.longDescription ?? "",
-      renderCell: (caseFile) => caseFile.leadAgency?.longDescription ?? "—",
-    },
-    {
-      label: "Actions",
-      headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell",
-      cellClassName:
-        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell",
-      isSortable: false,
-      renderCell: (caseFile) => (
-        <Dropdown
-          id={`case-action-button-${caseFile.caseIdentifier}`}
-          drop="start"
-          className="comp-action-dropdown"
-        >
-          <Dropdown.Toggle
-            id={`case-action-toggle-${caseFile.caseIdentifier}`}
-            size="sm"
-            variant="outline-primary"
-          >
-            Actions
-          </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
-            }}
-          >
-            <Dropdown.Item
-              as={Link}
-              to={`/case/${caseFile.caseIdentifier}`}
-              id={`view-case-${caseFile.caseIdentifier}`}
-            >
-              <i className="bi bi-eye" /> View Case
-            </Dropdown.Item>
-            <Dropdown.Item
-              as={Link}
-              to={`/case/${caseFile.caseIdentifier}/edit`}
-              id={`edit-case-${caseFile.caseIdentifier}`}
-            >
-              <i className="bi bi-pencil" /> Edit Case
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      ),
-    },
+    ...(showLegacyColumns
+      ? [
+          {
+            label: "Agency",
+            sortKey: "leadAgency",
+            isSortable: true,
+            getValue: (caseFile: CaseFile) => caseFile.leadAgency?.longDescription ?? "",
+            renderCell: (caseFile: CaseFile) => caseFile.leadAgency?.longDescription ?? "—",
+          },
+        ]
+      : []),
+    ...(showLegacyColumns
+      ? [
+          {
+            label: "Actions",
+            headerClassName:
+              "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell",
+            cellClassName:
+              "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell",
+            isSortable: false,
+            renderCell: (caseFile: CaseFile) => (
+              <Dropdown
+                id={`case-action-button-${caseFile.caseIdentifier}`}
+                drop="start"
+                className="comp-action-dropdown"
+              >
+                <Dropdown.Toggle
+                  id={`case-action-toggle-${caseFile.caseIdentifier}`}
+                  size="sm"
+                  variant="outline-primary"
+                >
+                  Actions
+                </Dropdown.Toggle>
+                <Dropdown.Menu
+                  popperConfig={{
+                    modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
+                  }}
+                >
+                  <Dropdown.Item
+                    as={Link}
+                    to={`/case/${caseFile.caseIdentifier}`}
+                    id={`view-case-${caseFile.caseIdentifier}`}
+                  >
+                    <i className="bi bi-eye" /> View Case
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    as={Link}
+                    to={`/case/${caseFile.caseIdentifier}/edit`}
+                    id={`edit-case-${caseFile.caseIdentifier}`}
+                  >
+                    <i className="bi bi-pencil" /> Edit Case
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            ),
+          },
+        ]
+      : []),
   ];
 
   return (

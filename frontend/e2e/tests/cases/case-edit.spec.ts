@@ -189,6 +189,8 @@ test.describe("Case Edit - Navigation", () => {
     await expect(page).toHaveURL(/\/case\/[^/]+\/edit$/);
   });
 
+  /**
+   * Note: Actions temporarily removed.  Uncomment if brought back
   test("it navigates to edit via actions dropdown", async ({ page }) => {
     await page.goto("/cases");
     await waitForSpinner(page);
@@ -207,6 +209,7 @@ test.describe("Case Edit - Navigation", () => {
 
     await expect(page).toHaveURL(/\/case\/[^/]+\/edit$/);
   });
+  */
 });
 
 test.describe("Case Edit - Lead Agency", () => {
@@ -219,14 +222,10 @@ test.describe("Case Edit - Lead Agency", () => {
     const rows = page.locator("#case-list tbody tr");
     expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
-    const actionsButton = rows.first().locator(".comp-action-dropdown button");
-    await expect(actionsButton).toBeVisible({ timeout: 10000 });
-    await actionsButton.click();
-
-    const editLink = page.locator(".dropdown-menu.show a", { hasText: "Edit Case" });
-    await expect(editLink).toBeVisible({ timeout: 5000 });
-    await editLink.click();
+    await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
+
+    await page.locator("#details-screen-edit-button").click();
 
     // Lead agency select should be disabled
     const leadAgencySelect = page.locator("#lead-agency-select");

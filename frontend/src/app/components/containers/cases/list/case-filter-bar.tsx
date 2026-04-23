@@ -6,6 +6,8 @@ import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
 import { useCaseSearch } from "../hooks/use-case-search";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
 
 type Props = {
   toggleShowMobileFilters: MouseEventHandler;
@@ -84,11 +86,13 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}
         />
-        <MapListToggle
-          onToggle={handleViewTypeToggle}
-          activeView={searchValues.viewType}
-          className="map-list-toggle"
-        />
+        <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+          <MapListToggle
+            onToggle={handleViewTypeToggle}
+            activeView={searchValues.viewType}
+            className="map-list-toggle"
+          />
+        </FeatureFlag>
       </div>
 
       <div className="filter-pills-container">

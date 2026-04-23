@@ -1,12 +1,12 @@
-import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useEffect, useState } from "react";
-import { HintInputWrapper } from "@components/common/custom-hint";
 import { usePartySearchQuery } from "@/app/graphql/hooks/usePartySearchQuery";
 import { usePartySearch } from "@/app/components/containers/parties/hooks/use-party-search";
 import { Party } from "@/generated/graphql";
 import { Badge } from "react-bootstrap";
+import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 
 type Props = {
   id?: string;
@@ -49,8 +49,7 @@ export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = 
 
   return (
     <div className="complaint-search-container">
-      <AsyncTypeahead
-        clearButton
+      <CompAsyncTypeahead
         id={id}
         labelKey={(option: any) =>
           `${option.business ? option.business?.name : option.person?.firstName + " " + option.person?.lastName}`
@@ -60,20 +59,11 @@ export const PartyListSearch: FC<Props> = ({ id = "partyListSearch", onChange = 
         onSearch={handleSearch}
         onChange={handlePartySelect}
         selected={selectedParty ? [selectedParty] : []}
-        filterBy={() => true}
         isLoading={isSearchPartyLoading}
         options={partyData}
         placeholder="Search for a party"
         isInvalid={errorMessage.length > 0}
-        className="comp-select comp-details-input full-width comp-async comp-async-text"
-        renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
-          <HintInputWrapper
-            hintText={hintText}
-            inputProps={inputProps}
-            inputRef={inputRef}
-            referenceElementRef={referenceElementRef}
-          />
-        )}
+        hintText={hintText}
         renderMenuItemChildren={(option: any, props: any) => (
           <div>
             <Highlighter

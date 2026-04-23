@@ -1,4 +1,4 @@
-import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useState } from "react";
@@ -10,9 +10,9 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { generateApiParameters, get } from "@common/api";
 import { applyStatusClass, getIssueDescription } from "@common/methods";
 import config from "@/config";
-import { HintInputWrapper } from "@components/common/custom-hint";
 import { AddComplaintToCaseOption } from "@/app/components/modal/instances/add-complaint-to-case";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 
 type Props = {
   id?: string;
@@ -102,8 +102,7 @@ export const ComplaintListSearch: FC<Props> = ({
 
   return (
     <div className="complaint-search-container">
-      <AsyncTypeahead
-        clearButton
+      <CompAsyncTypeahead
         id={id}
         labelKey="id"
         minLength={2}
@@ -113,20 +112,11 @@ export const ComplaintListSearch: FC<Props> = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         selected={selectedComplaint ? [selectedComplaint] : []}
-        filterBy={() => true}
         isLoading={false}
         options={complaintData}
         placeholder="Search for a complaint"
         isInvalid={errorMessage.length > 0}
-        className="comp-select comp-details-input full-width comp-async comp-async-text"
-        renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
-          <HintInputWrapper
-            hintText={hintText}
-            inputProps={inputProps}
-            inputRef={inputRef}
-            referenceElementRef={referenceElementRef}
-          />
-        )}
+        hintText={hintText}
         renderMenuItemChildren={(option: any, props: any) => (
           <>
             <div>
