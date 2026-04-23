@@ -3,8 +3,9 @@ import { Logger } from "@nestjs/common";
 
 const logger = new Logger("PrismaRetryExtension");
 
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 100;
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 200;
+const MAX_DELAY_MS = 5000;
 
 // Prisma error codes that appear on error.code (PrismaClientKnownRequestError)
 const RETRYABLE_ERROR_CODES = [
@@ -28,7 +29,9 @@ async function withRetry<T>(operation: string, query: () => Promise<T>): Promise
     } catch (error: any) {
       if (isRetryableError(error) && attempt < MAX_RETRIES) {
         lastError = error;
-        const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+        const exp = BASE_DELAY_MS * Math.pow(2, attempt);
+        // Random backoff so parallel retries don't all execute at once
+        const delay = Math.min(MAX_DELAY_MS, Math.round(exp * (0.5 + Math.random())));
         logger.warn(
           `Connection error on ${operation} (${error.code ?? "unknown"}), retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
         );
