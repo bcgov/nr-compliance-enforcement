@@ -94,7 +94,7 @@
     "supercluster": "^7.1.5",
     "swagger-ui-express": "^4.6.0",
     "typeorm": "^0.3.27",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "winston": "^3.9.0"
   },
   "devDependencies": {
