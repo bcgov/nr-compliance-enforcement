@@ -31,7 +31,7 @@ async function withRetry<T>(operation: string, query: () => Promise<T>): Promise
         lastError = error;
         const exp = BASE_DELAY_MS * Math.pow(2, attempt);
         // Random backoff so parallel retries don't all execute at once
-        const delay = Math.min(MAX_DELAY_MS, Math.round(exp * (0.5 + Math.random())));
+        const delay = Math.min(MAX_DELAY_MS, Math.round(exp * (0.5 + Math.random()))); // NOSONAR
         logger.warn(
           `Connection error on ${operation} (${error.code ?? "unknown"}), retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
         );
