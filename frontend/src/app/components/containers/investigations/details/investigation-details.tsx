@@ -134,66 +134,72 @@ export const InvestigationDetails: FC = () => {
   const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   const renderTabContent = () => {
-    switch (currentTab) {
-      case "summary":
-        return (
-          <InvestigationSummary
-            investigationData={investigationData}
-            investigationGuid={investigationGuid}
-            caseGuid={caseIdentifier ?? ""}
-            caseName={caseName ?? ""}
-            onDirtyChange={handleChildDirtyChange}
-          />
-        );
-      case "tasks":
-        return (
-          <InvestigationTasksNew
-            investigationData={investigationData}
-            investigationGuid={investigationGuid}
-            onDirtyChange={handleChildDirtyChange}
-          />
-        );
-      case "parties":
-        return (
-          <InvestigationParties
-            investigationData={investigationData}
-            investigationGuid={investigationGuid}
-            onDirtyChange={handleChildDirtyChange}
-          />
-        );
-      case "contraventions":
-        return (
-          <InvestigationContraventions
-            investigationData={investigationData}
-            investigationGuid={investigationGuid}
-            onDirtyChange={handleChildDirtyChange}
-          />
-        );
-      case "documents":
-        return (
-          <InvestigationDocumentation
-            investigationGuid={investigationGuid}
-            investigationName={investigationData?.name}
-            tasks={(investigationData?.tasks as Task[]) ?? []}
-          />
-        );
-      case "exhibits":
-        return (
-          <InvestigationExhibits
-            investigationGuid={investigationGuid}
-            investigationName={investigationData?.name}
-            tasks={(investigationData?.tasks as Task[]) ?? []}
-          />
-        );
-      case "continuation":
-        return (
-          <InvestigationContinuation
-            investigationData={investigationData}
-            onDirtyChange={handleChildDirtyChange}
-          />
-        );
-      case "admin":
-        return <InvestigationAdministration />;
+    if (currentTab === "summary") {
+      return (
+        <InvestigationSummary
+          investigationData={investigationData}
+          investigationGuid={investigationGuid}
+          caseGuid={caseIdentifier ?? ""}
+          caseName={caseName ?? ""}
+          onDirtyChange={handleChildDirtyChange}
+        />
+      );
+    }
+    if (currentTab === "tasks") {
+      return (
+        <InvestigationTasksNew
+          investigationData={investigationData}
+          investigationGuid={investigationGuid}
+          onDirtyChange={handleChildDirtyChange}
+        />
+      );
+    }
+    if (currentTab === "parties") {
+      return (
+        <InvestigationParties
+          investigationData={investigationData}
+          investigationGuid={investigationGuid}
+          onDirtyChange={handleChildDirtyChange}
+        />
+      );
+    }
+    if (currentTab === "contraventions") {
+      return (
+        <InvestigationContraventions
+          investigationData={investigationData}
+          investigationGuid={investigationGuid}
+          onDirtyChange={handleChildDirtyChange}
+        />
+      );
+    }
+    if (currentTab === "documents") {
+      return (
+        <InvestigationDocumentation
+          investigationGuid={investigationGuid}
+          investigationName={investigationData?.name}
+          tasks={(investigationData?.tasks as Task[]) ?? []}
+        />
+      );
+    }
+    if (currentTab === "exhibits") {
+      return (
+        <InvestigationExhibits
+          investigationGuid={investigationGuid}
+          investigationName={investigationData?.name}
+          tasks={(investigationData?.tasks as Task[]) ?? []}
+        />
+      );
+    }
+    if (currentTab === "continuation") {
+      return (
+        <InvestigationContinuation
+          investigationData={investigationData}
+          onDirtyChange={handleChildDirtyChange}
+        />
+      );
+    }
+    if (currentTab === "admin") {
+      return <InvestigationAdministration />;
     }
   };
 
