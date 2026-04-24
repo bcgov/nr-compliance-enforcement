@@ -130,6 +130,18 @@ jobs:
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
           ./.github/scripts/gitops.sh production
       - name: Commit and push update
+        env:
+          INPUT_BRANCH: ${{ inputs.release_branch }}
+          PR_NUMBER: ${{ needs.vars.outputs.pr }}
+          COMMIT_SHA: ${{ needs.vars.outputs.sha }}
         run: |
-          ./.github/scripts/gitops.sh commitall "Releasing ${{ inputs.release_branch }} to production (PR #${{ needs.vars.outputs.pr }}, sha ${{ needs.vars.outputs.sha }})"
-          git push origin ${{ env.GITOPS_REPO_BRANCH }}
+          # Re-validate even though vars job already did — defence in depth across job boundary.
+          if [[ ! "$INPUT_BRANCH" =~ ^release/[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
+            echo "Invalid release branch: '$INPUT_BRANCH'" >&2; exit 1
+          fi
+          case "$INPUT_BRANCH" in *..*) echo "Path traversal in input: '$INPUT_BRANCH'" >&2; exit 1 ;; esac
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '$PR_NUMBER'" >&2; exit 1; }
+          [[ "$COMMIT_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid commit SHA: '$COMMIT_SHA'" >&2; exit 1; }
+
+          ./.github/scripts/gitops.sh commitall "Releasing $INPUT_BRANCH to production (PR #$PR_NUMBER, sha $COMMIT_SHA)"
+          git push origin "$GITOPS_REPO_BRANCH"
