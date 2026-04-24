@@ -67,7 +67,10 @@ jobs:
         # We only update the base if NO developer custom changes exist on the branch
         # this way we dont accidently include partial / incomplete work into main
         # those changes should be manually merged via PR in the gitops repo
-        if: ${{ github.event.pull_request.merged == true }}
+        #
+        # Scoped to PRs targeting main: hotfix PRs against release/** must NOT shift
+        # the dev/test base — they're shaping prod, not the next test release.
+        if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main' }}
         run: |
           DEPLOYMENT_NUMBER=${{ steps.get-deployment-number.outputs.DEPLOYMENT_NUMBER }}
           PR_CREATION_TIMESTAMP=${{ steps.get-pr-creation-timestamp.outputs.PR_CREATION_TIMESTAMP }}
