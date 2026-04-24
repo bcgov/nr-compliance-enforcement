@@ -13,7 +13,7 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
-type ChangeStatusModalProps = {
+type ComplaintChangeStatusModalProps = {
   close: () => void;
   submit: () => void;
   complaint_type: string;
@@ -24,7 +24,12 @@ type ChangeStatusModalProps = {
  * A modal dialog box that allows users to change the status of a complaint
  *
  */
-export const ChangeStatusModal: FC<ChangeStatusModalProps> = ({ close, submit, complaint_type, complaint_status }) => {
+export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = ({
+  close,
+  submit,
+  complaint_type,
+  complaint_status,
+}) => {
   const modalData = useAppSelector(selectModalData);
   const { title, description, complaint_identifier, onDirtyChange } = modalData;
   const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);

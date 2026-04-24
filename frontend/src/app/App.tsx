@@ -75,8 +75,7 @@ const App: FC = () => {
   const investigationsFeatureOn = useAppSelector(selectIsInvestigationsFeatureEnabled);
   const inspectionsFeatureOn = useAppSelector(selectIsInspectionsFeatureEnabled);
   const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
-  const pilotGate = (element: ReactElement) =>
-    hasCaseAccess ? element : <CaseManagementPilotRestricted />;
+  const pilotGate = (element: ReactElement) => (hasCaseAccess ? element : <CaseManagementPilotRestricted />);
 
   const { REDIRECT_MODE, REDIRECT_HOST_NAME } = config;
   const redirectMode = REDIRECT_MODE === "true";
@@ -185,6 +184,18 @@ const App: FC = () => {
                   <Route
                     path="/investigations"
                     element={pilotGate(<Investigations />)}
+                  />
+                )}
+                {investigationsFeatureOn && (
+                  <Route
+                    path="/investigation/create"
+                    element={<InvestigationCreate />}
+                  />
+                )}
+                {investigationsFeatureOn && (
+                  <Route
+                    path="/investigation/:investigationGuid/edit"
+                    element={<InvestigationCreate />}
                   />
                 )}
                 {investigationsFeatureOn && (
