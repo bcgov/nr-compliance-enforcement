@@ -5,6 +5,8 @@ import { FilterDate } from "@components/common/filter-date";
 import { CaseSearchParams, useCaseSearch } from "../hooks/use-case-search";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 export const CaseFilter: FC = () => {
   const { searchValues, setValues } = useCaseSearch();
@@ -71,14 +73,16 @@ export const CaseFilter: FC = () => {
         handleFieldChange("caseStatus"),
       )}
 
-      {renderSelectFilter(
-        "lead-agency",
-        "Lead Agency",
-        leadAgencyOptions,
-        "Select agency",
-        leadAgencyOptions.find((option) => option.value === searchValues.leadAgency) || null,
-        handleFieldChange("leadAgency"),
-      )}
+      <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+        {renderSelectFilter(
+          "lead-agency",
+          "Lead Agency",
+          leadAgencyOptions,
+          "Select agency",
+          leadAgencyOptions.find((option) => option.value === searchValues.leadAgency) || null,
+          handleFieldChange("leadAgency"),
+        )}
+      </FeatureFlag>
 
       <FilterDate
         id="case-date-range-filter"

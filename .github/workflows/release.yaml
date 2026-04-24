@@ -1,0 +1,147 @@
+name: Release To Production (Trunk)
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: "Release branch to promote, like `release/v2.22`"
+        required: true
+
+concurrency:
+  # Do not interrupt previous workflows
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  GITOPS_REPO_BRANCH: main
+  GITOPS_REPO: bcgov-c/tenant-gitops-f208ae
+  GITOPS_REPO_VALUES_PATH: ./charts/apps/natsuite/values
+  GITOPS_REPO_OUTPUTS_PATH: ./charts/apps/natsuite/values/.outputs
+
+jobs:
+  vars:
+    name: Resolve Release SHA & PR
+    outputs:
+      sha: ${{ steps.resolve.outputs.sha }}
+      pr: ${{ steps.resolve.outputs.pr }}
+      tag: ${{ steps.resolve.outputs.tag }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release branch HEAD → SHA → PR#
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_BRANCH: ${{ inputs.release_branch }}
+        run: |
+          # Validate input shape before passing to git/shell.
+          # Must be `release/<name>` with only git-safe identifier chars.
+          if [[ ! "$INPUT_BRANCH" =~ ^release/[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
+            echo "Invalid release branch input: '$INPUT_BRANCH'" >&2
+            echo "Expected format: release/<name>  (e.g. release/2.22)" >&2
+            exit 1
+          fi
+          # Defence in depth: reject `..` segments anywhere in the path.
+          case "$INPUT_BRANCH" in
+            *..*) echo "Path traversal in input: '$INPUT_BRANCH'" >&2; exit 1 ;;
+          esac
+          ./.github/scripts/resolve-release-pr.sh "$INPUT_BRANCH"
+
+  promote:
+    name: Promote Images
+    needs: [vars]
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package:
+          [
+            backend,
+            frontend,
+            migration-complaint,
+            webeoc,
+            backend-cm,
+            migration-complaint-outcome,
+            migration-investigation,
+            migration-inspection,
+            migration-shared,
+            event-worker,
+          ]
+    timeout-minutes: 2
+    steps:
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ needs.vars.outputs.pr }}
+          tags: prod
+
+  create_release:
+    name: Create GitHub Release
+    needs: [vars, promote]
+    runs-on: ubuntu-22.04
+    if: needs.vars.outputs.tag != ''
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.vars.outputs.tag }}
+          name: Release ${{ needs.vars.outputs.tag }}
+          target_commitish: ${{ needs.vars.outputs.sha }}
+          body: |
+            ## Release ${{ needs.vars.outputs.tag }}
+
+            - Branch: `${{ inputs.release_branch }}`
+            - PR: #${{ needs.vars.outputs.pr }}
+            - SHA: `${{ needs.vars.outputs.sha }}`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  ### Emerald jobs
+  deploy-emerald-prod:
+    name: Deploy Workloads To Emerald (prod)
+    needs: [vars, promote]
+    environment: prod
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout CD repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.GITOPS_REPO }}
+          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          ref: ${{ env.GITOPS_REPO_BRANCH }}
+      - name: Configure git
+        # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Roll latest changes out to prod
+        run: |
+          VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
+          OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
+          ./.github/scripts/gitops.sh production
+      - name: Commit and push update
+        env:
+          INPUT_BRANCH: ${{ inputs.release_branch }}
+          PR_NUMBER: ${{ needs.vars.outputs.pr }}
+          COMMIT_SHA: ${{ needs.vars.outputs.sha }}
+        run: |
+          # Re-validate even though vars job already did — defence in depth across job boundary.
+          if [[ ! "$INPUT_BRANCH" =~ ^release/[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
+            echo "Invalid release branch: '$INPUT_BRANCH'" >&2; exit 1
+          fi
+          case "$INPUT_BRANCH" in *..*) echo "Path traversal in input: '$INPUT_BRANCH'" >&2; exit 1 ;; esac
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: '$PR_NUMBER'" >&2; exit 1; }
+          [[ "$COMMIT_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "Invalid commit SHA: '$COMMIT_SHA'" >&2; exit 1; }
+
+          ./.github/scripts/gitops.sh commitall "Releasing $INPUT_BRANCH to production (PR #$PR_NUMBER, sha $COMMIT_SHA)"
+          git push origin "$GITOPS_REPO_BRANCH"

@@ -1,11 +1,13 @@
+/**
+ * Tests for Case Map View functionality
+ * Note: The map view is currently a placeholder - only tests toggle behavior
+ * Another Note: the maps have been disabled on the case page - commenting out this file for now 
+
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import { waitForSpinner } from "../../utils/helpers";
 
-/**
- * Tests for Case Map View functionality
- * Note: The map view is currently a placeholder - only tests toggle behavior
- */
+
 test.describe("Case Map View", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
@@ -61,3 +63,4 @@ test.describe("Case Map View", () => {
     await expect(page.locator(".comp-map-container")).not.toBeVisible();
   });
 });
+*/

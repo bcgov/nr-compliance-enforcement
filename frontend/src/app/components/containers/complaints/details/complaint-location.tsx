@@ -82,6 +82,7 @@ export const ComplaintLocation: FC<Props> = ({
         draggable={draggable}
         onMarkerMove={onMarkerMove}
         geocodedLocation={geocodedLocation}
+        mapType="complaint"
       />
     </section>
   );

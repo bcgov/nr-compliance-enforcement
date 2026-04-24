@@ -1,4 +1,4 @@
-import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useState, useEffect } from "react";
@@ -10,6 +10,7 @@ import { Badge } from "react-bootstrap";
 import { Park } from "@/app/types/app/shared/park";
 import { useSelector } from "react-redux";
 import { selectAllParks, setPark } from "@/app/store/reducers/park";
+import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 
 type Props = {
   id?: string;
@@ -117,8 +118,7 @@ export const ParkSelect: FC<Props> = ({
 
   return isInEdit ? (
     <div id="park-select-id">
-      <AsyncTypeahead
-        clearButton
+      <CompAsyncTypeahead
         id={id}
         selected={parkOption ? [parkOption] : []}
         labelKey="label"
