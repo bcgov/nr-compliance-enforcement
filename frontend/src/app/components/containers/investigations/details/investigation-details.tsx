@@ -116,7 +116,7 @@ export type InvestigationParams = {
 export const InvestigationDetails: FC = () => {
   const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
   const currentTab = tabKey || "summary";
-  const { data, isLoading } = useGraphQLQuery<{
+  const { data, isLoading, refetch } = useGraphQLQuery<{
     getInvestigation: Investigation;
     caseFilesByActivityIds: CaseFile[];
   }>(GET_INVESTIGATION, {
@@ -224,7 +224,10 @@ export const InvestigationDetails: FC = () => {
 
   return (
     <div className={containerClass}>
-      <InvestigationHeader investigation={investigationData} />
+      <InvestigationHeader
+        investigation={investigationData}
+        onStatusUpdated={refetch}
+      />
 
       <div className={detailsBodyClass}>{renderTabContent()}</div>
     </div>

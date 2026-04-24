@@ -29,7 +29,7 @@ import {
 import {
   SampleModal,
   AssignOfficerModal,
-  ChangeStatusModal,
+  ComplaintChangeStatusModal,
   DeleteNoteModal,
   DeleteAnimalOutcomeModal,
   DeleteConfirmModalV2,
@@ -57,7 +57,7 @@ import { AddEditEnforcementActionModal } from "@/app/components/modal/instances/
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
   [ASSIGN_OFFICER]: AssignOfficerModal,
-  [CHANGE_STATUS]: ChangeStatusModal,
+  [CHANGE_STATUS]: ComplaintChangeStatusModal,
   [CANCEL_CONFIRM]: CancelConfirmModal,
   [DELETE_NOTE]: DeleteNoteModal,
   [DELETE_ANIMAL_OUTCOME]: DeleteAnimalOutcomeModal,
