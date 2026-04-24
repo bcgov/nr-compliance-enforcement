@@ -12,7 +12,7 @@ const CASE_TAB_ITEMS = {
   map: "Map View",
 };
 
-const LEGACY_TAB_KEYS = ["records", "map"];
+const LEGACY_TAB_KEYS = new Set(["records", "map"]);
 
 type CaseParams = {
   id: string;
@@ -46,7 +46,7 @@ export const CaseTabs: FC = () => {
   return (
     <Nav className="nav nav-tabs case-nav-tabs px-4">
       {Object.entries(CASE_TAB_ITEMS)
-        .filter(([key]) => showLegacy || !LEGACY_TAB_KEYS.includes(key))
+        .filter(([key]) => showLegacy || !LEGACY_TAB_KEYS.has(key))
         .map(([key, label]) => {
           return (
             <Nav.Item
