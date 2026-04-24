@@ -13,14 +13,7 @@ import {
   setCaseFileComplaints,
 } from "@/app/store/reducers/complaints";
 import { Complaint } from "@/app/types/app/complaints/complaint";
-import {
-  ComplaintColumn,
-  InvestigationColumn,
-  InspectionColumn,
-  CaseRecordsTab,
-  CaseHistoryTab,
-  CaseMapTab,
-} from "./components";
+import { ComplaintColumn, InvestigationColumn, InspectionColumn, CaseHistoryTab } from "./components";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -165,22 +158,14 @@ export const CaseView: FC = () => {
 
   const renderTabContent = () => {
     switch (currentTab) {
-      case "records":
-        return <CaseRecordsTab />;
       case "history":
         return <CaseHistoryTab caseIdentifier={id} />;
-      case "map":
-        return <CaseMapTab />;
       default:
         return (
           <div className="container-fluid px-5 py-3">
             <div className="row mb-2">
               <div className="comp-details-section-header">
-                <div>
-                  <h5 className="fw-bold">Case description</h5>
-                  <p>{caseData?.description}</p>
-                </div>
-                <div className="comp-details-section-header-actions align-self-center text-nowrap">
+                <div className="comp-details-section-header-actions align-self-center text-nowrap ms-auto">
                   <Button
                     variant="outline-primary"
                     size="sm"

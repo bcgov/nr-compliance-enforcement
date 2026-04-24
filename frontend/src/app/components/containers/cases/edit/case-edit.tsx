@@ -7,7 +7,6 @@ import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
-import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
@@ -144,14 +143,12 @@ const CaseEdit: FC = () => {
       return {
         caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
-        description: caseData.caseFile.description || "",
         name: caseData.caseFile.name || "",
       };
     }
     return {
       caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
-      description: "",
       name: "",
     };
   }, [isEditMode, caseData]);
@@ -166,7 +163,6 @@ const CaseEdit: FC = () => {
         const updateInput: CaseFileUpdateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
-          description: value.description,
           name: value.name,
         };
 
@@ -178,7 +174,6 @@ const CaseEdit: FC = () => {
         const createInput: CaseFileCreateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
-          description: value.description,
           name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
         };
@@ -331,26 +326,6 @@ const CaseEdit: FC = () => {
               )}
             />
 
-            <FormField
-              form={form}
-              name="description"
-              label="Case description"
-              required
-              validators={{ onChange: z.string().min(1, "Description is required") }}
-              render={(field) => (
-                <ValidationTextArea
-                  id="description"
-                  className="comp-form-control comp-details-input"
-                  rows={4}
-                  defaultValue={field.state.value}
-                  onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter case description..."
-                  maxLength={4000}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
-                  disabled={isDisabled}
-                />
-              )}
-            />
           </fieldset>
         </form>
       </section>

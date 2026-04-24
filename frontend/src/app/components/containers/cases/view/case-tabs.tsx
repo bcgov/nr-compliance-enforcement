@@ -4,9 +4,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const CASE_TAB_ITEMS = {
   summary: "Summary",
-  records: "Case Records",
   history: "Case History",
-  map: "Map View",
 };
 
 type CaseParams = {

@@ -90,7 +90,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const defaultValues = useMemo(
     () => ({
       name: "",
-      description: "",
     }),
     [],
   );
@@ -104,7 +103,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           leadAgency: agency_code,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
-          description: value.description,
           name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
         };
@@ -281,39 +279,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                       value={field.state.value}
                       placeholder="Enter Case ID"
                     />
-                  </div>
-                )}
-              />
-              <FormField
-                form={form}
-                name="description"
-                label="Case description"
-                validators={{
-                  onChange: z.string().max(4000, "Description must be 4000 characters or less"),
-                }}
-                render={(field) => (
-                  <div
-                    className="comp-details-input"
-                    style={{ width: "100%" }}
-                  >
-                    <textarea
-                      id="case-description"
-                      className="comp-form-control comp-details-input"
-                      rows={2}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter case description..."
-                      maxLength={4000}
-                      style={{ borderColor: field.state.meta.errors?.[0] ? "#dc3545" : "" }}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <div
-                        className="error-message"
-                        style={{ color: "#dc3545" }}
-                      >
-                        {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      </div>
-                    )}
                   </div>
                 )}
               />
