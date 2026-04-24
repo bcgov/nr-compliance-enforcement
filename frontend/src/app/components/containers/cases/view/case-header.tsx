@@ -3,9 +3,12 @@ import { Link, useLocation } from "react-router-dom";
 import { Badge } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
+import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -17,6 +20,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const lastUpdated = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
+  const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
   const createdBy = createdByUser?.user_id || "Unknown";
@@ -70,6 +74,9 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                 {status}
               </Badge>
             </div>
+            <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+              <ActionMenu />
+            </FeatureFlag>
           </div>
         </div>
       </div>
@@ -131,6 +138,22 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                     {!lastUpdated && <>N/A</>}
                   </dd>
                 </dl>
+
+                <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+                  <dl>
+                    <dt>Officer assigned</dt>
+                    <dd>
+                      <div
+                        data-initials-sm={getAvatarInitials(officerAssigned)}
+                        className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                      >
+                        <div>
+                          <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                        </div>
+                      </div>
+                    </dd>
+                  </dl>
+                </FeatureFlag>
 
                 <dl>
                   <dt>Created by</dt>

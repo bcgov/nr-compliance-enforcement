@@ -7,8 +7,11 @@ import { CaseEditHeader } from "./case-edit-header";
 import { CompSelect } from "@components/common/comp-select";
 import { CompInput } from "@components/common/comp-input";
 import { FormField } from "@components/common/form-field";
+import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
@@ -106,6 +109,7 @@ const CaseEdit: FC = () => {
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
+  const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
 
   const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
     queryKey: ["caseFile", id],
@@ -143,12 +147,14 @@ const CaseEdit: FC = () => {
       return {
         caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
+        description: caseData.caseFile.description || "",
         name: caseData.caseFile.name || "",
       };
     }
     return {
       caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
+      description: "",
       name: "",
     };
   }, [isEditMode, caseData]);
@@ -164,6 +170,7 @@ const CaseEdit: FC = () => {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           name: value.name,
+          ...(showLegacy && { description: value.description }),
         };
 
         updateCaseMutation.mutate({
@@ -176,6 +183,7 @@ const CaseEdit: FC = () => {
           leadAgency: value.leadAgency,
           name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
+          ...(showLegacy && { description: value.description }),
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -326,6 +334,27 @@ const CaseEdit: FC = () => {
               )}
             />
 
+            {showLegacy && (
+              <FormField
+                form={form}
+                name="description"
+                label="Case description"
+                validators={{ onChange: z.string().max(4000, "Description must be 4000 characters or less") }}
+                render={(field) => (
+                  <ValidationTextArea
+                    id="description"
+                    className="comp-form-control comp-details-input"
+                    rows={4}
+                    defaultValue={field.state.value}
+                    onChange={(value: string) => field.handleChange(value)}
+                    placeholderText="Enter case description..."
+                    maxLength={4000}
+                    errMsg={field.state.meta.errors?.[0]?.message || ""}
+                    disabled={isDisabled}
+                  />
+                )}
+              />
+            )}
           </fieldset>
         </form>
       </section>

@@ -56,6 +56,8 @@ test.describe("Case View", () => {
     await expect(dateSection).toBeVisible();
   });
 
+  // Case description hidden for MVP
+  /*
   test("it displays case description", async ({ page }) => {
     const descriptionSection = page.locator("h5", { hasText: "Case description" });
     await expect(descriptionSection).toBeVisible();
@@ -63,6 +65,7 @@ test.describe("Case View", () => {
     const descriptionContent = descriptionSection.locator("..").locator("p, .comp-details-content");
     await expect(descriptionContent.first()).toBeAttached();
   });
+  */
 
   test("it displays Edit case button", async ({ page }) => {
     const editButton = page.locator("#details-screen-edit-button");
@@ -102,9 +105,11 @@ test.describe("Case View - Tabs", () => {
     await expect(tabNav).toBeVisible();
 
     await expect(tabNav.locator("#summary")).toBeVisible();
-    await expect(tabNav.locator("#records")).toBeVisible();
     await expect(tabNav.locator("#history")).toBeVisible();
-    await expect(tabNav.locator("#map")).toBeVisible();
+
+    // Records and map tabs are hidden for MVP
+    await expect(tabNav.locator("#records")).not.toBeVisible();
+    await expect(tabNav.locator("#map")).not.toBeVisible();
   });
 
   test("it defaults to Summary tab", async ({ page }) => {
