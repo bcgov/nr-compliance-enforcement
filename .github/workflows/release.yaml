@@ -36,7 +36,20 @@ jobs:
         id: resolve
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./.github/scripts/resolve-release-pr.sh "${{ inputs.release_branch }}"
+          INPUT_BRANCH: ${{ inputs.release_branch }}
+        run: |
+          # Validate input shape before passing to git/shell.
+          # Must be `release/<name>` with only git-safe identifier chars.
+          if [[ ! "$INPUT_BRANCH" =~ ^release/[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
+            echo "Invalid release branch input: '$INPUT_BRANCH'" >&2
+            echo "Expected format: release/<name>  (e.g. release/2.22)" >&2
+            exit 1
+          fi
+          # Defence in depth: reject `..` segments anywhere in the path.
+          case "$INPUT_BRANCH" in
+            *..*) echo "Path traversal in input: '$INPUT_BRANCH'" >&2; exit 1 ;;
+          esac
+          ./.github/scripts/resolve-release-pr.sh "$INPUT_BRANCH"
 
   promote:
     name: Promote Images
