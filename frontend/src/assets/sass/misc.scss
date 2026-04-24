@@ -458,6 +458,69 @@
   border-top-color: white;
 }
 
+// Complaint search field tooltips (search-input.tsx)
+.complaint-search-fields-tooltip {
+  text-align: left;
+  font-size: 10px;
+  padding: 6px 8px;
+}
+
+.complaint-search-fields-tooltip-sector {
+  width: fit-content;
+  max-width: 90vw;
+}
+
+.complaint-search-fields-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.complaint-search-fields-tooltip-columns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 12px;
+  align-items: flex-start;
+  width: fit-content;
+}
+
+.complaint-search-fields-tooltip-column {
+  flex: 0 0 auto;
+}
+
+.complaint-search-fields-tooltip-column-bordered {
+  border-left: 1px solid rgba(0, 0, 0, 0.12);
+  padding-left: 12px;
+}
+
+.complaint-search-fields-tooltip-section-heading {
+  font-weight: 600;
+}
+
+.complaint-search-fields-tooltip-type-filter-intro {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.complaint-search-fields-tooltip-filter-heading {
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.complaint-search-fields-tooltip-filter-heading-compact {
+  margin-top: 2px;
+}
+
+.complaint-search-fields-tooltip-list {
+  padding: 0 10px;
+  margin: 0;
+}
+
+.complaint-search-fields-tooltip-list-sector {
+  padding: 0 0 0 10px;
+  margin: 2px 0 0;
+}
+
 .comp-tooltip-dark .tooltip-inner {
   background-color: $black;
 }
