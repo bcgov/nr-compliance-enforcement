@@ -69,7 +69,7 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>

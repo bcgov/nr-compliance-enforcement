@@ -70,7 +70,7 @@ export const InspectionEditHeader: FC<InspectionEditHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>
