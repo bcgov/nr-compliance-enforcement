@@ -59,7 +59,7 @@ test.describe("Investigation Details", () => {
   });
 
   test("it displays investigation details section", async ({ page }) => {
-    await expect(page.locator("h3", { hasText: "Investigation summary" })).toBeVisible();
+    await expect(page.locator("h2", { hasText: "Investigation summary" })).toBeVisible();
 
     const investigationIdLabel = page.locator("span", { hasText: "Investigation #" });
     await expect(investigationIdLabel).toBeVisible();

@@ -1,0 +1,35 @@
+type EnforcementAction {
+  enforcementActionIdentifier: String!
+  contraventionPartyXrefIdentifier: String!
+  enforcementActionCode: EnforcementActionCode!
+  dateIssued: DateTime!
+  geoOrganizationUnitCode: String!
+  appUserIdentifier: String!
+  activeIndicator: Boolean!
+  ticket: Ticket
+}
+
+input CreateEnforcementActionInput {
+  contraventionIdentifier: String!
+  partyIdentifier: String!
+  enforcementActionCode: String!
+  dateIssued: DateTime!
+  geoOrganizationUnitCode: String!
+  appUserIdentifier: String!
+  ticketOutcomeCode: String
+  ticketAmount: Float
+  ticketNumber: String
+  paidDate: DateTime
+}
+
+input UpdateEnforcementActionInput {
+  enforcementActionIdentifier: String!
+  enforcementActionCode: String
+  dateIssued: DateTime
+  geoOrganizationUnitCode: String
+  appUserIdentifier: String
+  ticketOutcomeCode: String
+  ticketAmount: Float
+  ticketNumber: String
+  paidDate: DateTime
+}

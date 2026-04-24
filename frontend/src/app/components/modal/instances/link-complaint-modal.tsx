@@ -2,7 +2,7 @@ import { FC, useState } from "react";
 import { Modal, Button, Form, Alert, Badge } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
-import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 import { generateApiParameters, get, post } from "@common/api";
 import config from "@/config";
@@ -10,8 +10,8 @@ import { applyStatusClass, getIssueDescription } from "@common/methods";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { ToggleSuccess, ToggleError } from "@common/toast";
-import { HintInputWrapper } from "@components/common/custom-hint";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 
 type LinkComplaintModalProps = {
   close: () => void;
@@ -201,8 +201,7 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
           <Form.Group className="mb-3">
             <Form.Label>Link current complaint to:</Form.Label>
             <div className="complaint-search-container">
-              <AsyncTypeahead
-                clearButton
+              <CompAsyncTypeahead
                 id="complaint-search"
                 labelKey="id"
                 minLength={2}
@@ -213,19 +212,10 @@ export const LinkComplaintModal: FC<LinkComplaintModalProps> = ({ close, submit 
                 onBlur={() => setIsFocused(false)}
                 useCache={false}
                 selected={selectedComplaint ? [selectedComplaint] : []}
-                filterBy={() => true}
                 isLoading={isLoading}
                 options={complaintData}
                 placeholder="Search for a complaint"
-                className="comp-select comp-details-input full-width comp-async comp-async-text"
-                renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
-                  <HintInputWrapper
-                    hintText={hintText}
-                    inputProps={inputProps}
-                    inputRef={inputRef}
-                    referenceElementRef={referenceElementRef}
-                  />
-                )}
+                hintText={hintText}
                 renderMenuItemChildren={(option: any, props: any) => (
                   <>
                     <div>

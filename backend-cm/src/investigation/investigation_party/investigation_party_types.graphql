@@ -6,6 +6,7 @@ type InvestigationParty {
   person: InvestigationPerson
   business: InvestigationBusiness
   partyAssociationRole: String
+  enforcementActions: [EnforcementAction]
 }
 
 input CreateInvestigationPartyInput {

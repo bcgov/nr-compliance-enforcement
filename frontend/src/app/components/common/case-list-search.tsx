@@ -1,4 +1,4 @@
-import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
 import { FC, useEffect, useState } from "react";
@@ -9,8 +9,8 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { applyStatusClass } from "@common/methods";
-import { HintInputWrapper } from "@components/common/custom-hint";
 import { useCaseSearchQuery } from "@/app/graphql/hooks/useCaseSearchQuery";
+import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 
 type Props = {
   id?: string;
@@ -70,15 +70,13 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     }
   };
 
-  const handleSearch =
-      throttle((query: string) => {
-        setSearchString(query);
-      }, 250)
+  const handleSearch = throttle((query: string) => {
+    setSearchString(query);
+  }, 250);
 
   return (
     <div className="complaint-search-container">
-      <AsyncTypeahead
-        clearButton
+      <CompAsyncTypeahead
         id={id}
         labelKey="name"
         minLength={2}
@@ -88,20 +86,11 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         selected={selectedCase ? [selectedCase] : []}
-        filterBy={() => true}
         isLoading={isSearchCaseLoading}
         options={caseFileData}
         placeholder="Search for a case"
         isInvalid={errorMessage.length > 0}
-        className="comp-select comp-details-input full-width comp-async comp-async-text"
-        renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
-          <HintInputWrapper
-            hintText={hintText}
-            inputProps={inputProps}
-            inputRef={inputRef}
-            referenceElementRef={referenceElementRef}
-          />
-        )}
+        hintText={hintText}
         renderMenuItemChildren={(option: any, props: any) => (
           <>
             <div>

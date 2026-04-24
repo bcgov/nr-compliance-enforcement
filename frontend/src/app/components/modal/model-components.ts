@@ -23,6 +23,7 @@ import {
   ADD_EDIT_TASK_ACTION,
   MULTI_STEP_MODAL,
   ADD_EDIT_TASK_EXHIBIT,
+  ADD_EDIT_ENFORCEMENT_ACTION,
 } from "@apptypes/modal/modal-types";
 
 import {
@@ -51,6 +52,7 @@ import { AddEditDiaryDateModal } from "@/app/components/modal/instances/add-edit
 import { AddEditTaskActionModal } from "@/app/components/modal/instances/add-edit-task-action-modal";
 import { MultiStepModal } from "@/app/components/modal/instances/multi-step-modal";
 import { AddEditTaskExhibitModal } from "@/app/components/modal/instances/add-task-exhibit";
+import { AddEditEnforcementActionModal } from "@/app/components/modal/instances/add-edit-enforcement-action";
 
 export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [Sample]: SampleModal,
@@ -77,4 +79,5 @@ export const MODAL_COMPONENTS: { [key: string]: React.ComponentType<any> } = {
   [ADD_EDIT_TASK_ACTION]: AddEditTaskActionModal,
   [MULTI_STEP_MODAL]: MultiStepModal,
   [ADD_EDIT_TASK_EXHIBIT]: AddEditTaskExhibitModal,
+  [ADD_EDIT_ENFORCEMENT_ACTION]: AddEditEnforcementActionModal,
 };

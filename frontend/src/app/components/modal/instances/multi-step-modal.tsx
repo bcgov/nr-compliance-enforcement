@@ -18,6 +18,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
   const [saveFn, setSaveFn] = useState<(() => Promise<void>) | null>(null);
   const [deleteFn, setDeleteFn] = useState<(() => Promise<void>) | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const title = titles?.[currentStep] ?? titles?.[0] ?? "";
 
@@ -50,6 +51,10 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
     setDeleteFn(() => fn);
   }, []);
 
+  const handleIsSavingChange = useCallback((saving: boolean) => {
+    setIsSaving(saving);
+  }, []);
+
   return (
     <>
       <Modal.Header closeButton>
@@ -57,7 +62,14 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
       </Modal.Header>
 
       <Modal.Body>
-        {content?.(currentStep, handleRequestValidate, handleRequestSave, handleRequestDelete, submit)}
+        {content?.(
+          currentStep,
+          handleRequestValidate,
+          handleRequestSave,
+          handleRequestDelete,
+          submit,
+          handleIsSavingChange,
+        )}
 
         {showDeleteConfirm && (
           <Alert
@@ -98,6 +110,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           totalSteps={totalSteps}
           isEdit={!!isEdit}
           showDeleteConfirm={showDeleteConfirm}
+          isSaving={isSaving}
           onCancel={close}
           onPrevious={handlePrevious}
           onNext={handleNext}

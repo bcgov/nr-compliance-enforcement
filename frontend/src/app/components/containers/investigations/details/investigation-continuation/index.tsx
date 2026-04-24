@@ -137,7 +137,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
         className="comp-details-section-header flex gap-3"
         style={{ justifyContent: "flex-start" }}
       >
-        <h3>Continuation report</h3>
+        <h2>Continuation report</h2>
         <Button
           variant="outline-primary"
           size="sm"

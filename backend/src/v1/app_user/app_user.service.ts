@@ -255,7 +255,6 @@ export class AppUserService {
       return this.mapAppUserToDto(updatedAppUser);
     } catch (error) {
       this.logger.error("An error occurred while requesting COMS access.", error);
-      throw error;
     }
   }
 

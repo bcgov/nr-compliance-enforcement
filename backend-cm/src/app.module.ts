@@ -78,7 +78,10 @@ import { TaskModule } from "./investigation/task/task.module";
 import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
 import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 import { LegislationConfigurationModule } from "./shared/legislation_configuration/legislation_configuration.module";
-import { ExhibitModule } from "src/investigation/exhibit/exhibit.module";
+import { ExhibitModule } from "./investigation/exhibit/exhibit.module";
+import { TicketOutcomeCodeModule } from "./investigation/ticket_outcome_code/ticket_outcome_code.module";
+import { EnforcementActionModule } from "./investigation/enforcement_action/enforcement_action.module";
+import { EnforcementActionCodeModule } from "./investigation/enforcement_action_code/enforcement_action_code.module";
 
 @Module({
   imports: [
@@ -156,6 +159,9 @@ import { ExhibitModule } from "src/investigation/exhibit/exhibit.module";
     TaskModule,
     DiaryDateModule,
     ExhibitModule,
+    TicketOutcomeCodeModule,
+    EnforcementActionModule,
+    EnforcementActionCodeModule,
   ],
   controllers: [AppController],
   providers: [

@@ -10,6 +10,7 @@ import {
 import { investigation_party } from "../../../../prisma/investigation/generated/investigation_party";
 import { Field, InputType } from "@nestjs/graphql";
 import { PartyDto } from "../../../common/party";
+import { EnforcementAction } from "src/investigation/enforcement_action/dto/enforcement_action";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -20,6 +21,7 @@ export class InvestigationParty implements PartyDto {
   investigationGuid: string;
   partyReference?: string;
   partyAssociationRole?: string;
+  enforcementActions?: EnforcementAction[];
 }
 
 @InputType()
@@ -90,6 +92,16 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.partyAssociationRole,
       mapFrom((src) => src.party_association_role_ref),
+    ),
+    forMember(
+      (dest) => dest.enforcementActions,
+      mapFrom((src) =>
+        mapper.mapArray(
+          (src.contravention_party_xref ?? []).map((x) => x.enforcement_action),
+          "enforcement_action",
+          "EnforcementAction",
+        ),
+      ),
     ),
   );
 };

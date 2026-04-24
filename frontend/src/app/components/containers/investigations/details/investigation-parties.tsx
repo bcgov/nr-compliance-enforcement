@@ -111,7 +111,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     <>
       <div className="row">
         <div className="col-12">
-          <h3>Parties</h3>
+          <h2>Parties</h2>
         </div>
       </div>
       <div className="row">

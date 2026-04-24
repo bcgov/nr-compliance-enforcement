@@ -900,6 +900,24 @@ export class CodeTableService {
         });
         return emailReferences;
       }
+
+      case "enforcement-action-type": {
+        const { data } = await get(token, {
+          query:
+            "{ enforcementActionCodes { enforcementActionCode shortDescription longDescription displayOrder activeIndicator agencyCode }}",
+        });
+        const results = data.enforcementActionCodes;
+        return results;
+      }
+
+      case "ticket-outcome-type": {
+        const { data } = await get(token, {
+          query:
+            "{ ticketOutcomeCodes { ticketOutcomeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.ticketOutcomeCodes;
+        return results;
+      }
     }
   };
 

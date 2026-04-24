@@ -3,8 +3,9 @@ import { ContraventionTable } from "@/app/components/containers/investigations/d
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
-import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
-import { Contravention, Investigation, InvestigationParty } from "@/generated/graphql";
+import { ADD_EDIT_ENFORCEMENT_ACTION, MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
+import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
+import { gql } from "graphql-request";
 import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
 
@@ -13,6 +14,60 @@ interface InvestigationContraventionProps {
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
+
+export const CREATE_ENFORCEMENT_ACTION = gql`
+  mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
+    createEnforcementAction(input: $input) {
+      enforcementActionIdentifier
+      enforcementActionCode {
+        enforcementActionCode
+        shortDescription
+      }
+      dateIssued
+      geoOrganizationUnitCode
+      appUserIdentifier
+      activeIndicator
+      ticket {
+        ticketIdentifier
+        ticketOutcomeCode
+        ticketAmount
+        ticketNumber
+        paidDate
+      }
+    }
+  }
+`;
+
+export const UPDATE_ENFORCEMENT_ACTION = gql`
+  mutation UpdateEnforcementAction($input: UpdateEnforcementActionInput!) {
+    updateEnforcementAction(input: $input) {
+      enforcementActionIdentifier
+      enforcementActionCode {
+        enforcementActionCode
+        shortDescription
+      }
+      dateIssued
+      geoOrganizationUnitCode
+      appUserIdentifier
+      activeIndicator
+      ticket {
+        ticketIdentifier
+        ticketOutcomeCode
+        ticketAmount
+        ticketNumber
+        paidDate
+      }
+    }
+  }
+`;
+
+export const REMOVE_ENFORCEMENT_ACTION = gql`
+  mutation RemoveEnforcementAction($enforcementActionId: String!) {
+    removeEnforcementAction(enforcementActionId: $enforcementActionId) {
+      enforcementActionIdentifier
+    }
+  }
+`;
 
 export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
   investigationGuid,
@@ -46,6 +101,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestSave: (fn: () => Promise<void>) => void,
             onRequestDelete: (fn: () => Promise<void>) => void,
             onClose: () => void,
+            onIsSavingChange: (isSaving: boolean) => void,
             // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionForm
@@ -58,10 +114,55 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
               onRequestDelete={onRequestDelete}
+              onIsSavingChange={onIsSavingChange}
               onClose={onClose}
             />
           ),
           handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
+
+  const onAddEnforcementAction = (contraventionId: string, partyGuid: string) => {
+    const contravention = contraventionId
+      ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
+      : undefined;
+
+    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
+        modalSize: "lg",
+        data: {
+          contravention,
+          party,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
+
+  const onEditEnforcementAction = (enforcementActionId: string, contraventionId: string, partyGuid: string) => {
+    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
+    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
+    const contraventionParty = contravention?.investigationParty?.find((p) => p?.partyIdentifier === partyGuid);
+    const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
+      (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
+    );
+
+    dispatch(
+      openModal({
+        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
+        modalSize: "lg",
+        data: {
+          contravention,
+          party,
+          enforcementAction,
+          onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,
       }),
@@ -107,7 +208,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               : "col-12"
           }
         >
-          <h3>Outcomes</h3>
+          <h2>Outcomes</h2>
           <Button
             variant="primary"
             size="sm"
@@ -122,7 +223,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
       {knownGroups.length > 0 && (
         <div className="row mb-4">
-          <h4>Known parties</h4>
+          <h3>Known parties</h3>
         </div>
       )}
       {knownGroups.map(({ partyName, contraventions: groupedContraventions, partyGuid }) => (
@@ -133,25 +234,37 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           <h5 className="mb-3 fw-bold">
             {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
           </h5>
-          <ContraventionTable
-            contraventions={groupedContraventions}
-            investigationGuid={investigationGuid}
-            partyGuid={partyGuid}
-            onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-          />
+          <div className="comp-data-container">
+            <ContraventionTable
+              contraventions={groupedContraventions}
+              investigationGuid={investigationGuid}
+              partyGuid={partyGuid}
+              onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
+              onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
+              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                onEditEnforcementAction(eaId, contraventionId, pGuid)
+              }
+            />
+          </div>
         </div>
       ))}
 
       {(parties.length > 0 || unknownGroups.length > 0) && (
         <div className="mb-4">
-          <h4 className="mb-3">Unknown parties</h4>
+          <h3 className="mb-3">Unknown parties</h3>
           {unknownGroups.length > 0 && (
-            <ContraventionTable
-              contraventions={unknownGroups.flatMap((g) => g.contraventions)}
-              investigationGuid={investigationGuid}
-              partyGuid={null}
-              onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
-            />
+            <div className="comp-data-container">
+              <ContraventionTable
+                contraventions={unknownGroups.flatMap((g) => g.contraventions)}
+                investigationGuid={investigationGuid}
+                partyGuid={null}
+                onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
+                onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
+                onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                  onEditEnforcementAction(eaId, contraventionId, pGuid)
+                }
+              />
+            </div>
           )}
         </div>
       )}
@@ -160,7 +273,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 };
 
 // Helper
-function getPartyLabel(party: InvestigationParty): string {
+export function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
   if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
   return "Unknown parties";

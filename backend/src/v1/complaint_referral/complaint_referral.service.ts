@@ -11,7 +11,7 @@ import { FeatureFlagService } from "../../v1/feature_flag/feature_flag.service";
 import { DocumentService } from "../../v1/document/document.service";
 import { ComplaintReferralEmailLogService } from "../complaint_referral_email_log/complaint_referral_email_log.service";
 import { CreateComplaintReferralEmailLogDto } from "../complaint_referral_email_log/dto/create-complaint_referral_email_log.dto";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 import { asUUID } from "src/common/methods";
 
 @Injectable({ scope: Scope.REQUEST })
@@ -97,7 +97,7 @@ export class ComplaintReferralService {
       try {
         for (const emailAddress of recipientList) {
           const emailReferralLog: CreateComplaintReferralEmailLogDto = {
-            complaint_referral_email_log_guid: asUUID(uuidv4()),
+            complaint_referral_email_log_guid: asUUID(randomUUID()),
             email_address: emailAddress,
             email_sent_utc_timestamp: new Date(),
             create_user_id: idir,
