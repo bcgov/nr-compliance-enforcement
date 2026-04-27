@@ -36,18 +36,20 @@ export async function navigateToDetailsScreen(
 
     //-- click on HWCR tab
     await page.locator(`#${complaintType.toLowerCase()}-tab`).click();
-    await expect(await page.locator("#comp-zone-filter")).toBeVisible();
+    await expect(page.locator("#comp-zone-filter")).toBeVisible();
     await page.locator("#comp-zone-filter").click(); //clear zone filter so this complaint is in the list view
-    await expect(await page.locator("#comp-zone-filter")).not.toBeVisible();
+    await expect(age.locator("#comp-zone-filter")).not.toBeVisible();
     await waitForSpinner(page);
-    await expect(await page.locator("#comp-status-filter")).toBeVisible();
+    await expect(page.locator("#comp-status-filter")).toBeVisible();
     await page.locator("#comp-status-filter").click(); //clear status filter so this complaint is in the list view
     await waitForSpinner(page);
-    await expect(await page.locator("#comp-status-filter")).not.toBeVisible();
+    await expect(page.locator("#comp-status-filter")).not.toBeVisible();
 
     //-- check to make sure there are items in the table
-    await expect(await page.locator("#complaint-list").locator("tr").count()).toBeGreaterThan(0);
+    expect(await page.locator("#complaint-list").locator("tr").count()).toBeGreaterThan(0);
     await page.locator("#complaint-list > tbody > tr").getByText(complaintIdentifier).first().click();
+    // Wait for a route change
+    await page.waitForURL(new RegExp(`/complaint/[^/]+/${complaintIdentifier}`, "i"));
   }
   await waitForSpinner(page);
 }
@@ -68,16 +70,16 @@ export async function navigateToTab(complaintTab: string, removeFilters: boolean
 
   //-- verify correct tab
   if (complaintTab === "#hwcr-tab") {
-    await expect(await page.locator(complaintTab)).toHaveText(/Human Wildlife Conflict/);
+    await expect(page.locator(complaintTab)).toHaveText(/Human Wildlife Conflict/);
   } else {
-    await expect(await page.locator(complaintTab)).toHaveText(/Enforcement/);
+    await expect(page.locator(complaintTab)).toHaveText(/Enforcement/);
   }
 
   if (removeFilters) {
     await page.locator("#comp-status-filter").click();
     await page.locator("#comp-zone-filter").click();
-    await expect(await page.locator("#comp-status-filter")).not.toBeVisible();
-    await expect(await page.locator("#comp-zone-filter")).not.toBeVisible();
+    await expect(page.locator("#comp-status-filter")).not.toBeVisible();
+    await expect(page.locator("#comp-zone-filter")).not.toBeVisible();
   }
 }
 
@@ -237,7 +239,7 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
   await enterDateTimeInDatePicker(page, datePickerId, date);
 
   //click Save Button
-  const saveButton = await page.locator(saveButtonId).first();
+  const saveButton = page.locator(saveButtonId).first();
   await saveButton.click();
 }
 
@@ -259,44 +261,35 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
     dateDiv = "#equipment-date-set-div";
   }
 
+  // Wait for the success toast as a signal that save completed
+  if (toastText) {
+    await expect(page.locator(".Toastify__toast-body", { hasText: toastText })).toBeVisible();
+  }
+
   if (section === "ASSESSMENT" && actionRequired) {
-    await expect(await testSection.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
+    await expect(testSection.locator("#action-required-div", { hasText: actionRequired }).first()).toBeVisible();
 
     if (actionRequired === "Yes") {
-      //Verify Fields exist
       for (let checkbox of checkboxes) {
-        await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
+        await expect(testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
       }
     }
   } else if (checkboxes) {
     for (let checkbox of checkboxes) {
-      await expect(await testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible;
+      await expect(testSection.locator(checkboxDiv, { hasText: checkbox }).first()).toBeVisible();
     }
   }
 
   if (justification) {
-    await expect(await testSection.locator("#justification-div", { hasText: justification }).first()).toBeVisible;
+    await expect(testSection.locator("#justification-div", { hasText: justification }).first()).toBeVisible();
   }
 
   if (equipmentType) {
-    await expect(async () => {
-      const $div = testSection.locator("#equipment-type-title");
-      expect($div).toHaveText(equipmentType);
-    }).toPass();
+    await expect(testSection.locator("#equipment-type-title")).toHaveText(equipmentType);
   }
-  await expect(async () => {
-    const $div = testSection.locator(officerDiv);
-    expect($div).toContainText(officer);
-  }).toPass();
-  await expect(async () => {
-    const dateText = await testSection.locator(dateDiv).textContent();
-    expect(dateText).toContain(date); //Don't know the month... could maybe make this a bit smarter but this is probably good enough.
-  }).toPass();
 
-  //validate the toast
-  if (toastText) {
-    await expect(await page.locator(".Toastify__toast-body", { hasText: toastText })).toBeVisible();
-  }
+  await expect(testSection.locator(officerDiv)).toContainText(officer);
+  await expect(testSection.locator(dateDiv)).toContainText(date);
 }
 
 export async function navigateToCreateScreen(page: Page) {
@@ -305,7 +298,7 @@ export async function navigateToCreateScreen(page: Page) {
 }
 
 export async function verifyAttachmentsCarousel(page: Page, uploadable: boolean, divId: string) {
-  const scope = await page.locator(`#${divId}`);
+  const scope = page.locator(`#${divId}`);
   // verify the attachments section exists
   await expect(scope.getByText(/attachments/).first()).toBeVisible();
 
@@ -331,7 +324,7 @@ export async function selectTypeAheadItemByText(selectId: string, optionText: st
   const typeaheadInput = page.locator(`#${selectId}`).locator("input").first();
   await typeaheadInput.clear();
   await typeaheadInput.pressSequentially(optionText);
-  await expect(await page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
+  await expect(page.locator(".dropdown-item").getByText(optionText).first()).toBeVisible();
   await page.locator(".dropdown-item").getByText(optionText).first().click();
 }
 
@@ -355,6 +348,6 @@ export async function isHeaderinViewPort(page: Page) {
 }
 
 export async function validateComplaint(page: Page, expectedComplaintId: string, expectedSpecies: string) {
-  await expect(await page.locator(".comp-box-complaint-id")).toContainText(expectedComplaintId);
-  await expect(await page.locator(".comp-box-species-type")).toContainText(expectedSpecies);
+  await expect(page.locator(".comp-box-complaint-id")).toContainText(expectedComplaintId);
+  await expect(page.locator(".comp-box-species-type")).toContainText(expectedSpecies);
 }
