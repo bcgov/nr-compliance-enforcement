@@ -78,6 +78,9 @@ test.describe("Investigation Create Form", () => {
   test("it cancels with confirmation", async ({ page }) => {
     await navigateToCreateInvestigation(page);
 
+    const investigationIdInput = page.locator("#description");
+    await investigationIdInput.fill("Test Investigation");
+
     const cancelButton = page.locator("button", { hasText: /Cancel/i });
     await cancelButton.click();
 

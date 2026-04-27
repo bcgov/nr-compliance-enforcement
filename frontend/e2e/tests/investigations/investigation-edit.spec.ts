@@ -80,7 +80,7 @@ test.describe("Investigation Edit Form", () => {
   });
 
   test("it validates on edit", async ({ page }) => {
-    const descriptionInput = page.locator("description");
+    const descriptionInput = page.locator("#description");
     await expect(descriptionInput).not.toHaveValue("", { timeout: 10000 });
 
     // Clear required field

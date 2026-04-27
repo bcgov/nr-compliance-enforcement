@@ -43,7 +43,7 @@ test.describe("Inspection Creation", () => {
 
     // Check for validation errors
     const errorMessages = page.locator(".error-message, .invalid-feedback, .text-danger");
-    await expect(errorMessages.first()).toBeVisible({ timeout: 10000 });
+    await expect(errorMessages.locator("visible=true")).not.toHaveCount(0, { timeout: 10000 });
   });
 
   test("it saves inspection with all fields", async ({ page }) => {
