@@ -237,32 +237,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                 form.handleSubmit();
               }}
             >
-              <FormField
-                form={form}
-                name="description"
-                label="Case description"
-                validators={{
-                  onChange: z.string().max(4000, "Description must be 4000 characters or less"),
-                }}
-                render={(field) => (
-                  <div
-                    className="comp-details-input"
-                    style={{ width: "100%" }}
-                  >
-                    <CompInput
-                      id="display-name"
-                      divid="display-name-value"
-                      type="input"
-                      inputClass="comp-form-control"
-                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      maxLength={120}
-                      onChange={(evt: any) => field.handleChange(evt.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter Case ID"
-                    />
-                  </div>
-                )}
-              />
               {showLegacy && (
                 <FormField
                   form={form}
