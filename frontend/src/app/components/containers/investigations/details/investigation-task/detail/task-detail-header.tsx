@@ -9,8 +9,8 @@ import { selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Button } from "react-bootstrap";
-import { TaskStatusModal } from "./task-status-modal";
 import { exportTask } from "@/app/store/reducers/documents-thunks";
+import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
 
 const UPDATE_TASK = gql`
   mutation UpdateTask($input: CreateUpdateTaskInput!) {
@@ -113,12 +113,12 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
         </div>
       </div>
 
-      <TaskStatusModal
+      <ChangeStatusModal
         show={showStatusModal}
         onHide={handleCloseStatusModal}
         onSave={handleSaveStatus}
-        task={task}
-        investigationGuid={investigationGuid}
+        data={task}
+        type="task"
         isSaving={updateStatusMutation.isPending}
       />
     </div>

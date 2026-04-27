@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.257",
+  "version": "2.0.260",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -120,7 +120,7 @@
     "use-query-params": "^2.2.1",
     "util": "^0.12.5",
     "utm-latlng": "^1.0.8",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "vite": "^7.0.2",
     "warning": "^4.0.3",
     "web-vitals": "^3.0.0",

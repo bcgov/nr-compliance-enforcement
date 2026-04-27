@@ -1,13 +1,14 @@
-name: Merge to Release
-
+name: Hotfix to Release
 on:
   push:
-    branches: [release/*]
+    # Hotfix PRs merged into a release branch trigger a prod deploy.
+    # Branch CREATION (e.g. cutting release/X.Y from main) is filtered out by
+    # `if: github.event.created != true` on each job below — that case is
+    # handled by `release.yaml` via workflow_dispatch.
+    branches: [release/**]
     paths-ignore:
       - "*.md"
-      - ".github/**"
       - ".github/graphics/**"
-      - "!.github/workflows/**"
   workflow_dispatch:
     inputs:
       pr_no:
@@ -35,22 +36,34 @@ env:
 jobs:
   vars:
     name: Set Variables
+    # Skip when this push is a branch creation (e.g. cutting release/X.Y from main).
+    # The cut is handled by release.yaml; this workflow only reacts to hotfix merges.
+    if: github.event.created != true
     outputs:
       pr: ${{ steps.pr.outputs.pr }}
     runs-on: ubuntu-22.04
     timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
-      # Get PR number for squash merges to release
+      # Resolve PR# from the merge commit SHA; honor manual dispatch override
       - name: PR Number
         id: pr
-        uses: ./.github/actions/get-pr-number
-      - name: Set PR Output
-        run: echo "pr=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_PR_NO: ${{ inputs.pr_no }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            pr="$INPUT_PR_NO"
+          else
+            pr=$(./.github/scripts/sha-to-pr.sh "${{ github.sha }}")
+          fi
+          [[ "$pr" =~ ^[0-9]+$ ]] || { echo "Invalid PR number: $pr" >&2; exit 1; }
+          echo "pr=$pr" >> "$GITHUB_OUTPUT"
 
   promote:
     name: Promote Images
     needs: [vars]
+    if: github.event.created != true
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -71,14 +84,15 @@ jobs:
           ]
     timeout-minutes: 1
     steps:
-      - uses: shrink/actions-docker-registry-tag@v4
+      - uses: shrink/actions-docker-registry-tag@f04afd0559f66b288586792eb150f45136a927fa
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
           target: ${{ needs.vars.outputs.pr }}
-          tags: test
+          tags: prod
   generate-schema-spy:
     name: Generate SchemaSpy Documentation
+    if: github.event.created != true
     runs-on: ubuntu-22.04
     services:
       postgres:
@@ -164,10 +178,11 @@ jobs:
           target-folder: schemaspy
 
   ### Emerald jobs
-  deploy-emerald-test:
-    name: Deploy Workloads To Emerald (test)
+  deploy-emerald-hotfix-to-prod:
+    name: Deploy Hotfix Workloads To Emerald (prod)
     needs: [vars, promote]
-    environment: test
+    if: github.event.created != true
+    environment: prod
     runs-on: ubuntu-22.04
     permissions:
       packages: write
@@ -185,7 +200,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Roll latest changes out to test
+      - name: Roll hotfix changes out to prod
         run: |
           VALUES_DIR="${{ env.GITOPS_REPO_VALUES_PATH }}" \
           OUTPUTS_DIR="${{ env.GITOPS_REPO_OUTPUTS_PATH }}" \
@@ -193,5 +208,5 @@ jobs:
 
       - name: Commit and push update
         run: |
-          ./.github/scripts/gitops.sh commitall "Updating test for PR ${{ needs.vars.outputs.pr }}"
+          ./.github/scripts/gitops.sh commitall "Updating prod for hotfix PR ${{ needs.vars.outputs.pr }}"
           git push origin ${{ env.GITOPS_REPO_BRANCH }}
