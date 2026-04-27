@@ -476,7 +476,6 @@ export type CreateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name: Scalars['String']['input'];
 };
 
 export type CreateInspectionPartyInput = {
@@ -2579,7 +2578,6 @@ export type UpdateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationInput = {

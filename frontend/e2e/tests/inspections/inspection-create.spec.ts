@@ -46,36 +46,9 @@ test.describe("Inspection Creation", () => {
     await expect(errorMessages.first()).toBeVisible({ timeout: 10000 });
   });
 
-  test("it validates Inspection ID uniqueness", async ({ page }) => {
-    await navigateToCreateInspection(page);
-
-    // Enter an inspection ID that already exists
-    const inspectionIdInput = page.locator("#display-name");
-    await inspectionIdInput.fill("INSPECTION1");
-
-    const validationError = page.locator("text=/already in use/i");
-    await expect(validationError).toBeVisible({ timeout: 10000 });
-  });
-
   test("it saves inspection with all fields", async ({ page }) => {
     await navigateToCreateInspection(page);
     await expect(page.locator("h2", { hasText: /Inspection Details/i })).toBeVisible();
-
-    const uniqueId = `INSPECTION-${Date.now()}`;
-
-    // Set up listener for async validation response before filling the input
-    const validationResponsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes("/graphql") &&
-        (response.request().postData()?.includes("checkInspectionNameExists") ?? false),
-      { timeout: 15000 },
-    );
-
-    const inspectionIdInput = page.locator("#display-name");
-    await inspectionIdInput.fill(uniqueId);
-
-    // Wait for async validation to complete
-    await validationResponsePromise;
 
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Test Description");
@@ -108,8 +81,8 @@ test.describe("Inspection Creation", () => {
   test("it cancels with confirmation", async ({ page }) => {
     await navigateToCreateInspection(page);
 
-    const inspectionIdInput = page.locator("#display-name");
-    await inspectionIdInput.fill("Test Inspection");
+    const descriptionInput = page.locator("#description");
+    await descriptionInput.fill("Test Inspection");
 
     const cancelButton = page.locator("button", { hasText: /Cancel/i });
     await cancelButton.click();

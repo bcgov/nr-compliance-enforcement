@@ -23,6 +23,7 @@ import { GeoJsonProperties } from "geojson";
 import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
+import { generateNextInspectionIdentifier } from "src/common/sequence.utility";
 
 @Injectable()
 export class InspectionService {
@@ -344,6 +345,8 @@ export class InspectionService {
     }
 
     // Create the inspection
+    const generatedName = await generateNextInspectionIdentifier(this.prisma);
+
     let inspection;
     await this.prisma.$transaction(async (tx) => {
       try {
@@ -354,7 +357,7 @@ export class InspectionService {
             owned_by_agency_ref: input.leadAgency,
             location_address: input.locationAddress,
             location_description: input.locationDescription,
-            name: input.name,
+            name: generatedName,
             inspection_opened_utc_timestamp: new Date(),
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
@@ -435,9 +438,6 @@ export class InspectionService {
         }
         if (input.description !== undefined) {
           updateData.inspection_description = input.description;
-        }
-        if (input.name !== undefined) {
-          updateData.name = input.name;
         }
         if (input.locationAddress !== undefined) {
           updateData.location_address = input.locationAddress;
