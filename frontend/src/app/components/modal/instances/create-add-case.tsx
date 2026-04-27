@@ -1,7 +1,8 @@
 import { FC, memo, useState, useMemo, useEffect } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { selectModalData, isLoading, appUserGuid } from "@store/reducers/app";
+import { selectModalData, isLoading, appUserGuid, isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -78,6 +79,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
   const currentAppUserGuid = useAppSelector(appUserGuid);
+  const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
 
   // Vars
   const { title, complaint_identifier, agency_code, onDirtyChange } = modalData;
@@ -104,9 +106,9 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           leadAgency: agency_code,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
-          description: value.description,
           name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
+          ...(showLegacy && { description: value.description }),
         };
         createCaseMutation.mutate({ input: createInput });
       }
@@ -284,39 +286,41 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                   </div>
                 )}
               />
-              <FormField
-                form={form}
-                name="description"
-                label="Case description"
-                validators={{
-                  onChange: z.string().max(4000, "Description must be 4000 characters or less"),
-                }}
-                render={(field) => (
-                  <div
-                    className="comp-details-input"
-                    style={{ width: "100%" }}
-                  >
-                    <textarea
-                      id="case-description"
-                      className="comp-form-control comp-details-input"
-                      rows={2}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter case description..."
-                      maxLength={4000}
-                      style={{ borderColor: field.state.meta.errors?.[0] ? "#dc3545" : "" }}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <div
-                        className="error-message"
-                        style={{ color: "#dc3545" }}
-                      >
-                        {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      </div>
-                    )}
-                  </div>
-                )}
-              />
+              {showLegacy && (
+                <FormField
+                  form={form}
+                  name="description"
+                  label="Case description"
+                  validators={{
+                    onChange: z.string().max(4000, "Description must be 4000 characters or less"),
+                  }}
+                  render={(field) => (
+                    <div
+                      className="comp-details-input"
+                      style={{ width: "100%" }}
+                    >
+                      <textarea
+                        id="case-description"
+                        className="comp-form-control comp-details-input"
+                        rows={2}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        value={field.state.value}
+                        placeholder="Enter case description..."
+                        maxLength={4000}
+                        style={{ borderColor: field.state.meta.errors?.[0] ? "#dc3545" : "" }}
+                      />
+                      {field.state.meta.errors.length > 0 && (
+                        <div
+                          className="error-message"
+                          style={{ color: "#dc3545" }}
+                        >
+                          {field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                />
+              )}
             </form>
           )}
           {createOrAddOption === "add" && (

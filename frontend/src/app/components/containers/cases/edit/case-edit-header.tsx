@@ -65,7 +65,7 @@ export const CaseEditHeader: FC<CaseEditHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>

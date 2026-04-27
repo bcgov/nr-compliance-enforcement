@@ -31,13 +31,16 @@ async function createHistoryData(page: Page): Promise<string> {
   await editButton.click();
   await waitForSpinner(page);
 
-  // Ensure description is filled (required field)
-  const descriptionInput = page.locator("#description");
-  await expect(descriptionInput).toBeVisible({ timeout: 10000 });
-  const currentDescription = await descriptionInput.inputValue();
-  if (!currentDescription) {
-    await descriptionInput.fill("Test case description for history");
-  }
+  // Description is hidden for MVP
+  /* NOSONAR
+    // Ensure description is filled (required field)
+    const descriptionInput = page.locator("#description");
+    await expect(descriptionInput).toBeVisible({ timeout: 10000 });
+    const currentDescription = await descriptionInput.inputValue();
+    if (!currentDescription) {
+      await descriptionInput.fill("Test case description for history");
+    }
+  */
 
   // Change status to generate history entry
   const statusSelect = page.locator("#case-status-select");
