@@ -44,15 +44,18 @@ export const CaseActivities: FC<CaseActivitiesProps> = ({ caseGuid, caseName }) 
     if (!issueCode) return "—";
 
     switch (typeCode) {
-      case "HWCR":
+      case "HWCR": {
         const natureCode = natureOfComplaints?.find((item: any) => item.natureOfComplaint === issueCode);
         return natureCode?.longDescription || issueCode;
-      case "GIR":
+      }
+      case "GIR": {
         const girCode = girTypeCodes?.find((item: any) => item.girType === issueCode);
         return girCode?.longDescription || issueCode;
-      case "ERS":
+      }
+      case "ERS": {
         const violCode = violationCodes?.find((item: any) => item.violation === issueCode);
         return violCode?.longDescription || issueCode;
+      }
       default:
         return issueCode;
     }
