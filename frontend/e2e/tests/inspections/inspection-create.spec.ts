@@ -80,9 +80,18 @@ test.describe("Inspection Creation", () => {
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Test Description");
 
-    const saveButton = page.locator("button", { hasText: /Save|Create/i }).first();
-    await expect(saveButton).toBeEnabled({ timeout: 10000 });
-    await saveButton.click({ force: true });
+    // Wait for the createInspection mutation
+    const createMutationPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") && (response.request().postData()?.includes("CreateInspection") ?? false),
+      { timeout: 15000 },
+    );
+
+    const saveButton = page.locator("#details-screen-save-button-top");
+    await expect(saveButton).toBeVisible({ timeout: 10000 });
+    await saveButton.click();
+
+    await createMutationPromise;
     await expect(page).toHaveURL(/\/inspection\/[a-f0-9-]+$/i, { timeout: 30000 });
   });
 
