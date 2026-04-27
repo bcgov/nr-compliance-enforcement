@@ -121,28 +121,6 @@ export class InvestigationService {
                     },
                   },
                 },
-                enforcement_action: {
-                  where: {
-                    active_ind: true,
-                  },
-                  orderBy: {
-                    create_utc_timestamp: "asc",
-                  },
-                  include: {
-                    ticket: {
-                      where: {
-                        active_ind: true,
-                      },
-                    },
-                    enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
-                    contravention_party_xref: {
-                      include: {
-                        contravention: true,
-                        enforcement_action: true,
-                      },
-                    },
-                  },
-                },
               },
               where: {
                 active_ind: true,
