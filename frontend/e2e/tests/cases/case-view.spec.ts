@@ -56,8 +56,8 @@ test.describe("Case View", () => {
     await expect(dateSection).toBeVisible();
   });
 
-  // NOSONAR - Case description hidden for MVP
-  /*
+  // Case description hidden for MVP
+  /* NOSONAR
   test("it displays case description", async ({ page }) => {
     const descriptionSection = page.locator("h5", { hasText: "Case description" });
     await expect(descriptionSection).toBeVisible();

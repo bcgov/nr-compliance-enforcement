@@ -99,8 +99,8 @@ test.describe("Case Edit Form", () => {
     expect(statusText).toBeTruthy();
   });
 
-  // NOSONAR - Case description hidden for MVP
-  /*
+  // Case description hidden for MVP
+  /* NOSONAR
   test("it allows editing description", async ({ page }) => {
     const descriptionInput = page.locator("#description");
 
@@ -147,8 +147,8 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it saves changes successfully", async ({ page }) => {
-    // NOSONAR - Description is hidden for MVP
-    /*
+    // Description is hidden for MVP
+    /* NOSONAR
     const descriptionInput = page.locator("#description");
     const originalDescription = await descriptionInput.inputValue();
     const newDescription = `${originalDescription} - Updated at ${Date.now()}`;
