@@ -1,12 +1,14 @@
 import { FC } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Badge, Button } from "react-bootstrap";
+import { Link, useLocation } from "react-router-dom";
+import { Badge } from "react-bootstrap";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
@@ -23,14 +25,9 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
   const createdBy = createdByUser?.user_id || "Unknown";
 
-  const navigate = useNavigate();
   const location = useLocation();
 
   const isOnSummaryTab = location.pathname.split("/").length <= 3;
-
-  const editButtonClick = () => {
-    navigate(`/case/${caseData?.caseIdentifier}/edit`);
-  };
 
   return (
     <>
@@ -77,7 +74,9 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                 {status}
               </Badge>
             </div>
-            <ActionMenu />
+            <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+              <ActionMenu />
+            </FeatureFlag>
           </div>
         </div>
       </div>
@@ -140,19 +139,21 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
                   </dd>
                 </dl>
 
-                <dl>
-                  <dt>Officer assigned</dt>
-                  <dd>
-                    <div
-                      data-initials-sm={getAvatarInitials(officerAssigned)}
-                      className="comp-avatar comp-avatar-sm comp-avatar-orange"
-                    >
-                      <div>
-                        <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+                  <dl>
+                    <dt>Officer assigned</dt>
+                    <dd>
+                      <div
+                        data-initials-sm={getAvatarInitials(officerAssigned)}
+                        className="comp-avatar comp-avatar-sm comp-avatar-orange"
+                      >
+                        <div>
+                          <span id="comp-details-assigned-officer-name-text-id">{officerAssigned}</span>
+                        </div>
                       </div>
-                    </div>
-                  </dd>
-                </dl>
+                    </dd>
+                  </dl>
+                </FeatureFlag>
 
                 <dl>
                   <dt>Created by</dt>

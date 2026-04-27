@@ -70,25 +70,26 @@ export const InspectionDetails: FC = () => {
   const caseName = data?.caseFilesByActivityIds?.[0]?.name;
 
   const renderTabContent = () => {
-    switch (currentTab) {
-      case "summary":
-        return (
-          <InspectionSummary
-            inspectionData={inspectionData}
-            inspectionGuid={inspectionGuid}
-            caseGuid={caseIdentifier ?? ""}
-            caseName={caseName ?? ""}
-          />
-        );
-      case "parties":
-        return (
-          <InspectionParties
-            inspectionData={inspectionData}
-            inspectionGuid={inspectionGuid}
-          />
-        );
-      case "admin":
-        return <InspectionAdministration />;
+    if (currentTab === "summary") {
+      return (
+        <InspectionSummary
+          inspectionData={inspectionData}
+          inspectionGuid={inspectionGuid}
+          caseGuid={caseIdentifier ?? ""}
+          caseName={caseName ?? ""}
+        />
+      );
+    }
+    if (currentTab === "parties") {
+      return (
+        <InspectionParties
+          inspectionData={inspectionData}
+          inspectionGuid={inspectionGuid}
+        />
+      );
+    }
+    if (currentTab === "admin") {
+      return <InspectionAdministration />;
     }
   };
 
