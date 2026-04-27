@@ -60,7 +60,7 @@ export const TaskCreateHeader: FC<TaskCreateHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>

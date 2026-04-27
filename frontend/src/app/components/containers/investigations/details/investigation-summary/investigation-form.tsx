@@ -236,7 +236,7 @@ export const InvestigationForm = ({
           <FormField
             form={form}
             name="locationAddress"
-            label="Location address"
+            label="Location/address"
             // required
             // validators={{ onChange: z.string().min(1, "Location address is required") }}
             render={(field) => (
@@ -312,28 +312,30 @@ export const InvestigationForm = ({
             }}
           />
         </fieldset>
-        <FormField
-          form={form}
-          name="community"
-          label="Community"
-          required
-          validators={{ onChange: z.string().min(1, "Community is required") }}
-          render={(field) => (
-            <CompSelect
-              id="community-select"
-              classNamePrefix="comp-select"
-              className="comp-details-input pt-2"
-              options={communityOptions}
-              value={communityOptions.find((opt) => opt.value === field.state.value)}
-              onChange={(option) => field.handleChange(option?.value || "")}
-              placeholder="Select community"
-              isClearable={true}
-              showInactive={false}
-              enableValidation={true}
-              errorMessage={field.state.meta.errors?.[0]?.message || ""}
-            />
-          )}
-        />
+        <div className="pt-3">
+          <FormField
+            form={form}
+            name="community"
+            label="Community"
+            required
+            validators={{ onChange: z.string().min(1, "Community is required") }}
+            render={(field) => (
+              <CompSelect
+                id="community-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={communityOptions}
+                value={communityOptions.find((opt) => opt.value === field.state.value)}
+                onChange={(option) => field.handleChange(option?.value || "")}
+                placeholder="Select community"
+                isClearable={true}
+                showInactive={false}
+                enableValidation={true}
+                errorMessage={field.state.meta.errors?.[0]?.message || ""}
+              />
+            )}
+          />
+        </div>
       </form>
     </>
   );

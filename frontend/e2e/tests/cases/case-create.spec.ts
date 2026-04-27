@@ -17,7 +17,9 @@ test.describe("Case Create Form", () => {
   test("it displays the create case form", async ({ page }) => {
     await expect(page.locator("#case-status-select")).toBeVisible();
     await expect(page.locator("#lead-agency-select")).toBeVisible();
-    await expect(page.locator("#description")).toBeVisible();
+
+    // Description is hidden for MVP
+    await expect(page.locator("#description")).not.toBeVisible();
   });
 
   test("it shows breadcrumb navigation", async ({ page }) => {
@@ -69,6 +71,11 @@ test.describe("Case Create Form", () => {
   });
 
   test("it creates a case successfully", async ({ page }) => {
+    const uniqueId = `TEST-CASE-${Date.now()}`;
+
+    // Case description hidden for MVP
+    // await page.locator("#description").fill("This is a test case");
+
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });
 

@@ -48,9 +48,8 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it pre-fills form with existing case data", async ({ page }) => {
-    // Description field should be visible
-    const descriptionInput = page.locator("#description");
-    await expect(descriptionInput).toBeVisible();
+    // Case description hidden for MVP
+    await expect(page.locator("#description")).not.toBeVisible();
 
     // Status should have a value
     const statusSelect = page.locator("#case-status-select");
@@ -83,6 +82,8 @@ test.describe("Case Edit Form", () => {
     expect(statusText).toBeTruthy();
   });
 
+  // Case description hidden for MVP
+  /* NOSONAR
   test("it allows editing description", async ({ page }) => {
     const descriptionInput = page.locator("#description");
 
@@ -91,10 +92,11 @@ test.describe("Case Edit Form", () => {
 
     await expect(descriptionInput).toHaveValue("Updated description");
   });
+  */
 
   test("it navigates back on cancel without saving", async ({ page }) => {
-    const descriptionInput = page.locator("#description");
-    await descriptionInput.fill("Unsaved changes");
+    const caseIdInput = page.locator("#display-name");
+    await caseIdInput.fill("UNSAVED-CASE-ID");
 
     // Click cancel
     await page.locator("#details-screen-cancel-edit-button-top").click();
@@ -128,11 +130,14 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it saves changes successfully", async ({ page }) => {
+    // Description is hidden for MVP
+    /* NOSONAR
     const descriptionInput = page.locator("#description");
     const originalDescription = await descriptionInput.inputValue();
     const newDescription = `${originalDescription} - Updated at ${Date.now()}`;
     await descriptionInput.clear();
     await descriptionInput.fill(newDescription);
+    */
 
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeEnabled({ timeout: 5000 });

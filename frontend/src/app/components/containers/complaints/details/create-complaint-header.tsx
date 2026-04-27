@@ -55,7 +55,7 @@ export const CreateComplaintHeader: FC<CreateComplaintHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>
