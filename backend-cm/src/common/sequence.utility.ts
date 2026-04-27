@@ -9,7 +9,7 @@ const formatIdentifier = (prefix: string, sequenceNumber: number): string => {
 };
 
 const getNextSequenceValue = async (
-  prisma: { $queryRawUnsafe: <T>(query: string) => Promise<T> },
+  prisma: SharedPrismaService | InvestigationPrismaService | InspectionPrismaService,
   sequenceName: string,
 ): Promise<number> => {
   const result = await prisma.$queryRawUnsafe<{ nextval: bigint }[]>(`SELECT nextval('${sequenceName}') AS nextval`);
