@@ -1,0 +1,10 @@
+type Query {
+  enforcementActions(contraventionIdentifier: String!, partyIdentifier: String!): [EnforcementAction]!
+  enforcementAction(enforcementActionId: String!): EnforcementAction
+}
+
+type Mutation {
+  createEnforcementAction(input: CreateEnforcementActionInput!): EnforcementAction!
+  updateEnforcementAction(input: UpdateEnforcementActionInput!): EnforcementAction!
+  removeEnforcementAction(enforcementActionId: String!): EnforcementAction!
+}

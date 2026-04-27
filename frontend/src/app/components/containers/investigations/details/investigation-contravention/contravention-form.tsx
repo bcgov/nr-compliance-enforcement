@@ -17,6 +17,7 @@ interface ContraventionFormProps {
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;
   onRequestDelete?: (fn: () => Promise<void>) => void;
+  onIsSavingChange?: (isSaving: boolean) => void;
   onClose: () => void;
 }
 
@@ -58,6 +59,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   onRequestValidate,
   onRequestSave,
   onRequestDelete,
+  onIsSavingChange,
   onClose,
 }) => {
   const isEditMode = !!contravention;
@@ -69,10 +71,12 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
 
   const addContraventionMutation = useGraphQLMutation(ADD_CONTRAVENTION, {
     onSuccess: () => {
+      onIsSavingChange?.(false);
       ToggleSuccess("Contravention added successfully");
       onClose();
     },
     onError: (error: any) => {
+      onIsSavingChange?.(false);
       console.error("Error adding contravention:", error);
       ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add contravention");
     },
@@ -80,10 +84,12 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
 
   const editContraventionMutation = useGraphQLMutation(UPDATE_CONTRAVENTION, {
     onSuccess: () => {
+      onIsSavingChange?.(false);
       ToggleSuccess("Contravention updated successfully");
       onClose();
     },
     onError: (error: any) => {
+      onIsSavingChange?.(false);
       console.error("Error updating contravention:", error);
       ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update contravention");
     },
@@ -91,10 +97,12 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
 
   const deleteContraventionMutation = useGraphQLMutation(REMOVE_CONTRAVENTION, {
     onSuccess: () => {
+      onIsSavingChange?.(false);
       ToggleSuccess("Contravention deleted successfully");
       onClose();
     },
     onError: (error: any) => {
+      onIsSavingChange?.(false);
       console.error("Error deleting contravention:", error);
       ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to delete contravention");
     },
@@ -124,10 +132,12 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
       };
 
       if (isEditMode) {
+        onIsSavingChange?.(true);
         editContraventionMutation.mutate({ contraventionGuid: contravention!.contraventionIdentifier, input });
       } else {
         const step2Values = getStepValues<ContraventionPartyFormValues>(1);
         if (!step2Values) return;
+        onIsSavingChange?.(true);
         addContraventionMutation.mutate({
           input: {
             ...input,
@@ -143,6 +153,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
 
     onRequestDelete(async () => {
       if (!contravention?.contraventionIdentifier) return;
+      onIsSavingChange?.(true);
       await deleteContraventionMutation.mutateAsync({
         investigationGuid: activityGuid,
         contraventionGuid: contravention.contraventionIdentifier,

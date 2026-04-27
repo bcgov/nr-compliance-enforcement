@@ -55,10 +55,16 @@ export const mapPrismaContreventionToContravention = (mapper: Mapper) => {
     forMember(
       (dest) => dest.investigationParty,
       mapFrom((src) =>
-        mapper.mapArray(
-          (src.contravention_party_xref ?? []).map((x) => x.investigation_party),
-          "investigation_party",
-          "InvestigationParty",
+        (src.contravention_party_xref ?? []).map(
+          (x) =>
+            ({
+              ...mapper.map(x.investigation_party, "investigation_party", "InvestigationParty"),
+              enforcementActions: mapper.mapArray(
+                x.enforcement_action ?? [],
+                "enforcement_action",
+                "EnforcementAction",
+              ),
+            }) as InvestigationParty,
         ),
       ),
     ),

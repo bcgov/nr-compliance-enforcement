@@ -72,17 +72,24 @@ export class InvestigationService {
               create_utc_timestamp: "asc",
             },
           },
-          contravention: {
-            include: {
-              contravention_party_xref: {
-                include: {
-                  investigation_party: {
-                    // Allows the person info to be mapped on the contravention object directly
-                    include: {
-                      investigation_person: {
-                        where: {
-                          active_ind: true,
-                        },
+        },
+        task: {
+          where: {
+            active_ind: true,
+          },
+          orderBy: {
+            create_utc_timestamp: "asc",
+          },
+        },
+        contravention: {
+          include: {
+            contravention_party_xref: {
+              include: {
+                investigation_party: {
+                  include: {
+                    investigation_person: {
+                      where: {
+                        active_ind: true,
                       },
                       investigation_business: {
                         where: {
@@ -92,9 +99,31 @@ export class InvestigationService {
                     },
                   },
                 },
-                where: {
-                  active_ind: true,
+                enforcement_action: {
+                  where: {
+                    active_ind: true,
+                  },
+                  orderBy: {
+                    create_utc_timestamp: "asc",
+                  },
+                  include: {
+                    ticket: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                    enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                    contravention_party_xref: {
+                      include: {
+                        contravention: true,
+                        enforcement_action: true,
+                      },
+                    },
+                  },
                 },
+              },
+              where: {
+                active_ind: true,
               },
             },
             where: {

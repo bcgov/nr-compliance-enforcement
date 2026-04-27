@@ -31,6 +31,7 @@ export type CompTableProps<T> = CompTableSharedProps<T> & {
   totalItems?: number; // the total number of items in the dataset
   currentPage?: number; // the current page the user is on
   emptyMessage?: string; // custom message to display when there is no data to display in the table
+  alwaysShowFooter?: boolean; // set to false if the footer / pagination should only be shown when there are multiple pages
 };
 
 export type CompTableRowProps<T> = CompTableSharedProps<T> & {

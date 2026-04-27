@@ -25,6 +25,7 @@ export const CompTable = <T,>({
   totalItems,
   currentPage: externalCurrentPage,
   emptyMessage,
+  alwaysShowFooter = true,
 }: CompTableProps<T>) => {
   const [sortBy, setSortBy] = useState<string>(defaultSort);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
@@ -34,9 +35,6 @@ export const CompTable = <T,>({
   // Infer whether sorting and pagination are server-side
   const isServerSort = !!onSort && !!onPageChange;
   const isServerPagination = !!onPageChange;
-
-  // Determine height of table
-  const isPartial = data.length < pageSize;
 
   const currentPage = isServerPagination ? (externalCurrentPage ?? 1) : internalCurrentPage;
 
@@ -99,7 +97,7 @@ export const CompTable = <T,>({
   const totalCount = isServerPagination ? (totalItems ?? 0) : sortedData.length;
 
   const renderHeader = () => (
-    <thead className="sticky-table-header">
+    <thead className={`${isFixedHeight ? "sticky-table-header" : "sticky-table-header--variable"}`}>
       <tr>
         {/* Chevron column header - only rendered when table is expandable */}
         {isExpandable && <th className="comp-cell-width-30 comp-cell-min-width-30" />}
@@ -200,17 +198,17 @@ export const CompTable = <T,>({
 
   return (
     <div className="comp-table-container">
-      <div className={`comp-table-scroll-container ${isFixedHeight ? "comp-table-scroll-container--fixed" : ""}`}>
+      <div className="comp-table-scroll-container">
         <Table
           id={tableIdentifier}
-          className={`comp-table mb-0 border-0 ${isPartial ? "comp-table--partial" : ""}`}
+          className="comp-table mb-0 border-0"
         >
           {renderHeader()}
           <tbody>{renderBody()}</tbody>
         </Table>
       </div>
 
-      {totalCount > 0 && (
+      {(alwaysShowFooter || totalCount > pageSize) && (
         <Paginator
           currentPage={currentPage}
           totalItems={totalCount}

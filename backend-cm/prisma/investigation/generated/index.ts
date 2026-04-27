@@ -24,6 +24,13 @@ import { diary_date as _diary_date } from "./diary_date";
 import { activity_note as _activity_note } from "./activity_note";
 import { activity_note_code as _activity_note_code } from "./activity_note_code";
 import { exhibit as _exhibit } from "./exhibit";
+import { enforcement_action as _enforcement_action } from "./enforcement_action";
+import { enforcement_action_code as _enforcement_action_code } from "./enforcement_action_code";
+import { enforcement_action_code_agency_xref as _enforcement_action_code_agency_xref } from "./enforcement_action_code_agency_xref";
+import { enforcement_action_h as _enforcement_action_h } from "./enforcement_action_h";
+import { ticket as _ticket } from "./ticket";
+import { ticket_h as _ticket_h } from "./ticket_h";
+import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
 
 export namespace PrismaModel {
   export class contravention extends _contravention {}
@@ -52,6 +59,13 @@ export namespace PrismaModel {
   export class activity_note extends _activity_note {}
   export class activity_note_code extends _activity_note_code {}
   export class exhibit extends _exhibit {}
+  export class enforcement_action extends _enforcement_action {}
+  export class enforcement_action_code extends _enforcement_action_code {}
+  export class enforcement_action_code_agency_xref extends _enforcement_action_code_agency_xref {}
+  export class enforcement_action_h extends _enforcement_action_h {}
+  export class ticket extends _ticket {}
+  export class ticket_h extends _ticket_h {}
+  export class ticket_outcome_code extends _ticket_outcome_code {}
 
   export const extraModels = [
     contravention,
@@ -80,5 +94,12 @@ export namespace PrismaModel {
     activity_note,
     activity_note_code,
     exhibit,
+    enforcement_action,
+    enforcement_action_code,
+    enforcement_action_code_agency_xref,
+    enforcement_action_h,
+    ticket,
+    ticket_h,
+    ticket_outcome_code,
   ];
 }

@@ -13,6 +13,7 @@ interface PaginationProps {
   resultsPerPage: number;
   onPageChange: (page: number) => void;
   resetPageOnChange?: boolean;
+  displayTotals?: boolean;
 }
 
 /**
@@ -28,6 +29,7 @@ const Paginator: React.FC<PaginationProps> = ({
   onPageChange,
   resultsPerPage,
   resetPageOnChange = false,
+  displayTotals = true,
 }) => {
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
 
@@ -130,7 +132,7 @@ const Paginator: React.FC<PaginationProps> = ({
       className="pagination_container"
     >
       {/* Total count */}
-      <div className="pagination_total">Total {totalItems} items</div>
+      {displayTotals && <div className="pagination_total">Total {totalItems} items</div>}
 
       {totalItems > resultsPerPage && (
         <div className="pagination_controls">
