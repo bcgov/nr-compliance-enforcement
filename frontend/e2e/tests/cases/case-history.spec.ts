@@ -31,7 +31,7 @@ async function createHistoryData(page: Page): Promise<string> {
   await editButton.click();
   await waitForSpinner(page);
 
-  // Description is hidden for MVP
+  // NOSONAR - Description is hidden for MVP
   /*
     // Ensure description is filled (required field)
     const descriptionInput = page.locator("#description");
