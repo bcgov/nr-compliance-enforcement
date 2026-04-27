@@ -92,6 +92,23 @@ export class InspectionService {
       },
       include: {
         inspection_status_code: true,
+        inspection_party: {
+          include: {
+            inspection_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            inspection_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
+        },
       },
     });
     for (const inv of prismaInspections) {

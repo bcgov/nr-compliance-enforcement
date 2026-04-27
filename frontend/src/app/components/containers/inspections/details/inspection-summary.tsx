@@ -10,6 +10,7 @@ import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
+import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;
@@ -125,6 +126,10 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
         </div>
       </div>
       <hr className="mt-4 mb-4 border-2"></hr>
+      <CaseActivities
+        caseGuid={caseGuid}
+        caseName={caseName}
+      />
       <div className="comp-details-view">
         <div className="comp-details-content">
           <div className="d-flex align-items-center gap-4 mb-3">
