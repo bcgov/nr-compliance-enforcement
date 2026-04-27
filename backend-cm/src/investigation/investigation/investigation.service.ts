@@ -267,12 +267,9 @@ export class InvestigationService {
 
     // Automatically open a case file if one is not provided
     if (!caseIdentifier) {
-      const today = new Date().toISOString().slice(0, 10);
-      const caseName = `Investigation ${input.name} (${today})`;
       const newCase = await this.caseFileService.create({
         leadAgency,
         caseStatus: "OPEN",
-        name: caseName,
         description: "Auto-generated case file for investigation",
         createdByAppUserGuid: input.createdByAppUserGuid,
       });

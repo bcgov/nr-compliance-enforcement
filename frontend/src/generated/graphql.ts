@@ -286,7 +286,6 @@ export type CaseFileCreateInput = {
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
-  name: Scalars['String']['input'];
 };
 
 export type CaseFileFilters = {
@@ -449,7 +448,7 @@ export type CreateEnforcementActionInput = {
   dateIssued: Scalars['DateTime']['input'];
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
-  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   partyIdentifier: Scalars['String']['input'];
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1113,6 +1112,7 @@ export type InvestigationBusiness = {
 };
 
 export type InvestigationFilters = {
+  community?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
@@ -2560,7 +2560,7 @@ export type UpdateEnforcementActionInput = {
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
   geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
-  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;

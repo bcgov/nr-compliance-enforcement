@@ -22,12 +22,6 @@ const createOrAddOptions: Option[] = [
   { label: "Add to an existing case", value: "add" },
 ];
 
-const CHECK_CASE_NAME_EXISTS = gql`
-  query CheckCaseNameExists($name: String!, $leadAgency: String!, $excludeCaseIdentifier: String) {
-    checkCaseNameExists(name: $name, leadAgency: $leadAgency, excludeCaseIdentifier: $excludeCaseIdentifier)
-  }
-`;
-
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
     createCaseFile(input: $input) {
@@ -89,7 +83,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   const defaultValues = useMemo(
     () => ({
-      name: "",
       description: "",
     }),
     [],
@@ -105,7 +98,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
           description: value.description,
-          name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
         };
         createCaseMutation.mutate({ input: createInput });
@@ -244,46 +236,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                 form.handleSubmit();
               }}
             >
-              <FormField
-                form={form}
-                name="name"
-                label="Case ID *"
-                validators={{
-                  onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
-                  onChangeAsyncDebounceMs: 500,
-                  onChangeAsync: async ({ value }: { value: string }) => {
-                    if (!value || value.length < 1) return "Case ID is required";
-                    if (!agency_code) return undefined;
-                    const result: { checkCaseNameExists: boolean } = await GraphQLRequest(CHECK_CASE_NAME_EXISTS, {
-                      name: value,
-                      leadAgency: agency_code,
-                      excludeCaseIdentifier: undefined,
-                    });
-                    if (result.checkCaseNameExists) {
-                      return "This Case ID is already in use for this agency. Please choose a different Case ID.";
-                    }
-                    return undefined;
-                  },
-                }}
-                render={(field) => (
-                  <div
-                    className="comp-details-input"
-                    style={{ width: "100%" }}
-                  >
-                    <CompInput
-                      id="display-name"
-                      divid="display-name-value"
-                      type="input"
-                      inputClass="comp-form-control"
-                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      maxLength={120}
-                      onChange={(evt: any) => field.handleChange(evt.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter Case ID"
-                    />
-                  </div>
-                )}
-              />
               <FormField
                 form={form}
                 name="description"

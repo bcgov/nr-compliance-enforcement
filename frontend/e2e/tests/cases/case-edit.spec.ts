@@ -32,9 +32,6 @@ test.describe("Case Edit Form", () => {
     await expect(editButton).toBeVisible({ timeout: 10000 });
     await editButton.click();
     await waitForSpinner(page);
-
-    const caseIdInput = page.locator("#display-name");
-    await expect(caseIdInput).not.toHaveValue("", { timeout: 10000 });
   });
 
   test("it displays the edit case form", async ({ page }) => {
@@ -51,11 +48,6 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it pre-fills form with existing case data", async ({ page }) => {
-    // Case ID should be filled
-    const caseIdInput = page.locator("#display-name");
-    const caseIdValue = await caseIdInput.inputValue();
-    expect(caseIdValue).toBeTruthy();
-
     // Description field should be visible
     const descriptionInput = page.locator("#description");
     await expect(descriptionInput).toBeVisible();
@@ -72,15 +64,6 @@ test.describe("Case Edit Form", () => {
 
     await expect(cancelButton).toBeVisible();
     await expect(saveButton).toBeVisible();
-  });
-
-  test("it allows editing Case ID", async ({ page }) => {
-    const caseIdInput = page.locator("#display-name");
-
-    await caseIdInput.clear();
-    await caseIdInput.fill("MODIFIED-CASE-ID");
-
-    await expect(caseIdInput).toHaveValue("MODIFIED-CASE-ID");
   });
 
   test("it allows editing case status", async ({ page }) => {
@@ -134,9 +117,9 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it shows validation error when clearing required fields", async ({ page }) => {
-    // Clear Case ID and click save
-    const caseIdInput = page.locator("#display-name");
-    await caseIdInput.clear();
+    // Clear description and click save
+    const descriptionInput = page.locator("#description");
+    await descriptionInput.clear();
     await page.locator("#details-screen-save-button-top").click();
 
     // Should show validation error
