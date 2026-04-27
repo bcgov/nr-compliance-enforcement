@@ -8,6 +8,12 @@ export function withPoolParams(url: string, limit = 20, timeout = 20): string {
     if (!u.searchParams.has("pool_timeout")) {
       u.searchParams.set("pool_timeout", String(timeout));
     }
+    // Disables prepared statements so the client works
+    // with PgBouncer's transaction-pooling mode.
+    // Used by Prisma only. Safe for local dev.
+    if (!u.searchParams.has("pgbouncer")) {
+      u.searchParams.set("pgbouncer", "true");
+    }
     return u.toString();
   } catch {
     return url;
