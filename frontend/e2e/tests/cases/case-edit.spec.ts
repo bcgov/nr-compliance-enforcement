@@ -95,8 +95,17 @@ test.describe("Case Edit Form", () => {
   */
 
   test("it navigates back on cancel without saving", async ({ page }) => {
-    const caseIdInput = page.locator("#display-name");
-    await caseIdInput.fill("UNSAVED-CASE-ID");
+    // Change status to enable cancel modal
+    const statusSelect = page.locator("#case-status-select");
+    await expect(statusSelect).toBeVisible({ timeout: 10000 });
+    await statusSelect.click();
+
+    // Get current status and toggle it
+    const currentStatus = await statusSelect.textContent();
+    const newStatus = currentStatus?.includes("Open") ? "Closed" : "Open";
+    const statusOption = page.locator(".comp-select__option", { hasText: newStatus });
+    await expect(statusOption).toBeVisible({ timeout: 5000 });
+    await statusOption.click();
 
     // Click cancel
     await page.locator("#details-screen-cancel-edit-button-top").click();
@@ -120,8 +129,8 @@ test.describe("Case Edit Form", () => {
 
   test("it shows validation error when clearing required fields", async ({ page }) => {
     // Clear description and click save
-    const descriptionInput = page.locator("#description");
-    await descriptionInput.clear();
+    const statusInput = page.locator("#case-status-select .comp-select__clear-indicator");
+    await statusInput.click({ force: true });
     await page.locator("#details-screen-save-button-top").click();
 
     // Should show validation error
