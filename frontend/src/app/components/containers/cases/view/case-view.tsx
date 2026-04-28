@@ -21,6 +21,8 @@ import {
   CaseHistoryTab,
   CaseMapTab,
 } from "./components";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -164,55 +166,58 @@ export const CaseView: FC = () => {
   };
 
   const renderTabContent = () => {
-    switch (currentTab) {
-      case "records":
-        return <CaseRecordsTab />;
-      case "history":
-        return <CaseHistoryTab caseIdentifier={id} />;
-      case "map":
-        return <CaseMapTab />;
-      default:
-        return (
-          <div className="container-fluid px-5 py-3">
-            <div className="row mb-2">
-              <div className="comp-details-section-header">
-                <div>
-                  <h5 className="fw-bold">Case description</h5>
-                  <p>{caseData?.description}</p>
-                </div>
-                <div className="comp-details-section-header-actions align-self-center text-nowrap">
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    id="details-screen-edit-button"
-                    onClick={editButtonClick}
-                  >
-                    {" "}
-                    <i className="bi bi-pencil" /> Edit case
-                  </Button>
-                </div>
-              </div>
-            </div>
+    if (currentTab === "history") {
+      return <CaseHistoryTab caseIdentifier={id} />;
+    }
+    if (currentTab === "records") {
+      return <CaseRecordsTab />;
+    }
+    if (currentTab === "map") {
+      return <CaseMapTab />;
+    }
 
-            <div className="row g-3">
-              <ComplaintColumn
-                complaints={linkedComplaints}
-                caseName={caseData?.name ?? undefined}
-                caseIdentifier={id}
-              />
-              <InspectionColumn
-                inspections={inspectionsData?.getInspections}
-                isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
-              />
-              <InvestigationColumn
-                investigations={investigationsData?.getInvestigations}
-                isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
-                disableBorder={true}
-              />
+    return (
+      <div className="container-fluid px-5 py-3">
+        <div className="row mb-2">
+          <div className="comp-details-section-header">
+            <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
+              <div>
+                <h5 className="fw-bold">Case description</h5>
+                <p>{caseData?.description}</p>
+              </div>
+            </FeatureFlag>
+            <div className="comp-details-section-header-actions align-self-center text-nowrap ms-auto">
+              <Button
+                variant="outline-primary"
+                size="sm"
+                id="details-screen-edit-button"
+                onClick={editButtonClick}
+              >
+                {" "}
+                <i className="bi bi-pencil" /> Edit case
+              </Button>
             </div>
           </div>
-        );
-    }
+        </div>
+
+        <div className="row g-3">
+          <ComplaintColumn
+            complaints={linkedComplaints}
+            caseName={caseData?.name ?? undefined}
+            caseIdentifier={id}
+          />
+          <InspectionColumn
+            inspections={inspectionsData?.getInspections}
+            isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
+          />
+          <InvestigationColumn
+            investigations={investigationsData?.getInvestigations}
+            isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
+            disableBorder={true}
+          />
+        </div>
+      </div>
+    );
   };
 
   if (isLoading) {

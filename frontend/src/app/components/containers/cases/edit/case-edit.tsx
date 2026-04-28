@@ -10,11 +10,12 @@ import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { openModal, appUserGuid } from "@store/reducers/app";
+import { openModal, appUserGuid, isFeatureActive } from "@store/reducers/app";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CaseFileCreateInput, CaseFileUpdateInput } from "@/generated/graphql";
@@ -107,6 +108,7 @@ const CaseEdit: FC = () => {
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
+  const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
 
   const { data: caseData, isLoading } = useGraphQLQuery(GET_CASE_FILE, {
     queryKey: ["caseFile", id],
@@ -166,8 +168,8 @@ const CaseEdit: FC = () => {
         const updateInput: CaseFileUpdateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
-          description: value.description,
           name: value.name,
+          ...(showLegacy && { description: value.description }),
         };
 
         updateCaseMutation.mutate({
@@ -178,9 +180,9 @@ const CaseEdit: FC = () => {
         const createInput: CaseFileCreateInput = {
           caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
-          description: value.description,
           name: value.name,
           createdByAppUserGuid: currentAppUserGuid || "",
+          ...(showLegacy && { description: value.description }),
         };
 
         createCaseMutation.mutate({ input: createInput });
@@ -331,26 +333,27 @@ const CaseEdit: FC = () => {
               )}
             />
 
-            <FormField
-              form={form}
-              name="description"
-              label="Case description"
-              required
-              validators={{ onChange: z.string().min(1, "Description is required") }}
-              render={(field) => (
-                <ValidationTextArea
-                  id="description"
-                  className="comp-form-control comp-details-input"
-                  rows={4}
-                  defaultValue={field.state.value}
-                  onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter case description..."
-                  maxLength={4000}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
-                  disabled={isDisabled}
-                />
-              )}
-            />
+            {showLegacy && (
+              <FormField
+                form={form}
+                name="description"
+                label="Case description"
+                validators={{ onChange: z.string().max(4000, "Description must be 4000 characters or less") }}
+                render={(field) => (
+                  <ValidationTextArea
+                    id="description"
+                    className="comp-form-control comp-details-input"
+                    rows={4}
+                    defaultValue={field.state.value}
+                    onChange={(value: string) => field.handleChange(value)}
+                    placeholderText="Enter case description..."
+                    maxLength={4000}
+                    errMsg={field.state.meta.errors?.[0]?.message || ""}
+                    disabled={isDisabled}
+                  />
+                )}
+              />
+            )}
           </fieldset>
         </form>
       </section>
