@@ -71,8 +71,6 @@ test.describe("Case Create Form", () => {
   });
 
   test("it creates a case successfully", async ({ page }) => {
-    const uniqueId = `TEST-CASE-${Date.now()}`;
-
     // Case description hidden for MVP
     // await page.locator("#description").fill("This is a test case");
 
