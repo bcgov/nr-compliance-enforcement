@@ -45,8 +45,6 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
       context.getClass(),
     ]);
 
-    this.logger.debug(`Guarded Roles: ${requiredRoles}`);
-
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
@@ -77,8 +75,6 @@ export class JwtRoleGuard extends AuthGuard("jwt") implements CanActivate {
     } else {
       this.logger.debug(`Endpoint ${request.originalUrl} is properly guarded.`);
     }
-
-    this.logger.debug(`User Roles: ${userRoles}`);
 
     // does the user have a required role?
     return requiredRoles.some((role) => userRoles?.includes(role));

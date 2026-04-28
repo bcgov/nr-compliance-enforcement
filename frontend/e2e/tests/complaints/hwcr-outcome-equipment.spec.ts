@@ -82,7 +82,7 @@ test.describe("HWCR Outcome Equipment", () => {
     await navigateToDetailsScreen(COMPLAINT_TYPES.HWCR, "23-032456", true, page);
     await validateComplaint(page, "23-032456", "Racoon");
 
-    const $equipment = await page.locator(".comp-outcome-equipment");
+    const $equipment = page.locator(".comp-outcome-equipment");
 
     await page.locator("#equipment-edit-button").click();
 
@@ -106,9 +106,11 @@ test.describe("HWCR Outcome Equipment", () => {
     await page.locator(".modal-footer > .btn-primary").click();
 
     //validate the toast
-    page.locator(".Toastify__toast-body", {
-      hasText: "Equipment has been deleted",
-    });
+    await expect(
+      page.locator(".Toastify__toast-body", {
+        hasText: "Equipment has been deleted",
+      }),
+    ).toBeVisible();
 
     await expect($equipment.locator("#outcome-report-add-equipment")).toBeVisible();
   });

@@ -11,8 +11,8 @@ async function enterReferenceNumber(page, number: string, shouldSave: boolean) {
   await page.locator("#external-file-reference-number-input").pressSequentially(number, { delay: 0 });
   if (shouldSave) {
     await page.locator("#external-file-reference-save-button").click();
+    await expect(page.locator("#external-file-reference-delete-button")).toBeVisible();
   }
-  await page.locator("#external-file-reference-delete-button");
 }
 async function navigateToComplaint(page: Page, type) {
   if (COMPLAINT_TYPES.HWCR === type) {

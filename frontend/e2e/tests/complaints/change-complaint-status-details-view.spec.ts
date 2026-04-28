@@ -42,8 +42,8 @@ async function enterReferenceNumber(page, number: string, shouldSave: boolean) {
   await page.locator("#external-file-reference-number-input").pressSequentially(number, { delay: 0 });
   if (shouldSave) {
     await page.locator("#external-file-reference-save-button").click();
+    await expect(page.locator("#external-file-reference-delete-button")).toBeVisible();
   }
-  await page.locator("#external-file-reference-delete-button");
 }
 
 async function deleteReferenceNumber(page: Page) {
@@ -146,9 +146,6 @@ test.describe("Complaint Change Status spec - Details View", () => {
 
     //validate error message
     await expect(page.locator("#outcome-assessment").locator(".section-error-message")).toBeVisible();
-    await expect(async () => {
-      const $error = await page.locator(".section-error-message");
-      expect($error).toHaveText("Complete section before closing the complaint.");
-    }).toPass();
+    await expect(page.locator(".section-error-message")).toHaveText("Complete section before closing the complaint.");
   });
 });
