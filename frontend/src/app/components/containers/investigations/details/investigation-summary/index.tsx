@@ -177,7 +177,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               onClick={editButtonClick}
             >
               <i className="bi bi-pencil"></i>
-              <span>Edit Investigation</span>
+              <span>Edit investigation</span>
             </Button>
           </div>
 
