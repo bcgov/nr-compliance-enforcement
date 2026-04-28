@@ -63,13 +63,21 @@ const SEARCH_LEGISLATION = gql`
 const GET_LEGISLATION = gql`
   query Legislation($legislationGuid: String!, $includeAncestors: Boolean) {
     legislation(legislationGuid: $legislationGuid, includeAncestors: $includeAncestors) {
+      legislationGuid
       legislationTypeCode
       fullCitation
+      citation
+      sectionTitle
       alternateText
       legislationText
       ancestors {
         legislationTypeCode
         legislationGuid
+        fullCitation
+        citation
+        sectionTitle
+        alternateText
+        legislationText
       }
     }
   }

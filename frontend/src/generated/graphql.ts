@@ -898,6 +898,20 @@ export type Exhibit = {
   updatedDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type ExhibitFilters = {
+  investigationGuid: Scalars['String']['input'];
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+  taskFilter?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ExhibitResult = {
+  __typename?: 'ExhibitResult';
+  items: Array<Exhibit>;
+  pageInfo: PageInfo;
+};
+
 export type GeoOrgUnitTypeCode = {
   __typename?: 'GeoOrgUnitTypeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1064,6 +1078,7 @@ export type InvestigationBusiness = {
 };
 
 export type InvestigationFilters = {
+  community?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
@@ -1451,6 +1466,7 @@ export type MutationremoveCaseActivityArgs = {
 export type MutationremoveContraventionArgs = {
   contraventionGuid: Scalars['String']['input'];
   investigationGuid: Scalars['String']['input'];
+  partyGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -1902,6 +1918,7 @@ export type Query = {
   searchCaseFiles: CaseFileResult;
   searchCosGeoOrgUnitsByNames: Array<Maybe<CosGeoOrgUnit>>;
   searchEvents: EventResult;
+  searchExhibitsByInvestigation: ExhibitResult;
   searchInspections: InspectionResult;
   searchInspectionsMap: SearchMapResults;
   searchInvestigations: InvestigationResult;
@@ -2210,6 +2227,13 @@ export type QuerysearchCosGeoOrgUnitsByNamesArgs = {
 
 export type QuerysearchEventsArgs = {
   filters?: InputMaybe<EventFilters>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  pageSize?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerysearchExhibitsByInvestigationArgs = {
+  filters: ExhibitFilters;
   page?: InputMaybe<Scalars['Int']['input']>;
   pageSize?: InputMaybe<Scalars['Int']['input']>;
 };

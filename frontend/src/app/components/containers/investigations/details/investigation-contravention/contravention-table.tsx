@@ -14,6 +14,7 @@ interface ContraventionTableProps {
   contraventions: Contravention[];
   investigationGuid: string;
   partyGuid: string | null;
+  onView: (contraventionId: string, partyGuid: string | null) => void;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
 }
 
@@ -36,6 +37,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   contraventions,
   investigationGuid,
   partyGuid,
+  onView,
   onEdit,
 }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
@@ -47,7 +49,17 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "",
       isSortable: false,
       getValue: (c) => c.legislationIdentifierRef ?? "",
-      renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,
+      renderCell: (c) => (
+        <button
+          type="button"
+          className="btn btn-link p-0 text-start"
+          onClick={() => {
+            onView(c.contraventionIdentifier, partyGuid);
+          }}
+        >
+          <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
+        </button>
+      ),
     },
     {
       label: "Date",
