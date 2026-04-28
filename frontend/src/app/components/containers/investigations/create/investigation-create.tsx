@@ -124,7 +124,6 @@ const InvestigationCreate: FC = () => {
         locationAddress: inv.locationAddress || "",
         locationDescription: inv.locationDescription || "",
         locationGeometry: inv.locationGeometry || null,
-        name: inv.name || "",
         supervisor: inv.supervisorGuid || "",
         primaryInvestigator: inv.primaryInvestigatorGuid || "",
         fileCoordinator: inv.fileCoordinatorGuid || "",
@@ -140,7 +139,6 @@ const InvestigationCreate: FC = () => {
       locationAddress: "",
       locationDescription: "",
       locationGeometry: null,
-      name: "",
       supervisor: "",
       primaryInvestigator: "",
       fileCoordinator: "",
@@ -161,7 +159,6 @@ const InvestigationCreate: FC = () => {
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
           locationGeometry: value.locationGeometry,
-          name: value.name,
           supervisorGuid: value.supervisor,
           primaryInvestigatorGuid: value.primaryInvestigator,
           fileCoordinatorGuid: value.fileCoordinator,
@@ -179,7 +176,6 @@ const InvestigationCreate: FC = () => {
           complaintIdentifier: complaintId ?? undefined,
           leadAgency: value.leadAgency,
           description: value.description,
-          name: value.name,
           investigationStatus: value.investigationStatus,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
@@ -267,7 +263,6 @@ const InvestigationCreate: FC = () => {
           <h2>Investigation details</h2>
         </div>
         <InvestigationForm
-          id={investigationGuid}
           form={form}
           isDisabled={isDisabled}
           discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? undefined}

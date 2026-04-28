@@ -9,10 +9,8 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { CaseActivityCreateInput, CaseFileCreateInput } from "@/generated/graphql";
 import { CompRadioGroup } from "@/app/components/common/comp-radiogroup";
-import { CompInput } from "@/app/components/common/comp-input";
 import { FormField } from "@/app/components/common/form-field";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
 import { Link } from "react-router-dom";
@@ -22,12 +20,6 @@ const createOrAddOptions: Option[] = [
   { label: "Create a new case", value: "create" },
   { label: "Add to an existing case", value: "add" },
 ];
-
-const CHECK_CASE_NAME_EXISTS = gql`
-  query CheckCaseNameExists($name: String!, $leadAgency: String!, $excludeCaseIdentifier: String) {
-    checkCaseNameExists(name: $name, leadAgency: $leadAgency, excludeCaseIdentifier: $excludeCaseIdentifier)
-  }
-`;
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -91,7 +83,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   const defaultValues = useMemo(
     () => ({
-      name: "",
       description: "",
     }),
     [],
@@ -106,7 +97,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           leadAgency: agency_code,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
-          name: value.name,
+          description: value.description,
           createdByAppUserGuid: currentAppUserGuid || "",
           ...(showLegacy && { description: value.description }),
         };
@@ -246,46 +237,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
                 form.handleSubmit();
               }}
             >
-              <FormField
-                form={form}
-                name="name"
-                label="Case ID *"
-                validators={{
-                  onChange: z.string().min(1, "Case ID is required").max(100, "Case ID must be 100 characters or less"),
-                  onChangeAsyncDebounceMs: 500,
-                  onChangeAsync: async ({ value }: { value: string }) => {
-                    if (!value || value.length < 1) return "Case ID is required";
-                    if (!agency_code) return undefined;
-                    const result: { checkCaseNameExists: boolean } = await GraphQLRequest(CHECK_CASE_NAME_EXISTS, {
-                      name: value,
-                      leadAgency: agency_code,
-                      excludeCaseIdentifier: undefined,
-                    });
-                    if (result.checkCaseNameExists) {
-                      return "This Case ID is already in use for this agency. Please choose a different Case ID.";
-                    }
-                    return undefined;
-                  },
-                }}
-                render={(field) => (
-                  <div
-                    className="comp-details-input"
-                    style={{ width: "100%" }}
-                  >
-                    <CompInput
-                      id="display-name"
-                      divid="display-name-value"
-                      type="input"
-                      inputClass="comp-form-control"
-                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                      maxLength={120}
-                      onChange={(evt: any) => field.handleChange(evt.target.value)}
-                      value={field.state.value}
-                      placeholder="Enter Case ID"
-                    />
-                  </div>
-                )}
-              />
               {showLegacy && (
                 <FormField
                   form={form}

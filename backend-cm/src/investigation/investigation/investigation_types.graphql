@@ -33,7 +33,6 @@ input CreateInvestigationInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
-  name: String!
   createdByAppUserGuid: String!
   supervisorGuid: String
   primaryInvestigatorGuid: String
@@ -50,7 +49,6 @@ input UpdateInvestigationInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
-  name: String
   supervisorGuid: String
   primaryInvestigatorGuid: String
   fileCoordinatorGuid: String
