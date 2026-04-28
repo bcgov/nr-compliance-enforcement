@@ -61,7 +61,7 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
               variant="outline-light"
               onClick={saveButtonClick}
             >
-              Save Changes
+              Save changes
             </Button>
           </div>
         </div>

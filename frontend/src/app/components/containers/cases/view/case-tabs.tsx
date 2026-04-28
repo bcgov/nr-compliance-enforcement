@@ -1,6 +1,9 @@
 import { FC, useState, useEffect } from "react";
 import { Nav } from "react-bootstrap";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useAppSelector } from "@hooks/hooks";
+import { isFeatureActive } from "@store/reducers/app";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 
 const CASE_TAB_ITEMS = {
   summary: "Summary",
@@ -8,6 +11,8 @@ const CASE_TAB_ITEMS = {
   history: "Case History",
   map: "Map View",
 };
+
+const LEGACY_TAB_KEYS = new Set(["records", "map"]);
 
 type CaseParams = {
   id: string;
@@ -18,6 +23,7 @@ export const CaseTabs: FC = () => {
   const { id } = useParams<CaseParams>();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState<string>("summary");
+  const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
 
   // Determine active tab based on current URL
   useEffect(() => {
@@ -39,22 +45,24 @@ export const CaseTabs: FC = () => {
 
   return (
     <Nav className="nav nav-tabs case-nav-tabs px-4">
-      {Object.entries(CASE_TAB_ITEMS).map(([key, label]) => {
-        return (
-          <Nav.Item
-            className={`nav-item case-tab case-tab-${key === activeTab ? "active" : "inactive"}`}
-            key={`${key}-tab-item`}
-          >
-            <Nav.Link
-              className={`nav-link ${key === activeTab ? "active" : "inactive"}`}
-              id={key}
-              onClick={() => handleTabClick(key)}
+      {Object.entries(CASE_TAB_ITEMS)
+        .filter(([key]) => showLegacy || !LEGACY_TAB_KEYS.has(key))
+        .map(([key, label]) => {
+          return (
+            <Nav.Item
+              className={`nav-item case-tab case-tab-${key === activeTab ? "active" : "inactive"}`}
+              key={`${key}-tab-item`}
             >
-              {label}
-            </Nav.Link>
-          </Nav.Item>
-        );
-      })}
+              <Nav.Link
+                className={`nav-link ${key === activeTab ? "active" : "inactive"}`}
+                id={key}
+                onClick={() => handleTabClick(key)}
+              >
+                {label}
+              </Nav.Link>
+            </Nav.Item>
+          );
+        })}
     </Nav>
   );
 };
