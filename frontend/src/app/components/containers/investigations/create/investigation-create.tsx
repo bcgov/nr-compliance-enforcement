@@ -75,6 +75,7 @@ const InvestigationCreate: FC = () => {
   }>();
   const [searchParams] = useSearchParams();
   const complaintId = searchParams.get("complaintId");
+  const complaintType = searchParams.get("complaintType");
 
   const isEditMode = Boolean(investigationGuid);
 
@@ -218,6 +219,8 @@ const InvestigationCreate: FC = () => {
       navigate(`/investigation/${investigationGuid}`);
     } else if (caseIdentifier) {
       navigate(`/case/${caseIdentifier}`);
+    } else if (complaintId) {
+      navigate(`/complaint/${complaintType}/${complaintId}`);
     } else {
       navigate("/investigations");
     }

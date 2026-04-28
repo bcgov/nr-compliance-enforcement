@@ -314,7 +314,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <Dropdown.Item
           as="button"
           id="create-add-case-button"
-          onClick={() => navigate(`/investigation/create?complaintId=${id}`)}
+          onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
           disabled={complaintAgency !== userAgency}
         >
           <i className="bi bi-folder-plus"></i>
