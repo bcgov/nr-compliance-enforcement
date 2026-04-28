@@ -68,9 +68,6 @@ export class CreateInspectionInput {
   @Field(() => String)
   inspectionStatus: string;
 
-  @Field(() => String)
-  name: string;
-
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
   locationGeometry?: Point;
@@ -97,10 +94,6 @@ export class UpdateInspectionInput {
 
   @Field(() => String)
   inspectionStatus: string;
-
-  @Field(() => String, { nullable: true })
-  @IsOptional()
-  name?: string;
 
   @Field(() => PointScalar, { nullable: true })
   @IsOptional()
