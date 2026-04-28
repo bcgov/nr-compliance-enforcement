@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
@@ -31,7 +31,6 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
-import { useNavigate } from "react-router-dom";
 
 interface ComplaintHeaderProps {
   id: string;
