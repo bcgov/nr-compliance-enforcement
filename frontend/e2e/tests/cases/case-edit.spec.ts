@@ -32,9 +32,6 @@ test.describe("Case Edit Form", () => {
     await expect(editButton).toBeVisible({ timeout: 10000 });
     await editButton.click();
     await waitForSpinner(page);
-
-    const caseIdInput = page.locator("#display-name");
-    await expect(caseIdInput).not.toHaveValue("", { timeout: 10000 });
   });
 
   test("it displays the edit case form", async ({ page }) => {
@@ -51,11 +48,6 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it pre-fills form with existing case data", async ({ page }) => {
-    // Case ID should be filled
-    const caseIdInput = page.locator("#display-name");
-    const caseIdValue = await caseIdInput.inputValue();
-    expect(caseIdValue).toBeTruthy();
-
     // Case description hidden for MVP
     await expect(page.locator("#description")).not.toBeVisible();
 
@@ -71,15 +63,6 @@ test.describe("Case Edit Form", () => {
 
     await expect(cancelButton).toBeVisible();
     await expect(saveButton).toBeVisible();
-  });
-
-  test("it allows editing Case ID", async ({ page }) => {
-    const caseIdInput = page.locator("#display-name");
-
-    await caseIdInput.clear();
-    await caseIdInput.fill("MODIFIED-CASE-ID");
-
-    await expect(caseIdInput).toHaveValue("MODIFIED-CASE-ID");
   });
 
   test("it allows editing case status", async ({ page }) => {
@@ -112,8 +95,17 @@ test.describe("Case Edit Form", () => {
   */
 
   test("it navigates back on cancel without saving", async ({ page }) => {
-    const caseIdInput = page.locator("#display-name");
-    await caseIdInput.fill("UNSAVED-CASE-ID");
+    // Change status to enable cancel modal
+    const statusSelect = page.locator("#case-status-select");
+    await expect(statusSelect).toBeVisible({ timeout: 10000 });
+    await statusSelect.click();
+
+    // Get current status and toggle it
+    const currentStatus = await statusSelect.textContent();
+    const newStatus = currentStatus?.includes("Open") ? "Closed" : "Open";
+    const statusOption = page.locator(".comp-select__option", { hasText: newStatus });
+    await expect(statusOption).toBeVisible({ timeout: 5000 });
+    await statusOption.click();
 
     // Click cancel
     await page.locator("#details-screen-cancel-edit-button-top").click();
@@ -136,9 +128,9 @@ test.describe("Case Edit Form", () => {
   });
 
   test("it shows validation error when clearing required fields", async ({ page }) => {
-    // Clear Case ID and click save
-    const caseIdInput = page.locator("#display-name");
-    await caseIdInput.clear();
+    // Clear description and click save
+    const statusInput = page.locator("#case-status-select .comp-select__clear-indicator");
+    await statusInput.click({ force: true });
     await page.locator("#details-screen-save-button-top").click();
 
     // Should show validation error
