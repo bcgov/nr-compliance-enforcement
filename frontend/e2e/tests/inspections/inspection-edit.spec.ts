@@ -34,10 +34,6 @@ test.describe("Inspection Edit", () => {
   test("it loads existing data", async ({ page }) => {
     await expect(page).toHaveURL(/\/inspection\/[^/]+\/edit$/);
 
-    // Verify form fields are pre-populated
-    const inspectionIdInput = page.locator("#display-name");
-    await expect(inspectionIdInput).not.toHaveValue("", { timeout: 10000 });
-
     // Verify status select has a value
     const statusSelect = page.locator("#inspection-status-select");
     await expect(statusSelect).toBeVisible();
@@ -96,7 +92,7 @@ test.describe("Inspection Edit", () => {
 
   test("it validates on edit", async ({ page }) => {
     // Clear a required field
-    const inspectionIdInput = page.locator("#display-name");
+    const inspectionIdInput = page.locator("#description");
     await inspectionIdInput.clear();
 
     // Try to save
@@ -105,7 +101,7 @@ test.describe("Inspection Edit", () => {
 
     // Check for validation errors
     const errorMessages = page.locator(".error-message, .invalid-feedback, .text-danger");
-    await expect(errorMessages.first()).toBeVisible({ timeout: 10000 });
+    await expect(errorMessages.locator("visible=true")).not.toHaveCount(0, { timeout: 10000 });
   });
 
   test("it cancels with confirmation", async ({ page }) => {
@@ -157,10 +153,6 @@ test.describe("Inspection Edit", () => {
     await editButton.click();
     await waitForSpinner(page);
 
-    // Verify inspection ID is preserved
-    const inspectionIdInput = page.locator("#display-name");
-    await expect(inspectionIdInput).toHaveValue(inspectionId || "");
-
     // Save without changes
     const saveButton = page.locator("button", { hasText: /Save|Update/i }).first();
     await saveButton.click();
@@ -168,32 +160,5 @@ test.describe("Inspection Edit", () => {
 
     // Verify ID is still correct after save
     await expect(page.locator("h1")).toContainText(inspectionId || "");
-  });
-
-  test("it validates ID uniqueness on edit", async ({ page }) => {
-    await page.goto("/inspections");
-    await waitForSpinner(page);
-
-    // Click on second inspection (not INSPECTION1)
-    const rows = page.locator("#inspection-list tbody tr");
-    await rows.nth(1).locator("a.comp-cell-link").first().click();
-    await waitForSpinner(page);
-
-    // Wait for inspection data to load
-    const header = page.locator("h1.comp-box-complaint-id");
-    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
-
-    // Navigate to edit
-    await page.locator("#details-screen-edit-button").click();
-    await waitForSpinner(page);
-
-    // Try to change ID to INSPECTION1
-    const inspectionIdInput = page.locator("#display-name");
-    await inspectionIdInput.clear();
-    await inspectionIdInput.fill("INSPECTION1");
-
-    // Should show duplicate error
-    const errorMessage = page.locator("text=already in use");
-    await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 });

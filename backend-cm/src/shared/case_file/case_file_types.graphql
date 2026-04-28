@@ -29,7 +29,6 @@ input CaseFileCreateInput {
   leadAgency: String!
   caseStatus: String!
   description: String
-  name: String!
   activityIdentifier: String
   activityType: String
   createdByAppUserGuid: String!
