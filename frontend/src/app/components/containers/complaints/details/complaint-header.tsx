@@ -31,6 +31,7 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useNavigate } from "react-router-dom";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -76,6 +77,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   let referrals = relatedData.referrals ?? [];
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
@@ -306,6 +308,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         >
           <i className="bi bi-folder-plus"></i>
           <span>Create/add case</span>
+        </Dropdown.Item>
+      )}
+      {showCreateAddCase && (
+        <Dropdown.Item
+          as="button"
+          id="create-add-case-button"
+          onClick={() => navigate(`/investigation/create?complaintId=${id}`)}
+          disabled={complaintAgency !== userAgency}
+        >
+          <i className="bi bi-folder-plus"></i>
+          <span>Create investigation</span>
         </Dropdown.Item>
       )}
       {showComplaintReferrals && (

@@ -26,6 +26,7 @@ type Investigation {
 
 input CreateInvestigationInput {
   caseIdentifier: String
+  complaintIdentifier: String
   leadAgency: String!
   description: String
   investigationStatus: String

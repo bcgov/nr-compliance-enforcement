@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { gql } from "graphql-request";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
@@ -73,6 +73,8 @@ const InvestigationCreate: FC = () => {
     caseIdentifier?: string;
     investigationGuid?: string;
   }>();
+  const [searchParams] = useSearchParams();
+  const complaintId = searchParams.get("complaintId");
 
   const isEditMode = Boolean(investigationGuid);
 
@@ -173,6 +175,7 @@ const InvestigationCreate: FC = () => {
       } else {
         const createInput: CreateInvestigationInput = {
           caseIdentifier: caseIdentifier ?? undefined,
+          complaintIdentifier: complaintId ?? undefined,
           leadAgency: value.leadAgency,
           description: value.description,
           name: value.name,
