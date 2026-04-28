@@ -1,18 +1,8 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CaseHeader } from "./case-header";
-import { useGraphQLQuery } from "@graphql/hooks";
-import { gql } from "graphql-request";
-import { CaseFile, Inspection, Investigation, CaseActivity } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
-import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import {
-  setComplaint,
-  getCaseFileComplaints,
-  selectCaseFileComplaints,
-  setCaseFileComplaints,
-} from "@/app/store/reducers/complaints";
-import { Complaint } from "@/app/types/app/complaints/complaint";
+import { useCaseActivities } from "@/app/hooks/use-case-activities";
 import {
   ComplaintColumn,
   InvestigationColumn,
@@ -24,142 +14,26 @@ import {
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
-const GET_CASE_FILE = gql`
-  query GetCaseFile($caseIdentifier: String!) {
-    caseFile(caseIdentifier: $caseIdentifier) {
-      __typename
-      caseIdentifier
-      name
-      openedTimestamp
-      description
-      createdByAppUserGuid
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency {
-        agencyCode
-        shortDescription
-        longDescription
-      }
-      activities {
-        activityIdentifier
-        activityType {
-          caseActivityTypeCode
-        }
-      }
-    }
-  }
-`;
-
-const GET_INVESTIGATIONS = gql`
-  query GetInvestigations($ids: [String]) {
-    getInvestigations(ids: $ids) {
-      __typename
-      investigationGuid
-      name
-      description
-      openedTimestamp
-      investigationStatus {
-        investigationStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-    }
-  }
-`;
-
-const GET_INSPECTIONS = gql`
-  query GetInspections($ids: [String]) {
-    getInspections(ids: $ids) {
-      __typename
-      inspectionGuid
-      name
-      description
-      openedTimestamp
-      inspectionStatus {
-        inspectionStatusCode
-        shortDescription
-        longDescription
-      }
-      leadAgency
-    }
-  }
-`;
-
 export type CaseParams = {
   id: string;
   tabKey?: string;
 };
 
 export const CaseView: FC = () => {
-  const dispatch = useAppDispatch();
   const { id = "", tabKey } = useParams<CaseParams>();
   const navigate = useNavigate();
 
   const currentTab = tabKey || "summary";
 
-  const { data, isLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
-    queryKey: ["caseFile", id],
-    variables: { caseIdentifier: id },
-    enabled: !!id,
-  });
-
-  const caseData = data?.caseFile;
-
-  const linkedComplaintIds = caseData?.activities
-    ?.filter((activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "COMP")
-    .map((item: CaseActivity | null | undefined) => {
-      return item?.activityIdentifier;
-    });
-
-  const linkedInvestigationIds = caseData?.activities
-    ?.filter((activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "INVSTGTN")
-    .map((item: CaseActivity | null | undefined) => {
-      return item?.activityIdentifier;
-    });
-
-  const linkedInspectionIds = caseData?.activities
-    ?.filter(
-      (activity: CaseActivity | null | undefined) => activity?.activityType?.caseActivityTypeCode === "INSPECTION",
-    )
-    .map((item: CaseActivity | null | undefined) => {
-      return item?.activityIdentifier;
-    });
-
-  useEffect(() => {
-    if (linkedComplaintIds && linkedComplaintIds.length > 0) {
-      dispatch(getCaseFileComplaints(linkedComplaintIds as string[]));
-    } else if (linkedComplaintIds?.length === 0) {
-      dispatch(setCaseFileComplaints([]));
-    }
-  }, [dispatch, caseData]);
-  const linkedComplaints = useAppSelector(selectCaseFileComplaints) ?? undefined;
-
-  const { data: investigationsData, isLoading: investigationsLoading } = useGraphQLQuery<{
-    getInvestigations: Investigation[];
-  }>(GET_INVESTIGATIONS, {
-    queryKey: ["getInvestigations", JSON.stringify(linkedInvestigationIds)],
-    variables: { ids: linkedInvestigationIds || [] },
-    enabled: !!caseData && !!linkedInvestigationIds && linkedInvestigationIds.length > 0,
-  });
-
-  const { data: inspectionsData, isLoading: inspectionsLoading } = useGraphQLQuery<{
-    getInspections: Inspection[];
-  }>(GET_INSPECTIONS, {
-    queryKey: ["getInspections", JSON.stringify(linkedInspectionIds)],
-    variables: { ids: linkedInspectionIds || [] },
-    enabled: !!caseData && !!linkedInspectionIds && linkedInspectionIds.length > 0,
-  });
-
-  useEffect(() => {
-    return () => {
-      dispatch(setComplaint(null));
-      dispatch(setCaseFileComplaints([]));
-    };
-  }, [dispatch]);
+  const {
+    caseData,
+    linkedComplaints,
+    investigations,
+    inspections,
+    isCaseFileLoading,
+    isInvestigationsLoading,
+    isInspectionsLoading,
+  } = useCaseActivities(id);
 
   const editButtonClick = () => {
     navigate(`/case/${id}/edit`);
@@ -201,26 +75,26 @@ export const CaseView: FC = () => {
         </div>
 
         <div className="row g-3">
-          <ComplaintColumn
-            complaints={linkedComplaints}
-            caseName={caseData?.name ?? undefined}
-            caseIdentifier={id}
-          />
-          <InspectionColumn
-            inspections={inspectionsData?.getInspections}
-            isLoading={inspectionsLoading && linkedInspectionIds && linkedInspectionIds.length > 0}
-          />
-          <InvestigationColumn
-            investigations={investigationsData?.getInvestigations}
-            isLoading={investigationsLoading && linkedInvestigationIds && linkedInvestigationIds.length > 0}
-            disableBorder={true}
-          />
+            <ComplaintColumn
+              complaints={linkedComplaints}
+              caseName={caseData?.name ?? undefined}
+              caseIdentifier={id}
+            />
+            <InspectionColumn
+              inspections={inspections}
+              isLoading={isInspectionsLoading}
+            />
+            <InvestigationColumn
+              investigations={investigations}
+              isLoading={isInvestigationsLoading}
+              disableBorder={true}
+            />
         </div>
       </div>
     );
   };
 
-  if (isLoading) {
+  if (isCaseFileLoading) {
     return (
       <div className="comp-complaint-details">
         <CaseHeader />
