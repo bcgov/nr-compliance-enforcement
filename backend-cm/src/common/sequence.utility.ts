@@ -2,8 +2,19 @@ import { InspectionPrismaService } from "../prisma/inspection/prisma.inspection.
 import { InvestigationPrismaService } from "../prisma/investigation/prisma.investigation.service";
 import { SharedPrismaService } from "../prisma/shared/prisma.shared.service";
 
+// Note that there is a small discrepency here for the parts of the province not in the
+// Pacific Timezone in that items created between midnight and 1am on January 1st will
+// still be given the previous years prefix and sequence numbering
+const getCurrentYear = (): number => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Vancouver",
+    year: "2-digit",
+  });
+  return Number(formatter.format(new Date()));
+};
+
 const formatIdentifier = (prefix: string, sequenceNumber: number): string => {
-  const yy = String(new Date().getFullYear()).slice(-2);
+  const yy = getCurrentYear();
   const paddedNumber = String(sequenceNumber).padStart(6, "0");
   return `${prefix}${yy}-${paddedNumber}`;
 };
