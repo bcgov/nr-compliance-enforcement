@@ -13,8 +13,9 @@ test.describe("Case Activities - Complaints Column", () => {
     await page.goto("/cases");
     await waitForSpinner(page);
 
+    // Wait for the case list to actually populate.
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
@@ -51,7 +52,7 @@ test.describe("Case Activities - Investigations Column", () => {
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
@@ -96,7 +97,7 @@ test.describe("Case Activities - Inspections Column", () => {
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
@@ -144,8 +145,7 @@ test.describe("Case Activities - Activity Cards", () => {
 
     // Look for CASE1 which has investigations
     const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
-
-    expect(await caseLink.count(), "CASE1 not found.").toBeGreaterThan(0);
+    await expect(caseLink.first()).toBeVisible({ timeout: 30000 });
 
     await caseLink.first().click();
     await waitForSpinner(page);
@@ -171,7 +171,7 @@ test.describe("Case Activities - Activity Cards", () => {
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
@@ -199,7 +199,7 @@ test.describe("Case Activities - Three Column Layout", () => {
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);
@@ -218,7 +218,7 @@ test.describe("Case Activities - Three Column Layout", () => {
     await waitForSpinner(page);
 
     const rows = page.locator("#case-list tbody tr");
-    expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
+    await expect(rows.first()).toBeVisible({ timeout: 30000 });
 
     await rows.first().locator("a.comp-cell-link").first().click();
     await waitForSpinner(page);

@@ -38,7 +38,7 @@ export async function navigateToDetailsScreen(
     await page.locator(`#${complaintType.toLowerCase()}-tab`).click();
     await expect(page.locator("#comp-zone-filter")).toBeVisible();
     await page.locator("#comp-zone-filter").click(); //clear zone filter so this complaint is in the list view
-    await expect(age.locator("#comp-zone-filter")).not.toBeVisible();
+    await expect(page.locator("#comp-zone-filter")).not.toBeVisible();
     await waitForSpinner(page);
     await expect(page.locator("#comp-status-filter")).toBeVisible();
     await page.locator("#comp-status-filter").click(); //clear status filter so this complaint is in the list view
@@ -208,7 +208,7 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
   let officerId = "prev-educ-outcome-officer";
   let datePickerId = "prev-educ-outcome-date";
   let saveButtonId = "#outcome-save-prev-and-educ-button";
-  const { section, actionRequired, checkboxes, justification, equipmentType, officer, date } = sectionParams;
+  const { section, actionRequired, checkboxes, justification, equipmentType, officer, date, toastText } = sectionParams;
 
   if (section === "ASSESSMENT") {
     officerId = "outcome-officer";
@@ -241,13 +241,18 @@ export async function fillInHWCSection(loc: Locator, page: Page, sectionParams: 
   //click Save Button
   const saveButton = page.locator(saveButtonId).first();
   await saveButton.click();
+
+  // Wait for the success toast right after the save click
+  if (toastText) {
+    await expect(page.locator(".Toastify__toast-body", { hasText: toastText })).toBeVisible();
+  }
 }
 
 export async function validateHWCSection(loc: Locator, page: Page, sectionParams: Partial<HWCSectionParams>) {
   //use the locator if provided
   const testSection = loc ?? page;
 
-  const { section, actionRequired, checkboxes, justification, equipmentType, officer, date, toastText } = sectionParams;
+  const { section, actionRequired, checkboxes, justification, equipmentType, officer, date } = sectionParams;
   let checkboxDiv = "#prev-educ-checkbox-div";
   let officerDiv = "#prev-educ-outcome-officer-div";
   let dateDiv = "#prev-educ-outcome-date-div";
@@ -259,11 +264,6 @@ export async function validateHWCSection(loc: Locator, page: Page, sectionParams
   } else if (section === "EQUIPMENT") {
     officerDiv = "#equipment-officer-set-div";
     dateDiv = "#equipment-date-set-div";
-  }
-
-  // Wait for the success toast as a signal that save completed
-  if (toastText) {
-    await expect(page.locator(".Toastify__toast-body", { hasText: toastText })).toBeVisible();
   }
 
   if (section === "ASSESSMENT" && actionRequired) {

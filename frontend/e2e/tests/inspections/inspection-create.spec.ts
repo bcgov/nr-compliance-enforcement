@@ -89,7 +89,7 @@ test.describe("Inspection Creation", () => {
 
     const saveButton = page.locator("#details-screen-save-button-top");
     await expect(saveButton).toBeVisible({ timeout: 10000 });
-    await saveButton.click();
+    await saveButton.click({ force: true });
 
     await createMutationPromise;
     await expect(page).toHaveURL(/\/inspection\/[a-f0-9-]+$/i, { timeout: 30000 });

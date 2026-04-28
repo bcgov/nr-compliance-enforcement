@@ -19,10 +19,11 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
   test.describe.configure({ mode: "serial" }); //Ensure tests run in order
 
+  // Use complaint 23-000083 rather than 23-000076 so that parallel tests don't interact.
   const originalCallDetails = {
     description:
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves",
-    location: "644 Pine Street",
+    location: "1990 Oak Bay Avenue",
     locationDescription: "",
     incidentDateDay: "11",
     attractants: ["Garbage", "Freezer", "Compost"],
@@ -30,15 +31,15 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
     attratantsIndex: [7, 6, 4],
     xCoord: "",
     yCoord: "",
-    community: "Kamloops",
-    office: "Kamloops",
-    zone: "Thompson Nicola",
-    region: "Thompson Cariboo",
+    community: "Oak Bay",
+    office: "Victoria",
+    zone: "South Island",
+    region: "West Coast",
     communityIndex: 799,
-    communityCode: "KAMLOOPS",
-    officeCode: "KMLPS",
-    zoneCode: "TMPSNNCLA",
-    regionCode: "TMPSNCRBO",
+    communityCode: "OAKBAY",
+    officeCode: "VICTRA",
+    zoneCode: "SISL",
+    regionCode: "WSTCST",
     methodComplaintReceived: "Observed in field",
     natureOfComplaint: "Aggressive - present/recent",
     natureOfComplaintIndex: 1,
@@ -68,7 +69,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
   const editCallDetails = {
     description:
       "Calling to report a black bear getting into the garbage on a regular basis. Also wanted to confirm that residents of the trailer home park could call to report sightings themselves ---- testing",
-    location: "644 Pine Street ---- testing",
+    location: "1990 Oak Bay Avenue ---- testing",
     locationDescription: " ---- testing",
     incidentDateDay: "01",
     attractants: ["Livestock", "BBQ", "Beehive"],
@@ -113,7 +114,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
 
   test("Navigate to the Complaint Edit page & change data, save, navigate to read-only", async function ({ page }) {
     //start edit
-    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076", true, page);
+    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000083", true, page);
     await page.locator("#caller-name-id").click();
     await page.locator("#caller-name-id").clear();
     await page.locator("#caller-name-id").fill(editCallerInformation.name);
@@ -228,7 +229,7 @@ test.describe("Complaint Edit Page spec - Edit View", () => {
 
   test("Puts everything back to the original details", async function ({ page }) {
     //start reverting changes
-    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000076", true, page);
+    await navigateToEditScreen(COMPLAINT_TYPES.HWCR, "23-000083", true, page);
     await page.locator("#caller-name-id").click();
     await page.locator("#caller-name-id").clear();
     await page.locator("#caller-name-id").fill(originalCallerInformation.name);
