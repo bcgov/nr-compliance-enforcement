@@ -10,6 +10,7 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
+import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -161,6 +162,12 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <hr className="mt-4 mb-4 border-2"></hr>
       <div className="comp-details-view">
         <div className="comp-details-content">
+          {caseGuid && (
+            <CaseActivities
+              caseGuid={caseGuid}
+              caseName={caseName}
+            />
+          )}
           <div className="d-flex align-items-center justify-content-between mb-3">
             <h2 className="mb-0">Investigation summary</h2>
             <Button
