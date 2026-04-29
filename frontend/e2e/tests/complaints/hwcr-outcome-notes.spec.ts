@@ -86,7 +86,7 @@ test.describe("HWCR Outcome Notes", () => {
 
     //validate the note
     await expect(
-      $outcome.locator(".comp-outcome-notes", {
+      $outcome.locator("#additional-note-text", {
         hasText: "This is test supporting note from Playwright",
       }),
     ).toBeVisible();

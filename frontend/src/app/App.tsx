@@ -89,7 +89,8 @@ const App: FC = () => {
         <Modal />
         <PageLoader />
         <ToastContainer //any options that might be overridden need to be given a default here
-          autoClose={5000}
+          // Disable toast auto-close for Playwright/WebDriver so toast assertions don't race the dismiss timer
+          autoClose={typeof navigator !== "undefined" && navigator.webdriver ? false : 5000}
           hideProgressBar={false}
           closeOnClick={true}
         />

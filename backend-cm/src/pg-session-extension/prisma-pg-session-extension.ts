@@ -1,5 +1,8 @@
 import { Prisma } from "@prisma/client/extension";
+import { Logger } from "@nestjs/common";
 import { getRequest } from "./request-interceptor";
+
+const logger = new Logger("PgSessionExtension");
 
 /**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
@@ -79,10 +82,14 @@ function createPgSessionExtension(client: any) {
               return result;
             });
           } catch (error) {
-            throw new Error(
-              `[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`,
-              error,
+            // Log the error
+            logger.error(
+              `Failed to execute query with JWT claims for ${model}.${operation}: ${(error as any)?.message ?? error}`,
+              (error as any)?.stack,
             );
+            throw new Error(`[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`, {
+              cause: error,
+            });
           }
         },
       },

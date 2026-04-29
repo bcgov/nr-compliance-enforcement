@@ -74,6 +74,7 @@ const Inspections: FC = () => {
       filters: getFilters(),
     },
     placeholderData: (previousData) => previousData,
+    enabled: searchValues.viewType === "list",
   });
 
   const inspectionGuids = useMemo(
