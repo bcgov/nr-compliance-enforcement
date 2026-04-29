@@ -15,6 +15,7 @@ import { InvestigationCreateHeader } from "@/app/components/containers/investiga
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import { getComplaintById, selectComplaint } from "@/app/store/reducers/complaints";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -77,6 +78,13 @@ const InvestigationCreate: FC = () => {
   const complaintId = searchParams.get("complaintId");
   const complaintType = searchParams.get("complaintType");
 
+  useEffect(() => {
+    if (complaintId && complaintType) {
+      dispatch(getComplaintById(complaintId, complaintType));
+    }
+  }, [complaintId, complaintType]);
+  const complaintData = useAppSelector(selectComplaint);
+
   const isEditMode = Boolean(investigationGuid);
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
@@ -131,6 +139,23 @@ const InvestigationCreate: FC = () => {
         discoveryTime: inv.discoveryTime || null,
         community: inv.community || "",
       };
+    } else if (!isEditMode && complaintData) {
+      const offcicerAssigned = complaintData.delegates.find((d) => d.type === "ASSIGNEE");
+      return {
+        investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
+        leadAgency: getUserAgency(),
+        description: complaintData?.details || "",
+        locationAddress: complaintData?.locationSummary || "",
+        locationDescription: complaintData?.locationDetail || "",
+        locationGeometry: complaintData?.location || null,
+        name: "",
+        supervisor: "",
+        primaryInvestigator: offcicerAssigned?.appUserGuid || "",
+        fileCoordinator: "",
+        discoveryDate: complaintData?.incidentDate || null,
+        discoveryTime: complaintData?.incidentTime || null,
+        community: complaintData.organization.area || "",
+      };
     }
     return {
       investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
@@ -146,7 +171,7 @@ const InvestigationCreate: FC = () => {
       discoveryTime: null,
       community: "",
     };
-  }, [investigationData, isEditMode, statusOptions]);
+  }, [investigationData, isEditMode, statusOptions, complaintData]);
 
   const form = useForm({
     defaultValues,
@@ -201,6 +226,12 @@ const InvestigationCreate: FC = () => {
       form.reset(defaultValues);
     }
   }, [investigationData?.getInvestigation]);
+
+  useEffect(() => {
+    if (!isEditMode && complaintData) {
+      form.reset(defaultValues);
+    }
+  }, [complaintData]);
 
   const isDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
@@ -265,8 +296,8 @@ const InvestigationCreate: FC = () => {
         <InvestigationForm
           form={form}
           isDisabled={isDisabled}
-          discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? undefined}
-          discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? undefined}
+          discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? complaintData?.incidentDate ?? undefined}
+          discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? complaintData?.incidentTime ?? undefined}
           isEditMode={isEditMode}
         />
       </section>
