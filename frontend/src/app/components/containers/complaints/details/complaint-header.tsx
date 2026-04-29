@@ -460,7 +460,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
 
                   {showCreateAddCase && complaintType === COMPLAINT_TYPES.ERS && (
                     <Button
-                      id="details-screen-update-status-button"
+                      id="details-screen-start-investigation-button"
                       title="Start investigation"
                       variant="outline-light"
                       onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
