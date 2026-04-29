@@ -147,13 +147,15 @@ const InvestigationCreate: FC = () => {
         description: complaintData?.details || "",
         locationAddress: complaintData?.locationSummary || "",
         locationDescription: complaintData?.locationDetail || "",
-        locationGeometry: complaintData?.location || null,
-        name: "",
+        locationGeometry:
+          complaintData?.location.coordinates[0] !== 0 && complaintData?.location.coordinates[1] !== 0
+            ? complaintData.location
+            : null,
         supervisor: "",
         primaryInvestigator: offcicerAssigned?.appUserGuid || "",
         fileCoordinator: "",
-        discoveryDate: complaintData?.incidentDate || null,
-        discoveryTime: complaintData?.incidentTime || null,
+        discoveryDate: complaintData?.reportedOn || null,
+        discoveryTime: complaintData?.reportedOn || null,
         community: complaintData.organization.area || "",
       };
     }
@@ -296,8 +298,8 @@ const InvestigationCreate: FC = () => {
         <InvestigationForm
           form={form}
           isDisabled={isDisabled}
-          discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? complaintData?.incidentDate ?? undefined}
-          discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? complaintData?.incidentTime ?? undefined}
+          discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? complaintData?.reportedOn ?? undefined}
+          discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? complaintData?.reportedOn ?? undefined}
           isEditMode={isEditMode}
         />
       </section>
