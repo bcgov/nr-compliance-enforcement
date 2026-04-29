@@ -75,6 +75,10 @@ export class CreateInvestigationInput {
   @IsOptional()
   caseIdentifier?: string;
 
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  complaintIdentifier?: string;
+
   @Field(() => String)
   leadAgency: string;
 
