@@ -11,7 +11,8 @@ type MultiStepModalProps = {
 
 export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { titles, totalSteps, content, isEdit } = modalData;
+  const { titles, totalSteps, content, isEdit, deleteFromStep, skipValidateForSteps, nextButtonLabel, hidePreviousButton } =
+    modalData;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [validateFn, setValidateFn] = useState<((step: number) => Promise<boolean>) | null>(null);
@@ -23,8 +24,12 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
   const title = titles?.[currentStep] ?? titles?.[0] ?? "";
 
   const handleNext = async () => {
-    const isValid = await validateFn?.(currentStep);
-    if (isValid) setCurrentStep((prev) => prev + 1);
+    const skipValidate = skipValidateForSteps?.includes(currentStep);
+    if (!skipValidate) {
+      const isValid = await validateFn?.(currentStep);
+      if (!isValid) return;
+    }
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrevious = () => {
@@ -109,6 +114,7 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           currentStep={currentStep}
           totalSteps={totalSteps}
           isEdit={!!isEdit}
+          deleteFromStep={deleteFromStep}
           showDeleteConfirm={showDeleteConfirm}
           isSaving={isSaving}
           onCancel={close}
@@ -116,6 +122,8 @@ export const MultiStepModal: FC<MultiStepModalProps> = ({ close, submit }) => {
           onNext={handleNext}
           onSave={handleSave}
           onDelete={() => setShowDeleteConfirm(true)}
+          nextButtonLabel={nextButtonLabel}
+          hidePreviousButton={hidePreviousButton}
         />
       </Modal.Footer>
     </>
