@@ -41,34 +41,32 @@ export class InspectionService {
   private readonly logger = new Logger(InspectionService.name);
 
   async findOne(inspectionGuid: string) {
-    const [prismaInspection, geometry] = await Promise.all([
-      this.prisma.inspection.findUnique({
-        where: {
-          inspection_guid: inspectionGuid,
-        },
-        include: {
-          inspection_status_code: true,
-          inspection_party: {
-            include: {
-              inspection_person: {
-                where: {
-                  active_ind: true,
-                },
-              },
-              inspection_business: {
-                where: {
-                  active_ind: true,
-                },
+    const prismaInspection = await this.prisma.inspection.findUnique({
+      where: {
+        inspection_guid: inspectionGuid,
+      },
+      include: {
+        inspection_status_code: true,
+        inspection_party: {
+          include: {
+            inspection_person: {
+              where: {
+                active_ind: true,
               },
             },
-            where: {
-              active_ind: true,
+            inspection_business: {
+              where: {
+                active_ind: true,
+              },
             },
           },
+          where: {
+            active_ind: true,
+          },
         },
-      }),
-      this.fetchLocationGeometryPoint(inspectionGuid),
-    ]);
+      },
+    });
+    const geometry = await this.fetchLocationGeometryPoint(inspectionGuid);
 
     if (!prismaInspection) {
       throw new Error(`Inspection with guid ${inspectionGuid} not found`);

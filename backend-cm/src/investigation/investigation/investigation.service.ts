@@ -41,95 +41,93 @@ export class InvestigationService {
   ) {}
 
   async findOne(investigationGuid: string) {
-    const [prismaInvestigation, geometry] = await Promise.all([
-      this.prisma.investigation.findUnique({
-        where: {
-          investigation_guid: investigationGuid,
+    const prismaInvestigation = await this.prisma.investigation.findUnique({
+      where: {
+        investigation_guid: investigationGuid,
+      },
+      include: {
+        investigation_status_code: true,
+        investigation_party: {
+          include: {
+            investigation_person: {
+              where: {
+                active_ind: true,
+              },
+            },
+            investigation_business: {
+              where: {
+                active_ind: true,
+              },
+            },
+          },
+          where: {
+            active_ind: true,
+          },
         },
-        include: {
-          investigation_status_code: true,
-          investigation_party: {
-            include: {
-              investigation_person: {
-                where: {
-                  active_ind: true,
-                },
-              },
-              investigation_business: {
-                where: {
-                  active_ind: true,
-                },
-              },
-            },
-            where: {
-              active_ind: true,
-            },
+        task: {
+          where: {
+            active_ind: true,
           },
-          task: {
-            where: {
-              active_ind: true,
-            },
-            orderBy: {
-              create_utc_timestamp: "asc",
-            },
+          orderBy: {
+            create_utc_timestamp: "asc",
           },
-          contravention: {
-            include: {
-              contravention_party_xref: {
-                include: {
-                  investigation_party: {
-                    include: {
-                      investigation_person: {
-                        where: {
-                          active_ind: true,
-                        },
-                      },
-                      investigation_business: {
-                        where: {
-                          active_ind: true,
-                        },
+        },
+        contravention: {
+          include: {
+            contravention_party_xref: {
+              include: {
+                investigation_party: {
+                  include: {
+                    investigation_person: {
+                      where: {
+                        active_ind: true,
                       },
                     },
-                  },
-                  enforcement_action: {
-                    where: {
-                      active_ind: true,
-                    },
-                    orderBy: {
-                      create_utc_timestamp: "asc",
-                    },
-                    include: {
-                      ticket: {
-                        where: {
-                          active_ind: true,
-                        },
-                      },
-                      enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
-                      contravention_party_xref: {
-                        include: {
-                          contravention: true,
-                          enforcement_action: true,
-                        },
+                    investigation_business: {
+                      where: {
+                        active_ind: true,
                       },
                     },
                   },
                 },
-                where: {
-                  active_ind: true,
+                enforcement_action: {
+                  where: {
+                    active_ind: true,
+                  },
+                  orderBy: {
+                    create_utc_timestamp: "asc",
+                  },
+                  include: {
+                    ticket: {
+                      where: {
+                        active_ind: true,
+                      },
+                    },
+                    enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                    contravention_party_xref: {
+                      include: {
+                        contravention: true,
+                        enforcement_action: true,
+                      },
+                    },
+                  },
                 },
               },
-            },
-            where: {
-              active_ind: true,
-            },
-            orderBy: {
-              create_utc_timestamp: "asc",
+              where: {
+                active_ind: true,
+              },
             },
           },
+          where: {
+            active_ind: true,
+          },
+          orderBy: {
+            create_utc_timestamp: "asc",
+          },
         },
-      }),
-      this.fetchLocationGeometryPoint(investigationGuid),
-    ]);
+      },
+    });
+    const geometry = await this.fetchLocationGeometryPoint(investigationGuid);
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }
