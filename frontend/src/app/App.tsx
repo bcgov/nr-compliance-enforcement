@@ -334,7 +334,7 @@ const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
   let userType =
     UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
-  const defaultType = !type ? userType : type;
+  const defaultType = type || userType;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;
 };
