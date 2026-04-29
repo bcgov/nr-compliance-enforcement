@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.262",
+  "version": "2.0.264",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -206,7 +206,7 @@
     "typescript": "^5.0.4"
   },
   "peerDependencies": {
-    "postcss": "^8.4.49"
+    "postcss": "^8.5.10"
   },
   "overrides": {
     "typescript": "^5.0.4",
