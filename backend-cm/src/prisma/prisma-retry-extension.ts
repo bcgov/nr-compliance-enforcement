@@ -3,7 +3,7 @@ import { Logger } from "@nestjs/common";
 
 const logger = new Logger("PrismaRetryExtension");
 
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 5;
 const BASE_DELAY_MS = 200;
 const MAX_DELAY_MS = 5000;
 

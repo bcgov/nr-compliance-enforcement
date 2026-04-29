@@ -103,10 +103,8 @@ export class PaginationUtility {
         findManyOptions.orderBy = orderByClause;
       }
 
-      const [totalCount, sourceData] = await Promise.all([
-        model.count({ where: whereClause }),
-        model.findMany(findManyOptions),
-      ]);
+      const totalCount = await model.count({ where: whereClause });
+      const sourceData = await model.findMany(findManyOptions);
 
       const items = mapper.mapArray<TSource, TDestination>(
         sourceData as Array<TSource>,
