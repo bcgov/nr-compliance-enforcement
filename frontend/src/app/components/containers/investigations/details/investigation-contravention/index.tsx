@@ -104,6 +104,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onRequestDelete: (fn: () => Promise<void>) => void,
             onClose: () => void,
             onIsSavingChange: (isSaving: boolean) => void,
+            // eslint-disable-next-line react/no-unstable-nested-components
           ) => (
             <ContraventionViewEditModalContent
               currentStep={currentStep}
