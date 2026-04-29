@@ -565,6 +565,7 @@ const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: str
   });
 
   await patch<Complaint>(dispatch, parameters);
+  ToggleSuccess("Status updated");
 };
 
 export const updateWildlifeComplaintStatus =
