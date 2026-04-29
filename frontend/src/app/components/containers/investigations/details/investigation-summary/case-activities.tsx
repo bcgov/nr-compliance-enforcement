@@ -119,7 +119,9 @@ export const CaseActivities: FC<CaseActivitiesProps> = ({ caseGuid, caseName }) 
               {investigationId}
             </Link>
             <span className="ms-2">• {agencyDescription}</span>
-            <span className="ms-2">• {partiesCount} parties</span>
+            <span className="ms-2">
+              • {partiesCount} {partiesCount === 1 ? "party" : "parties"}
+            </span>
             <span className="ms-2">• {communityLabel || "Unknown"}</span>
             <Badge className={`badge ${applyStatusClass(status || "")} ms-2`}>{status || "Unknown"}</Badge>
           </div>
@@ -149,7 +151,9 @@ export const CaseActivities: FC<CaseActivitiesProps> = ({ caseGuid, caseName }) 
               {inspectionId}
             </Link>
             <span className="ms-2">• {agencyDescription}</span>
-            <span className="ms-2">• {partiesCount} parties</span>
+            <span className="ms-2">
+              • {partiesCount} {partiesCount === 1 ? "party" : "parties"}
+            </span>
             <Badge className={`badge ${applyStatusClass(status || "")} ms-2`}>{status || "Unknown"}</Badge>
           </div>
         </div>
