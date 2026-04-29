@@ -6,12 +6,15 @@ interface StepModalFooterProps {
   totalSteps: number;
   isEdit: boolean;
   isSaving: boolean;
+  deleteFromStep?: number; // When set, Delete is only shown for currentStep >= deleteFromStep
   showDeleteConfirm: boolean;
   onCancel: () => void;
   onPrevious: () => void;
   onNext: () => void;
   onSave: () => void;
   onDelete: () => void;
+  nextButtonLabel?: string; // When set, replaces the default "Next" label
+  hidePreviousButton?: boolean;
 }
 
 export const StepModalFooter: FC<StepModalFooterProps> = ({
@@ -19,19 +22,23 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
   totalSteps,
   isEdit,
   isSaving,
+  deleteFromStep = 0,
   showDeleteConfirm,
   onCancel,
   onPrevious,
   onNext,
   onSave,
   onDelete,
+  nextButtonLabel,
+  hidePreviousButton,
 }) => {
   const isLastStep = currentStep === totalSteps - 1;
+  const showDelete = isEdit && currentStep >= deleteFromStep;
 
   return (
     <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
       <div className="d-flex gap-2">
-        {isEdit && (
+        {showDelete && (
           <Button
             variant="outline-danger"
             onClick={onDelete}
@@ -41,7 +48,7 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
             <span>Delete</span>
           </Button>
         )}
-        {currentStep > 0 && (
+        {currentStep > 0 && !hidePreviousButton && (
           <Button
             variant="outline-primary"
             onClick={onPrevious}
@@ -77,8 +84,14 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
             onClick={onNext}
             disabled={showDeleteConfirm || isSaving}
           >
-            <span>Next</span>
-            <i className="bi bi-arrow-right-circle ms-1" />
+            {nextButtonLabel ? (
+              <span>{nextButtonLabel}</span>
+            ) : (
+              <>
+                <span>Next</span>
+                <i className="bi bi-arrow-right-circle ms-1" />
+              </>
+            )}
           </Button>
         )}
       </div>

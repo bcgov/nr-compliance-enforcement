@@ -14,6 +14,7 @@ interface ContraventionTableProps {
   contraventions: Contravention[];
   investigationGuid: string;
   partyGuid: string | null;
+  onView?: (contraventionId: string, partyGuid: string | null) => void;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
   onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string) => void;
@@ -38,6 +39,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   contraventions,
   investigationGuid,
   partyGuid,
+  onView,
   onEdit,
   onAddEnforcementAction,
   onEditEnforcementAction,
@@ -53,7 +55,20 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "comp-cell-width-percent-50",
       isSortable: true,
       getValue: (c) => c.legislationIdentifierRef ?? "",
-      renderCell: (c) => <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />,
+      renderCell: (c) =>
+        onView ? (
+          <button
+            type="button"
+            className="btn btn-link p-0 text-start"
+            onClick={() => {
+              onView(c.contraventionIdentifier, partyGuid);
+            }}
+          >
+            <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
+          </button>
+        ) : (
+          <LegislationCell legislationIdentifierRef={c.legislationIdentifierRef} />
+        ),
     },
     {
       label: "Date",
