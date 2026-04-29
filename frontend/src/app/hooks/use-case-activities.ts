@@ -47,6 +47,10 @@ const GET_INVESTIGATIONS = gql`
       name
       description
       openedTimestamp
+      primaryInvestigatorGuid
+      fileCoordinatorGuid
+      discoveryDate
+      discoveryTime
       investigationStatus {
         investigationStatusCode
         shortDescription
