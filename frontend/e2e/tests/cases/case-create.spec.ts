@@ -15,7 +15,6 @@ test.describe("Case Create Form", () => {
   });
 
   test("it displays the create case form", async ({ page }) => {
-    await expect(page.locator("#display-name")).toBeVisible();
     await expect(page.locator("#case-status-select")).toBeVisible();
     await expect(page.locator("#lead-agency-select")).toBeVisible();
 
@@ -55,12 +54,6 @@ test.describe("Case Create Form", () => {
     expect(agencyText).toBeTruthy();
   });
 
-  test("it shows validation error for empty Case ID", async ({ page }) => {
-    await page.locator("#details-screen-save-button-top").click();
-    const caseIdError = page.locator("#display-name-value .error-message, .comp-error-message").first();
-    await expect(caseIdError).toBeVisible({ timeout: 5000 });
-  });
-
   test("it navigates back to cases list on cancel", async ({ page }) => {
     await page.locator("#details-screen-cancel-edit-button-top").click();
 
@@ -78,9 +71,6 @@ test.describe("Case Create Form", () => {
   });
 
   test("it creates a case successfully", async ({ page }) => {
-    const uniqueId = `TEST-CASE-${Date.now()}`;
-
-    await page.locator("#display-name").fill(uniqueId);
     // Case description hidden for MVP
     // await page.locator("#description").fill("This is a test case");
 
@@ -91,13 +81,6 @@ test.describe("Case Create Form", () => {
     await waitForSpinner(page);
 
     await expect(page).toHaveURL(/\/case\/[^/]+$/, { timeout: 15000 });
-  });
-
-  test("it shows duplicate Case ID error", async ({ page }) => {
-    await page.locator("#display-name").fill("CASE1");
-
-    const errorMessage = page.locator("text=already in use");
-    await expect(errorMessage).toBeVisible({ timeout: 10000 });
   });
 });
 

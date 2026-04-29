@@ -46,42 +46,15 @@ test.describe("Investigation Create Form", () => {
     await expect(errorMessages).toBeVisible({ timeout: 10000 });
   });
 
-  test("it validates Investigation ID uniqueness", async ({ page }) => {
-    await navigateToCreateInvestigation(page);
-
-    // Enter an investigation ID that already exists
-    const investigationIdInput = page.locator("#display-name");
-    await investigationIdInput.fill("INVESTIGATION1");
-
-    const validationError = page.locator("text=/already in use/i");
-    await expect(validationError).toBeVisible({ timeout: 10000 });
-  });
-
   test("it saves investigation with all fields", async ({ page }) => {
     await navigateToCreateInvestigation(page);
     await expect(page.locator("h2", { hasText: /Investigation details/i })).toBeVisible();
-
-    const uniqueId = `INV-${Date.now()}`;
-
-    // Set up listener for async validation response before filling the input
-    const validationResponsePromise = page.waitForResponse(
-      (response) =>
-        response.url().includes("/graphql") &&
-        (response.request().postData()?.includes("checkInvestigationNameExists") ?? false),
-      { timeout: 15000 },
-    );
-
-    const investigationIdInput = page.locator("#display-name");
-    await investigationIdInput.fill(uniqueId);
 
     await selectItemById("community-select", "100 Mile House", page);
     await selectItemById("primary-investigator-select", "TestAcct, ENV", page);
     await selectItemById("supervisor-select", "TestAcct, ENV", page);
 
     await enterDateTimeInDatePicker(page, "investigation-discovery-date", "01", "13", "45");
-
-    // Wait for async validation to complete
-    await validationResponsePromise;
 
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Test investigation description");
@@ -115,7 +88,7 @@ test.describe("Investigation Create Form", () => {
   test("it cancels with confirmation", async ({ page }) => {
     await navigateToCreateInvestigation(page);
 
-    const investigationIdInput = page.locator("#display-name");
+    const investigationIdInput = page.locator("#description");
     await investigationIdInput.fill("Test Investigation");
 
     const cancelButton = page.locator("button", { hasText: /Cancel/i });
