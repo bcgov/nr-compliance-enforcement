@@ -4,7 +4,7 @@ import { CaseActivity } from "../../case_activity/dto/case_activity";
 import { CaseStatusCode } from "../../case_status_code/dto/case_status_code";
 import { case_file } from "../../../../prisma/shared/generated/case_file";
 import { Field, InputType, ObjectType, Int } from "@nestjs/graphql";
-import { IsOptional, Min, Max } from "class-validator";
+import { IsOptional } from "class-validator";
 import { PaginationMetadata, PaginatedResult } from "../../../common/pagination.utility";
 
 export class CaseFile {
@@ -29,9 +29,6 @@ export class CaseFileCreateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   description?: string;
-
-  @Field(() => String)
-  name: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -58,10 +55,6 @@ export class CaseFileUpdateInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   description?: string;
-
-  @Field(() => String, { nullable: true })
-  @IsOptional()
-  name?: string;
 }
 
 @InputType()

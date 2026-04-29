@@ -1,7 +1,6 @@
 import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatLocalTime } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
-import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { FormField } from "@/app/components/common/form-field";
@@ -12,36 +11,22 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Option from "@apptypes/app/option";
-import { gql } from "graphql-request";
 import { useSelector } from "react-redux";
 import z from "zod";
-import { graphqlRequest as GraphQLRequest } from "@/app/graphql/client";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useState } from "react";
 
 interface InvestigationFormProps {
   form: any;
   isDisabled: boolean;
-  id?: string;
   discoveryDate?: string;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   discoveryTime?: string;
   isEditMode?: boolean;
 }
 
-const CHECK_INVESTIGATION_NAME_EXISTS = gql`
-  query CheckInvestigationNameExists($name: String!, $leadAgency: String!, $excludeInvestigationGuid: String) {
-    checkInvestigationNameExists(
-      name: $name
-      leadAgency: $leadAgency
-      excludeInvestigationGuid: $excludeInvestigationGuid
-    )
-  }
-`;
-
 export const InvestigationForm = ({
   form,
-  id,
   isDisabled,
   discoveryDate,
   onDirtyChange,
@@ -92,51 +77,6 @@ export const InvestigationForm = ({
       <FormErrorBanner form={form} />
       <form onSubmit={form.handleSubmit}>
         <fieldset>
-          <FormField
-            form={form}
-            name="name"
-            label="Investigation ID"
-            required
-            validators={{
-              onChange: z
-                .string()
-                .min(1, "Investigation ID is required")
-                .max(100, "Investigation ID must be 100 characters or less"),
-              onChangeAsyncDebounceMs: 500,
-              onChangeAsync: async ({ value }: { value: string }) => {
-                if (!value || value.length < 1) return "Investigation ID is required";
-                const leadAgency = form.getFieldValue("leadAgency");
-                if (!leadAgency) return undefined;
-                const result: { checkInvestigationNameExists: boolean } = await GraphQLRequest(
-                  CHECK_INVESTIGATION_NAME_EXISTS,
-                  {
-                    name: value,
-                    leadAgency: leadAgency,
-                    excludeInvestigationGuid: id,
-                  },
-                );
-                if (result.checkInvestigationNameExists) {
-                  return "This Investigation ID is already in use for this agency. Please choose a different Investigation ID.";
-                }
-                return undefined;
-              },
-            }}
-            render={(field) => (
-              <div>
-                <CompInput
-                  id="display-name"
-                  divid="display-name-value"
-                  type="input"
-                  inputClass="comp-form-control"
-                  error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                  maxLength={120}
-                  onChange={(evt: any) => field.handleChange(evt.target.value)}
-                  value={field.state.value}
-                  placeholder="Enter Investigation ID"
-                />
-              </div>
-            )}
-          />
           {isEditMode && (
             <FormField
               form={form}

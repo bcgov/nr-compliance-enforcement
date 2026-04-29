@@ -16,6 +16,7 @@ import { UserService } from "../../common/user.service";
 import { EventCreateInput } from "../../shared/event/dto/event";
 import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../../common/nats_constants";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
+import { generateNextCaseIdentifier } from "src/common/sequence.utility";
 
 @Injectable()
 export class CaseFileService {
@@ -114,12 +115,14 @@ export class CaseFileService {
   }
 
   async create(input: CaseFileCreateInput): Promise<CaseFile> {
+    const generatedName = await generateNextCaseIdentifier(this.prisma);
+
     const caseFile = await this.prisma.case_file.create({
       data: {
         lead_agency: input.leadAgency,
         case_status: input.caseStatus,
         description: input.description,
-        name: input.name,
+        name: generatedName,
         opened_utc_timestamp: new Date(),
         create_user_id: this.user.getIdirUsername(),
         created_by_app_user_guid: input.createdByAppUserGuid,
@@ -196,9 +199,6 @@ export class CaseFileService {
     }
     if (input.description !== undefined) {
       updateData.description = input.description;
-    }
-    if (input.name !== undefined) {
-      updateData.name = input.name;
     }
 
     const caseFile = await this.prisma.case_file.update({
