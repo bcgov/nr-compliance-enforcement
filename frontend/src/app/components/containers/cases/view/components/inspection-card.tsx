@@ -5,6 +5,7 @@ import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
 import { Inspection } from "@/generated/graphql";
+import { ActivityCardField } from "@/app/components/containers/cases/view/components/activity-card-field";
 
 interface InspectionCardProps {
   item: Inspection;
@@ -29,20 +30,10 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, case
       }}
     >
       <div className="row g-2 text-muted">
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Date opened</strong>
-          </div>
-          <div>{dateOpened}</div>
-        </div>
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Last updated</strong>
-          </div>
-          <div>
-            {formatDate(lastUpdatedDate)} {formatTime(lastUpdatedDate)}
-          </div>
-        </div>
+        <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
+        <ActivityCardField label="Last updated">
+          {formatDate(lastUpdatedDate)} {formatTime(lastUpdatedDate)}
+        </ActivityCardField>
       </div>
       {caseIdentifier && (
         <ActivityActionMenu
