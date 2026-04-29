@@ -1,4 +1,5 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
+import { ContraventionReadOnlyPanel } from "./contravention-read-only-panel";
 import { ContraventionTable } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-table";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
@@ -79,6 +80,58 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   const parties = investigationData?.parties as InvestigationParty[];
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
+
+  const openViewContraventionModal = (contraventionId: string, partyGuid?: string | null) => {
+    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
+    if (!contravention) return;
+
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: MULTI_STEP_MODAL,
+        data: {
+          titles: ["Contravention details", "Edit contravention"],
+          totalSteps: 2,
+          isEdit: true,
+          deleteFromStep: 1,
+          skipValidateForSteps: [0],
+          nextButtonLabel: "Edit",
+          hidePreviousButton: true,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onRequestDelete: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+            onIsSavingChange: (isSaving: boolean) => void,
+          ) => (
+            <>
+              <div className={currentStep === 0 ? "" : "d-none"}>
+                <ContraventionReadOnlyPanel contravention={contravention} />
+              </div>
+              <div className={currentStep === 1 ? "" : "d-none"}>
+                <ContraventionForm
+                  currentStep={0}
+                  activityGuid={investigationGuid}
+                  contravention={contravention}
+                  partyGuid={partyGuid ?? null}
+                  parties={investigationData?.parties as InvestigationParty[]}
+                  onDirtyChange={handleChildDirtyChange}
+                  onRequestValidate={onRequestValidate}
+                  onRequestSave={onRequestSave}
+                  onRequestDelete={onRequestDelete}
+                  onIsSavingChange={onIsSavingChange}
+                  onClose={onClose}
+                />
+              </div>
+            </>
+          ),
+          handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
 
   const openContraventionModal = (contraventionId?: string, partyGuid?: string | null) => {
     const contravention = contraventionId
@@ -239,6 +292,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contraventions={groupedContraventions}
               investigationGuid={investigationGuid}
               partyGuid={partyGuid}
+              onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
               onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
               onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
               onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
@@ -258,6 +312,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 contraventions={unknownGroups.flatMap((g) => g.contraventions)}
                 investigationGuid={investigationGuid}
                 partyGuid={null}
+                onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
                 onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
                 onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}
                 onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
