@@ -1,5 +1,5 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
-import { ContraventionReadOnlyPanel } from "./contravention-read-only-panel";
+import { ContraventionViewEditModalContent } from "./contravention-read-only-panel";
 import { ContraventionTable } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-table";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
@@ -105,26 +105,19 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             onClose: () => void,
             onIsSavingChange: (isSaving: boolean) => void,
           ) => (
-            <>
-              <div className={currentStep === 0 ? "" : "d-none"}>
-                <ContraventionReadOnlyPanel contravention={contravention} />
-              </div>
-              <div className={currentStep === 1 ? "" : "d-none"}>
-                <ContraventionForm
-                  currentStep={0}
-                  activityGuid={investigationGuid}
-                  contravention={contravention}
-                  partyGuid={partyGuid ?? null}
-                  parties={investigationData?.parties as InvestigationParty[]}
-                  onDirtyChange={handleChildDirtyChange}
-                  onRequestValidate={onRequestValidate}
-                  onRequestSave={onRequestSave}
-                  onRequestDelete={onRequestDelete}
-                  onIsSavingChange={onIsSavingChange}
-                  onClose={onClose}
-                />
-              </div>
-            </>
+            <ContraventionViewEditModalContent
+              currentStep={currentStep}
+              investigationGuid={investigationGuid}
+              investigationParties={investigationData?.parties as InvestigationParty[]}
+              contravention={contravention}
+              partyGuid={partyGuid}
+              handleChildDirtyChange={handleChildDirtyChange}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onRequestDelete={onRequestDelete}
+              onClose={onClose}
+              onIsSavingChange={onIsSavingChange}
+            />
           ),
           handleChildDirtyChange,
         },

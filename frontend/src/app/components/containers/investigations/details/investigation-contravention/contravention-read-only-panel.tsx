@@ -6,11 +6,12 @@ import {
   useLegislationSearchQuery,
 } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { getUserAgency } from "@/app/service/user-service";
 import { LegislationType } from "@/app/types/app/legislation";
 import { Contravention, InvestigationParty, Legislation } from "@/generated/graphql";
 import { format } from "date-fns";
-import { useMemo } from "react";
+import { FC, useMemo } from "react";
 
 function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
@@ -23,7 +24,7 @@ function wrapCitationForDisplay(citation: string | null | undefined): string {
   const raw = (citation ?? "").trim();
   if (!raw) return "";
   if (/^\([^)]+\)(\s*\([^)]+\))*$/.test(raw)) {
-    return raw.replace(/\s+/g, " ").trim();
+    return raw.replaceAll(/\s+/g, " ").trim();
   }
   return `(${raw})`;
 }
@@ -60,7 +61,7 @@ function buildSubsectionCitationPrefix(
   // but only if it isn't already the last one in the list. This prevents duplicate, consecutive citations.
   const selectedNode = wrapCitationForDisplay(displayCitation);
   if (selectedNode) {
-    const last = pieces[pieces.length - 1];
+    const last = pieces.at(-1);
     if (!last || last !== selectedNode) {
       pieces.push(selectedNode);
     }
@@ -91,7 +92,7 @@ type ContraventionReadOnlyPanelProps = {
   contravention: Contravention;
 };
 
-export const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadOnlyPanelProps) => {
+const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadOnlyPanelProps) => {
   const userAgency = getUserAgency();
   const contraventionGuid = contravention.legislationIdentifierRef;
   const contraventionDate = contravention.date ? parseUTCDateTimeToLocal(contravention.date, null) : null;
@@ -106,7 +107,7 @@ export const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadO
 
   const { actGuid, regGuid, sectionGuid } = useMemo(() => {
     const empty = { actGuid: "", regGuid: "", sectionGuid: "" };
-    if (!legislation || !legislation.ancestors?.length || !contraventionGuid) return empty;
+    if (!contraventionGuid || !legislation?.ancestors?.length) return empty;
 
     const ancestors = legislation.ancestors.filter(Boolean);
     const findAncestor = (type: string) =>
@@ -224,3 +225,52 @@ export const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadO
     </>
   );
 };
+
+type ContraventionViewEditModalContentProps = {
+  currentStep: number;
+  investigationGuid: string;
+  investigationParties: InvestigationParty[];
+  contravention: Contravention;
+  partyGuid?: string | null;
+  handleChildDirtyChange: (index: number, isDirty: boolean) => void;
+  onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
+  onRequestSave: (fn: () => Promise<void>) => void;
+  onRequestDelete: (fn: () => Promise<void>) => void;
+  onClose: () => void;
+  onIsSavingChange: (isSaving: boolean) => void;
+};
+
+export const ContraventionViewEditModalContent: FC<ContraventionViewEditModalContentProps> = ({
+  currentStep,
+  investigationGuid,
+  investigationParties,
+  contravention,
+  partyGuid,
+  handleChildDirtyChange,
+  onRequestValidate,
+  onRequestSave,
+  onRequestDelete,
+  onClose,
+  onIsSavingChange,
+}) => (
+  <>
+    <div className={currentStep === 0 ? "" : "d-none"}>
+      <ContraventionReadOnlyPanel contravention={contravention} />
+    </div>
+    <div className={currentStep === 1 ? "" : "d-none"}>
+      <ContraventionForm
+        currentStep={0}
+        activityGuid={investigationGuid}
+        contravention={contravention}
+        partyGuid={partyGuid ?? null}
+        parties={investigationParties}
+        onDirtyChange={handleChildDirtyChange}
+        onRequestValidate={onRequestValidate}
+        onRequestSave={onRequestSave}
+        onRequestDelete={onRequestDelete}
+        onIsSavingChange={onIsSavingChange}
+        onClose={onClose}
+      />
+    </div>
+  </>
+);
