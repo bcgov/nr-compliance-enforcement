@@ -125,7 +125,7 @@ export const updateComplaintAssignee =
     isHeader: boolean,
     appUserGuid?: UUID,
   ): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       // add new person complaint record
       const payload = {
@@ -136,7 +136,13 @@ export const updateComplaintAssignee =
         create_user_id: currentUser,
       } as NewAppUserComplaintXref;
 
-      // assign a complaint to an app user
+      const state = getState();
+      const complaint = selectComplaint(state);
+      const isAssigned = complaint?.delegates
+        ? complaint.delegates.filter((user) => user.type === "ASSIGNEE").map((delegate) => delegate.appUserGuid)
+            .length > 0
+        : false;
+
       let appUserComplaintXrefGuidParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/app-user-complaint-xref/${complaint_identifier}`,
         payload,
@@ -165,6 +171,7 @@ export const updateComplaintAssignee =
         // Thunk was called via complaint header, refresh complaint to view the changes
         dispatch(getComplaintById(complaint_identifier, complaint_type));
       }
+      ToggleSuccess(isAssigned ? " Complaint successfully reassigned" : "Complaint successfully assigned");
     } catch (error) {
       console.log(error);
     }
