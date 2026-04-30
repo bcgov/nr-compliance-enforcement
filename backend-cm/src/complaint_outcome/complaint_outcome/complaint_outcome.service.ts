@@ -816,8 +816,6 @@ export class ComplaintOutcomeService {
   }
 
   async updateAssessment(model: UpdateAssessmentInput) {
-    let complaintOutcomeOutput: ComplaintOutcome;
-
     try {
       await this.prisma.$transaction(async (db) => {
         await db.assessment.update({
@@ -876,7 +874,9 @@ export class ComplaintOutcomeService {
         });
 
         for (const action of model.assessment.actions) {
-          let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+          // Use db for reads inside the transaction, otherwise each read on this.prisma opens its
+          // own pg-session $transaction
+          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.COMPASSESS,
               action_code: action.actionCode,
@@ -888,7 +888,7 @@ export class ComplaintOutcomeService {
             },
           });
 
-          let actionXref = await this.prisma.action.findFirst({
+          let actionXref = await db.action.findFirst({
             where: {
               action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
               assessment_guid: model.assessment.id,
@@ -929,7 +929,8 @@ export class ComplaintOutcomeService {
 
         //Handle cat1actions
         for (const action of model.assessment.cat1Actions) {
-          let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+          // Use db to avoid nested pg-session transactions
+          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.CAT1ASSESS,
               action_code: action.actionCode,
@@ -956,12 +957,20 @@ export class ComplaintOutcomeService {
           });
         }
       });
-
-      complaintOutcomeOutput = await this.findOne(model.complaintOutcomeGuid);
     } catch (exception) {
+      this.logger.error(`updateAssessment transaction failed for ${model.complaintOutcomeGuid}`, exception);
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
-    return complaintOutcomeOutput;
+
+    try {
+      return await this.findOne(model.complaintOutcomeGuid);
+    } catch (exception) {
+      this.logger.error(
+        `updateAssessment succeeded but post-update read failed for ${model.complaintOutcomeGuid}`,
+        exception,
+      );
+      return { complaintOutcomeGuid: model.complaintOutcomeGuid } as ComplaintOutcome;
+    }
   }
 
   //--------------------------
@@ -1380,8 +1389,6 @@ export class ComplaintOutcomeService {
       select: {
         case_note_guid: true,
         case_note: true,
-        update_user_id: true,
-        update_utc_timestamp: true,
         outcome_agency_code: true,
         action: {
           select: {
@@ -1396,9 +1403,7 @@ export class ComplaintOutcomeService {
                     action_code: true,
                     short_description: true,
                     long_description: true,
-                    active_ind: true,
                   },
-                  // where active_ind is true
                 },
               },
             },
