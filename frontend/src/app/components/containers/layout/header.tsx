@@ -8,8 +8,6 @@ import { Link } from "react-router-dom";
 import config from "@/config";
 import EnvironmentBanner from "./environment-banner";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import UserService from "@/app/service/user-service";
-import { Roles } from "@/app/types/app/roles";
 
 export const Header: FC = () => {
   const initials = useAppSelector(profileInitials);
@@ -49,7 +47,7 @@ export const Header: FC = () => {
               alt={"Government of British Columbia"}
             />
           </picture>
-          {UserService.hasRole(Roles.COS) ? "NatTobe" : "NatComplaints"}
+          NatComplaints
         </Link>
 
         <div className="comp-header-content">
