@@ -2137,6 +2137,16 @@ tr:has(> .comp-cell-child-expanded) {
   position: relative;
 }
 
+// Makes the toast fixed-position over the page so playwright
+// doesn't interact, re-enable on mouse events so toast clicks
+// still work for users
+.Toastify__toast-container {
+  pointer-events: none;
+}
+.Toastify__toast {
+  pointer-events: auto;
+}
+
 .Toastify__toast--error {
   border: 1px solid #eea8ab;
   border-radius: 3px !important;
