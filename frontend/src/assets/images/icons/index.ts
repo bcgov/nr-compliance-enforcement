@@ -1,4 +1,4 @@
-import COS from "./ce-cos-icon.png";
+import COS from "./ce-cos-icon.svg";
 import PARKS from "./ce-parks-icon.svg";
 import EPO from "./ce-ceeb-icon.svg";
 import NROS from "./ce-nros-icon.svg";
