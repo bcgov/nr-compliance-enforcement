@@ -17,6 +17,8 @@ import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { selectOfficers } from "@store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import UserService from "@service/user-service";
+import { Roles } from "@apptypes/app/roles";
 
 interface ExternalFileReferenceProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -30,6 +32,13 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
   const complaintType = getComplaintType(complaintData);
   const officers = useAppSelector(selectOfficers);
 
+  const hasCaseAccessRole = UserService.hasRole(Roles.CASE_ACCESS);
+  const isCoorsEditRestricted =
+    hasCaseAccessRole &&
+    !!complaintData &&
+    [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy) &&
+    [COMPLAINT_TYPES.ERS, COMPLAINT_TYPES.HWCR].includes(complaintType);
+
   const [isEditable, setIsEditable] = useState<boolean>(true);
   const [referenceNumber, setReferenceNumber] = useState<string>("");
   const [referenceNumberError, setReferenceNumberError] = useState<string>("");
@@ -38,11 +47,17 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
 
   // State Management for when reference number changes, or page is first loaded
   useEffect(() => {
+    if (isCoorsEditRestricted) {
+      setIsEditable(false);
+      setReferenceNumber(complaintData?.referenceNumber ?? "");
+      return;
+    }
+
     if (complaintData?.referenceNumber) {
       setReferenceNumber(complaintData.referenceNumber);
       setIsEditable(false);
     } else setIsEditable(true);
-  }, [complaintData?.referenceNumber]);
+  }, [complaintData?.referenceNumber, complaintData, isCoorsEditRestricted]);
 
   // function for handling the cancel modal
   const cancelConfirmed = () => {
@@ -161,7 +176,7 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
       >
         <div className="comp-details-section-header">
           <h2>External file reference</h2>
-          {!isEditable && (
+          {!isEditable && !isCoorsEditRestricted && (
             <div className="comp-details-section-header-actions">
               <Button
                 variant="outline-primary"
@@ -190,7 +205,7 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
         <Card>
           <Card.Body>
             <div className="comp-details-form">
-              {isEditable && (
+              {isEditable && !isCoorsEditRestricted && (
                 <>
                   {complaintType === COMPLAINT_TYPES.ERS && (
                     <p className="mb-4">
@@ -239,12 +254,12 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
                 </>
               )}
 
-              {!isEditable && (
+              {(!isEditable || isCoorsEditRestricted) && (
                 <dl>
                   <div id="external-file-reference-number-div">
                     <dt>COORS number</dt>
                     <dd>
-                      <span id="external-file-reference-number">{referenceNumber}</span>
+                      <span id="external-file-reference-number">{referenceNumber || ""}</span>
                     </dd>
                   </div>
                 </dl>
