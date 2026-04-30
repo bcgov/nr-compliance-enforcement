@@ -84,8 +84,8 @@ function createPgSessionExtension(client: any) {
           } catch (error) {
             // Log the error
             logger.error(
-              `Failed to execute query with JWT claims for ${model}.${operation}: ${(error as any)?.message ?? error}`,
-              (error as any)?.stack,
+              `Failed to execute query with JWT claims for ${model}.${operation}: ${error?.message ?? error}`,
+              error?.stack,
             );
             throw new Error(`[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`, {
               cause: error,

@@ -2147,6 +2147,13 @@ tr:has(> .comp-cell-child-expanded) {
   pointer-events: auto;
 }
 
+// In test mode autoClose is disabled to reduce flakiness with assertions
+// on toasts. This class makes toasts non-interactive in test mode so that
+// the test runner doesn't click on them when trying to click on other elements
+.toast-container-e2e .Toastify__toast {
+  pointer-events: none;
+}
+
 .Toastify__toast--error {
   border: 1px solid #eea8ab;
   border-radius: 3px !important;

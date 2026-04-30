@@ -93,6 +93,10 @@ const App: FC = () => {
           autoClose={typeof navigator !== "undefined" && navigator.webdriver ? false : 5000}
           hideProgressBar={false}
           closeOnClick={true}
+          // In test mode autoClose is disabled to reduce flakiness with assertions
+          // on toasts. This class makes toasts non-interactive in test mode so that
+          // the test runner doesn't click on them when trying to click on other elements
+          className={typeof navigator !== "undefined" && navigator.webdriver ? "toast-container-e2e" : undefined}
         />
         <Routes>
           {redirectMode ? (
