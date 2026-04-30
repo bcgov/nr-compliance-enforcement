@@ -874,8 +874,7 @@ export class ComplaintOutcomeService {
         });
 
         for (const action of model.assessment.actions) {
-          // Use db for reads inside the transaction, otherwise each read on this.prisma opens its
-          // own pg-session $transaction
+          // Use db to avoid nested pg-session transactions
           let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.COMPASSESS,
@@ -1080,8 +1079,9 @@ export class ComplaintOutcomeService {
 
       this.logger.log(`Creating actions for prevention: ${prevention.prevention_education_guid}`);
 
-      //Validate that the actions passed in are all valid
-      let action_codes_objects = await this.prisma.action_type_action_xref.findMany({
+      // Validate that the actions passed in are all valid
+      // Use db to avoid nested pg-session transactions
+      let action_codes_objects = await db.action_type_action_xref.findMany({
         where: {
           action_type_code: {
             in: [ACTION_TYPE_CODES.COSPRVANDEDU, ACTION_TYPE_CODES.PRKPRVANDEDU],
@@ -1100,7 +1100,8 @@ export class ComplaintOutcomeService {
       }
 
       for (const action of model.prevention.actions) {
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
             action_type_code:
@@ -1141,7 +1142,8 @@ export class ComplaintOutcomeService {
       });
 
       for (const action of model.prevention.actions) {
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
             action_type_code:
@@ -1154,7 +1156,7 @@ export class ComplaintOutcomeService {
           },
         });
 
-        let actionXref = await this.prisma.action.findFirst({
+        let actionXref = await db.action.findFirst({
           where: {
             action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
             complaint_outcome_guid: model.complaintOutcomeGuid,
@@ -1275,7 +1277,8 @@ export class ComplaintOutcomeService {
       try {
         let actionId: string;
 
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_type_code: ACTION_TYPE_CODES.CASEACTION,
             action_code: ACTION_CODES.COMPLTREVW,
@@ -1505,8 +1508,9 @@ export class ComplaintOutcomeService {
     agencyCode: string,
     id: string = "",
   ): Promise<string> => {
+    // Use db to avoid nested pg-session transactions
     const _getNoteActionXref = async (): Promise<string> => {
-      const query = await this.prisma.action_type_action_xref.findFirst({
+      const query = await db.action_type_action_xref.findFirst({
         where: {
           action_code: ACTION_CODES.UPDATENOTE,
           action_type_code: ACTION_TYPE_CODES.CASEACTION,
@@ -3142,7 +3146,8 @@ export class ComplaintOutcomeService {
       try {
         const { sector, schedule } = decision;
 
-        let scheduleSectorXref = await this.prisma.schedule_sector_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: schedule,
             sector_code: sector,
@@ -3211,7 +3216,8 @@ export class ComplaintOutcomeService {
     actionCode: string,
     actionTypeCode: string,
   ): Promise<any> => {
-    const query = await this.prisma.action_type_action_xref.findFirst({
+    // Use db to avoid nested pg-session transactions
+    const query = await db.action_type_action_xref.findFirst({
       where: {
         action_code: actionCode,
         action_type_code: actionTypeCode,
@@ -3298,7 +3304,8 @@ export class ComplaintOutcomeService {
           update_utc_timestamp: current,
         };
 
-        let scheduleSectorXref = await this.prisma.schedule_sector_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: decision.schedule,
             sector_code: decision.sector,
