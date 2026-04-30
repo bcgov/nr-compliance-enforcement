@@ -358,6 +358,19 @@ export class InvestigationService {
       );
     }
 
+    if (input.complaintIdentifier) {
+      try {
+        await this.caseActivityService.create({
+          caseFileGuid: caseIdentifier,
+          activityType: "COMP",
+          activityIdentifier: input.complaintIdentifier,
+        });
+      } catch (error) {
+        this.logger.error("Error creating case activity for complaint association with investigation:", error);
+        throw new Error(`Failed to create case activity for complaint association. Error: ${error}`);
+      }
+    }
+
     try {
       return this.mapper.map<investigation, Investigation>(
         investigation as investigation,

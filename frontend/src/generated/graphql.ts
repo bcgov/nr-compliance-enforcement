@@ -502,6 +502,7 @@ export type CreateInvestigationBusinessInput = {
 export type CreateInvestigationInput = {
   caseIdentifier?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
+  complaintIdentifier?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
