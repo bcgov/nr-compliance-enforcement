@@ -10,13 +10,18 @@ const MAX_DELAY_MS = 5000;
 // Prisma error codes that appear on error.code (PrismaClientKnownRequestError)
 const RETRYABLE_ERROR_CODES = [
   "P1017", // Server has closed the connection
+  "P2024", // Timed out fetching a new connection from the pool
+  "P2028", // Transaction API error / transaction expired
   "08P01", // Connection slots exhausted
 ];
 
 function isRetryableError(error: any): boolean {
-  if (RETRYABLE_ERROR_CODES.includes(error?.code)) return true;
-  if (typeof error?.message === "string") {
-    return RETRYABLE_ERROR_CODES.some((code) => error.message.includes(code));
+  // pg-session extension wraps Prisma errors so the error code lives on .cause for those
+  const code = error?.code ?? error?.cause?.code;
+  if (RETRYABLE_ERROR_CODES.includes(code)) return true;
+  const message = error?.message ?? error?.cause?.message;
+  if (typeof message === "string") {
+    return RETRYABLE_ERROR_CODES.some((c) => message.includes(c));
   }
   return false;
 }

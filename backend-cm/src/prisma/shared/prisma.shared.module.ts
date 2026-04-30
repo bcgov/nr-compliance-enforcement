@@ -9,7 +9,9 @@ import createRetryExtension from "../prisma-retry-extension";
     {
       provide: SharedPrismaService,
       useFactory: () => {
-        const client = new PrismaClient();
+        const client = new PrismaClient({
+          transactionOptions: { maxWait: 10000, timeout: 30000 },
+        });
         return client.$extends(createRetryExtension());
       },
     },
