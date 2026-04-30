@@ -119,6 +119,8 @@ test.describe("HWCR Outcome Notes", () => {
     await validateComplaint(page, "23-032454", "Black Bear");
     const $notes = page.locator(".comp-outcome-notes");
 
+    await expect($notes.locator("#notes-edit-button").first()).toBeVisible({ timeout: 15000 });
+
     await $notes.locator("#notes-edit-button").click();
 
     await enterNote(page, "This note is edited by Playwright");
