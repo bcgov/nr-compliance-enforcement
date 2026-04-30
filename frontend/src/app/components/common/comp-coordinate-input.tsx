@@ -311,6 +311,9 @@ export const CompCoordinateInput: FC<Props> = ({
 
     setYCoordinate(lat);
     setXCoordinate(lng);
+    // Set the ref to the latest prop values so the dirty check doesn't think
+    // this is dirty before async data loads
+    initialCoordinatesRef.current = { x: lng, y: lat };
 
     if (lat && lng && !isZeroOrEmpty(lat) && !isZeroOrEmpty(lng)) {
       if (coordinateType === COORDINATE_TYPES.LatLong) {

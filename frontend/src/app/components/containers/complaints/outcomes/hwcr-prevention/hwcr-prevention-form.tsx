@@ -183,9 +183,11 @@ export const HWCRPreventionForm: FC<Props> = ({
   };
 
   const saveButtonClick = async () => {
-    if (!hasErrors()) {
+    if (hasErrors()) {
+      handleFormErrors();
+    } else {
       const updatedPreventionData: Prevention = {
-        id: preventionState.id,
+        id: prevention?.id ?? preventionState.id,
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
@@ -201,8 +203,6 @@ export const HWCRPreventionForm: FC<Props> = ({
 
       dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       handleSave();
-    } else {
-      handleFormErrors();
     }
     markClean();
   };

@@ -321,7 +321,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE");
 
   const getUpdatedAssessmentData = () => ({
-    id: assessmentState?.id,
+    id: assessment?.id ?? assessmentState?.id,
     date: selectedDate,
     officer: mapOption(selectedOfficer),
     action_required: selectedActionRequired?.label,
