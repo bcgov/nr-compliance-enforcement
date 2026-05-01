@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 import { gql } from "graphql-request";
+import { useInvestigationSearch } from "../../../hooks/use-investigation-search";
 import { Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { applyStatusClass } from "@/app/common/methods";
@@ -31,6 +32,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
   const taskStatuses = useAppSelector(selectTaskStatus);
   const status = taskStatuses.find((s) => s.value === task?.taskStatusCode);
   const taskDisplay = task ? `Task #${task.taskNumber}` : "Task";
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -62,7 +64,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/investigations">Investigations</Link>
+                <Link to={investigationSearchURL}>Investigations</Link>
               </li>
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/investigation/${investigationGuid}/tasks`}>Tasks</Link>

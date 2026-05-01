@@ -42,6 +42,7 @@ import { RefreshCommunities } from "./migrations/migration-42";
 import { AddBulkDownload } from "@/app/store/migrations/migration-43";
 import { RefreshJustificationCodes } from "@/app/store/migrations/migration-44";
 import { AddEnforcementActions } from "@/app/store/migrations/migration-45";
+import { AddInvestigationListUrl } from "@/app/store/migrations/migration-46";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -98,6 +99,7 @@ migration = {
   ...AddBulkDownload,
   ...RefreshJustificationCodes,
   ...AddEnforcementActions,
+  ...AddInvestigationListUrl,
 };
 
 export default migration;

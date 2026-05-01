@@ -1,11 +1,12 @@
 import { FC, useCallback } from "react";
-import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { CaseFile, Investigation } from "@/generated/graphql";
-import { applyStatusClass, formatDateTime } from "@common/methods";
-import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { AppUser } from "@apptypes/app/app_user/app_user";
+import { Investigation } from "@/generated/graphql";
+import { applyStatusClass, formatDate } from "@common/methods";
+import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
 import { SORT_TYPES } from "@constants/sort-direction";
@@ -13,22 +14,20 @@ import Option from "@apptypes/app/option";
 
 type Props = {
   investigations: Investigation[];
-  cases?: Map<string, CaseFile[]>;
   totalItems?: number;
   isLoading?: boolean;
   error?: Error | null;
 };
 
-export const InvestigationList: FC<Props> = ({
-  investigations,
-  totalItems = 0,
-  isLoading = false,
-  error = null,
-  cases = new Map(),
-}) => {
+export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, isLoading = false, error = null }) => {
   const { searchValues, setValues, setSort } = useInvestigationSearch();
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const officers = useAppSelector(selectOfficers) ?? [];
+
+  const officerByGuid = useCallback(
+    (guid: string | null | undefined) => officers.find((o: AppUser) => o.app_user_guid === guid),
+    [officers],
+  );
 
   const handleSort = useCallback(
     (sortKey: string, sortDirection: string) => {
@@ -62,59 +61,13 @@ export const InvestigationList: FC<Props> = ({
       ),
     },
     {
-      label: "Case ID",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 text-center",
-      isSortable: false,
-      getValue: () => "",
-      renderCell: (investigation) =>
-        (cases.get(investigation.investigationGuid) ?? []).map((caseFile: CaseFile) => (
-          <Link
-            to={`/case/${caseFile.caseIdentifier}`}
-            className="comp-cell-link"
-            key={caseFile.caseIdentifier}
-          >
-            {caseFile.name || caseFile.caseIdentifier}
-          </Link>
-        )),
-    },
-    {
       label: "Date Opened",
       sortKey: "openedTimestamp",
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (investigation) => investigation.openedTimestamp ?? "",
-      renderCell: (investigation) => formatDateTime(investigation.openedTimestamp),
-    },
-    {
-      label: "Status",
-      sortKey: "investigationStatus",
-      headerClassName: "comp-cell-width-110",
-      cellClassName: "comp-cell-width-110",
-      isSortable: true,
-      getValue: (investigation) => investigation.investigationStatus?.investigationStatusCode ?? "",
-      renderCell: (investigation) =>
-        investigation.investigationStatus?.investigationStatusCode ? (
-          <span className={`badge ${applyStatusClass(investigation.investigationStatus.investigationStatusCode)}`}>
-            {investigation.investigationStatus.shortDescription}
-          </span>
-        ) : null,
-    },
-    {
-      label: "Agency",
-      sortKey: "leadAgency",
-      headerClassName: "",
-      cellClassName: "",
-      isSortable: true,
-      getValue: (investigation) => {
-        const agency = leadAgencyOptions.find((o: Option) => o.value === investigation.leadAgency);
-        return agency?.label ?? "";
-      },
-      renderCell: (investigation) => {
-        const agency = leadAgencyOptions.find((o: Option) => o.value === investigation.leadAgency);
-        return agency?.label ?? "-";
-      },
+      renderCell: (investigation) => formatDate(investigation.openedTimestamp),
     },
     {
       label: "Community",
@@ -132,48 +85,58 @@ export const InvestigationList: FC<Props> = ({
       },
     },
     {
-      label: "Actions",
-      headerClassName:
-        "sticky-col sticky-col--right comp-cell-width-90 comp-cell-min-width-90 actions-col case-table-actions-cell",
-      cellClassName:
-        "comp-cell-width-90 comp-cell-min-width-90 sticky-col sticky-col--right actions-col case-table-actions-cell",
+      label: "Location/address",
+      sortKey: "locationAddress",
+      headerClassName: "",
+      cellClassName: "",
+      isSortable: true,
+      getValue: (investigation) => investigation.locationAddress ?? "",
+      renderCell: (investigation) => investigation.locationAddress || "-",
+    },
+    {
+      label: "Status",
+      sortKey: "investigationStatus",
+      headerClassName: "comp-cell-width-110",
+      cellClassName: "comp-cell-width-110",
+      isSortable: true,
+      getValue: (investigation) => investigation.investigationStatus?.investigationStatusCode ?? "",
+      renderCell: (investigation) =>
+        investigation.investigationStatus?.investigationStatusCode ? (
+          <span className={`badge ${applyStatusClass(investigation.investigationStatus.investigationStatusCode)}`}>
+            {investigation.investigationStatus.shortDescription}
+          </span>
+        ) : null,
+    },
+    {
+      label: "Primary investigator",
+      headerClassName: "",
+      cellClassName: "",
       isSortable: false,
       getValue: () => "",
-      renderCell: (investigation) => (
-        <Dropdown
-          id={`investigation-action-button-${investigation.investigationGuid}`}
-          drop="start"
-          className="comp-action-dropdown"
-        >
-          <Dropdown.Toggle
-            id={`investigation-action-toggle-${investigation.investigationGuid}`}
-            size="sm"
-            variant="outline-primary"
-          >
-            Actions
-          </Dropdown.Toggle>
-          <Dropdown.Menu
-            popperConfig={{
-              modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
-            }}
-          >
-            <Dropdown.Item
-              as={Link}
-              to={`/investigation/${investigation.investigationGuid}`}
-              id={`view-investigation-${investigation.investigationGuid}`}
-            >
-              <i className="bi bi-eye" /> View investigation
-            </Dropdown.Item>
-            <Dropdown.Item
-              as={Link}
-              to={`/investigation/${investigation.investigationGuid}/edit`}
-              id={`edit-investigation-${investigation.investigationGuid}`}
-            >
-              <i className="bi bi-pencil" /> Edit investigation
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
-      ),
+      renderCell: (investigation) => {
+        const officer = officerByGuid(investigation.primaryInvestigatorGuid);
+        return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
+      },
+    },
+    {
+      label: "File coordinator",
+      headerClassName: "",
+      cellClassName: "",
+      isSortable: false,
+      getValue: () => "",
+      renderCell: (investigation) => {
+        const officer = officerByGuid(investigation.fileCoordinatorGuid);
+        return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
+      },
+    },
+    {
+      label: "Last updated",
+      sortKey: "updatedTimestamp",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
+      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
+      isSortable: true,
+      getValue: (investigation) => investigation.updatedTimestamp ?? "",
+      renderCell: (investigation) => formatDate(investigation.updatedTimestamp) || "-",
     },
   ];
 
@@ -193,6 +156,14 @@ export const InvestigationList: FC<Props> = ({
       defaultSortDirection={SORT_TYPES.DESC}
       onSort={handleSort}
       onPageChange={handlePageChange}
+      renderExpandedContent={(investigation) => (
+        <dl className="hwc-table-dl">
+          <div>
+            <dt>Investigation description</dt>
+            <dd>{investigation.description || "No description provided"}</dd>
+          </div>
+        </dl>
+      )}
     />
   );
 };

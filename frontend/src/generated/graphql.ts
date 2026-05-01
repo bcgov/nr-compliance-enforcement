@@ -1100,6 +1100,7 @@ export type Investigation = {
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InvestigationBusiness = {
@@ -1113,12 +1114,15 @@ export type InvestigationBusiness = {
 export type InvestigationFilters = {
   community?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  fileCoordinator?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  primaryInvestigator?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  supervisor?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type InvestigationParty = {

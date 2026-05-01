@@ -1,6 +1,6 @@
-import { FC, useState, useCallback, useMemo } from "react";
+import { FC, useState, useCallback, useMemo, useEffect } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { InvestigationResult, CaseFile } from "@/generated/graphql";
@@ -9,6 +9,8 @@ import { InvestigationList } from "./list";
 import { InvestigationFilterBar } from "./list/investigation-filter-bar";
 import { InvestigationMap } from "./map/investigation-map";
 import { useInvestigationSearch } from "./hooks/use-investigation-search";
+import { useAppDispatch } from "@hooks/hooks";
+import { setInvestigationListUrl } from "@store/reducers/investigation-list-url";
 import { uniq, compact } from "lodash";
 
 const SEARCH_INVESTIGATIONS = gql`
@@ -19,10 +21,15 @@ const SEARCH_INVESTIGATIONS = gql`
         investigationGuid
         name
         openedTimestamp
+        updatedTimestamp
         leadAgency
         community
         caseIdentifier
         locationGeometry
+        locationAddress
+        description
+        primaryInvestigatorGuid
+        fileCoordinatorGuid
         investigationStatus {
           investigationStatusCode
           shortDescription
@@ -53,10 +60,18 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
 
 const Investigations: FC = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const location = useLocation();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
   const { searchValues, getFilters } = useInvestigationSearch();
+
+  // Track the current /investigations URL in Redux so any subsequent navigation
+  // to the list (sidebar, breadcrumbs, post-create redirect) restores filters.
+  useEffect(() => {
+    dispatch(setInvestigationListUrl(location.pathname + location.search));
+  }, [dispatch, location.pathname, location.search]);
 
   const { data, isLoading, error } = useGraphQLQuery<{ searchInvestigations: InvestigationResult }>(
     SEARCH_INVESTIGATIONS,
@@ -65,8 +80,10 @@ const Investigations: FC = () => {
         "searchInvestigations",
         searchValues.search,
         searchValues.investigationStatus,
-        searchValues.leadAgency,
         searchValues.community,
+        searchValues.primaryInvestigator,
+        searchValues.fileCoordinator,
+        searchValues.supervisor,
         searchValues.startDate,
         searchValues.endDate,
         searchValues.sortBy,
@@ -98,7 +115,7 @@ const Investigations: FC = () => {
   });
 
   // Map of activityIdentifier -> related cases
-  const cases = useMemo(() => {
+  useMemo(() => {
     const map = new Map<string, CaseFile[]>();
     for (const casefile of caseData?.caseFilesByActivityIds || []) {
       for (const activity of casefile.activities || []) {
@@ -162,7 +179,6 @@ const Investigations: FC = () => {
         totalItems={totalInvestigations}
         isLoading={isLoading}
         error={error}
-        cases={cases}
       />
     ) : (
       <InvestigationMap error={error} />
