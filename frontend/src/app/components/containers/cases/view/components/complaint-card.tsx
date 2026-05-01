@@ -8,6 +8,7 @@ import { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
+import { ActivityCardField } from "@/app/components/containers/cases/view/components/activity-card-field";
 
 interface ComplaintCardProps {
   item: SectorComplaint;
@@ -85,37 +86,16 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint, caseNam
       }}
     >
       <div className="row g-2 text-muted">
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Date logged:</strong>
-          </div>
-          <div>{dateLogged}</div>
-        </div>
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Community:</strong>
-          </div>
-          <div>{community}</div>
-        </div>
-
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Type:</strong>
-          </div>
-          <div>{complaintType}</div>
-        </div>
-        <div className="col-12 col-sm-6 col-md-6 col-lg-12 col-xl-6">
-          <div>
-            <strong>Agency:</strong>
-          </div>
-          <div>{agency}</div>
-        </div>
-        <div className="col-12">
-          <div>
-            <strong>Issue:</strong>
-          </div>
-          <div>{issueType}</div>
-        </div>
+        <ActivityCardField label="Date logged">{dateLogged}</ActivityCardField>
+        <ActivityCardField label="Community">{community}</ActivityCardField>
+        <ActivityCardField label="Type">{complaintType}</ActivityCardField>
+        <ActivityCardField label="Agency">{agency}</ActivityCardField>
+        <ActivityCardField
+          label="Issue"
+          fullWidth
+        >
+          {issueType}
+        </ActivityCardField>
       </div>
       {caseIdentifier && (
         <ActivityActionMenu

@@ -74,16 +74,33 @@ BEGIN
 
     -- Extract and prepare data for 'complaint_update' table
     _upd_detail_text := update_complaint_data ->> 'update_call_details';
-    _upd_location_summary_text := update_complaint_data ->> 'update_address';
+    _upd_location_summary_text := left(update_complaint_data ->> 'update_address', 100)
+        || CASE WHEN length(update_complaint_data ->> 'update_address') > 100 THEN
+            '… DATA TRUNCATED'
+        ELSE
+            ''
+        END;
     _upd_location_detailed_text := update_complaint_data ->> 'update_location_description';
     _update_address_coordinates_lat := update_complaint_data ->> 'update_address_coordinates_lat';
     _update_address_coordinates_long := update_complaint_data ->> 'update_address_coordinates_long';
-    _upd_caller_name := update_complaint_data ->> 'update_caller_name';
-    _upd_caller_phone_1 := update_complaint_data ->> 'update_primary_phone';
-    _upd_caller_phone_2 := update_complaint_data ->> 'update_alt_phone';
-    _upd_caller_phone_3 := update_complaint_data ->> 'update_alt_phone_2';
-    _upd_caller_address := update_complaint_data ->> 'update_caller_address';
-    _upd_caller_email := update_complaint_data ->> 'update_caller_email';
+    _upd_caller_name := left(update_complaint_data ->> 'update_caller_name', 100 )
+        || CASE WHEN length(update_complaint_data ->> 'update_caller_name' ) > 100 THEN
+            '… DATA TRUNCATED'
+        ELSE
+            ''
+        END;
+    _upd_caller_address := left(update_complaint_data ->> 'update_caller_address', 100 )
+        || CASE WHEN length(update_complaint_data ->> 'update_caller_address' ) > 100 THEN
+            '… DATA TRUNCATED'
+        ELSE
+            ''
+        END;
+    _upd_caller_email := left(update_complaint_data ->> 'update_caller_email', 100 )
+        || CASE WHEN length(update_complaint_data ->> 'update_caller_email' ) > 100 THEN
+            '… DATA TRUNCATED'
+        ELSE
+            ''
+        END;
     _upd_reported_by_code := update_complaint_data ->> 'update_reffered_by_lst';
     _upd_reported_by_other_text := update_complaint_data ->> 'update_reffered_by_txt';
     _create_userid := substring(update_complaint_data ->> USERNAME_TXT from 1 for 32);
@@ -96,9 +113,9 @@ BEGIN
     FROM   complaint.insert_and_return_code(_upd_reported_by_code, 'reprtdbycd');
 
     -- Format Phone Numbers
-    _upd_caller_phone_1 := complaint.format_phone_number(_upd_caller_phone_1);
-    _upd_caller_phone_2 := complaint.format_phone_number(_upd_caller_phone_2);
-    _upd_caller_phone_3 := complaint.format_phone_number(_upd_caller_phone_3);
+    _upd_caller_phone_1 := complaint.format_phone_number(update_complaint_data ->> 'update_primary_phone');
+    _upd_caller_phone_2 := complaint.format_phone_number(update_complaint_data ->> 'update_alt_phone');
+    _upd_caller_phone_3 := complaint.format_phone_number(update_complaint_data ->> 'update_alt_phone_2');
 
     -- Create a geometry point based on the latitude and longitude
     IF _update_address_coordinates_lat IS NOT NULL AND _update_address_coordinates_lat <> '' AND

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@apptypes/app/complaint-types";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import {
@@ -76,6 +76,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   let referrals = relatedData.referrals ?? [];
   const agencyCodes = useAppSelector((state) => state.codeTables.agency);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
@@ -276,7 +277,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     </OverlayTrigger>
   );
 
-  const renderCommonDropdownItems = () => (
+  const renderCommonDropdownItems = (showStartInvestigation = false) => (
     <>
       {complaintType === "HWCR" && (
         <Dropdown.Item
@@ -306,6 +307,17 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         >
           <i className="bi bi-folder-plus"></i>
           <span>Create/add case</span>
+        </Dropdown.Item>
+      )}
+      {showCreateAddCase && (complaintType !== COMPLAINT_TYPES.ERS || showStartInvestigation) && (
+        <Dropdown.Item
+          as="button"
+          id="start-investigation-button"
+          onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+          disabled={complaintAgency !== userAgency}
+        >
+          <i className="bi bi-arrow-right-circle"></i>
+          <span>Start investigation</span>
         </Dropdown.Item>
       )}
       {showComplaintReferrals && (
@@ -419,7 +431,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
-                      {renderCommonDropdownItems()}
+                      {renderCommonDropdownItems(true)}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -445,6 +457,19 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <i className="bi bi-arrow-repeat"></i>
                     <span>Update status</span>
                   </Button>
+
+                  {showCreateAddCase && complaintType === COMPLAINT_TYPES.ERS && (
+                    <Button
+                      id="details-screen-start-investigation-button"
+                      title="Start investigation"
+                      variant="outline-light"
+                      onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+                      disabled={complaintAgency !== userAgency}
+                    >
+                      <i className="bi bi-arrow-right-circle"></i>
+                      <span>Start investigation</span>
+                    </Button>
+                  )}
 
                   <Dropdown className="comp-header-kebab-menu">
                     <Dropdown.Toggle

@@ -286,7 +286,6 @@ export type CaseFileCreateInput = {
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
-  name: Scalars['String']['input'];
 };
 
 export type CaseFileFilters = {
@@ -449,7 +448,7 @@ export type CreateEnforcementActionInput = {
   dateIssued: Scalars['DateTime']['input'];
   enforcementActionCode: Scalars['String']['input'];
   geoOrganizationUnitCode: Scalars['String']['input'];
-  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   partyIdentifier: Scalars['String']['input'];
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
@@ -477,7 +476,6 @@ export type CreateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name: Scalars['String']['input'];
 };
 
 export type CreateInspectionPartyInput = {
@@ -504,6 +502,7 @@ export type CreateInvestigationBusinessInput = {
 export type CreateInvestigationInput = {
   caseIdentifier?: InputMaybe<Scalars['String']['input']>;
   community?: InputMaybe<Scalars['String']['input']>;
+  complaintIdentifier?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -514,7 +513,6 @@ export type CreateInvestigationInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name: Scalars['String']['input'];
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1114,6 +1112,7 @@ export type InvestigationBusiness = {
 };
 
 export type InvestigationFilters = {
+  community?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinator?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
@@ -2564,7 +2563,7 @@ export type UpdateEnforcementActionInput = {
   enforcementActionCode?: InputMaybe<Scalars['String']['input']>;
   enforcementActionIdentifier: Scalars['String']['input'];
   geoOrganizationUnitCode?: InputMaybe<Scalars['String']['input']>;
-  paidDate?: InputMaybe<Scalars['Date']['input']>;
+  paidDate?: InputMaybe<Scalars['DateTime']['input']>;
   ticketAmount?: InputMaybe<Scalars['Float']['input']>;
   ticketNumber?: InputMaybe<Scalars['String']['input']>;
   ticketOutcomeCode?: InputMaybe<Scalars['String']['input']>;
@@ -2584,7 +2583,6 @@ export type UpdateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationInput = {
@@ -2598,7 +2596,6 @@ export type UpdateInvestigationInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };

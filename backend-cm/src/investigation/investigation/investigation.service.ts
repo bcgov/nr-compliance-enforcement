@@ -23,6 +23,7 @@ import { GeoJsonProperties } from "geojson";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
+import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 
 @Injectable()
 export class InvestigationService {
@@ -267,12 +268,9 @@ export class InvestigationService {
 
     // Automatically open a case file if one is not provided
     if (!caseIdentifier) {
-      const today = new Date().toISOString().slice(0, 10);
-      const caseName = `Investigation ${input.name} (${today})`;
       const newCase = await this.caseFileService.create({
         leadAgency,
         caseStatus: "OPEN",
-        name: caseName,
         description: "Auto-generated case file for investigation",
         createdByAppUserGuid: input.createdByAppUserGuid,
       });
@@ -290,6 +288,8 @@ export class InvestigationService {
       throw new Error(`Case file with guid ${caseIdentifier} not found`);
     }
 
+    const generatedName = await generateNextInvestigationIdentifier(this.prisma);
+
     // Create the investigation
     let investigation;
     await this.prisma.$transaction(async (tx) => {
@@ -299,7 +299,7 @@ export class InvestigationService {
             investigation_status: investigationStatus,
             investigation_description: input.description,
             owned_by_agency_ref: leadAgency,
-            name: input.name,
+            name: generatedName,
             investigation_opened_utc_timestamp: new Date(),
             primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
             supervisor_guid_ref: input.supervisorGuid || null,
@@ -353,6 +353,19 @@ export class InvestigationService {
       );
     }
 
+    if (input.complaintIdentifier) {
+      try {
+        await this.caseActivityService.create({
+          caseFileGuid: caseIdentifier,
+          activityType: "COMP",
+          activityIdentifier: input.complaintIdentifier,
+        });
+      } catch (error) {
+        this.logger.error("Error creating case activity for complaint association with investigation:", error);
+        throw new Error(`Failed to create case activity for complaint association. Error: ${error}`);
+      }
+    }
+
     try {
       return this.mapper.map<investigation, Investigation>(
         investigation as investigation,
@@ -390,9 +403,6 @@ export class InvestigationService {
         }
         if (input.description !== undefined) {
           updateData.investigation_description = input.description;
-        }
-        if (input.name !== undefined) {
-          updateData.name = input.name;
         }
         if (input.locationAddress !== undefined) {
           updateData.location_address = input.locationAddress;

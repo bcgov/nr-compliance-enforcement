@@ -34,7 +34,7 @@ import { RequestTokenMiddleware } from "./middleware/req.token";
 import { ComplaintOutcomeModule } from "./v1/shared_data/complaint_outcome/complaint_outcome.module";
 import { ComplaintUpdatesModule } from "./v1/complaint_updates/complaint_updates.module";
 import { ScheduleModule } from "@nestjs/schedule";
-import { ComplaintSequenceResetScheduler } from "./v1/complaint/complaint-sequence-reset.service";
+import { SequenceResetScheduler } from "./v1/complaint/sequence-reset.service";
 import { DocumentModule } from "./v1/document/document.module";
 import { CdogsModule } from "./external_api/cdogs/cdogs.module";
 import { GirTypeCodeModule } from "./v1/gir_type_code/gir_type_code.module";
@@ -136,7 +136,7 @@ if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
     TeamModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ComplaintSequenceResetScheduler],
+  providers: [AppService, SequenceResetScheduler],
 })
 export class AppModule {
   // let's add a middleware on all routes
