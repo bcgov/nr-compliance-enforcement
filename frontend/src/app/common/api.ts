@@ -82,7 +82,7 @@ axios.interceptors.response.use(
     // access to this resource (e.g. cross-agency complaint). Send them to the
     // unauthorized page instead of letting callers render a partial/empty state.
     if (response?.status === STATUS_CODES.Unauthorized && originalRequest?._retry) {
-      window.location.href = "/not-authorized";
+      globalThis.location.href = "/not-authorized";
       throw error;
     }
 
