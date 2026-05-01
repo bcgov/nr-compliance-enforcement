@@ -1,8 +1,17 @@
 import { Prisma } from "@prisma/client/extension";
 import { Logger } from "@nestjs/common";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { getRequest } from "./request-interceptor";
 
 const logger = new Logger("PgSessionExtension");
+
+/**
+ * Set to true while a service-level transaction is in flight that has already set the JWT
+ * claims itself (via `withRlsTransaction`). Reads inside that transaction will then skip the
+ * pg-session wrap so they don't open nested transactions which under PgBouncer transaction-
+ * pooling.
+ */
+export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
 /**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
@@ -40,6 +49,12 @@ function createPgSessionExtension(client: any) {
           // This allows mutations to take advantage of transactions without
           // being nested, which prisma has been known to have troubles with
           if (!operation || !readOperations.has(operation)) {
+            return query(args);
+          }
+
+          // If we're inside a service-level transaction that has already set the claims,
+          // skip the wrap. Otherwise we'd open a nested transaction.
+          if (inTransactionContext.getStore()) {
             return query(args);
           }
 

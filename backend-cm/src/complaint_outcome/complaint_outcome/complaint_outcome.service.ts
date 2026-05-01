@@ -42,6 +42,7 @@ import { ActionInput } from "./dto/action-input";
 import { Note } from "./entities/note.entity";
 import { Prevention } from "./entities/prevention.entity";
 import { DeletePreventionInput } from "./dto/delete-prevention.input";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class ComplaintOutcomeService {
@@ -112,7 +113,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         let assessmentId: string;
 
         if (!model.complaintOutcomeGuid) {
@@ -817,7 +818,7 @@ export class ComplaintOutcomeService {
 
   async updateAssessment(model: UpdateAssessmentInput) {
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         await db.assessment.update({
           where: { assessment_guid: model.assessment.id },
           data: {
@@ -1051,7 +1052,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeGuid: string;
     let complaintOutcomeOutput: ComplaintOutcome;
 
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       if (!model.complaintOutcomeGuid) {
         complaintOutcomeGuid = await this.createComplaintOutcome(db, {
           complaintId: model.complaintId,
@@ -1132,7 +1133,7 @@ export class ComplaintOutcomeService {
   async updatePrevention(model: UpdatePreventionInput) {
     let complaintOutcomeOutput: ComplaintOutcome;
 
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       await db.prevention_education.update({
         where: { prevention_education_guid: model.prevention.id },
         data: {
@@ -1212,7 +1213,7 @@ export class ComplaintOutcomeService {
   async deletePrevention(model: DeletePreventionInput) {
     let complaintOutcomeOutput: ComplaintOutcome;
     let complaintOutcomeGuid: string;
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       let caseFile = await this.findOneByLeadId(model.complaintId);
       complaintOutcomeGuid = caseFile.complaintOutcomeGuid;
 
@@ -1310,7 +1311,7 @@ export class ComplaintOutcomeService {
         ...reviewInput,
       };
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //If case is not exists -> create case
         if (!reviewInput.complaintOutcomeGuid) {
           const caseFileId = await _createReviewCase(db, reviewInput);
@@ -1346,7 +1347,7 @@ export class ComplaintOutcomeService {
   async updateReview(reviewInput: ReviewInput): Promise<ComplaintOutcome> {
     try {
       const { isReviewRequired, complaintOutcomeGuid, reviewComplete, complaintId } = reviewInput;
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         // Update review_required_ind in table case_file
         await db.complaint_outcome.update({
           where: {
@@ -1453,7 +1454,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, note, createUserId, actor, outcomeAgencyCode } = model;
         const caseFile = await this.findOneByLeadId(complaintId);
 
@@ -1482,7 +1483,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         await this._upsertNote(db, complaintOutcomeGuid, note, actor, updateUserId, null, id);
 
         // Return updated case, not just the note
@@ -1596,7 +1597,7 @@ export class ComplaintOutcomeService {
       const current = new Date();
       const xrefId = await _getNoteActionXref();
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         if (!complaintOutcomeGuid) {
           throw new Error(`Unable to delete note for note id: ${id}`);
         }
@@ -1642,7 +1643,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
     let complaintOutcomeGuid;
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         let caseFile = await this.findOneByLeadId(createEquipmentInput.complaintId);
 
         if (caseFile?.complaintOutcomeGuid) {
@@ -1754,7 +1755,7 @@ export class ComplaintOutcomeService {
     let caseFile = await this.findOneByLeadId(updateEquipmentInput.complaintId);
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         // we're updating a single equipment record, so only one equipment was provided.
         const equipmentRecord = updateEquipmentInput.equipment[0];
         const equipmentGuid = equipmentRecord.id;
@@ -2404,7 +2405,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, wildlife } = model;
         const { tags, drugs, actions } = wildlife;
 
@@ -2962,7 +2963,7 @@ export class ComplaintOutcomeService {
     };
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the wildlife record first, if there is a record,
         //-- apply updates to it
         const source = await db.wildlife.findUnique({
@@ -3011,7 +3012,7 @@ export class ComplaintOutcomeService {
     const softDeleteFragment = { active_ind: false, update_user_id: userId, update_utc_timestamp: current };
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the wildlife entry to delete
         const wildlife = await db.wildlife.findUnique({
           where: {
@@ -3167,7 +3168,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, decision } = model;
 
         const caseFile = await this.findOneByLeadId(complaintId);
@@ -3396,7 +3397,7 @@ export class ComplaintOutcomeService {
       let results: ComplaintOutcome;
       const current = new Date();
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the decision record first, if there is a record,
         //-- apply updates to it
         const source = await db.decision.findUnique({
@@ -3584,7 +3585,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, input } = model;
 
         const caseFile = await this.findOneByLeadId(complaintId);
@@ -3617,7 +3618,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- get the current case file and compare the current
         //-- authorization outcome to the submited outcome if the
         //-- outcome is a different type, remove the old outcome
@@ -3646,7 +3647,7 @@ export class ComplaintOutcomeService {
     const timestamp = new Date();
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const caseFile = await this.findOne(complaintOutcomeGuid);
 
         if (caseFile) {
