@@ -11,6 +11,7 @@ import { openModal, appUserGuid } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
@@ -69,6 +70,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
 const InvestigationCreate: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
   const { caseIdentifier, investigationGuid } = useParams<{
     caseIdentifier?: string;
     investigationGuid?: string;
@@ -216,9 +218,9 @@ const InvestigationCreate: FC = () => {
     } else if (caseIdentifier) {
       navigate(`/case/${caseIdentifier}`);
     } else {
-      navigate("/investigations");
+      navigate(investigationSearchURL);
     }
-  }, [navigate, caseIdentifier, investigationGuid, isEditMode, form, allowNavigation]);
+  }, [navigate, caseIdentifier, investigationGuid, isEditMode, form, allowNavigation, investigationSearchURL]);
 
   const cancelButtonClick = useCallback(() => {
     if (!isDirty) {

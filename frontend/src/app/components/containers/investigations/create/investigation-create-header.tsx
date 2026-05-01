@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useInvestigationSearch } from "../hooks/use-investigation-search";
 
 interface InvestigationEditHeaderProps {
   cancelButtonClick: () => void;
@@ -21,6 +22,7 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
 }) => {
   const pageTitle = isEditMode ? "Edit investigation" : "Create investigation";
   const cancelTitle = isEditMode ? "Cancel edit investigation" : "Cancel create investigation";
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   return (
     <div className="comp-details-header">
@@ -30,7 +32,7 @@ export const InvestigationCreateHeader: FC<InvestigationEditHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/investigations">Investigations</Link>
+                <Link to={investigationSearchURL}>Investigations</Link>
               </li>
               {isEditMode && investigationGuid && (
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
