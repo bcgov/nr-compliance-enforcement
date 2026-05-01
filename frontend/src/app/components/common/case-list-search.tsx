@@ -1,9 +1,8 @@
 import { Highlighter } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Badge } from "react-bootstrap";
-import { throttle } from "lodash";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
@@ -11,11 +10,20 @@ import { CODE_TABLE_TYPES } from "@constants/code-table-types";
 import { applyStatusClass } from "@common/methods";
 import { useCaseSearchQuery } from "@/app/graphql/hooks/useCaseSearchQuery";
 import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
+import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
 
 type Props = {
   id?: string;
   onChange?: (selected: Option | null) => void;
   errorMessage?: string;
+};
+
+type CaseSearchOption = {
+  id: string;
+  name: string;
+  agency: string;
+  status: string;
+  investigations: Array<{ name: string; openedTimestamp: Date }>;
 };
 
 export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = () => {}, errorMessage = "" }) => {
@@ -28,20 +36,65 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
   const [searchString, setSearchString] = useState<string>("");
   const [caseFileData, setCaseFileData] = useState<any[]>([]);
 
-  const { data, isLoading: isSearchCaseLoading } = useCaseSearchQuery(searchString);
+  // Step 1: search investigations
+  const { data: investigationData, isLoading: isInvestigationLoading } = useInvestigationSearchQuery({
+    filters: { search: searchString },
+    queryKey: [searchString],
+    enabled: searchString.length > 0,
+  });
 
-  //Effects
+  // Build a map of investigationGuid -> { name, openedTimestamp } for lookup during merge
+  const investigationsByGuid = useMemo(() => {
+    const map = new Map<string, { name: string; openedTimestamp: Date }>();
+    for (const investigation of investigationData?.searchInvestigations?.items ?? []) {
+      if (investigation?.investigationGuid) {
+        map.set(investigation.investigationGuid, {
+          name: investigation.name ?? investigation.investigationGuid,
+          openedTimestamp: investigation.openedTimestamp,
+        });
+      }
+    }
+    return map;
+  }, [investigationData]);
+
+  // Collect activity GUIDs to feed into the case search
+  const activityGuids = useMemo(() => Array.from(investigationsByGuid.keys()), [investigationsByGuid]);
+
+  // Step 2: search cases (waits for investigation search to settle)
+  const { data: caseData, isLoading: isCaseLoading } = useCaseSearchQuery({
+    filters: { search: searchString, activityGuids },
+    queryKey: [searchString, activityGuids.join(",")],
+    enabled: searchString.length > 0 && !isInvestigationLoading,
+  });
+
+  // Effects: merge results into the typeahead shape
   useEffect(() => {
-    if (data) {
-      const caseFiles = data.searchCaseFiles.items.map((item) => ({
-        id: item.caseIdentifier,
-        name: item.name || item.caseIdentifier,
-        agency: item.leadAgency?.longDescription || "Unknown",
-        status: item.caseStatus?.caseStatusCode || "Unknown",
-      }));
-      setCaseFileData(caseFiles);
-    } else setCaseFileData([]);
-  }, [data, searchString]);
+    if (!caseData) {
+      setCaseFileData([]);
+      return;
+    }
+
+    const merged: CaseSearchOption[] = caseData.searchCaseFiles.items
+      .filter((item): item is typeof item & { caseIdentifier: string } => Boolean(item.caseIdentifier))
+      .map((item) => {
+        const investigations = (item.activities ?? [])
+          .map((activity) => {
+            const ref = activity?.activityIdentifier;
+            return ref ? investigationsByGuid.get(ref) : undefined;
+          })
+          .filter((investigation): investigation is { name: string; openedTimestamp: Date } => Boolean(investigation));
+
+        return {
+          id: item.caseIdentifier,
+          name: item.name || item.caseIdentifier,
+          agency: item.leadAgency?.longDescription || "Unknown",
+          status: item.caseStatus?.caseStatusCode || "Unknown",
+          investigations,
+        };
+      });
+
+    setCaseFileData(merged);
+  }, [caseData, investigationsByGuid]);
 
   const getStatusDescription = (input: string): string => {
     const code = statusCodes.find((item) => item.complaintStatus === input);
@@ -70,9 +123,9 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     }
   };
 
-  const handleSearch = throttle((query: string) => {
+  const handleSearch = (query: string) => {
     setSearchString(query);
-  }, 250);
+  };
 
   return (
     <div className="complaint-search-container">
@@ -86,22 +139,27 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         selected={selectedCase ? [selectedCase] : []}
-        isLoading={isSearchCaseLoading}
+        isLoading={isInvestigationLoading || isCaseLoading}
         options={caseFileData}
         placeholder="Search for a case"
         isInvalid={errorMessage.length > 0}
         hintText={hintText}
-        renderMenuItemChildren={(option: any, props: any) => (
-          <>
-            <div>
-              <Highlighter search={props.text}>{`${option.name}`}</Highlighter>{" "}
-              <div className={`badge ${applyStatusClass(option.status)}`}>{getStatusDescription(option.status)}</div>
-            </div>
-            <dt>
-              <Badge bg="species-badge comp-species-badge">{option.agency}</Badge>
-            </dt>
-          </>
-        )}
+        renderMenuItemChildren={(option, props) => {
+          const caseOption = option as CaseSearchOption;
+          return (
+            <>
+              <div>
+                <Highlighter search={props.text}>{`${caseOption.name}`}</Highlighter>{" "}
+                <div className={`badge ${applyStatusClass(caseOption.status)}`}>
+                  {getStatusDescription(caseOption.status)}
+                </div>
+              </div>
+              <dt>
+                <Badge bg="species-badge comp-species-badge">{caseOption.agency}</Badge>
+              </dt>
+            </>
+          );
+        }}
       />
       <div className="error-message">{errorMessage}</div>
     </div>

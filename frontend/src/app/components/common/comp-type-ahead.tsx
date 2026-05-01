@@ -22,6 +22,7 @@ export const CompAsyncTypeahead: FC<Props> = ({
       filterBy={() => true}
       className={className}
       options={options}
+      useCache={false}
       onChange={onChange}
       onKeyDown={(e: any) => {
         if (e.key === "Enter" && options.length > 0) {
