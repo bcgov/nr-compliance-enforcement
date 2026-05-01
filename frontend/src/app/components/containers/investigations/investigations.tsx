@@ -115,7 +115,7 @@ const Investigations: FC = () => {
   });
 
   // Map of activityIdentifier -> related cases
-  const cases = useMemo(() => {
+  useMemo(() => {
     const map = new Map<string, CaseFile[]>();
     for (const casefile of caseData?.caseFilesByActivityIds || []) {
       for (const activity of casefile.activities || []) {
