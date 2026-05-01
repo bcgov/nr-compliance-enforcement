@@ -78,13 +78,13 @@ axios.interceptors.response.use(
       }
     }
 
-    // 401 on the retry means the token was valid — the user genuinely lacks
+    // 401 on the retry means the login token was valid — the user genuinely lacks
     // access to this resource (e.g. cross-agency complaint). Send them to the
     // unauthorized page instead of letting callers render a partial/empty state.
-    // if (response?.status === STATUS_CODES.Unauthorized && originalRequest?._retry) {
-    //   window.location.href = "/not-authorized";
-    //   throw error;
-    // }
+    if (response?.status === STATUS_CODES.Unauthorized && originalRequest?._retry) {
+      window.location.href = "/not-authorized";
+      throw error;
+    }
 
     if (response?.status === STATUS_CODES.Forbiden) {
       ToggleError("User is not authorized to perform this action");
