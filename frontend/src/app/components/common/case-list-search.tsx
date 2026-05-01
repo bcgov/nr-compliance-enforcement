@@ -11,6 +11,7 @@ import { applyStatusClass } from "@common/methods";
 import { useCaseSearchQuery } from "@/app/graphql/hooks/useCaseSearchQuery";
 import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
+import { useGetInvestigationsQuery } from "@/app/components/containers/investigations/hooks/use-Investigation-query";
 
 type Props = {
   id?: string;
@@ -43,22 +44,25 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     enabled: searchString.length > 0,
   });
 
-  // Build a map of investigationGuid -> { name, openedTimestamp } for lookup during merge
-  const investigationsByGuid = useMemo(() => {
+  // Investigations matched by the user's search string
+  const searchMatchedInvestigationsByGuid = useMemo(() => {
     const map = new Map<string, { name: string; openedTimestamp: Date }>();
     for (const investigation of investigationData?.searchInvestigations?.items ?? []) {
       if (investigation?.investigationGuid) {
         map.set(investigation.investigationGuid, {
           name: investigation.name ?? investigation.investigationGuid,
-          openedTimestamp: investigation.openedTimestamp,
+          openedTimestamp: investigation.openedTimestamp ?? new Date(0),
         });
       }
     }
     return map;
   }, [investigationData]);
 
-  // Collect activity GUIDs to feed into the case search
-  const activityGuids = useMemo(() => Array.from(investigationsByGuid.keys()), [investigationsByGuid]);
+  // Activity GUIDs to feed into the case search (from search-matched investigations only)
+  const activityGuids = useMemo(
+    () => Array.from(searchMatchedInvestigationsByGuid.keys()),
+    [searchMatchedInvestigationsByGuid],
+  );
 
   // Step 2: search cases (waits for investigation search to settle)
   const { data: caseData, isLoading: isCaseLoading } = useCaseSearchQuery({
@@ -66,6 +70,41 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     queryKey: [searchString, activityGuids.join(",")],
     enabled: searchString.length > 0 && !isInvestigationLoading,
   });
+
+  const missingInvestigationGuids = useMemo(() => {
+    const knownGuids = new Set(searchMatchedInvestigationsByGuid.keys());
+    const referencedGuids = new Set<string>();
+
+    for (const item of caseData?.searchCaseFiles?.items ?? []) {
+      for (const activity of item?.activities ?? []) {
+        const isInvestigation = activity?.activityType?.caseActivityTypeCode === "INVSTGTN";
+        const ref = activity?.activityIdentifier;
+        if (isInvestigation && ref && !knownGuids.has(ref)) {
+          referencedGuids.add(ref);
+        }
+      }
+    }
+
+    return Array.from(referencedGuids);
+  }, [caseData, searchMatchedInvestigationsByGuid]);
+
+  const { data: missingInvestigationData, isLoading: isMissingInvestigationsLoading } = useGetInvestigationsQuery({
+    ids: missingInvestigationGuids,
+    queryKey: [missingInvestigationGuids.join(",")],
+  });
+
+  const investigationsByGuid = useMemo(() => {
+    const map = new Map(searchMatchedInvestigationsByGuid);
+    for (const investigation of missingInvestigationData?.getInvestigations ?? []) {
+      if (investigation?.investigationGuid) {
+        map.set(investigation.investigationGuid, {
+          name: investigation.name ?? investigation.investigationGuid,
+          openedTimestamp: investigation.openedTimestamp ?? new Date(0),
+        });
+      }
+    }
+    return map;
+  }, [searchMatchedInvestigationsByGuid, missingInvestigationData]);
 
   // Effects: merge results into the typeahead shape
   useEffect(() => {
@@ -139,7 +178,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         selected={selectedCase ? [selectedCase] : []}
-        isLoading={isInvestigationLoading || isCaseLoading}
+        isLoading={isInvestigationLoading || isCaseLoading || isMissingInvestigationsLoading}
         options={caseFileData}
         placeholder="Search for a case"
         isInvalid={errorMessage.length > 0}
@@ -148,15 +187,21 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
           const caseOption = option as CaseSearchOption;
           return (
             <>
-              <div>
-                <Highlighter search={props.text}>{`${caseOption.name}`}</Highlighter>{" "}
+              <div className="case-search-result__header">
+                <Highlighter search={props.text}>{caseOption.name}</Highlighter>{" "}
                 <div className={`badge ${applyStatusClass(caseOption.status)}`}>
                   {getStatusDescription(caseOption.status)}
                 </div>
-              </div>
-              <dt>
                 <Badge bg="species-badge comp-species-badge">{caseOption.agency}</Badge>
-              </dt>
+              </div>
+              {caseOption.investigations.map((investigation) => (
+                <div
+                  key={investigation.name}
+                  className="case-search-result__investigation"
+                >
+                  <Highlighter search={props.text}>{investigation.name}</Highlighter>
+                </div>
+              ))}
             </>
           );
         }}

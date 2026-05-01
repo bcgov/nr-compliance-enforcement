@@ -2341,3 +2341,14 @@ tr:has(> .comp-cell-child-expanded) {
     }
   }
 }
+
+.case-search-result__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.case-search-result__investigation {
+  margin-top: 0.25rem;
+  color: #6c757d;
+}

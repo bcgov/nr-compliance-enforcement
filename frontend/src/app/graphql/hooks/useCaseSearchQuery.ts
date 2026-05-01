@@ -22,6 +22,9 @@ const SEARCH_CASE_FILES = gql`
         }
         activities {
           activityIdentifier
+          activityType {
+            caseActivityTypeCode
+          }
         }
       }
       pageInfo {
