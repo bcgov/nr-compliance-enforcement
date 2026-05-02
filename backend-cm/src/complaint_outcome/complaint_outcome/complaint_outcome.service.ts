@@ -199,69 +199,22 @@ export class ComplaintOutcomeService {
           }
         }
 
-        for (const action of model.assessment.actions) {
-          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
-            where: {
-              action_type_code: ACTION_TYPE_CODES.COMPASSESS,
-              action_code: action.actionCode,
-            },
-            select: {
-              action_type_action_xref_guid: true,
-            },
-          });
-          await db.action.create({
-            data: {
-              complaint_outcome_guid: complaintOutcomeGuid,
-              assessment_guid: assessmentId,
-              action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
-              actor_guid: action.actor,
-              action_date: action.date,
-              active_ind: action.activeIndicator,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
-          });
-        }
-
-        //Add category 1 actions
-        let cat1Action_codes_objects = await db.action_type_action_xref.findMany({
-          where: { action_type_code: ACTION_TYPE_CODES.CAT1ASSESS },
-          select: { action_code: true, action_type_action_xref_guid: true },
+        await this._createAssessmentActions(db, {
+          complaintOutcomeGuid,
+          assessmentId,
+          actions: model.assessment.actions,
+          actionTypeCode: ACTION_TYPE_CODES.COMPASSESS,
+          createUserId: model.createUserId,
         });
 
-        let cat1Action_codes: Array<string> = [];
-        for (const action_code_object of cat1Action_codes_objects) {
-          cat1Action_codes.push(action_code_object.action_code);
-        }
-
-        for (const cat1Action of model.assessment.actions) {
-          if (action_codes.indexOf(cat1Action.actionCode) === -1) {
-            throw "Some action code values where not passed from the client";
-          }
-        }
-        for (const action of model.assessment.cat1Actions) {
-          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
-            where: {
-              action_type_code: ACTION_TYPE_CODES.CAT1ASSESS,
-              action_code: action.actionCode,
-            },
-            select: {
-              action_type_action_xref_guid: true,
-            },
-          });
-          await db.action.create({
-            data: {
-              complaint_outcome_guid: complaintOutcomeGuid,
-              assessment_guid: assessmentId,
-              action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
-              actor_guid: action.actor,
-              action_date: action.date,
-              active_ind: action.activeIndicator,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
-          });
-        }
+        //Add category 1 actions
+        await this._createAssessmentActions(db, {
+          complaintOutcomeGuid,
+          assessmentId,
+          actions: model.assessment.cat1Actions,
+          actionTypeCode: ACTION_TYPE_CODES.CAT1ASSESS,
+          createUserId: model.createUserId,
+        });
 
         this.logger.log(`Actions created for assessment: ${assessmentId}`);
       });
@@ -274,6 +227,43 @@ export class ComplaintOutcomeService {
       );
     }
     return complaintOutcomeOutput;
+  }
+
+  // Looks up the action_type_action_xref for each action in and creates an action
+  // record linked to the given assessment
+  private async _createAssessmentActions(
+    db: any,
+    options: {
+      complaintOutcomeGuid: string;
+      assessmentId: string;
+      actions: Array<{ actionCode: string; actor: string; date: Date; activeIndicator: boolean }>;
+      actionTypeCode: string;
+      createUserId: string;
+    },
+  ): Promise<void> {
+    for (const action of options.actions) {
+      const actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
+        where: {
+          action_type_code: options.actionTypeCode,
+          action_code: action.actionCode,
+        },
+        select: {
+          action_type_action_xref_guid: true,
+        },
+      });
+      await db.action.create({
+        data: {
+          complaint_outcome_guid: options.complaintOutcomeGuid,
+          assessment_guid: options.assessmentId,
+          action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
+          actor_guid: action.actor,
+          action_date: action.date,
+          active_ind: action.activeIndicator,
+          create_user_id: options.createUserId,
+          create_utc_timestamp: new Date(),
+        },
+      });
+    }
   }
 
   findOne = async (id: string): Promise<ComplaintOutcome> => {
