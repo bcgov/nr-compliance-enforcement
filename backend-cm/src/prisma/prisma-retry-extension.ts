@@ -3,19 +3,25 @@ import { Logger } from "@nestjs/common";
 
 const logger = new Logger("PrismaRetryExtension");
 
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 100;
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 200;
+const MAX_DELAY_MS = 5000;
 
 // Prisma error codes that appear on error.code (PrismaClientKnownRequestError)
 const RETRYABLE_ERROR_CODES = [
   "P1017", // Server has closed the connection
+  "P2024", // Timed out fetching a new connection from the pool
+  "P2028", // Transaction API error / transaction expired
   "08P01", // Connection slots exhausted
 ];
 
 function isRetryableError(error: any): boolean {
-  if (RETRYABLE_ERROR_CODES.includes(error?.code)) return true;
-  if (typeof error?.message === "string") {
-    return RETRYABLE_ERROR_CODES.some((code) => error.message.includes(code));
+  // pg-session extension wraps Prisma errors so the error code lives on .cause for those
+  const code = error?.code ?? error?.cause?.code;
+  if (RETRYABLE_ERROR_CODES.includes(code)) return true;
+  const message = error?.message ?? error?.cause?.message;
+  if (typeof message === "string") {
+    return RETRYABLE_ERROR_CODES.some((c) => message.includes(c));
   }
   return false;
 }
@@ -28,7 +34,9 @@ async function withRetry<T>(operation: string, query: () => Promise<T>): Promise
     } catch (error: any) {
       if (isRetryableError(error) && attempt < MAX_RETRIES) {
         lastError = error;
-        const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+        const exp = BASE_DELAY_MS * Math.pow(2, attempt);
+        // Random backoff so parallel retries don't all execute at once
+        const delay = Math.min(MAX_DELAY_MS, Math.round(exp * (0.5 + Math.random()))); // NOSONAR
         logger.warn(
           `Connection error on ${operation} (${error.code ?? "unknown"}), retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
         );

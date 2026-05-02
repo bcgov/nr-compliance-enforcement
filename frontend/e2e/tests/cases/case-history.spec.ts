@@ -91,6 +91,9 @@ test.describe("Case History Tab", () => {
     // Wait for history tab to be active
     const historyTab = page.locator("#history");
     await expect(historyTab).toHaveClass(/active/, { timeout: 10000 });
+
+    // Wait for data to load
+    await expect(page.getByText("Loading case history")).toBeHidden({ timeout: 15000 });
   });
 
   test("it displays the history tab and is active", async ({ page }) => {

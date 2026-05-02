@@ -35849,3 +35849,11 @@ SET
   agency_code_ref = 'COS'
 WHERE
   agency_code_ref IS NULL;
+
+  
+UPDATE app_user
+SET
+  coms_enrolled_ind = true
+WHERE
+  user_id IN ('ENCETST1', 'ENCETST2', 'ENCETST3');
+  

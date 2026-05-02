@@ -127,11 +127,11 @@ export class InvestigationService {
         },
       },
     });
-
+    const geometry = await this.fetchLocationGeometryPoint(investigationGuid);
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }
-    await this.getLocationGeometryPoint(prismaInvestigation as investigation);
+    (prismaInvestigation as investigation).location_geometry_point = geometry;
 
     try {
       return this.mapper.map<investigation, Investigation>(
@@ -177,8 +177,10 @@ export class InvestigationService {
         },
       },
     });
+    const guids = prismaInvestigations.map((inv) => inv.investigation_guid);
+    const geometryByGuid = await this.fetchLocationGeometryPoints(guids);
     for (const inv of prismaInvestigations) {
-      await this.getLocationGeometryPoint(inv as investigation);
+      (inv as investigation).location_geometry_point = geometryByGuid.get(inv.investigation_guid) ?? null;
     }
 
     try {
@@ -294,7 +296,7 @@ export class InvestigationService {
     let investigation;
     await this.prisma.$transaction(async (tx) => {
       try {
-        investigation = await this.prisma.investigation.create({
+        investigation = await tx.investigation.create({
           data: {
             investigation_status: investigationStatus,
             investigation_description: input.description,
@@ -320,8 +322,11 @@ export class InvestigationService {
         throw error;
       }
       await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry);
+      investigation.location_geometry_point = await this.fetchLocationGeometryPoint(
+        investigation.investigation_guid,
+        tx,
+      );
     });
-    await this.getLocationGeometryPoint(investigation as investigation);
     // Try to create case activity record, and if it fails, delete the investigation
     try {
       await this.caseActivityService.create({
@@ -458,6 +463,7 @@ export class InvestigationService {
           },
         });
         await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry);
+        updatedInvestigation.location_geometry_point = await this.fetchLocationGeometryPoint(investigationGuid, tx);
       } catch (error) {
         this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
         throw error;
@@ -470,7 +476,6 @@ export class InvestigationService {
         input.investigationStatus,
       );
     }
-    await this.getLocationGeometryPoint(updatedInvestigation as investigation);
     try {
       return this.mapper.map<investigation, Investigation>(
         updatedInvestigation as investigation,
@@ -665,25 +670,45 @@ export class InvestigationService {
     return !!existingInvestigation;
   }
 
-  async getLocationGeometryPoint(investigation: investigation): Promise<void> {
+  // Accepts an optional transaction client so the read can reuse the connection.
+  private async fetchLocationGeometryPoint(investigationGuid: string, tx?: any): Promise<any> {
+    const client = tx ?? this.prisma;
     try {
-      let result: investigation[];
-      const query = `
-        SELECT
-            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+      const result = await client.$queryRaw<Array<{ location_geometry_point: any }>>`
+        SELECT public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
         FROM investigation.investigation
-        WHERE investigation_guid = '${investigation.investigation_guid}'::uuid
+        WHERE investigation_guid = ${investigationGuid}::uuid
       `;
-      result = await this.prisma.$queryRawUnsafe(query);
       if (result.length === 0) {
-        throw new Error(`Investigation with guid ${investigation.investigation_guid} not found.`);
+        throw new Error(`Investigation with guid ${investigationGuid} not found.`);
       }
-      investigation.location_geometry_point = result[0].location_geometry_point;
+      return result[0].location_geometry_point;
     } catch (error) {
       this.logger.error(
-        `Error fetching location geometry point for investigation with guid ${investigation.investigation_guid}:`,
+        `Error fetching location geometry point for investigation with guid ${investigationGuid}:`,
         error,
       );
+      throw error;
+    }
+  }
+
+  // Get geometry points for many investigations
+  private async fetchLocationGeometryPoints(investigationGuids: string[]): Promise<Map<string, any>> {
+    const map = new Map<string, any>();
+    if (investigationGuids.length === 0) return map;
+    try {
+      const rows = await this.prisma.$queryRaw<Array<{ investigation_guid: string; location_geometry_point: any }>>`
+        SELECT investigation_guid,
+               public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
+        FROM investigation.investigation
+        WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
+      `;
+      for (const row of rows) {
+        map.set(row.investigation_guid, row.location_geometry_point);
+      }
+      return map;
+    } catch (error) {
+      this.logger.error("Error batch-fetching investigation location geometry points:", error);
       throw error;
     }
   }

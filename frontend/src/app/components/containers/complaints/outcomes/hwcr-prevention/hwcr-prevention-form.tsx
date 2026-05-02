@@ -56,7 +56,14 @@ export const HWCRPreventionForm: FC<Props> = ({
   );
 
   const currentDate = new Date();
-  const [preventionState] = useState<Prevention>(prevention ?? ({} as Prevention));
+  const [preventionState, setPreventionState] = useState<Prevention>(prevention ?? ({} as Prevention));
+
+  // Handles state when the form mounted before the assessment prop was loaded which happens during test runs
+  useEffect(() => {
+    if (prevention?.id && prevention.id !== preventionState.id) {
+      setPreventionState(prevention);
+    }
+  }, [prevention?.id, preventionState.id]);
 
   // Dirty tracking
   const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
@@ -183,9 +190,11 @@ export const HWCRPreventionForm: FC<Props> = ({
   };
 
   const saveButtonClick = async () => {
-    if (!hasErrors()) {
+    if (hasErrors()) {
+      handleFormErrors();
+    } else {
       const updatedPreventionData: Prevention = {
-        id: preventionState.id,
+        id: prevention?.id ?? preventionState.id,
         date: selectedDate,
         officer: {
           key: selectedOfficer?.label,
@@ -201,8 +210,6 @@ export const HWCRPreventionForm: FC<Props> = ({
 
       dispatch(upsertPrevention(id, ownedByAgencyCode.agency, updatedPreventionData));
       handleSave();
-    } else {
-      handleFormErrors();
     }
     markClean();
   };

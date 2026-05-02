@@ -69,9 +69,19 @@ test.describe("Investigation Create Form", () => {
       await locationDescInput.fill("Near the park entrance");
     }
 
-    const saveButton = page.locator("button", { hasText: /Save/i }).first();
-    await expect(saveButton).toBeEnabled({ timeout: 10000 });
+    // Wait for the createInvestigation mutation
+    const createMutationPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") &&
+        (response.request().postData()?.includes("CreateInvestigation") ?? false),
+      { timeout: 15000 },
+    );
+
+    const saveButton = page.locator("#details-screen-save-button-top");
+    await expect(saveButton).toBeVisible({ timeout: 10000 });
     await saveButton.click({ force: true });
+
+    await createMutationPromise;
     await expect(page).toHaveURL(/\/investigation\/[a-f0-9-]+$/i, { timeout: 30000 });
   });
 

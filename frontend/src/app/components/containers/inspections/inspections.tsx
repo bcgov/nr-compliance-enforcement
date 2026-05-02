@@ -1,6 +1,5 @@
 import { FC, useState, useCallback, useMemo } from "react";
-import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { InspectionResult, CaseFile } from "@/generated/graphql";
@@ -49,7 +48,6 @@ const GET_CASE_FILES_BY_ACTIVITIES = gql`
 `;
 
 const Inspections: FC = () => {
-  const navigate = useNavigate();
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
 
@@ -74,6 +72,7 @@ const Inspections: FC = () => {
       filters: getFilters(),
     },
     placeholderData: (previousData) => previousData,
+    enabled: searchValues.viewType === "list",
   });
 
   const inspectionGuids = useMemo(

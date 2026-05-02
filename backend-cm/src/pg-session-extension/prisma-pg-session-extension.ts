@@ -1,5 +1,17 @@
 import { Prisma } from "@prisma/client/extension";
+import { Logger } from "@nestjs/common";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { getRequest } from "./request-interceptor";
+
+const logger = new Logger("PgSessionExtension");
+
+/**
+ * Set to true while a service-level transaction is in flight that has already set the JWT
+ * claims itself (via `withRlsTransaction`). Reads inside that transaction will then skip the
+ * pg-session wrap so they don't open nested transactions which under PgBouncer transaction-
+ * pooling.
+ */
+export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
 /**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
@@ -14,9 +26,7 @@ function createPgSessionExtension(client: any) {
     query: {
       $allModels: {
         async $allOperations(params) {
-          const { args, query } = params;
-          const model = params.model as string | undefined;
-          const operation = params.operation as string | undefined;
+          const { args, query, model, operation } = params;
 
           const readOperations = new Set([
             "findUnique",
@@ -42,6 +52,12 @@ function createPgSessionExtension(client: any) {
             return query(args);
           }
 
+          // If we're inside a service-level transaction that has already set the claims,
+          // skip the wrap. Otherwise we'd open a nested transaction.
+          if (inTransactionContext.getStore()) {
+            return query(args);
+          }
+
           // Try to get the user from the request context from the AsyncLocalStorage
           const request = getRequest();
           const user = request?.user;
@@ -53,36 +69,45 @@ function createPgSessionExtension(client: any) {
 
           try {
             // Set JWT claims in a transaction, then execute the query
-            return await client.$transaction(async (tx: any) => {
-              // Set JWT claims as session variables
-              if (user.idir_user_guid) {
-                await tx.$executeRawUnsafe(
-                  `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
-                );
-              }
+            return await client.$transaction(
+              async (tx: any) => {
+                // Set JWT claims as session variables
+                if (user.idir_user_guid) {
+                  await tx.$executeRawUnsafe(
+                    `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
+                  );
+                }
 
-              if (user.client_roles) {
-                // Join roles with comma instead of JSON stringify to avoid double encoding
-                const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-                await tx.$executeRawUnsafe(
-                  `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
-                );
-              }
+                if (user.client_roles) {
+                  // Join roles with comma instead of JSON stringify to avoid double encoding
+                  const rolesString = Array.isArray(user.client_roles)
+                    ? user.client_roles.join(",")
+                    : user.client_roles;
+                  await tx.$executeRawUnsafe(
+                    `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
+                  );
+                }
 
-              // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-              await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
+                // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
+                await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
 
-              // Execute the original query using the transaction client
-              // We need to call the same operation on the transaction client
-              // The transaction client should have the same structure as the original client
-              const result = await tx[model][operation](args);
-              return result;
-            });
-          } catch (error) {
-            throw new Error(
-              `[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`,
-              error,
+                // Execute the original query using the transaction client
+                // We need to call the same operation on the transaction client
+                // The transaction client should have the same structure as the original client
+                const result = await tx[model][operation](args);
+                return result;
+              },
+              { maxWait: 10000, timeout: 30000 },
             );
+          } catch (error) {
+            // Log the error
+            logger.error(
+              `Failed to execute query with JWT claims for ${model}.${operation}: ${error?.message ?? error}`,
+              error?.stack,
+            );
+            throw new Error(`[pgSessionExtension] Failed to execute query with JWT claims for ${model}.${operation}`, {
+              cause: error,
+            });
           }
         },
       },

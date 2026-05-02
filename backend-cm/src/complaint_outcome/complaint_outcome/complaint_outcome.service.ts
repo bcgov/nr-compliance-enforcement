@@ -42,6 +42,7 @@ import { ActionInput } from "./dto/action-input";
 import { Note } from "./entities/note.entity";
 import { Prevention } from "./entities/prevention.entity";
 import { DeletePreventionInput } from "./dto/delete-prevention.input";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class ComplaintOutcomeService {
@@ -112,7 +113,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         let assessmentId: string;
 
         if (!model.complaintOutcomeGuid) {
@@ -198,69 +199,22 @@ export class ComplaintOutcomeService {
           }
         }
 
-        for (const action of model.assessment.actions) {
-          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
-            where: {
-              action_type_code: ACTION_TYPE_CODES.COMPASSESS,
-              action_code: action.actionCode,
-            },
-            select: {
-              action_type_action_xref_guid: true,
-            },
-          });
-          await db.action.create({
-            data: {
-              complaint_outcome_guid: complaintOutcomeGuid,
-              assessment_guid: assessmentId,
-              action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
-              actor_guid: action.actor,
-              action_date: action.date,
-              active_ind: action.activeIndicator,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
-          });
-        }
-
-        //Add category 1 actions
-        let cat1Action_codes_objects = await db.action_type_action_xref.findMany({
-          where: { action_type_code: ACTION_TYPE_CODES.CAT1ASSESS },
-          select: { action_code: true, action_type_action_xref_guid: true },
+        await this._createAssessmentActions(db, {
+          complaintOutcomeGuid,
+          assessmentId,
+          actions: model.assessment.actions,
+          actionTypeCode: ACTION_TYPE_CODES.COMPASSESS,
+          createUserId: model.createUserId,
         });
 
-        let cat1Action_codes: Array<string> = [];
-        for (const action_code_object of cat1Action_codes_objects) {
-          cat1Action_codes.push(action_code_object.action_code);
-        }
-
-        for (const cat1Action of model.assessment.actions) {
-          if (action_codes.indexOf(cat1Action.actionCode) === -1) {
-            throw "Some action code values where not passed from the client";
-          }
-        }
-        for (const action of model.assessment.cat1Actions) {
-          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
-            where: {
-              action_type_code: ACTION_TYPE_CODES.CAT1ASSESS,
-              action_code: action.actionCode,
-            },
-            select: {
-              action_type_action_xref_guid: true,
-            },
-          });
-          await db.action.create({
-            data: {
-              complaint_outcome_guid: complaintOutcomeGuid,
-              assessment_guid: assessmentId,
-              action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
-              actor_guid: action.actor,
-              action_date: action.date,
-              active_ind: action.activeIndicator,
-              create_user_id: model.createUserId,
-              create_utc_timestamp: new Date(),
-            },
-          });
-        }
+        //Add category 1 actions
+        await this._createAssessmentActions(db, {
+          complaintOutcomeGuid,
+          assessmentId,
+          actions: model.assessment.cat1Actions,
+          actionTypeCode: ACTION_TYPE_CODES.CAT1ASSESS,
+          createUserId: model.createUserId,
+        });
 
         this.logger.log(`Actions created for assessment: ${assessmentId}`);
       });
@@ -273,6 +227,43 @@ export class ComplaintOutcomeService {
       );
     }
     return complaintOutcomeOutput;
+  }
+
+  // Looks up the action_type_action_xref for each action in and creates an action
+  // record linked to the given assessment
+  private async _createAssessmentActions(
+    db: any,
+    options: {
+      complaintOutcomeGuid: string;
+      assessmentId: string;
+      actions: Array<{ actionCode: string; actor: string; date: Date; activeIndicator: boolean }>;
+      actionTypeCode: string;
+      createUserId: string;
+    },
+  ): Promise<void> {
+    for (const action of options.actions) {
+      const actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
+        where: {
+          action_type_code: options.actionTypeCode,
+          action_code: action.actionCode,
+        },
+        select: {
+          action_type_action_xref_guid: true,
+        },
+      });
+      await db.action.create({
+        data: {
+          complaint_outcome_guid: options.complaintOutcomeGuid,
+          assessment_guid: options.assessmentId,
+          action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
+          actor_guid: action.actor,
+          action_date: action.date,
+          active_ind: action.activeIndicator,
+          create_user_id: options.createUserId,
+          create_utc_timestamp: new Date(),
+        },
+      });
+    }
   }
 
   findOne = async (id: string): Promise<ComplaintOutcome> => {
@@ -816,10 +807,8 @@ export class ComplaintOutcomeService {
   }
 
   async updateAssessment(model: UpdateAssessmentInput) {
-    let complaintOutcomeOutput: ComplaintOutcome;
-
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         await db.assessment.update({
           where: { assessment_guid: model.assessment.id },
           data: {
@@ -876,7 +865,8 @@ export class ComplaintOutcomeService {
         });
 
         for (const action of model.assessment.actions) {
-          let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+          // Use db to avoid nested pg-session transactions
+          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.COMPASSESS,
               action_code: action.actionCode,
@@ -888,7 +878,7 @@ export class ComplaintOutcomeService {
             },
           });
 
-          let actionXref = await this.prisma.action.findFirst({
+          let actionXref = await db.action.findFirst({
             where: {
               action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
               assessment_guid: model.assessment.id,
@@ -929,7 +919,8 @@ export class ComplaintOutcomeService {
 
         //Handle cat1actions
         for (const action of model.assessment.cat1Actions) {
-          let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+          // Use db to avoid nested pg-session transactions
+          let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.CAT1ASSESS,
               action_code: action.actionCode,
@@ -956,12 +947,20 @@ export class ComplaintOutcomeService {
           });
         }
       });
-
-      complaintOutcomeOutput = await this.findOne(model.complaintOutcomeGuid);
     } catch (exception) {
+      this.logger.error(`updateAssessment transaction failed for ${model.complaintOutcomeGuid}`, exception);
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
-    return complaintOutcomeOutput;
+
+    try {
+      return await this.findOne(model.complaintOutcomeGuid);
+    } catch (exception) {
+      this.logger.error(
+        `updateAssessment succeeded but post-update read failed for ${model.complaintOutcomeGuid}`,
+        exception,
+      );
+      return { complaintOutcomeGuid: model.complaintOutcomeGuid } as ComplaintOutcome;
+    }
   }
 
   //--------------------------
@@ -1043,7 +1042,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeGuid: string;
     let complaintOutcomeOutput: ComplaintOutcome;
 
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       if (!model.complaintOutcomeGuid) {
         complaintOutcomeGuid = await this.createComplaintOutcome(db, {
           complaintId: model.complaintId,
@@ -1071,8 +1070,9 @@ export class ComplaintOutcomeService {
 
       this.logger.log(`Creating actions for prevention: ${prevention.prevention_education_guid}`);
 
-      //Validate that the actions passed in are all valid
-      let action_codes_objects = await this.prisma.action_type_action_xref.findMany({
+      // Validate that the actions passed in are all valid
+      // Use db to avoid nested pg-session transactions
+      let action_codes_objects = await db.action_type_action_xref.findMany({
         where: {
           action_type_code: {
             in: [ACTION_TYPE_CODES.COSPRVANDEDU, ACTION_TYPE_CODES.PRKPRVANDEDU],
@@ -1091,7 +1091,8 @@ export class ComplaintOutcomeService {
       }
 
       for (const action of model.prevention.actions) {
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
             action_type_code:
@@ -1122,7 +1123,7 @@ export class ComplaintOutcomeService {
   async updatePrevention(model: UpdatePreventionInput) {
     let complaintOutcomeOutput: ComplaintOutcome;
 
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       await db.prevention_education.update({
         where: { prevention_education_guid: model.prevention.id },
         data: {
@@ -1132,7 +1133,8 @@ export class ComplaintOutcomeService {
       });
 
       for (const action of model.prevention.actions) {
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
             action_type_code:
@@ -1145,7 +1147,7 @@ export class ComplaintOutcomeService {
           },
         });
 
-        let actionXref = await this.prisma.action.findFirst({
+        let actionXref = await db.action.findFirst({
           where: {
             action_type_action_xref_guid: actionTypeActionXref.action_type_action_xref_guid,
             complaint_outcome_guid: model.complaintOutcomeGuid,
@@ -1201,7 +1203,7 @@ export class ComplaintOutcomeService {
   async deletePrevention(model: DeletePreventionInput) {
     let complaintOutcomeOutput: ComplaintOutcome;
     let complaintOutcomeGuid: string;
-    await this.prisma.$transaction(async (db) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       let caseFile = await this.findOneByLeadId(model.complaintId);
       complaintOutcomeGuid = caseFile.complaintOutcomeGuid;
 
@@ -1266,7 +1268,8 @@ export class ComplaintOutcomeService {
       try {
         let actionId: string;
 
-        let actionTypeActionXref = await this.prisma.action_type_action_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_type_code: ACTION_TYPE_CODES.CASEACTION,
             action_code: ACTION_CODES.COMPLTREVW,
@@ -1298,7 +1301,7 @@ export class ComplaintOutcomeService {
         ...reviewInput,
       };
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //If case is not exists -> create case
         if (!reviewInput.complaintOutcomeGuid) {
           const caseFileId = await _createReviewCase(db, reviewInput);
@@ -1334,7 +1337,7 @@ export class ComplaintOutcomeService {
   async updateReview(reviewInput: ReviewInput): Promise<ComplaintOutcome> {
     try {
       const { isReviewRequired, complaintOutcomeGuid, reviewComplete, complaintId } = reviewInput;
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         // Update review_required_ind in table case_file
         await db.complaint_outcome.update({
           where: {
@@ -1380,8 +1383,6 @@ export class ComplaintOutcomeService {
       select: {
         case_note_guid: true,
         case_note: true,
-        update_user_id: true,
-        update_utc_timestamp: true,
         outcome_agency_code: true,
         action: {
           select: {
@@ -1396,9 +1397,7 @@ export class ComplaintOutcomeService {
                     action_code: true,
                     short_description: true,
                     long_description: true,
-                    active_ind: true,
                   },
-                  // where active_ind is true
                 },
               },
             },
@@ -1445,7 +1444,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, note, createUserId, actor, outcomeAgencyCode } = model;
         const caseFile = await this.findOneByLeadId(complaintId);
 
@@ -1474,7 +1473,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         await this._upsertNote(db, complaintOutcomeGuid, note, actor, updateUserId, null, id);
 
         // Return updated case, not just the note
@@ -1500,8 +1499,9 @@ export class ComplaintOutcomeService {
     agencyCode: string,
     id: string = "",
   ): Promise<string> => {
+    // Use db to avoid nested pg-session transactions
     const _getNoteActionXref = async (): Promise<string> => {
-      const query = await this.prisma.action_type_action_xref.findFirst({
+      const query = await db.action_type_action_xref.findFirst({
         where: {
           action_code: ACTION_CODES.UPDATENOTE,
           action_type_code: ACTION_TYPE_CODES.CASEACTION,
@@ -1587,7 +1587,7 @@ export class ComplaintOutcomeService {
       const current = new Date();
       const xrefId = await _getNoteActionXref();
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         if (!complaintOutcomeGuid) {
           throw new Error(`Unable to delete note for note id: ${id}`);
         }
@@ -1633,7 +1633,7 @@ export class ComplaintOutcomeService {
     let complaintOutcomeOutput: ComplaintOutcome;
     let complaintOutcomeGuid;
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         let caseFile = await this.findOneByLeadId(createEquipmentInput.complaintId);
 
         if (caseFile?.complaintOutcomeGuid) {
@@ -1745,7 +1745,7 @@ export class ComplaintOutcomeService {
     let caseFile = await this.findOneByLeadId(updateEquipmentInput.complaintId);
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         // we're updating a single equipment record, so only one equipment was provided.
         const equipmentRecord = updateEquipmentInput.equipment[0];
         const equipmentGuid = equipmentRecord.id;
@@ -2395,7 +2395,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, wildlife } = model;
         const { tags, drugs, actions } = wildlife;
 
@@ -2953,7 +2953,7 @@ export class ComplaintOutcomeService {
     };
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the wildlife record first, if there is a record,
         //-- apply updates to it
         const source = await db.wildlife.findUnique({
@@ -3002,7 +3002,7 @@ export class ComplaintOutcomeService {
     const softDeleteFragment = { active_ind: false, update_user_id: userId, update_utc_timestamp: current };
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the wildlife entry to delete
         const wildlife = await db.wildlife.findUnique({
           where: {
@@ -3137,7 +3137,8 @@ export class ComplaintOutcomeService {
       try {
         const { sector, schedule } = decision;
 
-        let scheduleSectorXref = await this.prisma.schedule_sector_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: schedule,
             sector_code: sector,
@@ -3157,7 +3158,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, decision } = model;
 
         const caseFile = await this.findOneByLeadId(complaintId);
@@ -3206,7 +3207,8 @@ export class ComplaintOutcomeService {
     actionCode: string,
     actionTypeCode: string,
   ): Promise<any> => {
-    const query = await this.prisma.action_type_action_xref.findFirst({
+    // Use db to avoid nested pg-session transactions
+    const query = await db.action_type_action_xref.findFirst({
       where: {
         action_code: actionCode,
         action_type_code: actionTypeCode,
@@ -3293,7 +3295,8 @@ export class ComplaintOutcomeService {
           update_utc_timestamp: current,
         };
 
-        let scheduleSectorXref = await this.prisma.schedule_sector_xref.findFirstOrThrow({
+        // Use db to avoid nested pg-session transactions
+        let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: decision.schedule,
             sector_code: decision.sector,
@@ -3384,7 +3387,7 @@ export class ComplaintOutcomeService {
       let results: ComplaintOutcome;
       const current = new Date();
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- find the decision record first, if there is a record,
         //-- apply updates to it
         const source = await db.decision.findUnique({
@@ -3572,7 +3575,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const { complaintId, createUserId, input } = model;
 
         const caseFile = await this.findOneByLeadId(complaintId);
@@ -3605,7 +3608,7 @@ export class ComplaintOutcomeService {
     try {
       let result: ComplaintOutcome;
 
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         //-- get the current case file and compare the current
         //-- authorization outcome to the submited outcome if the
         //-- outcome is a different type, remove the old outcome
@@ -3634,7 +3637,7 @@ export class ComplaintOutcomeService {
     const timestamp = new Date();
 
     try {
-      await this.prisma.$transaction(async (db) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         const caseFile = await this.findOne(complaintOutcomeGuid);
 
         if (caseFile) {

@@ -89,9 +89,14 @@ const App: FC = () => {
         <Modal />
         <PageLoader />
         <ToastContainer //any options that might be overridden need to be given a default here
-          autoClose={5000}
+          // Disable toast auto-close for Playwright/WebDriver so toast assertions don't race the dismiss timer
+          autoClose={typeof navigator !== "undefined" && navigator.webdriver ? false : 5000}
           hideProgressBar={false}
           closeOnClick={true}
+          // In test mode autoClose is disabled to reduce flakiness with assertions
+          // on toasts. This class makes toasts non-interactive in test mode so that
+          // the test runner doesn't click on them when trying to click on other elements
+          className={typeof navigator !== "undefined" && navigator.webdriver ? "toast-container-e2e" : undefined}
         />
         <Routes>
           {redirectMode ? (
@@ -333,7 +338,7 @@ const ComplaintsRouteWrapper = () => {
   const { type } = useParams();
   let userType =
     UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) ? COMPLAINT_TYPES.ERS : COMPLAINT_TYPES.HWCR;
-  const defaultType = !type ? userType : type;
+  const defaultType = type || userType;
 
   return <ComplaintsWrapper defaultComplaintType={defaultType} />;
 };

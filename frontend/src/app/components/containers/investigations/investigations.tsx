@@ -80,6 +80,7 @@ const Investigations: FC = () => {
         filters: getFilters(),
       },
       placeholderData: (previousData) => previousData,
+      enabled: searchValues.viewType === "list",
     },
   );
 
