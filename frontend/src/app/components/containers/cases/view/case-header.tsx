@@ -12,16 +12,15 @@ import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
+  lastUpdatedDisplay?: string;
 }
 
-export const CaseHeader: FC<CaseHeaderProps> = ({ caseData }) => {
+export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }) => {
   const caseId = caseData?.name || caseData?.caseIdentifier || "Unknown";
   const status = caseData?.caseStatus?.shortDescription || "Active";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
-  const lastUpdated = caseData?.updatedTimestamp
-    ? new Date(caseData.updatedTimestamp).toString()
-    : undefined;
+  const lastUpdated = lastUpdatedDisplay ?? undefined;
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
