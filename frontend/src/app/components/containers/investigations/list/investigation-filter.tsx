@@ -78,7 +78,7 @@ export const InvestigationFilter: FC = () => {
         "investigationStatus",
         "Status",
         statusOptions,
-        "Select status",
+        "Select",
         statusOptions.find((option) => option.value === searchValues.investigationStatus) || null,
         handleFieldChange("investigationStatus"),
       )}
@@ -87,7 +87,7 @@ export const InvestigationFilter: FC = () => {
         "community",
         "Community",
         communityOptions,
-        "Select community",
+        "Select",
         communityOptions.find((option) => option.value === searchValues.community) || null,
         handleFieldChange("community"),
       )}
@@ -96,7 +96,7 @@ export const InvestigationFilter: FC = () => {
         "primary-investigator",
         "Primary investigator",
         officerOptions,
-        "Select primary investigator",
+        "Select",
         officerOptions.find((option) => option.value === searchValues.primaryInvestigator) || null,
         handleFieldChange("primaryInvestigator"),
       )}
@@ -105,7 +105,7 @@ export const InvestigationFilter: FC = () => {
         "file-coordinator",
         "File coordinator",
         officerOptions,
-        "Select file coordinator",
+        "Select",
         officerOptions.find((option) => option.value === searchValues.fileCoordinator) || null,
         handleFieldChange("fileCoordinator"),
       )}
@@ -114,7 +114,7 @@ export const InvestigationFilter: FC = () => {
         "supervisor",
         "Supervisor",
         officerOptions,
-        "Select supervisor",
+        "Select",
         officerOptions.find((option) => option.value === searchValues.supervisor) || null,
         handleFieldChange("supervisor"),
       )}
