@@ -51,6 +51,7 @@ import { CodeTableState } from "@/app/types/state/code-table-state";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { geocodeAddressIfNeeded } from "@/app/common/geocoder";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -834,16 +835,15 @@ export const createComplaint =
       const { coordinates } = location;
       const selectedCommunity = areaCodes.find(({ area }) => area === community);
 
-      if (coordinates[Coordinates.Latitude] === 0 && coordinates[Coordinates.Longitude] === 0) {
-        const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${selectedCommunity?.areaName}&addressString=${locationSummary}`,
-        );
-        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+      const resolvedCoordinates = await geocodeAddressIfNeeded(
+        selectedCommunity?.areaName,
+        locationSummary,
+        coordinates,
+        dispatch,
+      );
 
-        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
-          const geoCoderCoordinates = geocodeResponse?.features[0].geometry.coordinates;
-          complaint = { ...complaint, location: { ...location, coordinates: geoCoderCoordinates } };
-        }
+      if (resolvedCoordinates !== coordinates) {
+        complaint = { ...complaint, location: { ...location, coordinates: resolvedCoordinates } };
       }
 
       if (selectedCommunity) {
