@@ -12,35 +12,6 @@ import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigatio
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 
-const SEARCH_INVESTIGATIONS = gql`
-  query SearchInvestigations($page: Int, $pageSize: Int, $filters: InvestigationFilters) {
-    searchInvestigations(page: $page, pageSize: $pageSize, filters: $filters) {
-      items {
-        __typename
-        investigationGuid
-        name
-        openedTimestamp
-        updatedTimestamp
-        leadAgency
-        community
-        caseIdentifier
-        locationGeometry
-        investigationStatus {
-          investigationStatusCode
-          shortDescription
-          longDescription
-        }
-      }
-      pageInfo {
-        currentPage
-        pageSize
-        totalPages
-        totalCount
-      }
-    }
-  }
-`;
-
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
   query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
     caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
