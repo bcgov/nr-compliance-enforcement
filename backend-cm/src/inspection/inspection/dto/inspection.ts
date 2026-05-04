@@ -15,6 +15,7 @@ export class Inspection {
   leadAgency: string;
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
+  updatedTimestamp: Date;
   name: string;
   createdByAppUserGuid?: string;
   locationGeometry?: Point;
@@ -132,6 +133,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.inspection_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.updatedTimestamp,
+      mapFrom((src) => src.update_utc_timestamp as Date),
     ),
     forMember(
       (dest) => dest.name,

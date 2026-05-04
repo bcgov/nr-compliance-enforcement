@@ -263,6 +263,7 @@ export type CaseFile = {
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp: Scalars['DateTime']['output'];
 };
 
 export type CaseFileAction = {
@@ -1015,6 +1016,7 @@ export type Inspection = {
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp: Scalars['DateTime']['output'];
   parties?: Maybe<Array<Maybe<InspectionParty>>>;
 };
 
@@ -1097,6 +1099,7 @@ export type Investigation = {
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp: Scalars['DateTime']['output'];
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;

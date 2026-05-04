@@ -17,8 +17,7 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, case
   const inspectionId = inspection.name ?? "";
   const dateOpened = inspection.openedTimestamp ? formatDate(inspection.openedTimestamp.toString()) : "";
   const status = inspection.inspectionStatus?.longDescription ?? "";
-  // NOTE: The Inspection type does not currently expose an "updated" timestamp.  Duplicating what's in the Inspection header
-  const lastUpdatedDate = inspection.openedTimestamp;
+  const lastUpdatedDate = inspection.updatedTimestamp;
 
   return (
     <ActivityCard
