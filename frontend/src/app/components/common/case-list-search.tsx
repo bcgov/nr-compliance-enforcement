@@ -188,7 +188,9 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
           return (
             <>
               <div className="case-search-result__header">
-                <Highlighter search={props.text}>{caseOption.name}</Highlighter>{" "}
+                <span className="case-search-result__case-id">
+                  <Highlighter search={props.text}>{caseOption.name}</Highlighter>
+                </span>
                 <div className={`badge ${applyStatusClass(caseOption.status)}`}>
                   {getStatusDescription(caseOption.status)}
                 </div>

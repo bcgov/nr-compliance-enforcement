@@ -2346,9 +2346,22 @@ tr:has(> .comp-cell-child-expanded) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  mark {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-weight: 600;
+  }
 }
 
 .case-search-result__investigation {
   margin-top: 0.25rem;
   color: #6c757d;
+  mark {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-weight: 600;
+  }
 }
