@@ -1,7 +1,6 @@
 import { gql } from "graphql-request";
-import { useCaseSearch } from "@/app/components/containers/cases/hooks/use-case-search";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { CaseFileResult } from "@/generated/graphql";
+import { CaseFileFilters, CaseFileResult } from "@/generated/graphql";
 
 const SEARCH_CASE_FILES = gql`
   query SearchCaseFiles($page: Int, $pageSize: Int, $filters: CaseFileFilters) {
@@ -22,6 +21,12 @@ const SEARCH_CASE_FILES = gql`
           shortDescription
           longDescription
         }
+        activities {
+          activityIdentifier
+          activityType {
+            caseActivityTypeCode
+          }
+        }
       }
       pageInfo {
         currentPage
@@ -33,27 +38,25 @@ const SEARCH_CASE_FILES = gql`
   }
 `;
 
-export const useCaseSearchQuery = (searchString: string) => {
-  const { searchValues } = useCaseSearch();
+type UseCaseSearchQueryParams = {
+  page?: number;
+  pageSize?: number;
+  filters?: CaseFileFilters;
+  queryKey?: unknown[];
+  enabled?: boolean;
+};
 
+export const useCaseSearchQuery = ({
+  page = 1,
+  pageSize = 25,
+  filters = {},
+  queryKey = [],
+  enabled = true,
+}: UseCaseSearchQueryParams = {}) => {
   const { data, isLoading, error } = useGraphQLQuery<{ searchCaseFiles: CaseFileResult }>(SEARCH_CASE_FILES, {
-    queryKey: [
-      "searchCaseFiles",
-      searchValues.search || searchString,
-      searchValues.caseStatus,
-      searchValues.leadAgency,
-      searchValues.startDate,
-      searchValues.endDate,
-      searchValues.sortBy,
-      searchValues.sortOrder,
-      searchValues.page,
-      searchValues.pageSize,
-    ],
-    variables: {
-      page: searchValues.page,
-      pageSize: searchValues.pageSize,
-      filters: { search: searchString },
-    },
+    queryKey: ["searchCaseFiles", ...queryKey],
+    variables: { page, pageSize, filters },
+    enabled,
     placeholderData: (previousData) => previousData,
   });
 

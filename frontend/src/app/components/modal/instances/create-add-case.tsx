@@ -80,7 +80,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   // State
   const [selectedCase, setSelectedCase] = useState<Option | null>();
-  const [createOrAddOption, setCreateOrAddOption] = useState<string>("create");
+  const [createOrAddOption, setCreateOrAddOption] = useState<string>("add");
 
   const defaultValues = useMemo(
     () => ({

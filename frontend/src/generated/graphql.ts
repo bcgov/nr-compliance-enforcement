@@ -291,6 +291,7 @@ export type CaseFileCreateInput = {
 };
 
 export type CaseFileFilters = {
+  activityGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   caseStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
