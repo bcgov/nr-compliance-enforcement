@@ -301,6 +301,8 @@ export class InvestigationService {
             owned_by_agency_ref: leadAgency,
             name: generatedName,
             investigation_opened_utc_timestamp: new Date(),
+            location_address: input.locationAddress || null,
+            location_description: input.locationDescription || null,
             primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
             supervisor_guid_ref: input.supervisorGuid || null,
             file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
