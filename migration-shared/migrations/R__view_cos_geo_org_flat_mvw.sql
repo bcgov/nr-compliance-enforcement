@@ -45,11 +45,23 @@ CREATE OR REPLACE TRIGGER geo_organization_unit_code_mvw_refresh_trigger
     FOR EACH STATEMENT 
     EXECUTE FUNCTION cos_geo_org_unit_flat_mvw_refresh();
 
-	REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
+-- Updates to the geo_organization_unit_code and geo_org_unit_structure tables go here 
+-- to ensure that the MV has the correct values when it is refreshed.
 
--- Correct the name of Pinantan Lake
--- This needs to be here to ensure that the MV and values are present when it runs
 UPDATE shared.geo_organization_unit_code
   SET short_description = 'Pinantan Lake',
   long_description = 'Pinantan Lake'
   WHERE geo_organization_unit_code = 'PINATNLK';
+  
+UPDATE shared.geo_org_unit_structure
+SET update_utc_timestamp=CURRENT_TIMESTAMP, 
+parent_geo_org_unit_code='NNIMO'
+WHERE child_geo_org_unit_code='VALDESIS';
+
+UPDATE shared.geo_org_unit_structure
+SET update_utc_timestamp=CURRENT_TIMESTAMP, 
+parent_geo_org_unit_code='BLKCRKCR'
+WHERE child_geo_org_unit_code='FANNYBAY';
+
+
+REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
