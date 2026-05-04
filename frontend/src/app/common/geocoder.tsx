@@ -1,7 +1,16 @@
 import { generateApiParameters, get } from "@/app/common/api";
+import { AppDispatch } from "@/app/store/store";
 import { Feature } from "@/app/types/maps/bcGeocoderType";
 import config from "@/config";
 import { Dispatch } from "redux";
+
+/**
+ * LocationGeometry type mirrors custom GraphQL scalar for FE type safety
+ */
+export type LocationGeometry = {
+  type: string;
+  coordinates: number[];
+};
 
 const MIN_CONFIDENCE_SCORE = 90;
 
@@ -57,4 +66,26 @@ export const geocodeAddressIfNeeded = async (
   }
 
   return originalCoordinates;
+};
+
+/**
+ * Helper function that reduces code duplication in create/edit branches and can be shared
+ * across activities
+ */
+export const resolveLocationGeometry = async (
+  community: string | undefined,
+  locationAddress: string | undefined,
+  locationGeometry: LocationGeometry | null | undefined,
+  dispatch: AppDispatch,
+): Promise<LocationGeometry | null | undefined> => {
+  console.log(community);
+  console.log(locationAddress);
+  const currentCoordinates = locationGeometry?.coordinates;
+  console.log(currentCoordinates);
+  const resolvedCoordinates = await geocodeAddressIfNeeded(community, locationAddress, currentCoordinates, dispatch);
+  console.log(resolvedCoordinates);
+
+  return resolvedCoordinates === currentCoordinates
+    ? locationGeometry
+    : { type: "Point", coordinates: resolvedCoordinates };
 };
