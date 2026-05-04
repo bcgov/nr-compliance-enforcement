@@ -2,7 +2,6 @@ import { FC, useState, useCallback, useMemo, useEffect } from "react";
 import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
-import { gql } from "graphql-request";
 import { CaseFile } from "@/generated/graphql";
 import { InvestigationFilter } from "./list/investigation-filter";
 import { InvestigationList } from "./list";
