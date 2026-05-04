@@ -11,7 +11,7 @@ import { applyStatusClass } from "@common/methods";
 import { useCaseSearchQuery } from "@/app/graphql/hooks/useCaseSearchQuery";
 import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
-import { useGetInvestigationsQuery } from "@/app/components/containers/investigations/hooks/use-Investigation-query";
+import { useGetInvestigationsQuery } from "@/app/components/containers/investigations/hooks/use-investigation-query";
 
 type Props = {
   id?: string;
