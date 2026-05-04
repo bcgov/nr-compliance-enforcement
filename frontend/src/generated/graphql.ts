@@ -263,7 +263,7 @@ export type CaseFile = {
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  updatedTimestamp: Scalars['DateTime']['output'];
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CaseFileAction = {
@@ -287,6 +287,7 @@ export type CaseFileCreateInput = {
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
+  name: Scalars['String']['input'];
 };
 
 export type CaseFileFilters = {
@@ -477,6 +478,7 @@ export type CreateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type CreateInspectionPartyInput = {
@@ -514,6 +516,7 @@ export type CreateInvestigationInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
+  name: Scalars['String']['input'];
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1015,8 +1018,8 @@ export type Inspection = {
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  updatedTimestamp: Scalars['DateTime']['output'];
   parties?: Maybe<Array<Maybe<InspectionParty>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InspectionBusiness = {
@@ -1098,11 +1101,11 @@ export type Investigation = {
   locationGeometry?: Maybe<Scalars['Point']['output']>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
-  updatedTimestamp: Scalars['DateTime']['output'];
   parties?: Maybe<Array<Maybe<InvestigationParty>>>;
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InvestigationBusiness = {
@@ -2582,6 +2585,7 @@ export type UpdateInspectionInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationInput = {
@@ -2595,6 +2599,7 @@ export type UpdateInvestigationInput = {
   locationAddress?: InputMaybe<Scalars['String']['input']>;
   locationDescription?: InputMaybe<Scalars['String']['input']>;
   locationGeometry?: InputMaybe<Scalars['Point']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
   primaryInvestigatorGuid?: InputMaybe<Scalars['String']['input']>;
   supervisorGuid?: InputMaybe<Scalars['String']['input']>;
 };
