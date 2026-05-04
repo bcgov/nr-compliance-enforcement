@@ -26,6 +26,7 @@ const CREATE_CASE_MUTATION = gql`
     createCaseFile(input: $input) {
       caseIdentifier
       openedTimestamp
+      updatedTimestamp
       description
       name
       caseStatus {

@@ -17,6 +17,7 @@ export class Investigation {
   leadAgency: string;
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
+  updatedTimestamp: Date;
   caseIdentifier: string;
   createdByAppUserGuid?: string;
   locationGeometry?: Point;
@@ -213,6 +214,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.updatedTimestamp,
+      mapFrom((src) => src.update_utc_timestamp as Date),
     ),
     forMember(
       (dest) => dest.locationGeometry,

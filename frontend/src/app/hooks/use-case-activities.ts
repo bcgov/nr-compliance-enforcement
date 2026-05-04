@@ -17,6 +17,7 @@ const GET_CASE_FILE = gql`
       caseIdentifier
       name
       openedTimestamp
+      updatedTimestamp
       description
       createdByAppUserGuid
       caseStatus {
@@ -47,6 +48,7 @@ const GET_INVESTIGATIONS = gql`
       name
       description
       openedTimestamp
+      updatedTimestamp
       primaryInvestigatorGuid
       fileCoordinatorGuid
       investigationStatus {
@@ -71,6 +73,7 @@ const GET_INSPECTIONS = gql`
       name
       description
       openedTimestamp
+      updatedTimestamp
       inspectionStatus {
         inspectionStatusCode
         shortDescription

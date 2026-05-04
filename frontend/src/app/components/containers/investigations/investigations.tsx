@@ -19,6 +19,7 @@ const SEARCH_INVESTIGATIONS = gql`
         investigationGuid
         name
         openedTimestamp
+        updatedTimestamp
         leadAgency
         community
         caseIdentifier

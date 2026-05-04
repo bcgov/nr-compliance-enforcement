@@ -32,7 +32,9 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   const dateLogged = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
-  const lastUpdated = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
+  const lastUpdated = inspectionData?.updatedTimestamp
+    ? new Date(inspectionData.updatedTimestamp).toString()
+    : undefined;
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(inspectionData?.createdByAppUserGuid));

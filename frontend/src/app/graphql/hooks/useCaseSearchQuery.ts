@@ -11,6 +11,7 @@ const SEARCH_CASE_FILES = gql`
         caseIdentifier
         name
         openedTimestamp
+        updatedTimestamp
         caseStatus {
           caseStatusCode
           shortDescription
