@@ -87,9 +87,9 @@ test.describe("Investigation List Pagination", () => {
       await nextButton.click();
       await waitForSpinner(page);
 
-      // Verify different content on new page
-      const newFirstRow = await rows.first().locator("td").first().textContent();
-      expect(newFirstRow).toBeTruthy();
+      // Verify different investigation id on new page
+      const newFirstRowId = await rows.first().locator("a.comp-cell-link").first().textContent();
+      expect(newFirstRowId).toBeTruthy();
     }
   });
 });
