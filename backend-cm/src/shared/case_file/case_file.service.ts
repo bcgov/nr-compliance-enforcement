@@ -261,55 +261,9 @@ export class CaseFileService {
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: CaseFileFilters): Promise<CaseFileResult> {
-    const where: any = {};
+    const where = this.buildSearchWhereClause(filters);
+    const orderBy = this.buildSearchOrderByClause(filters);
 
-    if (filters?.search) {
-      where.OR = [{ name: { contains: filters.search, mode: "insensitive" } }];
-    }
-
-    if (filters?.leadAgency) {
-      where.lead_agency = filters.leadAgency;
-    }
-
-    if (filters?.caseStatus) {
-      where.case_status = filters.caseStatus;
-    }
-
-    if (filters?.startDate || filters?.endDate) {
-      where.opened_utc_timestamp = {};
-
-      if (filters?.startDate) {
-        where.opened_utc_timestamp.gte = filters.startDate;
-      }
-
-      if (filters?.endDate) {
-        const endOfDay = new Date(filters.endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        where.opened_utc_timestamp.lte = endOfDay;
-      }
-    }
-
-    // map filters to db columns
-    const sortFieldMap: Record<string, string> = {
-      caseIdentifier: "case_file_guid",
-      openedTimestamp: "opened_utc_timestamp",
-      leadAgency: "lead_agency",
-      caseStatus: "case_status",
-      name: "name",
-    };
-
-    let orderBy: any = { opened_utc_timestamp: "desc" }; // Default sort
-
-    if (filters?.sortBy && filters?.sortOrder) {
-      const dbField = sortFieldMap[filters.sortBy];
-      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
-
-      if (dbField) {
-        orderBy = { [dbField]: validSortOrder };
-      }
-    }
-
-    // Use the pagination utility to handle pagination logic and return pageInfo meta
     const result = await this.paginationUtility.paginate<case_file, CaseFile>(
       { page, pageSize },
       {
@@ -336,5 +290,75 @@ export class CaseFileService {
       items: result.items,
       pageInfo: result.pageInfo as PageInfo,
     };
+  }
+
+  private buildSearchWhereClause(filters: CaseFileFilters | undefined): any {
+    const where: any = {};
+    const orConditions: any[] = [];
+
+    if (filters?.search) {
+      orConditions.push({ name: { contains: filters.search, mode: "insensitive" } });
+    }
+
+    if (filters?.activityGuids && filters.activityGuids.length > 0) {
+      orConditions.push({
+        case_activity: {
+          some: {
+            activity_identifier_ref: { in: filters.activityGuids },
+          },
+        },
+      });
+    }
+
+    if (orConditions.length > 0) {
+      where.OR = orConditions;
+    }
+
+    if (filters?.leadAgency) {
+      where.lead_agency = filters.leadAgency;
+    }
+
+    if (filters?.caseStatus) {
+      where.case_status = filters.caseStatus;
+    }
+
+    if (filters?.startDate || filters?.endDate) {
+      where.opened_utc_timestamp = {};
+
+      if (filters?.startDate) {
+        where.opened_utc_timestamp.gte = filters.startDate;
+      }
+
+      if (filters?.endDate) {
+        const endOfDay = new Date(filters.endDate);
+        endOfDay.setHours(23, 59, 59, 999);
+        where.opened_utc_timestamp.lte = endOfDay;
+      }
+    }
+
+    return where;
+  }
+
+  private buildSearchOrderByClause(filters: CaseFileFilters | undefined): any {
+    if (!filters?.sortBy || !filters?.sortOrder) {
+      return { opened_utc_timestamp: "desc" };
+    }
+
+    const sortFieldMap: Record<string, string> = {
+      caseIdentifier: "case_file_guid",
+      openedTimestamp: "opened_utc_timestamp",
+      leadAgency: "lead_agency",
+      caseStatus: "case_status",
+      name: "name",
+    };
+
+    const dbField = sortFieldMap[filters.sortBy];
+
+    if (!dbField) {
+      return { opened_utc_timestamp: "desc" };
+    }
+
+    const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
+    return { [dbField]: validSortOrder };
   }
 }

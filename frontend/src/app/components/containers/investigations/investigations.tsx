@@ -3,7 +3,7 @@ import { Button, CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
-import { InvestigationResult, CaseFile } from "@/generated/graphql";
+import { CaseFile } from "@/generated/graphql";
 import { InvestigationFilter } from "./list/investigation-filter";
 import { InvestigationList } from "./list";
 import { InvestigationFilterBar } from "./list/investigation-filter-bar";
@@ -12,39 +12,8 @@ import { useInvestigationSearch } from "./hooks/use-investigation-search";
 import { useAppDispatch } from "@hooks/hooks";
 import { setInvestigationListUrl } from "@store/reducers/investigation-list-url";
 import { uniq, compact } from "lodash";
-
-const SEARCH_INVESTIGATIONS = gql`
-  query SearchInvestigations($page: Int, $pageSize: Int, $filters: InvestigationFilters) {
-    searchInvestigations(page: $page, pageSize: $pageSize, filters: $filters) {
-      items {
-        __typename
-        investigationGuid
-        name
-        openedTimestamp
-        updatedTimestamp
-        leadAgency
-        community
-        caseIdentifier
-        locationGeometry
-        locationAddress
-        description
-        primaryInvestigatorGuid
-        fileCoordinatorGuid
-        investigationStatus {
-          investigationStatusCode
-          shortDescription
-          longDescription
-        }
-      }
-      pageInfo {
-        currentPage
-        pageSize
-        totalPages
-        totalCount
-      }
-    }
-  }
-`;
+import { gql } from "graphql-request";
+import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
 
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
   query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
@@ -73,32 +42,25 @@ const Investigations: FC = () => {
     dispatch(setInvestigationListUrl(location.pathname + location.search));
   }, [dispatch, location.pathname, location.search]);
 
-  const { data, isLoading, error } = useGraphQLQuery<{ searchInvestigations: InvestigationResult }>(
-    SEARCH_INVESTIGATIONS,
-    {
-      queryKey: [
-        "searchInvestigations",
-        searchValues.search,
-        searchValues.investigationStatus,
-        searchValues.community,
-        searchValues.primaryInvestigator,
-        searchValues.fileCoordinator,
-        searchValues.supervisor,
-        searchValues.startDate,
-        searchValues.endDate,
-        searchValues.sortBy,
-        searchValues.sortOrder,
-        searchValues.page,
-        searchValues.pageSize,
-      ],
-      variables: {
-        page: searchValues.page,
-        pageSize: searchValues.pageSize,
-        filters: getFilters(),
-      },
-      placeholderData: (previousData) => previousData,
-    },
-  );
+  const { data, isLoading, error } = useInvestigationSearchQuery({
+    page: searchValues.page,
+    pageSize: searchValues.pageSize,
+    filters: getFilters(),
+    queryKey: [
+      searchValues.search,
+      searchValues.investigationStatus,
+      searchValues.community,
+      searchValues.primaryInvestigator,
+      searchValues.fileCoordinator,
+      searchValues.supervisor,
+      searchValues.startDate,
+      searchValues.endDate,
+      searchValues.sortBy,
+      searchValues.sortOrder,
+      searchValues.page,
+      searchValues.pageSize,
+    ],
+  });
 
   const investigationGuids = useMemo(
     () =>

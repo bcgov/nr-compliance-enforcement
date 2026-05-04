@@ -86,6 +86,10 @@ export class CaseFileFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   sortOrder?: string;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  activityGuids?: string[];
 }
 
 @ObjectType()
