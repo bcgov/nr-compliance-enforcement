@@ -37,7 +37,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
   const [searchString, setSearchString] = useState<string>("");
   const [caseFileData, setCaseFileData] = useState<any[]>([]);
 
-  // Step 1: search investigations
+  // Step 1: search for investigations
   const { data: investigationData, isLoading: isInvestigationLoading } = useInvestigationSearchQuery({
     filters: { search: searchString },
     queryKey: [searchString],
