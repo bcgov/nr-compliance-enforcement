@@ -1,20 +1,33 @@
 import { WinstonModule, utilities } from "nest-winston";
 import * as winston from "winston";
-import { LoggerService } from "@nestjs/common";
+import { Logger, LoggerService } from "@nestjs/common";
 
-const globalLoggerFormat: winston.Logform.Format = winston.format.timestamp({ format: "YYYY-MM-DD hh:mm:ss.SSS" });
+export const logger = new Logger("BackendCM");
 
-const localLoggerFormat: winston.Logform.Format = winston.format.combine(
+const timestampFormat: winston.Logform.Format = winston.format.timestamp({ format: "YYYY-MM-DD hh:mm:ss.SSS" });
+
+const prettyFormat: winston.Logform.Format = winston.format.combine(
+  timestampFormat,
   winston.format.colorize(),
   winston.format.align(),
-  utilities.format.nestLike("Backend", { prettyPrint: true }),
+  utilities.format.nestLike("BackendCM", { prettyPrint: true }),
 );
+
+const jsonFormat: winston.Logform.Format = winston.format.combine(
+  timestampFormat,
+  winston.format.errors({ stack: true }),
+  winston.format.json(),
+);
+
+const resolveFormat = (): winston.Logform.Format => {
+  return process.env.LOG_FORMAT === "json" ? jsonFormat : prettyFormat;
+};
 
 export const customLogger: LoggerService = WinstonModule.createLogger({
   transports: [
     new winston.transports.Console({
       level: "silly",
-      format: winston.format.combine(globalLoggerFormat, localLoggerFormat),
+      format: resolveFormat(),
     }),
   ],
   exitOnError: false,
