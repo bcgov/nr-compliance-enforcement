@@ -391,13 +391,16 @@ const InspectionEdit: FC = () => {
                     initXCoordinate={longitude}
                     initYCoordinate={latitude}
                     syncCoordinates={(yCoordinate, xCoordinate) => {
-                      if (yCoordinate && xCoordinate && yCoordinate !== "" && xCoordinate !== "") {
+                      const yIsEmpty = !yCoordinate || yCoordinate === "";
+                      const xIsEmpty = !xCoordinate || xCoordinate === "";
+
+                      if (yIsEmpty && xIsEmpty) {
+                        field.handleChange(null);
+                      } else if (!yIsEmpty && !xIsEmpty) {
                         field.handleChange({
                           type: "Point",
                           coordinates: [Number.parseFloat(xCoordinate), Number.parseFloat(yCoordinate)],
                         });
-                      } else {
-                        field.handleChange(null);
                       }
                     }}
                     throwError={(hasError: boolean) =>

@@ -221,14 +221,10 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
               {inspectionData?.locationGeometry?.coordinates && (
                 <MapObjectLocation
                   map_object_type={MapObjectType.Inspection}
-                  locationCoordinates={
-                    inspectionData?.locationGeometry?.coordinates
-                      ? {
-                          lat: inspectionData.locationGeometry.coordinates[1],
-                          lng: inspectionData.locationGeometry.coordinates[0],
-                        }
-                      : undefined
-                  }
+                  locationCoordinates={{
+                    lat: inspectionData.locationGeometry.coordinates[1],
+                    lng: inspectionData.locationGeometry.coordinates[0],
+                  }}
                   draggable={false}
                   defaultCenter={{ lat: 55, lng: -125 }}
                   defaultZoom={inspectionData?.locationGeometry?.coordinates ? 12 : 5}
