@@ -7,7 +7,6 @@ import * as zip from "@zip.js/zip.js";
 import { AUTH_TOKEN } from "@/app/service/user-service";
 import { BulkDownloadState, CurrentDownload } from "@/app/types/state/bulk-download-state";
 import { createSlice } from "@reduxjs/toolkit";
-import { DownloadType } from "@/app/constants/download-type";
 
 const initialState: BulkDownloadState = {
   isBulkDownloadInProgress: false,
@@ -60,7 +59,7 @@ export const selectCurrentDownload = (state: RootState): CurrentDownload | null 
 export default bulkDownloadSlice.reducer;
 
 //Thunks
-interface FileWithPresignedUrl {
+export interface FileWithPresignedUrl {
   id: string | undefined;
   name: string;
   size: number;

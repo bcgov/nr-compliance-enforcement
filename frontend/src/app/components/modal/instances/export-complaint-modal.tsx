@@ -4,10 +4,16 @@ import { Button, Form, Modal } from "react-bootstrap";
 interface ExportComplaintModalProps {
   show: boolean;
   onHide: () => void;
-  onExport: (includeAttachments: boolean) => void;
+  onExportPdfOnly: () => void;
+  onExportWithAttachments: () => void;
 }
 
-export const ExportComplaintModal: FC<ExportComplaintModalProps> = ({ show, onHide, onExport }) => {
+export const ExportComplaintModal: FC<ExportComplaintModalProps> = ({
+  show,
+  onHide,
+  onExportPdfOnly,
+  onExportWithAttachments,
+}) => {
   const [includeAttachments, setIncludeAttachments] = useState(false);
 
   const handleHide = () => {
@@ -16,7 +22,11 @@ export const ExportComplaintModal: FC<ExportComplaintModalProps> = ({ show, onHi
   };
 
   const handleExport = () => {
-    onExport(includeAttachments);
+    if (includeAttachments) {
+      onExportWithAttachments();
+    } else {
+      onExportPdfOnly();
+    }
     handleHide();
   };
 
