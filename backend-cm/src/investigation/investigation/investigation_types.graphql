@@ -7,6 +7,7 @@ type Investigation {
   leadAgency: String
   investigationStatus: InvestigationStatusCode
   openedTimestamp: DateTime
+  updatedTimestamp: DateTime
   caseIdentifier: String
   createdByAppUserGuid: String
   locationGeometry: Point
@@ -62,6 +63,9 @@ input InvestigationFilters {
   leadAgency: String
   investigationStatus: String
   community: String
+  primaryInvestigator: String
+  fileCoordinator: String
+  supervisor: String
   startDate: DateTime
   endDate: DateTime
   sortBy: String
