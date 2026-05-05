@@ -17,6 +17,7 @@ export class Investigation {
   leadAgency: string;
   investigationStatus: InvestigationStatusCode;
   openedTimestamp: Date;
+  updatedTimestamp?: Date;
   caseIdentifier: string;
   createdByAppUserGuid?: string;
   locationGeometry?: Point;
@@ -51,6 +52,18 @@ export class InvestigationFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   community?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  primaryInvestigator?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  fileCoordinator?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  supervisor?: string;
 
   @Field(() => Date, { nullable: true })
   @IsOptional()
@@ -213,6 +226,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.investigation_opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.updatedTimestamp,
+      mapFrom((src) => src.update_utc_timestamp ?? undefined),
     ),
     forMember(
       (dest) => dest.locationGeometry,

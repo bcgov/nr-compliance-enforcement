@@ -1,14 +1,13 @@
-import { FC, MouseEventHandler, useCallback } from "react";
+import { FC, MouseEventHandler, useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
-import {
-  selectAgencyDropdown,
-  selectCommunityCodeDropdown,
-  selectComplaintStatusWithPendingCodeDropdown,
-} from "@store/reducers/code-table";
+import { selectCommunityCodeDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import { selectOfficersByAgency } from "@store/reducers/officer";
+import { AppUser } from "@apptypes/app/app_user/app_user";
+import { getUserAgency } from "@service/user-service";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
 
 type Props = {
@@ -18,9 +17,17 @@ type Props = {
 
 export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
   const { searchValues, setValues, clearValues } = useInvestigationSearch();
-  const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const userAgency = getUserAgency();
+  const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
+  const officerLabelByGuid = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const o of agencyOfficers ?? []) {
+      map.set((o as AppUser).app_user_guid, `${(o as AppUser).last_name}, ${(o as AppUser).first_name}`);
+    }
+    return map;
+  }, [agencyOfficers]);
 
   const removeFilter = useCallback(
     (filterName: string) => {
@@ -109,20 +116,50 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
           />
         )}
 
-        {hasFilter("leadAgency") && (
-          <FilterButton
-            id="investigation-agency-filter-pill"
-            label={leadAgencyOptions.find((option) => option.value === searchValues.leadAgency)?.label || "Agency"}
-            name="leadAgency"
-            clear={removeFilter}
-          />
-        )}
-
         {hasFilter("community") && (
           <FilterButton
             id="investigation-community-filter-pill"
             label={communityOptions.find((option) => option.value === searchValues.community)?.label || "Community"}
             name="community"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("primaryInvestigator") && (
+          <FilterButton
+            id="investigation-primary-investigator-filter-pill"
+            label={`Primary investigator${
+              officerLabelByGuid.has(searchValues.primaryInvestigator ?? "")
+                ? `: ${officerLabelByGuid.get(searchValues.primaryInvestigator ?? "")}`
+                : ""
+            }`}
+            name="primaryInvestigator"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("fileCoordinator") && (
+          <FilterButton
+            id="investigation-file-coordinator-filter-pill"
+            label={`File coordinator${
+              officerLabelByGuid.has(searchValues.fileCoordinator ?? "")
+                ? `: ${officerLabelByGuid.get(searchValues.fileCoordinator ?? "")}`
+                : ""
+            }`}
+            name="fileCoordinator"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("supervisor") && (
+          <FilterButton
+            id="investigation-supervisor-filter-pill"
+            label={`Supervisor${
+              officerLabelByGuid.has(searchValues.supervisor ?? "")
+                ? `: ${officerLabelByGuid.get(searchValues.supervisor ?? "")}`
+                : ""
+            }`}
+            name="supervisor"
             clear={removeFilter}
           />
         )}
