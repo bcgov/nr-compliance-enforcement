@@ -15,7 +15,6 @@ import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/
 import { generateApiParameters, get, patch, post } from "@common/api";
 import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "@common/toast";
-import { Coordinates } from "@apptypes/app/coordinate-type";
 
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
