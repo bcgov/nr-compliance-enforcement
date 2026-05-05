@@ -1,9 +1,10 @@
 import axios, { AxiosResponse, AxiosError, AxiosRequestConfig } from "axios";
+import { logger } from "../common/logger.config";
 
 const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL;
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
-  console.error(error.response);
+  logger.error("Shared data axios response error", { response: error.response, stack: error.stack });
   return Promise.reject(error as Error);
 });
 

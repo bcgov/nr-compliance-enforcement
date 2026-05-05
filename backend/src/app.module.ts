@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { logger } from "./common/logger.config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { AutomapperModule } from "@automapper/nestjs";
@@ -55,14 +56,14 @@ import { OfficeModule } from "./v1/office/office.module";
 import { TeamModule } from "./v1/team/team.module";
 import { PgSessionModule } from "./pg-session/pg-session.module";
 
-console.log("Var check - COMPLAINT_POSTGRESQL_HOST", process.env.COMPLAINT_POSTGRESQL_HOST);
-console.log("Var check - COMPLAINT_POSTGRESQL_DATABASE", process.env.COMPLAINT_POSTGRESQL_DATABASE);
-console.log("Var check - COMPLAINT_POSTGRESQL_USER", process.env.COMPLAINT_POSTGRESQL_USER);
-console.log("Var check - COMPLAINT_POSTGRESQL_ENABLE_LOGGING", process.env.COMPLAINT_POSTGRESQL_ENABLE_LOGGING);
+logger.log(`Var check - COMPLAINT_POSTGRESQL_HOST: ${process.env.COMPLAINT_POSTGRESQL_HOST}`);
+logger.log(`Var check - COMPLAINT_POSTGRESQL_DATABASE: ${process.env.COMPLAINT_POSTGRESQL_DATABASE}`);
+logger.log(`Var check - COMPLAINT_POSTGRESQL_USER: ${process.env.COMPLAINT_POSTGRESQL_USER}`);
+logger.log(`Var check - COMPLAINT_POSTGRESQL_ENABLE_LOGGING: ${process.env.COMPLAINT_POSTGRESQL_ENABLE_LOGGING}`);
 if (process.env.COMPLAINT_POSTGRESQL_PASSWORD != null) {
-  console.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD present");
+  logger.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD present");
 } else {
-  console.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD not present");
+  logger.log("Var check - COMPLAINT_POSTGRESQL_PASSWORD not present");
 }
 
 @Module({

@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { isSidebarOpen, toggleSidebar, isFeatureActive } from "@store/reducers/app";
 import {
   selectCanAccessCases,
@@ -21,6 +22,7 @@ export const SideBar: FC = () => {
   const canAccessCases = useAppSelector(selectCanAccessCases);
   const canAccessInvestigations = useAppSelector(selectCanAccessInvestigations);
   const canAccessInspections = useAppSelector(selectCanAccessInspections);
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   const menuItems: Array<MenuItem> = [
     {
@@ -40,7 +42,7 @@ export const SideBar: FC = () => {
       id: "investigations-link",
       name: "Investigations",
       icon: "bi bi-incognito",
-      route: "/investigations",
+      route: investigationSearchURL,
       hidden: !canAccessInvestigations,
     },
     {

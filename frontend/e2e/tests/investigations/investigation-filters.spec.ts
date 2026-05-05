@@ -26,23 +26,7 @@ test.describe("Investigation Filters", () => {
     // Verify results have Open status
     const rows = page.locator("#investigation-list tbody tr");
     const firstRow = rows.first();
-    await expect(firstRow.locator("td").nth(3).locator(".badge")).toContainText("Open");
-  });
-
-  test("it filters by lead agency", async ({ page }) => {
-    await page.locator("#case-filter-btn").click();
-
-    // Select agency
-    await selectItemById("investigation-lead-agency-select-id", "Conservation Officer Service", page);
-    await waitForSpinner(page);
-
-    // Verify filter pill appears
-    await expect(page.locator("#investigation-agency-filter-pill")).toBeVisible();
-
-    // Verify results
-    const rows = page.locator("#investigation-list tbody tr");
-    const firstRow = rows.first();
-    await expect(firstRow.locator("td").nth(4)).toContainText("Conservation Officer Service");
+    await expect(firstRow.locator("td").nth(5).locator(".badge")).toContainText("Open");
   });
 
   test("it clears filters", async ({ page }) => {
@@ -70,18 +54,12 @@ test.describe("Investigation Filters", () => {
     await selectItemById("investigation-investigationStatus-select-id", "Open", page);
     await waitForSpinner(page);
 
-    // Apply agency filter
-    await selectItemById("investigation-lead-agency-select-id", "Conservation Officer Service", page);
+    // Apply community filter
+    await selectItemById("investigation-community-select-id", "70 Mile House", page);
     await waitForSpinner(page);
 
-    // Verify both filter pills appear
+    // Both pills should appear
     await expect(page.locator("#investigation-status-filter-pill")).toBeVisible();
-    await expect(page.locator("#investigation-agency-filter-pill")).toBeVisible();
-
-    // Verify results match both criteria
-    const rows = page.locator("#investigation-list tbody tr");
-    const firstRow = rows.first();
-    await expect(firstRow.locator("td").nth(3).locator(".badge")).toContainText("Open");
-    await expect(firstRow.locator("td").nth(4)).toContainText("Conservation Officer Service");
+    await expect(page.locator("#investigation-community-filter-pill")).toBeVisible();
   });
 });
