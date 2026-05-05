@@ -2,6 +2,7 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Role } from "../enum/role.enum";
 import { UUID } from "node:crypto";
 import { toDate, toZonedTime, format } from "date-fns-tz";
+import { logger } from "./logger.config";
 
 export const formatDate = (input: string | undefined): string => {
   if (!input) {
@@ -17,7 +18,7 @@ export const formatDate = (input: string | undefined): string => {
 
     return format(parsedDate, "yyyy-MM-dd");
   } catch (error) {
-    console.error("Error formatting date:", error);
+    logger.error("Error formatting date", error instanceof Error ? error.stack : error);
     return "";
   }
 };

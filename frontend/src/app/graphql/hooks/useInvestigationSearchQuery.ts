@@ -10,10 +10,15 @@ const SEARCH_INVESTIGATIONS = gql`
         investigationGuid
         name
         openedTimestamp
+        updatedTimestamp
         leadAgency
         community
         caseIdentifier
         locationGeometry
+        locationAddress
+        primaryInvestigatorGuid
+        fileCoordinatorGuid
+        description
         investigationStatus {
           investigationStatusCode
           shortDescription
