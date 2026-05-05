@@ -78,12 +78,8 @@ export const resolveLocationGeometry = async (
   locationGeometry: LocationGeometry | null | undefined,
   dispatch: AppDispatch,
 ): Promise<LocationGeometry | null | undefined> => {
-  console.log(community);
-  console.log(locationAddress);
   const currentCoordinates = locationGeometry?.coordinates;
-  console.log(currentCoordinates);
   const resolvedCoordinates = await geocodeAddressIfNeeded(community, locationAddress, currentCoordinates, dispatch);
-  console.log(resolvedCoordinates);
 
   return resolvedCoordinates === currentCoordinates
     ? locationGeometry

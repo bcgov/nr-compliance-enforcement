@@ -60,6 +60,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
     navigate(`/investigation/${investigationGuid}/edit`);
   };
 
+  console.log(investigationData?.locationGeometry?.coordinates);
   return (
     <>
       <div className="comp-header-status-container">
@@ -197,20 +198,22 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
           />
           <br />
-          <MapObjectLocation
-            map_object_type={MapObjectType.Investigation}
-            locationCoordinates={
-              investigationData?.locationGeometry?.coordinates
-                ? {
-                    lat: investigationData.locationGeometry.coordinates[1],
-                    lng: investigationData.locationGeometry.coordinates[0],
-                  }
-                : undefined
-            }
-            draggable={false}
-            defaultCenter={{ lat: 55, lng: -125 }}
-            defaultZoom={investigationData?.locationGeometry?.coordinates ? 12 : 5}
-          />
+          {investigationData?.locationGeometry?.coordinates && (
+            <MapObjectLocation
+              map_object_type={MapObjectType.Investigation}
+              locationCoordinates={
+                investigationData.locationGeometry?.coordinates
+                  ? {
+                      lat: investigationData.locationGeometry.coordinates[1],
+                      lng: investigationData.locationGeometry.coordinates[0],
+                    }
+                  : undefined
+              }
+              draggable={false}
+              defaultCenter={{ lat: 55, lng: -125 }}
+              defaultZoom={investigationData.locationGeometry?.coordinates ? 12 : 5}
+            />
+          )}
         </div>
       </div>
     </>
