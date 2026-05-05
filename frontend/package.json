@@ -1,7 +1,7 @@
 {
   "name": "nr-sample-natcomplaints",
   "type": "module",
-  "version": "2.0.274",
+  "version": "2.0.276",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -43,7 +43,7 @@
     "@vitejs/plugin-react": "^4.6.0",
     "@zip.js/zip.js": "^2.8.21",
     "assert": "^2.1.0",
-    "axios": "^1.13.5",
+    "axios": "^1.15.2",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.5",
     "chart.js": "^4.3.0",

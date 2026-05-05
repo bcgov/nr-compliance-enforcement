@@ -15,6 +15,8 @@ import { AnimalOutcomeSubject } from "@/app/types/state/complaint-outcomes-state
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaint } from "@/app/store/reducers/complaints";
 import { getComplaintType } from "@/app/common/methods";
+import { Roles } from "@apptypes/app/roles";
+import UserService from "@service/user-service";
 
 type validationResults = {
   canCloseComplaint: boolean;
@@ -119,8 +121,12 @@ const useValidateComplaint = () => {
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 
       // check External file reference exists if required required
+      const hasCaseAccessRole = UserService.hasRole(Roles.CASE_ACCESS);
       const referenceNumberCriteria =
-        complaintType === COMPLAINT_TYPES.ERS && complaint && ["COS", "PARKS"].includes(complaint.ownedBy)
+        complaintType === COMPLAINT_TYPES.ERS &&
+        complaint &&
+        ["COS", "PARKS"].includes(complaint.ownedBy) &&
+        !hasCaseAccessRole
           ? !!complaint.referenceNumber
           : true;
 
