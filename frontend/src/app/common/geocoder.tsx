@@ -57,7 +57,7 @@ export const geocodeAddressIfNeeded = async (
   return originalCoordinates;
 };
 
-// Helper function that returns the a LocationGeometery type for use with GQL
+// Helper function that returns a LocationGeometery type for use with GQL
 export const resolveLocationGeometry = async (
   community: string | undefined,
   locationAddress: string | undefined,
