@@ -635,9 +635,32 @@ export const updateGeneralIncidentComplaintStatus =
 
 export const updateComplaintById =
   (complaint: ComplaintDtoAlias, complaintType: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       const { id } = complaint;
+
+      const {
+        codeTables: { "area-codes": areaCodes },
+      } = getState();
+
+      const {
+        location,
+        locationSummary,
+        organization: { area: community },
+      } = complaint as Complaint;
+      const { coordinates } = location;
+      const selectedCommunity = areaCodes.find(({ area }) => area === community);
+
+      const resolvedCoordinates = await geocodeAddressIfNeeded(
+        selectedCommunity?.areaName,
+        locationSummary,
+        coordinates,
+        dispatch,
+      );
+
+      if (resolvedCoordinates !== coordinates) {
+        complaint = { ...complaint, location: { ...location, coordinates: resolvedCoordinates } };
+      }
 
       const updateParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/update-by-id/${complaintType}/${id}`,
@@ -649,6 +672,7 @@ export const updateComplaintById =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
+      console.error("Error updating complaint", error);
     }
   };
 
