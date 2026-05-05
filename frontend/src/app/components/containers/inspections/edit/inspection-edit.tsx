@@ -145,7 +145,7 @@ const InspectionEdit: FC = () => {
         locationAddress: inspectionData.getInspection.locationAddress || "",
         locationDescription: inspectionData.getInspection.locationDescription || "",
         locationGeometry: inspectionData.getInspection.locationGeometry || null,
-        community: inspectionData.community || "",
+        community: inspectionData.getInspection.community || "",
       };
     }
     return {
@@ -435,6 +435,7 @@ const InspectionEdit: FC = () => {
                   showInactive={false}
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
                 />
               )}
             />

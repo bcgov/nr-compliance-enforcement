@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
@@ -37,6 +37,11 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(inspectionData?.createdByAppUserGuid));
   const createdBy = createdByUser?.user_id || "Unknown";
+
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const communityLabel = inspectionData?.community
+    ? (communityOptions.find((o: Option) => o.value === inspectionData.community)?.label ?? inspectionData.community)
+    : "";
 
   const editButtonClick = () => {
     navigate(`/inspection/${inspectionGuid}/edit`);
@@ -191,6 +196,10 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                   <dd id="comp-details-location-description">{inspectionData.locationDescription}</dd>
                 </div>
               )}
+              <div>
+                <dt>Community</dt>
+                <dd id="investigation-summary-community">{communityLabel}</dd>
+              </div>
               <div className="row">
                 <div className="col-12">
                   <div className="form-group">

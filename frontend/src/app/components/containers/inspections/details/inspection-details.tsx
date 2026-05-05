@@ -17,6 +17,7 @@ const GET_INSPECTION = gql`
       name
       description
       openedTimestamp
+      community
       createdByAppUserGuid
       inspectionStatus {
         inspectionStatusCode
