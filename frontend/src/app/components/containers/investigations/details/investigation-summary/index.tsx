@@ -60,7 +60,6 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
     navigate(`/investigation/${investigationGuid}/edit`);
   };
 
-  console.log(investigationData?.locationGeometry?.coordinates);
   return (
     <>
       <div className="comp-header-status-container">
