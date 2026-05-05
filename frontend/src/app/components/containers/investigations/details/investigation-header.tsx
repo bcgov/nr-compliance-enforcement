@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown } from "react-bootstrap";
+import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { InvestigationTabs } from "@/app/components/containers/investigations/details/investigation-navigation";
 import { applyStatusClass } from "@/app/common/methods";
@@ -29,6 +30,7 @@ interface InvestigationHeaderProps {
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   const [showStatusModal, setShowStatusModal] = useState(false);
 
@@ -58,7 +60,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
                 <li className="breadcrumb-item comp-nav-item-name-inverted">
-                  <Link to="/investigations">Investigations</Link>
+                  <Link to={investigationSearchURL}>Investigations</Link>
                 </li>
                 <li
                   className="breadcrumb-item"

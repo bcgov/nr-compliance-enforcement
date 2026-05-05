@@ -49,4 +49,5 @@ input CaseFileFilters {
   endDate: DateTime
   sortBy: String
   sortOrder: String
+  activityGuids: [String]
 }

@@ -1,12 +1,17 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { getUserAgency } from "@service/user-service";
+import { useAppSelector } from "@hooks/hooks";
+import { selectInvestigationListUrl } from "@store/reducers/investigation-list-url";
 
 export interface InvestigationSearchParams {
   search: string;
   investigationStatus: string | null;
-  leadAgency: string | null;
   community: string | null;
+  primaryInvestigator: string | null;
+  fileCoordinator: string | null;
+  supervisor: string | null;
   startDate: Date | null;
   endDate: Date | null;
   sortBy: string;
@@ -19,8 +24,10 @@ export interface InvestigationSearchParams {
 const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   search: "",
   investigationStatus: null,
-  leadAgency: null,
   community: null,
+  primaryInvestigator: null,
+  fileCoordinator: null,
+  supervisor: null,
   startDate: null,
   endDate: null,
   sortBy: "openedTimestamp",
@@ -67,8 +74,10 @@ export const useInvestigationSearch = () => {
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       investigationStatus: searchParams.get("investigationStatus"),
-      leadAgency: searchParams.get("leadAgency"),
       community: searchParams.get("community"),
+      primaryInvestigator: searchParams.get("primaryInvestigator"),
+      fileCoordinator: searchParams.get("fileCoordinator"),
+      supervisor: searchParams.get("supervisor"),
       startDate: deserializeDate(searchParams.get("startDate")),
       endDate: deserializeDate(searchParams.get("endDate")),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
@@ -143,7 +152,7 @@ export const useInvestigationSearch = () => {
 
   const getFilters = useCallback(() => {
     const { viewType, page, pageSize, ...filters } = searchValues;
-    return filters;
+    return { ...filters, leadAgency: getUserAgency() };
   }, [searchValues]);
 
   return {
@@ -153,5 +162,6 @@ export const useInvestigationSearch = () => {
     clearValues,
     resetSearch,
     getFilters,
+    searchURL: useAppSelector(selectInvestigationListUrl),
   };
 };

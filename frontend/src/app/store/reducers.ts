@@ -6,6 +6,7 @@ import officers from "./reducers/officer";
 import bulkDownload from "./reducers/bulk-download";
 import app from "./reducers/app";
 import complaints from "./reducers/complaints";
+import investigationListUrl from "./reducers/investigation-list-url";
 import offices from "./reducers/office";
 import codeTables from "./reducers/code-table";
 import complaintOutcomes from "./reducers/complaint-outcomes";
@@ -46,4 +47,5 @@ export const rootReducer = combineReducers({
   complaintOutcomes,
   parks: persistReducer(parksPersistConfig, parks),
   bulkDownload,
+  investigationListUrl,
 });
