@@ -1,6 +1,7 @@
 import { Scalar, CustomScalar } from "@nestjs/graphql";
 import { Kind, ValueNode } from "graphql";
 import { GraphQLJSONObject } from "graphql-type-json";
+import { logger } from "./logger.config";
 
 @Scalar("DateTime")
 export class DateTimeScalar implements CustomScalar<string, Date> {
@@ -91,7 +92,7 @@ export class PointScalar implements CustomScalar<Point, Point> {
           return parsed;
         }
       } catch (error) {
-        console.error("Error parsing Point:", error);
+        logger.error("Error parsing Point", error instanceof Error ? error.stack : String(error));
         return null;
       }
     }
@@ -120,7 +121,7 @@ export class PointScalar implements CustomScalar<Point, Point> {
           return parsed;
         }
       } catch (error) {
-        console.error("Error parsing Point:", error);
+        logger.error("Error parsing Point", error instanceof Error ? error.stack : String(error));
         return null;
       }
     }
