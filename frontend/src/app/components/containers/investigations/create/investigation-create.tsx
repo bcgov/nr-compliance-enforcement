@@ -16,7 +16,7 @@ import { InvestigationForm } from "@/app/components/containers/investigations/de
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintById, selectComplaint } from "@/app/store/reducers/complaints";
-import { geocodeAddressIfNeeded, resolveLocationGeometry } from "@/app/common/geocoder";
+import { resolveLocationGeometry } from "@/app/common/geocoder";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {

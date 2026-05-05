@@ -12,6 +12,7 @@ type Inspection {
   locationAddress: String
   locationDescription: String
   parties: [InspectionParty]
+  community: String
 }
 
 type PageInfo {
@@ -53,6 +54,7 @@ input CreateInspectionInput {
   locationAddress: String
   locationDescription: String
   createdByAppUserGuid: String!
+  community: String
 }
 
 input UpdateInspectionInput {
@@ -62,4 +64,5 @@ input UpdateInspectionInput {
   locationGeometry: Point
   locationAddress: String
   locationDescription: String
+  community: String
 }

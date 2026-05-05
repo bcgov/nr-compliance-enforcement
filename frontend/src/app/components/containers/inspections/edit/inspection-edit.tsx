@@ -8,7 +8,11 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
-import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
+import {
+  selectAgencyDropdown,
+  selectCommunityCodeDropdown,
+  selectComplaintStatusCodeDropdown,
+} from "@store/reducers/code-table";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@common/toast";
@@ -21,6 +25,7 @@ import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import Option from "@apptypes/app/option";
 import { bcUtmZoneNumbers } from "@common/methods";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { resolveLocationGeometry } from "@/app/common/geocoder";
 
 const CREATE_INSPECTION_MUTATION = gql`
   mutation CreateInspection($input: CreateInspectionInput!) {
@@ -37,6 +42,7 @@ const CREATE_INSPECTION_MUTATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      community
     }
   }
 `;
@@ -56,6 +62,7 @@ const UPDATE_INSPECTION_MUTATION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      community
     }
   }
 `;
@@ -77,6 +84,7 @@ const GET_INSPECTION = gql`
       locationAddress
       locationDescription
       locationGeometry
+      community
     }
     caseFilesByActivityIds(activityIdentifiers: [$inspectionGuid]) {
       caseIdentifier
@@ -93,6 +101,7 @@ const InspectionEdit: FC = () => {
   const isEditMode = !!id;
 
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
 
@@ -136,6 +145,7 @@ const InspectionEdit: FC = () => {
         locationAddress: inspectionData.getInspection.locationAddress || "",
         locationDescription: inspectionData.getInspection.locationDescription || "",
         locationGeometry: inspectionData.getInspection.locationGeometry || null,
+        community: inspectionData.community || "",
       };
     }
     return {
@@ -145,6 +155,7 @@ const InspectionEdit: FC = () => {
       locationAddress: "",
       locationDescription: "",
       locationGeometry: null,
+      community: "",
     };
   }, [isEditMode, inspectionData]);
 
@@ -154,6 +165,13 @@ const InspectionEdit: FC = () => {
       ToggleError("Errors in form");
     },
     onSubmit: async ({ value }) => {
+      const resolvedLocationGeometry = await resolveLocationGeometry(
+        value.community,
+        value.locationAddress,
+        value.locationGeometry,
+        dispatch,
+      );
+
       if (isEditMode) {
         const updateInput: UpdateInspectionInput = {
           leadAgency: value.leadAgency,
@@ -161,7 +179,8 @@ const InspectionEdit: FC = () => {
           description: value.description,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
+          locationGeometry: resolvedLocationGeometry,
+          community: value.community,
         };
 
         updateInspectionMutation.mutate({
@@ -176,8 +195,9 @@ const InspectionEdit: FC = () => {
           inspectionStatus: value.inspectionStatus,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
+          locationGeometry: resolvedLocationGeometry,
           createdByAppUserGuid: currentAppUserGuid || "",
+          community: value.community || undefined,
         };
 
         createInspectionMutation.mutate({ input: createInput });
@@ -395,6 +415,30 @@ const InspectionEdit: FC = () => {
               }}
             />
           </fieldset>
+          <div className="mt-3">
+            <FormField
+              form={form}
+              name="community"
+              label="Community"
+              required
+              validators={{ onChange: z.string().min(1, "Community is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="community-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={communityOptions}
+                  value={communityOptions.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select community"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+          </div>
         </form>
       </section>
     </div>

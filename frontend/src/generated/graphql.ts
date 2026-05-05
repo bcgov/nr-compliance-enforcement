@@ -470,6 +470,7 @@ export type CreateInspectionBusinessInput = {
 
 export type CreateInspectionInput = {
   caseIdentifier: Scalars['String']['input'];
+  community?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
@@ -1005,6 +1006,7 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
+  community?: Maybe<Scalars['String']['output']>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
@@ -2574,6 +2576,7 @@ export type UpdateEquipmentInput = {
 };
 
 export type UpdateInspectionInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;

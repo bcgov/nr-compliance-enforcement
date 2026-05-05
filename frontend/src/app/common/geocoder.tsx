@@ -4,9 +4,7 @@ import { Feature } from "@/app/types/maps/bcGeocoderType";
 import config from "@/config";
 import { Dispatch } from "redux";
 
-/**
- * LocationGeometry type mirrors custom GraphQL scalar for FE type safety
- */
+// LocationGeometry type mirrors custom GraphQL scalar for FE type safety
 export type LocationGeometry = {
   type: string;
   coordinates: number[];
@@ -14,10 +12,8 @@ export type LocationGeometry = {
 
 const MIN_CONFIDENCE_SCORE = 90;
 
-/**
- * Returns true when the provided coordinates represent "no coordinates entered".
- * Treats null, undefined, empty array, and [0, 0] as empty.
- */
+// Returns true when the provided coordinates represent "no coordinates entered".
+// Treats null, undefined, empty array, and [0, 0] as empty.
 const areCoordinatesEmpty = (coordinates: number[] | null | undefined): boolean => {
   if (!coordinates || coordinates.length === 0) {
     return true;
@@ -27,15 +23,8 @@ const areCoordinatesEmpty = (coordinates: number[] | null | undefined): boolean 
   return first === 0 && second === 0;
 };
 
-/**
- * Attempts to geocode the given address/community when the caller does not already
- * have coordinates:
- *   - only geocodes when current coordinates are empty
- *   - only returns geocoded coordinates when exactly one feature is returned
- *     and the minScore is >= 90
- *   - swallows errors and returns the original coordinates so geocoding failures
- *     never block the caller's save flow
- */
+// Attempts to geocode the given address/community when the caller does not already
+// have coordinates
 export const geocodeAddressIfNeeded = async (
   area: string | undefined,
   address: string | undefined,
@@ -68,10 +57,7 @@ export const geocodeAddressIfNeeded = async (
   return originalCoordinates;
 };
 
-/**
- * Helper function that reduces code duplication in create/edit branches and can be shared
- * across activities
- */
+// Helper function that returns the a LocationGeometery type for use with GQL
 export const resolveLocationGeometry = async (
   community: string | undefined,
   locationAddress: string | undefined,
