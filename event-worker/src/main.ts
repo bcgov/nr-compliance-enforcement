@@ -1,16 +1,20 @@
 import { NestFactory } from "@nestjs/core";
+import { ConsoleLogger, Logger } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import dotenv from "dotenv";
 
 async function bootstrap() {
   dotenv.config();
+  const logger = new Logger("Bootstrap");
 
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      logger: new ConsoleLogger({ json: process.env.LOG_FORMAT === "json" }),
+    });
     await app.listen(process.env.PORT ?? 3006);
-    console.log(`Server started on port ${process.env.PORT ?? 3006}`);
+    logger.log(`Server started on port ${process.env.PORT ?? 3006}`);
   } catch (error) {
-    console.error("Startup failed:", error);
+    logger.error("Startup failed", error instanceof Error ? error.stack : String(error));
     process.exit(1); // Exit with failure
   }
 }

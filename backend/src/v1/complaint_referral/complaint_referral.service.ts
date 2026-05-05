@@ -109,7 +109,7 @@ export class ComplaintReferralService {
           await this._complaintReferralEmailLogService.create(emailReferralLog);
         }
       } catch (error) {
-        console.error("Error creating one or more email logs:", error);
+        this.logger.error("Error creating one or more email logs", error instanceof Error ? error.stack : error);
       }
     }
     return result;
