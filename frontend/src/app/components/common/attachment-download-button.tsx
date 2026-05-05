@@ -43,8 +43,7 @@ export const BulkDownloadButton = ({
         name: a.name,
         size: a.size || 0,
       }));
-
-      await dispatch(bulkDownload(taskId, taskNumber, attachmentInfo));
+      await dispatch(bulkDownload(taskId, attachmentInfo, `Task_${taskNumber}_Attachments.zip`));
     } catch (error) {
       console.error("Bulk download error:", error);
       ToggleError("Download failed. Please try again.");

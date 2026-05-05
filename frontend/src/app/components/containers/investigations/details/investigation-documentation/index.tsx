@@ -97,14 +97,10 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
         size: blob.size,
         url: csvUrl,
       };
-      await dispatch(
-        bulkDownload(
-          investigationGuid,
-          investigationName || "",
-          filteredAttachments,
-          [csvFile],
-          DownloadType.INVESTIGATION,
-        ),
+      dispatch(
+        bulkDownload(investigationGuid, filteredAttachments, `Investigation_${investigationName}_Attachments.zip`, [
+          csvFile,
+        ]),
       );
     } catch (error) {
       console.error("Bulk download error:", error);

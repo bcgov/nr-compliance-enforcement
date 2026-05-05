@@ -31,6 +31,9 @@ import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { getAttachments } from "@/app/store/reducers/attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { ExportComplaintModal } from "@/app/components/modal/instances/export-complaint-modal";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -67,6 +70,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const showCreateAddCase = useAppSelector(selectCanAccessCases);
   const userGuid = useAppSelector(appUserGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
@@ -237,8 +241,28 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
-  const exportComplaintToPdf = () => {
-    dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+  const handleExportClick = async () => {
+    const [complainantAttachments, outcomeAttachments] = await Promise.all([
+      dispatch(getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT)),
+      dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT)),
+    ]);
+
+    const hasAttachments = complainantAttachments.length > 0 || outcomeAttachments.length > 0;
+
+    if (hasAttachments) {
+      setShowExportModal(true);
+    } else {
+      dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+    }
+  };
+
+  const handleExport = (includeAttachments: boolean) => {
+    if (includeAttachments) {
+      // TODO: zip export with attachments — coming in a later step
+      dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+    } else {
+      dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+    }
   };
 
   const collaboratorsTooltipOverlay = () => (
@@ -345,7 +369,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       <Dropdown.Item
         as="button"
         id="export-pdf-button"
-        onClick={() => exportComplaintToPdf()}
+        onClick={handleExportClick}
       >
         <i className="bi bi-file-earmark-pdf"></i>
         <span>Export</span>
@@ -636,6 +660,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </section>
       )}
       {/* <!-- complaint status details end --> */}
+      <ExportComplaintModal
+        show={showExportModal}
+        onHide={() => setShowExportModal(false)}
+        onExport={handleExport}
+      />
     </>
   );
 };

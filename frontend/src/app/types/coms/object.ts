@@ -24,4 +24,5 @@ export interface COMSObject {
   location?: string | null;
   sequenceNumber?: string | null;
   size?: number;
+  folder?: string;
 }
