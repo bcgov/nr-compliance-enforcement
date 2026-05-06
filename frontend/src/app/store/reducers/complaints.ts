@@ -481,24 +481,6 @@ export const getComplaintLocationByAddress =
     } catch (error) {}
   };
 
-// Used to get the complaint location by area and address
-export const getGeocodedComplaintCoordinates =
-  (area: string, address?: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      let parameters;
-      if (address && area) {
-        parameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
-        );
-      } else {
-        parameters = generateApiParameters(`${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`);
-      }
-      const response = await get<Feature>(dispatch, parameters);
-      dispatch(setGeocodedComplaintCoordinates(response));
-    } catch (error) {}
-  };
-
 export const getWebEOCUpdates =
   (complaintIdentifier: string): AppThunk =>
   async (dispatch) => {

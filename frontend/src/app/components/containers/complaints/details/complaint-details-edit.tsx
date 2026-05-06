@@ -9,7 +9,6 @@ import {
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
-  setGeocodedComplaintCoordinates,
   updateComplaintById,
   selectComplaint,
   getComplaintById,
@@ -303,7 +302,6 @@ export const ComplaintDetailsEdit: FC = () => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setComplaint(null));
-      dispatch(setGeocodedComplaintCoordinates(null));
       dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);
