@@ -118,6 +118,7 @@ const GET_INVESTIGATIONS_BY_PARTY = gql`
       description
       leadAgency
       openedTimestamp
+      updatedTimestamp
       locationGeometry
       locationAddress
       locationDescription
@@ -133,6 +134,7 @@ const GET_INSPECTIONS_BY_PARTY = gql`
       description
       leadAgency
       openedTimestamp
+      updatedTimestamp
       locationGeometry
       locationAddress
       locationDescription
