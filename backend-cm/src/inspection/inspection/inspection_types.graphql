@@ -6,6 +6,7 @@ type Inspection {
   leadAgency: String
   inspectionStatus: InspectionStatusCode
   openedTimestamp: DateTime
+  updatedTimestamp: DateTime
   name: String
   createdByAppUserGuid: String
   locationGeometry: Point

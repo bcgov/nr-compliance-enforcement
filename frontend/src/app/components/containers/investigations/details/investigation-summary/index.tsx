@@ -42,8 +42,8 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const discoveryDate = investigationData?.discoveryDate
     ? parseUTCDateTimeToLocal(investigationData.discoveryDate, investigationData.discoveryTime)?.toString()
     : undefined;
-  const lastUpdated = investigationData?.openedTimestamp
-    ? new Date(investigationData.openedTimestamp).toString()
+  const lastUpdated = investigationData?.updatedTimestamp
+    ? new Date(investigationData.updatedTimestamp).toString()
     : undefined;
 
   const primaryInvestigatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));

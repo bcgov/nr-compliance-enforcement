@@ -75,6 +75,7 @@ const GET_INSPECTION = gql`
       description
       name
       openedTimestamp
+      updatedTimestamp
       inspectionStatus {
         inspectionStatusCode
         shortDescription
