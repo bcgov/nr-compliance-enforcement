@@ -12,7 +12,42 @@ export type LocationGeometry = {
 
 const MIN_CONFIDENCE_SCORE = 90;
 
-// Returns true when the provided coordinates represent "no coordinates entered".
+//  Helper function to build the URL for the geocoder
+const buildGeocoderUrl = (area: string | undefined, address: string | undefined): string => {
+  const queryParts: string[] = [];
+
+  if (area) {
+    queryParts.push(`localityName=${encodeURIComponent(area)}`);
+  }
+  if (address) {
+    queryParts.push(`addressString=${encodeURIComponent(address)}`);
+  }
+
+  return `${config.API_BASE_URL}/bc-geo-coder/address?${queryParts.join("&")}`;
+};
+
+// Helper function to call geocoder and retrieve the response.
+// Logic is applied by the caller
+export const fetchRawGeocoderResponse = async (
+  area: string | undefined,
+  address: string | undefined,
+  dispatch: Dispatch,
+): Promise<Feature | null> => {
+  if (!area && !address) {
+    return null;
+  }
+
+  try {
+    const parameters = generateApiParameters(buildGeocoderUrl(area, address));
+    const response = await get<Feature>(dispatch, parameters);
+    return response ?? null;
+  } catch (error) {
+    console.error("Error fetching geocoder response", error);
+    return null;
+  }
+};
+
+// Helper function to represent "no coordinates entered".
 // Treats null, undefined, empty array, and [0, 0] as empty.
 const areCoordinatesEmpty = (coordinates: number[] | null | undefined): boolean => {
   if (!coordinates || coordinates.length === 0) {
@@ -24,7 +59,7 @@ const areCoordinatesEmpty = (coordinates: number[] | null | undefined): boolean 
 };
 
 // Attempts to geocode the given address/community when the caller does not already
-// have coordinates
+// have coordinates.   Enforces high level of confidence in the result.
 export const geocodeAddressIfNeeded = async (
   area: string | undefined,
   address: string | undefined,
@@ -37,21 +72,10 @@ export const geocodeAddressIfNeeded = async (
     return originalCoordinates;
   }
 
-  if (!area || !address) {
-    return originalCoordinates;
-  }
+  const response = await fetchRawGeocoderResponse(area, address, dispatch);
 
-  try {
-    const parameters = generateApiParameters(
-      `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
-    );
-    const response = await get<Feature>(dispatch, parameters);
-
-    if (response?.features?.length === 1 && response.minScore >= MIN_CONFIDENCE_SCORE) {
-      return response.features[0].geometry.coordinates;
-    }
-  } catch (error) {
-    console.error("Error returning geocoder coordinates", error);
+  if (response?.features?.length === 1 && response.minScore >= MIN_CONFIDENCE_SCORE) {
+    return response.features[0].geometry.coordinates;
   }
 
   return originalCoordinates;
@@ -70,4 +94,18 @@ export const resolveLocationGeometry = async (
   return resolvedCoordinates === currentCoordinates
     ? locationGeometry
     : { type: "Point", coordinates: resolvedCoordinates };
+};
+
+// Returns Zoom level based on if we have coordinates, a community or nothing (Province)
+export const getMapZoom = (
+  recordCoordinates: number[] | null | undefined,
+  communityCenter: { lat: number; lng: number } | null,
+): number => {
+  if (recordCoordinates && recordCoordinates.length > 0) {
+    return 14;
+  }
+  if (communityCenter) {
+    return 12;
+  }
+  return 5;
 };

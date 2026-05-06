@@ -13,6 +13,8 @@ import { InvestigationItem } from "@/app/components/containers/investigations/de
 import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
+import { getMapZoom } from "@/app/common/geocoder";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -33,6 +35,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
+  const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(
+    investigationData?.community,
+  );
 
   const discoveryDate = investigationData?.discoveryDate
     ? parseUTCDateTimeToLocal(investigationData.discoveryDate, investigationData.discoveryTime)?.toString()
@@ -197,16 +202,20 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
             onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)}
           />
           <br />
-          {investigationData?.locationGeometry?.coordinates && (
+          {investigationData && isCommunityLoaded && (
             <MapObjectLocation
               map_object_type={MapObjectType.Investigation}
-              locationCoordinates={{
-                lat: investigationData.locationGeometry.coordinates[1],
-                lng: investigationData.locationGeometry.coordinates[0],
-              }}
+              locationCoordinates={
+                investigationData.locationGeometry?.coordinates
+                  ? {
+                      lat: investigationData.locationGeometry.coordinates[1],
+                      lng: investigationData.locationGeometry.coordinates[0],
+                    }
+                  : undefined
+              }
               draggable={false}
-              defaultCenter={{ lat: 55, lng: -125 }}
-              defaultZoom={investigationData.locationGeometry?.coordinates ? 12 : 5}
+              defaultCenter={geocodedCommunityCenter ?? { lat: 55, lng: -125 }}
+              defaultZoom={getMapZoom(investigationData.locationGeometry?.coordinates, geocodedCommunityCenter)}
             />
           )}
         </div>
