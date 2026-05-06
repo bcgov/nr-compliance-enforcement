@@ -11,6 +11,8 @@ import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
+import { getMapZoom } from "@/app/common/geocoder";
+import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;
@@ -26,6 +28,8 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
   caseName,
 }) => {
   const navigate = useNavigate();
+
+  const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(inspectionData?.community);
 
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === inspectionData?.leadAgency);
@@ -218,16 +222,20 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                   </div>
                 </div>
               </div>
-              {inspectionData?.locationGeometry?.coordinates && (
+              {inspectionData && isCommunityLoaded && (
                 <MapObjectLocation
-                  map_object_type={MapObjectType.Inspection}
-                  locationCoordinates={{
-                    lat: inspectionData.locationGeometry.coordinates[1],
-                    lng: inspectionData.locationGeometry.coordinates[0],
-                  }}
+                  map_object_type={MapObjectType.Investigation}
+                  locationCoordinates={
+                    inspectionData.locationGeometry?.coordinates
+                      ? {
+                          lat: inspectionData.locationGeometry.coordinates[1],
+                          lng: inspectionData.locationGeometry.coordinates[0],
+                        }
+                      : undefined
+                  }
                   draggable={false}
-                  defaultCenter={{ lat: 55, lng: -125 }}
-                  defaultZoom={inspectionData?.locationGeometry?.coordinates ? 12 : 5}
+                  defaultCenter={geocodedCommunityCenter ?? { lat: 55, lng: -125 }}
+                  defaultZoom={getMapZoom(inspectionData.locationGeometry?.coordinates, geocodedCommunityCenter)}
                 />
               )}
             </div>
