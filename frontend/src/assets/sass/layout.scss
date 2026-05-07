@@ -783,6 +783,8 @@ p {
 // TABLES
 .comp-table {
   font-size: 0.875rem;
+  border-collapse: separate;
+  border-spacing: 0;
 
   tbody {
     font-weight: 400;
@@ -802,12 +804,13 @@ p {
       background: $gray-100;
       background-color: $gray-100;
       border-color: $gray-300;
+      border-bottom: 1px solid $gray-300;
       overflow: hidden;
       white-space: nowrap;
       vertical-align: middle;
 
       + th {
-        border-left-width: 1px;
+        border-left: 1px solid $gray-300;
       }
 
       &.sortable-header {

@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, selectModalData } from "@/app/store/reducers/app";
+import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Alert, Button, Modal } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
@@ -9,7 +9,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import { selectOfficerByAppUserGuid, selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficerListByAgencyCode } from "@/app/store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CreateUpdateExhibitInput, Exhibit } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
@@ -28,7 +28,7 @@ type AddEditTaskExhibitModalProps = {
 export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
   const userAgency = getUserAgency();
-  const currentUserGuid = useAppSelector(appUserGuid);
+  const allOfficers = useAppSelector(selectOfficers);
 
   const officerSelector = useMemo(() => selectOfficerListByAgencyCode(userAgency), [userAgency]);
   const assignableOfficers = useAppSelector(officerSelector);
@@ -37,28 +37,39 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
     title,
     investigationIdentifier,
     taskIdentifier,
+    taskAssignedUserGuid,
     exhibit,
     onDirtyChange,
   }: {
     title: string;
     investigationIdentifier: string;
     taskIdentifier: string;
+    taskAssignedUserGuid: string;
     exhibit?: Exhibit;
     onDirtyChange?: any;
   } = modalData;
 
-  const collectedByInitialValue = exhibit?.collectedAppUserGuidRef ?? currentUserGuid ?? "";
-  const collectedByOfficer = useAppSelector(
-    useMemo(() => selectOfficerByAppUserGuid(collectedByInitialValue), [collectedByInitialValue]),
-  );
+  // Existing officer on the exhibit being edited (if any)
+  const existingOfficer = exhibit?.collectedAppUserGuidRef
+    ? allOfficers?.find((item: { app_user_guid: string }) => item.app_user_guid === exhibit.collectedAppUserGuidRef)
+    : undefined;
 
+  // For new exhibits default to the task's assigned officer (primary investigator on the investigation)
+  const defaultAssignedOfficer = taskAssignedUserGuid
+    ? allOfficers?.find((item: { app_user_guid: string }) => item.app_user_guid === taskAssignedUserGuid)
+    : undefined;
+
+  const initialOfficer = existingOfficer ?? defaultAssignedOfficer;
+  const collectedByInitialValue = initialOfficer?.app_user_guid ?? "";
+
+  // Include the initial officer in the dropdown list even if they're inactive or in a different agency
   const assignableOfficersExtended =
-    collectedByOfficer && !assignableOfficers.some((opt) => opt.value === collectedByOfficer.app_user_guid)
+    initialOfficer && !assignableOfficers.some((opt) => opt.value === initialOfficer.app_user_guid)
       ? [
           ...assignableOfficers,
           {
-            value: collectedByOfficer.app_user_guid,
-            label: `${collectedByOfficer.last_name}, ${collectedByOfficer.first_name}`,
+            value: initialOfficer.app_user_guid,
+            label: `${initialOfficer.last_name}, ${initialOfficer.first_name}`,
           },
         ]
       : assignableOfficers;

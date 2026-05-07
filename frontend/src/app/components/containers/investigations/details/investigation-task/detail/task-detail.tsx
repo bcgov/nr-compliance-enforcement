@@ -206,10 +206,12 @@ const TaskDetail: FC = () => {
         <TaskActions
           investigationGuid={investigationGuid}
           taskIdentifier={task?.taskIdentifier}
+          taskAssignedUserGuid={task?.assignedUserIdentifier}
         />
         <TaskExhibits
           investigationGuid={investigationGuid}
           task={task}
+          taskAssignedUserGuid={task?.assignedUserIdentifier}
         />
         <TaskAttachments
           investigationGuid={investigationGuid}
