@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Inspection Edit functionality
@@ -60,6 +60,8 @@ test.describe("Inspection Edit", () => {
     if (await locationInput.isVisible()) {
       await locationInput.fill("123 Test Street, Vancouver BC");
     }
+
+    await selectItemById("community-select", "70 Mile House", page);
 
     // Save changes
     const saveButton = page.locator("button", { hasText: /Save|Update/i }).first();

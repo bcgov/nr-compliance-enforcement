@@ -15,12 +15,14 @@ export class Inspection {
   leadAgency: string;
   inspectionStatus: InspectionStatusCode;
   openedTimestamp: Date;
+  updatedTimestamp: Date;
   name: string;
   createdByAppUserGuid?: string;
   locationGeometry?: Point;
   locationAddress?: string;
   locationDescription?: string;
   parties: [InspectionParty];
+  community?: string;
 }
 
 @InputType()
@@ -82,6 +84,9 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   createdByAppUserGuid: string;
+
+  @Field(() => String)
+  community: string;
 }
 
 @InputType()
@@ -106,6 +111,10 @@ export class UpdateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
+  @Field(() => String)
+  @IsOptional()
+  community: string;
 }
 
 export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
@@ -134,6 +143,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
       mapFrom((src) => src.inspection_opened_utc_timestamp),
     ),
     forMember(
+      (dest) => dest.updatedTimestamp,
+      mapFrom((src) => src.update_utc_timestamp as Date),
+    ),
+    forMember(
       (dest) => dest.name,
       mapFrom((src) => src.name),
     ),
@@ -156,6 +169,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parties,
       mapFrom((src) => mapper.mapArray(src.inspection_party ?? [], "inspection_party", "InspectionParty")),
+    ),
+    forMember(
+      (dest) => dest.community,
+      mapFrom((src) => src.geo_organization_unit_code_ref),
     ),
   );
 };

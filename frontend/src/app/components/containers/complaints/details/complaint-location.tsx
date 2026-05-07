@@ -1,17 +1,14 @@
-import { FC, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import {
-  getGeocodedComplaintCoordinates,
-  selectComplaintDetails,
-  selectGeocodedComplaintCoordinates,
-} from "@store/reducers/complaints";
+import { FC, useMemo } from "react";
+import { useAppSelector } from "@hooks/hooks";
+import { selectComplaintDetails } from "@store/reducers/complaints";
 import LeafletMapWithPoint from "@components/mapping/leaflet-map-with-point";
 import { isWithinBC } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
+import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
+import { getMapZoom } from "@/app/common/geocoder";
 
 type Props = {
-  parentCoordinates?: { lat: number; lng: number };
   complaintType: string;
   draggable: boolean;
   onMarkerMove?: (lat: number, lng: number) => void;
@@ -30,60 +27,49 @@ export const ComplaintLocation: FC<Props> = ({
   editComponent,
   mapElements,
 }) => {
-  const dispatch = useAppDispatch();
   const { area, coordinates } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
-  const geocodedComplaintCoordinates = useAppSelector(selectGeocodedComplaintCoordinates);
 
-  useEffect(() => {
-    if (
-      editComponent &&
-      area &&
-      coordinates &&
-      +coordinates[Coordinates.Latitude] === 0 &&
-      +coordinates[Coordinates.Longitude] === 0
-    ) {
-      // geocode the complaint using the area.  Used in case there are no parentCoordinates
-      dispatch(getGeocodedComplaintCoordinates(area));
+  const shouldGeocode =
+    editComponent && // Only geocode in edit
+    !!area && // and there is a community / area
+    !!coordinates && // and there is something in the coordinates area
+    +coordinates[Coordinates.Latitude] === 0 && // and it's [0,0] our representation of empty
+    +coordinates[Coordinates.Longitude] === 0;
+
+  const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(
+    shouldGeocode ? area : undefined,
+  );
+
+  const geocodedLocation = useMemo(() => {
+    if (!geocodedCommunityCenter) {
+      return { lat: 0, lng: 0 };
     }
-  }, [area, dispatch, editComponent, coordinates]);
 
-  useEffect(() => {
-    let complaintMapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint);
+    const complaintMapElement = mapElements.find((item) => item.objectType === MapObjectType.Complaint);
     const complaintMapElementLocation = complaintMapElement?.location;
-    if (complaintMapElement) {
-      if (
-        !(
-          complaintMapElementLocation && isWithinBC([complaintMapElementLocation.lng, complaintMapElementLocation.lat])
-        ) &&
-        geocodedComplaintCoordinates?.features
-      ) {
-        const lat =
-          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Latitude]
-            : 0;
-        const lng =
-          geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude] !== undefined
-            ? geocodedComplaintCoordinates?.features[0]?.geometry?.coordinates[Coordinates.Longitude]
-            : 0;
-        setGeocodedLocation({ lat: lat, lng: lng });
-      }
-    }
-  }, [mapElements, geocodedComplaintCoordinates?.features]);
 
-  const [geocodedLocation, setGeocodedLocation] = useState({ lat: 0, lng: 0 });
+    if (complaintMapElementLocation && isWithinBC([complaintMapElementLocation.lng, complaintMapElementLocation.lat])) {
+      return { lat: 0, lng: 0 };
+    }
+
+    return geocodedCommunityCenter;
+  }, [geocodedCommunityCenter, mapElements]);
 
   const calculatedClass = editComponent ? "comp-complaint-details-location-block" : "display-none";
 
   return (
     <section className={"comp-details-section" + calculatedClass}>
       <h3>Complaint location</h3>
-      <LeafletMapWithPoint
-        mapElements={mapElements}
-        draggable={draggable}
-        onMarkerMove={onMarkerMove}
-        geocodedLocation={geocodedLocation}
-        mapType="complaint"
-      />
+      {coordinates && (!shouldGeocode || isCommunityLoaded) && (
+        <LeafletMapWithPoint
+          mapElements={mapElements}
+          draggable={draggable}
+          onMarkerMove={onMarkerMove}
+          geocodedLocation={geocodedLocation}
+          defaultZoom={shouldGeocode ? getMapZoom(null, geocodedCommunityCenter) : 14}
+          mapType="complaint"
+        />
+      )}
     </section>
   );
 };
