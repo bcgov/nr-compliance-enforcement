@@ -7,7 +7,7 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { CompSelect } from "@/app/components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/store/reducers/app";
+import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
