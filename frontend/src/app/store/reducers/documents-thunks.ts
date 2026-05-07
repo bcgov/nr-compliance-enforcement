@@ -11,7 +11,6 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
 import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
-import { ToggleError } from "@/app/common/toast";
 import { bulkDownload, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
 
 export const generateExportComplaintInputParams = (
