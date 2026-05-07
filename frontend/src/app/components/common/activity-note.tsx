@@ -76,8 +76,6 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   defaultAssignedUserGuid,
 }) => {
   // Redux State
-  const currentUserGuid = useAppSelector(appUserGuid);
-  const currentUserName = useAppSelector(profileDisplayName);
   const agency = useAppSelector(selectOfficerAgency);
   const allOfficers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
