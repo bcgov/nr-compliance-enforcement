@@ -15,7 +15,7 @@ type AddEditTaskActionModalProps = {
 
 export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
-  const { investigationGuid, taskIdentifier, taskAction, onDirtyChange } = modalData ?? {};
+  const { investigationGuid, taskIdentifier, taskAction, taskAssignedUserGuid, onDirtyChange } = modalData ?? {};
   const currentUserGuid = useAppSelector(selectAppUserGuid);
 
   const [editValues, setEditValues] = useState<Partial<ActivityNoteInput>>({});
@@ -107,6 +107,7 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
           onValidationChange={handleValidationChange}
           onDirtyChange={(_index, dirty) => (dirty ? markDirty() : markClean())}
           showErrors={showErrors}
+          defaultAssignedUserGuid={taskAssignedUserGuid}
         />
 
         {taskAction && showDeleteConfirm && (

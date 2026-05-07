@@ -13,6 +13,7 @@ import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 interface TaskActionsProps {
   investigationGuid: string;
   taskIdentifier: string | undefined;
+  taskAssignedUserGuid?: string | null;
   onEdit?: (taskAction: ActivityNote) => void;
 }
 
@@ -71,7 +72,12 @@ const TaskActionRow: FC<{
   );
 };
 
-export const TaskActions: FC<TaskActionsProps> = ({ investigationGuid, taskIdentifier, onEdit }) => {
+export const TaskActions: FC<TaskActionsProps> = ({
+  investigationGuid,
+  taskIdentifier,
+  taskAssignedUserGuid,
+  onEdit,
+}) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
@@ -95,6 +101,7 @@ export const TaskActions: FC<TaskActionsProps> = ({ investigationGuid, taskIdent
           investigationGuid,
           taskIdentifier,
           taskAction,
+          taskAssignedUserGuid,
           onDirtyChange: handleChildDirtyChange,
         },
         callback: refetch,
@@ -113,6 +120,7 @@ export const TaskActions: FC<TaskActionsProps> = ({ investigationGuid, taskIdent
           investigationGuid,
           taskIdentifier,
           taskAction: null,
+          taskAssignedUserGuid,
           onDirtyChange: handleChildDirtyChange,
         },
         callback: refetch,
