@@ -22,6 +22,7 @@ export class Inspection {
   locationAddress?: string;
   locationDescription?: string;
   parties: [InspectionParty];
+  community?: string;
 }
 
 @InputType()
@@ -83,6 +84,9 @@ export class CreateInspectionInput {
 
   @Field(() => String)
   createdByAppUserGuid: string;
+
+  @Field(() => String)
+  community: string;
 }
 
 @InputType()
@@ -107,6 +111,10 @@ export class UpdateInspectionInput {
   @Field(() => String)
   @IsOptional()
   locationAddress: string;
+
+  @Field(() => String)
+  @IsOptional()
+  community: string;
 }
 
 export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
@@ -161,6 +169,10 @@ export const mapPrismaInspectionToInspection = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parties,
       mapFrom((src) => mapper.mapArray(src.inspection_party ?? [], "inspection_party", "InspectionParty")),
+    ),
+    forMember(
+      (dest) => dest.community,
+      mapFrom((src) => src.geo_organization_unit_code_ref),
     ),
   );
 };
