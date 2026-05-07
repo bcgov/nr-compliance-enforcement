@@ -84,6 +84,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         investigationGuid={investigationGuid}
         task={undefined}
         isSaving={createTaskMutation.isPending}
+        primaryInvestigatorGuid={investigationData?.primaryInvestigatorGuid}
         onDirtyChange={handleChildDirtyChange}
       />
     </div>
