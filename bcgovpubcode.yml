@@ -18,18 +18,18 @@ product_information:
   ministry:
     - Environment and Climate Change Strategy
     - Water, Land and Resource Stewardship
-  product_acronym: NatCom, NatInv
+  product_acronym: NatSuite
   product_description: >-
     Manages public complaints as well as investigative case files for multiple
     Compliance and Enforcement divisions across the natural resource sector.
-  product_name: NatComplaints, NatInvestigations
+  product_name: NatSuite
   product_status: maturing
   product_urls:
     - >-
       https://nr-compliance-enforcement-test-frontend.apps.silver.devops.gov.bc.ca/
     - >-
       https://nr-compliance-enforcement-prod-frontend.apps.silver.devops.gov.bc.ca/
-    - https://natcomplaints.nrs.gov.bc.ca/
+    - https://natsuite.nrs.gov.bc.ca/
   program_area: Conservation and Recreation Division
 product_technology_information:
   backend_frameworks:

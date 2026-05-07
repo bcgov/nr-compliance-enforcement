@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { CaseHeader } from "./case-header";
 import { Button } from "react-bootstrap";
 import { useCaseActivities } from "@/app/hooks/use-case-activities";
@@ -34,6 +35,30 @@ export const CaseView: FC = () => {
     isInvestigationsLoading,
     isInspectionsLoading,
   } = useCaseActivities(id);
+
+  const lastUpdatedDisplay = useMemo(() => {
+    if (!caseData) return undefined;
+    const times: number[] = [];
+    const pushTime = (value: string | Date | undefined) => {
+      if (value == null) return;
+      const ms = new Date(value).getTime();
+      if (!Number.isNaN(ms)) times.push(ms);
+    };
+
+    pushTime(caseData.updatedTimestamp);
+    for (const c of linkedComplaints ?? []) {
+      pushTime((c as SectorComplaint & { updatedOn: string | Date }).updatedOn);
+    }
+    for (const inv of investigations ?? []) {
+      pushTime(inv.updatedTimestamp);
+    }
+    for (const ins of inspections ?? []) {
+      pushTime(ins.updatedTimestamp);
+    }
+
+    if (times.length === 0) return undefined;
+    return new Date(Math.max(...times)).toString();
+  }, [caseData, linkedComplaints, investigations, inspections]);
 
   const editButtonClick = () => {
     navigate(`/case/${id}/edit`);
@@ -75,20 +100,20 @@ export const CaseView: FC = () => {
         </div>
 
         <div className="row g-3">
-            <ComplaintColumn
-              complaints={linkedComplaints}
-              caseName={caseData?.name ?? undefined}
-              caseIdentifier={id}
-            />
-            <InspectionColumn
-              inspections={inspections}
-              isLoading={isInspectionsLoading}
-            />
-            <InvestigationColumn
-              investigations={investigations}
-              isLoading={isInvestigationsLoading}
-              disableBorder={true}
-            />
+          <ComplaintColumn
+            complaints={linkedComplaints}
+            caseName={caseData?.name ?? undefined}
+            caseIdentifier={id}
+          />
+          <InspectionColumn
+            inspections={inspections}
+            isLoading={isInspectionsLoading}
+          />
+          <InvestigationColumn
+            investigations={investigations}
+            isLoading={isInvestigationsLoading}
+            disableBorder={true}
+          />
         </div>
       </div>
     );
@@ -112,7 +137,10 @@ export const CaseView: FC = () => {
       {!caseData && <div className="m-auto">No data found for case: {id}</div>}
       {caseData && (
         <div className="comp-complaint-details">
-          <CaseHeader caseData={caseData} />
+          <CaseHeader
+            caseData={caseData}
+            lastUpdatedDisplay={lastUpdatedDisplay}
+          />
           {renderTabContent()}
         </div>
       )}

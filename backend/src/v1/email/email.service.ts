@@ -178,7 +178,7 @@ export class EmailService {
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
       const emailSubject = externalAgencyInd
         ? `${envFlag}Referral from ${referredByAgency}: ${subjectTypeDescription} complaint #${id}`
-        : `${envFlag}NatCom referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
+        : `${envFlag}NatSuite referral ${subjectTypeDescription} complaint #${id} ${subjectAdditionalDetails}`;
 
       const generateReferralEmailParams = {
         complaintId: id,
@@ -286,7 +286,7 @@ export class EmailService {
         }
       }
       const envFlag = ["dev", "test"].includes(process.env.ENVIRONMENT) ? "<TEST> " : "";
-      const emailSubject = `${envFlag}Invitation to collaborate: NatCom ${subjectTypeDescription} complaint #${complaintId} ${subjectAdditionalDetails}`;
+      const emailSubject = `${envFlag}Invitation to collaborate: NatSuite ${subjectTypeDescription} complaint #${complaintId} ${subjectAdditionalDetails}`;
       const generateCollaboratorEmailParams: GenerateCollaboratorEmailParams = {
         complaintId,
         collaboratorName,

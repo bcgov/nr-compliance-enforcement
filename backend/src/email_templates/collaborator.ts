@@ -41,8 +41,8 @@ export function generateCollaboratorEmailBody(emailCollaboratorParams: GenerateC
     </li>
   </ul>
 </p>
-<p><strong><u>PLEASE DO NOT DELETE THIS EMAIL AS THE COMPLAINT WILL NOT APPEAR IN YOUR LIST VIEW IN NATCOM. You need to use the link above to open the complaint.</u></strong></p>
-<p>Please note this is an automated email from NatCom generated on behalf of the person inviting you to collaborate. If you need assistance, please contact:
+<p><strong><u>PLEASE DO NOT DELETE THIS EMAIL AS THE COMPLAINT WILL NOT APPEAR IN YOUR LIST VIEW IN NATSUITE. You need to use the link above to open the complaint.</u></strong></p>
+<p>Please note this is an automated email from NatSuite generated on behalf of the person inviting you to collaborate. If you need assistance, please contact:
   <ul>
     <li>${senderEmailAddress} for information about the complaint and collaboration efforts.</li>
     <li>${supportEmail} for technical support.</li>

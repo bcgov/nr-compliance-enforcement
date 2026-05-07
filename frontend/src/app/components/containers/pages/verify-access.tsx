@@ -64,7 +64,7 @@ export const VerifyAccess: FC<Props> = () => {
         >
           Your access has been verified. You will be redirected to the application shortly. <br />
           If you are not redirected in 5 seconds click the link to continue:{" "}
-          <Link to="/complaints">NatComplaints - List View</Link> <br />
+          <Link to="/complaints">NatSuite - List View</Link> <br />
           If you have any problems, please contact the Compliance and Enforcement Digital Service team at{" "}
           <a href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>
         </ErrorMessage>
