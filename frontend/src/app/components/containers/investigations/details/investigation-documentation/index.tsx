@@ -12,7 +12,6 @@ import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { useInvestigationAttachments, Attachment } from "./hooks/use-investigation-attachments";
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
-import { DownloadType } from "@/app/constants/download-type";
 
 type Props = {
   investigationGuid: string;
@@ -97,8 +96,14 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
         size: blob.size,
         url: csvUrl,
       };
+
+      const attachmentsWithFolder = sorted.map((a) => ({
+        ...a,
+        folder: a.fileType ? `${a.fileType}s` : undefined,
+      }));
+
       dispatch(
-        bulkDownload(investigationGuid, filteredAttachments, `Investigation_${investigationName}_Attachments.zip`, [
+        bulkDownload(investigationGuid, attachmentsWithFolder, `Investigation_${investigationName}_Attachments.zip`, [
           csvFile,
         ]),
       );

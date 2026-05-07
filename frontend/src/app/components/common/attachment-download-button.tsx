@@ -6,6 +6,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { bulkDownload, selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { Id } from "react-toastify";
 import { useSelector } from "react-redux";
+import { COMSObject } from "@/app/types/coms/object";
 
 export const BulkDownloadButton = ({
   taskId,
@@ -37,11 +38,14 @@ export const BulkDownloadButton = ({
         ToggleError("No attachments found for this task");
         return;
       }
+
+      console.log(attachments);
       // Prepare attachment info for backend
-      const attachmentInfo = attachments.map((a: any) => ({
+      const attachmentInfo = attachments.map((a: COMSObject) => ({
         id: a.id,
         name: a.name,
         size: a.size || 0,
+        folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
       await dispatch(bulkDownload(taskId, attachmentInfo, `Task_${taskNumber}_Attachments.zip`));
     } catch (error) {
