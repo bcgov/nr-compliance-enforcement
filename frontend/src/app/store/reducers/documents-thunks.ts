@@ -49,7 +49,7 @@ export const generateExportComplaintInputParams = (
 
   const attachments = { complaintsAttachments: complaintAttachments, outcomeAttachments: outcomeAttachments };
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
+  const exportComplaintInput = { id, type, fileName, tz, attachments };
   return exportComplaintInput;
 };
 
