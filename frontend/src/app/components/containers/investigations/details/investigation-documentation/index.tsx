@@ -102,7 +102,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
         folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
 
-      dispatch(
+      await dispatch(
         bulkDownload(investigationGuid, attachmentsWithFolder, `Investigation_${investigationName}_Attachments.zip`, [
           csvFile,
         ]),
