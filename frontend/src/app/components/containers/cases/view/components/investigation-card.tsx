@@ -41,8 +41,7 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
   const primaryInvestigatorName = formatOfficerName(primaryInvestigator ?? undefined);
   const fileCoordinatorName = formatOfficerName(fileCoordinator ?? undefined);
   const partyCount = investigation.parties?.length;
-  // NOTE: The Investigation type does not currently expose an "updated" timestamp.  Duplicating what's in the Investigation header
-  const lastUpdatedDate = investigation.openedTimestamp;
+  const lastUpdatedDate = investigation.updatedTimestamp;
 
   return (
     <ActivityCard

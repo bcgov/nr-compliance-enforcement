@@ -5,6 +5,7 @@ type CaseFile {
   leadAgency: AgencyCode
   caseStatus: CaseStatusCode
   openedTimestamp: DateTime
+  updatedTimestamp: DateTime
   description: String
   name: String
   createdByAppUserGuid: String

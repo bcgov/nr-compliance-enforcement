@@ -43,6 +43,9 @@ export class inspection {
   @ApiPropertyOptional({ type: String })
   created_by_app_user_guid_ref?: string;
 
+  @ApiPropertyOptional({ type: String })
+  geo_organization_unit_code_ref?: string;
+
   @ApiProperty({ type: () => inspection_status_code })
   inspection_status_code: inspection_status_code;
 
