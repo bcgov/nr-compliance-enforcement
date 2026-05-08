@@ -1,6 +1,6 @@
 import { FC, memo, useState, useMemo, useEffect } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading, appUserGuid, isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import Option from "@apptypes/app/option";
@@ -15,6 +15,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
 import { Link } from "react-router-dom";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { updateComplaintLastUpdated } from "@store/reducers/complaints";
 
 const createOrAddOptions: Option[] = [
   { label: "Create a new case", value: "create" },
@@ -68,6 +69,9 @@ type CreateAddCaseModalProps = {
   submit: () => void;
 };
 export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit }) => {
+  // Hooks
+  const dispatch = useAppDispatch();
+
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
@@ -137,6 +141,9 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           closeOnClick: false,
         },
       );
+      if (complaint_identifier) {
+        dispatch(updateComplaintLastUpdated(complaint_identifier));
+      }
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -162,6 +169,9 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
           closeOnClick: false,
         },
       );
+      if (complaint_identifier) {
+        dispatch(updateComplaintLastUpdated(complaint_identifier));
+      }
     },
     onError: (error: any) => {
       console.error("Error adding case to complaint:", error);

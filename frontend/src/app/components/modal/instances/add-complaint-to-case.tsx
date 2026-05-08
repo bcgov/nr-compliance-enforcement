@@ -1,6 +1,6 @@
 import { FC, memo, useEffect, useState } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import Option from "@apptypes/app/option";
 import { gql } from "graphql-request";
@@ -9,6 +9,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { CaseActivityCreateInput } from "@/generated/graphql";
 import { ComplaintListSearch } from "@/app/components/common/complaint-list-search";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { updateComplaintLastUpdated } from "@store/reducers/complaints";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -44,6 +45,9 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
 
+  // Hooks
+  const dispatch = useAppDispatch();
+
   // Vars
   const { title, caseId, addedComplaints, onDirtyChange } = modalData;
   const { markDirty } = useFormDirtyState(onDirtyChange);
@@ -73,7 +77,10 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   };
 
   const addComplaintToCaseMutation = useGraphQLMutation(ADD_COMPLAINT_TO_CASE_MUTATION, {
-    onSuccess: (data: any) => {
+    onSuccess: () => {
+      if (selectedComplaint?.value) {
+        dispatch(updateComplaintLastUpdated(selectedComplaint.value));
+      }
       ToggleSuccess("Complaint successfully added");
     },
     onError: (error: any) => {

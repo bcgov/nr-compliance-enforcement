@@ -550,6 +550,19 @@ const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: str
   ToggleSuccess("Status updated");
 };
 
+export const updateComplaintLastUpdated =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaintIdentifier}`,
+      );
+      await patch<boolean>(dispatch, parameters);
+    } catch (error) {
+      console.error(`Unable to bump last-updated for complaint ${complaintIdentifier}:`, error);
+    }
+  };
+
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
   async (dispatch) => {
