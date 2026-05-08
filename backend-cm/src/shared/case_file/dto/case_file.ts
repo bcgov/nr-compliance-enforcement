@@ -10,6 +10,7 @@ import { PaginationMetadata, PaginatedResult } from "../../../common/pagination.
 export class CaseFile {
   caseIdentifier: string;
   openedTimestamp: Date;
+  updatedTimestamp: Date;
   leadAgency: AgencyCode;
   caseStatus: CaseStatusCode;
   description?: string;
@@ -134,6 +135,10 @@ export const mapPrismaCaseFileToCaseFile = (mapper: Mapper) => {
     forMember(
       (dest) => dest.openedTimestamp,
       mapFrom((src) => src.opened_utc_timestamp),
+    ),
+    forMember(
+      (dest) => dest.updatedTimestamp,
+      mapFrom((src) => src.update_utc_timestamp as Date),
     ),
     forMember(
       (dest) => dest.leadAgency,

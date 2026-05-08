@@ -12,6 +12,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 interface TaskExhibitsProps {
   investigationGuid: string;
   task: Task | undefined;
+  taskAssignedUserGuid?: string | null;
 }
 
 export const GET_EXHIBITS_BY_TASK = gql`
@@ -78,7 +79,7 @@ export const UPDATE_EXHIBIT = gql`
   }
 `;
 
-export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task }) => {
+export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task, taskAssignedUserGuid }) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
@@ -102,6 +103,7 @@ export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task })
           title: "Add exhibit",
           investigationIdentifier: investigationGuid,
           taskIdentifier: task?.taskIdentifier,
+          taskAssignedUserGuid: taskAssignedUserGuid,
           onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,

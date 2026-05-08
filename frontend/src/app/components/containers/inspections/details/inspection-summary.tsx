@@ -3,7 +3,7 @@ import { FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
-import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
+import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
@@ -11,6 +11,8 @@ import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
+import { getMapZoom } from "@/app/common/geocoder";
+import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;
@@ -27,16 +29,25 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  const { center: geocodedCommunityCenter, isLoaded: isCommunityLoaded } = useGeocodedCenter(inspectionData?.community);
+
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === inspectionData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
   const dateLogged = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
-  const lastUpdated = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
+  const lastUpdated = inspectionData?.updatedTimestamp
+    ? new Date(inspectionData.updatedTimestamp).toString()
+    : undefined;
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(inspectionData?.createdByAppUserGuid));
   const createdBy = createdByUser?.user_id || "Unknown";
+
+  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const communityLabel = inspectionData?.community
+    ? (communityOptions.find((o: Option) => o.value === inspectionData.community)?.label ?? inspectionData.community)
+    : "";
 
   const editButtonClick = () => {
     navigate(`/inspection/${inspectionGuid}/edit`);
@@ -191,6 +202,10 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                   <dd id="comp-details-location-description">{inspectionData.locationDescription}</dd>
                 </div>
               )}
+              <div>
+                <dt>Community</dt>
+                <dd id="investigation-summary-community">{communityLabel}</dd>
+              </div>
               <div className="row">
                 <div className="col-12">
                   <div className="form-group">
@@ -209,20 +224,22 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                   </div>
                 </div>
               </div>
-              <MapObjectLocation
-                map_object_type={MapObjectType.Inspection}
-                locationCoordinates={
-                  inspectionData?.locationGeometry?.coordinates
-                    ? {
-                        lat: inspectionData.locationGeometry.coordinates[1],
-                        lng: inspectionData.locationGeometry.coordinates[0],
-                      }
-                    : undefined
-                }
-                draggable={false}
-                defaultCenter={{ lat: 55, lng: -125 }}
-                defaultZoom={inspectionData?.locationGeometry?.coordinates ? 12 : 5}
-              />
+              {inspectionData && isCommunityLoaded && (
+                <MapObjectLocation
+                  map_object_type={MapObjectType.Investigation}
+                  locationCoordinates={
+                    inspectionData.locationGeometry?.coordinates
+                      ? {
+                          lat: inspectionData.locationGeometry.coordinates[1],
+                          lng: inspectionData.locationGeometry.coordinates[0],
+                        }
+                      : undefined
+                  }
+                  draggable={false}
+                  defaultCenter={geocodedCommunityCenter ?? { lat: 55, lng: -125 }}
+                  defaultZoom={getMapZoom(inspectionData.locationGeometry?.coordinates, geocodedCommunityCenter)}
+                />
+              )}
             </div>
           )}
         </div>

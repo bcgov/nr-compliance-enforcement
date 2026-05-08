@@ -24,9 +24,7 @@
              globalThis.VITE_COMS_URL="{$COMS_URL}";
              globalThis.VITE_COMS_BUCKET="{$COMS_BUCKET}";
              globalThis.VITE_SECURE_COMS_BUCKET="{$SECURE_COMS_BUCKET}";
-             globalThis.VITE_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}";
-             globalThis.VITE_REDIRECT_MODE="{$REDIRECT_MODE}";
-             globalThis.VITE_REDIRECT_HOST_NAME="{$REDIRECT_HOST_NAME}"`
+             globalThis.VITE_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"`
   }
 
   root * /app/dist

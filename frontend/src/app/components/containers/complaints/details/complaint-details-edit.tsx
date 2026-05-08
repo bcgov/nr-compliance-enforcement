@@ -9,7 +9,6 @@ import {
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
-  setGeocodedComplaintCoordinates,
   updateComplaintById,
   selectComplaint,
   getComplaintById,
@@ -90,7 +89,6 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
 import { selectCanAccessCases } from "@/app/access/module-access";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -304,7 +302,6 @@ export const ComplaintDetailsEdit: FC = () => {
     //-- when the component unmounts clear the complaint from redux
     return () => {
       dispatch(setComplaint(null));
-      dispatch(setGeocodedComplaintCoordinates(null));
       dispatch(setLinkedComplaints([]));
     };
   }, [dispatch]);

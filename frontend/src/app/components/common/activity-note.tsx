@@ -7,7 +7,7 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { CompSelect } from "@/app/components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { appUserGuid, profileDisplayName, selectOfficerAgency } from "@/app/store/reducers/app";
+import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
@@ -23,6 +23,7 @@ interface ActivityNoteProps {
   initialData?: ActivityNote;
   shouldReset?: boolean;
   showErrors: boolean;
+  defaultAssignedUserGuid?: string | null;
 }
 
 export const GET_ACTIVITY_NOTES_BY_TASK = gql`
@@ -72,10 +73,9 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   initialData,
   showErrors,
   shouldReset,
+  defaultAssignedUserGuid,
 }) => {
   // Redux State
-  const currentUserGuid = useAppSelector(appUserGuid);
-  const currentUserName = useAppSelector(profileDisplayName);
   const agency = useAppSelector(selectOfficerAgency);
   const allOfficers = useAppSelector(selectOfficers);
   const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
@@ -88,10 +88,18 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     ? `${existingOfficer.last_name}, ${existingOfficer.first_name}`
     : undefined;
 
-  const initialOfficer: Option = {
-    value: existingOfficer?.app_user_guid ?? currentUserGuid,
-    label: existingOfficerName ?? currentUserName,
-  };
+  // For new task actions default to primary investigator on the investigation
+  // this is passed down to task actions as the default as well
+  const defaultAssignedOfficer = defaultAssignedUserGuid
+    ? allOfficers?.find((item: { app_user_guid: string }) => item.app_user_guid === defaultAssignedUserGuid)
+    : undefined;
+  const defaultAssignedOfficerName = defaultAssignedOfficer
+    ? `${defaultAssignedOfficer.last_name}, ${defaultAssignedOfficer.first_name}`
+    : undefined;
+
+  const officer = existingOfficer ?? defaultAssignedOfficer;
+  const officerName = existingOfficerName ?? defaultAssignedOfficerName;
+  const initialOfficer: Option | null = officer ? { value: officer.app_user_guid, label: officerName ?? "" } : null;
 
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);

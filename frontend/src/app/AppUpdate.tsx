@@ -7,7 +7,7 @@ const AppUpdateToast: FC = (): JSX.Element => (
     <h5 className="fw-bold mb-3 text-black">
       <span aria-label="sparkles">✨</span> Update Available
     </h5>
-    <p className="text-black">A new version of NatComplaints is available. Click the button below to update.</p>
+    <p className="text-black">A new version of NatSuite is available. Click the button below to update.</p>
     <div>
       <Button
         variant="primary"

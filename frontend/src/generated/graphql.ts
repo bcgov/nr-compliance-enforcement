@@ -263,6 +263,7 @@ export type CaseFile = {
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CaseFileAction = {
@@ -470,6 +471,7 @@ export type CreateInspectionBusinessInput = {
 
 export type CreateInspectionInput = {
   caseIdentifier: Scalars['String']['input'];
+  community?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
@@ -1005,6 +1007,7 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
+  community?: Maybe<Scalars['String']['output']>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
@@ -1016,6 +1019,7 @@ export type Inspection = {
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   parties?: Maybe<Array<Maybe<InspectionParty>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InspectionBusiness = {
@@ -2578,6 +2582,7 @@ export type UpdateEquipmentInput = {
 };
 
 export type UpdateInspectionInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;

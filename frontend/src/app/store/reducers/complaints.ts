@@ -15,7 +15,6 @@ import { ComplaintRequestPayload } from "@apptypes/complaints/complaint-filters/
 import { generateApiParameters, get, patch, post } from "@common/api";
 import { Feature } from "@apptypes/maps/bcGeocoderType";
 import { ToggleSuccess, ToggleError } from "@common/toast";
-import { Coordinates } from "@apptypes/app/coordinate-type";
 
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
 import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complaint";
@@ -51,6 +50,7 @@ import { CodeTableState } from "@/app/types/state/code-table-state";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { geocodeAddressIfNeeded } from "@/app/common/geocoder";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -481,24 +481,6 @@ export const getComplaintLocationByAddress =
     } catch (error) {}
   };
 
-// Used to get the complaint location by area and address
-export const getGeocodedComplaintCoordinates =
-  (area: string, address?: string): AppThunk =>
-  async (dispatch) => {
-    try {
-      let parameters;
-      if (address && area) {
-        parameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}&addressString=${address}`,
-        );
-      } else {
-        parameters = generateApiParameters(`${config.API_BASE_URL}/bc-geo-coder/address?localityName=${area}`);
-      }
-      const response = await get<Feature>(dispatch, parameters);
-      dispatch(setGeocodedComplaintCoordinates(response));
-    } catch (error) {}
-  };
-
 export const getWebEOCUpdates =
   (complaintIdentifier: string): AppThunk =>
   async (dispatch) => {
@@ -634,9 +616,32 @@ export const updateGeneralIncidentComplaintStatus =
 
 export const updateComplaintById =
   (complaint: ComplaintDtoAlias, complaintType: string): AppThunk =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       const { id } = complaint;
+
+      const {
+        codeTables: { "area-codes": areaCodes },
+      } = getState();
+
+      const {
+        location,
+        locationSummary,
+        organization: { area: community },
+      } = complaint as Complaint;
+      const { coordinates } = location;
+      const selectedCommunity = areaCodes.find(({ area }) => area === community);
+
+      const resolvedCoordinates = await geocodeAddressIfNeeded(
+        selectedCommunity?.areaName,
+        locationSummary,
+        coordinates,
+        dispatch,
+      );
+
+      if (resolvedCoordinates !== coordinates) {
+        complaint = { ...complaint, location: { ...location, coordinates: resolvedCoordinates } };
+      }
 
       const updateParams = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/update-by-id/${complaintType}/${id}`,
@@ -648,6 +653,7 @@ export const updateComplaintById =
       ToggleSuccess("Updates have been saved");
     } catch (error) {
       ToggleError("Unable to update complaint");
+      console.error("Error updating complaint", error);
     }
   };
 
@@ -834,16 +840,15 @@ export const createComplaint =
       const { coordinates } = location;
       const selectedCommunity = areaCodes.find(({ area }) => area === community);
 
-      if (coordinates[Coordinates.Latitude] === 0 && coordinates[Coordinates.Longitude] === 0) {
-        const geocodeParameters = generateApiParameters(
-          `${config.API_BASE_URL}/bc-geo-coder/address?localityName=${selectedCommunity?.areaName}&addressString=${locationSummary}`,
-        );
-        const geocodeResponse = await get<Feature>(dispatch, geocodeParameters);
+      const resolvedCoordinates = await geocodeAddressIfNeeded(
+        selectedCommunity?.areaName,
+        locationSummary,
+        coordinates,
+        dispatch,
+      );
 
-        if (geocodeResponse?.features && geocodeResponse?.features.length === 1 && geocodeResponse?.minScore >= 90) {
-          const geoCoderCoordinates = geocodeResponse?.features[0].geometry.coordinates;
-          complaint = { ...complaint, location: { ...location, coordinates: geoCoderCoordinates } };
-        }
+      if (resolvedCoordinates !== coordinates) {
+        complaint = { ...complaint, location: { ...location, coordinates: resolvedCoordinates } };
       }
 
       if (selectedCommunity) {

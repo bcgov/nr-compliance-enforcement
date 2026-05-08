@@ -22,6 +22,7 @@ export const GET_INVESTIGATION = gql`
       name
       description
       openedTimestamp
+      updatedTimestamp
       createdByAppUserGuid
       investigationStatus {
         investigationStatusCode

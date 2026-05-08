@@ -28,7 +28,7 @@ const GenericErrorBoundary: FC<props> = ({ children }) => {
                 alt={"Government of British Columbia"}
               />
             </picture>
-            NatComplaints
+            NatSuite
           </a>
           <div className="comp-header-content">
             <div className="comp-header-left">{/* <!-- future left hand content --> */}</div>
