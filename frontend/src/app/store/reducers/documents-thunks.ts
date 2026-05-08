@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
-import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-input";
 import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
