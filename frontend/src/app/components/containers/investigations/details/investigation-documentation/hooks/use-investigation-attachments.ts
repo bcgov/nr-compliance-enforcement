@@ -53,7 +53,10 @@ const FETCH_PAGE_SIZE = 100;
 /**
  * Fetches attachments for an investigation by iterating through pages, then fetches metadata in bulk
  */
-export const fetchAttachmentsWithMetadata = async (investigationIdentifier: string): Promise<Attachment[]> => {
+export const fetchAttachmentsWithMetadata = async (
+  investigationIdentifier: string,
+  taskId?: string,
+): Promise<Attachment[]> => {
   const attachments: COMSObject[] = [];
   let currentPage = 1;
   let hasMorePages = true;
@@ -61,6 +64,7 @@ export const fetchAttachmentsWithMetadata = async (investigationIdentifier: stri
   while (hasMorePages) {
     const searchResult = await searchAttachments({
       headerId: investigationIdentifier,
+      subHeaderId: taskId,
       page: currentPage,
       limit: FETCH_PAGE_SIZE,
       attachmentType: AttachmentEnum.TASK_ATTACHMENT,

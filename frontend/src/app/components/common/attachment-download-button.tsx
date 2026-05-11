@@ -1,11 +1,13 @@
 import { Button } from "react-bootstrap";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
-import { getAttachments } from "@store/reducers/attachments";
 import { useAppDispatch } from "@/app/hooks/hooks";
-import AttachmentEnum from "@/app/constants/attachment-enum";
 import { bulkDownload, selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { Id } from "react-toastify";
 import { useSelector } from "react-redux";
+import {
+  Attachment,
+  fetchAttachmentsWithMetadata,
+} from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 
 export const BulkDownloadButton = ({
   taskId,
@@ -32,19 +34,20 @@ export const BulkDownloadButton = ({
         draggable: false,
       });
 
-      const attachments = await dispatch(getAttachments(investigationGuid, taskId, AttachmentEnum.TASK_ATTACHMENT));
+      const attachments = await fetchAttachmentsWithMetadata(investigationGuid, taskId);
       if (!attachments || attachments.length === 0) {
         ToggleError("No attachments found for this task");
         return;
       }
+
       // Prepare attachment info for backend
-      const attachmentInfo = attachments.map((a: any) => ({
+      const attachmentInfo = attachments.map((a: Attachment) => ({
         id: a.id,
         name: a.name,
         size: a.size || 0,
+        folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
-
-      await dispatch(bulkDownload(taskId, taskNumber, attachmentInfo));
+      await dispatch(bulkDownload(taskId, attachmentInfo, `Task_${taskNumber}_Attachments.zip`));
     } catch (error) {
       console.error("Bulk download error:", error);
       ToggleError("Download failed. Please try again.");

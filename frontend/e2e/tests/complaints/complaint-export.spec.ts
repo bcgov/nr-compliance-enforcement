@@ -40,6 +40,7 @@ test.describe("Export Complaint Functionality", () => {
       const downloadPromise = page.waitForEvent("download");
       await page.getByRole("button", { name: "Actions Menu" }).click();
       await page.locator("#export-pdf-button").click();
+      await page.locator("#export-complaint-modal-export-button").click();
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toBe(fileName);
       // To actually save the file:
