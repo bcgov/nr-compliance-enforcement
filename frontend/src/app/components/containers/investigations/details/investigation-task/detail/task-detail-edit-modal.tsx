@@ -22,6 +22,7 @@ interface TaskDetailEditModalProps {
   investigationGuid: string;
   task: Task | undefined;
   isSaving: boolean;
+  primaryInvestigatorGuid?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
@@ -32,6 +33,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   investigationGuid,
   task,
   isSaving,
+  primaryInvestigatorGuid,
   onDirtyChange,
 }) => {
   const currentUserGuid = useAppSelector(selectAppUserGuid);
@@ -75,7 +77,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     defaultValues: {
       taskCategory: "",
       taskSubCategory: "",
-      officerAssigned: currentUserGuid,
+      officerAssigned: primaryInvestigatorGuid ?? currentUserGuid,
       description: "",
       remarks: "",
       dueDate: task?.dueDate ?? new Date(),
@@ -133,8 +135,9 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
     if (show && !task) {
       setSelectedCategory("");
       form.reset();
+      form.setFieldValue("officerAssigned", primaryInvestigatorGuid ?? currentUserGuid);
     }
-  }, [show, task?.taskIdentifier]);
+  }, [show, task?.taskIdentifier, primaryInvestigatorGuid]);
 
   const handleClose = () => {
     form.reset();

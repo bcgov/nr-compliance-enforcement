@@ -11,11 +11,13 @@ import { openModal, appUserGuid } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { CreateInvestigationInput, Investigation, UpdateInvestigationInput } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
+import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
 import { InvestigationCreateHeader } from "@/app/components/containers/investigations/create/investigation-create-header";
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintById, selectComplaint } from "@/app/store/reducers/complaints";
+import { resolveLocationGeometry } from "@/app/common/geocoder";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -70,6 +72,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
 const InvestigationCreate: FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
   const { caseIdentifier, investigationGuid } = useParams<{
     caseIdentifier?: string;
     investigationGuid?: string;
@@ -178,6 +181,13 @@ const InvestigationCreate: FC = () => {
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
+      const resolvedLocationGeometry = await resolveLocationGeometry(
+        value.community,
+        value.locationAddress,
+        value.locationGeometry,
+        dispatch,
+      );
+
       if (isEditMode && investigationGuid) {
         const updateInput: UpdateInvestigationInput = {
           leadAgency: value.leadAgency,
@@ -185,7 +195,7 @@ const InvestigationCreate: FC = () => {
           description: value.description,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
+          locationGeometry: resolvedLocationGeometry,
           supervisorGuid: value.supervisor,
           primaryInvestigatorGuid: value.primaryInvestigator,
           fileCoordinatorGuid: value.fileCoordinator,
@@ -206,7 +216,7 @@ const InvestigationCreate: FC = () => {
           investigationStatus: value.investigationStatus,
           locationAddress: value.locationAddress,
           locationDescription: value.locationDescription,
-          locationGeometry: value.locationGeometry,
+          locationGeometry: resolvedLocationGeometry,
           createdByAppUserGuid: currentAppUserGuid || "",
           supervisorGuid: value.supervisor ?? undefined,
           primaryInvestigatorGuid: value.primaryInvestigator ?? "",
@@ -251,9 +261,9 @@ const InvestigationCreate: FC = () => {
     } else if (complaintId) {
       navigate(`/complaint/${complaintType}/${complaintId}`);
     } else {
-      navigate("/investigations");
+      navigate(investigationSearchURL);
     }
-  }, [navigate, caseIdentifier, investigationGuid, isEditMode, form, allowNavigation]);
+  }, [navigate, caseIdentifier, investigationGuid, isEditMode, form, allowNavigation, investigationSearchURL]);
 
   const cancelButtonClick = useCallback(() => {
     if (!isDirty) {

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { selectItemById, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Inspection Creation functionality
@@ -53,6 +53,8 @@ test.describe("Inspection Creation", () => {
     const descriptionInput = page.locator("#description");
     await descriptionInput.fill("Test Description");
 
+    await selectItemById("community-select", "100 Mile House", page);
+
     // Wait for the createInspection mutation
     const createMutationPromise = page.waitForResponse(
       (response) =>
@@ -60,8 +62,8 @@ test.describe("Inspection Creation", () => {
       { timeout: 15000 },
     );
 
-    const saveButton = page.locator("#details-screen-save-button-top");
-    await expect(saveButton).toBeVisible({ timeout: 10000 });
+    const saveButton = page.locator("button", { hasText: /Save|Create/i }).first();
+    await expect(saveButton).toBeEnabled({ timeout: 10000 });
     await saveButton.click({ force: true });
 
     await createMutationPromise;

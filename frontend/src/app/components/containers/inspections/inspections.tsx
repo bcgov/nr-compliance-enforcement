@@ -18,6 +18,7 @@ const SEARCH_INSPECTIONS = gql`
         inspectionGuid
         name
         openedTimestamp
+        updatedTimestamp
         leadAgency
         inspectionStatus {
           inspectionStatusCode

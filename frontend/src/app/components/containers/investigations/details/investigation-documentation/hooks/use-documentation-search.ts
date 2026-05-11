@@ -19,7 +19,7 @@ const DEFAULT_SEARCH_VALUES: DocumentationSearchParams = {
   sortBy: "createdAt",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
-  pageSize: 25,
+  pageSize: 50,
 };
 
 const serializeSearchValueToUrl = (key: keyof DocumentationSearchParams, value: any): string | undefined => {
@@ -53,7 +53,7 @@ export const useDocumentationSearch = () => {
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: Number.parseInt(searchParams.get("page") || "1", 10),
-      pageSize: Number.parseInt(searchParams.get("pageSize") || "25", 10),
+      pageSize: Number.parseInt(searchParams.get("pageSize") || "50", 10),
     }),
     [searchParams],
   );

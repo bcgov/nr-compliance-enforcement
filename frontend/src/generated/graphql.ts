@@ -263,6 +263,7 @@ export type CaseFile = {
   leadAgency?: Maybe<AgencyCode>;
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type CaseFileAction = {
@@ -289,6 +290,7 @@ export type CaseFileCreateInput = {
 };
 
 export type CaseFileFilters = {
+  activityGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   caseStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
@@ -469,6 +471,7 @@ export type CreateInspectionBusinessInput = {
 
 export type CreateInspectionInput = {
   caseIdentifier: Scalars['String']['input'];
+  community?: InputMaybe<Scalars['String']['input']>;
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
@@ -1004,6 +1007,7 @@ export type InactionJustificationType = {
 
 export type Inspection = {
   __typename?: 'Inspection';
+  community?: Maybe<Scalars['String']['output']>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   inspectionGuid?: Maybe<Scalars['String']['output']>;
@@ -1015,6 +1019,7 @@ export type Inspection = {
   name?: Maybe<Scalars['String']['output']>;
   openedTimestamp?: Maybe<Scalars['DateTime']['output']>;
   parties?: Maybe<Array<Maybe<InspectionParty>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InspectionBusiness = {
@@ -1100,6 +1105,7 @@ export type Investigation = {
   primaryInvestigatorGuid?: Maybe<Scalars['String']['output']>;
   supervisorGuid?: Maybe<Scalars['String']['output']>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+  updatedTimestamp?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type InvestigationBusiness = {
@@ -1113,12 +1119,15 @@ export type InvestigationBusiness = {
 export type InvestigationFilters = {
   community?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
+  fileCoordinator?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
+  primaryInvestigator?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
   startDate?: InputMaybe<Scalars['DateTime']['input']>;
+  supervisor?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type InvestigationParty = {
@@ -2573,6 +2582,7 @@ export type UpdateEquipmentInput = {
 };
 
 export type UpdateInspectionInput = {
+  community?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   inspectionStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;

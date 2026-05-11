@@ -122,7 +122,7 @@ export const AddUserSearch: FC<AddUserSearchProps> = ({
           {userStatus === UserStatus.inNatComSameAgency && (
             <div style={{ marginTop: "30px" }}>
               <p>
-                User already exists in NatCom.{" "}
+                User already exists in NatSuite.{" "}
                 <a
                   href="/"
                   onClick={(e) => {

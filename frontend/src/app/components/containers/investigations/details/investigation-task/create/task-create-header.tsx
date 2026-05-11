@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useInvestigationSearch } from "../../../hooks/use-investigation-search";
 
 interface TaskCreateHeaderProps {
   isEditMode: boolean;
@@ -16,6 +17,7 @@ export const TaskCreateHeader: FC<TaskCreateHeaderProps> = ({
   investigationGuid,
 }) => {
   const pageTitle = isEditMode ? "Edit task" : "Create task";
+  const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   return (
     <div className="comp-details-header">
@@ -24,7 +26,7 @@ export const TaskCreateHeader: FC<TaskCreateHeaderProps> = ({
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/investigations">Investigations</Link>
+                <Link to={investigationSearchURL}>Investigations</Link>
               </li>
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/investigation/${investigationGuid}/tasks`}>Tasks</Link>

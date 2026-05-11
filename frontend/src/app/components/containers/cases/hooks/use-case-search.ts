@@ -24,7 +24,7 @@ const DEFAULT_SEARCH_VALUES: CaseSearchParams = {
   sortBy: "openedTimestamp",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
-  pageSize: 25,
+  pageSize: 50,
   viewType: "list",
 };
 
@@ -71,7 +71,7 @@ export const useCaseSearch = () => {
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: parseInt(searchParams.get("page") || "1", 10),
-      pageSize: parseInt(searchParams.get("pageSize") || "25", 10),
+      pageSize: parseInt(searchParams.get("pageSize") || "50", 10),
       viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_SEARCH_VALUES.viewType,
     }),
     [searchParams],

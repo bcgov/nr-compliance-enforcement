@@ -379,6 +379,7 @@ export class InspectionService {
             location_description: input.locationDescription,
             name: generatedName,
             inspection_opened_utc_timestamp: new Date(),
+            geo_organization_unit_code_ref: input.community || null,
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -464,6 +465,9 @@ export class InspectionService {
         }
         if (input.locationDescription !== undefined) {
           updateData.location_description = input.locationDescription;
+        }
+        if (input.community !== undefined) {
+          updateData.geo_organization_unit_code_ref = input.community || null;
         }
         // Perform the update
         updatedInspection = await tx.inspection.update({

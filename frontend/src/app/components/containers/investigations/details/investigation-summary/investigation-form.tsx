@@ -7,7 +7,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { getUserAgency } from "@/app/service/user-service";
 import { selectCommunityCodeDropdown, selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Option from "@apptypes/app/option";
@@ -44,6 +44,7 @@ export const InvestigationForm = ({
 
   const leadAgency = getUserAgency();
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
+  const allOfficers = useAppSelector(selectOfficers) ?? [];
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
 
   const assignableOfficers: Option[] =
@@ -53,6 +54,16 @@ export const InvestigationForm = ({
           label: `${officer.last_name}, ${officer.first_name}`,
         }))
       : [];
+
+  // The officers are filtered by agency/role, but a previously-assigned officer from a complaint for example
+  // may not be in the list. Fall back to the full officer list in this case.
+  const resolveOfficerOption = (guid: string | null | undefined): Option | undefined => {
+    if (!guid) return undefined;
+    const inPool = assignableOfficers.find((opt) => opt.value === guid);
+    if (inPool) return inPool;
+    const officer = allOfficers.find((o: AppUser) => o.app_user_guid === guid);
+    return officer ? { value: officer.app_user_guid, label: `${officer.last_name}, ${officer.first_name}` } : undefined;
+  };
 
   const handleDiscoveryDateTimeChange = (date: Date | null, time: string | null) => {
     setSelectedDiscoveryDate(date);
@@ -113,7 +124,7 @@ export const InvestigationForm = ({
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 options={assignableOfficers}
-                value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                value={resolveOfficerOption(field.state.value)}
                 onChange={(option) => field.handleChange(option?.value || "")}
                 placeholder="Select investigator"
                 isClearable={true}
@@ -136,7 +147,7 @@ export const InvestigationForm = ({
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 options={assignableOfficers}
-                value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                value={resolveOfficerOption(field.state.value)}
                 onChange={(option) => field.handleChange(option?.value || "")}
                 placeholder="Select supervisor"
                 isClearable={true}
@@ -157,7 +168,7 @@ export const InvestigationForm = ({
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 options={assignableOfficers}
-                value={assignableOfficers.find((opt) => opt.value === field.state.value)}
+                value={resolveOfficerOption(field.state.value)}
                 onChange={(option) => field.handleChange(option?.value || "")}
                 placeholder="Select coordinator"
                 isClearable={true}
@@ -288,13 +299,16 @@ export const InvestigationForm = ({
                   initXCoordinate={longitude}
                   initYCoordinate={latitude}
                   syncCoordinates={(yCoordinate, xCoordinate) => {
-                    if (yCoordinate && xCoordinate && yCoordinate !== "" && xCoordinate !== "") {
+                    const yIsEmpty = !yCoordinate || yCoordinate === "";
+                    const xIsEmpty = !xCoordinate || xCoordinate === "";
+
+                    if (yIsEmpty && xIsEmpty) {
+                      field.handleChange(null);
+                    } else if (!yIsEmpty && !xIsEmpty) {
                       field.handleChange({
                         type: "Point",
                         coordinates: [Number.parseFloat(xCoordinate), Number.parseFloat(yCoordinate)],
                       });
-                    } else {
-                      field.handleChange(null);
                     }
                   }}
                   throwError={(hasError: boolean) =>

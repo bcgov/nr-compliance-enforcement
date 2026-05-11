@@ -2336,7 +2336,7 @@ export class ComplaintOutcomeService {
             data: records,
           });
         } catch (error) {
-          console.log(`exception: unable to add drug-used for wildlife record: ${wildlifeId}`, error);
+          this.logger.error(`exception: unable to add drug-used for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
           throw new GraphQLError("Exception occurred. See server log for details", error);
         }
       }
@@ -2423,7 +2423,7 @@ export class ComplaintOutcomeService {
 
       return result;
     } catch (error) {
-      console.log("exception: unable to create wildlife ", error);
+      this.logger.error("exception: unable to create wildlife", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -2470,7 +2470,7 @@ export class ComplaintOutcomeService {
 
         return result;
       } catch (error) {
-        console.log(`exception: unable to update wildlife record: ${wildlifeId}`, error);
+        this.logger.error(`exception: unable to update wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2594,7 +2594,7 @@ export class ComplaintOutcomeService {
           });
         }
       } catch (error) {
-        console.log(`exception: unable to update ear-tags for wildlife record: ${wildlifeId}`, error);
+        this.logger.error(`exception: unable to update ear-tags for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2764,7 +2764,7 @@ export class ComplaintOutcomeService {
           });
         }
       } catch (error) {
-        console.log(`exception: unable to update drug-used for wildlife record: ${wildlifeId}`, error);
+        this.logger.error(`exception: unable to update drug-used for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2947,7 +2947,7 @@ export class ComplaintOutcomeService {
           }
         }
       } catch (error) {
-        console.log(`exception: unable to update actions for wildlife record: ${wildlifeId}`, error);
+        this.logger.error(`exception: unable to update actions for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2990,7 +2990,7 @@ export class ComplaintOutcomeService {
 
       return result;
     } catch (error) {
-      console.log("exception: unable to update wildlife ", error);
+      this.logger.error("exception: unable to update wildlife", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3050,7 +3050,7 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(complaintOutcomeGuid);
     } catch (error) {
-      console.log("exception: unable to delete wildlife", error);
+      this.logger.error("exception: unable to delete wildlife", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3191,7 +3191,7 @@ export class ComplaintOutcomeService {
 
       return result;
     } catch (error) {
-      console.log(error);
+      this.logger.error("Exception occurred in _findWdrXref", error instanceof Error ? error.stack : String(error));
       throw new Error("Exception occurred in _findWdrXref. See server log for details", error);
     }
   };
@@ -3427,7 +3427,7 @@ export class ComplaintOutcomeService {
 
       return results;
     } catch (error) {
-      console.log("exception: unable to update decision", error);
+      this.logger.error("exception: unable to update decision", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3596,7 +3596,7 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(caseFileId);
     } catch (error) {
-      console.log("exception: unable to create authorization outcome ", error);
+      this.logger.error("exception: unable to create authorization outcome", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3627,7 +3627,7 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(complaintOutcomeGuid);
     } catch (error) {
-      console.log("exception: unable to create authorization outcome ", error);
+      this.logger.error("exception: unable to create authorization outcome", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3651,7 +3651,7 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(complaintOutcomeGuid);
     } catch (error) {
-      console.log("exception: unable to delete authorization outcome ", error);
+      this.logger.error("exception: unable to delete authorization outcome", error instanceof Error ? error.stack : String(error));
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };

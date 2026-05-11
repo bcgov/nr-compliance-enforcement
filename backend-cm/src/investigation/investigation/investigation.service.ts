@@ -303,6 +303,8 @@ export class InvestigationService {
             owned_by_agency_ref: leadAgency,
             name: generatedName,
             investigation_opened_utc_timestamp: new Date(),
+            location_address: input.locationAddress || null,
+            location_description: input.locationDescription || null,
             primary_investigator_guid_ref: input.primaryInvestigatorGuid || null,
             supervisor_guid_ref: input.supervisorGuid || null,
             file_coordinator_guid_ref: input.fileCoordinatorGuid || null,
@@ -495,10 +497,12 @@ export class InvestigationService {
   private readonly SORT_FIELD_MAP: Record<string, string> = {
     investigationGuid: "investigation_guid",
     openedTimestamp: "investigation_opened_utc_timestamp",
+    updatedTimestamp: "update_utc_timestamp",
     leadAgency: "owned_by_agency_ref",
     investigationStatus: "investigation_status",
     name: "name",
     community: "geo_organization_unit_code_ref",
+    locationAddress: "location_address",
   };
 
   private _buildInvestigationWhereClause(filters?: InvestigationFilters): any {
@@ -518,6 +522,18 @@ export class InvestigationService {
 
     if (filters?.community) {
       where.geo_organization_unit_code_ref = filters.community;
+    }
+
+    if (filters?.primaryInvestigator) {
+      where.primary_investigator_guid_ref = filters.primaryInvestigator;
+    }
+
+    if (filters?.fileCoordinator) {
+      where.file_coordinator_guid_ref = filters.fileCoordinator;
+    }
+
+    if (filters?.supervisor) {
+      where.supervisor_guid_ref = filters.supervisor;
     }
 
     if (filters?.startDate || filters?.endDate) {
