@@ -7,7 +7,6 @@ import * as zip from "@zip.js/zip.js";
 import { AUTH_TOKEN } from "@/app/service/user-service";
 import { BulkDownloadState, CurrentDownload } from "@/app/types/state/bulk-download-state";
 import { createSlice } from "@reduxjs/toolkit";
-import { DownloadType } from "@/app/constants/download-type";
 
 const initialState: BulkDownloadState = {
   isBulkDownloadInProgress: false,
@@ -60,11 +59,12 @@ export const selectCurrentDownload = (state: RootState): CurrentDownload | null 
 export default bulkDownloadSlice.reducer;
 
 //Thunks
-interface FileWithPresignedUrl {
+export interface FileWithPresignedUrl {
   id: string | undefined;
   name: string;
   size: number;
   url: string;
+  folder?: string;
 }
 
 export const configureZipJs = () => {
@@ -88,11 +88,10 @@ const CONFIG = {
 export const bulkDownload =
   (
     downloadId: string,
-    downloadNumber: string | number,
     attachments: COMSObject[],
+    zipFilename: string,
     additionalFiles?: FileWithPresignedUrl[],
-    downloadType?: DownloadType,
-  ): AppThunk =>
+  ): AppThunk<Promise<void>> =>
   async (dispatch, getState) => {
     const isBulkDownloadInProgress = selectIsBulkDownloadInProgress(getState());
 
@@ -117,7 +116,7 @@ export const bulkDownload =
       }
 
       // Start download
-      await bulkDownloadWithZipJs(downloadNumber, attachments, authToken, dispatch, additionalFiles, downloadType);
+      await bulkDownloadWithZipJs(attachments, authToken, zipFilename, dispatch, additionalFiles);
     } catch (error) {
       console.error("Bulk download error:", error);
 
@@ -148,12 +147,11 @@ export const bulkDownload =
  * Download and ZIP files using zip.js
  */
 async function bulkDownloadWithZipJs(
-  downloadNumber: string | number,
   attachments: COMSObject[],
   authToken: string,
+  zipFilename: string,
   dispatch?: any,
   additionalFiles?: FileWithPresignedUrl[],
-  downloadType?: DownloadType,
 ): Promise<void> {
   // Get presigned URLs for all files concurrently
   const urlPromises = attachments.map(async (attachment, index) => {
@@ -181,6 +179,7 @@ async function bulkDownloadWithZipJs(
         name: attachment.name,
         size: attachment.size || 0,
         url: presignedUrl.trim(),
+        folder: attachment.folder,
       };
     } catch (error) {
       console.error(`Failed to get presigned URL for ${attachment.name}:`, error);
@@ -202,17 +201,13 @@ async function bulkDownloadWithZipJs(
   files = [...files, ...additionalFileObjects];
 
   //Create ZIP using zip.js
-  await createZipWithZipJs(files, downloadNumber, downloadType);
+  await createZipWithZipJs(files, zipFilename);
 }
 
 /**
  * Create ZIP file using zip.js
  */
-async function createZipWithZipJs(
-  files: FileWithPresignedUrl[],
-  downloadNumber: string | number,
-  downloadType?: DownloadType,
-): Promise<void> {
+async function createZipWithZipJs(files: FileWithPresignedUrl[], zipFilename: string): Promise<void> {
   // Create ZIP writer
   const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"), {
     bufferedWrite: true,
@@ -270,8 +265,7 @@ async function createZipWithZipJs(
   const downloadUrl = globalThis.URL.createObjectURL(zipBlob);
   const link = document.createElement("a");
   link.href = downloadUrl;
-  const prefix = downloadType === DownloadType.INVESTIGATION ? "Investigation" : "Task";
-  link.download = `${prefix}_${downloadNumber}_Attachments.zip`;
+  link.download = zipFilename;
   link.style.display = "none";
 
   document.body.appendChild(link);
@@ -400,14 +394,14 @@ async function processSingleFile(
     );
   const compressionLevel = skipCompression ? 0 : 1;
 
-  await zipWriter.add(file.name, new zip.BlobReader(blob), {
+  const zipPath = file.folder ? `${file.folder}/${file.name}` : file.name;
+  await zipWriter.add(zipPath, new zip.BlobReader(blob), {
     level: compressionLevel,
     bufferedWrite: true,
   });
 
   return { success: true, bytesProcessed: blob.size };
 }
-
 
 async function addErrorPlaceholder(
   zipWriter: any,
@@ -427,7 +421,9 @@ async function addErrorPlaceholder(
       `File Index: ${index + 1} of ${totalFiles}\n` +
       `Retry Attempts: ${CONFIG.MAX_RETRIES}\n\n`;
 
-    await zipWriter.add(`ERROR_${file.name}.txt`, new zip.TextReader(errorMessage), { level: 0 });
+    const folderPrefix = file.folder ? `${file.folder}/` : "";
+    const errorPath = `ERROR_${folderPrefix}${file.name}.txt`;
+    await zipWriter.add(errorPath, new zip.TextReader(errorMessage), { level: 0 });
   } catch (placeholderError) {
     console.error(`Could not add error placeholder:`, placeholderError);
   }

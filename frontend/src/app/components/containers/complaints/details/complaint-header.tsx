@@ -24,13 +24,18 @@ import {
   LINK_COMPLAINT,
   CREATE_ADD_CASE,
 } from "@apptypes/modal/modal-types";
-import { exportComplaint } from "@store/reducers/documents-thunks";
+import { exportComplaint, exportComplaintWithAttachments } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { selectCanAccessCases } from "@/app/access/module-access";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { getAttachments } from "@/app/store/reducers/attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { ExportComplaintModal } from "@/app/components/modal/instances/export-complaint-modal";
+import { COMSObject } from "@/app/types/coms/object";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -67,6 +72,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showComplaintReferrals = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_REFERRALS));
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
+  const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const showCreateAddCase = useAppSelector(selectCanAccessCases);
   const userGuid = useAppSelector(appUserGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
@@ -79,6 +85,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const navigate = useNavigate();
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
+  const [complainantAttachments, setComplainantAttachments] = useState<COMSObject[]>([]);
+  const [outcomeAttachments, setOutcomeAttachments] = useState<COMSObject[]>([]);
 
   const [userIsCollaborator, setUserIsCollaborator] = useState<boolean>(false);
   useEffect(() => {
@@ -237,8 +246,55 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     );
   };
 
-  const exportComplaintToPdf = () => {
+  const handleExportClick = async () => {
+    const [fetchedComplainantAttachments, fetchedOutcomeAttachments] = await Promise.all([
+      dispatch(getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT, false)),
+      dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT, false)),
+    ]);
+
+    const hasAttachments = fetchedComplainantAttachments.length > 0 || fetchedOutcomeAttachments.length > 0;
+
+    if (hasAttachments) {
+      setComplainantAttachments(fetchedComplainantAttachments);
+      setOutcomeAttachments(fetchedOutcomeAttachments);
+      setShowExportModal(true);
+    } else {
+      dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+    }
+  };
+
+  const handleExportPdfOnly = () => {
     dispatch(exportComplaint(complaintType, id, new Date(loggedDate)));
+  };
+
+  const handleExportWithAttachments = async () => {
+    let toastDownloadInfo;
+    try {
+      toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
+        position: "top-right",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+        draggable: false,
+      });
+
+      await dispatch(
+        exportComplaintWithAttachments(
+          complaintType,
+          id,
+          new Date(loggedDate),
+          complainantAttachments,
+          outcomeAttachments,
+        ),
+      );
+    } catch (error) {
+      console.error("Export complaint with attachments error:", error);
+      ToggleError("Download failed. Please try again.");
+    } finally {
+      if (toastDownloadInfo !== undefined) {
+        DismissToast(toastDownloadInfo);
+      }
+    }
   };
 
   const collaboratorsTooltipOverlay = () => (
@@ -345,7 +401,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
       <Dropdown.Item
         as="button"
         id="export-pdf-button"
-        onClick={() => exportComplaintToPdf()}
+        onClick={handleExportClick}
       >
         <i className="bi bi-file-earmark-pdf"></i>
         <span>Export</span>
@@ -636,6 +692,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         </section>
       )}
       {/* <!-- complaint status details end --> */}
+      <ExportComplaintModal
+        show={showExportModal}
+        onHide={() => setShowExportModal(false)}
+        onExportPdfOnly={handleExportPdfOnly}
+        onExportWithAttachments={handleExportWithAttachments}
+      />
     </>
   );
 };

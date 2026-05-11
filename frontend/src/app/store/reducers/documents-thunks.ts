@@ -1,16 +1,16 @@
 import { Action, ThunkAction } from "@reduxjs/toolkit";
-import { RootState } from "@store/store";
+import { AppThunk, RootState } from "@store/store";
 import config from "@/config";
 import { format } from "date-fns";
 import axios, { AxiosRequestConfig } from "axios";
 import { AUTH_TOKEN, getUserAgency } from "@service/user-service";
 import { AgencyType } from "@apptypes/app/agency-types";
-import { ExportComplaintInput } from "@/app/types/complaints/export-complaint-input";
 import { COMSObject } from "@/app/types/coms/object";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
 import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { bulkDownload, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -48,7 +48,7 @@ export const generateExportComplaintInputParams = (
 
   const attachments = { complaintsAttachments: complaintAttachments, outcomeAttachments: outcomeAttachments };
   const tz: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const exportComplaintInput = { id, type, fileName, tz, attachments } as ExportComplaintInput;
+  const exportComplaintInput = { id, type, fileName, tz, attachments };
   return exportComplaintInput;
 };
 
@@ -78,6 +78,43 @@ const downloadPdf = (data: ArrayBuffer, fileName: string, elementId: string) => 
   link.remove();
 };
 
+interface ComplaintPdfResult {
+  data: ArrayBuffer;
+  fileName: string;
+}
+
+const generateComplaintPdf = async (
+  type: string,
+  id: string,
+  dateLogged: Date,
+  agency: string,
+  complainantAttachments: COMSObject[],
+  outcomeAttachments: COMSObject[],
+): Promise<ComplaintPdfResult> => {
+  const axiosConfig: AxiosRequestConfig = {
+    responseType: "arraybuffer",
+  };
+
+  axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+
+  const exportComplaintInput = generateExportComplaintInputParams(
+    id,
+    type,
+    dateLogged,
+    agency,
+    complainantAttachments,
+    outcomeAttachments,
+  );
+
+  const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
+  const response = await axios.post(url, exportComplaintInput, axiosConfig);
+
+  return {
+    data: response.data,
+    fileName: exportComplaintInput.fileName,
+  };
+};
+
 //--
 //-- exports a complaint as a pdf document
 //--
@@ -89,36 +126,89 @@ export const exportComplaint =
     forAgency?: string,
   ): ThunkAction<Promise<string | undefined>, RootState, unknown, Action<string>> =>
   async (dispatch) => {
-    const complaintAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT));
-    const outcomeAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT));
+    const complainantAttachments = await dispatch(
+      getAttachments(id, undefined, AttachmentEnum.COMPLAINT_ATTACHMENT, false),
+    );
+    const outcomeAttachments = await dispatch(getAttachments(id, undefined, AttachmentEnum.OUTCOME_ATTACHMENT, false));
     try {
       const agency = forAgency ?? getUserAgency();
 
-      const axiosConfig: AxiosRequestConfig = {
-        responseType: "arraybuffer", // Specify response type as arraybuffer
-      };
-
-      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
-
-      const exportComplaintInput = generateExportComplaintInputParams(
-        id,
+      const { data, fileName } = await generateComplaintPdf(
         type,
+        id,
         dateLogged,
         agency,
-        complaintAttachments,
+        complainantAttachments,
         outcomeAttachments,
       );
 
-      const url = `${config.API_BASE_URL}/v1/document/export-complaint`;
-
-      const response = await axios.post(url, exportComplaintInput, axiosConfig);
-
-      downloadPdf(response.data, exportComplaintInput.fileName, "hidden-details-screen-export-complaint");
+      downloadPdf(data, fileName, "hidden-details-screen-export-complaint");
 
       return "success";
     } catch (error) {
       console.error("Error exporting complaint:", error);
       return "error";
+    }
+  };
+
+export const exportComplaintWithAttachments =
+  (
+    type: string,
+    id: string,
+    dateLogged: Date,
+    complainantAttachments: COMSObject[],
+    outcomeAttachments: COMSObject[],
+    forAgency?: string,
+  ): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    let pdfObjectUrl: string | undefined;
+
+    try {
+      const agency = forAgency ?? getUserAgency();
+
+      const { data, fileName } = await generateComplaintPdf(
+        type,
+        id,
+        dateLogged,
+        agency,
+        complainantAttachments,
+        outcomeAttachments,
+      );
+
+      const pdfBlob = new Blob([data], { type: "application/pdf" });
+      pdfObjectUrl = URL.createObjectURL(pdfBlob);
+
+      const taggedComplainantAttachments: COMSObject[] = complainantAttachments.map((attachment) => ({
+        ...attachment,
+        folder: "Complainant attachments",
+      }));
+
+      const taggedOutcomeAttachments: COMSObject[] = outcomeAttachments.map((attachment) => ({
+        ...attachment,
+        folder: "Outcome attachments",
+      }));
+
+      const pdfFile: FileWithPresignedUrl = {
+        id: undefined,
+        name: fileName,
+        size: pdfBlob.size,
+        url: pdfObjectUrl,
+      };
+
+      const downloadId = id;
+      const zipFilename = `Complaint_${id}.zip`;
+
+      await dispatch(
+        bulkDownload(downloadId, [...taggedComplainantAttachments, ...taggedOutcomeAttachments], zipFilename, [
+          pdfFile,
+        ]),
+      );
+    } catch (error) {
+      console.error("Error exporting complaint with attachments:", error);
+    } finally {
+      if (pdfObjectUrl) {
+        URL.revokeObjectURL(pdfObjectUrl);
+      }
     }
   };
 
