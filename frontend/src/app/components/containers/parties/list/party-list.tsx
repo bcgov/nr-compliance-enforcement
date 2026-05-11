@@ -9,6 +9,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 import { format, parseISO } from "date-fns";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 
 type Props = {
   parties: any[];
@@ -23,7 +24,10 @@ const getPrimaryPhone = (contactMethods: any[] | undefined): string => {
     return "-";
   }
   const primary = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary);
-  return primary?.value ?? "-";
+  if (!primary?.value) {
+    return "-";
+  }
+  return formatPhoneNumber(primary.value) ?? primary.value;
 };
 
 const formatDateOfBirth = (dateOfBirth: string | null | undefined): string => {
@@ -37,7 +41,9 @@ const getBusinessNumber = (identifiers: any[] | undefined): string => {
   if (!identifiers?.length) {
     return "-";
   }
-  const businessNumber = identifiers.find((id) => id.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
+  const businessNumber = identifiers.find(
+    (id) => id.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
+  );
   return businessNumber?.identifierValue ?? "-";
 };
 

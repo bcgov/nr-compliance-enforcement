@@ -719,6 +719,36 @@ export class PartyService {
             select: {
               business_guid: true,
               name: true,
+              business_identifier: {
+                where: { active_ind: true },
+                select: {
+                  business_identifier_guid: true,
+                  identifier_value: true,
+                  business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
+                    select: {
+                      business_identifier_code: true,
+                      short_description: true,
+                      long_description: true,
+                    },
+                  },
+                },
+              },
+              contact_method: {
+                where: { active_ind: true },
+                select: {
+                  contact_method_guid: true,
+                  contact_method_type: true,
+                  contact_value: true,
+                  is_primary: true,
+                  contact_method_type_code: {
+                    select: {
+                      contact_method_type_code: true,
+                      short_description: true,
+                      long_description: true,
+                    },
+                  },
+                },
+              },
             },
           },
           person: {
@@ -732,6 +762,22 @@ export class PartyService {
               drivers_license_number: true,
               drivers_license_jurisdiction: true,
               sex_code: true,
+              contact_method: {
+                where: { active_ind: true },
+                select: {
+                  contact_method_guid: true,
+                  contact_method_type: true,
+                  contact_value: true,
+                  is_primary: true,
+                  contact_method_type_code: {
+                    select: {
+                      contact_method_type_code: true,
+                      short_description: true,
+                      long_description: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
