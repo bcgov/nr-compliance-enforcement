@@ -102,6 +102,7 @@ export const getAttachments =
     identifier: string,
     subIdentifier: string | undefined,
     attachmentType: AttachmentEnum,
+    includeThumbnails: boolean = true,
   ): AppThunk<Promise<COMSObject[]>> =>
   async (dispatch) => {
     const attachmentList: COMSObject[] = [];
@@ -123,7 +124,7 @@ export const getAttachments =
 
       if (response && from(response).any()) {
         for (const attachment of response) {
-          if (isImage(attachment.name)) {
+          if (includeThumbnails && isImage(attachment.name)) {
             const thumbHeader = buildAttachmentHeader({
               attachmentConfig,
               identifier,
