@@ -155,6 +155,12 @@ export const complaintSlice = createSlice({
       return { ...state, caseFileComplaints: payload };
     },
 
+    setComplaintLastUpdated: (state, action: PayloadAction<string>) => {
+      if (state.complaint) {
+        Object.assign(state.complaint, { updatedOn: action.payload });
+      }
+    },
+
     clearComplaint: (state) => {
       return { ...state, complaint: null };
     },
@@ -336,6 +342,7 @@ export const {
   setTotalCount,
   setComplaint,
   setCaseFileComplaints,
+  setComplaintLastUpdated,
   setComplaintCollaborators,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
@@ -549,6 +556,22 @@ const updateComplaintStatus = async (dispatch: Dispatch, id: string, status: str
   await patch<Complaint>(dispatch, parameters);
   ToggleSuccess("Status updated");
 };
+
+export const updateComplaintLastUpdated =
+  (complaintIdentifier: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const parameters = generateApiParameters(
+        `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaintIdentifier}`,
+      );
+      const updatedOn = await patch<string>(dispatch, parameters);
+      if (updatedOn) {
+        dispatch(setComplaintLastUpdated(updatedOn));
+      }
+    } catch (error) {
+      console.error(`Unable to bump last-updated for complaint ${complaintIdentifier}:`, error);
+    }
+  };
 
 export const updateWildlifeComplaintStatus =
   (complaint_identifier: string, newStatus: string): AppThunk =>
