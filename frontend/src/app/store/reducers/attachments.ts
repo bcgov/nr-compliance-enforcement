@@ -177,7 +177,7 @@ const deleteSingleAttachment = async ({
       }
 
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
-      await patch<boolean>(dispatch, parameters);
+      await patch<string>(dispatch, parameters);
     }
     ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
   }

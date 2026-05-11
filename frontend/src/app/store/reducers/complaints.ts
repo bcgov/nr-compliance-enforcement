@@ -155,6 +155,13 @@ export const complaintSlice = createSlice({
       return { ...state, caseFileComplaints: payload };
     },
 
+    setComplaintLastUpdated: (state, action: PayloadAction<string>) => {
+      if (state.complaint) {
+        return { ...state, complaint: { ...state.complaint, updatedOn: action.payload } };
+      }
+      return state;
+    },
+
     clearComplaint: (state) => {
       return { ...state, complaint: null };
     },
@@ -336,6 +343,7 @@ export const {
   setTotalCount,
   setComplaint,
   setCaseFileComplaints,
+  setComplaintLastUpdated,
   setComplaintCollaborators,
   setGeocodedComplaintCoordinates,
   setZoneAtAGlance,
@@ -557,7 +565,10 @@ export const updateComplaintLastUpdated =
       const parameters = generateApiParameters(
         `${config.API_BASE_URL}/v1/complaint/update-date-by-id/${complaintIdentifier}`,
       );
-      await patch<boolean>(dispatch, parameters);
+      const updatedOn = await patch<string>(dispatch, parameters);
+      if (updatedOn) {
+        dispatch(setComplaintLastUpdated(updatedOn));
+      }
     } catch (error) {
       console.error(`Unable to bump last-updated for complaint ${complaintIdentifier}:`, error);
     }
