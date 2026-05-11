@@ -32,6 +32,8 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
 import { parse } from "date-fns";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
+import { ContactMethods } from "@/app/constants/contact-methods";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -192,7 +194,7 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
   if (businessNumber?.identifierValue) {
     identifiers.push({
       ...(isUpdate && { businessIdentifierGuid: businessNumber.identifierGuid }),
-      identifierCode: "BNUM",
+      identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
       identifierValue: businessNumber.identifierValue,
     });
   }
@@ -200,7 +202,7 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
   if (worksafeBCNumber?.identifierValue) {
     identifiers.push({
       ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.identifierGuid }),
-      identifierCode: "WSBC",
+      identifierCode: BusinessIdentifiers.WSBC_NUMBER,
       identifierValue: worksafeBCNumber.identifierValue,
     });
   }
@@ -216,7 +218,7 @@ const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: Cont
     methods.push(
       ...phoneNumbers.map((p: ContactMethod) => ({
         ...(includeGuid && { contactMethodGuid: p.contactMethodGuid }),
-        typeCode: "PHONE",
+        typeCode: ContactMethods.PHONE,
         value: p.value ?? "",
         isPrimary: p.isPrimary ?? false,
       })),
@@ -227,7 +229,7 @@ const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: Cont
     methods.push(
       ...emailAddresses.map((e: ContactMethod) => ({
         ...(includeGuid && { contactMethodGuid: e.contactMethodGuid }),
-        typeCode: "EMAILADDR",
+        typeCode: ContactMethods.EMAIL,
         value: e.value ?? "",
         isPrimary: e.isPrimary ?? false,
       })),
@@ -359,10 +361,10 @@ const PartyEdit: FC = () => {
         sexCode: person?.sexCode || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
-          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "BNUM",
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
         ),
         worksafeBCNumber: partyData.party.business?.identifiers?.find(
-          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === "WSBC",
+          (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
         aliases:
           partyData.party.business?.aliases?.map((a: Alias) => ({
@@ -370,9 +372,9 @@ const PartyEdit: FC = () => {
             name: a.name,
           })) || [],
         phoneNumbers: partyData.party.business
-          ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, "PHONE")
-          : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, "PHONE"),
-        emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, "EMAILADDR"),
+          ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, ContactMethods.PHONE)
+          : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, ContactMethods.PHONE),
+        emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
       };
     }
@@ -637,7 +639,7 @@ const PartyEdit: FC = () => {
       form.setFieldValue("contacts", updatedContacts);
 
       const fieldId =
-        typeCode === "PHONE"
+        typeCode === ContactMethods.PHONE
           ? `contact-phone-${contactIndex}-${existingMethodsOfType.length}`
           : `contact-email-${contactIndex}-${existingMethodsOfType.length}`;
       focusFieldById(fieldId);
