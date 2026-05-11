@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { selectItemById, waitForSpinner } from "../../utils/helpers";
+import { selectItemById, waitForMapToLoad, waitForSpinner } from "../../utils/helpers";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 
 /*
@@ -98,19 +98,28 @@ test.describe("Complaints on map tests", () => {
       await page.locator("#comp-filter-btn").click();
       await selectItemById("community-select-id", "Kelowna", page);
 
-      // wait for the map to load
+      // Wait for the filters
+      await waitForSpinner(page);
+
       await expect(page.locator("div.leaflet-container")).toHaveCount(1);
       await expect(page.locator(".leaflet-popup")).toHaveCount(0);
+      await waitForMapToLoad(page);
 
       const markerCluster = page.locator(".marker-cluster");
       await expect(markerCluster.first()).toBeVisible();
-      await page.locator(".marker-cluster").first().click({ force: true });
-      await page.locator(".leaflet-marker-icon.map-marker svg").first().click();
+      await markerCluster.first().click({ force: true });
+
+      // wait for flyTo if a cluster was clicked
+      await waitForSpinner(page);
+      await waitForMapToLoad(page);
+
+      const mapMarker = page.locator(".leaflet-marker-icon.map-marker svg").first();
+      await expect(mapMarker).toBeVisible();
+      await mapMarker.click();
 
       // wait for the popup to load
       await expect(page.locator(".leaflet-popup")).toBeVisible();
-      await expect(page.locator(".comp-summary-popup-location em")).toBeVisible();
-      await expect(await page.locator(".comp-summary-popup-location em")).toContainText("Kelowna");
+      await expect(page.locator(".comp-summary-popup-location")).toContainText("Kelowna");
 
       // click the "view details" button to navigate to the complaint
 
