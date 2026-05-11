@@ -157,9 +157,8 @@ export const complaintSlice = createSlice({
 
     setComplaintLastUpdated: (state, action: PayloadAction<string>) => {
       if (state.complaint) {
-        return { ...state, complaint: { ...state.complaint, updatedOn: action.payload } };
+        state.complaint.updatedOn = action.payload as unknown as Date;
       }
-      return state;
     },
 
     clearComplaint: (state) => {
