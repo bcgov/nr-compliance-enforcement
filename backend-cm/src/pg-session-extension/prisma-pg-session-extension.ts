@@ -14,6 +14,11 @@ const logger = new Logger("PgSessionExtension");
 export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
 /**
+ * Prisma model names whose tables have a RLS policy
+ */
+const RLS_PROTECTED_MODELS = new Set(["complaint_outcome"]);
+
+/**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
  * JWT claims as session variables within a PG transaction and executes the original query
  * within that transaction. This allows PG to use the users roles and id to assess RLS policies.
@@ -49,6 +54,11 @@ function createPgSessionExtension(client: any) {
           // This allows mutations to take advantage of transactions without
           // being nested, which prisma has been known to have troubles with
           if (!operation || !readOperations.has(operation)) {
+            return query(args);
+          }
+
+          // Only wrap reads on RLS-protected tables.
+          if (!model || !RLS_PROTECTED_MODELS.has(model)) {
             return query(args);
           }
 

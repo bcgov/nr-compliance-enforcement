@@ -7,7 +7,7 @@ const MAX_RETRIES = 5;
 const BASE_DELAY_MS = 200;
 const MAX_DELAY_MS = 5000;
 
-// Prisma error codes that appear on error.code (PrismaClientKnownRequestError)
+// Prisma error codes that appear on error
 const RETRYABLE_ERROR_CODES = [
   "P1017", // Server has closed the connection
   "P2024", // Timed out fetching a new connection from the pool
@@ -15,10 +15,21 @@ const RETRYABLE_ERROR_CODES = [
   "08P01", // Connection slots exhausted
 ];
 
+// Codes that specifically indicate pool starvation
+const POOL_STARVATION_CODES = new Set([
+  "P2024", // Timed out fetching a connection from Prisma's local pool
+  "08P01", // Postgres: connection slots exhausted
+  "53300", // Postgres SQLSTATE: too_many_connections
+]);
+
+function getErrorCode(error: any): string | undefined {
+  return error?.code ?? error?.cause?.code;
+}
+
 function isRetryableError(error: any): boolean {
   // pg-session extension wraps Prisma errors so the error code lives on .cause for those
-  const code = error?.code ?? error?.cause?.code;
-  if (RETRYABLE_ERROR_CODES.includes(code)) return true;
+  const code = getErrorCode(error);
+  if (RETRYABLE_ERROR_CODES.includes(code as string)) return true;
   const message = error?.message ?? error?.cause?.message;
   if (typeof message === "string") {
     return RETRYABLE_ERROR_CODES.some((c) => message.includes(c));
@@ -32,6 +43,12 @@ async function withRetry<T>(operation: string, query: () => Promise<T>): Promise
     try {
       return await query();
     } catch (error: any) {
+      const code = getErrorCode(error);
+
+      if (POOL_STARVATION_CODES.has(code as string)) {
+        logger.warn(`POOL_STARVATION operation=${operation} code=${code} attempt=${attempt + 1}`);
+      }
+
       if (isRetryableError(error) && attempt < MAX_RETRIES) {
         lastError = error;
         const exp = BASE_DELAY_MS * Math.pow(2, attempt);
