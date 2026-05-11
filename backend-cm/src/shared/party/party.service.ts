@@ -688,6 +688,10 @@ export class PartyService {
           orderBy = { business: { name: validSortOrder } };
           break;
         }
+        case "dateOfBirth": {
+          orderBy = { person: { date_of_birth: validSortOrder } };
+          break;
+        }
         default: {
           const dbField = sortFieldMap[filters.sortBy];
           if (dbField) {
