@@ -34,6 +34,7 @@ import { parse } from "date-fns";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
+import { PartyTypeCodes, PartyTypes } from "@/app/constants/party-types";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -310,6 +311,7 @@ const PartyEdit: FC = () => {
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
+    .filter((party) => [PartyTypeCodes.PERSON, PartyTypeCodes.BUSINESS].includes(party.value))
     .map((code: any) => {
       return {
         value: code.value,
