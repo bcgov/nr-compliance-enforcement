@@ -127,7 +127,7 @@ export class InvestigationService {
         },
       },
     });
-    const geometry = await this.fetchLocationGeometryPoint(investigationGuid);
+    const geometry = (await this.fetchLocationGeometryPoints([investigationGuid])).get(investigationGuid) ?? null;
     if (!prismaInvestigation) {
       throw new Error(`Investigation with guid ${investigationGuid} not found`);
     }
@@ -324,10 +324,10 @@ export class InvestigationService {
         throw error;
       }
       await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry);
-      investigation.location_geometry_point = await this.fetchLocationGeometryPoint(
-        investigation.investigation_guid,
-        tx,
-      );
+      investigation.location_geometry_point =
+        (await this.fetchLocationGeometryPoints([investigation.investigation_guid], tx)).get(
+          investigation.investigation_guid,
+        ) ?? null;
     });
     // Try to create case activity record, and if it fails, delete the investigation
     try {
@@ -465,7 +465,8 @@ export class InvestigationService {
           },
         });
         await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry);
-        updatedInvestigation.location_geometry_point = await this.fetchLocationGeometryPoint(investigationGuid, tx);
+        updatedInvestigation.location_geometry_point =
+          (await this.fetchLocationGeometryPoints([investigationGuid], tx)).get(investigationGuid) ?? null;
       } catch (error) {
         this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
         throw error;
@@ -686,34 +687,13 @@ export class InvestigationService {
     return !!existingInvestigation;
   }
 
-  // Accepts an optional transaction client so the read can reuse the connection.
-  private async fetchLocationGeometryPoint(investigationGuid: string, tx?: any): Promise<any> {
-    const client = tx ?? this.prisma;
-    try {
-      const result = await client.$queryRaw<Array<{ location_geometry_point: any }>>`
-        SELECT public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
-        FROM investigation.investigation
-        WHERE investigation_guid = ${investigationGuid}::uuid
-      `;
-      if (result.length === 0) {
-        throw new Error(`Investigation with guid ${investigationGuid} not found.`);
-      }
-      return result[0].location_geometry_point;
-    } catch (error) {
-      this.logger.error(
-        `Error fetching location geometry point for investigation with guid ${investigationGuid}:`,
-        error,
-      );
-      throw error;
-    }
-  }
-
-  // Get geometry points for many investigations
-  private async fetchLocationGeometryPoints(investigationGuids: string[]): Promise<Map<string, any>> {
+  // Get geometry points for many investigations. Accepts an optional transaction client so the read can reuse the connection.
+  private async fetchLocationGeometryPoints(investigationGuids: string[], tx?: any): Promise<Map<string, any>> {
     const map = new Map<string, any>();
     if (investigationGuids.length === 0) return map;
+    const client = tx ?? this.prisma;
     try {
-      const rows = await this.prisma.$queryRaw<Array<{ investigation_guid: string; location_geometry_point: any }>>`
+      const rows = await client.$queryRaw<Array<{ investigation_guid: string; location_geometry_point: any }>>`
         SELECT investigation_guid,
                public.ST_AsGeoJSON(location_geometry_point)::json AS location_geometry_point
         FROM investigation.investigation
