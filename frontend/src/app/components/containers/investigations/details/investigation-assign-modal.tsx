@@ -1,8 +1,6 @@
 import { FC, useEffect, useCallback } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { CompSelect } from "@/app/components/common/comp-select";
-import type { Investigation } from "@/generated/graphql";
-import { getUserAgency } from "@/app/service/user-service";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
 import Option from "@apptypes/app/option";
