@@ -136,7 +136,7 @@ export class ComplaintController {
 
   @Patch("/update-date-by-id/:id")
   @Roles(coreRoles)
-  async updateComplaintLastUpdatedDateById(@Param("id") id: string): Promise<boolean> {
+  async updateComplaintLastUpdatedDateById(@Param("id") id: string): Promise<Date> {
     return await this.service.updateComplaintLastUpdatedDate(id);
   }
 
