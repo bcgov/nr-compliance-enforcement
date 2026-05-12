@@ -10,7 +10,7 @@ import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
+import CaseActivities from "@/app/components/containers/cases/case-activities/caseActivities";
 import { getMapZoom } from "@/app/common/geocoder";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 

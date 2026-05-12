@@ -10,7 +10,7 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
+import CaseActivities from "@/app/components/containers/cases/case-activities/caseActivities";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
