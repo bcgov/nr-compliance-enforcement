@@ -618,3 +618,15 @@ export const formatLocalTime = (date: Date): string => {
   const mm = date.getMinutes().toString().padStart(2, "0");
   return `${hh}:${mm}`;
 };
+
+/**
+ * Formats date of birth
+ */
+export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAbsent: string = ""): string => {
+  if (!dateOfBirth) {
+    return whenAbsent;
+  }
+  const dateOnly = String(dateOfBirth).slice(0, 10);
+  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(dateOfBirth);
+  return formatted || whenAbsent;
+};
