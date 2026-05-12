@@ -1,7 +1,7 @@
 import { FC, useEffect, useCallback } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { CompSelect } from "@/app/components/common/comp-select";
-import type { Investigation, UpdateInvestigationInput } from "@/generated/graphql";
+import type { Investigation } from "@/generated/graphql";
 import { getUserAgency } from "@/app/service/user-service";
 import { RootState } from "@/app/store/store";
 import { useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { FormField } from "@/app/components/common/form-field";
 import z from "zod";
-import { useStore, useForm } from "@tanstack/react-form";
+import { useStore } from "@tanstack/react-form";
 
 interface InvestigationAssignModalProps {
   form: any;
@@ -30,9 +30,6 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({ fo
           label: `${officer.last_name}, ${officer.first_name}`,
         }))
       : [];
-
-  let initialStatus = "";
-  initialStatus = (data as Investigation)?.investigationStatus?.investigationStatusCode ?? "";
 
   const isDirty = useStore(form.store, (state: any) => state.isDirty);
 
