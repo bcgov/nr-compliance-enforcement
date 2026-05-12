@@ -4,6 +4,7 @@ import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
 import { BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { ContactMethods } from "@/app/constants/contact-methods";
 
 interface ContactPersonFieldsProps {
   contact: BusinessPerson;
@@ -31,13 +32,13 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(
         (item): item is { method: ContactMethod; originalIndex: number } =>
-          item.method !== null && item.method.typeCode === "PHONE",
+          item.method !== null && item.method.typeCode === ContactMethods.PHONE,
       ) || [];
 
   const emails =
     contact.person?.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
-      .filter(({ method }) => method?.typeCode === "EMAILADDR") || [];
+      .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
 
   return (
     <div className="party-details-item">
@@ -106,7 +107,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
                 id={`contact-phone-primary-${contactIndex}-${originalIndex}`}
                 name={`primaryContactPhone-${contactIndex}`}
                 checked={method.isPrimary || false}
-                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, "PHONE")}
+                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.PHONE)}
                 disabled={isDisabled}
               />
 
@@ -145,7 +146,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           <Button
             variant="outline-primary"
             size="sm"
-            onClick={() => onAddContactMethod(contactIndex, "PHONE")}
+            onClick={() => onAddContactMethod(contactIndex, ContactMethods.PHONE)}
             type="button"
           >
             <i className="bi bi-plus-circle me-1" /> Add phone number
@@ -170,7 +171,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
                 id={`email-primary-${displayIndex}`}
                 name={`primaryContactEmail-${contactIndex}`}
                 checked={method?.isPrimary || false}
-                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, "EMAILADDR")}
+                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.EMAIL)}
                 disabled={isDisabled}
               />
 
@@ -206,7 +207,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           <Button
             variant="outline-primary"
             size="sm"
-            onClick={() => onAddContactMethod(contactIndex, "EMAILADDR")}
+            onClick={() => onAddContactMethod(contactIndex, ContactMethods.EMAIL)}
             type="button"
           >
             <i className="bi bi-plus-circle me-1" /> Add email

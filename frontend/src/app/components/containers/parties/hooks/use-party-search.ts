@@ -1,10 +1,11 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 export interface PartySearchParams {
   search: string;
-  partyTypeCode: string | null;
+  partyTypeCode: string;
   sortBy: string;
   sortOrder: string;
   page: number;
@@ -14,7 +15,7 @@ export interface PartySearchParams {
 
 const DEFAULT_SEARCH_VALUES: PartySearchParams = {
   search: "",
-  partyTypeCode: null,
+  partyTypeCode: PartyTypeCodes.PERSON,
   sortBy: "partyIdentifier",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
@@ -51,17 +52,16 @@ const serializeSearchValueToUrl = (key: keyof PartySearchParams, value: any): st
 };
 
 export const usePartySearch = () => {
-  
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchValues: PartySearchParams = useMemo(
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
-      partyTypeCode: searchParams.get("partyTypeCode"),
+      partyTypeCode: searchParams.get("partyTypeCode") || DEFAULT_SEARCH_VALUES.partyTypeCode,
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
-      page: parseInt(searchParams.get("page") || "1", 10),
-      pageSize: parseInt(searchParams.get("pageSize") || "50", 10),
+      page: Number.parseInt(searchParams.get("page") || "1", 10),
+      pageSize: Number.parseInt(searchParams.get("pageSize") || "50", 10),
       viewType: (searchParams.get("viewType") as "list" | "map") || DEFAULT_SEARCH_VALUES.viewType,
     }),
     [searchParams],
@@ -76,10 +76,10 @@ export const usePartySearch = () => {
           Object.entries(values).forEach(([key, value]) => {
             const serialized = serializeSearchValueToUrl(key as keyof PartySearchParams, value);
 
-            if (serialized !== undefined) {
-              newParams.set(key, serialized);
-            } else {
+            if (serialized === undefined) {
               newParams.delete(key);
+            } else {
+              newParams.set(key, serialized);
             }
           });
 
