@@ -10,11 +10,11 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import CaseActivities from "@/app/components/containers/cases/case-activities/caseActivities";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -170,10 +170,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
           {caseGuid && (
             <>
               <h2 className="mb-6 mb-sm-3">Associated data</h2>
-              <CaseActivities
-                caseGuid={caseGuid}
-                caseName={caseName}
-              />
+              <CaseActivities cases={[{ caseIdentifier: caseGuid, name: caseName }]} />
             </>
           )}
           <div className="d-flex align-items-center justify-content-between mb-3">

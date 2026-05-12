@@ -17,6 +17,7 @@ import config from "@/config";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { CaseFile } from "@/generated/graphql";
 import { selectCanAccessCases } from "@/app/access/module-access";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];
@@ -35,7 +36,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
   const [expandedComplaints, setExpandedComplaints] = useState<Record<string, boolean>>({});
   const [viewMoreDuplicates, setViewMoreDuplicates] = useState<boolean>(false);
   const [viewMoreLinked, setViewMoreLinked] = useState<boolean>(false);
-  const [viewMoreCases, setViewMoreCases] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>(casesActive ? "CASES" : "LINK");
 
   const agencies = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AGENCY));
@@ -98,8 +98,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
       setViewMoreDuplicates(!viewMoreDuplicates);
     } else if (type === "LINK") {
       setViewMoreLinked(!viewMoreLinked);
-    } else if (type === "CASES") {
-      setViewMoreCases(!viewMoreCases);
     }
   };
 
@@ -107,8 +105,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
     let viewMore;
     if (type === "DUPLICATE") {
       viewMore = viewMoreDuplicates;
-    } else if (type === "CASES") {
-      viewMore = viewMoreCases;
     } else {
       viewMore = viewMoreLinked;
     }
@@ -251,50 +247,6 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
     );
   };
 
-  const renderCaseFileList = (caseFiles: CaseFile[]) => {
-    if (caseFiles.length === 0) {
-      return <div className="text-muted p-3">No associated case files found.</div>;
-    }
-
-    return (
-      <>
-        <div>
-          {caseFiles.map((data, index) => {
-            const caseStatus = data.caseStatus?.caseStatusCode;
-            return (
-              <div
-                className={`comp-linked-complaint-item ${index > 4 && !viewMoreCases ? "hide-item" : "show-item"}`}
-                key={data.caseIdentifier}
-                tabIndex={index}
-              >
-                <div className="item-header">
-                  <div className="item-link">
-                    <Link to={`/case/${data.caseIdentifier}`}>{data.name || data.caseIdentifier}</Link>
-                  </div>
-                  {data.leadAgency && <div>{data.leadAgency.longDescription}</div>}
-                  {
-                    <div className="comp-details-badge-container ms-auto">
-                      <Badge className={`badge ${applyStatusClass(caseStatus!)}`}>
-                        {data.caseStatus?.shortDescription}
-                      </Badge>
-                    </div>
-                  }
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <button
-          className="viewMore"
-          onClick={() => toggleViewMore("CASES")}
-          onKeyDown={() => toggleViewMore("CASES")}
-        >
-          {renderViewMore(caseFiles, "CASES")}
-        </button>
-      </>
-    );
-  };
-
   return !hasAssociatedCaseFiles && !hasDuplicateComplaints && !hasLinkedComplaints ? null : (
     <div className="comp-complaint-details-block">
       <div>
@@ -330,7 +282,14 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
 
           <Tab.Content>
             {hasAssociatedCaseFiles && casesActive && (
-              <Tab.Pane eventKey="CASES">{renderCaseFileList(associatedCaseFiles)}</Tab.Pane>
+              <Tab.Pane eventKey="CASES">
+                <CaseActivities
+                  cases={associatedCaseFiles.map((cf) => ({
+                    caseIdentifier: cf.caseIdentifier!,
+                    name: cf.name ?? undefined,
+                  }))}
+                />
+              </Tab.Pane>
             )}
             {hasLinkedComplaints && (
               <Tab.Pane eventKey="LINK">{renderComplaintList(linkedComplaints, "LINK")}</Tab.Pane>
@@ -345,7 +304,12 @@ export const LinkedComplaintList: FC<Props> = ({ linkedComplaintData, associated
           {hasAssociatedCaseFiles && casesActive && (
             <>
               <h3 className="mb-3">Associated cases ({associatedCaseFiles.length})</h3>
-              {renderCaseFileList(associatedCaseFiles)}
+              <CaseActivities
+                cases={associatedCaseFiles.map((cf) => ({
+                  caseIdentifier: cf.caseIdentifier!,
+                  name: cf.name ?? undefined,
+                }))}
+              />
             </>
           )}
           {hasLinkedComplaints && (
