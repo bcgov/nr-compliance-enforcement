@@ -34,7 +34,7 @@ import { parse } from "date-fns";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
-import { PartyTypeCodes, PartyTypes } from "@/app/constants/party-types";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
