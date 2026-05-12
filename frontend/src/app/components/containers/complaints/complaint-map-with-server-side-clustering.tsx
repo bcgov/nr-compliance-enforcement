@@ -225,10 +225,7 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
       const response: any = await get(dispatch, parameters, {}, false);
       if (response) {
         response.unmappedCount != null && setUnmappedCount(response.unmappedCount);
-        // If there is no bounding box, update totals and the default framing.
-        // defaultClusterView must only change on initial / filter-driven loads —
-        // moveend-triggered fetches always pass a bbox, and re-setting it there
-        // would re-fire the child useEffect → fitBounds → moveend cycle.
+        // If there is no bounding box, update totals
         if (bbox === undefined) {
           dispatch(
             setMappedComplaintsCount({

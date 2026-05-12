@@ -3,8 +3,8 @@ import { inTransactionContext } from "./prisma-pg-session-extension";
 
 /**
  * Runs inside a single Prisma transaction with the JWT claims set once at the start.
- * Tells the pg-session extension to skip its per-query transaction wrap so reads inside the
- * callback don't open nested transactions.
+ * Tells the pg-session extension to skip its per-query transaction logic so reads inside
+ * don't open nested transactions.
  */
 export async function withRlsTransaction<T>(
   prisma: any,

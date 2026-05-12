@@ -865,7 +865,6 @@ export class ComplaintOutcomeService {
         });
 
         for (const action of model.assessment.actions) {
-          // Use db to avoid nested pg-session transactions
           let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.COMPASSESS,
@@ -919,7 +918,6 @@ export class ComplaintOutcomeService {
 
         //Handle cat1actions
         for (const action of model.assessment.cat1Actions) {
-          // Use db to avoid nested pg-session transactions
           let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
             where: {
               action_type_code: ACTION_TYPE_CODES.CAT1ASSESS,
@@ -952,15 +950,7 @@ export class ComplaintOutcomeService {
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
 
-    try {
-      return await this.findOne(model.complaintOutcomeGuid);
-    } catch (exception) {
-      this.logger.error(
-        `updateAssessment succeeded but post-update read failed for ${model.complaintOutcomeGuid}`,
-        exception,
-      );
-      return { complaintOutcomeGuid: model.complaintOutcomeGuid } as ComplaintOutcome;
-    }
+    return await this.findOne(model.complaintOutcomeGuid);
   }
 
   //--------------------------
@@ -1071,7 +1061,7 @@ export class ComplaintOutcomeService {
       this.logger.log(`Creating actions for prevention: ${prevention.prevention_education_guid}`);
 
       // Validate that the actions passed in are all valid
-      // Use db to avoid nested pg-session transactions
+
       let action_codes_objects = await db.action_type_action_xref.findMany({
         where: {
           action_type_code: {
@@ -1091,7 +1081,6 @@ export class ComplaintOutcomeService {
       }
 
       for (const action of model.prevention.actions) {
-        // Use db to avoid nested pg-session transactions
         let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
@@ -1133,7 +1122,6 @@ export class ComplaintOutcomeService {
       });
 
       for (const action of model.prevention.actions) {
-        // Use db to avoid nested pg-session transactions
         let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_code: action.actionCode,
@@ -1268,7 +1256,6 @@ export class ComplaintOutcomeService {
       try {
         let actionId: string;
 
-        // Use db to avoid nested pg-session transactions
         let actionTypeActionXref = await db.action_type_action_xref.findFirstOrThrow({
           where: {
             action_type_code: ACTION_TYPE_CODES.CASEACTION,
@@ -1499,7 +1486,6 @@ export class ComplaintOutcomeService {
     agencyCode: string,
     id: string = "",
   ): Promise<string> => {
-    // Use db to avoid nested pg-session transactions
     const _getNoteActionXref = async (): Promise<string> => {
       const query = await db.action_type_action_xref.findFirst({
         where: {
@@ -1878,27 +1864,28 @@ export class ComplaintOutcomeService {
 
   async deleteEquipment(deleteEquipmentInput: DeleteEquipmentInput): Promise<boolean> {
     try {
-      // Find the equipment record by its ID
-      const equipment = await this.prisma.equipment.findUnique({
-        where: {
-          equipment_guid: deleteEquipmentInput.id,
-        },
-      });
+      // Update the equipment record by its ID
+      await withRlsTransaction(this.prisma, async (db) => {
+        const equipment = await db.equipment.findUnique({
+          where: {
+            equipment_guid: deleteEquipmentInput.id,
+          },
+        });
 
-      if (!equipment) {
-        throw new Error(`Equipment with ID ${deleteEquipmentInput.id} not found.`);
-      }
+        if (!equipment) {
+          throw new Error(`Equipment with ID ${deleteEquipmentInput.id} not found.`);
+        }
 
-      // Update the active_ind field to false
-      await this.prisma.equipment.update({
-        where: {
-          equipment_guid: deleteEquipmentInput.id,
-        },
-        data: {
-          active_ind: false,
-          update_user_id: deleteEquipmentInput.updateUserId,
-          update_utc_timestamp: new Date(),
-        },
+        await db.equipment.update({
+          where: {
+            equipment_guid: deleteEquipmentInput.id,
+          },
+          data: {
+            active_ind: false,
+            update_user_id: deleteEquipmentInput.updateUserId,
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
 
       this.logger.debug(`Equipment with ID ${deleteEquipmentInput.id} has been updated successfully.`);
@@ -2336,7 +2323,10 @@ export class ComplaintOutcomeService {
             data: records,
           });
         } catch (error) {
-          this.logger.error(`exception: unable to add drug-used for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
+          this.logger.error(
+            `exception: unable to add drug-used for wildlife record: ${wildlifeId}`,
+            error instanceof Error ? error.stack : String(error),
+          );
           throw new GraphQLError("Exception occurred. See server log for details", error);
         }
       }
@@ -2470,7 +2460,10 @@ export class ComplaintOutcomeService {
 
         return result;
       } catch (error) {
-        this.logger.error(`exception: unable to update wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
+        this.logger.error(
+          `exception: unable to update wildlife record: ${wildlifeId}`,
+          error instanceof Error ? error.stack : String(error),
+        );
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2594,7 +2587,10 @@ export class ComplaintOutcomeService {
           });
         }
       } catch (error) {
-        this.logger.error(`exception: unable to update ear-tags for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
+        this.logger.error(
+          `exception: unable to update ear-tags for wildlife record: ${wildlifeId}`,
+          error instanceof Error ? error.stack : String(error),
+        );
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2764,7 +2760,10 @@ export class ComplaintOutcomeService {
           });
         }
       } catch (error) {
-        this.logger.error(`exception: unable to update drug-used for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
+        this.logger.error(
+          `exception: unable to update drug-used for wildlife record: ${wildlifeId}`,
+          error instanceof Error ? error.stack : String(error),
+        );
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -2947,7 +2946,10 @@ export class ComplaintOutcomeService {
           }
         }
       } catch (error) {
-        this.logger.error(`exception: unable to update actions for wildlife record: ${wildlifeId}`, error instanceof Error ? error.stack : String(error));
+        this.logger.error(
+          `exception: unable to update actions for wildlife record: ${wildlifeId}`,
+          error instanceof Error ? error.stack : String(error),
+        );
         throw new GraphQLError("Exception occurred. See server log for details", {});
       }
     };
@@ -3137,7 +3139,6 @@ export class ComplaintOutcomeService {
       try {
         const { sector, schedule } = decision;
 
-        // Use db to avoid nested pg-session transactions
         let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: schedule,
@@ -3207,7 +3208,6 @@ export class ComplaintOutcomeService {
     actionCode: string,
     actionTypeCode: string,
   ): Promise<any> => {
-    // Use db to avoid nested pg-session transactions
     const query = await db.action_type_action_xref.findFirst({
       where: {
         action_code: actionCode,
@@ -3295,7 +3295,6 @@ export class ComplaintOutcomeService {
           update_utc_timestamp: current,
         };
 
-        // Use db to avoid nested pg-session transactions
         let scheduleSectorXref = await db.schedule_sector_xref.findFirstOrThrow({
           where: {
             schedule_code: decision.schedule,
@@ -3596,7 +3595,10 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(caseFileId);
     } catch (error) {
-      this.logger.error("exception: unable to create authorization outcome", error instanceof Error ? error.stack : String(error));
+      this.logger.error(
+        "exception: unable to create authorization outcome",
+        error instanceof Error ? error.stack : String(error),
+      );
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3627,7 +3629,10 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(complaintOutcomeGuid);
     } catch (error) {
-      this.logger.error("exception: unable to create authorization outcome", error instanceof Error ? error.stack : String(error));
+      this.logger.error(
+        "exception: unable to create authorization outcome",
+        error instanceof Error ? error.stack : String(error),
+      );
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };
@@ -3651,7 +3656,10 @@ export class ComplaintOutcomeService {
 
       return await this.findOne(complaintOutcomeGuid);
     } catch (error) {
-      this.logger.error("exception: unable to delete authorization outcome", error instanceof Error ? error.stack : String(error));
+      this.logger.error(
+        "exception: unable to delete authorization outcome",
+        error instanceof Error ? error.stack : String(error),
+      );
       throw new GraphQLError("Exception occurred. See server log for details", {});
     }
   };

@@ -6,10 +6,9 @@ import { getRequest } from "./request-interceptor";
 const logger = new Logger("PgSessionExtension");
 
 /**
- * Set to true while a service-level transaction is in flight that has already set the JWT
- * claims itself (via `withRlsTransaction`). Reads inside that transaction will then skip the
- * pg-session wrap so they don't open nested transactions which under PgBouncer transaction-
- * pooling.
+ * Set to true while a transaction is in progress that has already set the JWT claims
+ * via withRlsTransaction. This will then skip the pg-session wrap so they don't open
+ * multiple independant nested transactions
  */
 export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
@@ -62,8 +61,8 @@ function createPgSessionExtension(client: any) {
             return query(args);
           }
 
-          // If we're inside a service-level transaction that has already set the claims,
-          // skip the wrap. Otherwise we'd open a nested transaction.
+          // If we're inside a transaction that has already set the claims return the query
+          // without setting claims again to avoid nested transactions
           if (inTransactionContext.getStore()) {
             return query(args);
           }

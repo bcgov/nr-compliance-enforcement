@@ -27,9 +27,8 @@ function getErrorCode(error: any): string | undefined {
 }
 
 function isRetryableError(error: any): boolean {
-  // pg-session extension wraps Prisma errors so the error code lives on .cause for those
   const code = getErrorCode(error);
-  if (RETRYABLE_ERROR_CODES.includes(code as string)) return true;
+  if (RETRYABLE_ERROR_CODES.includes(code)) return true;
   const message = error?.message ?? error?.cause?.message;
   if (typeof message === "string") {
     return RETRYABLE_ERROR_CODES.some((c) => message.includes(c));
@@ -45,14 +44,14 @@ async function withRetry<T>(operation: string, query: () => Promise<T>): Promise
     } catch (error: any) {
       const code = getErrorCode(error);
 
-      if (POOL_STARVATION_CODES.has(code as string)) {
+      if (POOL_STARVATION_CODES.has(code)) {
         logger.warn(`POOL_STARVATION operation=${operation} code=${code} attempt=${attempt + 1}`);
       }
 
       if (isRetryableError(error) && attempt < MAX_RETRIES) {
         lastError = error;
         const exp = BASE_DELAY_MS * Math.pow(2, attempt);
-        // Random backoff so parallel retries don't all execute at once
+        // Random backoff so retries don't all execute at once
         const delay = Math.min(MAX_DELAY_MS, Math.round(exp * (0.5 + Math.random()))); // NOSONAR
         logger.warn(
           `Connection error on ${operation} (${error.code ?? "unknown"}), retrying in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
