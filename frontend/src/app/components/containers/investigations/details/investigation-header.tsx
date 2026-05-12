@@ -241,7 +241,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
         form={form}
         show={showAssignModal}
         onHide={handleCloseAssignModal}
-        data={investigation}
+        investigationLeadAgency={investigation?.leadAgency || ""}
         isSaving={updateStatusMutation.isPending}
       />
     </>

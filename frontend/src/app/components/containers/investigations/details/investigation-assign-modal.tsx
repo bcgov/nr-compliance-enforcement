@@ -16,13 +16,20 @@ interface InvestigationAssignModalProps {
   form: any;
   show: boolean;
   onHide: () => void;
-  data: Investigation | undefined;
+  investigationLeadAgency: string;
   isSaving: boolean;
 }
 
-export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({ form, show, onHide, data, isSaving }) => {
-  const leadAgency = getUserAgency();
-  const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
+export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
+  form,
+  show,
+  onHide,
+  investigationLeadAgency,
+  isSaving,
+}) => {
+  const officersInAgencyList = useSelector((state: RootState) =>
+    selectOfficersByAgency(state, investigationLeadAgency),
+  );
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
       ? officersInAgencyList.map((officer: AppUser) => ({
