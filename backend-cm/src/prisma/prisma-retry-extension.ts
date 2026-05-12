@@ -3,9 +3,9 @@ import { Logger } from "@nestjs/common";
 
 const logger = new Logger("PrismaRetryExtension");
 
-const MAX_RETRIES = 5;
+const MAX_RETRIES = 6;
 const BASE_DELAY_MS = 200;
-const MAX_DELAY_MS = 5000;
+const MAX_DELAY_MS = 8000;
 
 // Error codes worth retrying
 const RETRYABLE_ERROR_CODES = [
@@ -23,6 +23,14 @@ const POOL_STARVATION_CODES = new Set([
   "53300", // Postgres SQLSTATE: too_many_connections
 ]);
 
+// Message fragments that indicate a retryable failure even when no error code
+const RETRYABLE_MESSAGE_PATTERNS = [
+  "remaining connection slots",
+  "too many connections",
+  "server login has been failing",
+  "Server has closed the connection",
+];
+
 function getErrorCode(error: any): string | undefined {
   // For raw-query failures, Prisma sets the top-level code to P2010 and puts the actual
   // Postgres SQLSTATE on meta.code
@@ -34,7 +42,8 @@ function isRetryableError(error: any): boolean {
   if (RETRYABLE_ERROR_CODES.includes(code)) return true;
   const message = error?.message ?? error?.cause?.message;
   if (typeof message === "string") {
-    return RETRYABLE_ERROR_CODES.some((c) => message.includes(c));
+    if (RETRYABLE_ERROR_CODES.some((c) => message.includes(c))) return true;
+    if (RETRYABLE_MESSAGE_PATTERNS.some((p) => message.includes(p))) return true;
   }
   return false;
 }
