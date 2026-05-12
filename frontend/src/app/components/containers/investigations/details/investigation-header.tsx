@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Dropdown } from "react-bootstrap";
 import { useInvestigationSearch } from "@/app/components/containers/investigations/hooks/use-investigation-search";
@@ -9,6 +9,8 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
+import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
+import { useForm } from "@tanstack/react-form";
 
 const UPDATE_INVESTIGATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
@@ -33,6 +35,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
   const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
 
   const updateStatusMutation = useGraphQLMutation(UPDATE_INVESTIGATION, {
     onSuccess: () => {
@@ -45,11 +48,63 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
     },
   });
 
+  const updateAssignMutation = useGraphQLMutation(UPDATE_INVESTIGATION, {
+    onSuccess: () => {
+      ToggleSuccess("Investigation successfully assigned");
+      setShowAssignModal(false);
+    },
+    onError: () => {
+      ToggleError("Failed to assign investigation");
+    },
+  });
+
   const handleOpenStatusModal = () => setShowStatusModal(true);
   const handleCloseStatusModal = () => setShowStatusModal(false);
   const handleSaveStatus = async (input: UpdateInvestigationInput, investigationGuid?: string | null) => {
     await updateStatusMutation.mutateAsync({ investigationGuid, input });
   };
+
+  const handleOpenAssignModal = () => setShowAssignModal(true);
+  const handleCloseAssignModal = () => setShowAssignModal(false);
+
+  const defaultValues = useMemo(() => {
+    if (investigation) {
+      return {
+        supervisor: investigation.supervisorGuid || "",
+        primaryInvestigator: investigation.primaryInvestigatorGuid || "",
+        fileCoordinator: investigation.fileCoordinatorGuid || "",
+      };
+    }
+    return {
+      supervisor: "",
+      primaryInvestigator: "",
+      fileCoordinator: "",
+    };
+  }, [investigation]);
+
+  const form = useForm({
+    defaultValues,
+    onSubmit: async ({ value }) => {
+      const updateInput: UpdateInvestigationInput = {
+        supervisorGuid: value.supervisor,
+        primaryInvestigatorGuid: value.primaryInvestigator,
+        fileCoordinatorGuid: value.fileCoordinator,
+      };
+      await updateAssignMutation.mutateAsync({
+        investigationGuid: investigation?.investigationGuid || "",
+        input: updateInput,
+      });
+    },
+    onSubmitInvalid: () => {
+      ToggleError("Errors in form");
+    },
+  });
+
+  useEffect(() => {
+    if (investigation) {
+      form.reset(defaultValues);
+    }
+  }, [investigation]);
 
   return (
     <>
@@ -104,6 +159,14 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   <Dropdown.Menu align="end">
                     <Dropdown.Item
                       as="button"
+                      id="assign-button"
+                      onClick={handleOpenAssignModal}
+                    >
+                      <i className="bi bi-person-plus"></i>
+                      <span>Assign</span>
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      as="button"
                       id="update-status-button"
                       onClick={handleOpenStatusModal}
                     >
@@ -121,6 +184,15 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                 </Dropdown>
               </div>
               <div className="comp-header-actions-desktop">
+                <Button
+                  id="details-screen-assign-button"
+                  title="Assign to officer"
+                  variant="outline-light"
+                  onClick={handleOpenAssignModal}
+                >
+                  <i className="bi bi-person-plus"></i>
+                  <span>Assign</span>
+                </Button>
                 <Button
                   id="details-screen-update-status-button"
                   title="Update status"
@@ -163,6 +235,13 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
         onSave={handleSaveStatus}
         data={investigation}
         type="investigation"
+        isSaving={updateStatusMutation.isPending}
+      />
+      <InvestigationAssignModal
+        form={form}
+        show={showAssignModal}
+        onHide={handleCloseAssignModal}
+        data={investigation}
         isSaving={updateStatusMutation.isPending}
       />
     </>
