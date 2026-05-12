@@ -163,7 +163,6 @@ export const CaseActivities: FC<CaseActivitiesProps> = ({ caseGuid, caseName }) 
 
   return (
     <>
-      <h2 className="mb-6 mb-sm-3">Associated data</h2>
       <div className="border rounded p-4 mb-4 bg-white">
         <div className="d-flex flex-column mb-3">
           <span className="mb-2 mb-sm-0 larger-font">

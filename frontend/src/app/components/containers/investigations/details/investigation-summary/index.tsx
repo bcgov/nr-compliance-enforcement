@@ -168,10 +168,13 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <div className="comp-details-view">
         <div className="comp-details-content">
           {caseGuid && (
-            <CaseActivities
-              caseGuid={caseGuid}
-              caseName={caseName}
-            />
+            <>
+              <h2 className="mb-6 mb-sm-3">Associated data</h2>
+              <CaseActivities
+                caseGuid={caseGuid}
+                caseName={caseName}
+              />
+            </>
           )}
           <div className="d-flex align-items-center justify-content-between mb-3">
             <h2 className="mb-0">Investigation summary</h2>

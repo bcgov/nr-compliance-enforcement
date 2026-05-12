@@ -137,6 +137,7 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
         </div>
       </div>
       <hr className="mt-4 mb-4 border-2"></hr>
+      <h2 className="mb-6 mb-sm-3">Associated data</h2>
       <CaseActivities
         caseGuid={caseGuid}
         caseName={caseName}
