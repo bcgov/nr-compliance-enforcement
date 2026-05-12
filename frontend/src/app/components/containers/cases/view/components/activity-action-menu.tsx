@@ -6,7 +6,8 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { FC, useCallback } from "react";
 import { gql } from "graphql-request";
-import { CaseActivityType } from "@/app/constants/case-activity-types";
+import { CASE_ACTIVITY_TYPES, CaseActivityType } from "@/app/constants/case-activity-types";
+import { updateComplaintLastUpdated } from "@/app/store/reducers/complaints";
 
 const REMOVE_ACTIVITY_FROM_CASE_MUTATION = gql`
   mutation RemoveCaseActivity($input: CaseActivityRemoveInput!) {
@@ -35,6 +36,9 @@ export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({
 
   const removeActivityFromCaseMutation = useGraphQLMutation(REMOVE_ACTIVITY_FROM_CASE_MUTATION, {
     onSuccess: () => {
+      if (activityType === CASE_ACTIVITY_TYPES.COMPLAINT) {
+        dispatch(updateComplaintLastUpdated(activityId));
+      }
       ToggleSuccess("Activity removed successfully");
     },
     onError: (error: any) => {

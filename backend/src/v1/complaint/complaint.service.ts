@@ -1908,7 +1908,7 @@ export class ComplaintService {
   //     - When attachments are uploaded to a complaint or case the complaint is considered updated
   //     - Updates from webEOC are considered Updates, however Actions Taken are not
   // As a result this method can be called whenever you need to set the complaint as 'Updated'
-  updateComplaintLastUpdatedDate = async (id: string): Promise<boolean> => {
+  updateComplaintLastUpdatedDate = async (id: string): Promise<Date> => {
     try {
       const idir = getIdirFromRequest(this.request);
       const timestamp = new Date();
@@ -1922,7 +1922,7 @@ export class ComplaintService {
 
       //-- check to make sure that only one record was updated
       if (result.affected === 1) {
-        return true;
+        return timestamp;
       } else {
         this.logger.error(`Unable to update complaint: ${id}`);
         throw new HttpException(`Unable to update complaint: ${id}`, HttpStatus.UNPROCESSABLE_ENTITY);
