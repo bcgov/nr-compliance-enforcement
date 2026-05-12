@@ -7,12 +7,13 @@ const MAX_RETRIES = 5;
 const BASE_DELAY_MS = 200;
 const MAX_DELAY_MS = 5000;
 
-// Prisma error codes that appear on error
+// Error codes worth retrying
 const RETRYABLE_ERROR_CODES = [
   "P1017", // Server has closed the connection
   "P2024", // Timed out fetching a new connection from the pool
   "P2028", // Transaction API error / transaction expired
   "08P01", // Connection slots exhausted
+  "53300", // Postgres SQLSTATE: too_many_connections
 ];
 
 // Codes that specifically indicate pool starvation
@@ -23,7 +24,9 @@ const POOL_STARVATION_CODES = new Set([
 ]);
 
 function getErrorCode(error: any): string | undefined {
-  return error?.code ?? error?.cause?.code;
+  // For raw-query failures, Prisma sets the top-level code to P2010 and puts the actual
+  // Postgres SQLSTATE on meta.code
+  return error?.meta?.code ?? error?.code ?? error?.cause?.meta?.code ?? error?.cause?.code;
 }
 
 function isRetryableError(error: any): boolean {
