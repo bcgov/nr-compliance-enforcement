@@ -23,6 +23,7 @@ import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { formatDate } from "@common/methods";
+import { ContactMethods } from "@/app/constants/contact-methods";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -276,7 +277,9 @@ const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> =
       return (
         <p key={contactMethod?.contactMethodGuid}>
           <b>{contactMethod?.typeDescription}: </b>
-          {contactMethod?.typeCode === "PHONE" ? formatPhoneNumber(contactMethod?.value ?? "") : contactMethod?.value}
+          {contactMethod?.typeCode === ContactMethods.PHONE
+            ? formatPhoneNumber(contactMethod?.value ?? "")
+            : contactMethod?.value}
           {contactMethod?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
         </p>
       );
