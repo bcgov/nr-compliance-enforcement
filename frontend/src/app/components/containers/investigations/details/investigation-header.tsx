@@ -88,7 +88,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
       const updateInput: UpdateInvestigationInput = {
         supervisorGuid: value.supervisor,
         primaryInvestigatorGuid: value.primaryInvestigator,
-        fileCoordinatorGuid: value.fileCoordinator,
+        fileCoordinatorGuid: value.fileCoordinator || "",
       };
       await updateAssignMutation.mutateAsync({
         investigationGuid: investigation?.investigationGuid || "",
