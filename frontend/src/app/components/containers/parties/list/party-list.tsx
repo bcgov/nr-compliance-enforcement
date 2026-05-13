@@ -6,7 +6,7 @@ import { CompColumn } from "@/app/types/app/comp-tables";
 import { usePartySearch } from "../hooks/use-party-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { format, parseISO } from "date-fns";
+import { formatDateOfBirth } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -28,13 +28,6 @@ const getPrimaryPhone = (contactMethods: any[] | undefined): string => {
     return "-";
   }
   return formatPhoneNumber(primary.value) ?? primary.value;
-};
-
-const formatDateOfBirth = (dateOfBirth: string | null | undefined): string => {
-  if (!dateOfBirth) {
-    return "-";
-  }
-  return format(parseISO(dateOfBirth), "yyyy-MM-dd");
 };
 
 const getBusinessNumber = (identifiers: any[] | undefined): string => {
@@ -163,7 +156,7 @@ const personColumns: CompColumn<any>[] = [
     cellClassName: "comp-cell-width-110",
     isSortable: true,
     getValue: (party) => party.person?.dateOfBirth ?? "",
-    renderCell: (party) => formatDateOfBirth(party.person?.dateOfBirth),
+    renderCell: (party) => formatDateOfBirth(party.person?.dateOfBirth, "-"),
   },
   {
     label: "Phone number",
