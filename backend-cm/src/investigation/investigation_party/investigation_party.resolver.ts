@@ -45,6 +45,22 @@ export class InvestigationPartyResolver {
       });
     }
   }
+
+  @Query("InvestigationParties")
+  @Roles(coreRoles)
+  async findManyByParty(@Args("partyRefId") partyRefId: string) {
+    try {
+      return await this.investigationPartyService.findManyByRef(partyRefId);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching investigation parties by Party Ref IDs from investigation schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
   @Mutation("editPartyRoleInInvestigation")
   @Roles(coreRoles)
   async editPartyRole(
