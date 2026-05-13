@@ -66,7 +66,7 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
         closeButton
         className="pb-0"
       >
-        <Modal.Title>Assign investigation roles</Modal.Title>
+        <Modal.Title>Reassign roles</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={form.handleSubmit}>
@@ -151,7 +151,7 @@ export const InvestigationAssignModal: FC<InvestigationAssignModalProps> = ({
           onClick={handleSave}
           disabled={isSaving}
         >
-          {isSaving ? "Updating..." : "Update"}
+          {isSaving ? "Saving..." : "Save"}
         </Button>
       </Modal.Footer>
     </Modal>
