@@ -74,7 +74,8 @@ INSERT INTO shared.person (person_guid,first_name,middle_name,middle_name_2,last
 	 ('c5c27af6-48d0-4dfa-9305-0206260e0291','Stella',NULL,NULL,'Khan','system',NOW(),'system',NOW(),'3f514e91-0c25-471e-af65-d337aedab196'),
 	 ('ddb322f3-d0bb-4888-b647-aa31e91b60a8','Joan',NULL,NULL,'Matthews','system',NOW(),'system',NOW(),'d7f734a3-988c-4420-945f-60e5a3c2f43f'),
 	 ('444037f1-8a70-45df-94f8-743127836c1b','Gustavo',NULL,NULL,'Smith','system',NOW(),'system',NOW(),'fb845379-e684-4598-9bed-ed9b81e51f41'),
-	 ('1b0adb9b-9d9f-4f8e-aeab-684dd88fe8c9','Mary',NULL,NULL,'Randall','system',NOW(),'system',NOW(),'f3cb9906-e50a-48ca-93b3-5d21eb54eafb')
+	 ('1b0adb9b-9d9f-4f8e-aeab-684dd88fe8c9','Mary',NULL,NULL,'Randall','system',NOW(),'system',NOW(),'f3cb9906-e50a-48ca-93b3-5d21eb54eafb'),
+	 ('0c52b0f4-65c7-4eed-b7c1-a27d5a387b06','Monica',NULL,NULL,'Watkins','system',NOW(),'system',NOW(),'6532c891-afa2-444b-a7ef-e19fef8a1340')
 ON CONFLICT DO NOTHING;   
 
 

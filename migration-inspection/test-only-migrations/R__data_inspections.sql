@@ -1,303 +1,629 @@
--- Create test inspections
-insert into
-  inspection.inspection (
-    inspection_guid,
-    owned_by_agency_ref,
-    inspection_status,
-    inspection_opened_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp,
-    location_geometry_point,
-    name
-  )
-values
+-- Test-only seed data of 51 inspections
+-- The inspections are added to cases in the R__data_cases script
+
+INSERT INTO inspection.inspection (
+  inspection_guid,
+  inspection_description,
+  owned_by_agency_ref,
+  inspection_status,
+  inspection_opened_utc_timestamp,
+  create_user_id,
+  create_utc_timestamp,
+  name,
+  location_geometry_point,
+  geo_organization_unit_code_ref
+)
+VALUES
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb900',
+    'Test INSPECTION1',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
+    'INSPECTION1',
     ST_GeomFromText ('POINT(-123.1207 49.2827)'),
-    'INSPECTION1'
+    '100MHHS'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb901',
+    'Test INSPECTION2',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
+    'INSPECTION2',
     ST_GeomFromText ('POINT(-123.3656 48.4284)'),
-    'INSPECTION2'
+    'BURNLK'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb902',
+    'Test INSPECTION3',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
+    'INSPECTION3',
     ST_GeomFromText ('POINT(-122.9574 49.1666)'),
-    'INSPECTION3'
+    '70MLHS'
   ),
   (
     '8116f74c-19d2-4903-9dfc-d5607c1fb903',
+    'Test INSPECTION4',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
+    'INSPECTION4',
     ST_GeomFromText ('POINT(-123.0848 49.3043)'),
-    'INSPECTION4'
+    '108MLRNH'
   ),
   (
-    'c0000000-0000-0000-0000-000000000005',
+    'c2000000-0000-4000-a000-000000000005',
+    'Test INSPECTION5',
     'COS',
     'OPEN',
-    now () - interval '1 day',
+    now (),
     'system',
     now (),
-    ST_GeomFromText ('POINT(-123.1207 49.2827)'),
-    'INSPECTION5'
+    'INSPECTION5',
+    NULL,
+    '140MHHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000006',
+    'c2000000-0000-4000-a000-000000000006',
+    'Test INSPECTION6',
     'COS',
     'OPEN',
-    now () - interval '2 days',
+    now (),
     'system',
     now (),
+    'INSPECTION6',
     NULL,
-    'INSPECTION6'
+    'ABTFRD'
   ),
   (
-    'c0000000-0000-0000-0000-000000000007',
-    'COS',
-    'CLOSED',
-    now () - interval '3 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION7'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000008',
+    'c2000000-0000-4000-a000-000000000007',
+    'Test INSPECTION7',
     'COS',
     'OPEN',
-    now () - interval '4 days',
+    now (),
     'system',
     now (),
+    'INSPECTION7',
     NULL,
-    'INSPECTION8'
+    '150MHHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000009',
+    'c2000000-0000-4000-a000-000000000008',
+    'Test INSPECTION8',
     'COS',
     'OPEN',
-    now () - interval '5 days',
+    now (),
     'system',
     now (),
+    'INSPECTION8',
     NULL,
-    'INSPECTION9'
+    '40MLFLTZ'
   ),
   (
-    'c0000000-0000-0000-0000-000000000010',
-    'COS',
-    'CLOSED',
-    now () - interval '6 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION10'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000011',
+    'c2000000-0000-4000-a000-000000000009',
+    'Test INSPECTION9',
     'COS',
     'OPEN',
-    now () - interval '7 days',
+    now (),
     'system',
     now (),
+    'INSPECTION9',
     NULL,
-    'INSPECTION11'
+    'ANHMLK'
   ),
   (
-    'c0000000-0000-0000-0000-000000000012',
+    'c2000000-0000-4000-a000-00000000000a',
+    'Test INSPECTION10',
     'COS',
     'OPEN',
-    now () - interval '8 days',
+    now (),
     'system',
     now (),
+    'INSPECTION10',
     NULL,
-    'INSPECTION12'
+    '16MIL'
   ),
   (
-    'c0000000-0000-0000-0000-000000000013',
-    'COS',
-    'CLOSED',
-    now () - interval '9 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION13'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000014',
+    'c2000000-0000-4000-a000-00000000000b',
+    'Test INSPECTION11',
     'COS',
     'OPEN',
-    now () - interval '10 days',
+    now (),
     'system',
     now (),
+    'INSPECTION11',
     NULL,
-    'INSPECTION14'
+    '100MHHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000015',
+    'c2000000-0000-4000-a000-00000000000c',
+    'Test INSPECTION12',
     'COS',
     'OPEN',
-    now () - interval '11 days',
+    now (),
     'system',
     now (),
+    'INSPECTION12',
     NULL,
-    'INSPECTION15'
+    'BURNLK'
   ),
   (
-    'c0000000-0000-0000-0000-000000000016',
-    'COS',
-    'CLOSED',
-    now () - interval '12 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION16'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000017',
+    'c2000000-0000-4000-a000-00000000000d',
+    'Test INSPECTION13',
     'COS',
     'OPEN',
-    now () - interval '13 days',
+    now (),
     'system',
     now (),
+    'INSPECTION13',
     NULL,
-    'INSPECTION17'
+    '70MLHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000018',
+    'c2000000-0000-4000-a000-00000000000e',
+    'Test INSPECTION14',
     'COS',
     'OPEN',
-    now () - interval '14 days',
+    now (),
     'system',
     now (),
+    'INSPECTION14',
     NULL,
-    'INSPECTION18'
+    '108MLRNH'
   ),
   (
-    'c0000000-0000-0000-0000-000000000019',
-    'COS',
-    'CLOSED',
-    now () - interval '15 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION19'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000020',
+    'c2000000-0000-4000-a000-00000000000f',
+    'Test INSPECTION15',
     'COS',
     'OPEN',
-    now () - interval '16 days',
+    now (),
     'system',
     now (),
+    'INSPECTION15',
     NULL,
-    'INSPECTION20'
+    '140MHHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000021',
+    'c2000000-0000-4000-a000-000000000010',
+    'Test INSPECTION16',
     'COS',
     'OPEN',
-    now () - interval '17 days',
+    now (),
     'system',
     now (),
+    'INSPECTION16',
     NULL,
-    'INSPECTION21'
+    'ABTFRD'
   ),
   (
-    'c0000000-0000-0000-0000-000000000022',
-    'COS',
-    'CLOSED',
-    now () - interval '18 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION22'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000023',
+    'c2000000-0000-4000-a000-000000000011',
+    'Test INSPECTION17',
     'COS',
     'OPEN',
-    now () - interval '19 days',
+    now (),
     'system',
     now (),
+    'INSPECTION17',
     NULL,
-    'INSPECTION23'
+    '150MHHS'
   ),
   (
-    'c0000000-0000-0000-0000-000000000024',
+    'c2000000-0000-4000-a000-000000000012',
+    'Test INSPECTION18',
     'COS',
     'OPEN',
-    now () - interval '20 days',
+    now (),
     'system',
     now (),
+    'INSPECTION18',
     NULL,
-    'INSPECTION24'
+    '40MLFLTZ'
   ),
   (
-    'c0000000-0000-0000-0000-000000000025',
-    'COS',
-    'CLOSED',
-    now () - interval '21 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION25'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000026',
+    'c2000000-0000-4000-a000-000000000013',
+    'Test INSPECTION19',
     'COS',
     'OPEN',
-    now () - interval '22 days',
+    now (),
     'system',
     now (),
+    'INSPECTION19',
     NULL,
-    'INSPECTION26'
+    'ANHMLK'
   ),
   (
-    'c0000000-0000-0000-0000-000000000027',
+    'c2000000-0000-4000-a000-000000000014',
+    'Test INSPECTION20',
     'COS',
     'OPEN',
-    now () - interval '23 days',
+    now (),
     'system',
     now (),
+    'INSPECTION20',
     NULL,
-    'INSPECTION27'
+    '16MIL'
   ),
   (
-    'c0000000-0000-0000-0000-000000000028',
-    'COS',
-    'CLOSED',
-    now () - interval '24 days',
-    'system',
-    now (),
-    NULL,
-    'INSPECTION28'
-  ),
-  (
-    'c0000000-0000-0000-0000-000000000029',
+    'c2000000-0000-4000-a000-000000000015',
+    'Test INSPECTION21',
     'COS',
     'OPEN',
-    now () - interval '25 days',
+    now (),
     'system',
     now (),
+    'INSPECTION21',
     NULL,
-    'INSPECTION29'
-  ) on conflict do nothing;
+    '100MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000016',
+    'Test INSPECTION22',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION22',
+    NULL,
+    'BURNLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000017',
+    'Test INSPECTION23',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION23',
+    NULL,
+    '70MLHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000018',
+    'Test INSPECTION24',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION24',
+    NULL,
+    '108MLRNH'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000019',
+    'Test INSPECTION25',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION25',
+    NULL,
+    '140MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001a',
+    'Test INSPECTION26',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION26',
+    NULL,
+    'ABTFRD'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001b',
+    'Test INSPECTION27',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION27',
+    NULL,
+    '150MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001c',
+    'Test INSPECTION28',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION28',
+    NULL,
+    '40MLFLTZ'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001d',
+    'Test INSPECTION29',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION29',
+    NULL,
+    'ANHMLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001e',
+    'Test INSPECTION30',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION30',
+    NULL,
+    '16MIL'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000001f',
+    'Test INSPECTION31',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION31',
+    NULL,
+    '100MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000020',
+    'Test INSPECTION32',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION32',
+    NULL,
+    'BURNLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000021',
+    'Test INSPECTION33',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION33',
+    NULL,
+    '70MLHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000022',
+    'Test INSPECTION34',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION34',
+    NULL,
+    '108MLRNH'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000023',
+    'Test INSPECTION35',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION35',
+    NULL,
+    '140MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000024',
+    'Test INSPECTION36',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION36',
+    NULL,
+    'ABTFRD'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000025',
+    'Test INSPECTION37',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION37',
+    NULL,
+    '150MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000026',
+    'Test INSPECTION38',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION38',
+    NULL,
+    '40MLFLTZ'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000027',
+    'Test INSPECTION39',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION39',
+    NULL,
+    'ANHMLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000028',
+    'Test INSPECTION40',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION40',
+    NULL,
+    '16MIL'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000029',
+    'Test INSPECTION41',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION41',
+    NULL,
+    '100MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002a',
+    'Test INSPECTION42',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION42',
+    NULL,
+    'BURNLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002b',
+    'Test INSPECTION43',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION43',
+    NULL,
+    '70MLHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002c',
+    'Test INSPECTION44',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION44',
+    NULL,
+    '108MLRNH'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002d',
+    'Test INSPECTION45',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION45',
+    NULL,
+    '140MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002e',
+    'Test INSPECTION46',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION46',
+    NULL,
+    'ABTFRD'
+  ),
+  (
+    'c2000000-0000-4000-a000-00000000002f',
+    'Test INSPECTION47',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION47',
+    NULL,
+    '150MHHS'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000030',
+    'Test INSPECTION48',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION48',
+    NULL,
+    '40MLFLTZ'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000031',
+    'Test INSPECTION49',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION49',
+    NULL,
+    'ANHMLK'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000032',
+    'Test INSPECTION50',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION50',
+    NULL,
+    '16MIL'
+  ),
+  (
+    'c2000000-0000-4000-a000-000000000033',
+    'Test INSPECTION51',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'INSPECTION51',
+    NULL,
+    '100MHHS'
+  )
+ON CONFLICT DO NOTHING;
