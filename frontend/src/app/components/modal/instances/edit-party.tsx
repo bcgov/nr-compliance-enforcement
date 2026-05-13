@@ -11,78 +11,6 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 type ActivityType = "investigation" | "inspection";
 
-const createEditPartyRoleMutation = (activityType: ActivityType) => {
-  if (activityType === "investigation") {
-    return gql`
-      mutation EditPartyRoleInInvestigation(
-        $investigationGuid: String!
-        $partyIdentifier: String!
-        $partyAssociationRole: String!
-      ) {
-        editPartyRoleInInvestigation(
-          investigationGuid: $investigationGuid
-          partyIdentifier: $partyIdentifier
-          partyAssociationRole: $partyAssociationRole
-        ) {
-          investigationGuid
-          description
-          investigationStatus {
-            investigationStatusCode
-            shortDescription
-            longDescription
-          }
-          parties {
-            partyIdentifier
-            person {
-              firstName
-              lastName
-            }
-            business {
-              name
-            }
-            partyAssociationRole
-          }
-          leadAgency
-        }
-      }
-    `;
-  } else {
-    return gql`
-      mutation EditPartyRoleInInspection(
-        $inspectionGuid: String!
-        $partyIdentifier: String!
-        $partyAssociationRole: String!
-      ) {
-        editPartyRoleInInspection(
-          inspectionGuid: $inspectionGuid
-          partyIdentifier: $partyIdentifier
-          partyAssociationRole: $partyAssociationRole
-        ) {
-          inspectionGuid
-          description
-          inspectionStatus {
-            inspectionStatusCode
-            shortDescription
-            longDescription
-          }
-          parties {
-            partyIdentifier
-            person {
-              firstName
-              lastName
-            }
-            business {
-              name
-            }
-            partyAssociationRole
-          }
-          leadAgency
-        }
-      }
-    `;
-  }
-};
-
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
     <div className="comp-overlay-content d-flex align-items-center justify-content-center">
@@ -112,7 +40,39 @@ export const EditPartyModal: FC<EditPartyModalProps> = ({ activityType, close, s
 
   const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
-  const EDIT_PARTY_ROLE_MUTATION = createEditPartyRoleMutation(activityType);
+  const EDIT_PARTY_ROLE_MUTATION = gql`
+    mutation EditPartyRoleInInvestigation(
+      $investigationGuid: String!
+      $partyIdentifier: String!
+      $partyAssociationRole: String!
+    ) {
+      editPartyRoleInInvestigation(
+        investigationGuid: $investigationGuid
+        partyIdentifier: $partyIdentifier
+        partyAssociationRole: $partyAssociationRole
+      ) {
+        investigationGuid
+        description
+        investigationStatus {
+          investigationStatusCode
+          shortDescription
+          longDescription
+        }
+        parties {
+          partyIdentifier
+          person {
+            firstName
+            lastName
+          }
+          business {
+            name
+          }
+          partyAssociationRole
+        }
+        leadAgency
+      }
+    }
+  `;
   const editPartyRoleMutation = useGraphQLMutation(EDIT_PARTY_ROLE_MUTATION, {
     onSuccess: () => {
       ToggleSuccess("Party role updated successfully");
@@ -162,11 +122,9 @@ export const EditPartyModal: FC<EditPartyModalProps> = ({ activityType, close, s
       );
     })
     .map((option: any) => {
-      return {
-        value: option.value,
-        label: option.label,
-      };
+      return { value: option.value, label: option.label };
     });
+
   useEffect(() => {
     setSelectedPartyRole(partyAssociationRole || null);
   }, [partyAssociationRole]);
