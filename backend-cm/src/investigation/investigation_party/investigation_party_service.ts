@@ -147,4 +147,28 @@ export class InvestigationPartyService {
       throw error;
     }
   }
+  async editPartyRole(
+    investigationGuid: string,
+    partyIdentifier: string,
+    partyAssociationRole: string,
+  ): Promise<Investigation> {
+    try {
+      await this.prisma.investigation_party.update({
+        where: {
+          investigation_party_guid: partyIdentifier,
+          investigation_guid: investigationGuid,
+        },
+        data: {
+          party_association_role_ref: partyAssociationRole,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+    } catch (error) {
+      this.logger.error("Error editing party role in investigation:", error);
+      throw error;
+    }
+
+    return await this.investigationService.findOne(investigationGuid);
+  }
 }

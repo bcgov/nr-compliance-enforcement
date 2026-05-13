@@ -1270,6 +1270,7 @@ export type Mutation = {
   deletePerson: Person;
   deletePrevention: ComplaintOutcome;
   deleteWildlife: ComplaintOutcome;
+  editPartyRoleInInvestigation: Investigation;
   removeCaseActivity: CaseActivity;
   removeContravention: Investigation;
   removeEnforcementAction: EnforcementAction;
@@ -1506,6 +1507,13 @@ export type MutationdeletePreventionArgs = {
 
 export type MutationdeleteWildlifeArgs = {
   input: DeleteWildlifeInput;
+};
+
+
+export type MutationeditPartyRoleInInvestigationArgs = {
+  investigationGuid: Scalars['String']['input'];
+  partyAssociationRole: Scalars['String']['input'];
+  partyIdentifier: Scalars['String']['input'];
 };
 
 

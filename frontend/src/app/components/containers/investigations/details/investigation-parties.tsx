@@ -1,7 +1,7 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { ADD_PARTY, EDIT_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { Button } from "react-bootstrap";
@@ -96,6 +96,27 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     [dispatch, investigationGuid, removePartyMutation],
   );
 
+  const handleEditParty = (partyIdentifier: string, partyName: string, partyAssociationRole: string) => {
+    document.body.click();
+    dispatch(
+      openModal({
+        modalSize: "lg",
+        modalType: EDIT_PARTY,
+        data: {
+          title: "Edit party in investigation",
+          description: "",
+          activityGuid: investigationGuid,
+          activityType: "investigation",
+          partyIdentifier: partyIdentifier,
+          partyName: partyName,
+          partyAssociationRole: partyAssociationRole,
+          onDirtyChange: handleChildDirtyChange,
+        },
+        hideCallback,
+      }),
+    );
+  };
+
   const parties = investigationData?.parties ?? [];
 
   const { peopleParties, businessParties } = parties.reduce(
@@ -120,6 +141,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             companies={businessParties as InvestigationParty[]}
             people={peopleParties as InvestigationParty[]}
             onRemoveParty={handleRemoveParty}
+            onEditParty={handleEditParty}
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>
