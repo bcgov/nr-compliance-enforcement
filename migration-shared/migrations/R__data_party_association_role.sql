@@ -24,7 +24,3 @@ display_order = EXCLUDED.display_order,
 active_ind = EXCLUDED.active_ind,
 update_user_id = 'FLYWAY',
 update_utc_timestamp = NOW();
-
- UPDATE complaint_outcome.configuration
- SET    configuration_value = configuration_value::int + 1
- WHERE  configuration_code = 'CDTABLEVER';
