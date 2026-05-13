@@ -1,14 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
-import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import {
-  setComplaint,
-  getCaseFileComplaints,
-  selectCaseFileComplaints,
-  setCaseFileComplaints,
-} from "@/app/store/reducers/complaints";
+import { useAppDispatch } from "@hooks/hooks";
+import { getCaseFileComplaints } from "@/app/store/reducers/complaints";
 import { CaseFile, CaseActivity, Inspection, Investigation } from "@/generated/graphql";
+import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 
 const GET_CASE_FILE = gql`
   query GetCaseFile($caseIdentifier: String!) {
@@ -100,6 +96,8 @@ export interface UseCaseActivitiesResult {
 
 export const useCaseActivities = (caseGuid?: string): UseCaseActivitiesResult => {
   const dispatch = useAppDispatch();
+  const [linkedComplaints, setLinkedComplaints] = useState<SectorComplaint[]>();
+  const [isComplaintsLoading, setIsComplaintsLoading] = useState(false);
 
   const { data, isLoading: isCaseFileLoading } = useGraphQLQuery<{ caseFile: CaseFile }>(GET_CASE_FILE, {
     queryKey: ["caseFile", caseGuid],
@@ -146,13 +144,17 @@ export const useCaseActivities = (caseGuid?: string): UseCaseActivitiesResult =>
     }
 
     if (linkedComplaintIds.length > 0) {
-      dispatch(getCaseFileComplaints(linkedComplaintIds));
+      const fetchComplaints = async () => {
+        setIsComplaintsLoading(true);
+        const result = await dispatch(getCaseFileComplaints(linkedComplaintIds));
+        setLinkedComplaints(result);
+        setIsComplaintsLoading(false);
+      };
+      fetchComplaints();
     } else {
-      dispatch(setCaseFileComplaints([]));
+      setLinkedComplaints([]);
     }
   }, [caseData, dispatch, linkedComplaintIds]);
-
-  const linkedComplaints = useAppSelector(selectCaseFileComplaints) ?? undefined;
 
   const { data: investigationsData, isLoading: isInvestigationsLoading } = useGraphQLQuery<{
     getInvestigations: Investigation[];
@@ -171,13 +173,6 @@ export const useCaseActivities = (caseGuid?: string): UseCaseActivitiesResult =>
     },
   );
 
-  useEffect(() => {
-    return () => {
-      dispatch(setComplaint(null));
-      dispatch(setCaseFileComplaints([]));
-    };
-  }, [dispatch]);
-
   return {
     caseData,
     linkedComplaints,
@@ -186,6 +181,6 @@ export const useCaseActivities = (caseGuid?: string): UseCaseActivitiesResult =>
     isCaseFileLoading,
     isInvestigationsLoading,
     isInspectionsLoading,
-    isLoading: isCaseFileLoading || isInvestigationsLoading || isInspectionsLoading,
+    isLoading: isCaseFileLoading || isInvestigationsLoading || isInspectionsLoading || isComplaintsLoading,
   };
 };
