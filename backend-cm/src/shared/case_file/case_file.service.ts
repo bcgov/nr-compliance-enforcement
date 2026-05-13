@@ -17,6 +17,8 @@ import { EventCreateInput } from "../../shared/event/dto/event";
 import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../../common/nats_constants";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { generateNextCaseIdentifier } from "src/common/sequence.utility";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 @Injectable()
 export class CaseFileService {
@@ -56,10 +58,15 @@ export class CaseFileService {
       },
     });
 
+    if (!prismaCaseFile) {
+      throw new UnauthorizedAccessException("You do not have access to this case file.");
+    }
+
     try {
       return this.mapper.map<case_file, CaseFile>(prismaCaseFile as case_file, "case_file", "CaseFile");
     } catch (error) {
       this.logger.error("Error mapping case file:", error);
+      throw error;
     }
   }
 
@@ -123,26 +130,28 @@ export class CaseFileService {
   async create(input: CaseFileCreateInput): Promise<CaseFile> {
     const generatedName = await generateNextCaseIdentifier(this.prisma);
 
-    const caseFile = await this.prisma.case_file.create({
-      data: {
-        lead_agency: input.leadAgency,
-        case_status: input.caseStatus,
-        description: input.description,
-        name: generatedName,
-        opened_utc_timestamp: new Date(),
-        create_user_id: this.user.getIdirUsername(),
-        created_by_app_user_guid: input.createdByAppUserGuid,
-      },
-      include: {
-        agency_code: true,
-        case_status_code: true,
-        case_activity: {
-          include: {
-            case_activity_type_code: true,
+    const caseFile = await withRlsTransaction(this.prisma, async (db) =>
+      db.case_file.create({
+        data: {
+          lead_agency: input.leadAgency,
+          case_status: input.caseStatus,
+          description: input.description,
+          name: generatedName,
+          opened_utc_timestamp: new Date(),
+          create_user_id: this.user.getIdirUsername(),
+          created_by_app_user_guid: input.createdByAppUserGuid,
+        },
+        include: {
+          agency_code: true,
+          case_status_code: true,
+          case_activity: {
+            include: {
+              case_activity_type_code: true,
+            },
           },
         },
-      },
-    });
+      }),
+    );
     const event: EventCreateInput = {
       eventVerbTypeCode: "OPENED",
       sourceId: caseFile.case_file_guid,

@@ -4,6 +4,10 @@ import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
+import {
+  UnauthorizedAccessException,
+  UNAUTHORIZED_ERROR_CODE,
+} from "../../common/exceptions/unauthorized-access.exception";
 import { InspectionFilters, CreateInspectionInput, UpdateInspectionInput } from "./dto/inspection";
 import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
@@ -19,6 +23,9 @@ export class InspectionResolver {
     try {
       return await this.inspectionService.findOne(inspectionGuid);
     } catch (error) {
+      if (error instanceof UnauthorizedAccessException) {
+        throw new GraphQLError(error.message, { extensions: { code: UNAUTHORIZED_ERROR_CODE } });
+      }
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from inspection schema", {
         extensions: {

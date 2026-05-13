@@ -5,6 +5,8 @@ import { ActivityNote, ActivityNoteInput } from "./dto/activity_note";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
 import { activity_note } from "prisma/investigation/generated/activity_note";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 @Injectable()
 export class ActivityNoteService {
@@ -24,7 +26,7 @@ export class ActivityNoteService {
       },
     });
     if (!prismaActivityNote) {
-      throw new Error(`Activity note with guid ${activityNoteGuid} not found`);
+      throw new UnauthorizedAccessException("You do not have access to this activity note.");
     }
 
     try {
@@ -87,27 +89,28 @@ export class ActivityNoteService {
 
   async save(input: ActivityNoteInput): Promise<ActivityNote> {
     let result;
-    if (input.activityNoteGuid) {
-      //Update existing activity note
-      result = await this.prisma.activity_note.update({
-        where: { activity_note_guid: input.activityNoteGuid },
-        data: {
-          investigation_guid: input.investigationGuid,
-          content_json: JSON.parse(input.contentJson),
-          content_text: input.contentText,
-          actioned_utc_time: input.actionedTime,
-          actioned_utc_date: input.actionedDate,
-          reported_utc_timestamp: input.reportedTimestamp,
-          actioned_app_user_guid_ref: input.actionedAppUserGuidRef,
-          reported_app_user_guid_ref: input.reportedAppUserGuidRef,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        },
-      });
-    } else {
-      // Create new activity note
-      try {
-        result = await this.prisma.activity_note.create({
+    try {
+      result = await withRlsTransaction(this.prisma, async (db) => {
+        if (input.activityNoteGuid) {
+          //Update existing activity note
+          return await db.activity_note.update({
+            where: { activity_note_guid: input.activityNoteGuid },
+            data: {
+              investigation_guid: input.investigationGuid,
+              content_json: JSON.parse(input.contentJson),
+              content_text: input.contentText,
+              actioned_utc_time: input.actionedTime,
+              actioned_utc_date: input.actionedDate,
+              reported_utc_timestamp: input.reportedTimestamp,
+              actioned_app_user_guid_ref: input.actionedAppUserGuidRef,
+              reported_app_user_guid_ref: input.reportedAppUserGuidRef,
+              create_user_id: this.user.getIdirUsername(),
+              create_utc_timestamp: new Date(),
+            },
+          });
+        }
+        // Create new activity note
+        return await db.activity_note.create({
           data: {
             investigation_guid: input.investigationGuid,
             task_guid: input.taskGuid,
@@ -126,10 +129,10 @@ export class ActivityNoteService {
             update_utc_timestamp: new Date(),
           },
         });
-      } catch (error) {
-        this.logger.error("Error creating Activity Note:", error);
-        throw error;
-      }
+      });
+    } catch (error) {
+      this.logger.error("Error saving Activity Note:", error);
+      throw error;
     }
 
     try {
@@ -148,13 +151,15 @@ export class ActivityNoteService {
   async delete(activityNoteGuid: string): Promise<boolean> {
     try {
       // Soft delete by setting active_ind to false
-      await this.prisma.activity_note.update({
-        where: { activity_note_guid: activityNoteGuid },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.activity_note.update({
+          where: { activity_note_guid: activityNoteGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
       return true;
     } catch (error) {

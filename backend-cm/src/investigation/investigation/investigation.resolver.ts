@@ -5,6 +5,10 @@ import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import {
+  UnauthorizedAccessException,
+  UNAUTHORIZED_ERROR_CODE,
+} from "../../common/exceptions/unauthorized-access.exception";
+import {
   CreateInvestigationInput,
   UpdateInvestigationInput,
   InvestigationFilters,
@@ -22,6 +26,9 @@ export class InvestigationResolver {
     try {
       return await this.investigationService.findOne(investigationGuid);
     } catch (error) {
+      if (error instanceof UnauthorizedAccessException) {
+        throw new GraphQLError(error.message, { extensions: { code: UNAUTHORIZED_ERROR_CODE } });
+      }
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from investigation schema", {
         extensions: {

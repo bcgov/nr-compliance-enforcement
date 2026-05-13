@@ -8,6 +8,8 @@ import {
   EnforcementAction,
   UpdateEnforcementActionInput,
 } from "src/investigation/enforcement_action/dto/enforcement_action";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 @Injectable()
 export class EnforcementActionService {
@@ -73,6 +75,10 @@ export class EnforcementActionService {
       },
     });
 
+    if (!prismaEnforcementAction) {
+      throw new UnauthorizedAccessException("You do not have access to this enforcement action.");
+    }
+
     return this.mapper.map(prismaEnforcementAction, "enforcement_action", "EnforcementAction");
   }
 
@@ -128,8 +134,8 @@ export class EnforcementActionService {
 
   async update(input: UpdateEnforcementActionInput): Promise<EnforcementAction> {
     try {
-      await this.prisma.$transaction(async (tx) => {
-        await tx.enforcement_action.update({
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.enforcement_action.update({
           where: {
             enforcement_action_guid: input.enforcementActionIdentifier,
           },
@@ -146,7 +152,7 @@ export class EnforcementActionService {
         const isViolationTicket = input.ticketOutcomeCode !== undefined && input.ticketAmount !== undefined;
 
         if (isViolationTicket) {
-          const existingTicket = await tx.ticket.findFirst({
+          const existingTicket = await db.ticket.findFirst({
             where: {
               enforcement_action_guid: input.enforcementActionIdentifier,
               active_ind: true,
@@ -154,7 +160,7 @@ export class EnforcementActionService {
           });
 
           if (existingTicket) {
-            await tx.ticket.update({
+            await db.ticket.update({
               where: { ticket_guid: existingTicket.ticket_guid },
               data: {
                 ticket_outcome_code: input.ticketOutcomeCode,
@@ -166,7 +172,7 @@ export class EnforcementActionService {
               },
             });
           } else {
-            await tx.ticket.create({
+            await db.ticket.create({
               data: {
                 enforcement_action_guid: input.enforcementActionIdentifier,
                 ticket_outcome_code: input.ticketOutcomeCode,
@@ -181,7 +187,7 @@ export class EnforcementActionService {
           }
         } else {
           // Soft delete any existing ticket if switching to non-ticket type
-          await tx.ticket.updateMany({
+          await db.ticket.updateMany({
             where: {
               enforcement_action_guid: input.enforcementActionIdentifier,
               active_ind: true,
@@ -204,9 +210,9 @@ export class EnforcementActionService {
 
   async remove(enforcementActionIdentifier: string): Promise<EnforcementAction> {
     try {
-      await this.prisma.$transaction(async (tx) => {
+      await withRlsTransaction(this.prisma, async (db) => {
         // Soft delete any associated ticket first
-        await tx.ticket.updateMany({
+        await db.ticket.updateMany({
           where: {
             enforcement_action_guid: enforcementActionIdentifier,
             active_ind: true,
@@ -218,7 +224,7 @@ export class EnforcementActionService {
           },
         });
 
-        await tx.enforcement_action.update({
+        await db.enforcement_action.update({
           where: {
             enforcement_action_guid: enforcementActionIdentifier,
           },

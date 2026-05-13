@@ -5,6 +5,10 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { CaseFileService } from "./case_file.service";
+import {
+  UnauthorizedAccessException,
+  UNAUTHORIZED_ERROR_CODE,
+} from "../../common/exceptions/unauthorized-access.exception";
 import { CaseFileFilters, CaseFileCreateInput, CaseFileUpdateInput } from "./dto/case_file";
 
 @UseGuards(JwtRoleGuard)
@@ -19,6 +23,9 @@ export class CaseFileResolver {
     try {
       return await this.caseFileService.findOne(id);
     } catch (error) {
+      if (error instanceof UnauthorizedAccessException) {
+        throw new GraphQLError(error.message, { extensions: { code: UNAUTHORIZED_ERROR_CODE } });
+      }
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from Shared schema", {
         extensions: {

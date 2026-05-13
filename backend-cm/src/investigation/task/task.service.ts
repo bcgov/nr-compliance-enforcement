@@ -5,6 +5,8 @@ import { Mapper } from "@automapper/core";
 import { task } from "../../../prisma/investigation/generated/task";
 import { CreateUpdateTaskInput, Task } from "./dto/task";
 import { UserService } from "../../common/user.service";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 @Injectable()
 export class TaskService {
@@ -78,6 +80,10 @@ export class TaskService {
       },
     });
 
+    if (!prismaTask) {
+      throw new UnauthorizedAccessException("You do not have access to this task.");
+    }
+
     return this.mapper.map<task, Task>(prismaTask as task, "task", "Task");
   }
 
@@ -88,9 +94,9 @@ export class TaskService {
     // Manual Concurrency to handle race conditions as we don't have a broader concurrency strategy in place
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const task = await this.prisma.$transaction(async (tx) => {
+        const task = await withRlsTransaction(this.prisma, async (db) => {
           // Get the highest task number
-          const highestTask = await tx.task.findFirst({
+          const highestTask = await db.task.findFirst({
             where: {
               investigation_guid: taskInput.investigationIdentifier,
             },
@@ -105,7 +111,7 @@ export class TaskService {
           // Generate next task number (start at 1 if no tasks exist)
           const nextTaskNumber = highestTask ? highestTask.task_number + 1 : 1;
 
-          return await tx.task.create({
+          return await db.task.create({
             data: {
               investigation_guid: taskInput.investigationIdentifier,
               task_type_code: taskInput.taskTypeCode || null,
@@ -145,18 +151,20 @@ export class TaskService {
 
   async remove(taskIdentifier: string): Promise<Task> {
     try {
-      await this.prisma.task.update({
-        where: {
-          task_guid: taskIdentifier,
-        },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.task.update({
+          where: {
+            task_guid: taskIdentifier,
+          },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
     } catch (error) {
-      this.logger.error("Error removing contravention:", error);
+      this.logger.error("Error removing task:", error);
       throw error;
     }
     return await this.findOne(taskIdentifier);
@@ -164,28 +172,30 @@ export class TaskService {
 
   async update(taskInput: CreateUpdateTaskInput): Promise<Task> {
     try {
-      const task = await this.prisma.task.update({
-        where: {
-          task_guid: taskInput.taskIdentifier,
-        },
-        data: {
-          task_type_code: taskInput.taskTypeCode,
-          task_status_code: taskInput.taskStatusCode,
-          assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
-          app_update_user_guid_ref: taskInput.appUserIdentifier,
-          app_update_utc_timestamp: new Date(),
-          description: taskInput.description,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-          task_category_type_code: taskInput.taskCategoryTypeCode,
-          remarks: taskInput.remarks,
-          due_date: taskInput.dueDate,
-        },
+      const task = await withRlsTransaction(this.prisma, async (db) => {
+        return await db.task.update({
+          where: {
+            task_guid: taskInput.taskIdentifier,
+          },
+          data: {
+            task_type_code: taskInput.taskTypeCode,
+            task_status_code: taskInput.taskStatusCode,
+            assigned_app_user_guid_ref: taskInput.assignedUserIdentifier,
+            app_update_user_guid_ref: taskInput.appUserIdentifier,
+            app_update_utc_timestamp: new Date(),
+            description: taskInput.description,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+            task_category_type_code: taskInput.taskCategoryTypeCode,
+            remarks: taskInput.remarks,
+            due_date: taskInput.dueDate,
+          },
+        });
       });
 
       return await this.findOne(task.task_guid);
     } catch (error) {
-      this.logger.error("Error adding task:", error);
+      this.logger.error("Error updating task:", error);
       throw error;
     }
   }
