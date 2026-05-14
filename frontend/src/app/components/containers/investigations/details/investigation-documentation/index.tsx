@@ -12,6 +12,7 @@ import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { useInvestigationAttachments, Attachment } from "./hooks/use-investigation-attachments";
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 
 type Props = {
   investigationGuid: string;
@@ -102,10 +103,16 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
         folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
 
+      const onProgress = createDownloadProgressHandler(toastDownloadInfo);
+
       await dispatch(
-        bulkDownload(investigationGuid, attachmentsWithFolder, `Investigation_${investigationName}_Attachments.zip`, [
-          csvFile,
-        ]),
+        bulkDownload(
+          investigationGuid,
+          attachmentsWithFolder,
+          `Investigation_${investigationName}_Attachments.zip`,
+          [csvFile],
+          onProgress,
+        ),
       );
     } catch (error) {
       console.error("Bulk download error:", error);

@@ -10,7 +10,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import { ExportTaskInput } from "@/app/types/api-params/export-task-input";
 import { fetchAttachmentsWithMetadata } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
-import { bulkDownload, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
+import { bulkDownload, BulkDownloadProgressCallback, FileWithPresignedUrl } from "@/app/store/reducers/bulk-download";
 
 export const generateExportComplaintInputParams = (
   id: string,
@@ -159,6 +159,7 @@ export const exportComplaintWithAttachments =
     complainantAttachments: COMSObject[],
     outcomeAttachments: COMSObject[],
     forAgency?: string,
+    onProgress?: BulkDownloadProgressCallback,
   ): AppThunk<Promise<void>> =>
   async (dispatch) => {
     let pdfObjectUrl: string | undefined;
@@ -199,9 +200,13 @@ export const exportComplaintWithAttachments =
       const zipFilename = `Complaint_${id}.zip`;
 
       await dispatch(
-        bulkDownload(downloadId, [...taggedComplainantAttachments, ...taggedOutcomeAttachments], zipFilename, [
-          pdfFile,
-        ]),
+        bulkDownload(
+          downloadId,
+          [...taggedComplainantAttachments, ...taggedOutcomeAttachments],
+          zipFilename,
+          [pdfFile],
+          onProgress,
+        ),
       );
     } catch (error) {
       console.error("Error exporting complaint with attachments:", error);

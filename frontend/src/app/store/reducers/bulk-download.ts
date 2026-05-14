@@ -67,6 +67,18 @@ export interface FileWithPresignedUrl {
   folder?: string;
 }
 
+export interface BulkDownloadProgressEvent {
+  fileIndex: number;
+  fileCount: number;
+  bytesDownloaded: number;
+  totalBytes: number;
+  fileName: string;
+  retryAttempt?: number;
+  phase: "downloading" | "finalizing";
+}
+
+export type BulkDownloadProgressCallback = (event: BulkDownloadProgressEvent) => void;
+
 export const configureZipJs = () => {
   zip.configure({
     useWebWorkers: true,
@@ -91,6 +103,7 @@ export const bulkDownload =
     attachments: COMSObject[],
     zipFilename: string,
     additionalFiles?: FileWithPresignedUrl[],
+    onProgress?: BulkDownloadProgressCallback,
   ): AppThunk<Promise<void>> =>
   async (dispatch, getState) => {
     const isBulkDownloadInProgress = selectIsBulkDownloadInProgress(getState());
@@ -116,7 +129,7 @@ export const bulkDownload =
       }
 
       // Start download
-      await bulkDownloadWithZipJs(attachments, authToken, zipFilename, dispatch, additionalFiles);
+      await bulkDownloadWithZipJs(attachments, authToken, zipFilename, dispatch, additionalFiles, onProgress);
     } catch (error) {
       console.error("Bulk download error:", error);
 
@@ -152,6 +165,7 @@ async function bulkDownloadWithZipJs(
   zipFilename: string,
   dispatch?: any,
   additionalFiles?: FileWithPresignedUrl[],
+  onProgress?: BulkDownloadProgressCallback,
 ): Promise<void> {
   // Get presigned URLs for all files concurrently
   const urlPromises = attachments.map(async (attachment, index) => {
@@ -201,13 +215,17 @@ async function bulkDownloadWithZipJs(
   files = [...files, ...additionalFileObjects];
 
   //Create ZIP using zip.js
-  await createZipWithZipJs(files, zipFilename);
+  await createZipWithZipJs(files, zipFilename, onProgress);
 }
 
 /**
  * Create ZIP file using zip.js
  */
-async function createZipWithZipJs(files: FileWithPresignedUrl[], zipFilename: string): Promise<void> {
+async function createZipWithZipJs(
+  files: FileWithPresignedUrl[],
+  zipFilename: string,
+  onProgress?: BulkDownloadProgressCallback,
+): Promise<void> {
   // Create ZIP writer
   const zipWriter = new zip.ZipWriter(new zip.BlobWriter("application/zip"), {
     bufferedWrite: true,
@@ -219,14 +237,35 @@ async function createZipWithZipJs(files: FileWithPresignedUrl[], zipFilename: st
   let totalBytesProcessed = 0;
   const failedFileNames: string[] = [];
 
+  const totalBytes = files.reduce((sum, f) => sum + (f.size || 0), 0);
+  let completedBytes = 0;
+
   // Main processing loop
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
+    const fileSize = file.size || 0;
+
+    const emitFileProgress = (loaded: number, retryAttempt?: number) => {
+      const cappedLoaded = fileSize > 0 ? Math.min(loaded, fileSize) : loaded;
+      onProgress?.({
+        fileIndex: i,
+        fileCount: files.length,
+        bytesDownloaded: completedBytes + cappedLoaded,
+        totalBytes,
+        fileName: file.name,
+        retryAttempt,
+        phase: "downloading",
+      });
+    };
+
+    // Emit initial 0% for this file so the UI shows "File X of N" even before the first chunk
+    emitFileProgress(0);
 
     try {
-      const result = await processSingleFile(file, zipWriter);
+      const result = await processSingleFile(file, zipWriter, emitFileProgress);
       completedFiles++;
       totalBytesProcessed += result.bytesProcessed;
+      completedBytes += fileSize > 0 ? fileSize : result.bytesProcessed;
 
       // Pause briefly between files to allow memory cleanup
       if (i + 1 < files.length) {
@@ -235,6 +274,7 @@ async function createZipWithZipJs(files: FileWithPresignedUrl[], zipFilename: st
     } catch (error) {
       failedFiles++;
       failedFileNames.push(file.name);
+      completedBytes += fileSize;
 
       console.error(`\nFAILED: ${file.name}`);
       console.error(`Final error: ${error instanceof Error ? error.message : String(error)}`);
@@ -257,6 +297,16 @@ async function createZipWithZipJs(files: FileWithPresignedUrl[], zipFilename: st
 
   // Summary
   showCompletionSummary(completedFiles, failedFiles, files.length, failedFileNames);
+
+  // Signal that downloads are complete and we are now finalizing the zip
+  onProgress?.({
+    fileIndex: Math.max(files.length - 1, 0),
+    fileCount: files.length,
+    bytesDownloaded: totalBytes,
+    totalBytes,
+    fileName: "",
+    phase: "finalizing",
+  });
 
   // Finalize zip
   const zipBlob = await zipWriter.close();
@@ -304,10 +354,15 @@ function logMemory() {
 
 async function downloadFileWithRetry(
   file: FileWithPresignedUrl,
+  onFileProgress?: (loaded: number, retryAttempt?: number) => void,
 ): Promise<{ success: boolean; blob?: Blob; error?: Error; attempts: number }> {
   const result = await withRetry(
     async (attempt) => {
       const attemptPrefix = attempt > 1 ? `[Retry ${attempt - 1}/${CONFIG.MAX_RETRIES - 1}]` : "  ";
+      const retryAttempt = attempt > 1 ? attempt - 1 : undefined;
+
+      // Reset per-file progress to 0 at the start of each attempt
+      onFileProgress?.(0, retryAttempt);
 
       // Check available memory before download
       if (attempt > 1) {
@@ -322,7 +377,7 @@ async function downloadFileWithRetry(
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const blob = await response.blob();
+      const blob = await readResponseWithProgress(response, onFileProgress, retryAttempt);
       validateBlobSize(blob, file, attemptPrefix);
 
       return blob;
@@ -341,6 +396,43 @@ async function downloadFileWithRetry(
 
   console.error(`All ${CONFIG.MAX_RETRIES} attempts failed for ${file.name}`);
   return { success: false, error: result.error, attempts: result.attempts };
+}
+
+async function readResponseWithProgress(
+  response: Response,
+  onFileProgress?: (loaded: number, retryAttempt?: number) => void,
+  retryAttempt?: number,
+): Promise<Blob> {
+  const contentType = response.headers.get("content-type") || "application/octet-stream";
+
+  // If we cannot stream (no body or no progress callback), fall back to response.blob()
+  if (!onFileProgress || !response.body || typeof (response.body as any).getReader !== "function") {
+    return await response.blob();
+  }
+
+  const reader = (response.body as ReadableStream<Uint8Array>).getReader();
+  const chunks: BlobPart[] = [];
+  let loaded = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) {
+        chunks.push(value as BlobPart);
+        loaded += value.length;
+        onFileProgress(loaded, retryAttempt);
+      }
+    }
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {
+      // Ignore — reader may already be released
+    }
+  }
+
+  return new Blob(chunks, { type: contentType });
 }
 
 function validateBlobSize(blob: Blob, file: FileWithPresignedUrl, attemptPrefix: string): void {
@@ -377,9 +469,10 @@ async function checkMemoryBeforeDownload(
 async function processSingleFile(
   file: FileWithPresignedUrl,
   zipWriter: any,
+  onFileProgress?: (loaded: number, retryAttempt?: number) => void,
 ): Promise<{ success: boolean; bytesProcessed: number }> {
   // Download with retry
-  const downloadResult = await downloadFileWithRetry(file);
+  const downloadResult = await downloadFileWithRetry(file, onFileProgress);
 
   if (!downloadResult.success || !downloadResult.blob) {
     throw downloadResult.error || new Error("Download failed");
