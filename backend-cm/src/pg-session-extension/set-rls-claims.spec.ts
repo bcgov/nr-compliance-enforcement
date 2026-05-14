@@ -5,7 +5,7 @@ describe("setRlsClaims", () => {
 
   it("does nothing when there is no user", async () => {
     const tx = makeTx();
-    await setRlsClaims(tx, undefined);
+    await setRlsClaims(tx);
     expect(tx.$executeRawUnsafe).not.toHaveBeenCalled();
   });
 
