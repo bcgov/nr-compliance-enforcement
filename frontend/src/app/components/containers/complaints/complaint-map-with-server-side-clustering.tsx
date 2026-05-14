@@ -236,11 +236,11 @@ export const ComplaintMapWithServerSideClustering: FC<Props> = ({ type, searchQu
           const hasMapped = (response.mappedCount ?? 0) > 0;
           const hasUnmapped = (response.unmappedCount ?? 0) > 0;
           setNoResults(!hasMapped && !hasUnmapped);
+          if (response.zoom && response.center) {
+            setDefaultClusterView({ zoom: response.zoom, center: response.center });
+          }
         }
         response.clusters && setClusters(response.clusters);
-        if (response.zoom && response.center) {
-          setDefaultClusterView({ zoom: response.zoom, center: response.center });
-        }
       }
       setLoadingMapData(false);
     },

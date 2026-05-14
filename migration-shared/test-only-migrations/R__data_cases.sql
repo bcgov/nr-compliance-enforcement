@@ -1,15 +1,16 @@
--- Create case files for the investigations to be added to
-insert into
-  shared.case_file (
-    case_file_guid,
-    lead_agency,
-    case_status,
-    opened_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp,
-    name
-  )
-values
+-- -- Create case files for the investigations and inspections to be added to
+
+INSERT INTO shared.case_file (
+  case_file_guid,
+  lead_agency,
+  case_status,
+  opened_utc_timestamp,
+  create_user_id,
+  create_utc_timestamp,
+  name,
+  description
+)
+VALUES
   (
     '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
     'COS',
@@ -17,37 +18,516 @@ values
     now (),
     'system',
     now (),
-    'CASE1'
+    'CASE1',
+    'Test case 1.'
   ),
   (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ef',
+    'a2000000-0000-4000-a000-000000000002',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
-    'CASE2'
+    'CASE2',
+    'Test case 2.'
   ),
   (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+    'a2000000-0000-4000-a000-000000000003',
     'COS',
     'OPEN',
     now (),
     'system',
     now (),
-    'CASE3'
-  ) on conflict do nothing;
-
--- Add the investigations to the cases
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
+    'CASE3',
+    'Test case 3.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000004',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE4',
+    'Test case 4.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000005',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE5',
+    'Test case 5.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000006',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE6',
+    'Test case 6.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000007',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE7',
+    'Test case 7.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000008',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE8',
+    'Test case 8.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000009',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE9',
+    'Test case 9.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000a',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE10',
+    'Test case 10.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000b',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE11',
+    'Test case 11.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000c',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE12',
+    'Test case 12.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000d',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE13',
+    'Test case 13.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000e',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE14',
+    'Test case 14.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000000f',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE15',
+    'Test case 15.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000010',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE16',
+    'Test case 16.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000011',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE17',
+    'Test case 17.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000012',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE18',
+    'Test case 18.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000013',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE19',
+    'Test case 19.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000014',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE20',
+    'Test case 20.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000015',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE21',
+    'Test case 21.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000016',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE22',
+    'Test case 22.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000017',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE23',
+    'Test case 23.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000018',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE24',
+    'Test case 24.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000019',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE25',
+    'Test case 25.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001a',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE26',
+    'Test case 26.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001b',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE27',
+    'Test case 27.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001c',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE28',
+    'Test case 28.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001d',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE29',
+    'Test case 29.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001e',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE30',
+    'Test case 30.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000001f',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE31',
+    'Test case 31.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000020',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE32',
+    'Test case 32.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000021',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE33',
+    'Test case 33.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000022',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE34',
+    'Test case 34.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000023',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE35',
+    'Test case 35.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000024',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE36',
+    'Test case 36.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000025',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE37',
+    'Test case 37.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000026',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE38',
+    'Test case 38.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000027',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE39',
+    'Test case 39.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000028',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE40',
+    'Test case 40.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000029',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE41',
+    'Test case 41.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002a',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE42',
+    'Test case 42.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002b',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE43',
+    'Test case 43.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002c',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE44',
+    'Test case 44.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002d',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE45',
+    'Test case 45.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002e',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE46',
+    'Test case 46.'
+  ),
+  (
+    'a2000000-0000-4000-a000-00000000002f',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE47',
+    'Test case 47.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000030',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE48',
+    'Test case 48.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000031',
+    'COS',
+    'CLOSED',
+    now (),
+    'system',
+    now (),
+    'CASE49',
+    'Test case 49.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000032',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE50',
+    'Test case 50.'
+  ),
+  (
+    'a2000000-0000-4000-a000-000000000033',
+    'COS',
+    'OPEN',
+    now (),
+    'system',
+    now (),
+    'CASE51',
+    'Test case 51.'
   )
+ON CONFLICT DO NOTHING;
+
+-- Link each investigation and inspection to its paired case (same ordinal).
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
   '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
   'INVSTGTN',
@@ -55,466 +535,1623 @@ SELECT
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f200'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f200'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ef',
+  'a2000000-0000-4000-a000-000000000002',
   'INVSTGTN',
   '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f201'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f201'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'a2000000-0000-4000-a000-000000000003',
   'INVSTGTN',
   '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f202'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f202'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'a2000000-0000-4000-a000-000000000004',
   'INVSTGTN',
   '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f203'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '66dd3a1f-4bc5-4758-a986-a664b8d8f203'
+);
 
--- Create case files for the inspections to be added to
-insert into
-  shared.case_file (
-    case_file_guid,
-    lead_agency,
-    case_status,
-    opened_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp,
-    name
-  )
-values
-  -- New values
-  (
-    'd61b99d1-20dd-44e7-a864-6e28c9b3585a',
-    'COS',
-    'OPEN',
-    now (),
-    'system',
-    now (),
-    'CASE4'
-  ),
-  (
-    'd61b99d1-20dd-44e7-a864-6e28c9b3585b',
-    'COS',
-    'OPEN',
-    now (),
-    'system',
-    now (),
-    'CASE5'
-  ),
-  -- Existing case, redundant insert to avoid ordering issue
-  (
-    '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
-    'COS',
-    'OPEN',
-    now (),
-    'system',
-    now (),
-    'CASE6'
-  ) on conflict do nothing;
-
--- Add the inspections to the cases
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  'd61b99d1-20dd-44e7-a864-6e28c9b3585a',
+  'a2000000-0000-4000-a000-000000000005',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000005',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000005'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000006',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000006',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000006'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000007',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000007',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000007'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000008',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000008',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000008'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000009',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000009',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000009'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000a',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000b',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000c',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000d',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000e',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000f',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000000f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000000f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000010',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000010',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000010'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000011',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000011',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000011'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000012',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000012',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000012'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000013',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000013',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000013'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000014',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000014',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000014'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000015',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000015',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000015'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000016',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000016',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000016'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000017',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000017',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000017'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000018',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000018',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000018'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000019',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000019',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000019'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001a',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001b',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001c',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001d',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001e',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001f',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000001f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000001f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000020',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000020',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000020'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000021',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000021',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000021'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000022',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000022',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000022'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000023',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000023',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000023'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000024',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000024',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000024'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000025',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000025',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000025'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000026',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000026',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000026'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000027',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000027',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000027'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000028',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000028',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000028'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000029',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000029',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000029'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002a',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002b',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002c',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002d',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002e',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002f',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-00000000002f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-00000000002f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000030',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000030',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000030'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000031',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000031',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000031'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000032',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000032',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000032'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000033',
+  'INVSTGTN',
+  'b2000000-0000-4000-a000-000000000033',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'b2000000-0000-4000-a000-000000000033'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
   'INSPECTION',
   '8116f74c-19d2-4903-9dfc-d5607c1fb900',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb900'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb900'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  'd61b99d1-20dd-44e7-a864-6e28c9b3585b',
+  'a2000000-0000-4000-a000-000000000002',
   'INSPECTION',
   '8116f74c-19d2-4903-9dfc-d5607c1fb901',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb901'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb901'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'a2000000-0000-4000-a000-000000000003',
   'INSPECTION',
   '8116f74c-19d2-4903-9dfc-d5607c1fb902',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb902'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb902'
+);
 
-INSERT INTO
-  shared.case_activity (
-    case_file_guid,
-    activity_type,
-    activity_identifier_ref,
-    effective_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp
-  )
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
 SELECT
-  '77dd3a1f-4bc5-4758-a986-a664b8d8f2ea',
+  'a2000000-0000-4000-a000-000000000004',
   'INSPECTION',
   '8116f74c-19d2-4903-9dfc-d5607c1fb903',
   now (),
   'system',
   now ()
-WHERE
-  NOT EXISTS (
-    SELECT
-      1
-    FROM
-      shared.case_activity
-    WHERE
-      activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb903'
-  );
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = '8116f74c-19d2-4903-9dfc-d5607c1fb903'
+);
 
--- Additional cases for e2e tests
-insert into
-  shared.case_file (
-    case_file_guid,
-    lead_agency,
-    case_status,
-    opened_utc_timestamp,
-    create_user_id,
-    create_utc_timestamp,
-    name
-  )
-values
-  (
-    'a0000000-0000-0000-0000-000000000007',
-    'COS',
-    'CLOSED',
-    now () - interval '1 day',
-    'system',
-    now (),
-    'CASE7'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000008',
-    'COS',
-    'OPEN',
-    now () - interval '2 days',
-    'system',
-    now (),
-    'CASE8'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000009',
-    'COS',
-    'CLOSED',
-    now () - interval '3 days',
-    'system',
-    now (),
-    'CASE9'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000010',
-    'COS',
-    'OPEN',
-    now () - interval '4 days',
-    'system',
-    now (),
-    'CASE10'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000011',
-    'COS',
-    'OPEN',
-    now () - interval '5 days',
-    'system',
-    now (),
-    'CASE11'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000012',
-    'COS',
-    'CLOSED',
-    now () - interval '6 days',
-    'system',
-    now (),
-    'CASE12'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000013',
-    'COS',
-    'OPEN',
-    now () - interval '7 days',
-    'system',
-    now (),
-    'CASE13'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000014',
-    'COS',
-    'OPEN',
-    now () - interval '8 days',
-    'system',
-    now (),
-    'CASE14'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000015',
-    'COS',
-    'OPEN',
-    now () - interval '9 days',
-    'system',
-    now (),
-    'CASE15'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000016',
-    'COS',
-    'CLOSED',
-    now () - interval '10 days',
-    'system',
-    now (),
-    'CASE16'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000017',
-    'COS',
-    'OPEN',
-    now () - interval '11 days',
-    'system',
-    now (),
-    'CASE17'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000018',
-    'COS',
-    'OPEN',
-    now () - interval '12 days',
-    'system',
-    now (),
-    'CASE18'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000019',
-    'COS',
-    'OPEN',
-    now () - interval '13 days',
-    'system',
-    now (),
-    'CASE19'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000020',
-    'COS',
-    'CLOSED',
-    now () - interval '14 days',
-    'system',
-    now (),
-    'CASE20'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000021',
-    'COS',
-    'OPEN',
-    now () - interval '15 days',
-    'system',
-    now (),
-    'CASE21'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000022',
-    'COS',
-    'OPEN',
-    now () - interval '16 days',
-    'system',
-    now (),
-    'CASE22'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000023',
-    'COS',
-    'OPEN',
-    now () - interval '17 days',
-    'system',
-    now (),
-    'CASE23'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000024',
-    'COS',
-    'CLOSED',
-    now () - interval '18 days',
-    'system',
-    now (),
-    'CASE24'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000025',
-    'COS',
-    'OPEN',
-    now () - interval '19 days',
-    'system',
-    now (),
-    'CASE25'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000026',
-    'COS',
-    'OPEN',
-    now () - interval '20 days',
-    'system',
-    now (),
-    'CASE26'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000027',
-    'COS',
-    'OPEN',
-    now () - interval '21 days',
-    'system',
-    now (),
-    'CASE27'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000028',
-    'COS',
-    'CLOSED',
-    now () - interval '22 days',
-    'system',
-    now (),
-    'CASE28'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000029',
-    'COS',
-    'OPEN',
-    now () - interval '23 days',
-    'system',
-    now (),
-    'CASE29'
-  ),
-  (
-    'a0000000-0000-0000-0000-000000000030',
-    'COS',
-    'OPEN',
-    now () - interval '24 days',
-    'system',
-    now (),
-    'CASE30'
-  ) on conflict do nothing;
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000005',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000005',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000005'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000006',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000006',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000006'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000007',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000007',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000007'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000008',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000008',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000008'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000009',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000009',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000009'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000a',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000b',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000c',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000d',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000e',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000000f',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000000f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000000f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000010',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000010',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000010'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000011',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000011',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000011'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000012',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000012',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000012'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000013',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000013',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000013'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000014',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000014',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000014'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000015',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000015',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000015'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000016',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000016',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000016'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000017',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000017',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000017'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000018',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000018',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000018'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000019',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000019',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000019'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001a',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001b',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001c',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001d',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001e',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000001f',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000001f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000001f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000020',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000020',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000020'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000021',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000021',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000021'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000022',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000022',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000022'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000023',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000023',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000023'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000024',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000024',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000024'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000025',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000025',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000025'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000026',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000026',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000026'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000027',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000027',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000027'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000028',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000028',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000028'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000029',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000029',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000029'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002a',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002a',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002a'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002b',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002b',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002b'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002c',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002c',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002c'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002d',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002d',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002d'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002e',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002e',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002e'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-00000000002f',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-00000000002f',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-00000000002f'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000030',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000030',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000030'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000031',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000031',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000031'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000032',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000032',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000032'
+);
+
+INSERT INTO shared.case_activity (
+  case_file_guid, activity_type, activity_identifier_ref,
+  effective_utc_timestamp, create_user_id, create_utc_timestamp
+)
+SELECT
+  'a2000000-0000-4000-a000-000000000033',
+  'INSPECTION',
+  'c2000000-0000-4000-a000-000000000033',
+  now (),
+  'system',
+  now ()
+WHERE NOT EXISTS (
+  SELECT 1 FROM shared.case_activity
+  WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000033'
+);

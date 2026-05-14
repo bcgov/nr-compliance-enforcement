@@ -29,8 +29,7 @@ export default defineConfig({
     baseURL: baseURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "retain-on-failure",
-    /* attempted fix for blank traces in pipeline */
-    screenshot: "on",
+    screenshot: "only-on-failure",
   },
 
   /* Configure projects for major browsers */

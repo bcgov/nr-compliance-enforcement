@@ -11,10 +11,11 @@ interface Props {
   companies: InvestigationParty[] | InspectionParty[];
   people: InvestigationParty[] | InspectionParty[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
+  onEditParty?: (partyIdentifier: string, partyName: string, partyAssociationRole: string) => void;
   activityType: string;
 }
 
-const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activityType }) => {
+const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEditParty, activityType }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
   const getPartyRoleText = (selected: InvestigationParty | InspectionParty) => {
@@ -57,7 +58,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activi
                   </div>
                   <div className="d-flex align-items-center gap-2">
                     <Badge bg="species-badge comp-species-badge">{getPartyRoleText(party)}</Badge>
-                    {onRemoveParty && (
+                    {(onRemoveParty || onEditParty) && (
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="link"
@@ -66,19 +67,34 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activi
                         >
                           <i className="bi bi-three-dots-vertical" />
                         </Dropdown.Toggle>
-
                         <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() =>
-                              onRemoveParty(
-                                party.partyIdentifier,
-                                `${party.person?.firstName} ${party.person?.lastName}`,
-                              )
-                            }
-                          >
-                            <i className="bi bi-trash me-2" />
-                            {/* */}Remove
-                          </Dropdown.Item>
+                          {onRemoveParty && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                onRemoveParty(
+                                  party.partyIdentifier,
+                                  `${party.person?.firstName} ${party.person?.lastName}`,
+                                )
+                              }
+                            >
+                              <i className="bi bi-trash me-2" />
+                              {/* */}Remove
+                            </Dropdown.Item>
+                          )}
+                          {onEditParty && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                onEditParty(
+                                  party.partyIdentifier,
+                                  `${party.person?.firstName} ${party.person?.lastName}`,
+                                  party.partyAssociationRole ?? "",
+                                )
+                              }
+                            >
+                              <i className="bi bi-pencil me-2" />
+                              {/* */}Edit
+                            </Dropdown.Item>
+                          )}
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
@@ -107,7 +123,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activi
                   </div>
                   <div className="d-flex align-items-center gap-2">
                     <Badge bg="species-badge comp-species-badge">{getPartyRoleText(party)}</Badge>
-                    {onRemoveParty && (
+                    {(onRemoveParty || onEditParty) && (
                       <Dropdown>
                         <Dropdown.Toggle
                           variant="link"
@@ -118,12 +134,28 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, activi
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
-                          >
-                            <i className="bi bi-trash me-2" />
-                            {/* */}Remove
-                          </Dropdown.Item>
+                          {onRemoveParty && (
+                            <Dropdown.Item
+                              onClick={() => onRemoveParty(party.partyIdentifier, party.business?.name || "")}
+                            >
+                              <i className="bi bi-trash me-2" />
+                              {/* */}Remove
+                            </Dropdown.Item>
+                          )}
+                          {onEditParty && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                onEditParty(
+                                  party.partyIdentifier,
+                                  party.business?.name || "",
+                                  party.partyAssociationRole ?? "",
+                                )
+                              }
+                            >
+                              <i className="bi bi-pencil me-2" />
+                              {/* */}Edit
+                            </Dropdown.Item>
+                          )}
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
