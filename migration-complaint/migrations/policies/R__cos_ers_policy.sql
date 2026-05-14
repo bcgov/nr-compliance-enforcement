@@ -33,8 +33,9 @@ CREATE POLICY policy_cos_ers_complaints ON complaint.complaint
          'COS' = ANY(string_to_array(COALESCE(current_setting('jwt.claims.client_roles', true), ''), ','))
         OR
         complaint.complaint_identifier IN (
-        -- Referrer is matched against jwt.claims.agency_code so role names that don't equal the agency_code (CEEB / EPO) 
+        -- Referrer is matched against jwt.claims.agency_code so role names that don't equal the agency_code (CEEB / EPO)
         -- can be supported without hardcoding role names in the policy
+        SELECT cr.complaint_identifier
         FROM complaint.complaint_referral cr
         WHERE cr.referred_by_agency_code_ref = COALESCE(current_setting('jwt.claims.agency_code', true), '')
       )
