@@ -104,9 +104,6 @@ test.describe("Complaint Change Status spec - Details View", () => {
 
     //validate error message
     await expect(page.locator("#outcome-assessment").locator(".section-error-message")).toBeVisible();
-    await expect(async () => {
-      const $error = await page.locator(".section-error-message");
-      expect($error).toHaveText("Complete section before closing the complaint.");
-    }).toPass();
+    await expect(page.locator(".section-error-message")).toHaveText("Complete section before closing the complaint.");
   });
 });

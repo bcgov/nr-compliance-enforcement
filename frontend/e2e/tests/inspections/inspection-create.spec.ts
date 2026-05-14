@@ -55,9 +55,18 @@ test.describe("Inspection Creation", () => {
 
     await selectItemById("community-select", "100 Mile House", page);
 
+    // Wait for the createInspection mutation
+    const createMutationPromise = page.waitForResponse(
+      (response) =>
+        response.url().includes("/graphql") && (response.request().postData()?.includes("CreateInspection") ?? false),
+      { timeout: 15000 },
+    );
+
     const saveButton = page.locator("button", { hasText: /Save|Create/i }).first();
     await expect(saveButton).toBeEnabled({ timeout: 10000 });
     await saveButton.click({ force: true });
+
+    await createMutationPromise;
     await expect(page).toHaveURL(/\/inspection\/[a-f0-9-]+$/i, { timeout: 30000 });
   });
 

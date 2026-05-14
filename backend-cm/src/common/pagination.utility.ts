@@ -89,8 +89,6 @@ export class PaginationUtility {
         throw new Error(`Model ${modelName} not found in Prisma service`);
       }
 
-      const totalCount = await model.count({ where: whereClause });
-
       const findManyOptions: any = {
         where: whereClause,
         skip,
@@ -105,6 +103,7 @@ export class PaginationUtility {
         findManyOptions.orderBy = orderByClause;
       }
 
+      const totalCount = await model.count({ where: whereClause });
       const sourceData = await model.findMany(findManyOptions);
 
       const items = mapper.mapArray<TSource, TDestination>(

@@ -234,7 +234,12 @@ export class AppUserService {
         secretAccessKey: process.env.OBJECTSTORE_SECRET_KEY,
         permCodes: permissions,
       };
-      await put(token, comsUrl, comsPayload);
+      try {
+        await put(token, comsUrl, comsPayload, undefined, { suppressErrorLog: true });
+      } catch (error) {
+        this.logger.error(`Error requesting COMS access: ${(error as Error).message}`);
+        return;
+      }
 
       const secureComsPayload = {
         accessKeyId: process.env.SECURE_OBJECTSTORE_ACCESS_KEY,
@@ -245,7 +250,12 @@ export class AppUserService {
         secretAccessKey: process.env.SECURE_OBJECTSTORE_SECRET_KEY,
         permCodes: permissions,
       };
-      await put(token, comsUrl, secureComsPayload);
+      try {
+        await put(token, comsUrl, secureComsPayload, undefined, { suppressErrorLog: true });
+      } catch (error) {
+        this.logger.error(`Error requesting secure COMS access: ${(error as Error).message}`);
+        return;
+      }
 
       // Update app_user to set coms_enrolled_ind = true
       const updatedAppUser = await updateAppUser(token, app_user_guid, {
@@ -254,7 +264,7 @@ export class AppUserService {
 
       return this.mapAppUserToDto(updatedAppUser);
     } catch (error) {
-      this.logger.error("An error occurred while requesting COMS access.", error);
+      this.logger.error(`An error occurred while requesting COMS access: ${(error as Error).message}`);
     }
   }
 

@@ -521,9 +521,7 @@ export const CreateComplaint: FC = () => {
       setPrimaryPhoneMsg("Invalid Format");
     } else {
       setPrimaryPhoneMsg("");
-
-      const complaint = { ...complaintData, phone1: value } as Complaint;
-      applyComplaintData(complaint);
+      applyComplaintData((prev) => ({ ...(prev as Complaint), phone1: value }) as Complaint);
     }
   };
   const handleSecondaryPhoneChange = (value: string) => {
@@ -534,9 +532,7 @@ export const CreateComplaint: FC = () => {
       setSecondaryPhoneMsg("Invalid Format");
     } else {
       setSecondaryPhoneMsg("");
-
-      const complaint = { ...complaintData, phone2: value } as Complaint;
-      applyComplaintData(complaint);
+      applyComplaintData((prev) => ({ ...(prev as Complaint), phone2: value }) as Complaint);
     }
   };
 
@@ -548,9 +544,7 @@ export const CreateComplaint: FC = () => {
       setAlternatePhoneMsg("Invalid Format");
     } else {
       setAlternatePhoneMsg("");
-
-      const complaint = { ...complaintData, phone3: value } as Complaint;
-      applyComplaintData(complaint);
+      applyComplaintData((prev) => ({ ...(prev as Complaint), phone3: value }) as Complaint);
     }
   };
 
