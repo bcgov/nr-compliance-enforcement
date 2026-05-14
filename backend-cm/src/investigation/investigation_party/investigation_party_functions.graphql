@@ -1,6 +1,11 @@
 type Mutation {
   addPartyToInvestigation(investigationGuid: String!, input: [CreateInvestigationPartyInput]!): Investigation!
   removePartyFromInvestigation(investigationGuid: String!, partyIdentifier: String!): Investigation!
+  editPartyRoleInInvestigation(
+    investigationGuid: String!
+    partyIdentifier: String!
+    partyAssociationRole: String!
+  ): Investigation!
 }
 
 type Query {

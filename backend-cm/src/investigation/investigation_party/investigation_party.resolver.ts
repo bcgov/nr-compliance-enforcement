@@ -60,4 +60,27 @@ export class InvestigationPartyResolver {
       });
     }
   }
+
+  @Mutation("editPartyRoleInInvestigation")
+  @Roles(coreRoles)
+  async editPartyRole(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("partyAssociationRole") partyAssociationRole: string,
+  ) {
+    try {
+      return await this.investigationPartyService.editPartyRole(
+        investigationGuid,
+        partyIdentifier,
+        partyAssociationRole,
+      );
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error editing party role in investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
 }
