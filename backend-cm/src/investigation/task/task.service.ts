@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
@@ -6,8 +6,6 @@ import { task } from "../../../prisma/investigation/generated/task";
 import { CreateUpdateTaskInput, Task } from "./dto/task";
 import { UserService } from "../../common/user.service";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class TaskService {
   constructor(
@@ -81,7 +79,7 @@ export class TaskService {
     });
 
     if (!prismaTask) {
-      throw new UnauthorizedAccessException("You do not have access to this task.");
+      throw new NotFoundException();
     }
 
     return this.mapper.map<task, Task>(prismaTask as task, "task", "Task");

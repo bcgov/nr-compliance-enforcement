@@ -18,12 +18,8 @@ const getClient = () => {
   });
 };
 
-const UNAUTHORIZED_ERROR_CODES = new Set(["UNAUTHORIZED", "FORBIDDEN"]);
-
-const isUnauthorizedGraphqlError = (error: ClientError): boolean =>
-  (error.response?.errors ?? []).some((gqlError) =>
-    UNAUTHORIZED_ERROR_CODES.has(String(gqlError?.extensions?.code ?? "")),
-  );
+const hasGraphqlErrorCode = (error: ClientError, code: string): boolean =>
+  (error.response?.errors ?? []).some((gqlError) => String(gqlError?.extensions?.code ?? "") === code);
 
 // Mirrors the axios auth-error handling in app/common/api.ts so REST and GraphQL behave the same.
 export const graphqlRequest = async (QUERY: any, input = {}, _retry = false): Promise<any> => {
@@ -47,8 +43,14 @@ export const graphqlRequest = async (QUERY: any, input = {}, _retry = false): Pr
     }
 
     // 401 on the retry means the login token was valid but the user truely isn't authorized. Redirect to not-authorized page.
-    if (status === STATUS_CODES.Unauthorized || isUnauthorizedGraphqlError(error)) {
+    if (status === STATUS_CODES.Unauthorized) {
       globalThis.location.href = "/not-authorized";
+      throw error;
+    }
+
+    // Record is hidden by RLS or doesn't exist - both come through as NOT_FOUND.
+    if (status === STATUS_CODES.NotFound || hasGraphqlErrorCode(error, "NOT_FOUND")) {
+      globalThis.location.href = "/not-found";
       throw error;
     }
 

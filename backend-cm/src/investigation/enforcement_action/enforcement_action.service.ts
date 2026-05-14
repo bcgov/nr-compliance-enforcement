@@ -9,8 +9,6 @@ import {
   UpdateEnforcementActionInput,
 } from "src/investigation/enforcement_action/dto/enforcement_action";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class EnforcementActionService {
   constructor(
@@ -74,10 +72,6 @@ export class EnforcementActionService {
         },
       },
     });
-
-    if (!prismaEnforcementAction) {
-      throw new UnauthorizedAccessException("You do not have access to this enforcement action.");
-    }
 
     return this.mapper.map(prismaEnforcementAction, "enforcement_action", "EnforcementAction");
   }

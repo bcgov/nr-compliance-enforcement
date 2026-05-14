@@ -1,5 +1,5 @@
+import { NotFoundException } from "@nestjs/common";
 import { InspectionService } from "./inspection.service";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 describe("InspectionService.findOne", () => {
   const makeService = (findUniqueResult: unknown) => {
@@ -23,17 +23,15 @@ describe("InspectionService.findOne", () => {
     return { service, db, prisma, mapper };
   };
 
-  it("throws UnauthorizedAccessException when the inspection is not visible or does not exist", async () => {
+  it("throws NotFoundException when the inspection is not visible or does not exist", async () => {
     const { service } = makeService(null);
-    await expect(service.findOne("11111111-1111-1111-1111-111111111111")).rejects.toBeInstanceOf(
-      UnauthorizedAccessException,
-    );
+    await expect(service.findOne("11111111-1111-1111-1111-111111111111")).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it("does not reveal whether the record exists", async () => {
     const { service } = makeService(null);
     await expect(service.findOne("11111111-1111-1111-1111-111111111111")).rejects.toMatchObject({
-      message: "You do not have access to this inspection.",
+      message: "Not Found",
     });
   });
 

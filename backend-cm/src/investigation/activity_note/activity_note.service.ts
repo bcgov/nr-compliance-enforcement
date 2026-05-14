@@ -6,8 +6,6 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { UserService } from "../../common/user.service";
 import { activity_note } from "prisma/investigation/generated/activity_note";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class ActivityNoteService {
   constructor(
@@ -26,7 +24,7 @@ export class ActivityNoteService {
       },
     });
     if (!prismaActivityNote) {
-      throw new UnauthorizedAccessException("You do not have access to this activity note.");
+      throw new Error(`Activity note with guid ${activityNoteGuid} not found`);
     }
 
     try {

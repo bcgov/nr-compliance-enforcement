@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
+import { NotFoundException } from "@nestjs/common";
 import { InspectionResolver } from "./inspection.resolver";
 import { InspectionService } from "./inspection.service";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
 
 describe("InspectionResolver.getInspection", () => {
   let resolver: InspectionResolver;
@@ -20,12 +20,11 @@ describe("InspectionResolver.getInspection", () => {
     await expect(resolver.findOne("g1")).resolves.toEqual({ inspectionGuid: "g1" });
   });
 
-  it("maps an UnauthorizedAccessException to a GraphQL error with code UNAUTHORIZED", async () => {
-    service.findOne.mockRejectedValue(new UnauthorizedAccessException("You do not have access to this inspection."));
+  it("maps a NotFoundException to a GraphQL error with code NOT_FOUND", async () => {
+    service.findOne.mockRejectedValue(new NotFoundException());
 
     await expect(resolver.findOne("cross-agency-guid")).rejects.toMatchObject({
-      message: "You do not have access to this inspection.",
-      extensions: { code: "UNAUTHORIZED" },
+      extensions: { code: "NOT_FOUND" },
     });
     await expect(resolver.findOne("cross-agency-guid")).rejects.toBeInstanceOf(GraphQLError);
   });

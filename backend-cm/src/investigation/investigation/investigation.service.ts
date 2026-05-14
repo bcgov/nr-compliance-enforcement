@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
 import {
   CreateInvestigationInput,
@@ -25,8 +25,6 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
@@ -139,7 +137,7 @@ export class InvestigationService {
     });
 
     if (!prismaInvestigation) {
-      throw new UnauthorizedAccessException("You do not have access to this investigation.");
+      throw new NotFoundException();
     }
 
     try {

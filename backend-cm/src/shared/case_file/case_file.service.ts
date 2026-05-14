@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject, forwardRef } from "@nestjs/common";
+import { Injectable, Logger, Inject, forwardRef, NotFoundException } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
@@ -18,8 +18,6 @@ import { ActivityTypeToEventEntity, EVENT_STREAM_NAME, STREAM_TOPICS } from "../
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { generateNextCaseIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class CaseFileService {
   constructor(
@@ -59,7 +57,7 @@ export class CaseFileService {
     });
 
     if (!prismaCaseFile) {
-      throw new UnauthorizedAccessException("You do not have access to this case file.");
+      throw new NotFoundException();
     }
 
     try {

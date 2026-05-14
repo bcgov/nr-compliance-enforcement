@@ -1,5 +1,4 @@
 // Maps the user's Keycloak client_roles to the agency_code the RLS policies use
-
 const ROLE_TO_AGENCY: Record<string, string> = {
   COS: "COS",
   CEEB: "EPO",
@@ -7,23 +6,25 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   NROS: "NROS",
 };
 
-const ROLE_PRIORITY = ["COS", "CEEB", "PARKS", "NROS"];
-const DEFAULT_AGENCY = "NRS";
-
 export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
-  if (!clientRoles) return DEFAULT_AGENCY;
-  const roles = Array.isArray(clientRoles)
-    ? clientRoles
-    : clientRoles
-        .split(",")
-        .map((r) => r.trim())
-        .filter(Boolean);
+  const roles = !clientRoles
+    ? []
+    : Array.isArray(clientRoles)
+      ? clientRoles
+      : clientRoles
+          .split(",")
+          .map((r) => r.trim())
+          .filter(Boolean);
 
-  let agency = DEFAULT_AGENCY;
-  for (const role of ROLE_PRIORITY) {
-    if (roles.includes(role)) {
-      agency = ROLE_TO_AGENCY[role];
-    }
+  const agencies = Object.entries(ROLE_TO_AGENCY)
+    .filter(([role]) => roles.includes(role))
+    .map(([, agency]) => agency);
+
+  if (agencies.length === 0) {
+    throw new Error(`User agency is not configured correctly. No agency role found.`);
   }
-  return agency;
+  if (agencies.length > 1) {
+    throw new Error(`User agency is not configured correctly. Multiple agency roles found.`);
+  }
+  return agencies[0];
 };

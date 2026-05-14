@@ -2,47 +2,47 @@ import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../utils/authConfig";
 import { waitForSpinner } from "../utils/helpers";
 
-// Test that an invalid record is redirected to the not-authorized page. This covers both the case
+// Test that an invalid record is redirected to the not-found page. This covers both the case
 // of a user trying to access a record that doesn't exist at all, and the case of a user trying to
 // access a real record that belongs to another agency and is not returned due to RLS.
 const NONEXISTENT_GUID = "00000000-0000-0000-0000-0000000000aa";
 const OTHER_NONEXISTENT_GUID = "00000000-0000-0000-0000-0000000000bb";
 
-const expectNotAuthorized = async (page: import("@playwright/test").Page, path: string) => {
+const expectNotFound = async (page: import("@playwright/test").Page, path: string) => {
   await page.goto(path, { waitUntil: "commit" });
-  await expect(page).toHaveURL(/\/not-authorized/);
-  await expect(page.getByRole("heading", { name: /not authorized/i })).toBeVisible();
+  await expect(page).toHaveURL(/\/not-found/);
+  await expect(page.getByRole("heading", { name: /could not be found/i })).toBeVisible();
 };
 
-test.describe("Agency scoped access: a record the user cannot see redirects to /not-authorized", () => {
+test.describe("Agency scoped access: a record the user cannot see redirects to /not-found", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test("case file detail", async ({ page }) => {
-    await expectNotAuthorized(page, `/case/${NONEXISTENT_GUID}`);
+    await expectNotFound(page, `/case/${NONEXISTENT_GUID}`);
   });
 
   test("case file detail tab", async ({ page }) => {
-    await expectNotAuthorized(page, `/case/${NONEXISTENT_GUID}/activity`);
+    await expectNotFound(page, `/case/${NONEXISTENT_GUID}/activity`);
   });
 
   test("investigation detail", async ({ page }) => {
-    await expectNotAuthorized(page, `/investigation/${NONEXISTENT_GUID}`);
+    await expectNotFound(page, `/investigation/${NONEXISTENT_GUID}`);
   });
 
   test("investigation detail tab", async ({ page }) => {
-    await expectNotAuthorized(page, `/investigation/${NONEXISTENT_GUID}/tasks`);
+    await expectNotFound(page, `/investigation/${NONEXISTENT_GUID}/tasks`);
   });
 
   test("task within an investigation the user cannot see", async ({ page }) => {
-    await expectNotAuthorized(page, `/investigation/${NONEXISTENT_GUID}/task/${OTHER_NONEXISTENT_GUID}`);
+    await expectNotFound(page, `/investigation/${NONEXISTENT_GUID}/task/${OTHER_NONEXISTENT_GUID}`);
   });
 
   test("inspection detail", async ({ page }) => {
-    await expectNotAuthorized(page, `/inspection/${NONEXISTENT_GUID}`);
+    await expectNotFound(page, `/inspection/${NONEXISTENT_GUID}`);
   });
 
   test("inspection detail tab", async ({ page }) => {
-    await expectNotAuthorized(page, `/inspection/${NONEXISTENT_GUID}/parties`);
+    await expectNotFound(page, `/inspection/${NONEXISTENT_GUID}/parties`);
   });
 });
 
@@ -65,7 +65,7 @@ test.describe("Agency scoped access: Agency-specific record visibility", () => {
     const parksContext = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.PARKS });
     const parksPage = await parksContext.newPage();
     await parksPage.goto(caseHref as string, { waitUntil: "commit" });
-    await expect(parksPage).toHaveURL(/\/not-authorized/);
+    await expect(parksPage).toHaveURL(/\/not-found/);
     await parksContext.close();
   });
 
@@ -112,7 +112,7 @@ test.describe("Agency scoped access: Agency-specific record visibility", () => {
     const parksContext = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.PARKS });
     const parksPage = await parksContext.newPage();
     await parksPage.goto(inspectionHref as string, { waitUntil: "commit" });
-    await expect(parksPage).toHaveURL(/\/not-authorized/);
+    await expect(parksPage).toHaveURL(/\/not-found/);
     await parksContext.close();
   });
 

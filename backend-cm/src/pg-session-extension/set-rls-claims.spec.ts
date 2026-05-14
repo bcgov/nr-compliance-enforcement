@@ -29,16 +29,24 @@ describe("setRlsClaims", () => {
     expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.agency_code = 'EPO'");
   });
 
-  it("defaults to NRS agency_code when no recognized role is present", async () => {
+  it("error when client_roles has no agency", async () => {
     const tx = makeTx();
-    await setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["SECTOR"], exp: 1 });
-    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.agency_code = 'NRS'");
+    await expect(setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["READ ONLY"], exp: 1 })).rejects.toThrow(
+      /User agency is not configured correctly/,
+    );
+  });
+
+  it("error when client_roles has multiple agencies", async () => {
+    const tx = makeTx();
+    await expect(setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["COS", "PARKS"], exp: 1 })).rejects.toThrow(
+      /User agency is not configured correctly/,
+    );
   });
 
   it("joins an array of client_roles with commas", async () => {
     const tx = makeTx();
-    await setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["COS", "PARKS"], exp: 1 });
-    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.client_roles = 'COS,PARKS'");
+    await setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["COS", "READ ONLY"], exp: 1 });
+    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.client_roles = 'COS,READ ONLY'");
   });
 
   it("accepts client_roles as a plain string", async () => {
@@ -55,9 +63,8 @@ describe("setRlsClaims", () => {
 
   it("escapes single quotes in claim values", async () => {
     const tx = makeTx();
-    await setRlsClaims(tx, { idir_user_guid: "o'brien", client_roles: "a'b", exp: 1 });
+    await setRlsClaims(tx, { idir_user_guid: "o'brien", client_roles: "COS", exp: 1 });
     expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.idir_user_guid = 'o''brien'");
-    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.client_roles = 'a''b'");
   });
 
   it("skips idir_user_guid / client_roles when they are falsy but always sets exp", async () => {

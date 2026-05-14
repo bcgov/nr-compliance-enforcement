@@ -1,12 +1,8 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
-import { Logger } from "@nestjs/common";
+import { Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import {
-  UnauthorizedAccessException,
-  UNAUTHORIZED_ERROR_CODE,
-} from "../../common/exceptions/unauthorized-access.exception";
 import { EnforcementActionService } from "src/investigation/enforcement_action/enforcement_action.service";
 import {
   CreateEnforcementActionInput,
@@ -40,8 +36,8 @@ export class EnforcementActionResolver {
     try {
       return await this.enforcementActionService.findOne(enforcementActionId);
     } catch (error) {
-      if (error instanceof UnauthorizedAccessException) {
-        throw new GraphQLError(error.message, { extensions: { code: UNAUTHORIZED_ERROR_CODE } });
+      if (error instanceof NotFoundException) {
+        throw new GraphQLError(error.message, { extensions: { code: "NOT_FOUND" } });
       }
       this.logger.error("Error fetching enforcement action:", error?.message ?? error);
       throw new GraphQLError("Error fetching enforcement action", {

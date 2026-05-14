@@ -8,8 +8,6 @@ import { UserService } from "../../common/user.service";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class ExhibitService {
   constructor(
@@ -128,10 +126,6 @@ export class ExhibitService {
         exhibit_guid: exhibitGuid,
       },
     });
-
-    if (!prismaExhibit) {
-      throw new UnauthorizedAccessException("You do not have access to this exhibit.");
-    }
 
     return this.mapper.map<exhibit, Exhibit>(prismaExhibit as exhibit, "exhibit", "Exhibit");
   }

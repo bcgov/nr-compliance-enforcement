@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { inspection } from "../../../prisma/inspection/inspection.unsupported_types";
 import {
   CreateInspectionInput,
@@ -25,8 +25,6 @@ import { SearchMapResults } from "../../investigation/investigation/dto/search-m
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInspectionIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { UnauthorizedAccessException } from "../../common/exceptions/unauthorized-access.exception";
-
 @Injectable()
 export class InspectionService {
   constructor(
@@ -78,7 +76,7 @@ export class InspectionService {
     });
 
     if (!prismaInspection) {
-      throw new UnauthorizedAccessException("You do not have access to this inspection.");
+      throw new NotFoundException();
     }
 
     try {

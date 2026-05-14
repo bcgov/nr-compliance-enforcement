@@ -1,6 +1,5 @@
 -- Policy to limit access to case files based on the user's agency.
 -- The logic is applied directly to shared.case_file, and the other tables defer to it. 
--- This keeps the logic itself localized to a single policy to avoid duplication and inconsistency.
 
 ALTER TABLE shared.case_file ENABLE ROW LEVEL SECURITY;
 
