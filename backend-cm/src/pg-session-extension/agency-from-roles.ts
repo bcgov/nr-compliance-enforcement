@@ -6,16 +6,17 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   NROS: "NROS",
 };
 
-export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
-  const roles = !clientRoles
-    ? []
-    : Array.isArray(clientRoles)
-      ? clientRoles
-      : clientRoles
-          .split(",")
-          .map((r) => r.trim())
-          .filter(Boolean);
+const normalizeRoles = (clientRoles: string | string[] | undefined | null): string[] => {
+  if (!clientRoles) return [];
+  if (Array.isArray(clientRoles)) return clientRoles;
+  return clientRoles
+    .split(",")
+    .map((r) => r.trim())
+    .filter(Boolean);
+};
 
+export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
+  const roles = normalizeRoles(clientRoles);
   const agencies = Object.entries(ROLE_TO_AGENCY)
     .filter(([role]) => roles.includes(role))
     .map(([, agency]) => agency);
