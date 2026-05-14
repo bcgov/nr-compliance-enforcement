@@ -74,12 +74,10 @@ export class InspectionService {
         (await this.fetchLocationGeometryPoints([inspectionGuid], db)).get(inspectionGuid) ?? null;
       return found;
     });
-    const geometry = (await this.fetchLocationGeometryPoints([inspectionGuid])).get(inspectionGuid) ?? null;
 
     if (!prismaInspection) {
       throw new NotFoundException();
     }
-    (prismaInspection as inspection).location_geometry_point = geometry;
 
     try {
       return this.mapper.map<inspection, Inspection>(prismaInspection as inspection, "inspection", "Inspection");
@@ -129,11 +127,6 @@ export class InspectionService {
       }
       return found;
     });
-    const guids = prismaInspections.map((insp) => insp.inspection_guid);
-    const geometryByGuid = await this.fetchLocationGeometryPoints(guids);
-    for (const insp of prismaInspections) {
-      (insp as inspection).location_geometry_point = geometryByGuid.get(insp.inspection_guid) ?? null;
-    }
 
     try {
       return this.mapper.mapArray<inspection, Inspection>(
@@ -408,9 +401,9 @@ export class InspectionService {
         this.logger.error("Error creating inspection:", error);
         throw error;
       }
-      await this.updateLocationGeometryPoint(tx, inspection.inspection_guid, input.locationGeometry);
+      await this.updateLocationGeometryPoint(db, inspection.inspection_guid, input.locationGeometry);
       inspection.location_geometry_point =
-        (await this.fetchLocationGeometryPoints([inspection.inspection_guid], tx)).get(inspection.inspection_guid) ??
+        (await this.fetchLocationGeometryPoints([inspection.inspection_guid], db)).get(inspection.inspection_guid) ??
         null;
     });
     // Try to create case activity record, and if it fails, delete the inspection
@@ -495,9 +488,9 @@ export class InspectionService {
             inspection_status_code: true,
           },
         });
-        await this.updateLocationGeometryPoint(tx, inspectionGuid, input.locationGeometry);
+        await this.updateLocationGeometryPoint(db, inspectionGuid, input.locationGeometry);
         updatedInspection.location_geometry_point =
-          (await this.fetchLocationGeometryPoints([inspectionGuid], tx)).get(inspectionGuid) ?? null;
+          (await this.fetchLocationGeometryPoints([inspectionGuid], db)).get(inspectionGuid) ?? null;
       } catch (error) {
         this.logger.error(`Error updating inspection with guid ${inspectionGuid}:`, error);
         throw error;

@@ -135,11 +135,9 @@ export class InvestigationService {
         (await this.fetchLocationGeometryPoints([investigationGuid], db)).get(investigationGuid) ?? null;
       return found;
     });
-    const geometry = (await this.fetchLocationGeometryPoints([investigationGuid])).get(investigationGuid) ?? null;
     if (!prismaInvestigation) {
       throw new NotFoundException();
     }
-    (prismaInvestigation as investigation).location_geometry_point = geometry;
 
     try {
       return this.mapper.map<investigation, Investigation>(
@@ -193,11 +191,6 @@ export class InvestigationService {
       }
       return found;
     });
-    const guids = prismaInvestigations.map((inv) => inv.investigation_guid);
-    const geometryByGuid = await this.fetchLocationGeometryPoints(guids);
-    for (const inv of prismaInvestigations) {
-      (inv as investigation).location_geometry_point = geometryByGuid.get(inv.investigation_guid) ?? null;
-    }
 
     try {
       return this.mapper.mapArray<investigation, Investigation>(

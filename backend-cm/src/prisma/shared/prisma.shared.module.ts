@@ -14,7 +14,7 @@ import createRetryExtension from "../prisma-retry-extension";
         const client = new PrismaClient({
           transactionOptions: { maxWait: 10000, timeout: 30000 },
         });
-        return client.$extends(createRetryExtension());
+        return client.$extends(createPgSessionExtension(client, CASE_FILE_RLS_MODELS)).$extends(createRetryExtension());
       },
     },
   ],
