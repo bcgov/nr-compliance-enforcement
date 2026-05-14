@@ -31,6 +31,20 @@ const READ_OPERATIONS = new Set([
   "aggregateRaw",
 ]);
 
+const logger = new Logger("PgSessionExtension");
+
+/**
+ * Set to true while a transaction is in progress that has already set the JWT claims
+ * via withRlsTransaction. This will then skip the pg-session wrap so they don't open
+ * multiple independant nested transactions
+ */
+export const inTransactionContext = new AsyncLocalStorage<boolean>();
+
+/**
+ * Prisma model names whose tables have a RLS policy
+ */
+const RLS_PROTECTED_MODELS = new Set(["complaint_outcome"]);
+
 /**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
  * JWT claims as session variables within a PG transaction and executes the original query
@@ -62,6 +76,7 @@ function createPgSessionExtension(client: any, protectedModels: Set<string>) {
               { maxWait: 10000, timeout: 30000 },
             );
           } catch (error) {
+            // Log the error
             logger.error(
               `Failed to execute query with JWT claims for ${model}.${operation}: ${error?.message ?? error}`,
               error?.stack,
