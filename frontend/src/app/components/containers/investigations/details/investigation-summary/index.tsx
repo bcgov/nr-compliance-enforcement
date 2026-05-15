@@ -15,6 +15,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
 import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -32,6 +33,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   onDirtyChange,
 }) => {
   const navigate = useNavigate();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
@@ -180,6 +182,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               size="sm"
               id="details-screen-edit-button"
               onClick={editButtonClick}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit investigation</span>
