@@ -11,7 +11,6 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
 import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
 import { useForm } from "@tanstack/react-form";
-import { useInvestigationReadOnly } from "@/app/components/containers/investigations/hooks/use-investigation-read-only";
 
 const UPDATE_INVESTIGATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
