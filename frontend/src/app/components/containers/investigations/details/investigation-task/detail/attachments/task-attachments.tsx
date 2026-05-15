@@ -12,6 +12,7 @@ import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
 import { Task } from "@/generated/graphql";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
+import { useInvestigationReadOnly } from "../../../../hooks/use-investigation-read-only";
 
 interface TaskAttachmentProps {
   investigationGuid: string;
@@ -21,6 +22,7 @@ interface TaskAttachmentProps {
 export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, task }) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
   const { searchValues } = useDocumentationSearch();
 
@@ -92,6 +94,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
               variant="primary"
               size="sm"
               onClick={handleAddAttachment}
+              disabled={isReadOnly}
             >
               <i className="bi bi-upload"></i>
               <span>Add attachment</span>
@@ -108,6 +111,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
             variant="primary"
             size="sm"
             onClick={handleAddAttachment}
+            disabled={isReadOnly}
           >
             <i className="bi bi-upload"></i>
             <span>Add attachment</span>
@@ -118,6 +122,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
           <TaskAttachmentList
             attachments={attachments}
             isLoading={isLoading}
+            isReadOnly={isReadOnly}
             onEdit={handleEditAttachment}
           />
         </div>

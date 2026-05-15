@@ -11,6 +11,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
 import { InvestigationAssignModal } from "@/app/components/containers/investigations/details/investigation-assign-modal";
 import { useForm } from "@tanstack/react-form";
+import { useInvestigationReadOnly } from "@/app/components/containers/investigations/hooks/use-investigation-read-only";
 
 const UPDATE_INVESTIGATION = gql`
   mutation UpdateInvestigation($investigationGuid: String!, $input: UpdateInvestigationInput!) {
@@ -31,6 +32,7 @@ interface InvestigationHeaderProps {
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
+  const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED";
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -161,6 +163,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                       as="button"
                       id="assign-button"
                       onClick={handleOpenAssignModal}
+                      disabled={isReadOnly}
                     >
                       <i className="bi bi-person-plus"></i>
                       <span>Assign</span>
@@ -189,6 +192,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   title="Assign to officer"
                   variant="outline-light"
                   onClick={handleOpenAssignModal}
+                  disabled={isReadOnly}
                 >
                   <i className="bi bi-person-plus"></i>
                   <span>Assign</span>

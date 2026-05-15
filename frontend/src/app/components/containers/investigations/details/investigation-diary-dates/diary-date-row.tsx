@@ -6,6 +6,7 @@ import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { Button } from "react-bootstrap";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
@@ -24,6 +25,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
 }) => {
   const navigate = useNavigate();
   const { investigationGuid } = useParams<InvestigationParams>();
+  const isReadOnly = investigationGuid ? useInvestigationReadOnly(investigationGuid) : false;
 
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser
@@ -70,6 +72,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
             onClick={handleEditClick}
             title="Edit diary date"
             aria-label="edit-diary-date"
+            disabled={isReadOnly}
           >
             <i className="bi bi-pencil ms-1 me-1" />
           </Button>

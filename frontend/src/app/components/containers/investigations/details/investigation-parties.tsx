@@ -10,6 +10,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useInvestigationReadOnly } from "../hooks/use-investigation-read-only";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
@@ -43,6 +44,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
     onSuccess: () => {
@@ -119,7 +121,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
           <PartiesList
             companies={businessParties as InvestigationParty[]}
             people={peopleParties as InvestigationParty[]}
-            onRemoveParty={handleRemoveParty}
+            onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>
@@ -130,6 +132,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             variant="primary"
             size="sm"
             onClick={handleAddParty}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle me-1" /> {/**/}
             Add party

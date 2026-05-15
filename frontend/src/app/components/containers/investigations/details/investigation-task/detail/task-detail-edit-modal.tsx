@@ -14,6 +14,7 @@ import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/off
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { CompInput } from "@/app/components/common/comp-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
 interface TaskDetailEditModalProps {
   show: boolean;
@@ -36,6 +37,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
   primaryInvestigatorGuid,
   onDirtyChange,
 }) => {
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -208,6 +210,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 showInactive={false}
                 enableValidation
                 errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+                isDisabled={isReadOnly}
               />
             )}
           />
@@ -256,6 +259,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                   onChange={(evt: any) => field.handleChange(evt.target.value)}
                   value={field.state.value}
                   placeholder="Enter task remarks"
+                  disabled={isReadOnly}
                 />
               </div>
             )}
@@ -282,6 +286,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 showInactive={false}
                 enableValidation
                 errorMessage={field.state.meta.errors?.[0]?.message ?? ""}
+                isDisabled={isReadOnly}
               />
             )}
           />
@@ -305,6 +310,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 selectedDate={field.state.value}
                 errMsg={field.state.meta.errors?.[0]?.message || ""}
                 vertical={true}
+                isDisabled={isReadOnly}
               />
             )}
           />
@@ -322,6 +328,7 @@ export const TaskDetailEditModal: FC<TaskDetailEditModalProps> = ({
                 placeholderText="Enter task description..."
                 maxLength={4000}
                 errMsg={field.state.meta.errors?.[0]?.message ?? ""}
+                disabled={isReadOnly}
               />
             )}
           />

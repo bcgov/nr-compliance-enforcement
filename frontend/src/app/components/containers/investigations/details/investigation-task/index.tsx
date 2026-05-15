@@ -9,6 +9,7 @@ import { Investigation, Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 const CREATE_TASK = gql`
   mutation CreateTask($input: CreateUpdateTaskInput!) {
@@ -26,6 +27,7 @@ interface InvestigationTasksNewProps {
 
 export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {
   const navigate = useNavigate();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const tasks = (investigationData?.tasks as Task[]) ?? [];
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
@@ -63,6 +65,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
           variant="primary"
           size="sm"
           onClick={() => setShowAddTaskModal(true)}
+          disabled={isReadOnly}
         >
           <i className="bi bi-plus-circle me-1" /> Add task
         </Button>

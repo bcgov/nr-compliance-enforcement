@@ -9,6 +9,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
 interface TaskActionsProps {
   investigationGuid: string;
@@ -79,6 +80,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const { data, refetch } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(GET_ACTIVITY_NOTES_BY_TASK, {
@@ -161,6 +163,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
             variant="primary"
             size="sm"
             onClick={handleAddClick}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle" />
             <span>Add task action</span>
@@ -180,6 +183,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
             variant="primary"
             size="sm"
             onClick={handleAddClick}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle" />
             <span>Add task action</span>
