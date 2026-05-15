@@ -128,7 +128,7 @@ export const ComplaintActionItems: FC<Props> = ({
         modalSize: "lg",
         modalType: CREATE_ADD_CASE,
         data: {
-          title: "Create/add case",
+          title: "Add to case",
           complaint_identifier: complaint_identifier,
           agency_code: agency_code,
           onDirtyChange: handleChildDirtyChange,
@@ -204,7 +204,7 @@ export const ComplaintActionItems: FC<Props> = ({
               className="bi bi-folder-plus"
               id="link-conplaint-icon"
             />{" "}
-            Create/add case
+            Add to case
           </Dropdown.Item>
         )}
         {showExperimentalFeature && (
