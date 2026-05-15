@@ -256,6 +256,71 @@ export const exportTask =
   };
 
 //--
+//-- exports the list of tasks for an investigation as a zip containing a CSV
+//-- of the task details and a folder with pdf exports of each task
+//--
+export const exportTasksList =
+  (
+    investigationGuid: string,
+    investigationName: string | null | undefined,
+    tasks: Array<{ taskIdentifier: string; taskNumber: number }>,
+    csvContent: string,
+    onProgress?: BulkDownloadProgressCallback,
+  ): AppThunk<Promise<void>> =>
+  async (dispatch) => {
+    const objectUrlsToRevoke: string[] = [];
+
+    try {
+      const allAttachments = await fetchAttachmentsWithMetadata(investigationGuid);
+
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(AUTH_TOKEN)}`;
+
+      const exportTaskUrl = `${config.API_BASE_URL}/v1/document/export-task`;
+
+      const pdfFiles: FileWithPresignedUrl[] = await Promise.all(
+        tasks.map(async ({ taskIdentifier, taskNumber }) => {
+          const attachments = allAttachments
+            .filter((a) => a.taskId === taskIdentifier)
+            .sort((a, b) => new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime());
+
+          const exportTaskInput = generateExportTaskInputParams(taskIdentifier, taskNumber, attachments);
+          const response = await axios.post(exportTaskUrl, exportTaskInput, { responseType: "arraybuffer" });
+
+          const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+          const pdfUrl = URL.createObjectURL(pdfBlob);
+          objectUrlsToRevoke.push(pdfUrl);
+
+          return {
+            id: undefined,
+            name: exportTaskInput.fileName,
+            size: pdfBlob.size,
+            url: pdfUrl,
+            folder: "Tasks",
+          };
+        }),
+      );
+
+      const csvBlob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const csvUrl = URL.createObjectURL(csvBlob);
+      objectUrlsToRevoke.push(csvUrl);
+      const today = format(new Date(), "yyyy-MM-dd");
+      const safeName = investigationName || investigationGuid;
+      const csvFile: FileWithPresignedUrl = {
+        id: undefined,
+        name: `Investigation ${safeName} Tasks ${today}.csv`,
+        size: csvBlob.size,
+        url: csvUrl,
+      };
+
+      const zipFilename = `Investigation_${safeName}_Tasks.zip`;
+
+      await dispatch(bulkDownload(investigationGuid, [], zipFilename, [csvFile, ...pdfFiles], onProgress));
+    } finally {
+      objectUrlsToRevoke.forEach((url) => URL.revokeObjectURL(url));
+    }
+  };
+
+//--
 //-- exports a continuation report as a pdf document
 //--
 export const exportContinuationReport =
