@@ -25,7 +25,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
 }) => {
   const navigate = useNavigate();
   const { investigationGuid } = useParams<InvestigationParams>();
-  const isReadOnly = investigationGuid ? useInvestigationReadOnly(investigationGuid) : false;
+  const isReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
 
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser
