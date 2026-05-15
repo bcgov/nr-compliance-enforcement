@@ -38,7 +38,7 @@ test.describe("Verify CEEB specific search filters work", () => {
       await page
         .locator("#ceeb-decision > .card-body > .comp-details-form-buttons > #outcome-decision-save-button")
         .click();
-      await page.locator("div", { hasText: /Decision added/ });
+      await expect(page.locator("div", { hasText: /Decision added/ }).first()).toBeVisible();
     }
 
     // Return to the complaints view

@@ -53,14 +53,18 @@ test.describe("HWCR Outcome Notes", () => {
     await page.locator("#supporting-notes-save-button").click();
 
     //validate error message
-    page.locator("#outcome-note .error-message", {
-      hasText: "Additional notes required",
-    });
+    await expect(
+      page.locator("#outcome-note .error-message", {
+        hasText: "Additional notes required",
+      }),
+    ).toBeVisible();
 
     //validate the toast
-    page.locator(".Toastify__toast-body", {
-      hasText: "Error updating additional notes",
-    });
+    await expect(
+      page.locator(".Toastify__toast-body", {
+        hasText: "Error updating additional notes",
+      }),
+    ).toBeVisible();
   });
 
   test("it can save note", async ({ page }) => {
@@ -73,20 +77,26 @@ test.describe("HWCR Outcome Notes", () => {
     await enterNote(page, "This is test supporting note from Playwright");
     await $outcome.locator("#supporting-notes-save-button").click();
 
+    // Validate the toast
+    await expect(
+      page.locator(".Toastify__toast-body", {
+        hasText: "Note created",
+      }),
+    ).toBeVisible();
+
     //validate the note
-    $outcome.locator(".comp-outcome-notes", {
-      hasText: "This is test supporting note from Playwright",
-    });
+    await expect(
+      $outcome.locator("#additional-note-text", {
+        hasText: "This is test supporting note from Playwright",
+      }),
+    ).toBeVisible();
 
     //validate the officer
-    $outcome.locator("#comp-note-created-by", {
-      hasText: "TestAcct, ENV",
-    });
-
-    //validate the toast
-    page.locator(".Toastify__toast-body", {
-      hasText: "Note created",
-    });
+    await expect(
+      $outcome.locator("#comp-note-created-by", {
+        hasText: "TestAcct, ENV",
+      }),
+    ).toBeVisible();
   });
 
   test("it can cancel note edits", async ({ page }) => {
@@ -109,20 +119,26 @@ test.describe("HWCR Outcome Notes", () => {
     await validateComplaint(page, "23-032454", "Black Bear");
     const $notes = page.locator(".comp-outcome-notes");
 
+    await expect($notes.locator("#notes-edit-button").first()).toBeVisible({ timeout: 15000 });
+
     await $notes.locator("#notes-edit-button").click();
 
     await enterNote(page, "This note is edited by Playwright");
     await $notes.locator("#supporting-notes-save-button").click();
 
-    //Validate the text
-    $notes.locator(".comp-outcome-notes", {
-      hasText: "This note is edited by Playwright",
-    });
+    // Validate the toast
+    await expect(
+      page.locator(".Toastify__toast-body", {
+        hasText: "Note updated",
+      }),
+    ).toBeVisible();
 
-    //validate the toast
-    page.locator(".Toastify__toast-body", {
-      hasText: "Note updated",
-    });
+    //Validate the text
+    await expect(
+      $notes.locator(".comp-outcome-notes-note", {
+        hasText: "This note is edited by Playwright",
+      }),
+    ).toBeVisible();
   });
 
   test("it can delete an existing note", async ({ page }) => {
@@ -133,8 +149,10 @@ test.describe("HWCR Outcome Notes", () => {
     await page.locator(".modal-footer > .btn-primary").click();
 
     //validate the toast
-    page.locator(".Toastify__toast-body", {
-      hasText: "Note deleted",
-    });
+    await expect(
+      page.locator(".Toastify__toast-body", {
+        hasText: "Note deleted",
+      }),
+    ).toBeVisible();
   });
 });

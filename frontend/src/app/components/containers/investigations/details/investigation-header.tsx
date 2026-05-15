@@ -52,11 +52,11 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
 
   const updateAssignMutation = useGraphQLMutation(UPDATE_INVESTIGATION, {
     onSuccess: () => {
-      ToggleSuccess("Investigation successfully assigned");
+      ToggleSuccess("Investigation successfully reassigned");
       setShowAssignModal(false);
     },
     onError: () => {
-      ToggleError("Failed to assign investigation");
+      ToggleError("Failed to reassign investigation");
     },
   });
 
@@ -166,7 +166,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                       disabled={isReadOnly}
                     >
                       <i className="bi bi-person-plus"></i>
-                      <span>Assign</span>
+                      <span>Reassign</span>
                     </Dropdown.Item>
                     <Dropdown.Item
                       as="button"
@@ -195,7 +195,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   disabled={isReadOnly}
                 >
                   <i className="bi bi-person-plus"></i>
-                  <span>Assign</span>
+                  <span>Reassign</span>
                 </Button>
                 <Button
                   id="details-screen-update-status-button"

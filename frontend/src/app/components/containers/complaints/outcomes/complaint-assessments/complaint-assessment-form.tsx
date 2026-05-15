@@ -75,6 +75,13 @@ export const ComplaintAssessmentForm: FC<Props> = ({
 
   const [assessmentState, setAssessmentState] = useState<Assessment>(assessment ?? ({} as Assessment));
 
+  // Handles state when the form mounted before the assessment prop was loaded which happens during test runs
+  useEffect(() => {
+    if (assessment?.id && assessment.id !== assessmentState?.id) {
+      setAssessmentState(assessment);
+    }
+  }, [assessment?.id, assessmentState?.id]);
+
   const [selectedActionRequired, setSelectedActionRequired] = useState<Option | null>();
   const [selectedJustification, setSelectedJustification] = useState<Option | null>();
   const [selectedLinkedComplaint, setSelectedLinkedComplaint] = useState<Option | null>();
@@ -321,7 +328,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     selectedActionRequired?.value === "No" && (quickClose || selectedJustification?.value === "DUPLICATE");
 
   const getUpdatedAssessmentData = () => ({
-    id: assessmentState?.id,
+    id: assessment?.id ?? assessmentState?.id,
     date: selectedDate,
     officer: mapOption(selectedOfficer),
     action_required: selectedActionRequired?.label,

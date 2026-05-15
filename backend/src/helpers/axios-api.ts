@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 
-const generateConfig = (apiToken: string, headers?: any): AxiosRequestConfig => {
+const generateConfig = (apiToken: string, headers?: any, options?: { suppressErrorLog?: boolean }): AxiosRequestConfig => {
   const config: AxiosRequestConfig = {
     timeout: 30000,
   };
@@ -12,6 +12,10 @@ const generateConfig = (apiToken: string, headers?: any): AxiosRequestConfig => 
     config.headers = {
       Authorization: `Bearer ${apiToken}`,
     };
+  }
+
+  if (options?.suppressErrorLog) {
+    (config as any).suppressErrorLog = true;
   }
 
   return config;
@@ -28,7 +32,13 @@ export const post = async (apiToken: string, url: string, data: any, headers?: a
   return axios.post(url, data, config);
 };
 
-export const put = async (apiToken: string, url: string, data: any, headers?: any) => {
-  const config = generateConfig(apiToken, headers);
+export const put = async (
+  apiToken: string,
+  url: string,
+  data: any,
+  headers?: any,
+  options?: { suppressErrorLog?: boolean },
+) => {
+  const config = generateConfig(apiToken, headers, options);
   return axios.put(url, data, config);
 };

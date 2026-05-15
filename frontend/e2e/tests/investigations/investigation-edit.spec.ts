@@ -8,6 +8,7 @@ import { enterDateTimeInDatePicker, selectItemById, waitForSpinner } from "../..
  */
 test.describe("Investigation Edit Form", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
+  test.describe.configure({ mode: "serial" }); // tests share the first investigation's data
 
   test.beforeEach(async ({ page }) => {
     // Navigate to investigations list

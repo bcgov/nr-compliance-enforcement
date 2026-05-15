@@ -32,6 +32,12 @@ export class CaseFileService {
   private readonly logger = new Logger(CaseFileService.name);
 
   async findOne(id: string) {
+    const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!id || !UUID_REGEX.test(id)) {
+      this.logger.error(`case_file.findOne called with non-UUID id: ${JSON.stringify(id)}`);
+      throw new Error(`Invalid case_file identifier (expected UUID): ${id}`);
+    }
+
     const prismaCaseFile = await this.prisma.case_file.findUnique({
       where: {
         case_file_guid: id,
