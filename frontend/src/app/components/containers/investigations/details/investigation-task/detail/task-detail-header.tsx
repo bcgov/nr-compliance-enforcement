@@ -12,6 +12,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Button } from "react-bootstrap";
 import { exportTask } from "@/app/store/reducers/documents-thunks";
 import { ChangeStatusModal } from "@/app/components/common/change-status-modal";
+import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
 const UPDATE_TASK = gql`
   mutation UpdateTask($input: CreateUpdateTaskInput!) {
@@ -29,6 +30,7 @@ interface TaskDetailHeaderProps {
 
 export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigationGuid, onStatusUpdated }) => {
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const status = taskStatuses.find((s) => s.value === task?.taskStatusCode);
   const taskDisplay = task ? `Task #${task.taskNumber}` : "Task";
@@ -96,6 +98,7 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
                 variant="outline-light"
                 size="sm"
                 onClick={handleOpenStatusModal}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-arrow-repeat" />
                 <span>Update status</span>

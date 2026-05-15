@@ -16,6 +16,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { TaskAttachments } from "@/app/components/containers/investigations/details/investigation-task/detail/attachments/task-attachments";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { TaskExhibits } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
+import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
 const GET_TASK = gql`
   query GetTask($taskId: String!) {
@@ -54,6 +55,7 @@ interface TaskDetailSectionProps {
 
 //-----------TASK DETAIL SECTION----------------
 const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid, onEditClick }) => {
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const officers = useAppSelector(selectOfficers);
@@ -83,6 +85,7 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
             title="Edit task"
             className="position-absolute top-0 end-0 m-3"
             onClick={onEditClick}
+            disabled={isReadOnly}
           >
             <i className="bi bi-pencil" />
             <span>Edit</span>
