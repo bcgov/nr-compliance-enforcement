@@ -143,7 +143,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             companies={businessParties as InvestigationParty[]}
             people={peopleParties as InvestigationParty[]}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
-            onEditParty={handleEditParty}
+            onEditParty={isReadOnly ? undefined : handleEditParty}
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>
