@@ -4,7 +4,9 @@ import { logger } from "../common/logger.config";
 const caseManagementlURL = process.env.CASE_MANAGEMENT_API_URL;
 
 axios.interceptors.response.use(undefined, (error: AxiosError) => {
-  logger.error("Shared data axios response error", { response: error.response, stack: error.stack });
+  if (!(error.config as any)?.suppressErrorLog) {
+    logger.error("Shared data axios response error", { response: error.response, stack: error.stack });
+  }
   return Promise.reject(error as Error);
 });
 
