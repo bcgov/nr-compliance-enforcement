@@ -8,31 +8,38 @@ import { BulkDownloadProgressCallback, BulkDownloadProgressEvent } from "@store/
 // Mirrors the UX of uploadAttachmentsWithProgress for symmetry with upload progress.
 export const createDownloadProgressHandler = (toastId: Id): BulkDownloadProgressCallback => {
   let lastRenderedOverall = -1;
+  let lastRenderedMessage: string | undefined;
   let lastRenderedStatus: string | undefined;
 
   return (event: BulkDownloadProgressEvent) => {
-    const { fileIndex, fileCount, bytesDownloaded, totalBytes, retryAttempt, phase } = event;
+    const { fileIndex, fileCount, overallPercent, retryAttempt, phase, fileName } = event;
 
-    const overall =
-      totalBytes > 0 ? Math.min(100, Math.round((bytesDownloaded / totalBytes) * 100)) : phase === "finalizing" ? 100 : 0;
+    const overall = Math.min(100, Math.max(0, overallPercent));
 
+    let message: string;
     let status: string | undefined;
-    if (phase === "finalizing") {
+    const fileLabel = fileCount > 1 ? `File ${fileIndex + 1} of ${fileCount}` : "";
+    if (phase === "compressing") {
+      message = "Download in progress, do not close the NatSuite application.";
+      status = `${fileLabel}: Adding to zip…`;
+    } else if (phase === "finalizing") {
+      message = "Download in progress, do not close the NatSuite application.";
       status = "Finalizing zip file…";
     } else {
-      const fileLabel = fileCount > 1 ? `File ${fileIndex + 1} of ${fileCount}` : "";
+      message = "Download in progress, do not close the NatSuite application.";
       const retryLabel = retryAttempt ? `Retry attempt ${retryAttempt} of ${RETRY_CONFIG.MAX_RETRIES}` : "";
       status = [fileLabel, retryLabel].filter(Boolean).join(" - ") || undefined;
     }
 
-    if (overall === lastRenderedOverall && status === lastRenderedStatus) return;
+    if (overall === lastRenderedOverall && message === lastRenderedMessage && status === lastRenderedStatus) return;
     lastRenderedOverall = overall;
+    lastRenderedMessage = message;
     lastRenderedStatus = status;
 
     UpdateToast(
       toastId,
       <>
-        <div>Download in progress, do not close the NatSuite application.</div>
+        <div>{message}</div>
         <ProgressBar
           now={overall}
           label={`${overall}%`}

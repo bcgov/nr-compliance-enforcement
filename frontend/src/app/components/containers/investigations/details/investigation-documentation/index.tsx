@@ -13,6 +13,7 @@ import { useInvestigationAttachments, Attachment } from "./hooks/use-investigati
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
+import AttachmentEnum from "@constants/attachment-enum";
 
 type Props = {
   investigationGuid: string;
@@ -112,6 +113,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
           `Investigation_${investigationName}_Attachments.zip`,
           [csvFile],
           onProgress,
+          AttachmentEnum.TASK_ATTACHMENT,
         ),
       );
     } catch (error) {

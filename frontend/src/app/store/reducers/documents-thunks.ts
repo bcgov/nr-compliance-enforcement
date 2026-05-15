@@ -206,6 +206,7 @@ export const exportComplaintWithAttachments =
           zipFilename,
           [pdfFile],
           onProgress,
+          AttachmentEnum.COMPLAINT_ATTACHMENT,
         ),
       );
     } catch (error) {
