@@ -4,15 +4,13 @@ import { UpdateToast } from "@common/toast";
 import { RETRY_CONFIG } from "@common/attachment-utils";
 import { BulkDownloadProgressCallback, BulkDownloadProgressEvent } from "@store/reducers/bulk-download";
 
-// Builds a progress callback that renders a progress bar inside the given toast.
-// Mirrors the UX of uploadAttachmentsWithProgress for symmetry with upload progress.
 export const createDownloadProgressHandler = (toastId: Id): BulkDownloadProgressCallback => {
   let lastRenderedOverall = -1;
   let lastRenderedMessage: string | undefined;
   let lastRenderedStatus: string | undefined;
 
   return (event: BulkDownloadProgressEvent) => {
-    const { fileIndex, fileCount, overallPercent, retryAttempt, phase, fileName } = event;
+    const { fileIndex, fileCount, overallPercent, retryAttempt, phase } = event;
 
     const overall = Math.min(100, Math.max(0, overallPercent));
 

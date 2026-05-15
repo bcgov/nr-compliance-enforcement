@@ -317,7 +317,7 @@ export const fetchObjectsMetadata = async (
         ? (attachmentTypeNum as AttachmentEnum)
         : null;
 
-    const parsedSize = contentLengthMeta ? Number.parseInt(contentLengthMeta.value, 10) : NaN;
+    const parsedSize = contentLengthMeta ? Number.parseInt(contentLengthMeta.value, 10) : Number.NaN;
 
     metadataMap.set(item.objectId, {
       objectId: item.objectId,

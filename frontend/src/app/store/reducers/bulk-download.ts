@@ -8,7 +8,7 @@ import { AUTH_TOKEN } from "@/app/service/user-service";
 import { BulkDownloadState, CurrentDownload } from "@/app/types/state/bulk-download-state";
 import { createSlice } from "@reduxjs/toolkit";
 import AttachmentEnum from "@constants/attachment-enum";
-import { fetchObjectsMetadata } from "@common/attachment-utils";
+import { RETRY_CONFIG, categorizeError, withRetry, fetchObjectsMetadata } from "@common/attachment-utils";
 
 const initialState: BulkDownloadState = {
   isBulkDownloadInProgress: false,
@@ -85,8 +85,6 @@ export const configureZipJs = () => {
     useWebWorkers: true,
   });
 };
-
-import { RETRY_CONFIG, categorizeError, withRetry } from "@common/attachment-utils";
 
 const CONFIG = {
   ...RETRY_CONFIG,
@@ -359,23 +357,7 @@ async function createZipWithZipJs(
       completedBytes += fileSizeHint;
       failedFiles++;
       failedFileNames.push(file.name);
-
-      console.error(`\nFAILED: ${file.name}`);
-      console.error(`Final error: ${error instanceof Error ? error.message : String(error)}`);
-
-      // Detailed error categorization
-      if (error instanceof Error) {
-        const { errorType } = categorizeError(error);
-        console.error(`  → Type: ${errorType} ERROR`);
-      }
-
-      // Add error placeholder
-      await addErrorPlaceholder(zipWriter, file, error, i, files.length);
-
-      // Pause after error to allow memory recovery
-      if (i + 1 < files.length) {
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-      }
+      await handleFailedFile(error, file, i, files.length, zipWriter);
     }
   }
 
@@ -490,7 +472,7 @@ async function readResponseWithProgress(
   const contentLengthHeader = response.headers.get("content-length");
   const contentLength = contentLengthHeader ? Number.parseInt(contentLengthHeader, 10) || 0 : 0;
 
-  // If we cannot stream (no body or no progress callback), fall back to response.blob()
+  // If we cannot stream fall back to response.blob()
   if (!onFileProgress || !response.body || typeof (response.body as any).getReader !== "function") {
     return await response.blob();
   }
@@ -515,7 +497,7 @@ async function readResponseWithProgress(
     try {
       reader.releaseLock();
     } catch {
-      // Ignore — reader may already be released
+      // Reader is already released
     }
   }
 
@@ -585,6 +567,31 @@ async function processSingleFile(
   });
 
   return { success: true, bytesProcessed: blob.size };
+}
+
+async function handleFailedFile(
+  error: unknown,
+  file: FileWithPresignedUrl,
+  index: number,
+  totalFiles: number,
+  zipWriter: any,
+): Promise<void> {
+  console.error(`\nFAILED: ${file.name}`);
+  console.error(`Final error: ${error instanceof Error ? error.message : String(error)}`);
+
+  // Detailed error categorization
+  if (error instanceof Error) {
+    const { errorType } = categorizeError(error);
+    console.error(`  → Type: ${errorType} ERROR`);
+  }
+
+  // Add error placeholder
+  await addErrorPlaceholder(zipWriter, file, error, index, totalFiles);
+
+  // Pause after error to allow memory recovery
+  if (index + 1 < totalFiles) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
 }
 
 async function addErrorPlaceholder(
