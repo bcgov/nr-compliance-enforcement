@@ -1,7 +1,15 @@
 import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
+import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
+import { ContactMethods } from "@/app/constants/contact-methods";
 
 export const usePartyFormFields = (form: any, businessGuid?: string) => {
+  const focusFieldById = useCallback((fieldId: string) => {
+    setTimeout(() => {
+      document.getElementById(fieldId)?.focus();
+    }, 0);
+  }, []);
+
   // Phone numbers
   const phoneNumbers = useStore(form.store, (state: any) => state.values.phoneNumbers);
 
@@ -16,9 +24,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       },
     ];
     form.setFieldValue("phoneNumbers", newPhoneNumbers);
-    setTimeout(() => {
-      document.getElementById(`phone-number-${currentPhoneNumbers.length}`)?.focus();
-    }, 0);
+    focusFieldById(`phone-number-${currentPhoneNumbers.length}`);
   }, [form]);
 
   const handleRemovePhoneNumber = useCallback(
@@ -58,13 +64,11 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       {
         contactMethodGuid: "",
         value: "",
-        isPrimary: currentEmails.length === 0,
+        isPrimary: currentEmails.length === 0, // First one is primary
       },
     ];
     form.setFieldValue("emailAddresses", newEmails);
-    setTimeout(() => {
-      document.getElementById(`email-${currentEmails.length}`)?.focus();
-    }, 0);
+    focusFieldById(`email-${currentEmails.length}`);
   }, [form]);
 
   const handleRemoveEmail = useCallback(
@@ -73,6 +77,8 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       const removingPrimary = currentEmails[indexToRemove]?.isPrimary;
       const newEmails = currentEmails.filter((_: any, index: number) => index !== indexToRemove);
 
+      // If we removed the primary phone and there are still phone numbers left,
+      // make the first one primary
       if (removingPrimary && newEmails.length > 0) {
         newEmails[0].isPrimary = true;
       }
@@ -101,15 +107,13 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     const currentAliases = form.getFieldValue("aliases") || [];
     const newAliases = [...currentAliases, { aliasGuid: crypto.randomUUID(), name: "" }];
     form.setFieldValue("aliases", newAliases);
-    setTimeout(() => {
-      document.getElementById(`alias-${currentAliases.length}`)?.focus();
-    }, 0);
+    focusFieldById(`alias-${currentAliases.length}`);
   }, [form]);
 
   const handleRemoveAlias = useCallback(
     (indexToRemove: number) => {
       const currentAliases = form.getFieldValue("aliases") || [];
-      const newAliases = currentAliases.filter((_: any, index: number) => index !== indexToRemove);
+      const newAliases = currentAliases.filter((_: Alias, index: number) => index !== indexToRemove);
       form.setFieldValue("aliases", newAliases);
     },
     [form],
@@ -133,15 +137,13 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       },
     };
     form.setFieldValue("contacts", [...currentContacts, newContact]);
-    setTimeout(() => {
-      document.getElementById(`contact-firstName-${currentContacts.length}`)?.focus();
-    }, 0);
+    focusFieldById(`contact-firstName-${currentContacts.length}`);
   }, [form]);
 
   const handleRemoveContact = useCallback(
     (indexToRemove: number) => {
       const currentContacts = form.getFieldValue("contacts") || [];
-      const newContacts = currentContacts.filter((_: any, index: number) => index !== indexToRemove);
+      const newContacts = currentContacts.filter((_: BusinessPerson, index: number) => index !== indexToRemove);
       form.setFieldValue("contacts", newContacts);
     },
     [form],
@@ -151,26 +153,42 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     (contactIndex: number, typeCode: string) => {
       const currentContacts = form.getFieldValue("contacts") || [];
 
+      // Check if this will be the first contact method of this type for this contact
       const existingMethodsOfType =
-        currentContacts[contactIndex]?.person?.contactMethods?.filter((cm: any) => cm?.typeCode === typeCode) || [];
+        currentContacts[contactIndex]?.person?.contactMethods?.filter(
+          (cm: ContactMethod) => cm?.typeCode === typeCode,
+        ) || [];
 
       const newContactMethod = {
-        contactMethodGuid: undefined,
+        contactMethodGuid: undefined, // ← Should be undefined, not empty string
         typeCode: typeCode,
         value: "",
-        isPrimary: existingMethodsOfType.length === 0,
+        isPrimary: existingMethodsOfType.length === 0, // First one is primary
       };
 
-      const updatedContacts = currentContacts.map((contact: any, index: number) => {
-        const contactMethods = (contact.person?.contactMethods || [])
-          .filter((cm: any) => cm != null)
-          .map((cm: any) => ({
-            contactMethodGuid: cm.contactMethodGuid,
-            typeCode: cm.typeCode,
-            value: cm.value,
-            isPrimary: cm.isPrimary ?? false,
-          }));
-
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
+        if (index === contactIndex) {
+          return {
+            businessPersonXrefGuid: contact.businessPersonXrefGuid,
+            business: { businessGuid: contact.business?.businessGuid },
+            person: {
+              personGuid: contact.person?.personGuid,
+              firstName: contact.person?.firstName,
+              lastName: contact.person?.lastName,
+              contactMethods: [
+                ...(contact.person?.contactMethods || [])
+                  .filter((cm): cm is ContactMethod => cm != null)
+                  .map((cm) => ({
+                    contactMethodGuid: cm.contactMethodGuid,
+                    typeCode: cm.typeCode,
+                    value: cm.value,
+                    isPrimary: cm.isPrimary ?? false,
+                  })),
+                newContactMethod,
+              ],
+            },
+          };
+        }
         return {
           businessPersonXrefGuid: contact.businessPersonXrefGuid,
           business: { businessGuid: contact.business?.businessGuid },
@@ -178,7 +196,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
             personGuid: contact.person?.personGuid,
             firstName: contact.person?.firstName,
             lastName: contact.person?.lastName,
-            contactMethods: index === contactIndex ? [...contactMethods, newContactMethod] : contactMethods,
+            contactMethods: (contact.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false,
+              })),
           },
         };
       });
@@ -186,12 +211,10 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       form.setFieldValue("contacts", updatedContacts);
 
       const fieldId =
-        typeCode === "PHONE"
+        typeCode === ContactMethods.PHONE
           ? `contact-phone-${contactIndex}-${existingMethodsOfType.length}`
           : `contact-email-${contactIndex}-${existingMethodsOfType.length}`;
-      setTimeout(() => {
-        document.getElementById(fieldId)?.focus();
-      }, 0);
+      focusFieldById(fieldId);
     },
     [form],
   );
@@ -200,24 +223,26 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     (contactIndex: number, methodIndex: number) => {
       const currentContacts = form.getFieldValue("contacts") || [];
 
-      const updatedContacts = currentContacts.map((contact: any, index: number) => {
-        const contactMethods = (contact.person?.contactMethods || []).filter((cm: any) => cm != null);
-
-        let newContactMethods = contactMethods.map((cm: any) => ({
-          contactMethodGuid: cm.contactMethodGuid,
-          typeCode: cm.typeCode,
-          value: cm.value,
-          isPrimary: cm.isPrimary ?? false,
-        }));
-
+      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
         if (index === contactIndex) {
-          const methodToRemove = newContactMethods[methodIndex];
+          const contactMethods = (contact.person?.contactMethods || []).filter((cm): cm is ContactMethod => cm != null);
+
+          const methodToRemove = contactMethods[methodIndex];
           const removingPrimary = methodToRemove?.isPrimary || false;
           const removingTypeCode = methodToRemove?.typeCode;
-          newContactMethods = newContactMethods.filter((_: any, i: number) => i !== methodIndex);
+          let newContactMethods = contactMethods
+            .filter((_, i) => i !== methodIndex)
+            .map((cm) => ({
+              contactMethodGuid: cm.contactMethodGuid,
+              typeCode: cm.typeCode,
+              value: cm.value,
+              isPrimary: cm.isPrimary ?? false,
+            }));
 
+          // If we removed the primary method and there are still methods of the same type left,
+          // make the first one of that type primary
           if (removingPrimary && removingTypeCode && newContactMethods.length > 0) {
-            const firstOfSameType = newContactMethods.findIndex((cm: any) => cm?.typeCode === removingTypeCode);
+            const firstOfSameType = newContactMethods.findIndex((cm) => cm?.typeCode === removingTypeCode);
             if (firstOfSameType !== -1) {
               newContactMethods[firstOfSameType] = {
                 ...newContactMethods[firstOfSameType],
@@ -225,8 +250,18 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
               };
             }
           }
-        }
 
+          return {
+            businessPersonXrefGuid: contact.businessPersonXrefGuid,
+            business: { businessGuid: contact.business?.businessGuid },
+            person: {
+              personGuid: contact.person?.personGuid,
+              firstName: contact.person?.firstName,
+              lastName: contact.person?.lastName,
+              contactMethods: newContactMethods,
+            },
+          };
+        }
         return {
           businessPersonXrefGuid: contact.businessPersonXrefGuid,
           business: { businessGuid: contact.business?.businessGuid },
@@ -234,7 +269,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
             personGuid: contact.person?.personGuid,
             firstName: contact.person?.firstName,
             lastName: contact.person?.lastName,
-            contactMethods: newContactMethods,
+            contactMethods: (contact.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false,
+              })),
           },
         };
       });
@@ -247,26 +289,55 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
   const handleSetPrimaryContact = useCallback(
     (contactIndex: number, contactMethodIndex: number, contactMethodType: string) => {
       const currentContacts = form.getFieldValue("contacts") || [];
-      const updatedContacts = currentContacts.map((c: any, cIndex: number) => ({
-        businessPersonXrefGuid: c.businessPersonXrefGuid,
-        business: { businessGuid: c.business?.businessGuid },
-        person: {
-          personGuid: c.person?.personGuid,
-          firstName: c.person?.firstName,
-          lastName: c.person?.lastName,
-          contactMethods: (c.person?.contactMethods || [])
-            .filter((cm: any) => cm != null)
-            .map((cm: any, cmIdx: number) => ({
-              contactMethodGuid: cm.contactMethodGuid,
-              typeCode: cm.typeCode,
-              value: cm.value,
-              isPrimary:
-                cIndex === contactIndex && cm?.typeCode === contactMethodType
-                  ? cmIdx === contactMethodIndex
-                  : (cm.isPrimary ?? false),
-            })),
-        },
-      }));
+      const updatedContacts = currentContacts.map((c: BusinessPerson, cIndex: number) => {
+        if (cIndex === contactIndex) {
+          return {
+            businessPersonXrefGuid: c.businessPersonXrefGuid,
+            business: { businessGuid: c.business?.businessGuid },
+            person: {
+              personGuid: c.person?.personGuid,
+              firstName: c.person?.firstName,
+              lastName: c.person?.lastName,
+              contactMethods: (c.person?.contactMethods || [])
+                .filter((cm): cm is ContactMethod => cm != null)
+                .map((cm, cmIdx) => {
+                  if (cm?.typeCode === contactMethodType) {
+                    return {
+                      contactMethodGuid: cm.contactMethodGuid,
+                      typeCode: cm.typeCode,
+                      value: cm.value,
+                      isPrimary: cmIdx === contactMethodIndex,
+                    };
+                  }
+                  return {
+                    contactMethodGuid: cm.contactMethodGuid,
+                    typeCode: cm.typeCode,
+                    value: cm.value,
+                    isPrimary: cm.isPrimary ?? false, // ← Add default
+                  };
+                }),
+            },
+          };
+        }
+        // Transform the unchanged contact too
+        return {
+          businessPersonXrefGuid: c.businessPersonXrefGuid,
+          business: { businessGuid: c.business?.businessGuid },
+          person: {
+            personGuid: c.person?.personGuid,
+            firstName: c.person?.firstName,
+            lastName: c.person?.lastName,
+            contactMethods: (c.person?.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm) => ({
+                contactMethodGuid: cm.contactMethodGuid,
+                typeCode: cm.typeCode,
+                value: cm.value,
+                isPrimary: cm.isPrimary ?? false, // ← Add default
+              })),
+          },
+        };
+      });
       form.setFieldValue("contacts", updatedContacts);
     },
     [form],
