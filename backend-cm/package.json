@@ -124,6 +124,9 @@
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -168,5 +171,5 @@
       "glob": "^7.2.3"
     }
   },
-  "version": "2.0.291"
+  "version": "2.0.292"
 }

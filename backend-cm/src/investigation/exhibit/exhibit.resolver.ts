@@ -1,7 +1,8 @@
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { ExhibitService } from "./exhibit.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
+import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { CreateUpdateExhibitInput } from "../../investigation/exhibit/dto/exhibit";
@@ -10,6 +11,7 @@ import { CreateUpdateExhibitInput } from "../../investigation/exhibit/dto/exhibi
 @Resolver("Exhibit")
 export class ExhibitResolver {
   constructor(private readonly exhibitService: ExhibitService) {}
+  private readonly logger = new Logger(ExhibitResolver.name);
 
   @Query("getExhibitsByTask")
   @Roles(coreRoles)
@@ -30,7 +32,15 @@ export class ExhibitResolver {
   @Query("getExhibit")
   @Roles(coreRoles)
   async findOne(@Args("exhibitGuid") exhibitGuid: string) {
-    return await this.exhibitService.findOne(exhibitGuid);
+    try {
+      return await this.exhibitService.findOne(exhibitGuid);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new GraphQLError(error.message, { extensions: { code: "NOT_FOUND" } });
+      }
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching exhibit", { extensions: { code: "INTERNAL_SERVER_ERROR" } });
+    }
   }
 
   @Mutation("createExhibit")
