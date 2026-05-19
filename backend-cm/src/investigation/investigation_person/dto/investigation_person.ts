@@ -2,6 +2,10 @@ import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { investigation_person } from "../../../../prisma/investigation/generated/investigation_person";
 import { Field, InputType } from "@nestjs/graphql";
 import { PersonDto } from "../../../common/party";
+import {
+  CreateInvestigationContactMethodInput,
+  InvestigationContactMethod,
+} from "../../investigation_contact_method/dto/investigation_contact_method";
 
 export class InvestigationPerson implements PersonDto {
   personGuid: string;
@@ -12,24 +16,44 @@ export class InvestigationPerson implements PersonDto {
   middleName2?: string;
   lastName: string;
   isActive: boolean;
+  dateOfBirth?: Date;
+  driversLicenseNumber?: string;
+  driversLicenseJurisdiction?: string;
+  sexCode?: string;
+  contactMethods?: InvestigationContactMethod[];
 }
 
 @InputType()
 export class CreateInvestigationPersonInput {
-  @Field(() => String)
-  personReference: string;
+  @Field(() => String, { nullable: true })
+  personReference?: string;
 
   @Field(() => String)
   firstName: string;
 
   @Field(() => String)
-  middleName: string;
+  middleName?: string;
 
   @Field(() => String)
-  middleName2: string;
+  middleName2?: string;
 
   @Field(() => String)
   lastName: string;
+
+  @Field(() => Date, { nullable: true })
+  dateOfBirth?: Date;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseNumber?: string;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseJurisdiction?: string;
+
+  @Field(() => String, { nullable: true })
+  sexCode?: string;
+
+  @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: CreateInvestigationContactMethodInput[];
 }
 
 export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
@@ -68,6 +92,32 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isActive,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.dateOfBirth,
+      mapFrom((src) => src.date_of_birth),
+    ),
+    forMember(
+      (dest) => dest.driversLicenseNumber,
+      mapFrom((src) => src.drivers_license_number),
+    ),
+    forMember(
+      (dest) => dest.driversLicenseJurisdiction,
+      mapFrom((src) => src.drivers_license_jurisdiction),
+    ),
+    forMember(
+      (dest) => dest.sexCode,
+      mapFrom((src) => src.sex_code_ref),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_contact_method ?? [],
+          "investigation_contact_method",
+          "InvestigationContactMethod",
+        ),
+      ),
     ),
   );
 };

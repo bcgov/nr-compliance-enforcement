@@ -30,13 +30,13 @@ export class CreateInvestigationPartyInput {
   partyTypeCode: string;
 
   @Field(() => String)
-  partyReference: string;
+  partyReference?: string;
 
-  @Field(() => CreateInvestigationPersonInput)
-  person: CreateInvestigationPersonInput;
+  @Field(() => CreateInvestigationPersonInput, { nullable: true })
+  person?: CreateInvestigationPersonInput;
 
-  @Field(() => CreateInvestigationBusinessInput)
-  business: CreateInvestigationBusinessInput;
+  @Field(() => CreateInvestigationBusinessInput, { nullable: true })
+  business?: CreateInvestigationBusinessInput;
 
   @Field(() => String)
   partyAssociationRole: string;

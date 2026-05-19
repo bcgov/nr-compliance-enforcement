@@ -55,7 +55,7 @@ export class InvestigationPartyService {
 
           // Only add the business if it's required
           if (input.business) {
-            await tx.investigation_business.create({
+            const investigationBusiness = await tx.investigation_business.create({
               data: {
                 business_guid_ref: input.business.businessReference,
                 investigation_party_guid: investigationParty.investigation_party_guid,
@@ -64,11 +64,47 @@ export class InvestigationPartyService {
                 create_utc_timestamp: new Date(),
               },
             });
+
+            if (input.business.contactMethods?.length) {
+              await tx.investigation_contact_method.createMany({
+                data: input.business.contactMethods.map((cm) => ({
+                  investigation_business_guid: investigationBusiness.investigation_business_guid,
+                  contact_method_type_code_ref: cm.contactMethodTypeCode,
+                  contact_value: cm.contactValue,
+                  is_primary: cm.isPrimary ?? false,
+                  create_user_id: this.user.getIdirUsername(),
+                  create_utc_timestamp: new Date(),
+                })),
+              });
+            }
+
+            if (input.business.businessIdentifiers?.length) {
+              await tx.investigation_business_identifier.createMany({
+                data: input.business.businessIdentifiers.map((bi) => ({
+                  investigation_business_guid: investigationBusiness.investigation_business_guid,
+                  business_identifier_code_ref: bi.businessIdentifierCode,
+                  identifier_value: bi.identifierValue,
+                  create_user_id: this.user.getIdirUsername(),
+                  create_utc_timestamp: new Date(),
+                })),
+              });
+            }
+
+            if (input.business.aliases?.length) {
+              await tx.investigation_alias.createMany({
+                data: input.business.aliases.map((a) => ({
+                  investigation_business_guid: investigationBusiness.investigation_business_guid,
+                  name: a.name,
+                  create_user_id: this.user.getIdirUsername(),
+                  create_utc_timestamp: new Date(),
+                })),
+              });
+            }
           }
 
           // Only add the person if it's required
           if (input.person) {
-            await tx.investigation_person.create({
+            const investigationPerson = await tx.investigation_person.create({
               data: {
                 person_guid_ref: input.person.personReference,
                 investigation_party_guid: investigationParty.investigation_party_guid,
@@ -76,10 +112,27 @@ export class InvestigationPartyService {
                 middle_name: input.person.middleName,
                 middle_name_2: input.person.middleName2,
                 last_name: input.person.lastName,
+                date_of_birth: input.person.dateOfBirth,
+                drivers_license_number: input.person.driversLicenseNumber,
+                drivers_license_jurisdiction: input.person.driversLicenseJurisdiction,
+                sex_code_ref: input.person.sexCode,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
               },
             });
+
+            if (input.person.contactMethods?.length) {
+              await tx.investigation_contact_method.createMany({
+                data: input.person.contactMethods.map((cm) => ({
+                  investigation_person_guid: investigationPerson.investigation_person_guid,
+                  contact_method_type_code_ref: cm.contactMethodTypeCode,
+                  contact_value: cm.contactValue,
+                  is_primary: cm.isPrimary ?? false,
+                  create_user_id: this.user.getIdirUsername(),
+                  create_utc_timestamp: new Date(),
+                })),
+              });
+            }
           }
         } catch (error) {
           this.logger.error("Error creating investigation party:", error);
