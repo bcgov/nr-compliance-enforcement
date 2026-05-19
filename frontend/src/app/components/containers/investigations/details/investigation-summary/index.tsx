@@ -14,7 +14,7 @@ import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
-import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface InvestigationSummaryProps {

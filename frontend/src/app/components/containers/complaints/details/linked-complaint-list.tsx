@@ -17,7 +17,7 @@ import config from "@/config";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { CaseFile } from "@/generated/graphql";
 import { selectCanAccessCases } from "@/app/access/module-access";
-import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 
 type Props = {
   linkedComplaintData: LinkedComplaint[];

@@ -12,7 +12,7 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { getMapZoom } from "@/app/common/geocoder";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
-import { CaseActivities } from "@/app/components/containers/cases/case-activities/caseActivities";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;

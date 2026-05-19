@@ -1,4 +1,4 @@
-import { CaseActivityCard } from "@/app/components/containers/cases/case-activities/caseActivityCard";
+import { CaseActivityCard } from "@/app/components/containers/cases/case-activities/case-activity-card";
 import { FC, useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 
