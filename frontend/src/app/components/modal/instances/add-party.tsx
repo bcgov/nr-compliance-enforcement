@@ -1,9 +1,20 @@
-import { FC, memo, useState } from "react";
+import { FC, memo, useMemo, useState } from "react";
 import { Modal, Spinner, Button, Form } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
-import { CreateInspectionPartyInput, CreateInvestigationPartyInput, Party } from "@/generated/graphql";
+import {
+  Alias,
+  BusinessIdentifier,
+  ContactMethod,
+  CreateInspectionPartyInput,
+  CreateInvestigationPartyInput,
+  InvestigationAlias,
+  InvestigationBusinessIdentifier,
+  InvestigationContactMethod,
+  InvestigationParty,
+  Party,
+} from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
@@ -18,7 +29,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessForm } from "@/app/components/containers/parties/form/business-form";
 import z from "zod";
-import { toDateOfBirth } from "@/app/common/methods";
+import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -74,6 +85,30 @@ const createAddPartyMutation = (activityType: ActivityType) => {
   }
 };
 
+const UPDATE_INVESTIGATION_PARTY_MUTATION = gql`
+  mutation UpdateInvestigationParty($investigationGuid: String!, $input: UpdateInvestigationPartyInput!) {
+    updateInvestigationParty(investigationGuid: $investigationGuid, input: $input) {
+      investigationGuid
+      description
+      investigationStatus {
+        investigationStatusCode
+        shortDescription
+        longDescription
+      }
+      parties {
+        person {
+          firstName
+          lastName
+        }
+        business {
+          name
+        }
+      }
+      leadAgency
+    }
+  }
+`;
+
 const ModalLoading: FC = memo(() => (
   <div className="modal-loader">
     <div className="comp-overlay-content d-flex align-items-center justify-content-center">
@@ -87,12 +122,17 @@ const ModalLoading: FC = memo(() => (
 ));
 
 // Helper to build contact methods array for the local party mutation
-const buildLocalContactMethods = (phoneNumbers: any[], emailAddresses: any[]) => {
+const buildLocalContactMethods = (
+  phoneNumbers: ContactMethod[],
+  emailAddresses: ContactMethod[],
+  isUpdate: boolean = false,
+) => {
   const methods = [];
 
   if (phoneNumbers?.length) {
     methods.push(
-      ...phoneNumbers.map((p: any) => ({
+      ...phoneNumbers.map((p: ContactMethod) => ({
+        ...(isUpdate && p.contactMethodGuid ? { contactMethodGuid: p.contactMethodGuid } : {}),
         contactMethodTypeCode: ContactMethods.PHONE,
         contactValue: p.value ?? "",
         isPrimary: p.isPrimary ?? false,
@@ -102,7 +142,8 @@ const buildLocalContactMethods = (phoneNumbers: any[], emailAddresses: any[]) =>
 
   if (emailAddresses?.length) {
     methods.push(
-      ...emailAddresses.map((e: any) => ({
+      ...emailAddresses.map((e: ContactMethod) => ({
+        ...(isUpdate && e.contactMethodGuid ? { contactMethodGuid: e.contactMethodGuid } : {}),
         contactMethodTypeCode: ContactMethods.EMAIL,
         contactValue: e.value ?? "",
         isPrimary: e.isPrimary ?? false,
@@ -114,7 +155,7 @@ const buildLocalContactMethods = (phoneNumbers: any[], emailAddresses: any[]) =>
 };
 
 // Helper to build business identifiers for the local party mutation
-const buildLocalBusinessIdentifiers = (businessNumber: any, worksafeBCNumber: any) => {
+const buildLocalBusinessIdentifiers = (businessNumber: BusinessIdentifier, worksafeBCNumber?: BusinessIdentifier) => {
   const identifiers = [];
 
   if (businessNumber?.identifierValue) {
@@ -135,18 +176,40 @@ const buildLocalBusinessIdentifiers = (businessNumber: any, worksafeBCNumber: an
 };
 
 // Helper to build aliases for the local party mutation
-const buildLocalAliases = (aliases: any[]) => {
-  const filtered = aliases?.filter((a: any) => a.name?.trim());
-  return filtered?.length ? filtered.map((a: any) => ({ name: a.name })) : undefined;
+const buildLocalAliases = (aliases: Alias[]) => {
+  const filtered = aliases?.filter((a: Alias) => a.name?.trim());
+  return filtered?.length ? filtered.map((a: Alias) => ({ name: a.name })) : undefined;
 };
 
-type AddPartyModalProps = {
+// Helper to map investigation contact methods to form phone/email arrays
+const mapInvestigationContactMethods = (contactMethods: ContactMethod[], typeCode: string) => {
+  return (
+    contactMethods
+      ?.filter((cm: ContactMethod) => cm?.typeCode === typeCode)
+      .map((cm: ContactMethod) => ({
+        contactMethodGuid: cm.contactMethodGuid,
+        value: cm.value,
+        isPrimary: cm.isPrimary ?? false,
+      })) || []
+  );
+};
+
+// Helper to map between global ContactMethod types and locals
+const toContactMethod = (cm: InvestigationContactMethod): ContactMethod => ({
+  contactMethodGuid: cm.contactMethodGuid,
+  typeCode: cm.contactMethodTypeCode,
+  value: cm.contactValue,
+  isPrimary: cm.isPrimary,
+});
+
+type AddEditPartyModalProps = {
   activityType: ActivityType;
+  modalMode: "add" | "edit";
   close: () => void;
   submit: () => void;
 };
 
-export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, submit }) => {
+export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, modalMode, close, submit }) => {
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
@@ -155,6 +218,9 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
 
   // Vars
   const { title, activityGuid, onDirtyChange } = modalData;
+
+  // The full party object passed in for edit mode
+  const editParty: InvestigationParty | undefined = modalData.party;
 
   // Dirty Tracking
   const { markDirty } = useFormDirtyState(onDirtyChange);
@@ -177,9 +243,75 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
     },
   });
 
-  // TanStack form for "create new" mode
-  const createForm = useForm({
-    defaultValues: {
+  const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
+    onSuccess: () => {
+      ToggleSuccess("Party updated successfully");
+    },
+    onError: (error: any) => {
+      console.error("Error updating party:", error);
+      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update party");
+    },
+  });
+
+  const defaultValues = useMemo(() => {
+    if (modalMode === "edit" && editParty) {
+      return {
+        partyType: editParty.partyTypeCode || "",
+        firstName: editParty.person?.firstName || "",
+        middleName: editParty.person?.middleName || "",
+        middleName2: editParty.person?.middleName2 || "",
+        lastName: editParty.person?.lastName || "",
+        dateOfBirth: editParty.person?.dateOfBirth
+          ? formatDateOfBirth(String(editParty.person.dateOfBirth))
+          : undefined,
+        driversLicenseNumber: editParty.person?.driversLicenseNumber || "",
+        driversLicenseJurisdiction: editParty.person?.driversLicenseJurisdiction || "",
+        sexCode: editParty.person?.sexCode || "",
+        businessName: editParty.business?.name || "",
+        businessNumber: (() => {
+          const found = editParty.business?.businessIdentifiers
+            ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+            .find((bi) => bi.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
+          return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+        })(),
+        wsbcNumber: (() => {
+          const found = editParty.business?.businessIdentifiers
+            ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+            .find((bi) => bi.businessIdentifierCode === BusinessIdentifiers.WSBC_NUMBER);
+          return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+        })(),
+        aliases:
+          editParty.business?.aliases
+            ?.filter((a): a is InvestigationAlias => a != null)
+            .map((a) => ({
+              aliasGuid: a.aliasGuid,
+              name: a.name,
+            })) || [],
+        phoneNumbers: editParty.person
+          ? mapInvestigationContactMethods(
+              (editParty.person.contactMethods ?? [])
+                .filter((cm): cm is InvestigationContactMethod => cm != null)
+                .map(toContactMethod),
+              ContactMethods.PHONE,
+            )
+          : mapInvestigationContactMethods(
+              (editParty.business?.contactMethods ?? [])
+                .filter((cm): cm is InvestigationContactMethod => cm != null)
+                .map(toContactMethod),
+              ContactMethods.PHONE,
+            ),
+        emailAddresses: mapInvestigationContactMethods(
+          (editParty.business?.contactMethods ?? [])
+            .filter((cm): cm is InvestigationContactMethod => cm != null)
+            .map(toContactMethod),
+          ContactMethods.EMAIL,
+        ),
+        contacts: [] as any[],
+        partyAssociationRole: editParty.partyAssociationRole || "",
+      };
+    }
+
+    return {
       partyType: "",
       firstName: "",
       middleName: "",
@@ -190,51 +322,88 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
       driversLicenseJurisdiction: "",
       sexCode: "",
       businessName: "",
-      businessNumber: {} as any,
-      worksafeBCNumber: {} as any,
-      aliases: [] as any[],
+      businessNumber: {},
+      worksafeBCNumber: {},
+      aliases: [] as Alias[],
       phoneNumbers: [] as any[],
       emailAddresses: [] as any[],
       contacts: [] as any[],
       partyAssociationRole: "",
-    },
+    };
+  }, [modalMode, editParty]);
+
+  // TanStack form for "create new" and "edit" mode
+  const partyForm = useForm({
+    defaultValues,
     onSubmit: async ({ value }) => {
-      const input: any = {
-        partyTypeCode: value.partyType,
-        partyAssociationRole: value.partyAssociationRole,
-      };
-
-      if (value.partyType === PartyTypeCodes.PERSON) {
-        input.person = {
-          firstName: value.firstName,
-          middleName: value.middleName?.trim() || undefined,
-          middleName2: value.middleName2?.trim() || undefined,
-          lastName: value.lastName,
-          dateOfBirth: toDateOfBirth(value),
-          driversLicenseNumber: value.driversLicenseNumber || undefined,
-          driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
-          sexCode: value.sexCode || undefined,
-          contactMethods: buildLocalContactMethods(value.phoneNumbers, []),
+      if (modalMode === "edit" && editParty) {
+        // Update mutation
+        const input: any = {
+          partyIdentifier: editParty.partyIdentifier,
+          partyAssociationRole: value.partyAssociationRole,
         };
-      } else {
-        input.business = {
-          name: value.businessName,
-          contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
-          businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
-          aliases: buildLocalAliases(value.aliases),
-        };
-      }
 
-      if (activityType === "investigation") {
-        addPartyMutation.mutate({ investigationGuid: activityGuid, input });
+        if (value.partyType === PartyTypeCodes.PERSON) {
+          input.person = {
+            firstName: value.firstName,
+            middleName: value.middleName?.trim() || undefined,
+            middleName2: value.middleName2?.trim() || undefined,
+            lastName: value.lastName,
+            dateOfBirth: toDateOfBirth(value),
+            driversLicenseNumber: value.driversLicenseNumber || undefined,
+            driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
+            sexCode: value.sexCode || undefined,
+            contactMethods: buildLocalContactMethods(value.phoneNumbers as any[], [], true),
+          };
+        } else {
+          input.business = {
+            name: value.businessName,
+            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
+            businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            aliases: buildLocalAliases(value.aliases),
+          };
+        }
+
+        updatePartyMutation.mutate({ investigationGuid: activityGuid, input });
       } else {
-        addPartyMutation.mutate({ inspectionGuid: activityGuid, input });
+        // Create mutation
+        const input: any = {
+          partyTypeCode: value.partyType,
+          partyAssociationRole: value.partyAssociationRole,
+        };
+
+        if (value.partyType === PartyTypeCodes.PERSON) {
+          input.person = {
+            firstName: value.firstName,
+            middleName: value.middleName?.trim() || undefined,
+            middleName2: value.middleName2?.trim() || undefined,
+            lastName: value.lastName,
+            dateOfBirth: toDateOfBirth(value),
+            driversLicenseNumber: value.driversLicenseNumber || undefined,
+            driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
+            sexCode: value.sexCode || undefined,
+            contactMethods: buildLocalContactMethods(value.phoneNumbers, []),
+          };
+        } else {
+          input.business = {
+            name: value.businessName,
+            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
+            businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            aliases: buildLocalAliases(value.aliases),
+          };
+        }
+
+        if (activityType === "investigation") {
+          addPartyMutation.mutate({ investigationGuid: activityGuid, input });
+        } else {
+          addPartyMutation.mutate({ inspectionGuid: activityGuid, input });
+        }
       }
       submit();
     },
   });
 
-  const partyTypeValue = useStore(createForm.store, (state: any) => state.values.partyType);
+  const partyTypeValue = useStore(partyForm.store, (state: any) => state.values.partyType);
 
   const partyTypeCodes = partyTypes
     ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
@@ -333,27 +502,30 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
             display: "inherit",
           }}
         >
-          {/* Mode selection */}
-          <div className="pb-3 d-flex">
-            <Form.Check
-              inline
-              type="radio"
-              id="mode-search"
-              label="Search existing party"
-              checked={mode === "search"}
-              onChange={() => setMode("search")}
-            />
-            <Form.Check
-              inline
-              type="radio"
-              id="mode-create"
-              label="Create new party"
-              checked={mode === "create"}
-              onChange={() => setMode("create")}
-            />
-          </div>
+          {/* Mode selection - only shown in add mode */}
+          {modalMode === "add" && (
+            <div className="pb-3 d-flex">
+              <Form.Check
+                inline
+                type="radio"
+                id="mode-search"
+                label="Search existing party"
+                checked={mode === "search"}
+                onChange={() => setMode("search")}
+              />
+              <Form.Check
+                inline
+                type="radio"
+                id="mode-create"
+                label="Create new party"
+                checked={mode === "create"}
+                onChange={() => setMode("create")}
+              />
+            </div>
+          )}
 
-          {mode === "search" && (
+          {/* Search existing party mode - only available in add mode */}
+          {modalMode === "add" && mode === "search" && (
             <>
               <div
                 className="comp-details-form-row pb-3"
@@ -418,11 +590,12 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
               )}
             </>
           )}
-          {/* Create new party mode */}
-          {mode === "create" && (
+
+          {/* Create new party / Edit party form */}
+          {(modalMode === "edit" || (modalMode === "add" && mode === "create")) && (
             <>
               <FormField
-                form={createForm}
+                form={partyForm}
                 name="partyType"
                 label="Party Type"
                 required
@@ -440,20 +613,21 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
                     showInactive={false}
                     enableValidation={true}
                     errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    isDisabled={modalMode === "edit"}
                   />
                 )}
               />
 
               {partyTypeValue === PartyTypeCodes.PERSON && (
                 <PersonForm
-                  form={createForm}
+                  form={partyForm}
                   isDisabled={false}
                 />
               )}
 
               {partyTypeValue === PartyTypeCodes.BUSINESS && (
                 <BusinessForm
-                  form={createForm}
+                  form={partyForm}
                   isDisabled={false}
                   showContactPeople={false}
                 />
@@ -461,7 +635,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
 
               {partyTypeValue && (
                 <FormField
-                  form={createForm}
+                  form={partyForm}
                   name="partyAssociationRole"
                   label="Party association role"
                   required
@@ -492,7 +666,7 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
           <Button
             variant="outline-primary"
             id="add-party-cancel-button"
-            title="Cancel Add Party"
+            title="Cancel"
             onClick={close}
           >
             Cancel
@@ -500,8 +674,8 @@ export const AddPartyModal: FC<AddPartyModalProps> = ({ activityType, close, sub
           <Button
             variant="primary"
             id="add-party-save-button"
-            title="Save Add Party"
-            onClick={mode === "search" ? handleAddParty : () => createForm.handleSubmit()}
+            title="Save"
+            onClick={modalMode === "add" && mode === "search" ? handleAddParty : () => partyForm.handleSubmit()}
           >
             <span>Save and Close</span>
           </Button>

@@ -11,7 +11,7 @@ interface Props {
   companies: InvestigationParty[] | InspectionParty[];
   people: InvestigationParty[] | InspectionParty[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
-  onEditParty?: (partyIdentifier: string, partyName: string, partyAssociationRole: string) => void;
+  onEditParty?: (party: InvestigationParty | InspectionParty) => void;
   activityType: string;
 }
 
@@ -114,15 +114,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
                             </Dropdown.Item>
                           )}
                           {onEditParty && (
-                            <Dropdown.Item
-                              onClick={() =>
-                                onEditParty(
-                                  party.partyIdentifier,
-                                  `${party.person?.firstName} ${party.person?.lastName}`,
-                                  party.partyAssociationRole ?? "",
-                                )
-                              }
-                            >
+                            <Dropdown.Item onClick={() => onEditParty(party)}>
                               <i className="bi bi-pencil me-2" />
                               {/* */}Edit
                             </Dropdown.Item>
@@ -175,15 +167,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
                             </Dropdown.Item>
                           )}
                           {onEditParty && (
-                            <Dropdown.Item
-                              onClick={() =>
-                                onEditParty(
-                                  party.partyIdentifier,
-                                  party.business?.name || "",
-                                  party.partyAssociationRole ?? "",
-                                )
-                              }
-                            >
+                            <Dropdown.Item onClick={() => onEditParty(party)}>
                               <i className="bi bi-pencil me-2" />
                               {/* */}Edit
                             </Dropdown.Item>

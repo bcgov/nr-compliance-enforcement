@@ -31,16 +31,43 @@ export const GET_INVESTIGATION = gql`
       }
       parties {
         partyIdentifier
+        partyReference
+        partyTypeCode
         person {
-          firstName
-          lastName
           personGuid
+          firstName
+          middleName
+          middleName2
+          lastName
           dateOfBirth
+          driversLicenseNumber
+          driversLicenseJurisdiction
           sexCode
+          contactMethods {
+            contactMethodGuid
+            contactMethodTypeCode
+            contactValue
+            isPrimary
+          }
         }
         business {
-          name
           businessGuid
+          name
+          contactMethods {
+            contactMethodGuid
+            contactMethodTypeCode
+            contactValue
+            isPrimary
+          }
+          businessIdentifiers {
+            businessIdentifierGuid
+            businessIdentifierCode
+            identifierValue
+          }
+          aliases {
+            aliasGuid
+            name
+          }
         }
         partyAssociationRole
       }
