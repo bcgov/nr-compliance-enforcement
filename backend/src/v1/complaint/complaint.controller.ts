@@ -151,7 +151,7 @@ export class ComplaintController {
   ): Promise<ComplaintDtoAlias> {
     const result = (await this.service.findById(id, complaintType, req, token)) as ComplaintDtoAlias;
     if (!result) {
-      return res.status(401).send({ message: "Unauthorized" });
+      return res.status(404).send({ message: "Not Found" });
     }
     return res.status(200).json(result);
   }

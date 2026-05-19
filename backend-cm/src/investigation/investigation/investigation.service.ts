@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { investigation } from "../../../prisma/investigation/investigation.unsupported_types";
 import {
   CreateInvestigationInput,
@@ -24,7 +24,7 @@ import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
-
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 @Injectable()
 export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
@@ -41,121 +41,127 @@ export class InvestigationService {
   ) {}
 
   async findOne(investigationGuid: string) {
-    const prismaInvestigation = await this.prisma.investigation.findUnique({
-      where: {
-        investigation_guid: investigationGuid,
-      },
-      include: {
-        investigation_status_code: true,
-        investigation_party: {
-          include: {
-            investigation_person: {
-              where: {
-                active_ind: true,
+    const prismaInvestigation = await withRlsTransaction(this.prisma, async (db) => {
+      const found = await db.investigation.findUnique({
+        where: {
+          investigation_guid: investigationGuid,
+        },
+        include: {
+          investigation_status_code: true,
+          investigation_party: {
+            include: {
+              investigation_person: {
+                where: {
+                  active_ind: true,
+                },
+                include: {
+                  investigation_contact_method: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                },
               },
-              include: {
-                investigation_contact_method: {
-                  where: {
-                    active_ind: true,
+              investigation_business: {
+                where: {
+                  active_ind: true,
+                },
+                include: {
+                  investigation_contact_method: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                  investigation_business_identifier: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                  investigation_alias: {
+                    where: {
+                      active_ind: true,
+                    },
                   },
                 },
               },
             },
-            investigation_business: {
-              where: {
-                active_ind: true,
-              },
-              include: {
-                investigation_contact_method: {
-                  where: {
-                    active_ind: true,
+            where: {
+              active_ind: true,
+            },
+          },
+          task: {
+            where: {
+              active_ind: true,
+            },
+            orderBy: {
+              create_utc_timestamp: "asc",
+            },
+          },
+          contravention: {
+            include: {
+              contravention_party_xref: {
+                include: {
+                  investigation_party: {
+                    include: {
+                      investigation_person: {
+                        where: {
+                          active_ind: true,
+                        },
+                      },
+                      investigation_business: {
+                        where: {
+                          active_ind: true,
+                        },
+                      },
+                    },
+                  },
+                  enforcement_action: {
+                    where: {
+                      active_ind: true,
+                    },
+                    orderBy: {
+                      create_utc_timestamp: "asc",
+                    },
+                    include: {
+                      ticket: {
+                        where: {
+                          active_ind: true,
+                        },
+                      },
+                      enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                      contravention_party_xref: {
+                        include: {
+                          contravention: true,
+                          enforcement_action: true,
+                        },
+                      },
+                    },
                   },
                 },
-                investigation_business_identifier: {
-                  where: {
-                    active_ind: true,
-                  },
-                },
-                investigation_alias: {
-                  where: {
-                    active_ind: true,
-                  },
+                where: {
+                  active_ind: true,
                 },
               },
             },
-          },
-          where: {
-            active_ind: true,
-          },
-        },
-        task: {
-          where: {
-            active_ind: true,
-          },
-          orderBy: {
-            create_utc_timestamp: "asc",
-          },
-        },
-        contravention: {
-          include: {
-            contravention_party_xref: {
-              include: {
-                investigation_party: {
-                  include: {
-                    investigation_person: {
-                      where: {
-                        active_ind: true,
-                      },
-                    },
-                    investigation_business: {
-                      where: {
-                        active_ind: true,
-                      },
-                    },
-                  },
-                },
-                enforcement_action: {
-                  where: {
-                    active_ind: true,
-                  },
-                  orderBy: {
-                    create_utc_timestamp: "asc",
-                  },
-                  include: {
-                    ticket: {
-                      where: {
-                        active_ind: true,
-                      },
-                    },
-                    enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
-                    contravention_party_xref: {
-                      include: {
-                        contravention: true,
-                        enforcement_action: true,
-                      },
-                    },
-                  },
-                },
-              },
-              where: {
-                active_ind: true,
-              },
+            where: {
+              active_ind: true,
+            },
+            orderBy: {
+              create_utc_timestamp: "asc",
             },
           },
-          where: {
-            active_ind: true,
-          },
-          orderBy: {
-            create_utc_timestamp: "asc",
-          },
         },
-      },
+      });
+      if (!found) {
+        return null;
+      }
+      (found as investigation).location_geometry_point =
+        (await this.fetchLocationGeometryPoints([investigationGuid], db)).get(investigationGuid) ?? null;
+      return found;
     });
-    const geometry = (await this.fetchLocationGeometryPoints([investigationGuid])).get(investigationGuid) ?? null;
     if (!prismaInvestigation) {
-      throw new Error(`Investigation with guid ${investigationGuid} not found`);
+      throw new NotFoundException();
     }
-    (prismaInvestigation as investigation).location_geometry_point = geometry;
 
     try {
       return this.mapper.map<investigation, Investigation>(
@@ -174,38 +180,41 @@ export class InvestigationService {
       return [];
     }
 
-    const prismaInvestigations = await this.prisma.investigation.findMany({
-      where: {
-        investigation_guid: {
-          in: ids,
-        },
-      },
-      include: {
-        investigation_status_code: true,
-        investigation_party: {
-          include: {
-            investigation_person: {
-              where: {
-                active_ind: true,
-              },
-            },
-            investigation_business: {
-              where: {
-                active_ind: true,
-              },
-            },
-          },
-          where: {
-            active_ind: true,
+    const prismaInvestigations = await withRlsTransaction(this.prisma, async (db) => {
+      const found = await db.investigation.findMany({
+        where: {
+          investigation_guid: {
+            in: ids,
           },
         },
-      },
+        include: {
+          investigation_status_code: true,
+          investigation_party: {
+            include: {
+              investigation_person: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              investigation_business: {
+                where: {
+                  active_ind: true,
+                },
+              },
+            },
+            where: {
+              active_ind: true,
+            },
+          },
+        },
+      });
+      const guids = found.map((inv) => inv.investigation_guid);
+      const geometryByGuid = await this.fetchLocationGeometryPoints(guids, db);
+      for (const inv of found) {
+        (inv as investigation).location_geometry_point = geometryByGuid.get(inv.investigation_guid) ?? null;
+      }
+      return found;
     });
-    const guids = prismaInvestigations.map((inv) => inv.investigation_guid);
-    const geometryByGuid = await this.fetchLocationGeometryPoints(guids);
-    for (const inv of prismaInvestigations) {
-      (inv as investigation).location_geometry_point = geometryByGuid.get(inv.investigation_guid) ?? null;
-    }
 
     try {
       return this.mapper.mapArray<investigation, Investigation>(
@@ -318,9 +327,9 @@ export class InvestigationService {
 
     // Create the investigation
     let investigation;
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       try {
-        investigation = await tx.investigation.create({
+        investigation = await db.investigation.create({
           data: {
             investigation_status: investigationStatus,
             investigation_description: input.description,
@@ -347,9 +356,9 @@ export class InvestigationService {
         this.logger.error("Error creating investigation:", error);
         throw error;
       }
-      await this.updateLocationGeometryPoint(tx, investigation.investigation_guid, input.locationGeometry);
+      await this.updateLocationGeometryPoint(db, investigation.investigation_guid, input.locationGeometry);
       investigation.location_geometry_point =
-        (await this.fetchLocationGeometryPoints([investigation.investigation_guid], tx)).get(
+        (await this.fetchLocationGeometryPoints([investigation.investigation_guid], db)).get(
           investigation.investigation_guid,
         ) ?? null;
     });
@@ -419,7 +428,7 @@ export class InvestigationService {
       throw new Error(`Investigation with guid ${investigationGuid} not found.`);
     }
     let updatedInvestigation;
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       try {
         const updateData: any = {
           update_user_id: this.user.getIdirUsername(),
@@ -464,7 +473,7 @@ export class InvestigationService {
           updateData.geo_organization_unit_code_ref = input.community || null;
         }
         // Perform the update
-        updatedInvestigation = await tx.investigation.update({
+        updatedInvestigation = await db.investigation.update({
           where: { investigation_guid: investigationGuid },
           data: updateData,
           include: {
@@ -488,9 +497,9 @@ export class InvestigationService {
             },
           },
         });
-        await this.updateLocationGeometryPoint(tx, investigationGuid, input.locationGeometry);
+        await this.updateLocationGeometryPoint(db, investigationGuid, input.locationGeometry);
         updatedInvestigation.location_geometry_point =
-          (await this.fetchLocationGeometryPoints([investigationGuid], tx)).get(investigationGuid) ?? null;
+          (await this.fetchLocationGeometryPoints([investigationGuid], db)).get(investigationGuid) ?? null;
       } catch (error) {
         this.logger.error(`Error updating investigation with guid ${investigationGuid}:`, error);
         throw error;
@@ -623,67 +632,69 @@ export class InvestigationService {
   async searchMap(model: InvestigationSearchMapParameters): Promise<SearchMapResults> {
     try {
       const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
-
       const where = this._buildInvestigationWhereClause(model.filters);
-      const investigations = await this.prisma.investigation.findMany({
-        where,
-        select: {
-          investigation_guid: true,
-        },
+
+      return await withRlsTransaction(this.prisma, async (db) => {
+        const investigations = await db.investigation.findMany({
+          where,
+          select: {
+            investigation_guid: true,
+          },
+        });
+        const investigationGuids = investigations.map((inv) => inv.investigation_guid);
+
+        if (investigationGuids.length === 0) {
+          // Pass false when there are no results to prevent unwanted reposition
+          return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
+        }
+
+        // Get unmappable results. Raw SQL is required for PostGIS operations.
+        const unmappedResult = await db.$queryRaw<Array<{ count: bigint }>>`
+          SELECT COUNT(*) as count
+          FROM investigation.investigation
+          WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
+            AND (
+              location_geometry_point IS NULL OR
+              public.ST_X(location_geometry_point) = 0 OR
+              public.ST_Y(location_geometry_point) = 0
+            )
+        `;
+
+        // Get mappable results
+        const mappedInvestigations = await db.$queryRaw<
+          Array<{ investigation_guid: string; location_geometry_point: any }>
+        >`
+          SELECT
+            investigation_guid,
+            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+          FROM investigation.investigation
+          WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
+            AND location_geometry_point IS NOT NULL
+            AND public.ST_X(location_geometry_point) <> 0
+            AND public.ST_Y(location_geometry_point) <> 0
+            AND public.ST_Intersects(
+              public.ST_SetSRID(location_geometry_point, 4326),
+              public.ST_MakeEnvelope(${bboxArray[0]}, ${bboxArray[1]}, ${bboxArray[2]}, ${bboxArray[3]}, 4326)
+            )
+        `;
+
+        const points: Array<PointFeature<GeoJsonProperties>> = mappedInvestigations.map((item) => ({
+          type: "Feature",
+          properties: {
+            cluster: false,
+            id: item.investigation_guid,
+          },
+          geometry: item.location_geometry_point,
+        }));
+
+        return MapSearchUtility.buildSearchMapResults(
+          points,
+          unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
+          model.zoom,
+          bboxArray,
+          isGlobalSearch,
+        );
       });
-      const investigationGuids = investigations.map((inv) => inv.investigation_guid);
-
-      if (investigationGuids.length === 0) {
-        // Pass false when there are no results to prevent unwanted reposition
-        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
-      }
-
-      // Get unmappable results. Raw SQL is required for PostGIS operations.
-      const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
-        SELECT COUNT(*) as count
-        FROM investigation.investigation
-        WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
-          AND (
-            location_geometry_point IS NULL OR
-            public.ST_X(location_geometry_point) = 0 OR
-            public.ST_Y(location_geometry_point) = 0
-          )
-      `;
-
-      // Get mappable results
-      const mappedInvestigations = await this.prisma.$queryRaw<
-        Array<{ investigation_guid: string; location_geometry_point: any }>
-      >`
-        SELECT
-          investigation_guid,
-          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM investigation.investigation
-        WHERE investigation_guid = ANY(${investigationGuids}::uuid[])
-          AND location_geometry_point IS NOT NULL
-          AND public.ST_X(location_geometry_point) <> 0
-          AND public.ST_Y(location_geometry_point) <> 0
-          AND public.ST_Intersects(
-            public.ST_SetSRID(location_geometry_point, 4326),
-            public.ST_MakeEnvelope(${bboxArray[0]}, ${bboxArray[1]}, ${bboxArray[2]}, ${bboxArray[3]}, 4326)
-          )
-      `;
-
-      const points: Array<PointFeature<GeoJsonProperties>> = mappedInvestigations.map((item) => ({
-        type: "Feature",
-        properties: {
-          cluster: false,
-          id: item.investigation_guid,
-        },
-        geometry: item.location_geometry_point,
-      }));
-
-      return MapSearchUtility.buildSearchMapResults(
-        points,
-        unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
-        model.zoom,
-        bboxArray,
-        isGlobalSearch,
-      );
     } catch (error) {
       this.logger.error("Error performing map search:", error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);

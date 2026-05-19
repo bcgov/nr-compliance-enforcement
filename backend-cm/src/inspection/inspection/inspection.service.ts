@@ -1,6 +1,6 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { HttpException, HttpStatus, Injectable, Logger } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { inspection } from "../../../prisma/inspection/inspection.unsupported_types";
 import {
   CreateInspectionInput,
@@ -24,7 +24,7 @@ import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInspectionIdentifier } from "src/common/sequence.utility";
-
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 @Injectable()
 export class InspectionService {
   constructor(
@@ -41,37 +41,43 @@ export class InspectionService {
   private readonly logger = new Logger(InspectionService.name);
 
   async findOne(inspectionGuid: string) {
-    const prismaInspection = await this.prisma.inspection.findUnique({
-      where: {
-        inspection_guid: inspectionGuid,
-      },
-      include: {
-        inspection_status_code: true,
-        inspection_party: {
-          include: {
-            inspection_person: {
-              where: {
-                active_ind: true,
+    const prismaInspection = await withRlsTransaction(this.prisma, async (db) => {
+      const found = await db.inspection.findUnique({
+        where: {
+          inspection_guid: inspectionGuid,
+        },
+        include: {
+          inspection_status_code: true,
+          inspection_party: {
+            include: {
+              inspection_person: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              inspection_business: {
+                where: {
+                  active_ind: true,
+                },
               },
             },
-            inspection_business: {
-              where: {
-                active_ind: true,
-              },
+            where: {
+              active_ind: true,
             },
-          },
-          where: {
-            active_ind: true,
           },
         },
-      },
+      });
+      if (!found) {
+        return null;
+      }
+      (found as inspection).location_geometry_point =
+        (await this.fetchLocationGeometryPoints([inspectionGuid], db)).get(inspectionGuid) ?? null;
+      return found;
     });
-    const geometry = (await this.fetchLocationGeometryPoints([inspectionGuid])).get(inspectionGuid) ?? null;
 
     if (!prismaInspection) {
-      throw new Error(`Inspection with guid ${inspectionGuid} not found`);
+      throw new NotFoundException();
     }
-    (prismaInspection as inspection).location_geometry_point = geometry;
 
     try {
       return this.mapper.map<inspection, Inspection>(prismaInspection as inspection, "inspection", "Inspection");
@@ -86,38 +92,41 @@ export class InspectionService {
       return [];
     }
 
-    const prismaInspections = await this.prisma.inspection.findMany({
-      where: {
-        inspection_guid: {
-          in: ids,
-        },
-      },
-      include: {
-        inspection_status_code: true,
-        inspection_party: {
-          include: {
-            inspection_person: {
-              where: {
-                active_ind: true,
-              },
-            },
-            inspection_business: {
-              where: {
-                active_ind: true,
-              },
-            },
-          },
-          where: {
-            active_ind: true,
+    const prismaInspections = await withRlsTransaction(this.prisma, async (db) => {
+      const found = await db.inspection.findMany({
+        where: {
+          inspection_guid: {
+            in: ids,
           },
         },
-      },
+        include: {
+          inspection_status_code: true,
+          inspection_party: {
+            include: {
+              inspection_person: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              inspection_business: {
+                where: {
+                  active_ind: true,
+                },
+              },
+            },
+            where: {
+              active_ind: true,
+            },
+          },
+        },
+      });
+      const guids = found.map((insp) => insp.inspection_guid);
+      const geometryByGuid = await this.fetchLocationGeometryPoints(guids, db);
+      for (const insp of found) {
+        (insp as inspection).location_geometry_point = geometryByGuid.get(insp.inspection_guid) ?? null;
+      }
+      return found;
     });
-    const guids = prismaInspections.map((insp) => insp.inspection_guid);
-    const geometryByGuid = await this.fetchLocationGeometryPoints(guids);
-    for (const insp of prismaInspections) {
-      (insp as inspection).location_geometry_point = geometryByGuid.get(insp.inspection_guid) ?? null;
-    }
 
     try {
       return this.mapper.mapArray<inspection, Inspection>(
@@ -287,65 +296,65 @@ export class InspectionService {
   async searchMap(model: InspectionSearchMapParameters): Promise<SearchMapResults> {
     try {
       const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
-
       const where = this._buildInspectionWhereClause(model.filters);
-      const inspections = await this.prisma.inspection.findMany({
-        where,
-        select: {
-          inspection_guid: true,
-        },
+
+      return await withRlsTransaction(this.prisma, async (db) => {
+        const inspections = await db.inspection.findMany({
+          where,
+          select: {
+            inspection_guid: true,
+          },
+        });
+        const inspectionGuids = inspections.map((ins) => ins.inspection_guid);
+
+        if (inspectionGuids.length === 0) {
+          // Pass false when there are no results to prevent unwanted reposition
+          return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
+        }
+
+        const unmappedResult = await db.$queryRaw<Array<{ count: bigint }>>`
+          SELECT COUNT(*) as count
+          FROM inspection.inspection
+          WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
+            AND (
+              location_geometry_point IS NULL OR
+              public.ST_X(location_geometry_point) = 0 OR
+              public.ST_Y(location_geometry_point) = 0
+            )
+        `;
+
+        const mappedInspections = await db.$queryRaw<Array<{ inspection_guid: string; location_geometry_point: any }>>`
+          SELECT
+            inspection_guid,
+            public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
+          FROM inspection.inspection
+          WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
+            AND location_geometry_point IS NOT NULL
+            AND public.ST_X(location_geometry_point) <> 0
+            AND public.ST_Y(location_geometry_point) <> 0
+            AND public.ST_Intersects(
+              public.ST_SetSRID(location_geometry_point, 4326),
+              public.ST_MakeEnvelope(${bboxArray[0]}, ${bboxArray[1]}, ${bboxArray[2]}, ${bboxArray[3]}, 4326)
+            )
+        `;
+
+        const points: Array<PointFeature<GeoJsonProperties>> = mappedInspections.map((item) => ({
+          type: "Feature",
+          properties: {
+            cluster: false,
+            id: item.inspection_guid,
+          },
+          geometry: item.location_geometry_point,
+        }));
+
+        return MapSearchUtility.buildSearchMapResults(
+          points,
+          unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
+          model.zoom,
+          bboxArray,
+          isGlobalSearch,
+        );
       });
-      const inspectionGuids = inspections.map((ins) => ins.inspection_guid);
-
-      if (inspectionGuids.length === 0) {
-        // Pass false when there are no results to prevent unwanted reposition
-        return MapSearchUtility.buildSearchMapResults([], 0, model.zoom, bboxArray, false);
-      }
-
-      const unmappedResult = await this.prisma.$queryRaw<Array<{ count: bigint }>>`
-        SELECT COUNT(*) as count
-        FROM inspection.inspection
-        WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
-          AND (
-            location_geometry_point IS NULL OR
-            public.ST_X(location_geometry_point) = 0 OR
-            public.ST_Y(location_geometry_point) = 0
-          )
-      `;
-
-      const mappedInspections = await this.prisma.$queryRaw<
-        Array<{ inspection_guid: string; location_geometry_point: any }>
-      >`
-        SELECT
-          inspection_guid,
-          public.ST_AsGeoJSON(location_geometry_point)::json as location_geometry_point
-        FROM inspection.inspection
-        WHERE inspection_guid = ANY(${inspectionGuids}::uuid[])
-          AND location_geometry_point IS NOT NULL
-          AND public.ST_X(location_geometry_point) <> 0
-          AND public.ST_Y(location_geometry_point) <> 0
-          AND public.ST_Intersects(
-            public.ST_SetSRID(location_geometry_point, 4326),
-            public.ST_MakeEnvelope(${bboxArray[0]}, ${bboxArray[1]}, ${bboxArray[2]}, ${bboxArray[3]}, 4326)
-          )
-      `;
-
-      const points: Array<PointFeature<GeoJsonProperties>> = mappedInspections.map((item) => ({
-        type: "Feature",
-        properties: {
-          cluster: false,
-          id: item.inspection_guid,
-        },
-        geometry: item.location_geometry_point,
-      }));
-
-      return MapSearchUtility.buildSearchMapResults(
-        points,
-        unmappedResult[0]?.count ? Number(unmappedResult[0].count) : 0,
-        model.zoom,
-        bboxArray,
-        isGlobalSearch,
-      );
     } catch (error) {
       this.logger.error("Error performing inspection map search:", error);
       throw new HttpException("Unable to Perform Search", HttpStatus.BAD_REQUEST);
@@ -368,9 +377,9 @@ export class InspectionService {
     const generatedName = await generateNextInspectionIdentifier(this.prisma);
 
     let inspection;
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       try {
-        inspection = await tx.inspection.create({
+        inspection = await db.inspection.create({
           data: {
             inspection_status: input.inspectionStatus,
             inspection_description: input.description,
@@ -392,9 +401,9 @@ export class InspectionService {
         this.logger.error("Error creating inspection:", error);
         throw error;
       }
-      await this.updateLocationGeometryPoint(tx, inspection.inspection_guid, input.locationGeometry);
+      await this.updateLocationGeometryPoint(db, inspection.inspection_guid, input.locationGeometry);
       inspection.location_geometry_point =
-        (await this.fetchLocationGeometryPoints([inspection.inspection_guid], tx)).get(inspection.inspection_guid) ??
+        (await this.fetchLocationGeometryPoints([inspection.inspection_guid], db)).get(inspection.inspection_guid) ??
         null;
     });
     // Try to create case activity record, and if it fails, delete the inspection
@@ -446,7 +455,7 @@ export class InspectionService {
       throw new Error(`Inspection with guid ${inspectionGuid} not found.`);
     }
     let updatedInspection;
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       try {
         const updateData: any = {
           update_user_id: this.user.getIdirUsername(),
@@ -472,16 +481,16 @@ export class InspectionService {
           updateData.geo_organization_unit_code_ref = input.community || null;
         }
         // Perform the update
-        updatedInspection = await tx.inspection.update({
+        updatedInspection = await db.inspection.update({
           where: { inspection_guid: inspectionGuid },
           data: updateData,
           include: {
             inspection_status_code: true,
           },
         });
-        await this.updateLocationGeometryPoint(tx, inspectionGuid, input.locationGeometry);
+        await this.updateLocationGeometryPoint(db, inspectionGuid, input.locationGeometry);
         updatedInspection.location_geometry_point =
-          (await this.fetchLocationGeometryPoints([inspectionGuid], tx)).get(inspectionGuid) ?? null;
+          (await this.fetchLocationGeometryPoints([inspectionGuid], db)).get(inspectionGuid) ?? null;
       } catch (error) {
         this.logger.error(`Error updating inspection with guid ${inspectionGuid}:`, error);
         throw error;
