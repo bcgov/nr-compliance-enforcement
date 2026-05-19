@@ -31,6 +31,7 @@ interface InvestigationHeaderProps {
 }
 
 export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigation, onStatusUpdated }) => {
+  const isReadOnly = investigation?.investigationStatus?.investigationStatusCode === "CLOSED";
   const investigationId = investigation?.name || investigation?.investigationGuid || "Unknown";
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -161,6 +162,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                       as="button"
                       id="assign-button"
                       onClick={handleOpenAssignModal}
+                      disabled={isReadOnly}
                     >
                       <i className="bi bi-person-plus"></i>
                       <span>Reassign</span>
@@ -189,6 +191,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   title="Assign to officer"
                   variant="outline-light"
                   onClick={handleOpenAssignModal}
+                  disabled={isReadOnly}
                 >
                   <i className="bi bi-person-plus"></i>
                   <span>Reassign</span>

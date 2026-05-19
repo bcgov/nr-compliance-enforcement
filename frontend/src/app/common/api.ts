@@ -12,7 +12,7 @@ interface NatComRequestConfig extends AxiosRequestConfig {
   toggleLoading: boolean;
 }
 
-const STATUS_CODES = {
+export const STATUS_CODES = {
   Ok: 200,
   BadRequest: 400,
   Unauthorized: 401,
@@ -79,10 +79,16 @@ axios.interceptors.response.use(
     }
 
     // 401 on the retry means the login token was valid — the user genuinely lacks
-    // access to this resource (e.g. cross-agency complaint). Send them to the
-    // unauthorized page instead of letting callers render a partial/empty state.
+    // access to this resource. Send them to the unauthorized page instead of
+    // letting callers render a partial/empty state.
     if (response?.status === STATUS_CODES.Unauthorized && originalRequest?._retry) {
       globalThis.location.href = "/not-authorized";
+      throw error;
+    }
+
+    // Handle 404s
+    if (response?.status === STATUS_CODES.NotFound) {
+      globalThis.location.href = "/not-found";
       throw error;
     }
 
