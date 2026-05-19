@@ -298,7 +298,6 @@ const PartyEdit: FC = () => {
   const dispatch = useAppDispatch();
 
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
-  const sexCodeOptions = useAppSelector(selectSexDropdown);
 
   const { data: partyData, isLoading } = useGraphQLQuery(GET_PARTY, {
     queryKey: ["party", id],
