@@ -14,6 +14,7 @@ import config from "@/config";
 type TaskAttachmentListProps = {
   attachments: Attachment[];
   isLoading?: boolean;
+  isReadOnly?: boolean;
   onEdit: (attachment: Attachment) => void;
 };
 
@@ -28,7 +29,12 @@ const downloadAttachment = async (dispatch: any, objectId: string | undefined, f
   a.click();
 };
 
-export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, isLoading = false, onEdit }) => {
+export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
+  attachments,
+  isLoading = false,
+  isReadOnly = false,
+  onEdit,
+}) => {
   const dispatch = useAppDispatch();
   const officers = useAppSelector(selectOfficers);
 
@@ -129,6 +135,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({ attachments, i
           onClick={() => onEdit(attachment)}
           title="Edit attachment data"
           aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
+          disabled={isReadOnly}
         >
           <i className="bi bi-pencil ms-1 me-1" />
         </Button>

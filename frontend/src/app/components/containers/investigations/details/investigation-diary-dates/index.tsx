@@ -11,6 +11,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_DIARY_DATE } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 export const GET_DIARY_DATES = gql`
   query GetDiaryDates($investigationGuid: String!) {
@@ -82,6 +83,7 @@ interface DiaryDatesProps {
 
 export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange, taskGuid }) => {
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const tasks = investigationData?.tasks || [];
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
@@ -168,6 +170,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
             variant="primary"
             size="sm"
             onClick={handleAddClick}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add diary date</span>
@@ -181,6 +184,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
             variant="primary"
             size="sm"
             onClick={handleAddClick}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add diary date</span>

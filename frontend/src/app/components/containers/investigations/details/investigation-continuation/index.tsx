@@ -17,6 +17,7 @@ import { exportContinuationReport } from "@/app/store/reducers/documents-thunks"
 import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -42,6 +43,7 @@ interface InvestigationContinuationProps {
 export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ investigationData, onDirtyChange }) => {
   const dispatch = useAppDispatch();
   const { investigationGuid = "" } = useParams<{ investigationGuid: string }>();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const leadAgency = investigationData?.leadAgency ?? "COS";
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const reportedUserGuid = useAppSelector(appUserGuid);
@@ -151,33 +153,37 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <ActivityNoteEditor
-          index={0} // Only ever one
-          onValidationChange={handleContinuationReportValidationChange}
-          onValuesChange={handleContinuationReportValuesChange}
-          showErrors={showContinuationReportErrors}
-          shouldReset={shouldReset}
-          onDirtyChange={onDirtyChange}
-        />
+        {!isReadOnly && (
+          <>
+            <ActivityNoteEditor
+              index={0} // Only ever one
+              onValidationChange={handleContinuationReportValidationChange}
+              onValuesChange={handleContinuationReportValuesChange}
+              showErrors={showContinuationReportErrors}
+              shouldReset={shouldReset}
+              onDirtyChange={onDirtyChange}
+            />
 
-        <div className="comp-details-form-buttons">
-          <Button
-            variant="outline-primary"
-            id="outcome-cancel-button"
-            title="Cancel Outcome"
-            onClick={resetForm}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            id="outcome-save-button"
-            title="Save Outcome"
-            onClick={handleActivityNoteSave}
-          >
-            {saveReportMutation.isPending ? "Saving..." : "Save"}
-          </Button>
-        </div>
+            <div className="comp-details-form-buttons">
+              <Button
+                variant="outline-primary"
+                id="outcome-cancel-button"
+                title="Cancel Outcome"
+                onClick={resetForm}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                id="outcome-save-button"
+                title="Save Outcome"
+                onClick={handleActivityNoteSave}
+              >
+                {saveReportMutation.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </>
+        )}
         <div className="space-y-4">
           <div className="space-y-2 max-h-screen overflow-y-auto">
             {reports?.length === 0 ? (
