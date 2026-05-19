@@ -24,14 +24,14 @@ import {
 } from "@/generated/graphql";
 import { selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
-import { selectSexDropdown } from "@/app/store/reducers/code-table";
 import { parse } from "date-fns";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
-import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
+import { BusinessForm } from "@/app/components/containers/parties/form/business-form";
+import { toDateOfBirth } from "@/app/common/methods";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -260,13 +260,6 @@ const buildBusinessCreate = (value: any) => {
 };
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
-
-// Normalize to UTC date-only
-const toDateOfBirth = (value: any): Date | undefined => {
-  const d = value?.dateOfBirth;
-  if (!(d instanceof Date)) return undefined;
-  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-};
 
 // Shared base fields for person create/update.
 function buildPersonBase(value: any, isUpdate: boolean) {
@@ -504,7 +497,7 @@ const PartyEdit: FC = () => {
               />
             )}
             {partyTypeValue === "CMP" && (
-              <BusinessFormFields
+              <BusinessForm
                 form={form}
                 isDisabled={isDisabled}
                 showContactPeople={true}

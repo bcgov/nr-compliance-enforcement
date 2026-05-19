@@ -15,7 +15,7 @@ type BusinessFormFieldsProps = {
   businessGuid?: string;
 };
 
-export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
+export const BusinessForm: FC<BusinessFormFieldsProps> = ({
   form,
   isDisabled,
   showContactPeople = true,
