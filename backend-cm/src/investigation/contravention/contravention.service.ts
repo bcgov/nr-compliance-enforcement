@@ -4,6 +4,7 @@ import { CreateUpdateContraventionInput } from "src/investigation/contravention/
 import { Investigation } from "src/investigation/investigation/dto/investigation";
 import { InvestigationService } from "src/investigation/investigation/investigation.service";
 import { InvestigationPrismaService } from "src/prisma/investigation/prisma.investigation.service";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class ContraventionService {
@@ -17,8 +18,8 @@ export class ContraventionService {
 
   async create(contraventionInput: CreateUpdateContraventionInput): Promise<Investigation> {
     try {
-      await this.prisma.$transaction(async (tx) => {
-        const contravention = await tx.contravention.create({
+      await withRlsTransaction(this.prisma, async (db) => {
+        const contravention = await db.contravention.create({
           data: {
             investigation_guid: contraventionInput.investigationGuid,
             legislation_guid_ref: contraventionInput.legislationReference,
@@ -33,7 +34,7 @@ export class ContraventionService {
         const parties = contraventionInput.investigationPartyGuids;
 
         for (const party of parties) {
-          await tx.contravention_party_xref.create({
+          await db.contravention_party_xref.create({
             data: {
               contravention_guid: contravention.contravention_guid,
               investigation_party_guid: party,
@@ -53,8 +54,8 @@ export class ContraventionService {
 
   async remove(investigationGuid: string, contraventionGuid: string, partyGuid: string | null): Promise<Investigation> {
     try {
-      await this.prisma.$transaction(async (tx) => {
-        const contravention = await tx.contravention.findUnique({
+      await withRlsTransaction(this.prisma, async (db) => {
+        const contravention = await db.contravention.findUnique({
           where: { contravention_guid: contraventionGuid },
           include: {
             contravention_party_xref: {
@@ -71,7 +72,7 @@ export class ContraventionService {
 
         if (otherParties.length > 0) {
           //Shared contravention — only deactivate this party's xref
-          await tx.contravention_party_xref.updateMany({
+          await db.contravention_party_xref.updateMany({
             where: {
               contravention_guid: contraventionGuid,
               investigation_party_guid: partyGuid,
@@ -85,7 +86,7 @@ export class ContraventionService {
           });
 
           //Check if any active xrefs remain after deactivation
-          const remainingXrefs = await tx.contravention_party_xref.count({
+          const remainingXrefs = await db.contravention_party_xref.count({
             where: {
               contravention_guid: contraventionGuid,
               active_ind: true,
@@ -94,7 +95,7 @@ export class ContraventionService {
 
           //If no parties left, deactivate the contravention itself
           if (remainingXrefs === 0) {
-            await tx.contravention.update({
+            await db.contravention.update({
               where: { contravention_guid: contraventionGuid },
               data: {
                 active_ind: false,
@@ -105,7 +106,7 @@ export class ContraventionService {
           }
         } else {
           //This is the only party — deactivate the contravention itself
-          await tx.contravention.update({
+          await db.contravention.update({
             where: { contravention_guid: contraventionGuid },
             data: {
               active_ind: false,
@@ -125,8 +126,8 @@ export class ContraventionService {
 
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
     try {
-      await this.prisma.$transaction(async (tx) => {
-        const originalContravention = await tx.contravention.findUnique({
+      await withRlsTransaction(this.prisma, async (db) => {
+        const originalContravention = await db.contravention.findUnique({
           where: { contravention_guid: contraventionGuid },
           include: {
             contravention_party_xref: {
@@ -145,7 +146,7 @@ export class ContraventionService {
         if (isShared) {
           // Contravention is shared with other parties — split it:
           //Deactivate selectedPartyGuid xref on the original contravention
-          await tx.contravention_party_xref.updateMany({
+          await db.contravention_party_xref.updateMany({
             where: {
               contravention_guid: contraventionGuid,
               investigation_party_guid: input.selectedPartyGuid,
@@ -159,7 +160,7 @@ export class ContraventionService {
           });
 
           //Create a new contravention with the updated legislation for selectedPartyGuid only
-          const newContravention = await tx.contravention.create({
+          const newContravention = await db.contravention.create({
             data: {
               investigation_guid: originalContravention.investigation_guid,
               legislation_guid_ref: input.legislationReference,
@@ -172,7 +173,7 @@ export class ContraventionService {
 
           //Link selectedPartyGuid to the new contravention
           if (input.selectedPartyGuid) {
-            await tx.contravention_party_xref.create({
+            await db.contravention_party_xref.create({
               data: {
                 contravention_guid: newContravention.contravention_guid,
                 investigation_party_guid: input.selectedPartyGuid,
@@ -183,7 +184,7 @@ export class ContraventionService {
           }
         } else {
           // Contravention belongs to selectedPartyGuid only — update in place as before
-          await tx.contravention.update({
+          await db.contravention.update({
             where: { contravention_guid: contraventionGuid },
             data: {
               legislation_guid_ref: input.legislationReference,

@@ -1,7 +1,8 @@
 import { Resolver, Query, Args, Mutation } from "@nestjs/graphql";
 import { TaskService } from "./task.service";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
-import { UseGuards } from "@nestjs/common";
+import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
+import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { CreateUpdateTaskInput } from "../../investigation/task/dto/task";
@@ -10,6 +11,7 @@ import { CreateUpdateTaskInput } from "../../investigation/task/dto/task";
 @Resolver("Task")
 export class TaskResolver {
   constructor(private readonly taskService: TaskService) {}
+  private readonly logger = new Logger(TaskResolver.name);
 
   @Query("tasks")
   @Roles(coreRoles)
@@ -20,7 +22,15 @@ export class TaskResolver {
   @Query("task")
   @Roles(coreRoles)
   async findOne(@Args("taskId") taskGuid: string) {
-    return await this.taskService.findOne(taskGuid);
+    try {
+      return await this.taskService.findOne(taskGuid);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new GraphQLError(error.message, { extensions: { code: "NOT_FOUND" } });
+      }
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching task", { extensions: { code: "INTERNAL_SERVER_ERROR" } });
+    }
   }
 
   @Mutation("createTask")

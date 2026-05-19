@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client/extension";
 import { Logger } from "@nestjs/common";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { getRequest } from "./request-interceptor";
+import { setRlsClaims } from "./set-rls-claims";
 
 const logger = new Logger("PgSessionExtension");
 
@@ -12,10 +13,23 @@ const logger = new Logger("PgSessionExtension");
  */
 export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
-/**
- * Prisma model names whose tables have a RLS policy
- */
-const RLS_PROTECTED_MODELS = new Set(["complaint_outcome"]);
+// Only reads get wrapped in a claims-bearing transaction as the policies are only set for reads
+const READ_OPERATIONS = new Set([
+  "findUnique",
+  "findUniqueOrThrow",
+  "findFirst",
+  "findFirstOrThrow",
+  "findMany",
+  "count",
+  "aggregate",
+  "groupBy",
+  "queryRaw",
+  "$queryRaw",
+  "queryRawUnsafe",
+  "$queryRawUnsafe",
+  "findRaw",
+  "aggregateRaw",
+]);
 
 /**
  * createPgSessionExtension is a factory that returns a Prisma extension that sets the
@@ -24,92 +38,30 @@ const RLS_PROTECTED_MODELS = new Set(["complaint_outcome"]);
  * Prisma extensions are not able to access the client directly, so the client is passed in using
  * a factory function.
  */
-function createPgSessionExtension(client: any) {
+function createPgSessionExtension(client: any, protectedModels: Set<string>) {
   return Prisma.defineExtension({
-    name: "pgSessionExtension", // Optional: name appears in error logs
+    name: "pgSessionExtension",
     query: {
       $allModels: {
         async $allOperations(params) {
           const { args, query, model, operation } = params;
 
-          const readOperations = new Set([
-            "findUnique",
-            "findUniqueOrThrow",
-            "findFirst",
-            "findFirstOrThrow",
-            "findMany",
-            "count",
-            "aggregate",
-            "groupBy",
-            "queryRaw",
-            "$queryRaw",
-            "queryRawUnsafe",
-            "$queryRawUnsafe",
-            "findRaw",
-            "aggregateRaw",
-          ]);
+          if (!operation || !READ_OPERATIONS.has(operation)) return query(args);
+          if (!model || !protectedModels.has(model)) return query(args);
+          if (inTransactionContext.getStore()) return query(args);
 
-          // Only setup the PG sessions with JWT claims for read operations.
-          // This allows mutations to take advantage of transactions without
-          // being nested, which prisma has been known to have troubles with
-          if (!operation || !readOperations.has(operation)) {
-            return query(args);
-          }
-
-          // Only wrap reads on RLS-protected tables.
-          if (!model || !RLS_PROTECTED_MODELS.has(model)) {
-            return query(args);
-          }
-
-          // If we're inside a transaction that has already set the claims return the query
-          // without setting claims again to avoid nested transactions
-          if (inTransactionContext.getStore()) {
-            return query(args);
-          }
-
-          // Try to get the user from the request context from the AsyncLocalStorage
-          const request = getRequest();
-          const user = request?.user;
-
-          // If there's no user, attempt to execute the query normally
-          if (!user) {
-            return query(args);
-          }
+          const user = getRequest()?.user;
+          if (!user) return query(args);
 
           try {
-            // Set JWT claims in a transaction, then execute the query
             return await client.$transaction(
               async (tx: any) => {
-                // Set JWT claims as session variables
-                if (user.idir_user_guid) {
-                  await tx.$executeRawUnsafe(
-                    `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
-                  );
-                }
-
-                if (user.client_roles) {
-                  // Join roles with comma instead of JSON stringify to avoid double encoding
-                  const rolesString = Array.isArray(user.client_roles)
-                    ? user.client_roles.join(",")
-                    : user.client_roles;
-                  await tx.$executeRawUnsafe(
-                    `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
-                  );
-                }
-
-                // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-                await tx.$executeRawUnsafe(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
-
-                // Execute the original query using the transaction client
-                // We need to call the same operation on the transaction client
-                // The transaction client should have the same structure as the original client
-                const result = await tx[model][operation](args);
-                return result;
+                await setRlsClaims(tx, user);
+                return await tx[model][operation](args);
               },
               { maxWait: 10000, timeout: 30000 },
             );
           } catch (error) {
-            // Log the error
             logger.error(
               `Failed to execute query with JWT claims for ${model}.${operation}: ${error?.message ?? error}`,
               error?.stack,

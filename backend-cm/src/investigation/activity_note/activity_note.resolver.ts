@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args } from "@nestjs/graphql";
 import { ActivityNoteService } from "./activity_note.service";
-import { Logger } from "@nestjs/common";
+import { Logger, NotFoundException } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -17,6 +17,9 @@ export class ActivityNoteResolver {
     try {
       return await this.activityNoteService.findOne(activityNoteGuid);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new GraphQLError(error.message, { extensions: { code: "NOT_FOUND" } });
+      }
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from activity note schema", {
         extensions: {
