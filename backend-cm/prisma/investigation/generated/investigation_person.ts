@@ -1,3 +1,4 @@
+import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation_party } from "./investigation_party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -37,6 +38,21 @@ export class investigation_person {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiPropertyOptional({ type: Date })
+  date_of_birth?: Date;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_number?: string;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_jurisdiction?: string;
+
+  @ApiPropertyOptional({ type: String })
+  sex_code_ref?: string;
+
+  @ApiProperty({ isArray: true, type: () => investigation_contact_method })
+  investigation_contact_method: investigation_contact_method[];
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;
