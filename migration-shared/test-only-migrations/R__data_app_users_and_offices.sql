@@ -59,7 +59,7 @@ VALUES
     '2025-09-08 23:27:10.251621',
     'postgres',
     '2025-09-08 23:27:10.251621'
-  );
+  ) ON CONFLICT DO NOTHING;
 
 --
 -- Data for Name: geo_organization_unit_code; Type: TABLE DATA; Schema: shared; Owner: -
@@ -17895,7 +17895,7 @@ VALUES
     '2025-09-08 23:27:33.265905',
     'AREA',
     false
-  );
+  ) ON CONFLICT DO NOTHING;
 
 --
 -- Data for Name: geo_org_unit_structure; Type: TABLE DATA; Schema: shared; Owner: -

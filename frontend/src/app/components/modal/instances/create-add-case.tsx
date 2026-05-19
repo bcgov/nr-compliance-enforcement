@@ -17,11 +17,6 @@ import { Link } from "react-router-dom";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { updateComplaintLastUpdated } from "@store/reducers/complaints";
 
-const createOrAddOptions: Option[] = [
-  { label: "Create a new case", value: "create" },
-  { label: "Add to an existing case", value: "add" },
-];
-
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
     createCaseFile(input: $input) {
@@ -77,10 +72,17 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const modalData = useAppSelector(selectModalData);
   const currentAppUserGuid = useAppSelector(appUserGuid);
   const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
+  const showCreateCaseBtn = useAppSelector(isFeatureActive(FEATURE_TYPES.CREATE_CASE));
 
   // Vars
   const { title, complaint_identifier, agency_code, onDirtyChange } = modalData;
   const { markDirty } = useFormDirtyState(onDirtyChange);
+  const createOrAddOptions: Option[] = showCreateCaseBtn
+    ? [
+        { label: "Create a new case", value: "create" },
+        { label: "Add to an existing case", value: "add" },
+      ]
+    : [{ label: "Add to an existing case", value: "add" }];
 
   // State
   const [selectedCase, setSelectedCase] = useState<Option | null>();
