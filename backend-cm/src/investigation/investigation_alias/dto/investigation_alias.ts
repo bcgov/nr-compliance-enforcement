@@ -14,6 +14,15 @@ export class CreateInvestigationAliasInput {
   name: string;
 }
 
+@InputType()
+export class UpdateInvestigationAliasInput {
+  @Field(() => String, { nullable: true })
+  aliasGuid?: string;
+
+  @Field(() => String)
+  name: string;
+}
+
 export const mapPrismaAliasToInvestigationAlias = (mapper: Mapper) => {
   createMap<investigation_alias, InvestigationAlias>(
     mapper,

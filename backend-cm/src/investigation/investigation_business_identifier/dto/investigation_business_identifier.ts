@@ -18,6 +18,18 @@ export class CreateInvestigationBusinessIdentifierInput {
   identifierValue: string;
 }
 
+@InputType()
+export class UpdateInvestigationBusinessIdentifierInput {
+  @Field(() => String, { nullable: true })
+  businessIdentifierGuid?: string;
+
+  @Field(() => String)
+  businessIdentifierCode: string;
+
+  @Field(() => String)
+  identifierValue: string;
+}
+
 export const mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier = (mapper: Mapper) => {
   createMap<investigation_business_identifier, InvestigationBusinessIdentifier>(
     mapper,

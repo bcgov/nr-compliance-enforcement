@@ -5,6 +5,7 @@ import { PersonDto } from "../../../common/party";
 import {
   CreateInvestigationContactMethodInput,
   InvestigationContactMethod,
+  UpdateInvestigationContactMethodInput,
 } from "../../investigation_contact_method/dto/investigation_contact_method";
 
 export class InvestigationPerson implements PersonDto {
@@ -54,6 +55,36 @@ export class CreateInvestigationPersonInput {
 
   @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
   contactMethods?: CreateInvestigationContactMethodInput[];
+}
+
+@InputType()
+export class UpdateInvestigationPersonInput {
+  @Field(() => String)
+  firstName: string;
+
+  @Field(() => String, { nullable: true })
+  middleName?: string;
+
+  @Field(() => String, { nullable: true })
+  middleName2?: string;
+
+  @Field(() => String)
+  lastName: string;
+
+  @Field(() => Date, { nullable: true })
+  dateOfBirth?: Date;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseNumber?: string;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseJurisdiction?: string;
+
+  @Field(() => String, { nullable: true })
+  sexCode?: string;
+
+  @Field(() => [UpdateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: UpdateInvestigationContactMethodInput[];
 }
 
 export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {

@@ -1,0 +1,8 @@
+input CreateInvestigationAliasInput {
+  name: String!
+}
+
+input UpdateInvestigationAliasInput {
+  aliasGuid: String
+  name: String!
+}

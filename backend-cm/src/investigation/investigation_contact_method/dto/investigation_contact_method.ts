@@ -22,6 +22,21 @@ export class CreateInvestigationContactMethodInput {
   isPrimary?: boolean;
 }
 
+@InputType()
+export class UpdateInvestigationContactMethodInput {
+  @Field(() => String, { nullable: true })
+  contactMethodGuid?: string;
+
+  @Field(() => String)
+  contactMethodTypeCode: string;
+
+  @Field(() => String, { nullable: true })
+  contactValue?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isPrimary?: boolean;
+}
+
 export const mapPrismaContactMethodToInvestigationContactMethod = (mapper: Mapper) => {
   createMap<investigation_contact_method, InvestigationContactMethod>(
     mapper,

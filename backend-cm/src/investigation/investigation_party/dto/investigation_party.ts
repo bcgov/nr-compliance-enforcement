@@ -2,10 +2,12 @@ import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import {
   CreateInvestigationBusinessInput,
   InvestigationBusiness,
+  UpdateInvestigationBusinessInput,
 } from "../../investigation_business/dto/investigation_business";
 import {
   CreateInvestigationPersonInput,
   InvestigationPerson,
+  UpdateInvestigationPersonInput,
 } from "../../investigation_person/dto/investigation_person";
 import { investigation_party } from "../../../../prisma/investigation/generated/investigation_party";
 import { Field, InputType } from "@nestjs/graphql";
@@ -40,6 +42,21 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => String)
   partyAssociationRole: string;
+}
+
+@InputType()
+export class UpdateInvestigationPartyInput {
+  @Field(() => String)
+  partyIdentifier: string;
+
+  @Field(() => String)
+  partyAssociationRole: string;
+
+  @Field(() => UpdateInvestigationPersonInput, { nullable: true })
+  person?: UpdateInvestigationPersonInput;
+
+  @Field(() => UpdateInvestigationBusinessInput, { nullable: true })
+  business?: UpdateInvestigationBusinessInput;
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {

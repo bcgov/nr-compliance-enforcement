@@ -1,0 +1,14 @@
+input CreateInvestigationPartyInput {
+  partyTypeCode: String!
+  partyReference: String
+  person: CreateInvestigationPersonInput
+  business: CreateInvestigationBusinessInput
+  partyAssociationRole: String
+}
+
+input UpdateInvestigationPartyInput {
+  partyIdentifier: String!
+  partyAssociationRole: String!
+  person: UpdateInvestigationPersonInput
+  business: UpdateInvestigationBusinessInput
+}

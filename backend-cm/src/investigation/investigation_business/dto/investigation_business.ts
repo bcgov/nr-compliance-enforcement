@@ -5,12 +5,18 @@ import { BusinessDto } from "../../../common/party";
 import {
   CreateInvestigationContactMethodInput,
   InvestigationContactMethod,
+  UpdateInvestigationContactMethodInput,
 } from "../../investigation_contact_method/dto/investigation_contact_method";
 import {
   CreateInvestigationBusinessIdentifierInput,
   InvestigationBusinessIdentifier,
+  UpdateInvestigationBusinessIdentifierInput,
 } from "../../investigation_business_identifier/dto/investigation_business_identifier";
-import { CreateInvestigationAliasInput, InvestigationAlias } from "../../investigation_alias/dto/investigation_alias";
+import {
+  CreateInvestigationAliasInput,
+  InvestigationAlias,
+  UpdateInvestigationAliasInput,
+} from "../../investigation_alias/dto/investigation_alias";
 
 export class InvestigationBusiness implements BusinessDto {
   businessGuid: string;
@@ -39,6 +45,21 @@ export class CreateInvestigationBusinessInput {
 
   @Field(() => [CreateInvestigationAliasInput], { nullable: true })
   aliases?: CreateInvestigationAliasInput[];
+}
+
+@InputType()
+export class UpdateInvestigationBusinessInput {
+  @Field(() => String)
+  name: string;
+
+  @Field(() => [UpdateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: UpdateInvestigationContactMethodInput[];
+
+  @Field(() => [UpdateInvestigationBusinessIdentifierInput], { nullable: true })
+  businessIdentifiers?: UpdateInvestigationBusinessIdentifierInput[];
+
+  @Field(() => [UpdateInvestigationAliasInput], { nullable: true })
+  aliases?: UpdateInvestigationAliasInput[];
 }
 
 export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {

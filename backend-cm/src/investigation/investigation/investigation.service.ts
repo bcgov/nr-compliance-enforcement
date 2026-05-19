@@ -53,10 +53,34 @@ export class InvestigationService {
               where: {
                 active_ind: true,
               },
+              include: {
+                investigation_contact_method: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
+              },
             },
             investigation_business: {
               where: {
                 active_ind: true,
+              },
+              include: {
+                investigation_contact_method: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
+                investigation_business_identifier: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
+                investigation_alias: {
+                  where: {
+                    active_ind: true,
+                  },
+                },
               },
             },
           },
