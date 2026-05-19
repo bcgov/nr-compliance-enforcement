@@ -35,6 +35,8 @@ export const GET_INVESTIGATION = gql`
           firstName
           lastName
           personGuid
+          dateOfBirth
+          sexCode
         }
         business {
           name

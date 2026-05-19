@@ -17,6 +17,38 @@ interface Props {
 
 const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEditParty, activityType }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+  const sexCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SEX));
+
+  const getPersonDetails = (party: InvestigationParty | InspectionParty) => {
+    // Only investigations are currently supported
+    if (activityType !== CaseActivities.INVESTIGATION) {
+      return "";
+    }
+
+    const investigationParty = party as InvestigationParty;
+    const parts: string[] = [];
+
+    if (investigationParty.person?.dateOfBirth) {
+      const dob = new Date(String(investigationParty.person.dateOfBirth).slice(0, 10));
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      parts.push(String(age));
+    }
+
+    if (investigationParty.person?.sexCode) {
+      const sexDescription = sexCodes?.find(
+        (code: any) => code.sex === investigationParty.person?.sexCode,
+      )?.shortDescription;
+      if (sexDescription) {
+        parts.push(sexDescription);
+      }
+    }
+    return parts.join(", ");
+  };
 
   const getPartyRoleText = (selected: InvestigationParty | InspectionParty) => {
     let currentActivityType = "";
@@ -53,8 +85,8 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
                   className="d-flex justify-content-between align-items-center"
                 >
                   <div>
-                    <strong>{`${party.person?.lastName}, ${party.person?.firstName} | `}</strong>
-                    <span className="text-muted">{`24, Male`}</span>
+                    <strong>{`${party.person?.lastName}, ${party.person?.firstName}`}</strong>
+                    {getPersonDetails(party) && <span className="text-muted">{` | ${getPersonDetails(party)}`}</span>}
                   </div>
                   <div className="d-flex align-items-center gap-2">
                     <Badge bg="species-badge comp-species-badge">{getPartyRoleText(party)}</Badge>
