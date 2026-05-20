@@ -45,6 +45,9 @@ interface BuildHeaderParams {
   attachmentName?: string;
   attachmentId?: string;
   extendedMeta?: Record<string, string>;
+  /** When provided, the file's byte size is written as x-amz-meta-content-length so it
+   *  can be retrieved later via the metadata API */
+  size?: number;
 }
 
 interface ObjectVersion {
@@ -65,6 +68,7 @@ const buildAttachmentHeader = ({
   attachmentName,
   attachmentId,
   extendedMeta,
+  size,
 }: BuildHeaderParams): Record<string, any> => {
   // Common fields
   const header: Record<string, any> = {
@@ -85,6 +89,10 @@ const buildAttachmentHeader = ({
 
   if (isThumb && attachmentId) {
     header["x-amz-meta-thumb-for"] = attachmentId;
+  }
+
+  if (typeof size === "number" && size > 0) {
+    header["x-amz-meta-content-length"] = String(size);
   }
 
   if (extendedMeta) {
@@ -233,6 +241,7 @@ const saveSingleAttachment = async ({
     isThumb: false,
     attachmentName,
     extendedMeta,
+    size: attachment.size,
   });
 
   const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
