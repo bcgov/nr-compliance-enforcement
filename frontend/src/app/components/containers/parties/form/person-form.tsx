@@ -2,13 +2,10 @@ import { FC } from "react";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
-import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import { ContactMethod } from "@/generated/graphql";
 import { useAppSelector } from "@hooks/hooks";
 import { selectSexDropdown } from "@/app/store/reducers/code-table";
 import { z } from "zod";
-import { Button } from "react-bootstrap";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 
