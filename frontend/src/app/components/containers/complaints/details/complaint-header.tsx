@@ -36,6 +36,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { ExportComplaintModal } from "@/app/components/modal/instances/export-complaint-modal";
 import { COMSObject } from "@/app/types/coms/object";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -278,6 +279,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         draggable: false,
       });
 
+      const onProgress = createDownloadProgressHandler(toastDownloadInfo);
+
       await dispatch(
         exportComplaintWithAttachments(
           complaintType,
@@ -285,6 +288,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           new Date(loggedDate),
           complainantAttachments,
           outcomeAttachments,
+          undefined,
+          onProgress,
         ),
       );
     } catch (error) {
