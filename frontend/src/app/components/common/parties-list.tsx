@@ -29,11 +29,11 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
     const parts: string[] = [];
 
     if (investigationParty.person?.dateOfBirth) {
-      const dob = new Date(String(investigationParty.person.dateOfBirth).slice(0, 10));
+      const dateStr = String(investigationParty.person.dateOfBirth).slice(0, 10);
+      const [year, month, day] = dateStr.split("-").map(Number);
       const today = new Date();
-      let age = today.getFullYear() - dob.getFullYear();
-      const monthDiff = today.getMonth() - dob.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+      let age = today.getFullYear() - year;
+      if (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day)) {
         age--;
       }
       parts.push(String(age));

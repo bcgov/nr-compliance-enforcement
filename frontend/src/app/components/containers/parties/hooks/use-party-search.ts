@@ -1,7 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { PartyTypeCodes } from "@/app/constants/party-types";
 
 export interface PartySearchParams {
   search: string;
@@ -15,7 +14,7 @@ export interface PartySearchParams {
 
 const DEFAULT_SEARCH_VALUES: PartySearchParams = {
   search: "",
-  partyTypeCode: PartyTypeCodes.PERSON,
+  partyTypeCode: "",
   sortBy: "partyIdentifier",
   sortOrder: SORT_TYPES.DESC,
   page: 1,
