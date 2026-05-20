@@ -236,7 +236,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         modalSize: "lg",
         modalType: CREATE_ADD_CASE,
         data: {
-          title: "Create/add case",
+          title: "Add to case",
           complaint_identifier: id,
           agency_code: complaintAgency,
           onDirtyChange: handleChildDirtyChange,
@@ -362,7 +362,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           disabled={complaintAgency !== userAgency}
         >
           <i className="bi bi-folder-plus"></i>
-          <span>Create/add case</span>
+          <span>Add to case</span>
         </Dropdown.Item>
       )}
       {showCreateAddCase && (complaintType !== COMPLAINT_TYPES.ERS || showStartInvestigation) && (

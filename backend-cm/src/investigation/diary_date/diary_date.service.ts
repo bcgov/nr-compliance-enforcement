@@ -5,6 +5,7 @@ import { DiaryDate, DiaryDateInput } from "./dto/diary_date";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
 import { UserService } from "../../common/user.service";
 import { diary_date } from "../../../prisma/investigation/generated/diary_date";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class DiaryDateService {
@@ -72,24 +73,25 @@ export class DiaryDateService {
 
   async save(input: DiaryDateInput): Promise<DiaryDate> {
     let result;
-    if (input.diaryDateGuid) {
-      // Update existing diary date
-      result = await this.prisma.diary_date.update({
-        where: { diary_date_guid: input.diaryDateGuid },
-        data: {
-          due_date: input.dueDate,
-          description: input.description,
-          app_update_utc_timestamp: new Date(),
-          app_update_user_guid_ref: input.userGuid,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-          task_guid: input.taskGuid || null,
-        },
-      });
-    } else {
-      // Create new diary date
-      try {
-        result = await this.prisma.diary_date.create({
+    try {
+      result = await withRlsTransaction(this.prisma, async (db) => {
+        if (input.diaryDateGuid) {
+          // Update existing diary date
+          return await db.diary_date.update({
+            where: { diary_date_guid: input.diaryDateGuid },
+            data: {
+              due_date: input.dueDate,
+              description: input.description,
+              app_update_utc_timestamp: new Date(),
+              app_update_user_guid_ref: input.userGuid,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+              task_guid: input.taskGuid || null,
+            },
+          });
+        }
+        // Create new diary date
+        return await db.diary_date.create({
           data: {
             investigation_guid: input.investigationGuid,
             due_date: input.dueDate,
@@ -102,10 +104,10 @@ export class DiaryDateService {
             task_guid: input.taskGuid || null,
           },
         });
-      } catch (error) {
-        this.logger.error("Error creating Diary Date:", error);
-        throw error;
-      }
+      });
+    } catch (error) {
+      this.logger.error("Error saving Diary Date:", error);
+      throw error;
     }
 
     try {
@@ -120,13 +122,15 @@ export class DiaryDateService {
   async delete(diaryDateGuid: string): Promise<boolean> {
     try {
       // Soft delete by setting active_ind to false
-      await this.prisma.diary_date.update({
-        where: { diary_date_guid: diaryDateGuid },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.diary_date.update({
+          where: { diary_date_guid: diaryDateGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
       return true;
     } catch (error) {
@@ -137,13 +141,15 @@ export class DiaryDateService {
 
   async deleteByTask(taskGuid: string): Promise<boolean> {
     try {
-      await this.prisma.diary_date.updateMany({
-        where: { task_guid: taskGuid },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.diary_date.updateMany({
+          where: { task_guid: taskGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
       return true;
     } catch (error) {

@@ -12,6 +12,7 @@ import { case_activity } from "prisma/shared/generated/case_activity";
 import { ActivityTypeToEventEntity, EVENT_STREAM_NAME } from "src/common/nats_constants";
 import { EventCreateInput } from "src/shared/event/dto/event";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class CaseActivityService {
@@ -25,15 +26,17 @@ export class CaseActivityService {
   private readonly logger = new Logger(CaseActivityService.name);
 
   async create(input: CaseActivityCreateInput): Promise<CaseActivity | any> {
-    const result = await this.prisma.case_activity.create({
-      data: {
-        case_file_guid: input.caseFileGuid,
-        activity_type: input.activityType,
-        activity_identifier_ref: input.activityIdentifier,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-      },
-    });
+    const result = await withRlsTransaction(this.prisma, async (db) =>
+      db.case_activity.create({
+        data: {
+          case_file_guid: input.caseFileGuid,
+          activity_type: input.activityType,
+          activity_identifier_ref: input.activityIdentifier,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+        },
+      }),
+    );
     // Publish the event
     const sourceEntityType = ActivityTypeToEventEntity[input.activityType];
     const eventTopic = `${EVENT_STREAM_NAME}.${sourceEntityType.toLowerCase()}.added_to_case`;
@@ -62,24 +65,27 @@ export class CaseActivityService {
 
   async remove(input: CaseActivityRemoveInput): Promise<CaseActivity | null> {
     const utc_expiry_timestamp = new Date();
-    const activityToExpire = await this.prisma.case_activity.findFirst({
-      where: {
-        case_file_guid: input.caseFileGuid,
-        activity_identifier_ref: input.activityIdentifier,
-        expiry_utc_timestamp: null,
-      },
-    });
+    const activityToExpire = await withRlsTransaction(this.prisma, async (db) => {
+      const found = await db.case_activity.findFirst({
+        where: {
+          case_file_guid: input.caseFileGuid,
+          activity_identifier_ref: input.activityIdentifier,
+          expiry_utc_timestamp: null,
+        },
+      });
 
-    if (!activityToExpire) {
-      throw new Error("Activity not found in case");
-    }
-    await this.prisma.case_activity.update({
-      where: {
-        case_activity_guid: activityToExpire.case_activity_guid,
-      },
-      data: {
-        expiry_utc_timestamp: utc_expiry_timestamp,
-      },
+      if (!found) {
+        throw new Error("Activity not found in case");
+      }
+      await db.case_activity.update({
+        where: {
+          case_activity_guid: found.case_activity_guid,
+        },
+        data: {
+          expiry_utc_timestamp: utc_expiry_timestamp,
+        },
+      });
+      return found;
     });
 
     // Publish the event

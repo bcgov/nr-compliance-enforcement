@@ -7,7 +7,7 @@ import { CreateUpdateExhibitInput, Exhibit, ExhibitFilters, ExhibitResult } from
 import { UserService } from "../../common/user.service";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { PageInfo } from "../../shared/case_file/dto/case_file";
-
+import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 @Injectable()
 export class ExhibitService {
   constructor(
@@ -132,8 +132,8 @@ export class ExhibitService {
 
   async create(exhibitInput: CreateUpdateExhibitInput): Promise<Exhibit> {
     try {
-      const exhibit = await this.prisma.$transaction(async (tx) => {
-        const highestExhibit = await tx.exhibit.findFirst({
+      const exhibit = await withRlsTransaction(this.prisma, async (db) => {
+        const highestExhibit = await db.exhibit.findFirst({
           where: {
             investigation_guid: exhibitInput.investigationGuid,
           },
@@ -147,7 +147,7 @@ export class ExhibitService {
 
         const nextExhibitNumber = highestExhibit ? highestExhibit.exhibit_number + 1 : 1;
 
-        return await tx.exhibit.create({
+        return await db.exhibit.create({
           data: {
             task_guid: exhibitInput.taskGuid,
             investigation_guid: exhibitInput.investigationGuid,
@@ -171,15 +171,17 @@ export class ExhibitService {
 
   async remove(exhibitGuid: string): Promise<Exhibit> {
     try {
-      await this.prisma.exhibit.update({
-        where: {
-          exhibit_guid: exhibitGuid,
-        },
-        data: {
-          active_ind: false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      await withRlsTransaction(this.prisma, async (db) => {
+        await db.exhibit.update({
+          where: {
+            exhibit_guid: exhibitGuid,
+          },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
     } catch (error) {
       this.logger.error("Error removing exhibit:", error);
@@ -190,17 +192,19 @@ export class ExhibitService {
 
   async update(exhibitInput: CreateUpdateExhibitInput): Promise<Exhibit> {
     try {
-      const exhibit = await this.prisma.exhibit.update({
-        where: {
-          exhibit_guid: exhibitInput.exhibitGuid,
-        },
-        data: {
-          description: exhibitInput.description,
-          date_collected: exhibitInput.dateCollected,
-          collected_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
+      const exhibit = await withRlsTransaction(this.prisma, async (db) => {
+        return await db.exhibit.update({
+          where: {
+            exhibit_guid: exhibitInput.exhibitGuid,
+          },
+          data: {
+            description: exhibitInput.description,
+            date_collected: exhibitInput.dateCollected,
+            collected_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
 
       return await this.findOne(exhibit.exhibit_guid);
