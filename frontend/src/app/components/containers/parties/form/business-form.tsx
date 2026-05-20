@@ -7,6 +7,7 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
+import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 
 type BusinessFormFieldsProps = {
   form: any;
@@ -157,69 +158,13 @@ export const BusinessForm: FC<BusinessFormFieldsProps> = ({
           />
         )}
       />
-      {phoneNumbers?.map((phoneNumber: ContactMethod, index: number) => (
-        <FormField
-          key={phoneNumber.contactMethodGuid || `phone-${index}`}
-          form={form}
-          name={`phoneNumbers[${index}].value`}
-          label={index === 0 ? "Phone number" : ""}
-          render={(field) => (
-            <div className="party-contact-method">
-              {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {index > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`phone-primary-${index}`}
-                name="primaryPhoneNumber"
-                checked={phoneNumber.isPrimary || false}
-                onChange={() => handleSetPrimaryPhoneNumber(index)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <ValidationPhoneInput
-                  className="comp-details-input"
-                  value={phoneNumber.value ?? ""}
-                  onChange={(value: string) => field.handleChange(value || "")}
-                  maxLength={14}
-                  international={false}
-                  id={`phone-number-${index}`}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
-                />
-              </div>
-
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => handleRemovePhoneNumber(index)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
-          )}
-        />
-      ))}
-      <FormField
+      <PartyPhoneFields
         form={form}
-        name="add-phone-number-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-phone-number-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleAddPhoneNumber}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add phone number
-          </Button>
-        )}
+        isDisabled={isDisabled}
+        phoneNumbers={phoneNumbers}
+        onAdd={handleAddPhoneNumber}
+        onRemove={handleRemovePhoneNumber}
+        onSetPrimary={handleSetPrimaryPhoneNumber}
       />
       {emailAddresses?.map((email: ContactMethod, index: number) => (
         <FormField
