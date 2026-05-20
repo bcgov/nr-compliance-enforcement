@@ -207,6 +207,7 @@ export interface ParsedObjectMetadata {
   location: string | null;
   description: string | null;
   title: string | null;
+  size: number | null;
 }
 
 /**
@@ -308,12 +309,15 @@ export const fetchObjectsMetadata = async (
     const locationMeta = item.metadata.find((m) => m.key === "location");
     const descriptionMeta = item.metadata.find((m) => m.key === "description");
     const titleMeta = item.metadata.find((m) => m.key === "title");
+    const contentLengthMeta = item.metadata.find((m) => m.key === "content-length");
 
     const attachmentTypeNum = attachmentTypeMeta ? Number.parseInt(attachmentTypeMeta.value, 10) : null;
     const validAttachmentType =
       attachmentTypeNum !== null && Object.values(AttachmentEnum).includes(attachmentTypeNum)
         ? (attachmentTypeNum as AttachmentEnum)
         : null;
+
+    const parsedSize = contentLengthMeta ? Number.parseInt(contentLengthMeta.value, 10) : Number.NaN;
 
     metadataMap.set(item.objectId, {
       objectId: item.objectId,
@@ -326,6 +330,7 @@ export const fetchObjectsMetadata = async (
       location: locationMeta?.value ?? null,
       description: descriptionMeta?.value ?? null,
       title: titleMeta?.value ?? null,
+      size: Number.isFinite(parsedSize) && parsedSize > 0 ? parsedSize : null,
     });
   }
 
