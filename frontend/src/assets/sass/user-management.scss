@@ -25,6 +25,11 @@
     margin-top: 24px;
   }
 
+  .admin-header-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
   .disable-field {
     color: $gray-600;
   }
