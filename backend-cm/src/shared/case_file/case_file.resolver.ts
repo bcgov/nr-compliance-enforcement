@@ -1,4 +1,4 @@
-import { Logger, UseGuards } from "@nestjs/common";
+import { Logger, UseGuards, NotFoundException } from "@nestjs/common";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Args, Query, Mutation, Resolver, Int } from "@nestjs/graphql";
 import { Roles } from "../../auth/decorators/roles.decorator";
@@ -19,6 +19,9 @@ export class CaseFileResolver {
     try {
       return await this.caseFileService.findOne(id);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new GraphQLError(error.message, { extensions: { code: "NOT_FOUND" } });
+      }
       this.logger.error(error);
       throw new GraphQLError("Error fetching data from Shared schema", {
         extensions: {

@@ -150,11 +150,6 @@ export const complaintSlice = createSlice({
       return { ...state, complaint, complaintView: { isReadOnly } };
     },
 
-    setCaseFileComplaints: (state, action) => {
-      const { payload } = action;
-      return { ...state, caseFileComplaints: payload };
-    },
-
     setComplaintLastUpdated: (state, action: PayloadAction<string>) => {
       if (state.complaint) {
         Object.assign(state.complaint, { updatedOn: action.payload });
@@ -341,7 +336,6 @@ export const {
   setComplaints,
   setTotalCount,
   setComplaint,
-  setCaseFileComplaints,
   setComplaintLastUpdated,
   setComplaintCollaborators,
   setGeocodedComplaintCoordinates,
@@ -828,17 +822,17 @@ export const getLinkedComplaints =
   };
 
 export const getCaseFileComplaints =
-  (complaintIds: string[]): AppThunk =>
+  (complaintIds: string[]): AppThunk<Promise<SectorComplaint[]>> =>
   async (dispatch) => {
     try {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/sector-complaints-by-ids`, {
         ids: complaintIds,
       });
-      const response = await get<ComplaintDtoAlias>(dispatch, parameters);
-      dispatch(setCaseFileComplaints(response));
+      const response = await get<SectorComplaint[]>(dispatch, parameters);
+      return response;
     } catch (error) {
       console.error("Unable to get complaints for case file", error);
-      dispatch(setCaseFileComplaints(null));
+      return [];
     }
   };
 
@@ -1025,13 +1019,6 @@ export const selectComplaint = (
     complaints: { complaint },
   } = state;
   return complaint;
-};
-
-export const selectCaseFileComplaints = (state: RootState): SectorComplaint[] | null => {
-  const {
-    complaints: { caseFileComplaints },
-  } = state;
-  return caseFileComplaints;
 };
 
 export const selectComplaintCollaborators = (state: RootState): Collaborator[] => {

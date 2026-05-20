@@ -10,11 +10,12 @@ import { MapObjectType } from "@/app/types/maps/map-element";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import DiaryDates from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { InvestigationItem } from "@/app/components/containers/investigations/details/investigation-summary/investigation-item";
-import CaseActivities from "@/app/components/containers/investigations/details/investigation-summary/case-activities";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
+import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -32,6 +33,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   onDirtyChange,
 }) => {
   const navigate = useNavigate();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === investigationData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
@@ -168,10 +170,10 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
       <div className="comp-details-view">
         <div className="comp-details-content">
           {caseGuid && (
-            <CaseActivities
-              caseGuid={caseGuid}
-              caseName={caseName}
-            />
+            <>
+              <h2 className="mb-6 mb-sm-3">Associated data</h2>
+              <CaseActivities cases={[{ caseIdentifier: caseGuid, name: caseName }]} />
+            </>
           )}
           <div className="d-flex align-items-center justify-content-between mb-3">
             <h2 className="mb-0">Investigation summary</h2>
@@ -180,6 +182,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
               size="sm"
               id="details-screen-edit-button"
               onClick={editButtonClick}
+              disabled={isReadOnly}
             >
               <i className="bi bi-pencil"></i>
               <span>Edit investigation</span>

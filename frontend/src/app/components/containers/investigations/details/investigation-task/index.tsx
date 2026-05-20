@@ -11,16 +11,13 @@ import type { CreateUpdateTaskInput } from "@/generated/graphql";
 import { DismissToast, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
-import {
-  selectTaskCategory,
-  selectTaskSubCategory,
-  selectTaskStatus,
-} from "@/app/store/reducers/code-table-selectors";
+import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { exportTasksList } from "@/app/store/reducers/documents-thunks";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import { escapeCsvCell, formatDate, formatDateTime } from "@/app/common/methods";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 const CREATE_TASK = gql`
   mutation CreateTask($input: CreateUpdateTaskInput!) {
@@ -39,6 +36,7 @@ interface InvestigationTasksNewProps {
 export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investigationGuid, investigationData }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const tasks = (investigationData?.tasks as Task[]) ?? [];
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
@@ -171,6 +169,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
             variant="primary"
             size="sm"
             onClick={() => setShowAddTaskModal(true)}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle me-1" /> Add task
           </Button>

@@ -9,6 +9,7 @@ import { Contravention, EnforcementAction, Investigation, InvestigationParty } f
 import { gql } from "graphql-request";
 import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
+import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
@@ -76,6 +77,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const contraventions = investigationData?.contraventions;
   const parties = investigationData?.parties as InvestigationParty[];
 
@@ -261,6 +263,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             size="sm"
             id="details-screen-edit-button"
             onClick={() => openContraventionModal()}
+            disabled={isReadOnly}
           >
             <i className="bi bi-plus-circle"></i>
             <span>Add contravention</span>
