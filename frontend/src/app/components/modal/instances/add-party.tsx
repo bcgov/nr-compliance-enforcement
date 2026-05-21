@@ -503,7 +503,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           }}
         >
           {/* Mode selection - only shown in add mode */}
-          {modalMode === "add" && (
+          {modalMode === "add" && activityType === "investigation" && (
             <div className="pb-3 d-flex">
               <Form.Check
                 inline

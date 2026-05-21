@@ -59,6 +59,7 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
         modalType: ADD_PARTY,
         data: {
           title: "Add party to inspection",
+          modalMode: "add",
           description: "",
           activityGuid: inspectionGuid,
           activityType: "inspection",
