@@ -200,6 +200,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
               <Dropdown.Item
                 id={`edit-contravention-${c.contraventionIdentifier}`}
                 onClick={() => onEdit(c.contraventionIdentifier, partyGuid)}
+                disabled={isReadOnly}
               >
                 <i className="bi bi-pencil" /> Edit
               </Dropdown.Item>
