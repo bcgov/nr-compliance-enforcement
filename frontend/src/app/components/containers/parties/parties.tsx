@@ -76,6 +76,7 @@ const Parties: FC = () => {
       page: searchValues.page,
       pageSize: searchValues.pageSize,
       filters: getFilters(),
+      partyTypeCode: searchValues.partyTypeCode || PartyTypeCodes.PERSON,
     },
     placeholderData: (previousData) => previousData,
   });
