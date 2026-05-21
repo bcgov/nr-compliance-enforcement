@@ -142,6 +142,13 @@ export const UserList: FC<Props> = ({
       getValue: (u) => (u.user_roles?.length ? u.user_roles.join(", ") : EMPTY).toLowerCase(),
       renderCell: (u) => (u.user_roles?.length ? u.user_roles.join(", ") : EMPTY),
     },
+    {
+      label: "COMS access",
+      sortKey: "coms_access",
+      isSortable: true,
+      getValue: (u) => (u.coms_enrolled_ind ? "enrolled" : EMPTY),
+      renderCell: (u) => (u.coms_enrolled_ind ? "Enrolled" : EMPTY),
+    },
   ];
 
   return (

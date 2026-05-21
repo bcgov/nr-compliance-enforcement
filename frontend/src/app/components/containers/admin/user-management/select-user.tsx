@@ -92,7 +92,7 @@ function getAgencyDetailDisplay(
   }
 }
 
-type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role" | "zone" | "region";
+type SortColumn = "name" | "user_id" | "agency" | "agency_detail" | "role" | "zone" | "region" | "coms_access";
 
 // Agencies with a dedicated tab / table
 const AGENCY_TAB_CODES = [
@@ -142,7 +142,9 @@ function buildTableCsv(
   includeZoneRegion: boolean,
 ): string {
   const baseHeaders = ["Name (last, first)", "User ID", "Agency", agencyDetailLabel];
-  const headers = includeZoneRegion ? [...baseHeaders, "Zone", "Region", "Role"] : [...baseHeaders, "Role"];
+  const headers = includeZoneRegion
+    ? [...baseHeaders, "Zone", "Region", "Role", "COMS access"]
+    : [...baseHeaders, "Role", "COMS access"];
   const headerRow = headers.map(escapeCsvCell).join(",");
   const rows = officers.map((u) => {
     const name = `${u.last_name ?? ""}, ${u.first_name ?? ""}${u.deactivate_ind ? " (deactivated)" : ""}`;
@@ -156,7 +158,8 @@ function buildTableCsv(
       ? [escapeCsvCell(getZoneDisplayName(u)), escapeCsvCell(getRegionDisplayName(u))]
       : [];
     const roleCell = [escapeCsvCell(u.user_roles?.length ? u.user_roles.join(", ") : EMPTY)];
-    return [...baseCells, ...zoneRegionCells, ...roleCell].join(",");
+    const comsCell = [escapeCsvCell(u.coms_enrolled_ind ? "Enrolled" : EMPTY)];
+    return [...baseCells, ...zoneRegionCells, ...roleCell, ...comsCell].join(",");
   });
   return [headerRow, ...rows].join("\r\n");
 }
@@ -253,6 +256,8 @@ export const SelectUser: FC<SelectUserProps> = ({
           return getZoneDisplayName(u).toLowerCase();
         case "region":
           return getRegionDisplayName(u).toLowerCase();
+        case "coms_access":
+          return u.coms_enrolled_ind ? "enrolled" : EMPTY;
         default:
           return "";
       }
