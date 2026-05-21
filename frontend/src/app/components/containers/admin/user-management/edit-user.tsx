@@ -480,7 +480,6 @@ export const EditUser: FC<EditUserProps> = ({
               <Button
                 variant="outline-primary"
                 onClick={resetComsAccess}
-                disabled={!officerData?.coms_enrolled_ind}
                 title={
                   officerData?.coms_enrolled_ind
                     ? "Reset this user's COMS access flag"
