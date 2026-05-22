@@ -151,6 +151,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
       <div className="row">
         <div className="col-12">
           <Button
+            id="add-party-button"
             variant="primary"
             size="sm"
             onClick={handleAddParty}
