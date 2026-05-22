@@ -24,12 +24,14 @@ import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { formatDateOfBirth } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
+import { getUserAgency } from "@/app/service/user-service";
 
 type PartyRelation = {
   caseId?: string | null;
   caseName?: string | null;
   activities?: PartyActivity[] | null;
   leadAgency?: string | null;
+  sameAgency?: boolean;
 };
 
 type PartyActivity = {
@@ -38,6 +40,7 @@ type PartyActivity = {
   activityType?: string | null;
   leadAgency?: string | null;
   role?: string | null;
+  sameAgency?: boolean;
 };
 
 export const GET_PARTY = gql`
@@ -114,7 +117,7 @@ export const GET_PARTY = gql`
 
 const GET_INVESTIGATIONS_BY_PARTY = gql`
   query GetInvestigationsByParty($partyId: String!, $partyType: String!) {
-    getInvestigationsByParty(partyId: $partyId, partyType: $partyType) {
+    partyHistoryInvestigations(partyId: $partyId, partyType: $partyType) {
       investigationGuid
       description
       leadAgency
@@ -130,7 +133,7 @@ const GET_INVESTIGATIONS_BY_PARTY = gql`
 
 const GET_INSPECTIONS_BY_PARTY = gql`
   query GetInspectionsByParty($partyId: String!, $partyType: String!) {
-    getInspectionsByParty(partyId: $partyId, partyType: $partyType) {
+    partyHistoryInspections(partyId: $partyId, partyType: $partyType) {
       inspectionGuid
       description
       leadAgency
@@ -146,7 +149,7 @@ const GET_INSPECTIONS_BY_PARTY = gql`
 
 const GET_CASE_FILES_BY_ACTIVITIES = gql`
   query GetCaseFilesByActivityIds($activityIdentifiers: [String!]!) {
-    caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
+    partyHistoryCaseFiles(activityIdentifiers: $activityIdentifiers) {
       caseIdentifier
       name
       leadAgency {
@@ -224,7 +227,11 @@ const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({
             <p>
               <b>
                 Case:&nbsp;&nbsp;
-                <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
+                {partyRelation.sameAgency ? (
+                  <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
+                ) : (
+                  <span>{partyRelation.caseName}</span>
+                )}
               </b>
               <span style={{ marginLeft: "0.8em" }}></span>
               <i className="bi-building bi"></i>
@@ -237,11 +244,15 @@ const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({
                   &nbsp;&nbsp;&nbsp;&nbsp;
                   {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
                   &nbsp;&nbsp;
-                  <Link
-                    to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
-                  >
-                    {activity.name}
-                  </Link>
+                  {activity.sameAgency ? (
+                    <Link
+                      to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
+                    >
+                      {activity.name}
+                    </Link>
+                  ) : (
+                    <span>{activity.name}</span>
+                  )}
                   <span style={{ marginLeft: "0.4em" }}></span>
                   <span>|</span>
                   <i
@@ -346,20 +357,22 @@ export const PartyView: FC = () => {
 
     const partyRelations = [];
 
+    const userAgency = getUserAgency();
+
     const relatedInvestigationsIds = relatedInvestigations?.map((investigation) => investigation.investigationGuid);
     const relatedInspectionIds = relatedInspections?.map((inspection) => inspection.inspectionGuid);
 
     const activityIds = [...(relatedInvestigationsIds ?? []), ...(relatedInspectionIds ?? [])];
 
     const { data: caseData, isLoading: isCaseLoading } = useGraphQLQuery<{
-      caseFilesByActivityIds: CaseFile[];
+      partyHistoryCaseFiles: CaseFile[];
     }>(GET_CASE_FILES_BY_ACTIVITIES, {
       queryKey: ["activities", activityIds],
       variables: { activityIdentifiers: activityIds },
       enabled: !!activityIds && activityIds.length > 0,
     });
 
-    const relatedCases = caseData?.caseFilesByActivityIds;
+    const relatedCases = caseData?.partyHistoryCaseFiles;
 
     const uniqueCaseIds = [...new Set(relatedCases?.map((item) => item.caseIdentifier))];
 
@@ -374,6 +387,7 @@ export const PartyView: FC = () => {
       partyRelation.leadAgency = leadAgencyOptions.find(
         (option: Option) => option.value === currentCase?.leadAgency?.agencyCode,
       )?.label;
+      partyRelation.sameAgency = currentCase?.leadAgency?.agencyCode === userAgency;
 
       for (let caseActivity of currentCase?.activities ?? []) {
         const currenInvestigation = relatedInvestigations?.find(
@@ -393,6 +407,7 @@ export const PartyView: FC = () => {
               )?.partyAssociationRole ?? "",
               CASE_ACTIVITY_TYPES.INVESTIGATION,
             ),
+            sameAgency: currenInvestigation?.leadAgency === userAgency,
           });
         }
 
@@ -411,6 +426,7 @@ export const PartyView: FC = () => {
                 ?.partyAssociationRole ?? "",
               CASE_ACTIVITY_TYPES.INSPECTION,
             ),
+            sameAgency: currenInspection?.leadAgency === userAgency,
           });
         }
       }
@@ -430,24 +446,24 @@ export const PartyView: FC = () => {
     isActivityLoading: boolean;
   } => {
     const { data: investigationData, isLoading: isInvestigationLoading } = useGraphQLQuery<{
-      getInvestigationsByParty: Investigation[];
+      partyHistoryInvestigations: Investigation[];
     }>(GET_INVESTIGATIONS_BY_PARTY, {
       queryKey: ["InvestigationParty", id],
       variables: { partyId, partyType },
       enabled: !!partyId && !!partyType,
     });
 
-    const relatedInvestigations = investigationData?.getInvestigationsByParty ?? [];
+    const relatedInvestigations = investigationData?.partyHistoryInvestigations ?? [];
 
     const { data: inspectionData, isLoading: isInspectionLoading } = useGraphQLQuery<{
-      getInspectionsByParty: Inspection[];
+      partyHistoryInspections: Inspection[];
     }>(GET_INSPECTIONS_BY_PARTY, {
       queryKey: ["InspectionParty", id],
       variables: { partyId, partyType },
       enabled: !!partyId && !!partyType,
     });
 
-    const relatedInspections = inspectionData?.getInspectionsByParty ?? [];
+    const relatedInspections = inspectionData?.partyHistoryInspections ?? [];
 
     const isActivityLoading = isInspectionLoading || isInvestigationLoading;
 
