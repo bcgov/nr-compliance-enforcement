@@ -30,6 +30,8 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessForm } from "@/app/components/containers/parties/form/business-form";
 import z from "zod";
 import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -232,6 +234,13 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
 
+  // Hooks
+  const { data: fullPartyData } = useGraphQLQuery(GET_PARTY, {
+    queryKey: ["party-for-add", selectedParty?.partyIdentifier],
+    variables: { partyIdentifier: selectedParty?.partyIdentifier },
+    enabled: !!selectedParty?.partyIdentifier,
+  });
+
   const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
     onSuccess: () => {
@@ -274,7 +283,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             .find((bi) => bi.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
           return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
         })(),
-        wsbcNumber: (() => {
+        worksafeBCNumber: (() => {
           const found = editParty.business?.businessIdentifiers
             ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
             .find((bi) => bi.businessIdentifierCode === BusinessIdentifiers.WSBC_NUMBER);
@@ -437,26 +446,58 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
     if (partyErrorMessage || partyRoleErrorMessage) return;
 
+    const party = fullPartyData?.party ?? selectedParty;
+
     const addPartyInput = {
-      partyTypeCode: selectedParty.partyTypeCode || "",
-      partyReference: selectedParty.partyIdentifier,
-      ...(selectedParty.person?.lastName && {
+      partyTypeCode: party.partyTypeCode || "",
+      partyReference: party.partyIdentifier,
+      ...(party.person?.lastName && {
         person: {
-          firstName: selectedParty.person?.firstName || "",
-          lastName: selectedParty.person?.lastName || "",
-          middleName: selectedParty.person?.middleName,
-          middleName2: selectedParty.person?.middleName2,
-          personReference: selectedParty.person?.personGuid,
+          firstName: party.person?.firstName || "",
+          lastName: party.person?.lastName || "",
+          middleName: party.person?.middleName,
+          middleName2: party.person?.middleName2,
+          personReference: party.person?.personGuid,
+          dateOfBirth: party.person?.dateOfBirth,
+          driversLicenseNumber: party.person?.driversLicenseNumber,
+          driversLicenseJurisdiction: party.person?.driversLicenseJurisdiction,
+          sexCode: party.person?.sexCode,
+          contactMethods: party.person?.contactMethods
+            ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
+            .map((cm: ContactMethod) => ({
+              contactMethodTypeCode: cm.typeCode,
+              contactValue: cm.value,
+              isPrimary: cm.isPrimary ?? false,
+            })),
         },
       }),
-      ...(selectedParty.business?.name && {
+      ...(party.business?.name && {
         business: {
-          name: selectedParty.business.name,
-          businessReference: selectedParty.business.businessGuid,
+          name: party.business.name,
+          businessReference: party.business.businessGuid,
+          contactMethods: party.business?.contactMethods
+            ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
+            .map((cm: ContactMethod) => ({
+              contactMethodTypeCode: cm.typeCode,
+              contactValue: cm.value,
+              isPrimary: cm.isPrimary ?? false,
+            })),
+          businessIdentifiers: party.business?.identifiers
+            ?.filter((bi: BusinessIdentifier): bi is BusinessIdentifier => bi != null)
+            .map((bi: BusinessIdentifier) => ({
+              businessIdentifierCode: bi.identifierCode?.businessIdentifierCode,
+              identifierValue: bi.identifierValue,
+            })),
+          aliases: party.business?.aliases
+            ?.filter((a: Alias): a is Alias => a != null)
+            .map((a: Alias) => ({
+              name: a.name,
+            })),
         },
       }),
       partyAssociationRole: selectedPartyRole,
     };
+
     const typeCastedInput =
       activityType === "investigation"
         ? (addPartyInput as CreateInvestigationPartyInput)
