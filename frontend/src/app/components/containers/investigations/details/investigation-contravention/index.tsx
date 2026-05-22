@@ -99,6 +99,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           skipValidateForSteps: [0],
           nextButtonLabel: "Edit",
           hidePreviousButton: true,
+          isReadOnly: isReadOnly,
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -114,6 +115,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               investigationParties={investigationData?.parties as InvestigationParty[]}
               contravention={contravention}
               partyGuid={partyGuid}
+              isReadOnly={isReadOnly}
               handleChildDirtyChange={handleChildDirtyChange}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
@@ -291,6 +293,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contraventions={groupedContraventions}
               investigationGuid={investigationGuid}
               partyGuid={partyGuid}
+              isReadOnly={isReadOnly}
               onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
               onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
               onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
@@ -311,6 +314,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 contraventions={unknownGroups.flatMap((g) => g.contraventions)}
                 investigationGuid={investigationGuid}
                 partyGuid={null}
+                isReadOnly={isReadOnly}
                 onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
                 onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
                 onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}

@@ -35,7 +35,7 @@ import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { CssUser } from "@/app/types/app/app_user/app_user";
 import { NewAppUser } from "@apptypes/app/app_user/new-app-user";
-import { TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
+import { DELETE_CONFIRM, TOGGLE_DEACTIVATE } from "@/app/types/modal/modal-types";
 import "@assets/sass/user-management.scss";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
@@ -418,6 +418,33 @@ export const EditUser: FC<EditUserProps> = ({
     );
   };
 
+  const resetComsAccess = () => {
+    const guid = officerData?.app_user_guid;
+    if (!guid) return;
+
+    dispatch(
+      openModal({
+        modalSize: "md",
+        modalType: DELETE_CONFIRM,
+        data: {
+          title: "Reset COMS access?",
+          description:
+            "This clears the user's COMS access flag. The next time they sign in, NatSuite will re-request COMS access.",
+          confirmText: "reset COMS access",
+          deleteConfirmed: async () => {
+            const res = await dispatch(updateOfficerReducer(guid, { coms_enrolled_ind: false }));
+            if (res === "success") {
+              dispatch(getOfficers());
+              ToggleSuccess("COMS access reset");
+            } else {
+              ToggleError("Unable to reset COMS access");
+            }
+          },
+        },
+      }),
+    );
+  };
+
   const resetSelect = () => {
     setCurrentAgency(null);
     setSelectedTeam(null);
@@ -449,20 +476,33 @@ export const EditUser: FC<EditUserProps> = ({
         <div className="comp-page-title-container">
           <h3>{isInAddUserView ? "Add new user" : "Edit user"}</h3>
           {!isInAddUserView && (
-            <Button
-              variant="primary"
-              onClick={toggleDeactivate}
-            >
-              {officerData?.deactivate_ind ? (
-                <span>
-                  <i className="bi bi-person-bounding-box"></i>Activate user
-                </span>
-              ) : (
-                <span>
-                  <i className="comp-sidenav-item-icon bi bi-x-circle"></i>Deactivate user
-                </span>
-              )}
-            </Button>
+            <div className="admin-header-buttons">
+              <Button
+                variant="outline-primary"
+                onClick={resetComsAccess}
+                title={
+                  officerData?.coms_enrolled_ind
+                    ? "Reset this user's COMS access flag"
+                    : "This user's COMS access is not enrolled"
+                }
+              >
+                <i className="comp-sidenav-item-icon bi bi-arrow-counterclockwise"></i>Reset COMS access
+              </Button>
+              <Button
+                variant="primary"
+                onClick={toggleDeactivate}
+              >
+                {officerData?.deactivate_ind ? (
+                  <span>
+                    <i className="bi bi-person-bounding-box"></i>Activate user
+                  </span>
+                ) : (
+                  <span>
+                    <i className="comp-sidenav-item-icon bi bi-x-circle"></i>Deactivate user
+                  </span>
+                )}
+              </Button>
+            </div>
           )}
         </div>
       </div>
