@@ -15,6 +15,7 @@ interface StepModalFooterProps {
   onDelete: () => void;
   nextButtonLabel?: string; // When set, replaces the default "Next" label
   hidePreviousButton?: boolean;
+  isReadOnly?: boolean;
 }
 
 export const StepModalFooter: FC<StepModalFooterProps> = ({
@@ -31,9 +32,10 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
   onDelete,
   nextButtonLabel,
   hidePreviousButton,
+  isReadOnly,
 }) => {
   const isLastStep = currentStep === totalSteps - 1;
-  const showDelete = isEdit && currentStep >= deleteFromStep;
+  const showDelete = !isReadOnly && isEdit && currentStep >= deleteFromStep;
 
   return (
     <div className="comp-details-form-buttons w-100 d-flex justify-content-between">
@@ -67,33 +69,34 @@ export const StepModalFooter: FC<StepModalFooterProps> = ({
           onClick={onCancel}
           disabled={showDeleteConfirm || isSaving}
         >
-          Cancel
+          {isReadOnly ? "Close" : "Cancel"}
         </Button>
-        {isLastStep ? (
-          <Button
-            variant="primary"
-            onClick={onSave}
-            disabled={showDeleteConfirm || isSaving}
-          >
-            <i className="bi bi-check-circle" />
-            <span>Save</span>
-          </Button>
-        ) : (
-          <Button
-            variant="primary"
-            onClick={onNext}
-            disabled={showDeleteConfirm || isSaving}
-          >
-            {nextButtonLabel ? (
-              <span>{nextButtonLabel}</span>
-            ) : (
-              <>
-                <span>Next</span>
-                <i className="bi bi-arrow-right-circle ms-1" />
-              </>
-            )}
-          </Button>
-        )}
+        {!isReadOnly &&
+          (isLastStep ? (
+            <Button
+              variant="primary"
+              onClick={onSave}
+              disabled={showDeleteConfirm || isSaving}
+            >
+              <i className="bi bi-check-circle" />
+              <span>Save</span>
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={onNext}
+              disabled={showDeleteConfirm || isSaving}
+            >
+              {nextButtonLabel ? (
+                <span>{nextButtonLabel}</span>
+              ) : (
+                <>
+                  <span>Next</span>
+                  <i className="bi bi-arrow-right-circle ms-1" />
+                </>
+              )}
+            </Button>
+          ))}
       </div>
     </div>
   );

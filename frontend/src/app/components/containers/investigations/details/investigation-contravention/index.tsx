@@ -99,6 +99,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           skipValidateForSteps: [0],
           nextButtonLabel: "Edit",
           hidePreviousButton: true,
+          isReadOnly: isReadOnly,
           content: (
             currentStep: number,
             onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
@@ -114,6 +115,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               investigationParties={investigationData?.parties as InvestigationParty[]}
               contravention={contravention}
               partyGuid={partyGuid}
+              isReadOnly={isReadOnly}
               handleChildDirtyChange={handleChildDirtyChange}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
