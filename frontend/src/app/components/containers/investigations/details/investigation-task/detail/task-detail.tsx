@@ -23,6 +23,7 @@ const GET_TASK = gql`
     task(taskId: $taskId) {
       taskIdentifier
       investigationIdentifier
+      investigationLabel
       taskTypeCode
       taskStatusCode
       assignedUserIdentifier
