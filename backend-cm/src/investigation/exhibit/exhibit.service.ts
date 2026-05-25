@@ -8,6 +8,8 @@ import { UserService } from "../../common/user.service";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { InvestigationService } from "../investigation/investigation.service";
+
 @Injectable()
 export class ExhibitService {
   constructor(
@@ -15,6 +17,7 @@ export class ExhibitService {
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
+    private readonly investigationService: InvestigationService,
   ) {}
 
   private readonly logger = new Logger(ExhibitService.name);
@@ -161,6 +164,7 @@ export class ExhibitService {
           },
         });
       });
+      await this.investigationService.updateInvestigationTimestamp(exhibitInput.investigationGuid);
 
       return await this.findOne(exhibit.exhibit_guid);
     } catch (error) {
@@ -171,6 +175,14 @@ export class ExhibitService {
 
   async remove(exhibitGuid: string): Promise<Exhibit> {
     try {
+      const exhibit = await this.prisma.exhibit.findUnique({
+        where: { exhibit_guid: exhibitGuid },
+      });
+
+      if (!exhibit) {
+        throw new Error(`Exhibit with guid ${exhibitGuid} not found`);
+      }
+
       await withRlsTransaction(this.prisma, async (db) => {
         await db.exhibit.update({
           where: {
@@ -183,6 +195,8 @@ export class ExhibitService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(exhibit.investigation_guid);
     } catch (error) {
       this.logger.error("Error removing exhibit:", error);
       throw error;
@@ -206,6 +220,8 @@ export class ExhibitService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(exhibit.investigation_guid);
 
       return await this.findOne(exhibit.exhibit_guid);
     } catch (error) {

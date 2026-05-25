@@ -48,6 +48,7 @@ export class ContraventionService {
       this.logger.error("Error adding contravention:", error);
       throw error;
     }
+    await this.investigationService.updateInvestigationTimestamp(contraventionInput.investigationGuid);
 
     return await this.investigationService.findOne(contraventionInput.investigationGuid);
   }
@@ -120,6 +121,8 @@ export class ContraventionService {
       this.logger.error("Error removing contravention:", error);
       throw error;
     }
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     return await this.investigationService.findOne(investigationGuid);
   }
@@ -200,6 +203,7 @@ export class ContraventionService {
       this.logger.error("Error updating contravention:", error);
       throw error;
     }
+    await this.investigationService.updateInvestigationTimestamp(input.investigationGuid);
 
     return await this.investigationService.findOne(input.investigationGuid);
   }

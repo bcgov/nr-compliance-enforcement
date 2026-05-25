@@ -10,11 +10,7 @@ import { FormField } from "@components/common/form-field";
 import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
-import {
-  fileListToCOMSObjects,
-  getDisplayFilename,
-  handlePersistAttachments,
-} from "@/app/common/attachment-utils";
+import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
@@ -27,6 +23,17 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { Attachment } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
 import { fileTypeOptions } from "@/app/components/common/file-type-options";
 import { parseISO } from "date-fns";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+
+const UPDATE_INVESTIGATION_TIMESTAMP = gql`
+  mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
+    updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
+      investigationGuid
+      updatedTimestamp
+    }
+  }
+`;
 
 type AddEditTaskAttachmentModalProps = {
   close: () => void;
@@ -70,6 +77,12 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     const labelA = String(a.label ?? "");
     const labelB = String(b.label ?? "");
     return labelA.localeCompare(labelB, undefined, { sensitivity: "base" });
+  });
+
+  const updateInvestigationTimestampMutation = useGraphQLMutation(UPDATE_INVESTIGATION_TIMESTAMP, {
+    onError: () => {
+      ToggleError("Failed to update investigation timestamp");
+    },
   });
 
   // State
@@ -163,6 +176,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     } else {
       await handleAdd(value, taskIdentifier);
     }
+    await updateInvestigationTimestampMutation.mutateAsync({ investigationGuid: investigationIdentifier });
   };
 
   // Function to add attachments to a task.

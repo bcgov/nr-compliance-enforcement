@@ -1293,6 +1293,7 @@ export type Mutation = {
   updateExhibit: Exhibit;
   updateInspection: Inspection;
   updateInvestigation: Investigation;
+  updateInvestigationTimestamp: Investigation;
   updateLegislationConfiguration: Scalars['Boolean']['output'];
   updateLegislationSource: LegislationSource;
   updateNote: ComplaintOutcome;
@@ -1633,6 +1634,11 @@ export type MutationupdateInspectionArgs = {
 
 export type MutationupdateInvestigationArgs = {
   input: UpdateInvestigationInput;
+  investigationGuid: Scalars['String']['input'];
+};
+
+
+export type MutationupdateInvestigationTimestampArgs = {
   investigationGuid: Scalars['String']['input'];
 };
 

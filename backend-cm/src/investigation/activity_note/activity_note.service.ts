@@ -6,12 +6,15 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { UserService } from "../../common/user.service";
 import { activity_note } from "prisma/investigation/generated/activity_note";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { InvestigationService } from "../investigation/investigation.service";
+
 @Injectable()
 export class ActivityNoteService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
+    private readonly investigationService: InvestigationService,
   ) {}
 
   private readonly logger = new Logger(ActivityNoteService.name);
@@ -139,6 +142,9 @@ export class ActivityNoteService {
         "activity_note",
         "ActivityNote",
       );
+
+      await this.investigationService.updateInvestigationTimestamp(input.investigationGuid);
+
       return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping Activity Note:", error);
@@ -148,6 +154,13 @@ export class ActivityNoteService {
 
   async delete(activityNoteGuid: string): Promise<boolean> {
     try {
+      const activityNote = await this.prisma.activity_note.findUnique({
+        where: { activity_note_guid: activityNoteGuid },
+      });
+
+      if (!activityNote) {
+        throw new Error(`Activity note with guid ${activityNoteGuid} not found`);
+      }
       // Soft delete by setting active_ind to false
       await withRlsTransaction(this.prisma, async (db) => {
         await db.activity_note.update({
@@ -159,6 +172,9 @@ export class ActivityNoteService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(activityNote.investigation_guid);
+
       return true;
     } catch (error) {
       this.logger.error("Error deleting Activity Note:", error);

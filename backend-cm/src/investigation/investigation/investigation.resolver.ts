@@ -60,6 +60,20 @@ export class InvestigationResolver {
     }
   }
 
+  @Mutation("updateInvestigationTimestamp")
+  @Roles(coreRoles)
+  async updateTimestamp(@Args("investigationGuid") investigationGuid: string) {
+    try {
+      await this.investigationService.updateInvestigationTimestamp(investigationGuid);
+      return await this.investigationService.findOne(investigationGuid);
+    } catch (error) {
+      this.logger.error("Update investigation timestamp error:", error);
+      throw new GraphQLError("Error updating investigation timestamp", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
   @Query("getInvestigations")
   @Roles(coreRoles)
   async findMany(@Args("ids", { type: () => [String] }) ids: string[]) {
