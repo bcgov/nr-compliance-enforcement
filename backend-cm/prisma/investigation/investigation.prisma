@@ -89,16 +89,19 @@ model investigation {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_business {
-  investigation_business_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid_ref           String?              @db.Uuid
-  investigation_party_guid    String?              @db.Uuid
-  name                        String               @db.VarChar(128)
-  active_ind                  Boolean              @default(true)
-  create_user_id              String               @db.VarChar(32)
-  create_utc_timestamp        DateTime             @default(now()) @db.Timestamp(6)
-  update_user_id              String?              @db.VarChar(32)
-  update_utc_timestamp        DateTime?            @db.Timestamp(6)
-  investigation_party         investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+  investigation_business_guid       String                              @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid_ref                 String?                             @db.Uuid
+  investigation_party_guid          String?                             @db.Uuid
+  name                              String                              @db.VarChar(128)
+  active_ind                        Boolean                             @default(true)
+  create_user_id                    String                              @db.VarChar(32)
+  create_utc_timestamp              DateTime                            @default(now()) @db.Timestamp(6)
+  update_user_id                    String?                             @db.VarChar(32)
+  update_utc_timestamp              DateTime?                           @db.Timestamp(6)
+  investigation_alias               investigation_alias[]
+  investigation_party               investigation_party?                @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+  investigation_business_identifier investigation_business_identifier[]
+  investigation_contact_method      investigation_contact_method[]
 
   @@schema("investigation")
 }
@@ -161,19 +164,24 @@ model investigation_party_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_person {
-  investigation_person_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  person_guid_ref           String?              @db.Uuid
-  investigation_party_guid  String?              @db.Uuid
-  first_name                String               @db.VarChar(128)
-  middle_name               String?              @db.VarChar(128)
-  middle_name_2             String?              @db.VarChar(128)
-  last_name                 String               @db.VarChar(128)
-  active_ind                Boolean              @default(true)
-  create_user_id            String               @db.VarChar(32)
-  create_utc_timestamp      DateTime             @default(now()) @db.Timestamp(6)
-  update_user_id            String?              @db.VarChar(32)
-  update_utc_timestamp      DateTime?            @db.Timestamp(6)
-  investigation_party       investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+  investigation_person_guid    String                         @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  person_guid_ref              String?                        @db.Uuid
+  investigation_party_guid     String?                        @db.Uuid
+  first_name                   String                         @db.VarChar(128)
+  middle_name                  String?                        @db.VarChar(128)
+  middle_name_2                String?                        @db.VarChar(128)
+  last_name                    String                         @db.VarChar(128)
+  active_ind                   Boolean                        @default(true)
+  create_user_id               String                         @db.VarChar(32)
+  create_utc_timestamp         DateTime                       @default(now()) @db.Timestamp(6)
+  update_user_id               String?                        @db.VarChar(32)
+  update_utc_timestamp         DateTime?                      @db.Timestamp(6)
+  date_of_birth                DateTime?                      @db.Date
+  drivers_license_number       String?                        @db.VarChar(64)
+  drivers_license_jurisdiction String?                        @db.VarChar(64)
+  sex_code_ref                 String?                        @db.VarChar(16)
+  investigation_contact_method investigation_contact_method[]
+  investigation_party          investigation_party?           @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
 
   @@schema("investigation")
 }
@@ -580,6 +588,56 @@ model ticket_outcome_code {
   update_user_id                                         String?   @db.VarChar(32)
   update_utc_timestamp                                   DateTime? @db.Timestamp(6)
   ticket_ticket_ticket_outcome_codeToticket_outcome_code ticket[]  @relation("ticket_ticket_outcome_codeToticket_outcome_code")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_alias {
+  investigation_alias_guid    String                 @id(map: "investigation_alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid String                 @db.Uuid
+  name                        String                 @db.VarChar(512)
+  active_ind                  Boolean                @default(true)
+  create_user_id              String                 @db.VarChar(32)
+  create_utc_timestamp        DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id              String?                @db.VarChar(32)
+  update_utc_timestamp        DateTime?              @db.Timestamp(6)
+  investigation_business      investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_alias_business")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_identifier {
+  investigation_business_identifier_guid String                 @id(map: "investigation_business_identifier_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid            String                 @db.Uuid
+  business_identifier_code_ref           String                 @db.VarChar(16)
+  identifier_value                       String                 @db.VarChar(256)
+  active_ind                             Boolean                @default(true)
+  create_user_id                         String                 @db.VarChar(32)
+  create_utc_timestamp                   DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                         String?                @db.VarChar(32)
+  update_utc_timestamp                   DateTime?              @db.Timestamp(6)
+  investigation_business                 investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_business_identifier_business")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_contact_method {
+  investigation_contact_method_guid String                  @id(map: "investigation_contact_method_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_person_guid         String?                 @db.Uuid
+  investigation_business_guid       String?                 @db.Uuid
+  contact_method_type_code_ref      String                  @db.VarChar(10)
+  contact_value                     String?                 @db.VarChar(512)
+  is_primary                        Boolean                 @default(false)
+  active_ind                        Boolean                 @default(true)
+  create_user_id                    String                  @db.VarChar(32)
+  create_utc_timestamp              DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                    String?                 @db.VarChar(32)
+  update_utc_timestamp              DateTime?               @db.Timestamp(6)
+  investigation_business            investigation_business? @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_business")
+  investigation_person              investigation_person?   @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_person")
 
   @@schema("investigation")
 }

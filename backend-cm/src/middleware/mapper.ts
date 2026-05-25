@@ -51,6 +51,9 @@ import { mapPrismaTicketOutcomeCodeToTicketOutcomeCode } from "../investigation/
 import { mapPrismaEnforcementActionCodeToEnforcementActionCode } from "../investigation/enforcement_action_code/dto/enforcement_action_code";
 import { mapPrismaTicketToTicket } from "../investigation/ticket/dto/ticket";
 import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/enforcement_action/dto/enforcement_action";
+import { mapPrismaContactMethodToInvestigationContactMethod } from "../investigation/investigation_contact_method/dto/investigation_contact_method";
+import { mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier } from "../investigation/investigation_business_identifier/dto/investigation_business_identifier";
+import { mapPrismaAliasToInvestigationAlias } from "../investigation/investigation_alias/dto/investigation_alias";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -104,6 +107,9 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaEnforcementActionCodeToEnforcementActionCode(mapper);
   mapPrismaTicketToTicket(mapper);
   mapPrismaEnforcementActionToEnforcementAction(mapper);
+  mapPrismaContactMethodToInvestigationContactMethod(mapper);
+  mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier(mapper);
+  mapPrismaAliasToInvestigationAlias(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

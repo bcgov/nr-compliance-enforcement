@@ -6,6 +6,7 @@ type Mutation {
     partyIdentifier: String!
     partyAssociationRole: String!
   ): Investigation!
+  updateInvestigationParty(investigationGuid: String!, input: UpdateInvestigationPartyInput!): Investigation!
 }
 
 type Query {

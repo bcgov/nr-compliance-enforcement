@@ -630,3 +630,10 @@ export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAb
   const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(dateOfBirth);
   return formatted || whenAbsent;
 };
+
+// Normalize to UTC date-only
+export const toDateOfBirth = (value: any): Date | undefined => {
+  const d = value?.dateOfBirth;
+  if (!(d instanceof Date)) return undefined;
+  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+};

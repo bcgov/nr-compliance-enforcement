@@ -1,11 +1,14 @@
-type InvestigationBusiness {
-  businessGuid: String!
-  partyGuid: String!
-  businessReference: String
-  name: String!
-}
-
 input CreateInvestigationBusinessInput {
   name: String!
   businessReference: String
+  contactMethods: [CreateInvestigationContactMethodInput]
+  businessIdentifiers: [CreateInvestigationBusinessIdentifierInput]
+  aliases: [CreateInvestigationAliasInput]
+}
+
+input UpdateInvestigationBusinessInput {
+  name: String!
+  contactMethods: [UpdateInvestigationContactMethodInput]
+  businessIdentifiers: [UpdateInvestigationBusinessIdentifierInput]
+  aliases: [UpdateInvestigationAliasInput]
 }
