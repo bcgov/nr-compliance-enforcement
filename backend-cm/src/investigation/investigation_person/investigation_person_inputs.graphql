@@ -1,0 +1,24 @@
+input CreateInvestigationPersonInput {
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  personReference: String
+  dateOfBirth: DateTime
+  driversLicenseNumber: String
+  driversLicenseJurisdiction: String
+  sexCode: String
+  contactMethods: [CreateInvestigationContactMethodInput]
+}
+
+input UpdateInvestigationPersonInput {
+  firstName: String!
+  middleName: String
+  middleName2: String
+  lastName: String!
+  dateOfBirth: DateTime
+  driversLicenseNumber: String
+  driversLicenseJurisdiction: String
+  sexCode: String
+  contactMethods: [UpdateInvestigationContactMethodInput]
+}

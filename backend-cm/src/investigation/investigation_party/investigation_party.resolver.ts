@@ -3,7 +3,10 @@ import { Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
 import { coreRoles } from "../../enum/role.enum";
 import { Roles } from "../../auth/decorators/roles.decorator";
-import { CreateInvestigationPartyInput } from "../investigation_party/dto/investigation_party";
+import {
+  CreateInvestigationPartyInput,
+  UpdateInvestigationPartyInput,
+} from "../investigation_party/dto/investigation_party";
 import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
 @Resolver("InvestigationParty")
@@ -79,6 +82,25 @@ export class InvestigationPartyResolver {
       throw new GraphQLError("Error editing party role in investigation", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Mutation("updateInvestigationParty")
+  @Roles(coreRoles)
+  async update(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("input") input: UpdateInvestigationPartyInput,
+  ) {
+    try {
+      return await this.investigationPartyService.update(investigationGuid, input);
+    } catch (error) {
+      this.logger.error("Update investigation party error:", error);
+      throw new GraphQLError("Error updating investigation party", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
         },
       });
     }

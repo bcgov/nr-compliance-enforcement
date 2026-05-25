@@ -1,0 +1,12 @@
+input CreateInvestigationContactMethodInput {
+  contactMethodTypeCode: String!
+  contactValue: String
+  isPrimary: Boolean
+}
+
+input UpdateInvestigationContactMethodInput {
+  contactMethodGuid: String
+  contactMethodTypeCode: String!
+  contactValue: String
+  isPrimary: Boolean
+}

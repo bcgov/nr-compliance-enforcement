@@ -10,4 +10,5 @@ type Query {
 type Mutation {
   createInvestigation(input: CreateInvestigationInput!): Investigation!
   updateInvestigation(investigationGuid: String!, input: UpdateInvestigationInput!): Investigation!
+  updateInvestigationTimestamp(investigationGuid: String!): Investigation!
 }

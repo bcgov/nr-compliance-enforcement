@@ -13,6 +13,9 @@ const logger = new Logger("PgSessionExtension");
  */
 export const inTransactionContext = new AsyncLocalStorage<boolean>();
 
+// Set to true to deliberately run reads WITHOUT JWT claims bypassing RLS
+export const rlsBypassContext = new AsyncLocalStorage<boolean>();
+
 // Only reads get wrapped in a claims-bearing transaction as the policies are only set for reads
 const READ_OPERATIONS = new Set([
   "findUnique",
@@ -49,6 +52,7 @@ function createPgSessionExtension(client: any, protectedModels: Set<string>) {
           if (!operation || !READ_OPERATIONS.has(operation)) return query(args);
           if (!model || !protectedModels.has(model)) return query(args);
           if (inTransactionContext.getStore()) return query(args);
+          if (rlsBypassContext.getStore()) return query(args);
 
           const user = getRequest()?.user;
           if (!user) return query(args);

@@ -54,10 +54,34 @@ export class InvestigationService {
                 where: {
                   active_ind: true,
                 },
+                include: {
+                  investigation_contact_method: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                },
               },
               investigation_business: {
                 where: {
                   active_ind: true,
+                },
+                include: {
+                  investigation_contact_method: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                  investigation_business_identifier: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
+                  investigation_alias: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
                 },
               },
             },
@@ -739,6 +763,24 @@ export class InvestigationService {
     } catch (error) {
       this.logger.error(
         `Error updating location geometry point for investigation with guid ${investigationGuid}:`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  async updateInvestigationTimestamp(investigationGuid: string): Promise<void> {
+    try {
+      await this.prisma.investigation.update({
+        where: { investigation_guid: investigationGuid },
+        data: {
+          update_utc_timestamp: new Date(),
+          update_user_id: this.user.getIdirUsername(),
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error updating investigation timestamp for investigation with guid ${investigationGuid}:`,
         error,
       );
       throw error;
