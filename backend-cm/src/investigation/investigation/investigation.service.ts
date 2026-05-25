@@ -768,4 +768,22 @@ export class InvestigationService {
       throw error;
     }
   }
+
+  async updateInvestigationTimestamp(investigationGuid: string): Promise<void> {
+    try {
+      await this.prisma.investigation.update({
+        where: { investigation_guid: investigationGuid },
+        data: {
+          update_utc_timestamp: new Date(),
+          update_user_id: this.user.getIdirUsername(),
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Error updating investigation timestamp for investigation with guid ${investigationGuid}:`,
+        error,
+      );
+      throw error;
+    }
+  }
 }
