@@ -225,14 +225,16 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     const grouped = groupContraventionsByParty(contraventions as Contravention[]);
     const groupedByPartyGuid = new Map(grouped.map((g) => [g.partyGuid, g]));
     // Order by parties of interest
-    const knownGroups = parties.map((party) => {
-      const existing = groupedByPartyGuid.get(party.partyIdentifier ?? null);
-      return {
-        partyName: getPartyLabel(party),
-        partyGuid: party.partyIdentifier ?? null,
-        contraventions: existing?.contraventions ?? [],
-      };
-    });
+    const knownGroups = parties
+      .filter((party) => party.partyAssociationRole === "PTYOFINTRST")
+      .map((party) => {
+        const existing = groupedByPartyGuid.get(party.partyIdentifier ?? null);
+        return {
+          partyName: getPartyLabel(party),
+          partyGuid: party.partyIdentifier ?? null,
+          contraventions: existing?.contraventions ?? [],
+        };
+      });
     // Unknown group always last
     const unknownGroups = groupedByPartyGuid.has(null)
       ? [

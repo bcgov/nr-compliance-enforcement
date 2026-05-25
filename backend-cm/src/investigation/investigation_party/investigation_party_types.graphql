@@ -8,11 +8,3 @@ type InvestigationParty {
   partyAssociationRole: String
   enforcementActions: [EnforcementAction]
 }
-
-input CreateInvestigationPartyInput {
-  partyTypeCode: String!
-  partyReference: String
-  person: CreateInvestigationPersonInput
-  business: CreateInvestigationBusinessInput
-  partyAssociationRole: String
-}

@@ -8,6 +8,7 @@ import { PartyList } from "./list/party-list";
 import { PartyFilterBar } from "./list/party-filter-bar";
 import { usePartySearch } from "./hooks/use-party-search";
 import { PartyListTabs } from "@/app/components/containers/parties/list/party-list-tabs";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 const SEARCH_PARTIES = gql`
   query SearchParties($page: Int, $pageSize: Int, $filters: PartyFilters) {
@@ -65,7 +66,7 @@ const Parties: FC = () => {
     queryKey: [
       "searchParties",
       searchValues.search,
-      searchValues.partyTypeCode,
+      searchValues.partyTypeCode || PartyTypeCodes.PERSON,
       searchValues.sortBy,
       searchValues.sortOrder,
       searchValues.page,
@@ -74,7 +75,10 @@ const Parties: FC = () => {
     variables: {
       page: searchValues.page,
       pageSize: searchValues.pageSize,
-      filters: getFilters(),
+      filters: {
+        ...getFilters(),
+        partyTypeCode: searchValues.partyTypeCode || PartyTypeCodes.PERSON,
+      },
     },
     placeholderData: (previousData) => previousData,
   });
@@ -108,7 +112,7 @@ const Parties: FC = () => {
         </div>
 
         <PartyListTabs
-          partyTypeCode={searchValues.partyTypeCode}
+          partyTypeCode={searchValues.partyTypeCode || PartyTypeCodes.PERSON}
           onTabChange={handleTabChange}
         />
 
@@ -119,7 +123,7 @@ const Parties: FC = () => {
         <div className="comp-data-list-map">
           <PartyList
             parties={parties}
-            partyTypeCode={searchValues.partyTypeCode}
+            partyTypeCode={searchValues.partyTypeCode || PartyTypeCodes.PERSON}
             totalItems={totalParties}
             isLoading={isLoading}
             error={error}

@@ -651,12 +651,15 @@ export class PartyService {
       if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(filters.search)) {
         where.OR = [{ party_guid: { equals: filters.search } }];
       } else {
-        where.OR = [
-          { party_type: { equals: filters.search } },
-          { business: { name: { contains: filters.search, mode: "insensitive" } } },
-          { person: { first_name: { contains: filters.search, mode: "insensitive" } } },
-          { person: { last_name: { contains: filters.search, mode: "insensitive" } } },
-        ];
+        const terms = filters.search.trim().split(/\s+/);
+        where.AND = terms.map((term) => ({
+          OR: [
+            { party_type: { equals: term } },
+            { business: { name: { contains: term, mode: "insensitive" } } },
+            { person: { first_name: { contains: term, mode: "insensitive" } } },
+            { person: { last_name: { contains: term, mode: "insensitive" } } },
+          ],
+        }));
       }
     }
 
