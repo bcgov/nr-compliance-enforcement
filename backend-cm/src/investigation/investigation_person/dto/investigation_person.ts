@@ -32,10 +32,10 @@ export class CreateInvestigationPersonInput {
   @Field(() => String)
   firstName: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   middleName?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   middleName2?: string;
 
   @Field(() => String)

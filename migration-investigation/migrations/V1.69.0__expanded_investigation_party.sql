@@ -80,6 +80,41 @@ COMMENT ON COLUMN investigation.investigation_contact_method.update_user_id IS
 COMMENT ON COLUMN investigation.investigation_contact_method.update_utc_timestamp IS
     'The timestamp when the contact method was last updated. The timestamp is stored in UTC with no offset.';
 
+CREATE TABLE investigation.investigation_contact_method_h (
+    h_investigation_contact_method_guid UUID DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    target_row_id UUID NOT NULL,
+    operation_type CHARACTER(1) NOT NULL,
+    operation_user_id CHARACTER VARYING(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    data_after_executed_operation JSONB
+);
+
+COMMENT ON TABLE investigation.investigation_contact_method_h IS
+    'History table for investigation_contact_method table.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.h_investigation_contact_method_guid IS
+    'Primary key. System generated unique identifier for an investigation contact method history record.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.target_row_id IS
+    'The unique key for the investigation contact method that has been created or modified.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.operation_type IS
+    'The operation performed: I = Insert, U = Update, D = Delete.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.operation_user_id IS
+    'The id of the user that created or modified the data in the investigation contact method table. Defaults to the logged in user if not passed in by the application.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.operation_executed_at IS
+    'The timestamp when the data in the investigation contact method table was created or modified. The timestamp is stored in UTC with no offset.';
+
+COMMENT ON COLUMN investigation.investigation_contact_method_h.data_after_executed_operation IS
+    'A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table.';
+
+CREATE TRIGGER investigation_contact_method_history_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON investigation.investigation_contact_method
+    FOR EACH ROW EXECUTE FUNCTION investigation.audit_history('investigation_contact_method_h', 'investigation_contact_method_guid');
+
+
 -- ==========================================
 -- INVESTIGATION_BUSINESS_IDENTIFIER
 -- ==========================================
@@ -128,6 +163,41 @@ COMMENT ON COLUMN investigation.investigation_business_identifier.update_user_id
 COMMENT ON COLUMN investigation.investigation_business_identifier.update_utc_timestamp IS
     'The timestamp when the business identifier was last updated. The timestamp is stored in UTC with no offset.';
 
+CREATE TABLE investigation.investigation_business_identifier_h (
+    h_investigation_business_identifier_guid UUID DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    target_row_id UUID NOT NULL,
+    operation_type CHARACTER(1) NOT NULL,
+    operation_user_id CHARACTER VARYING(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    data_after_executed_operation JSONB
+);
+
+COMMENT ON TABLE investigation.investigation_business_identifier_h IS
+    'History table for investigation_business_identifier table.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.h_investigation_business_identifier_guid IS
+    'Primary key. System generated unique identifier for an investigation business identifier history record.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.target_row_id IS
+    'The unique key for the investigation business identifier that has been created or modified.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.operation_type IS
+    'The operation performed: I = Insert, U = Update, D = Delete.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.operation_user_id IS
+    'The id of the user that created or modified the data in the investigation business identifier table. Defaults to the logged in user if not passed in by the application.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.operation_executed_at IS
+    'The timestamp when the data in the investigation business identifier table was created or modified. The timestamp is stored in UTC with no offset.';
+
+COMMENT ON COLUMN investigation.investigation_business_identifier_h.data_after_executed_operation IS
+    'A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table.';
+
+CREATE TRIGGER investigation_business_identifier_history_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON investigation.investigation_business_identifier
+    FOR EACH ROW EXECUTE FUNCTION investigation.audit_history('investigation_business_identifier_h', 'investigation_business_identifier_guid');
+
+
 -- ==========================================
 -- INVESTIGATION_ALIAS
 -- ==========================================
@@ -171,3 +241,37 @@ COMMENT ON COLUMN investigation.investigation_alias.update_user_id IS
 
 COMMENT ON COLUMN investigation.investigation_alias.update_utc_timestamp IS
     'The timestamp when the alias was last updated. The timestamp is stored in UTC with no offset.';
+
+CREATE TABLE investigation.investigation_alias_h (
+    h_investigation_alias_guid UUID DEFAULT public.uuid_generate_v4() NOT NULL PRIMARY KEY,
+    target_row_id UUID NOT NULL,
+    operation_type CHARACTER(1) NOT NULL,
+    operation_user_id CHARACTER VARYING(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at TIMESTAMP WITHOUT TIME ZONE DEFAULT now() NOT NULL,
+    data_after_executed_operation JSONB
+);
+
+COMMENT ON TABLE investigation.investigation_alias_h IS
+    'History table for investigation_alias table.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.h_investigation_alias_guid IS
+    'Primary key. System generated unique identifier for an investigation alias history record.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.target_row_id IS
+    'The unique key for the investigation alias that has been created or modified.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.operation_type IS
+    'The operation performed: I = Insert, U = Update, D = Delete.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.operation_user_id IS
+    'The id of the user that created or modified the data in the investigation alias table. Defaults to the logged in user if not passed in by the application.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.operation_executed_at IS
+    'The timestamp when the data in the investigation alias table was created or modified. The timestamp is stored in UTC with no offset.';
+
+COMMENT ON COLUMN investigation.investigation_alias_h.data_after_executed_operation IS
+    'A JSON representation of the row in the table after the operation was completed successfully. This implies that the latest row in the audit table will always match with the current row in the live table.';
+
+CREATE TRIGGER investigation_alias_history_trigger
+    BEFORE INSERT OR UPDATE OR DELETE ON investigation.investigation_alias
+    FOR EACH ROW EXECUTE FUNCTION investigation.audit_history('investigation_alias_h', 'investigation_alias_guid');
