@@ -69,6 +69,9 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
                 <Link to={investigationSearchURL}>Investigations</Link>
               </li>
               <li className="breadcrumb-item comp-nav-item-name-inverted">
+                <Link to={`/investigation/${investigationGuid}`}>{task?.investigationLabel ?? "Investigation"}</Link>
+              </li>
+              <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/investigation/${investigationGuid}/tasks`}>Tasks</Link>
               </li>
               <li
