@@ -167,6 +167,9 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
   const reserveLayerParams = useMemo(() => {
     return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
   }, []);
+  const wmuLayerParams = useMemo(() => {
+    return { format: "image/png", layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW", transparent: true };
+  }, []);
 
   return (
     <div className="comp-map-container">
@@ -221,6 +224,18 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
               <WMSTileLayer
                 url="https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP/ows"
                 params={reserveLayerParams}
+                zIndex={1000}
+              />
+            </Pane>
+          </LayersControl.Overlay>
+          <LayersControl.Overlay name="Wildlife Management Units">
+            <Pane
+              name="wmu"
+              style={{ zIndex: 499 }}
+            >
+              <WMSTileLayer
+                url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
+                params={wmuLayerParams}
                 zIndex={1000}
               />
             </Pane>
