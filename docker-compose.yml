@@ -165,7 +165,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i --legacy-peer-deps && npm run start"
+      - "npm i --legacy-peer-deps && npm run start:dev"
     environment:
       NODE_ENV: development
     hostname: backend
@@ -175,8 +175,8 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - ./backend:/app:z
-      - /app/node_modules
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
     user: root
     working_dir: "/app"
     depends_on:
@@ -186,23 +186,29 @@ services:
         condition: service_started
   frontend:
     container_name: frontend
-    entrypoint:
-      - "sh"
-      - "-c"
-      - "chown -R root . && npm ci && npm run dev"
+    # we call rebuild for host machine vs linux runtime diff
+    entrypoint: sh -c "npm install && npm run dev"
     environment:
       NODE_ENV: development
+      PORT: "3000"
       VITE_API_URL: http://localhost:3001/api
       VITE_ENVIRONMENT_NAME: DEVELOPMENT
+      CODEGEN_GRAPHQL_URL: http://backend-cm:3000/graphql
     hostname: frontend
     image: node:22-alpine
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
     links:
       - backend
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app:z
-      - /app/node_modules
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
     user: root
     working_dir: "/app"
   nats:
@@ -221,7 +227,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i && npm run start"
+      - "npm i && npm run start:dev"
     hostname: webeoc
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
@@ -229,13 +235,11 @@ services:
     ports:
       - "3002:3000"
     volumes:
-      - ./webeoc:/app:z
-      - /app/node_modules
+      - ./webeoc:/app
+      - webeoc_node_modules:/app/node_modules
       - ./webeoc/logs:/mnt/data # this is just for the developer webeoc logging
     user: root
     working_dir: "/app"
-    environment:
-      WEBEOC_STREAM_NAME: nats_durable_complaints
   backend-cm:
     container_name: backend-cm
     entrypoint: sh -c "npm i --legacy-peer-deps && npm run prisma-generate-complaint-outcome && \
@@ -247,13 +251,10 @@ services:
       <<: *postgres-vars
       NODE_ENV: development
       BACKEND_PORT: "3000"
-      KEYCLOCK_CLIENT_ID: compliance-and-enforcement-digital-services-dev-6341
-      JWKS_URI: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs
-      JWT_ISSUER: https://dev.loginproxy.gov.bc.ca/auth/realms/standard
       NATS_HOST: nats://nats:4222
     image: node:20-bullseye
     ports: ["3003:3000"]
-    volumes: ["./backend-cm:/app", "/app/node_modules"]
+    volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/api"]
     working_dir: "/app"
@@ -273,7 +274,7 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i && npm run start"
+      - "npm i && npm run start:dev"
     hostname: event-worker
     image: node:22-bookworm-slim
     links:
@@ -281,12 +282,14 @@ services:
     ports:
       - "3006:3000"
     volumes:
-      - ./event-worker:/app:z
-      - /app/node_modules
+      - ./event-worker:/app
+      - event_worker_node_modules:/app/node_modules
     user: root
     working_dir: "/app"
-    environment:
-      EVENT_STREAM_NAME: nats_durable_events
-      NATS_HOST: nats://nats:4222
-      CASE_MANAGEMENT_API_URL: http://host.docker.internal:3003/graphql
-      CASE_API_KEY: "somekey"
+# named volumes to cache install files between container restarts
+volumes:
+  frontend_node_modules:
+  backend_node_modules:
+  backend_cm_node_modules:
+  webeoc_node_modules:
+  event_worker_node_modules:
