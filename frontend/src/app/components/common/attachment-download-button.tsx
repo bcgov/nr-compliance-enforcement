@@ -8,6 +8,8 @@ import {
   Attachment,
   fetchAttachmentsWithMetadata,
 } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-investigation-attachments";
+import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
+import AttachmentEnum from "@constants/attachment-enum";
 
 export const BulkDownloadButton = ({
   taskId,
@@ -47,7 +49,17 @@ export const BulkDownloadButton = ({
         size: a.size || 0,
         folder: a.fileType ? `${a.fileType}s` : undefined,
       }));
-      await dispatch(bulkDownload(taskId, attachmentInfo, `Task_${taskNumber}_Attachments.zip`));
+      const onProgress = createDownloadProgressHandler(toastDownloadInfo);
+      await dispatch(
+        bulkDownload(
+          taskId,
+          attachmentInfo,
+          `Task_${taskNumber}_Attachments.zip`,
+          undefined,
+          onProgress,
+          AttachmentEnum.TASK_ATTACHMENT,
+        ),
+      );
     } catch (error) {
       console.error("Bulk download error:", error);
       ToggleError("Download failed. Please try again.");

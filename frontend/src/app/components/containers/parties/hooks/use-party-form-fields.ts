@@ -7,6 +7,24 @@ import {
   createEmptyAddress,
 } from "@/app/components/containers/parties/form/business-form-utils";
 
+const toContactSnapshot = (contact: BusinessPerson) => ({
+  businessPersonXrefGuid: contact.businessPersonXrefGuid,
+  business: { businessGuid: contact.business?.businessGuid },
+  person: {
+    personGuid: contact.person?.personGuid,
+    firstName: contact.person?.firstName,
+    lastName: contact.person?.lastName,
+    contactMethods: (contact.person?.contactMethods || [])
+      .filter((cm): cm is ContactMethod => cm != null)
+      .map((cm) => ({
+        contactMethodGuid: cm.contactMethodGuid,
+        typeCode: cm.typeCode,
+        value: cm.value,
+        isPrimary: cm.isPrimary ?? false, // adds default
+      })),
+  },
+});
+
 export const usePartyFormFields = (form: any, businessGuid?: string) => {
   const focusFieldById = useCallback((fieldId: string) => {
     setTimeout(() => {
@@ -238,23 +256,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
             },
           };
         }
-        return {
-          businessPersonXrefGuid: contact.businessPersonXrefGuid,
-          business: { businessGuid: contact.business?.businessGuid },
-          person: {
-            personGuid: contact.person?.personGuid,
-            firstName: contact.person?.firstName,
-            lastName: contact.person?.lastName,
-            contactMethods: (contact.person?.contactMethods || [])
-              .filter((cm): cm is ContactMethod => cm != null)
-              .map((cm) => ({
-                contactMethodGuid: cm.contactMethodGuid,
-                typeCode: cm.typeCode,
-                value: cm.value,
-                isPrimary: cm.isPrimary ?? false,
-              })),
-          },
-        };
+        return toContactSnapshot(contact);
       });
 
       form.setFieldValue("contacts", updatedContacts);
@@ -311,23 +313,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
             },
           };
         }
-        return {
-          businessPersonXrefGuid: contact.businessPersonXrefGuid,
-          business: { businessGuid: contact.business?.businessGuid },
-          person: {
-            personGuid: contact.person?.personGuid,
-            firstName: contact.person?.firstName,
-            lastName: contact.person?.lastName,
-            contactMethods: (contact.person?.contactMethods || [])
-              .filter((cm): cm is ContactMethod => cm != null)
-              .map((cm) => ({
-                contactMethodGuid: cm.contactMethodGuid,
-                typeCode: cm.typeCode,
-                value: cm.value,
-                isPrimary: cm.isPrimary ?? false,
-              })),
-          },
-        };
+        return toContactSnapshot(contact);
       });
 
       form.setFieldValue("contacts", updatedContacts);
@@ -369,23 +355,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
           };
         }
         // Transform the unchanged contact too
-        return {
-          businessPersonXrefGuid: c.businessPersonXrefGuid,
-          business: { businessGuid: c.business?.businessGuid },
-          person: {
-            personGuid: c.person?.personGuid,
-            firstName: c.person?.firstName,
-            lastName: c.person?.lastName,
-            contactMethods: (c.person?.contactMethods || [])
-              .filter((cm): cm is ContactMethod => cm != null)
-              .map((cm) => ({
-                contactMethodGuid: cm.contactMethodGuid,
-                typeCode: cm.typeCode,
-                value: cm.value,
-                isPrimary: cm.isPrimary ?? false, // ← Add default
-              })),
-          },
-        };
+        return toContactSnapshot(c);
       });
       form.setFieldValue("contacts", updatedContacts);
     },

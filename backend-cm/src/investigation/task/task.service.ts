@@ -6,12 +6,15 @@ import { task } from "../../../prisma/investigation/generated/task";
 import { CreateUpdateTaskInput, Task } from "./dto/task";
 import { UserService } from "../../common/user.service";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { InvestigationService } from "../investigation/investigation.service";
+
 @Injectable()
 export class TaskService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
+    private readonly investigationService: InvestigationService,
   ) {}
 
   private readonly logger = new Logger(TaskService.name);
@@ -129,7 +132,11 @@ export class TaskService {
           });
         });
 
-        return await this.findOne(task.task_guid);
+        const result = await this.findOne(task.task_guid);
+
+        await this.investigationService.updateInvestigationTimestamp(taskInput.investigationIdentifier);
+
+        return result;
       } catch (error) {
         // Check if it's a unique constraint violation
         if (error?.code === "P2002") {
@@ -149,6 +156,13 @@ export class TaskService {
 
   async remove(taskIdentifier: string): Promise<Task> {
     try {
+      const task = await this.prisma.task.findUnique({
+        where: { task_guid: taskIdentifier },
+      });
+
+      if (!task) {
+        throw new Error(`Task with guid ${taskIdentifier} not found`);
+      }
       await withRlsTransaction(this.prisma, async (db) => {
         await db.task.update({
           where: {
@@ -161,6 +175,7 @@ export class TaskService {
           },
         });
       });
+      await this.investigationService.updateInvestigationTimestamp(task.investigation_guid);
     } catch (error) {
       this.logger.error("Error removing task:", error);
       throw error;
@@ -191,7 +206,11 @@ export class TaskService {
         });
       });
 
-      return await this.findOne(task.task_guid);
+      const result = await this.findOne(task.task_guid);
+
+      await this.investigationService.updateInvestigationTimestamp(task.investigation_guid);
+
+      return result;
     } catch (error) {
       this.logger.error("Error updating task:", error);
       throw error;

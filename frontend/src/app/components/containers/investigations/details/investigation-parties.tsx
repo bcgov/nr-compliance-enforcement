@@ -1,8 +1,8 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_PARTY, EDIT_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
-import { Investigation, InvestigationParty } from "@/generated/graphql";
+import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
@@ -66,6 +66,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
         modalType: ADD_PARTY,
         data: {
           title: "Add party to investigation",
+          modalMode: "add",
           description: "",
           activityGuid: investigationGuid,
           activityType: "investigation",
@@ -98,20 +99,19 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     [dispatch, investigationGuid, removePartyMutation],
   );
 
-  const handleEditParty = (partyIdentifier: string, partyName: string, partyAssociationRole: string) => {
+  const handleEditParty = (party: InvestigationParty | InspectionParty) => {
     document.body.click();
     dispatch(
       openModal({
         modalSize: "lg",
-        modalType: EDIT_PARTY,
+        modalType: ADD_PARTY,
         data: {
           title: "Edit party in investigation",
+          modalMode: "edit",
           description: "",
           activityGuid: investigationGuid,
           activityType: "investigation",
-          partyIdentifier: partyIdentifier,
-          partyName: partyName,
-          partyAssociationRole: partyAssociationRole,
+          party: party,
           onDirtyChange: handleChildDirtyChange,
         },
         hideCallback,
@@ -151,6 +151,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
       <div className="row">
         <div className="col-12">
           <Button
+            id="add-party-button"
             variant="primary"
             size="sm"
             onClick={handleAddParty}

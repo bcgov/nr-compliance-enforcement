@@ -30,6 +30,7 @@ import {
   InvestigationContactMethod,
   UpdateInvestigationContactMethodInput,
 } from "../investigation_contact_method/dto/investigation_contact_method";
+import { withRlsTransaction } from "src/pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class InvestigationPartyService {
@@ -51,7 +52,7 @@ export class InvestigationPartyService {
 
     const investigation = await this.investigationService.findOne(investigationGuid);
 
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       for (const input of inputs) {
         try {
           const partyAlreadyExists = investigation.parties.some(
@@ -62,7 +63,7 @@ export class InvestigationPartyService {
             throw new Error("Record already exists on Investigation.");
           }
 
-          const investigationParty = await tx.investigation_party.create({
+          const investigationParty = await db.investigation_party.create({
             data: {
               party_guid_ref: input.partyReference,
               party_type_code_ref: input.partyTypeCode,
@@ -74,11 +75,11 @@ export class InvestigationPartyService {
           });
 
           if (input.business) {
-            await this.createBusiness(tx, investigationParty.investigation_party_guid, input.business);
+            await this.createBusiness(db, investigationParty.investigation_party_guid, input.business);
           }
 
           if (input.person) {
-            await this.createPerson(tx, investigationParty.investigation_party_guid, input.person);
+            await this.createPerson(db, investigationParty.investigation_party_guid, input.person);
           }
         } catch (error) {
           this.logger.error("Error creating investigation party:", error);
@@ -86,6 +87,8 @@ export class InvestigationPartyService {
         }
       }
     });
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     return await this.investigationService.findOne(investigationGuid);
   }
@@ -171,9 +174,9 @@ export class InvestigationPartyService {
   }
 
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
-    await this.prisma.$transaction(async (tx) => {
+    await withRlsTransaction(this.prisma, async (db) => {
       try {
-        const investigationParty = await tx.investigation_party.findFirst({
+        const investigationParty = await db.investigation_party.findFirst({
           where: {
             investigation_party_guid: partyIdentifier,
             investigation_guid: investigationGuid,
@@ -184,7 +187,7 @@ export class InvestigationPartyService {
           throw new Error("Party not found for this investigation.");
         }
 
-        await tx.investigation_party.update({
+        await db.investigation_party.update({
           where: {
             investigation_party_guid: partyIdentifier,
           },
@@ -199,6 +202,8 @@ export class InvestigationPartyService {
         throw error;
       }
     });
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     return await this.investigationService.findOne(investigationGuid);
   }
@@ -247,6 +252,8 @@ export class InvestigationPartyService {
       this.logger.error("Error editing party role in investigation:", error);
       throw error;
     }
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     return await this.investigationService.findOne(investigationGuid);
   }

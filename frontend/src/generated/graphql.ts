@@ -1385,6 +1385,7 @@ export type Mutation = {
   updateInspection: Inspection;
   updateInvestigation: Investigation;
   updateInvestigationParty: Investigation;
+  updateInvestigationTimestamp: Investigation;
   updateLegislationConfiguration: Scalars['Boolean']['output'];
   updateLegislationSource: LegislationSource;
   updateNote: ComplaintOutcome;
@@ -1735,6 +1736,11 @@ export type MutationupdateInvestigationPartyArgs = {
 };
 
 
+export type MutationupdateInvestigationTimestampArgs = {
+  investigationGuid: Scalars['String']['input'];
+};
+
+
 export type MutationupdateLegislationConfigurationArgs = {
   input: Array<UpdateLegislationConfigurationInput>;
 };
@@ -2078,6 +2084,9 @@ export type Query = {
   parks?: Maybe<Array<Maybe<Park>>>;
   party?: Maybe<Party>;
   partyAssociationRoles: Array<Maybe<PartyAssociationRole>>;
+  partyHistoryCaseFiles?: Maybe<Array<Maybe<CaseFile>>>;
+  partyHistoryInspections?: Maybe<Array<Maybe<Inspection>>>;
+  partyHistoryInvestigations?: Maybe<Array<Maybe<Investigation>>>;
   partyTypeCodes: Array<Maybe<PartyTypeCode>>;
   people?: Maybe<Array<Maybe<Person>>>;
   person?: Maybe<Person>;
@@ -2373,6 +2382,23 @@ export type QueryparksArgs = {
 
 export type QuerypartyArgs = {
   partyIdentifier: Scalars['String']['input'];
+};
+
+
+export type QuerypartyHistoryCaseFilesArgs = {
+  activityIdentifiers: Array<Scalars['String']['input']>;
+};
+
+
+export type QuerypartyHistoryInspectionsArgs = {
+  partyId: Scalars['String']['input'];
+  partyType: Scalars['String']['input'];
+};
+
+
+export type QuerypartyHistoryInvestigationsArgs = {
+  partyId: Scalars['String']['input'];
+  partyType: Scalars['String']['input'];
 };
 
 

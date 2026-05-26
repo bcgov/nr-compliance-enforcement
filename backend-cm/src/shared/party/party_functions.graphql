@@ -1,6 +1,9 @@
 type Query {
   party(partyIdentifier: String!): Party
   searchParties(page: Int = 1, pageSize: Int = 25, filters: PartyFilters): PartyResult!
+  partyHistoryInvestigations(partyId: String!, partyType: String!): [Investigation]
+  partyHistoryInspections(partyId: String!, partyType: String!): [Inspection]
+  partyHistoryCaseFiles(activityIdentifiers: [String!]!): [CaseFile]
 }
 
 type Mutation {

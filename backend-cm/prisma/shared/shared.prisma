@@ -142,8 +142,8 @@ model business {
   party_guid           String?                @unique(map: "UQ_business_party_guid") @db.Uuid
   alias                alias[]
   party                party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
-  business_identifier  business_identifier[]
   business_address     business_address[]
+  business_identifier  business_identifier[]
   business_person_xref business_person_xref[]
   contact_method       contact_method[]
 

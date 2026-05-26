@@ -232,6 +232,7 @@ type ContraventionViewEditModalContentProps = {
   investigationParties: InvestigationParty[];
   contravention: Contravention;
   partyGuid?: string | null;
+  isReadOnly?: boolean;
   handleChildDirtyChange: (index: number, isDirty: boolean) => void;
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;
@@ -246,6 +247,7 @@ export const ContraventionViewEditModalContent: FC<ContraventionViewEditModalCon
   investigationParties,
   contravention,
   partyGuid,
+  isReadOnly,
   handleChildDirtyChange,
   onRequestValidate,
   onRequestSave,
@@ -257,20 +259,22 @@ export const ContraventionViewEditModalContent: FC<ContraventionViewEditModalCon
     <div className={currentStep === 0 ? "" : "d-none"}>
       <ContraventionReadOnlyPanel contravention={contravention} />
     </div>
-    <div className={currentStep === 1 ? "" : "d-none"}>
-      <ContraventionForm
-        currentStep={0}
-        activityGuid={investigationGuid}
-        contravention={contravention}
-        partyGuid={partyGuid ?? null}
-        parties={investigationParties}
-        onDirtyChange={handleChildDirtyChange}
-        onRequestValidate={onRequestValidate}
-        onRequestSave={onRequestSave}
-        onRequestDelete={onRequestDelete}
-        onIsSavingChange={onIsSavingChange}
-        onClose={onClose}
-      />
-    </div>
+    {!isReadOnly && (
+      <div className={currentStep === 1 ? "" : "d-none"}>
+        <ContraventionForm
+          currentStep={0}
+          activityGuid={investigationGuid}
+          contravention={contravention}
+          partyGuid={partyGuid ?? null}
+          parties={investigationParties}
+          onDirtyChange={handleChildDirtyChange}
+          onRequestValidate={onRequestValidate}
+          onRequestSave={onRequestSave}
+          onRequestDelete={onRequestDelete}
+          onIsSavingChange={onIsSavingChange}
+          onClose={onClose}
+        />
+      </div>
+    )}
   </>
 );

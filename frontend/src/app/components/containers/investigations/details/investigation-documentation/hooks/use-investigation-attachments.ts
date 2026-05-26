@@ -98,6 +98,7 @@ export const fetchAttachmentsWithMetadata = async (
       title: metadata?.title ?? null,
       date: metadata?.date ?? null,
       location: metadata?.location ?? null,
+      size: metadata?.size ?? attachment.size,
     };
   });
 };

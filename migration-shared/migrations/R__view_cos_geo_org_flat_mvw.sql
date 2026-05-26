@@ -63,5 +63,10 @@ SET update_utc_timestamp=CURRENT_TIMESTAMP,
 parent_geo_org_unit_code='BLKCRKCR'
 WHERE child_geo_org_unit_code='FANNYBAY';
 
+UPDATE shared.geo_org_unit_structure
+SET update_utc_timestamp=CURRENT_TIMESTAMP, 
+parent_geo_org_unit_code='KLWNA'
+WHERE child_geo_org_unit_code='OYAMA';
+
 
 REFRESH MATERIALIZED VIEW cos_geo_org_unit_flat_mvw;
