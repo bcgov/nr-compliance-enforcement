@@ -12,8 +12,9 @@ import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { PARTY_TYPES } from "src/common/party";
-import { EventService } from "../event/event.service";
+import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
+import { STREAM_TOPICS } from "../../common/nats_constants";
 
 @Injectable()
 export class PartyService {
@@ -22,7 +23,7 @@ export class PartyService {
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
-    private readonly eventService: EventService,
+    private readonly eventPublisher: EventPublisherService,
   ) {}
 
   private readonly logger = new Logger(PartyService.name);
@@ -263,15 +264,18 @@ export class PartyService {
 
       const createdParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
 
-      await this.eventService.create({
-        eventVerbTypeCode: "CREATED",
-        sourceId: createdParty.partyIdentifier,
-        sourceEntityTypeCode: "PARTY",
-        actorId: this.user.getUserGuid(),
-        actorEntityTypeCode: "USER",
-        targetId: createdParty.partyIdentifier,
-        targetEntityTypeCode: "PARTY",
-      });
+      this.eventPublisher.publishEvent(
+        {
+          eventVerbTypeCode: "CREATED",
+          sourceId: createdParty.partyIdentifier,
+          sourceEntityTypeCode: "PARTY",
+          actorId: this.user.getUserGuid(),
+          actorEntityTypeCode: "USER",
+          targetId: createdParty.partyIdentifier,
+          targetEntityTypeCode: "PARTY",
+        },
+        STREAM_TOPICS.PARTY_CREATED,
+      );
 
       return createdParty;
     } catch (error) {
@@ -810,7 +814,7 @@ export class PartyService {
       });
 
       for (const event of changeEvents) {
-        await this.eventService.create(event);
+        this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
       }
 
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");

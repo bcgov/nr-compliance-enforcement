@@ -99,6 +99,8 @@ export class EventProcessorService implements OnModuleInit {
         STREAM_TOPICS.INVESTIGATION_ADDED_TO_CASE,
         STREAM_TOPICS.INSPECTION_CLOSED,
         STREAM_TOPICS.INSPECTION_ADDED_TO_CASE,
+        STREAM_TOPICS.PARTY_CREATED,
+        STREAM_TOPICS.PARTY_UPDATED,
       ],
       storage: StorageType.Memory,
       max_age: 10 * 60 * 60 * 1e9, // 10 minutes in nanoseconds

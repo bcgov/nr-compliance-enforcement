@@ -10,7 +10,7 @@ import { UserModule } from "../../common/user.module";
 import { InvestigationModule } from "../../investigation/investigation/investigation.module";
 import { InspectionModule } from "../../inspection/inspection/inspection.module";
 import { CaseFileModule } from "../case_file/case_file.module";
-import { EventModule } from "../event/event.module";
+import { EventPublisherModule } from "../../event_publisher/event_publisher.module";
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { EventModule } from "../event/event.module";
     InvestigationModule,
     InspectionModule,
     CaseFileModule,
-    EventModule,
+    EventPublisherModule,
   ],
   providers: [PartyResolver, PartyService, PartyHistoryResolver, PartyHistoryService],
 })
