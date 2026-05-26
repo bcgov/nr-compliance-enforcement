@@ -32,6 +32,9 @@ import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
+import {
+  BusinessAddressFormValue,
+} from "@/app/components/containers/parties/form/business-form-utils";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -189,19 +192,23 @@ const buildContactPeopleForCreate = (contacts: BusinessPerson[]) => {
 const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: boolean) => {
   const identifiers = [];
 
-  if (businessNumber?.identifierValue) {
+  if (businessNumber?.identifierValue?.trim()) {
     identifiers.push({
-      ...(isUpdate && { businessIdentifierGuid: businessNumber.identifierGuid }),
+      ...(isUpdate && businessNumber.businessIdentifierGuid
+        ? { businessIdentifierGuid: businessNumber.businessIdentifierGuid }
+        : {}),
       identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
-      identifierValue: businessNumber.identifierValue,
+      identifierValue: businessNumber.identifierValue.trim(),
     });
   }
 
-  if (worksafeBCNumber?.identifierValue) {
+  if (worksafeBCNumber?.identifierValue?.trim()) {
     identifiers.push({
-      ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.identifierGuid }),
+      ...(isUpdate && worksafeBCNumber.businessIdentifierGuid
+        ? { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }
+        : {}),
       identifierCode: BusinessIdentifiers.WSBC_NUMBER,
-      identifierValue: worksafeBCNumber.identifierValue,
+      identifierValue: worksafeBCNumber.identifierValue.trim(),
     });
   }
 
@@ -237,12 +244,55 @@ const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: Cont
   return methods;
 };
 
+const buildAddresses = (addresses: BusinessAddressFormValue[] | undefined, isUpdate: boolean) =>
+  (addresses ?? []).map((address) => ({
+    ...(isUpdate && address.businessAddressGuid ? { businessAddressGuid: address.businessAddressGuid } : {}),
+    addressName: address.addressName?.trim() ?? "",
+    address: address.address?.trim() || null,
+    city: address.city?.trim() || null,
+    province: address.province?.trim() || null,
+    postalCode: address.postalCode?.trim() || null,
+    country: address.country?.trim() || null,
+    isPrimary: address.isPrimary ?? false,
+  }));
+
+const mapAddressesFromPartyData = (addresses: any[] | undefined): BusinessAddressFormValue[] =>
+  addresses?.map((address, index) => ({
+    businessAddressGuid: address.businessAddressGuid,
+    addressName: address.addressName ?? "",
+    address: address.address ?? "",
+    city: address.city ?? "",
+    province: address.province ?? "",
+    postalCode: address.postalCode ?? "",
+    country: address.country ?? "",
+    isPrimary: address.isPrimary ?? index === 0,
+  })) ?? [];
+
+const validateBusinessForm = async (value: any, businessGuid?: string): Promise<string | null> => {
+  if (!value.businessName?.trim()) {
+    return "Name is required.";
+  }
+
+  if (!value.businessNumber?.identifierValue?.trim()) {
+    return "Business number is required.";
+  }
+
+  const addresses = (value.addresses as BusinessAddressFormValue[] | undefined) ?? [];
+  const missingNameIndex = addresses.findIndex((address) => !address.addressName?.trim());
+  if (missingNameIndex >= 0) {
+    return "Address name is required.";
+  }
+
+  return null;
+};
+
 // Helper to build business object for updates
 const buildBusinessUpdate = (value: any) => {
   return {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
+    addresses: buildAddresses(value.addresses, true),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
     contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,
   };
@@ -254,6 +304,7 @@ const buildBusinessCreate = (value: any) => {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, false),
+    addresses: buildAddresses(value.addresses, false),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
     contactPeople: value.contacts?.length ? buildContactPeopleForCreate(value.contacts) : undefined,
   };
@@ -318,7 +369,7 @@ const PartyEdit: FC = () => {
   const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
     onError: (error: any) => {
       console.error("Error creating party:", error);
-      ToggleError("Failed to create party");
+      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to create party");
     },
     onSuccess: (data: any) => {
       ToggleSuccess("Party created successfully");
@@ -335,7 +386,7 @@ const PartyEdit: FC = () => {
     },
     onError: (error: any) => {
       console.error("Error updating party:", error);
-      ToggleError("Failed to update party");
+      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to update party");
     },
   });
 
@@ -370,6 +421,7 @@ const PartyEdit: FC = () => {
           : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
+        addresses: mapAddressesFromPartyData(partyData.party.business?.addresses),
       };
     }
     return {
@@ -390,12 +442,24 @@ const PartyEdit: FC = () => {
       phoneNumbers: [],
       emailAddresses: [],
       contacts: [],
+      addresses: [],
     };
   }, [isEditMode, partyData]);
 
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
+      if (value.partyType === PartyTypeCodes.BUSINESS) {
+        const validationError = await validateBusinessForm(
+          value,
+          isEditMode ? partyData?.party?.business?.businessGuid : undefined,
+        );
+        if (validationError) {
+          ToggleError(validationError);
+          return;
+        }
+      }
+
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,

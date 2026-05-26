@@ -82,6 +82,16 @@ export const GET_PARTY = gql`
             shortDescription
           }
         }
+        addresses {
+          businessAddressGuid
+          addressName
+          address
+          city
+          province
+          postalCode
+          country
+          isPrimary
+        }
         contactMethods {
           contactMethodGuid
           typeCode
@@ -280,6 +290,64 @@ const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> =
   </>
 );
 
+type BusinessAddressDisplay = {
+  businessAddressGuid?: string | null;
+  addressName?: string | null;
+  address?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  isPrimary?: boolean | null;
+};
+
+const BusinessAddressesList: FC<{ addresses: ReadonlyArray<BusinessAddressDisplay> }> = ({ addresses }) => (
+  <>
+    {addresses.map((businessAddress, index) => (
+      <div
+        key={businessAddress.businessAddressGuid ?? `address-${index}`}
+        className="party-details-item"
+        style={index < addresses.length - 1 ? { marginBottom: "1em" } : undefined}
+      >
+        <h4 className="mb-3">
+          {businessAddress.addressName || `Address ${index + 1}`}
+          {businessAddress.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
+        </h4>
+        {businessAddress.address && (
+          <p>
+            <b>Address: </b>
+            {businessAddress.address}
+          </p>
+        )}
+        {businessAddress.city && (
+          <p>
+            <b>City: </b>
+            {businessAddress.city}
+          </p>
+        )}
+        {businessAddress.province && (
+          <p>
+            <b>Province: </b>
+            {businessAddress.province}
+          </p>
+        )}
+        {businessAddress.postalCode && (
+          <p>
+            <b>Postal code: </b>
+            {businessAddress.postalCode}
+          </p>
+        )}
+        {businessAddress.country && (
+          <p>
+            <b>Country: </b>
+            {businessAddress.country}
+          </p>
+        )}
+      </div>
+    ))}
+  </>
+);
+
 export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
   const navigate = useNavigate();
@@ -294,6 +362,9 @@ export const PartyView: FC = () => {
   });
 
   const partyData = data?.party;
+
+  const businessAddresses =
+    (partyData?.business as { addresses?: ReadonlyArray<BusinessAddressDisplay> } | undefined)?.addresses ?? [];
 
   let partyType;
   let partyId;
@@ -604,6 +675,13 @@ export const PartyView: FC = () => {
                 </>
               )}
             </div>
+            {businessAddresses.length > 0 && (
+              <>
+                <br />
+                <h4>Addresses</h4>
+                <BusinessAddressesList addresses={businessAddresses} />
+              </>
+            )}
             <br />
             <h4>C&E history</h4>
             <div className="party-details-item">

@@ -1,6 +1,7 @@
 import { alias } from "./alias";
 import { party } from "./party";
 import { business_identifier } from "./business_identifier";
+import { business_address } from "./business_address";
 import { business_person_xref } from "./business_person_xref";
 import { contact_method } from "./contact_method";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -35,6 +36,9 @@ export class business {
 
   @ApiProperty({ isArray: true, type: () => business_identifier })
   business_identifier: business_identifier[];
+
+  @ApiProperty({ isArray: true, type: () => business_address })
+  business_address: business_address[];
 
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];

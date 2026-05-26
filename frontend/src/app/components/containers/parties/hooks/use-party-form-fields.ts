@@ -2,6 +2,10 @@ import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
 import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
+import {
+  BusinessAddressFormValue,
+  createEmptyAddress,
+} from "@/app/components/containers/parties/form/business-form-utils";
 
 export const usePartyFormFields = (form: any, businessGuid?: string) => {
   const focusFieldById = useCallback((fieldId: string) => {
@@ -96,6 +100,51 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
         isPrimary: i === index,
       }));
       form.setFieldValue("emailAddresses", updatedEmailAddresses);
+    },
+    [form],
+  );
+
+  // Addresses
+  const addresses = useStore(form.store, (state: any) => state.values.addresses);
+
+  const handleAddAddress = useCallback(() => {
+    const currentAddresses = form.getFieldValue("addresses") || [];
+    const newAddresses = [
+      ...currentAddresses,
+      {
+        ...createEmptyAddress(),
+        isPrimary: currentAddresses.length === 0,
+      },
+    ];
+    form.setFieldValue("addresses", newAddresses);
+    focusFieldById(`business-address-name-${currentAddresses.length}`);
+  }, [form, focusFieldById]);
+
+  const handleRemoveAddress = useCallback(
+    (indexToRemove: number) => {
+      const currentAddresses = form.getFieldValue("addresses") || [];
+      const removingPrimary = currentAddresses[indexToRemove]?.isPrimary;
+      const newAddresses = currentAddresses.filter(
+        (_: BusinessAddressFormValue, index: number) => index !== indexToRemove,
+      );
+
+      if (removingPrimary && newAddresses.length > 0) {
+        newAddresses[0].isPrimary = true;
+      }
+
+      form.setFieldValue("addresses", newAddresses);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryAddress = useCallback(
+    (index: number) => {
+      const currentAddresses = form.getFieldValue("addresses") || [];
+      const updatedAddresses = currentAddresses.map((address: BusinessAddressFormValue, i: number) => ({
+        ...address,
+        isPrimary: i === index,
+      }));
+      form.setFieldValue("addresses", updatedAddresses);
     },
     [form],
   );
@@ -344,6 +393,10 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
   );
 
   return {
+    addresses,
+    handleAddAddress,
+    handleRemoveAddress,
+    handleSetPrimaryAddress,
     phoneNumbers,
     handleAddPhoneNumber,
     handleRemovePhoneNumber,

@@ -43,6 +43,7 @@ import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investig
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 import { mapPrismaAliasToAlias } from "../shared/alias/dto/alias";
+import { mapPrismaBusinessAddressToBusinessAddress } from "../shared/business_address/dto/business_address";
 import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "../shared/business_identifier_code/dto/business_identifier_code";
 import { mapPrismaBusinessIdentifierToIdentifier } from "../shared/business_identifier/dto/business_identifier";
 import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "../shared/business_person_xref/dto/business_person_xref";
@@ -76,6 +77,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaAliasToAlias(mapper);
+  mapPrismaBusinessAddressToBusinessAddress(mapper);
   mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode(mapper);
   mapPrismaBusinessIdentifierToIdentifier(mapper);
   mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);

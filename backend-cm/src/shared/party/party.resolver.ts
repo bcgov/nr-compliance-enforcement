@@ -54,8 +54,10 @@ export class PartyResolver {
       return await this.partyService.create(input);
     } catch (error) {
       this.logger.error("Create party error:", error);
-      throw new GraphQLError("Error creating party", {
-        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      throw new GraphQLError(error?.message ?? "Error creating party", {
+        extensions: {
+          code: error?.message ? "BAD_USER_INPUT" : "INTERNAL_SERVER_ERROR",
+        },
       });
     }
   }
@@ -67,8 +69,10 @@ export class PartyResolver {
       return await this.partyService.update(partyIdentifier, input);
     } catch (error) {
       this.logger.error("Update party error:", error);
-      throw new GraphQLError("Error updating party", {
-        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      throw new GraphQLError(error?.message ?? "Error updating party", {
+        extensions: {
+          code: error?.message ? "BAD_USER_INPUT" : "INTERNAL_SERVER_ERROR",
+        },
       });
     }
   }

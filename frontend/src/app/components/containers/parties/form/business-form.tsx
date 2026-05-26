@@ -5,6 +5,8 @@ import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ContactMethod, Alias, BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
+import { BusinessAddressFormValue } from "./business-form-utils";
+import { BusinessAddressFields } from "./business-address-fields";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
 
@@ -22,6 +24,10 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   businessGuid,
 }) => {
   const {
+    addresses,
+    handleAddAddress,
+    handleRemoveAddress,
+    handleSetPrimaryAddress,
     phoneNumbers,
     handleAddPhoneNumber,
     handleRemovePhoneNumber,
@@ -125,13 +131,17 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         form={form}
         name="businessNumber.identifierValue"
         label="Business number"
+        required
+        validators={{
+          onChange: z.string().min(1, "Business number is required"),
+        }}
         render={(field) => (
           <CompInput
             id="businessNumber"
             divid=""
             type="input"
             inputClass="comp-form-control comp-details-input"
-            value={field.state.value}
+            value={field.state.value ?? ""}
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={16}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
@@ -149,12 +159,48 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             divid=""
             type="input"
             inputClass="comp-form-control comp-details-input"
-            value={field.state.value}
+            value={field.state.value ?? ""}
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={16}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
             disabled={isDisabled}
           />
+        )}
+      />
+      {addresses?.map((address: BusinessAddressFormValue, index: number) => (
+        <FormField
+          key={address.businessAddressGuid || `address-${index}`}
+          form={form}
+          name={`address-block-${index}` as any}
+          label={index === 0 ? "Address" : ""}
+          render={() => (
+            <BusinessAddressFields
+              addressIndex={index}
+              form={form}
+              isDisabled={isDisabled}
+              isPrimary={address.isPrimary || false}
+              onRemoveAddress={handleRemoveAddress}
+              onSetPrimaryAddress={handleSetPrimaryAddress}
+            />
+          )}
+        />
+      ))}
+      <FormField
+        form={form}
+        name="add-address-placeholder"
+        label=""
+        render={() => (
+          <Button
+            id="add-address-button"
+            variant="outline-primary"
+            size="sm"
+            onClick={handleAddAddress}
+            type="button"
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {/**/}
+            Add address
+          </Button>
         )}
       />
       {phoneNumbers?.map((phoneNumber: ContactMethod, index: number) => (

@@ -91,3 +91,8 @@ CREATE UNIQUE INDEX business_address_primary_unique
 ON business_address (business_guid)
 WHERE is_primary = true
 AND active_ind = true;
+
+CREATE UNIQUE INDEX business_identifier_bnum_active_unique
+ON business_identifier (identifier_value)
+WHERE business_identifier_code = 'BNUM'
+AND active_ind = true;
