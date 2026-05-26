@@ -88,6 +88,8 @@ export class InvestigationPartyService {
       }
     });
 
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
+
     return await this.investigationService.findOne(investigationGuid);
   }
 
@@ -201,6 +203,8 @@ export class InvestigationPartyService {
       }
     });
 
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
+
     return await this.investigationService.findOne(investigationGuid);
   }
 
@@ -248,6 +252,8 @@ export class InvestigationPartyService {
       this.logger.error("Error editing party role in investigation:", error);
       throw error;
     }
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
     return await this.investigationService.findOne(investigationGuid);
   }

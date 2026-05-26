@@ -9,12 +9,15 @@ import {
   UpdateEnforcementActionInput,
 } from "src/investigation/enforcement_action/dto/enforcement_action";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { InvestigationService } from "../investigation/investigation.service";
+
 @Injectable()
 export class EnforcementActionService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
+    private readonly investigationService: InvestigationService,
   ) {}
 
   private readonly logger = new Logger(EnforcementActionService.name);
@@ -84,6 +87,9 @@ export class EnforcementActionService {
           investigation_party_guid: input.partyIdentifier,
           active_ind: true,
         },
+        include: {
+          contravention: true,
+        },
       });
 
       if (!xref) {
@@ -119,6 +125,8 @@ export class EnforcementActionService {
         },
       });
 
+      await this.investigationService.updateInvestigationTimestamp(xref.contravention.investigation_guid);
+
       return await this.findOne(enforcementAction.enforcement_action_guid);
     } catch (error) {
       this.logger.error("Error creating enforcement action:", error);
@@ -128,6 +136,23 @@ export class EnforcementActionService {
 
   async update(input: UpdateEnforcementActionInput): Promise<EnforcementAction> {
     try {
+      const enforcementAction = await this.prisma.enforcement_action.findUnique({
+        where: {
+          enforcement_action_guid: input.enforcementActionIdentifier,
+        },
+        include: {
+          contravention_party_xref: {
+            include: {
+              contravention: true,
+            },
+          },
+        },
+      });
+
+      if (!enforcementAction) {
+        throw new Error(`Enforcement action with guid ${input.enforcementActionIdentifier} not found`);
+      }
+
       await withRlsTransaction(this.prisma, async (db) => {
         await db.enforcement_action.update({
           where: {
@@ -195,6 +220,10 @@ export class EnforcementActionService {
         }
       });
 
+      await this.investigationService.updateInvestigationTimestamp(
+        enforcementAction.contravention_party_xref.contravention.investigation_guid,
+      );
+
       return await this.findOne(input.enforcementActionIdentifier);
     } catch (error) {
       this.logger.error("Error updating enforcement action:", error);
@@ -204,6 +233,23 @@ export class EnforcementActionService {
 
   async remove(enforcementActionIdentifier: string): Promise<EnforcementAction> {
     try {
+      const enforcementAction = await this.prisma.enforcement_action.findUnique({
+        where: {
+          enforcement_action_guid: enforcementActionIdentifier,
+        },
+        include: {
+          contravention_party_xref: {
+            include: {
+              contravention: true,
+            },
+          },
+        },
+      });
+
+      if (!enforcementAction) {
+        throw new Error(`Enforcement action with guid ${enforcementActionIdentifier} not found`);
+      }
+
       await withRlsTransaction(this.prisma, async (db) => {
         // Soft delete any associated ticket first
         await db.ticket.updateMany({
@@ -229,6 +275,10 @@ export class EnforcementActionService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(
+        enforcementAction.contravention_party_xref.contravention.investigation_guid,
+      );
     } catch (error) {
       this.logger.error("Error removing enforcement action:", error);
       throw error;
