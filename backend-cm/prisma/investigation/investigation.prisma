@@ -641,3 +641,39 @@ model investigation_contact_method {
 
   @@schema("investigation")
 }
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_alias_h {
+  h_investigation_alias_guid    String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_identifier_h {
+  h_investigation_business_identifier_guid String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                            String   @db.Uuid
+  operation_type                           String   @db.Char(1)
+  operation_user_id                        String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                    DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation            Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_contact_method_h {
+  h_investigation_contact_method_guid String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                       String   @db.Uuid
+  operation_type                      String   @db.Char(1)
+  operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation       Json?
+
+  @@schema("investigation")
+}

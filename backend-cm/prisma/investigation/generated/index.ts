@@ -34,6 +34,9 @@ import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_co
 import { investigation_alias as _investigation_alias } from "./investigation_alias";
 import { investigation_business_identifier as _investigation_business_identifier } from "./investigation_business_identifier";
 import { investigation_contact_method as _investigation_contact_method } from "./investigation_contact_method";
+import { investigation_alias_h as _investigation_alias_h } from "./investigation_alias_h";
+import { investigation_business_identifier_h as _investigation_business_identifier_h } from "./investigation_business_identifier_h";
+import { investigation_contact_method_h as _investigation_contact_method_h } from "./investigation_contact_method_h";
 
 export namespace PrismaModel {
   export class contravention extends _contravention {}
@@ -72,6 +75,9 @@ export namespace PrismaModel {
   export class investigation_alias extends _investigation_alias {}
   export class investigation_business_identifier extends _investigation_business_identifier {}
   export class investigation_contact_method extends _investigation_contact_method {}
+  export class investigation_alias_h extends _investigation_alias_h {}
+  export class investigation_business_identifier_h extends _investigation_business_identifier_h {}
+  export class investigation_contact_method_h extends _investigation_contact_method_h {}
 
   export const extraModels = [
     contravention,
@@ -110,5 +116,8 @@ export namespace PrismaModel {
     investigation_alias,
     investigation_business_identifier,
     investigation_contact_method,
+    investigation_alias_h,
+    investigation_business_identifier_h,
+    investigation_contact_method_h,
   ];
 }

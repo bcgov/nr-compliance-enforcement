@@ -12,6 +12,8 @@ import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { PARTY_TYPES } from "src/common/party";
+import { EventService } from "../event/event.service";
+import { EventCreateInput } from "../event/dto/event";
 
 @Injectable()
 export class PartyService {
@@ -20,6 +22,7 @@ export class PartyService {
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
+    private readonly eventService: EventService,
   ) {}
 
   private readonly logger = new Logger(PartyService.name);
@@ -258,7 +261,19 @@ export class PartyService {
         },
       });
 
-      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+      const createdParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+
+      await this.eventService.create({
+        eventVerbTypeCode: "CREATED",
+        sourceId: createdParty.partyIdentifier,
+        sourceEntityTypeCode: "PARTY",
+        actorId: this.user.getUserGuid(),
+        actorEntityTypeCode: "USER",
+        targetId: createdParty.partyIdentifier,
+        targetEntityTypeCode: "PARTY",
+      });
+
+      return createdParty;
     } catch (error) {
       this.logger.error("Error creating party:", error.message);
       throw error;
@@ -522,6 +537,163 @@ export class PartyService {
     return operations;
   }
 
+  private _partyChangeEvents(partyIdentifier: string, oldParty: Party, input: PartyUpdateInput): EventCreateInput[] {
+    const events: EventCreateInput[] = [];
+    const actorId = this.user.getUserGuid();
+
+    const addEvent = (verb: string, field: string, oldValue: any, newValue: any) => {
+      events.push({
+        eventVerbTypeCode: verb,
+        sourceId: partyIdentifier,
+        sourceEntityTypeCode: "PARTY",
+        actorId,
+        actorEntityTypeCode: "USER",
+        targetId: partyIdentifier,
+        targetEntityTypeCode: "PARTY",
+        content: { field, oldValue: oldValue ?? null, newValue: newValue ?? null },
+      });
+    };
+
+    const compareField = (field: string, oldVal: any, newVal: any) => {
+      const oldStr = oldVal != null && oldVal !== "" ? String(oldVal) : null;
+      const newStr = newVal != null && newVal !== "" ? String(newVal) : null;
+      if (oldStr === newStr) return;
+      if (!oldStr && newStr) addEvent("ADDED", field, null, newVal);
+      else if (oldStr && !newStr) addEvent("REMOVED", field, oldVal, null);
+      else addEvent("EDITED", field, oldVal, newVal);
+    };
+
+    // Party type: person
+    if (input.partyTypeCode === PARTY_TYPES.Person) {
+      const oldP = oldParty.person;
+      const newP = input.person;
+      if (!oldP || !newP) return events;
+
+      compareField("first name", oldP.firstName, newP.firstName);
+      compareField("middle name", oldP.middleName, newP.middleName);
+      compareField("middle name 2", oldP.middleName2, newP.middleName2);
+      compareField("last name", oldP.lastName, newP.lastName);
+      compareField(
+        "date of birth",
+        oldP.dateOfBirth.toISOString().split("T")[0],
+        newP.dateOfBirth.toISOString().split("T")[0],
+      );
+      compareField("driver's licence number", oldP.driversLicenseNumber, newP.driversLicenseNumber);
+      compareField("driver's licence jurisdiction", oldP.driversLicenseJurisdiction, newP.driversLicenseJurisdiction);
+      compareField("sex", oldP.sexCode, newP.sexCode);
+
+      const existingMethods = oldP.contactMethods ?? [];
+      const incomingMethods = newP.contactMethods ?? [];
+
+      for (const incoming of incomingMethods) {
+        if (!incoming.contactMethodGuid) {
+          addEvent("ADDED", `contact method (${incoming.typeCode})`, null, incoming.value);
+        } else {
+          const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
+          if (existing && existing.value !== incoming.value) {
+            addEvent("EDITED", `contact method (${incoming.typeCode})`, existing.value, incoming.value);
+          }
+        }
+      }
+      for (const existing of existingMethods) {
+        if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
+          addEvent("REMOVED", `contact method (${existing.typeCode})`, existing.value, null);
+        }
+      }
+    }
+    // Party type: business
+    else {
+      const oldB = oldParty.business;
+      const newB = input.business;
+      if (!oldB || !newB) return events;
+
+      compareField("business name", oldB.name, newB.name);
+
+      const existingAliases = oldB.aliases ?? [];
+      const incomingAliases = newB.aliases ?? [];
+      for (const incoming of incomingAliases) {
+        if (!incoming.aliasGuid) {
+          addEvent("ADDED", "alias", null, incoming.name);
+        } else {
+          const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);
+          if (existing && existing.name !== incoming.name) {
+            addEvent("EDITED", "alias", existing.name, incoming.name);
+          }
+        }
+      }
+      for (const existing of existingAliases) {
+        if (!incomingAliases.find((a) => a.aliasGuid === existing.aliasGuid)) {
+          addEvent("REMOVED", "alias", existing.name, null);
+        }
+      }
+
+      const existingIdentifiers = oldB.identifiers ?? [];
+      const incomingIdentifiers = newB.identifiers ?? [];
+      for (const incoming of incomingIdentifiers) {
+        if (!incoming.businessIdentifierGuid) {
+          addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
+        } else {
+          const existing = existingIdentifiers.find(
+            (i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid,
+          );
+          if (existing && existing.identifierValue !== incoming.identifierValue) {
+            addEvent(
+              "EDITED",
+              `identifier (${incoming.identifierCode})`,
+              existing.identifierValue,
+              incoming.identifierValue,
+            );
+          }
+        }
+      }
+      for (const existing of existingIdentifiers) {
+        if (!incomingIdentifiers.find((i) => i.businessIdentifierGuid === existing.businessIdentifierGuid)) {
+          addEvent(
+            "REMOVED",
+            `identifier (${existing.identifierCode?.businessIdentifierCode ?? existing.identifierCode})`,
+            existing.identifierValue,
+            null,
+          );
+        }
+      }
+
+      const existingMethods = oldB.contactMethods ?? [];
+      const incomingMethods = newB.contactMethods ?? [];
+      for (const incoming of incomingMethods) {
+        if (!incoming.contactMethodGuid) {
+          addEvent("ADDED", `contact method (${incoming.typeCode})`, null, incoming.value);
+        } else {
+          const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
+          if (existing && existing.value !== incoming.value) {
+            addEvent("EDITED", `contact method (${incoming.typeCode})`, existing.value, incoming.value);
+          }
+        }
+      }
+      for (const existing of existingMethods) {
+        if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
+          addEvent("REMOVED", `contact method (${existing.typeCode})`, existing.value, null);
+        }
+      }
+
+      const existingXrefs = oldB.contactPeople ?? [];
+      const incomingXrefs = newB.contactPeople ?? [];
+      for (const incoming of incomingXrefs) {
+        if (!incoming.businessPersonXrefGuid) {
+          const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
+          addEvent("ADDED", "business contact", null, name);
+        }
+      }
+      for (const existing of existingXrefs) {
+        if (!incomingXrefs.find((x) => x.businessPersonXrefGuid === existing.businessPersonXrefGuid)) {
+          const name = [existing.person?.firstName, existing.person?.lastName].filter(Boolean).join(" ");
+          addEvent("REMOVED", "business contact", name, null);
+        }
+      }
+    }
+
+    return events;
+  }
+
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
       include: {
@@ -623,6 +795,8 @@ export class PartyService {
       };
     }
     try {
+      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
+
       const prismaParty = await this.prisma.party.update({
         where: { party_guid: partyIdentifier },
         data: data,
@@ -632,6 +806,10 @@ export class PartyService {
           business: true,
         },
       });
+
+      for (const event of changeEvents) {
+        await this.eventService.create(event);
+      }
 
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {

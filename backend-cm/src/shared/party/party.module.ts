@@ -10,6 +10,7 @@ import { UserModule } from "../../common/user.module";
 import { InvestigationModule } from "../../investigation/investigation/investigation.module";
 import { InspectionModule } from "../../inspection/inspection/inspection.module";
 import { CaseFileModule } from "../case_file/case_file.module";
+import { EventModule } from "../event/event.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CaseFileModule } from "../case_file/case_file.module";
     InvestigationModule,
     InspectionModule,
     CaseFileModule,
+    EventModule,
   ],
   providers: [PartyResolver, PartyService, PartyHistoryResolver, PartyHistoryService],
 })
