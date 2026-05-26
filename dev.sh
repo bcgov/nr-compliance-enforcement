@@ -8,7 +8,7 @@ NC='\033[0m'
 
 info()  { echo -e "${GREEN}[info]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[warn]${NC} $*"; }
-error() { echo -e "${RED}[error]${NC} $*"; exit 1; }
+error() { echo -e "${RED}[error]${NC} $*" >&2; exit 1; }
 
 wait_for_service() {
   local service="$1"
@@ -19,7 +19,7 @@ wait_for_service() {
   info "Waiting for ${service}..."
   until docker exec "$service" curl -sf "$url" >/dev/null 2>&1; do
     retries=$((retries + 1))
-    [ $retries -gt $max ] && {
+    [[ $retries -gt $max ]] && {
       echo ""
       cmd_errors_for "$service"
       error "${service} not ready after ${timeout}s"
@@ -44,6 +44,7 @@ Commands:
   install                       Rerun npm install in frontend, backend, backend-cm
   prisma                        Run prisma-all in backend-cm container
   codegen                       Run GraphQL codegen in frontend container
+  import                        Run import:all in backend-cm (parks, bclaws, federallaws)
   health                        Check env files and URLs for container setup issues
   pt <service> <command...>     Pass through any command to a running container
 
@@ -73,10 +74,6 @@ EOF
 # nuke and recreate all containers
 cmd_reset() {
   cmd_health || { error "Fix health issues before resetting."; }
-
-  warn "This will destroy and recreate the database. Continue? [y/N]"
-  read -r confirm
-  [[ "$confirm" =~ ^[Yy]$ ]] || { info "Aborted."; exit 0; }
 
   info "Tearing down..."
   docker compose down -v 2>/dev/null || true
@@ -113,7 +110,7 @@ cmd_errors_for() {
   local svc="$1"
   local hits
   hits=$(docker logs "$svc" 2>&1 | grep -E "$ERROR_PATTERN" | tail -20)
-  if [ -n "$hits" ]; then
+  if [[ -n "$hits" ]]; then
     echo -e "${RED}── ${svc} ──${NC}"
     echo "$hits"
     echo ""
@@ -129,7 +126,7 @@ cmd_errors() {
   for svc in "${services[@]}"; do
     cmd_errors_for "$svc" || found=1
   done
-  if [ $found -eq 0 ]; then
+  if [[ $found -eq 0 ]]; then
     info "No errors found in any container logs."
   else
     exit 1
@@ -159,6 +156,11 @@ cmd_codegen() {
   docker exec frontend npm run codegen
 }
 
+cmd_import() {
+  info "Running import:all in backend-cm..."
+  docker exec backend-cm npm run import:all
+}
+
 cmd_health() {
   local issues=0
 
@@ -173,7 +175,7 @@ cmd_health() {
   # Check .env files exist
   local services=("frontend" "backend" "backend-cm" "webeoc" "event-worker")
   for svc in "${services[@]}"; do
-    if [ ! -f "${svc}/.env" ]; then
+    if [[ ! -f "${svc}/.env" ]]; then
       warn "Missing ${svc}/.env"
       issues=1
     else
@@ -181,14 +183,62 @@ cmd_health() {
     fi
   done
 
+  # Verify .env URL ports match docker-compose.yml port mappings using yq
+  if ! command -v yq &>/dev/null; then
+    warn "yq not installed — skipping port validation (install: https://github.com/mikefarah/yq)"
+  else
+  info "Checking .env ports against docker-compose.yml..."
+  local port_map
+  port_map=$(yq '.services | to_entries[] | select(.value.ports) | .key + " " + (.value.ports[] | sub("\"", "") | sub("\"", ""))' docker-compose.yml 2>/dev/null)
+
+  # Check container-to-container URLs use the right internal port
+  local all_envs=("backend/.env" "backend-cm/.env" "webeoc/.env" "event-worker/.env")
+  for envfile in "${all_envs[@]}"; do
+    [[ ! -f "$envfile" ]] && continue
+    while IFS= read -r line; do
+      [[ "$line" =~ ^# ]] && continue
+      local checked_svcs=""
+      while IFS=' ' read -r svc mapping; do
+        [[ "$checked_svcs" == *"|${svc}:${line}|"* ]] && continue
+        local container_port="${mapping##*:}"
+        if [[ "$line" =~ ${svc}:([0-9]+) ]]; then
+          local url_port="${BASH_REMATCH[1]}"
+          local all_container_ports
+          all_container_ports=$(echo "$port_map" | grep "^${svc} " | awk '{split($2,a,":"); print a[2]}')
+          if ! echo "$all_container_ports" | grep -qx "$url_port"; then
+            warn "${envfile}: port ${url_port} for ${svc} doesn't match any compose internal port (expected: $(echo $all_container_ports | tr '\n' ','))"
+            issues=1
+          fi
+          checked_svcs="${checked_svcs}|${svc}:${line}|"
+        fi
+      done <<< "$port_map"
+    done < "$envfile"
+  done
+
+  # Check browser-side URLs (localhost:port) use the right host port
+  if [[ -f "frontend/.env" ]]; then
+    local host_port_list
+    host_port_list=$(echo "$port_map" | awk '{split($2,a,":"); print a[1]}' | sort -u)
+    while IFS= read -r line; do
+      [[ "$line" =~ ^# ]] && continue
+      if [[ "$line" =~ localhost:([0-9]+) ]]; then
+        if ! echo "$host_port_list" | grep -qx "${BASH_REMATCH[1]}"; then
+          warn "frontend/.env: localhost:${BASH_REMATCH[1]} doesn't match any compose host port"
+          issues=1
+        fi
+      fi
+    done < "frontend/.env"
+  fi
+  fi
+
   # Scan backend .env files for URLs that won't work in containers
   # (frontend VITE_* vars are browser-side so localhost is correct there)
   local backend_envs=("backend/.env" "backend-cm/.env" "webeoc/.env" "event-worker/.env")
   for envfile in "${backend_envs[@]}"; do
-    [ ! -f "$envfile" ] && continue
+    [[ ! -f "$envfile" ]] && continue
     local bad_urls
     bad_urls=$(grep -nE "$BAD_URL_PATTERN" "$envfile" | grep -v '^[0-9]*:#' || true)
-    if [ -n "$bad_urls" ]; then
+    if [[ -n "$bad_urls" ]]; then
       warn "${envfile} has URLs that won't work in containers:"
       echo "$bad_urls" | while read -r line; do
         echo "  $line"
@@ -198,11 +248,11 @@ cmd_health() {
   done
 
   # Check frontend .env for non-VITE vars with localhost
-  if [ -f "frontend/.env" ]; then
+  if [[ -f "frontend/.env" ]]; then
     local bad_fe
     # grep out commented lines in .env
     bad_fe=$(grep -nE "$BAD_URL_PATTERN" frontend/.env | grep -v '^[0-9]*:#' | grep -vE "$FE_URL_EXCLUDE" || true)
-    if [ -n "$bad_fe" ]; then
+    if [[ -n "$bad_fe" ]]; then
       warn "frontend/.env has non-VITE URLs that won't work in containers:"
       echo "$bad_fe" | while read -r line; do
         echo "  $line"
@@ -253,7 +303,7 @@ cmd_health() {
     done
   fi
 
-  if [ $issues -eq 0 ]; then
+  if [[ $issues -eq 0 ]]; then
     info "All checks passed."
   else
     exit 1
@@ -262,7 +312,7 @@ cmd_health() {
 
 # helper func to make it easy for devs to pass through commands to in-container
 cmd_pt() {
-  [ $# -lt 2 ] && error "Usage: ./dev.sh pt <service> <command...>"
+  [[ $# -lt 2 ]] && error "Usage: ./dev.sh pt <service> <command...>"
   local service="$1"; shift
   docker exec "$service" "$@"
 }
@@ -274,6 +324,7 @@ case "${1:-}" in
   install)  cmd_install ;;
   prisma)   cmd_prisma ;;
   codegen)  cmd_codegen ;;
+  import)   cmd_import ;;
   health)   cmd_health ;;
   pt)       shift; cmd_pt "$@" ;;
   -h|--help|help|"") usage ;;
