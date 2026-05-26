@@ -573,11 +573,13 @@ export class PartyService {
       compareField("middle name", oldP.middleName, newP.middleName);
       compareField("middle name 2", oldP.middleName2, newP.middleName2);
       compareField("last name", oldP.lastName, newP.lastName);
-      compareField(
-        "date of birth",
-        oldP.dateOfBirth.toISOString().split("T")[0],
-        newP.dateOfBirth.toISOString().split("T")[0],
-      );
+      if (oldP.dateOfBirth && newP.dateOfBirth) {
+        compareField(
+          "date of birth",
+          oldP.dateOfBirth.toISOString().split("T")[0],
+          newP.dateOfBirth.toISOString().split("T")[0],
+        );
+      }
       compareField("driver's licence number", oldP.driversLicenseNumber, newP.driversLicenseNumber);
       compareField("driver's licence jurisdiction", oldP.driversLicenseJurisdiction, newP.driversLicenseJurisdiction);
       compareField("sex", oldP.sexCode, newP.sexCode);
