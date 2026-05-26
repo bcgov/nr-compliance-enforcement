@@ -9,6 +9,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
+    {
+      name: "precompiled-scss",
+      apply: "serve",
+      enforce: "pre",
+      resolveId(source, importer) {
+        if (!importer) return;
+        const match = source.match(/assets\/sass\/(.+)\.scss$/);
+        if (match) {
+          return path.resolve(__dirname, `src/assets/sass/${match[1]}.compiled.css`);
+        }
+      },
+    },
     react(),
     {
       name: "build-html",
@@ -60,9 +72,13 @@ export default defineConfig({
     },
   ],
   server: {
-    host: "0.0.0.0", // This fixes the "use --host to expose" issue
-    port: 3000,
-    open: false, // This fixes the xdg-open error
+    host: "0.0.0.0",
+    port: parseInt(process.env.PORT || "3000"),
+    open: false,
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   },
   build: {
     // Build Target

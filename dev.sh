@@ -38,7 +38,7 @@ usage() {
 Usage: ./dev.sh <command> [options]
 
 Commands:
-  reset                         Full reset: wipe DB, run migrations, generate prisma
+  reset                         Full reset (see flow below)
   logs [service...]             Tail logs (default: all app services)
   errors                        Check all container logs for errors
   install                       Rerun npm install in frontend, backend, backend-cm
@@ -46,6 +46,15 @@ Commands:
   codegen                       Run GraphQL codegen in frontend container
   health                        Check env files and URLs for container setup issues
   pt <service> <command...>     Pass through any command to a running container
+
+Reset flow (each step can be run individually):
+  1. ./dev.sh health                         # check env files
+  2. docker compose down -v                  # tear down containers + volumes
+  3. docker compose up -d                    # start all (compose handles ordering)
+  4. ./dev.sh prisma                         # pull + generate all prisma schemas
+  5. ./dev.sh codegen                        # generate GraphQL types for frontend
+  6. docker compose restart frontend         # restart frontend with generated types
+  7. ./dev.sh errors                         # verify no errors
 
 Examples:
   ./dev.sh logs frontend
@@ -61,6 +70,7 @@ Examples:
 EOF
 }
 
+# nuke and recreate all containers
 cmd_reset() {
   cmd_health || { error "Fix health issues before resetting."; }
 
@@ -77,6 +87,9 @@ cmd_reset() {
   wait_for_service "backend-cm" "http://localhost:3000/api"
 
   cmd_prisma
+  info "Awaiting backend-cm reload..."
+  sleep 5
+  wait_for_service "backend-cm" "http://localhost:3000/api"
   cmd_codegen
   info "Restarting frontend..."
   docker compose restart frontend
@@ -86,6 +99,7 @@ cmd_reset() {
   info "Reset complete!"
 }
 
+# helper for easy tailing
 cmd_logs() {
   if [ $# -eq 0 ]; then
     docker compose logs -f frontend backend backend-cm webeoc event-worker
@@ -94,6 +108,7 @@ cmd_logs() {
   fi
 }
 
+# quickscan for errors in logs
 cmd_errors_for() {
   local svc="$1"
   local hits
@@ -107,6 +122,7 @@ cmd_errors_for() {
   return 0
 }
 
+# quickscan containers for error regex
 cmd_errors() {
   local services=("frontend" "backend" "backend-cm" "webeoc" "event-worker" "database" "nats")
   local found=0
@@ -120,6 +136,7 @@ cmd_errors() {
   fi
 }
 
+# install all node modules in-container
 cmd_install() {
   info "Installing frontend..."
   docker exec frontend npm install
@@ -130,11 +147,13 @@ cmd_install() {
   info "Done."
 }
 
+# runs prisma gen in-container
 cmd_prisma() {
   info "Running prisma-all in backend-cm..."
   docker exec backend-cm npm run prisma-all
 }
 
+# runs codegen in-container
 cmd_codegen() {
   info "Running GraphQL codegen in frontend..."
   docker exec frontend npm run codegen
@@ -210,6 +229,28 @@ cmd_health() {
         issues=1
       fi
     done
+
+    # Frontend asset checks
+    info "Checking frontend assets..."
+    local fe_assets=(
+      "complaint page|http://localhost:3000/complaint/"
+      "app CSS|http://localhost:3000/src/assets/sass/app.compiled.css"
+      "user-mgmt CSS|http://localhost:3000/src/assets/sass/user-management.compiled.css"
+      "hwcr-assessment CSS|http://localhost:3000/src/assets/sass/hwcr-assessment.compiled.css"
+      "BC Sans font|http://localhost:3000/src/assets/fonts/bc-sans-regular.woff"
+      "bootstrap icons|http://localhost:3000/node_modules/bootstrap-icons/font/bootstrap-icons.css"
+      "index.tsx|http://localhost:3000/src/index.tsx"
+    )
+    for entry in "${fe_assets[@]}"; do
+      local name="${entry%%|*}"
+      local url="${entry##*|}"
+      if curl -sf --max-time 10 -o /dev/null "$url" 2>&1; then
+        info "${name} OK"
+      else
+        warn "${name} FAILED (${url})"
+        issues=1
+      fi
+    done
   fi
 
   if [ $issues -eq 0 ]; then
@@ -219,6 +260,7 @@ cmd_health() {
   fi
 }
 
+# helper func to make it easy for devs to pass through commands to in-container
 cmd_pt() {
   [ $# -lt 2 ] && error "Usage: ./dev.sh pt <service> <command...>"
   local service="$1"; shift
