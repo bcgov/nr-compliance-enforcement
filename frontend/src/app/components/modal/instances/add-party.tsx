@@ -19,7 +19,7 @@ import {
 } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleError, ToggleSuccess } from "@/app/common/toast";
+import { ToggleSuccess } from "@/app/common/toast";
 import { CompSelect } from "../../common/comp-select";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
