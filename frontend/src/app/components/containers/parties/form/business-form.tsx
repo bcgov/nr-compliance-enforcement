@@ -9,6 +9,7 @@ import { Button } from "react-bootstrap";
 import { BusinessAddressFormValue } from "./business-form-utils";
 import { BusinessAddressFields } from "./business-address-fields";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
 type BusinessFormFieldsProps = {
   form: any;
@@ -142,9 +143,14 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
-            error={field.state.meta.errors?.[0]?.message || ""}
+            error={getFieldErrorMessage(field)}
             maxLength={16}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+            onChange={(evt: any) => {
+              field.handleChange(evt?.target?.value || "");
+              if (getFieldErrorMessage(field)) {
+                field.setMeta({ errorMap: {}, errorSourceMap: {} });
+              }
+            }}
             disabled={isDisabled}
           />
         )}

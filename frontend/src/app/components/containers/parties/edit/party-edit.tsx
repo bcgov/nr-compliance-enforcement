@@ -32,6 +32,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { toDateOfBirth } from "@/app/common/methods";
 
 const PARTY_PERSON_FRAGMENT = gql`
@@ -357,30 +358,6 @@ const PartyEdit: FC = () => {
       };
     });
 
-  const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
-    onError: (error: any) => {
-      console.error("Error creating party:", error);
-      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to create party");
-    },
-    onSuccess: (data: any) => {
-      ToggleSuccess("Party created successfully");
-      allowNavigation();
-      navigate(`/party/${data.createParty.partyIdentifier}`);
-    },
-  });
-
-  const updatePartyMutation = useGraphQLMutation(UPDATE_PARTY_MUTATION, {
-    onSuccess: (data: any) => {
-      ToggleSuccess("Party updated successfully");
-      allowNavigation();
-      navigate(`/party/${id}`);
-    },
-    onError: (error: any) => {
-      console.error("Error updating party:", error);
-      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to update party");
-    },
-  });
-
   const defaultValues = useMemo(() => {
     if (isEditMode && partyData?.party) {
       const person = partyData.party.person;
@@ -466,6 +443,30 @@ const PartyEdit: FC = () => {
         };
         createPartyMutation.mutate({ input: createInput });
       }
+    },
+  });
+
+  const createPartyMutation = useGraphQLMutation(CREATE_PARTY_MUTATION, {
+    onError: (error: any) => {
+      console.error("Error creating party:", error);
+      handleBusinessPartyMutationError(form, error, "Failed to create party");
+    },
+    onSuccess: (data: any) => {
+      ToggleSuccess("Party created successfully");
+      allowNavigation();
+      navigate(`/party/${data.createParty.partyIdentifier}`);
+    },
+  });
+
+  const updatePartyMutation = useGraphQLMutation(UPDATE_PARTY_MUTATION, {
+    onSuccess: (data: any) => {
+      ToggleSuccess("Party updated successfully");
+      allowNavigation();
+      navigate(`/party/${id}`);
+    },
+    onError: (error: any) => {
+      console.error("Error updating party:", error);
+      handleBusinessPartyMutationError(form, error, "Failed to update party");
     },
   });
 

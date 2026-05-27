@@ -31,6 +31,7 @@ import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import z from "zod";
 import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
@@ -275,27 +276,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     enabled: !!selectedParty?.partyIdentifier,
   });
 
-  const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
-  const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
-    onSuccess: () => {
-      ToggleSuccess("Party added successfully");
-    },
-    onError: (error: any) => {
-      console.error("Error adding party:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add party");
-    },
-  });
-
-  const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
-    onSuccess: () => {
-      ToggleSuccess("Party updated successfully");
-    },
-    onError: (error: any) => {
-      console.error("Error updating party:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update party");
-    },
-  });
-
   const defaultValues = useMemo(() => {
     if (modalMode === "edit" && editParty) {
       return {
@@ -446,7 +426,29 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           addPartyMutation.mutate({ inspectionGuid: activityGuid, input });
         }
       }
+    },
+  });
+
+  const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
+  const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
+    onSuccess: () => {
+      ToggleSuccess("Party added successfully");
       submit();
+    },
+    onError: (error: any) => {
+      console.error("Error adding party:", error);
+      handleBusinessPartyMutationError(partyForm, error, "Failed to add party");
+    },
+  });
+
+  const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
+    onSuccess: () => {
+      ToggleSuccess("Party updated successfully");
+      submit();
+    },
+    onError: (error: any) => {
+      console.error("Error updating party:", error);
+      handleBusinessPartyMutationError(partyForm, error, "Failed to update party");
     },
   });
 
@@ -558,7 +560,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     } else {
       addPartyMutation.mutate({ inspectionGuid: activityGuid, input: typeCastedInput });
     }
-    submit();
   };
 
   const partyRoleOptions = partyRoles
