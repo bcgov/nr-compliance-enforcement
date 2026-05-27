@@ -73,6 +73,9 @@ typings/
 .env
 .env.test
 
+# pre-compiled SCSS for dev containers
+*.compiled.css
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
