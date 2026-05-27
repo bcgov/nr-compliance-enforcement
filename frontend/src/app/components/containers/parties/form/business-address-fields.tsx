@@ -60,6 +60,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-address-name-${addressIndex}`}
+            divid={`business-address-name-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -78,6 +79,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-address-${addressIndex}`}
+            divid={`business-address-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -96,6 +98,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-city-${addressIndex}`}
+            divid={`business-city-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -114,6 +117,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-province-${addressIndex}`}
+            divid={`business-province-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -132,6 +136,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-postal-code-${addressIndex}`}
+            divid={`business-postal-code-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -150,6 +155,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         render={(field) => (
           <CompInput
             id={`business-country-${addressIndex}`}
+            divid={`business-country-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
