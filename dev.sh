@@ -1,7 +1,14 @@
 #!/bin/bash
 set -e
 
+SVC_FE='frontend'
+SVC_BE='backend'
 SVC_CM='backend-cm'
+SVC_WEBEOC='webeoc'
+SVC_WORKER='event-worker'
+FE_URL='http://localhost:3000'
+FE_ENV="${SVC_FE}/.env"
+COMMENT_FILTER='^[0-9]*:#'
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -83,15 +90,15 @@ cmd_reset() {
   info "Starting all services (compose handles dependency ordering)..."
   docker compose up -d
 
-  wait_for_service "$SVC_CM" "http://localhost:3000/api"
+  wait_for_service "$SVC_CM" "${FE_URL}/api"
 
   cmd_prisma
   info "Awaiting $SVC_CM reload..."
   sleep 5
-  wait_for_service "$SVC_CM" "http://localhost:3000/api"
+  wait_for_service "$SVC_CM" "${FE_URL}/api"
   cmd_codegen
-  info "Restarting frontend..."
-  docker compose restart frontend
+  info "Restarting $SVC_FE..."
+  docker compose restart "$SVC_FE"
   sleep 5
   cmd_errors || true
 
@@ -101,7 +108,7 @@ cmd_reset() {
 # helper for easy tailing
 cmd_logs() {
   if [[ $# -eq 0 ]]; then
-    docker compose logs -f frontend backend "$SVC_CM" webeoc event-worker
+    docker compose logs -f "$SVC_FE" "$SVC_BE" "$SVC_CM" "$SVC_WEBEOC" "$SVC_WORKER"
   else
     docker compose logs -f "$@"
   fi
@@ -123,7 +130,7 @@ cmd_errors_for() {
 
 # quickscan containers for error regex
 cmd_errors() {
-  local services=("frontend" "backend" "$SVC_CM" "webeoc" "event-worker" "database" "nats")
+  local services=("$SVC_FE" "$SVC_BE" "$SVC_CM" "$SVC_WEBEOC" "$SVC_WORKER" "database" "nats")
   local found=0
   for svc in "${services[@]}"; do
     cmd_errors_for "$svc" || found=1
@@ -137,10 +144,10 @@ cmd_errors() {
 
 # install all node modules in-container
 cmd_install() {
-  info "Installing frontend..."
-  docker exec frontend npm install
-  info "Installing backend..."
-  docker exec backend npm install --legacy-peer-deps
+  info "Installing $SVC_FE..."
+  docker exec "$SVC_FE" npm install
+  info "Installing $SVC_BE..."
+  docker exec "$SVC_BE" npm install --legacy-peer-deps
   info "Installing $SVC_CM..."
   docker exec "$SVC_CM" npm install --legacy-peer-deps
   info "Done."
@@ -154,8 +161,8 @@ cmd_prisma() {
 
 # runs codegen in-container
 cmd_codegen() {
-  info "Running GraphQL codegen in frontend..."
-  docker exec frontend npm run codegen
+  info "Running GraphQL codegen in $SVC_FE..."
+  docker exec "$SVC_FE" npm run codegen
 }
 
 # helper to pass through the import jobs for parks and laws data
@@ -182,7 +189,7 @@ cmd_health() {
   esac
 
   # Check .env files exist
-  local services=("frontend" "backend" "$SVC_CM" "webeoc" "event-worker")
+  local services=("$SVC_FE" "$SVC_BE" "$SVC_CM" "$SVC_WEBEOC" "$SVC_WORKER")
   for svc in "${services[@]}"; do
     if [[ ! -f "${svc}/.env" ]]; then
       warn "Missing ${svc}/.env"
@@ -201,7 +208,7 @@ cmd_health() {
   port_map=$(yq '.services | to_entries[] | select(.value.ports) | .key + " " + (.value.ports[] | sub("\"", "") | sub("\"", ""))' docker-compose.yml 2>/dev/null)
 
   # Check container-to-container URLs use the right internal port
-  local all_envs=("backend/.env" "${SVC_CM}/.env" "webeoc/.env" "event-worker/.env")
+  local all_envs=("${SVC_BE}/.env" "${SVC_CM}/.env" "${SVC_WEBEOC}/.env" "${SVC_WORKER}/.env")
   for envfile in "${all_envs[@]}"; do
     [[ ! -f "$envfile" ]] && continue
     while IFS= read -r line; do
@@ -224,26 +231,26 @@ cmd_health() {
   done
 
   # Check browser-side URLs (localhost:port) use the right host port
-  if [[ -f "frontend/.env" ]]; then
+  if [[ -f "$FE_ENV" ]]; then
     local host_port_list
     host_port_list=$(echo "$port_map" | awk '{split($2,a,":"); print a[1]}' | sort -u)
     while IFS= read -r line; do
       [[ "$line" =~ ^# ]] && continue
       if [[ "$line" =~ localhost:([0-9]+) ]] && ! echo "$host_port_list" | grep -qx "${BASH_REMATCH[1]}"; then
-        warn "frontend/.env: localhost:${BASH_REMATCH[1]} doesn't match any compose host port"
+        warn "${FE_ENV}: localhost:${BASH_REMATCH[1]} doesn't match any compose host port"
         issues=1
       fi
-    done < "frontend/.env"
+    done < "$FE_ENV"
   fi
   fi
 
   # Scan backend .env files for URLs that won't work in containers
   # (frontend VITE_* vars are browser-side so localhost is correct there)
-  local backend_envs=("backend/.env" "${SVC_CM}/.env" "webeoc/.env" "event-worker/.env")
+  local backend_envs=("${SVC_BE}/.env" "${SVC_CM}/.env" "${SVC_WEBEOC}/.env" "${SVC_WORKER}/.env")
   for envfile in "${backend_envs[@]}"; do
     [[ ! -f "$envfile" ]] && continue
     local bad_urls
-    bad_urls=$(grep -nE "$BAD_URL_PATTERN" "$envfile" | grep -v '^[0-9]*:#' || true)
+    bad_urls=$(grep -nE "$BAD_URL_PATTERN" "$envfile" | grep -v "$COMMENT_FILTER" || true)
     if [[ -n "$bad_urls" ]]; then
       warn "${envfile} has URLs that won't work in containers:"
       echo "$bad_urls" | while read -r line; do
@@ -254,11 +261,11 @@ cmd_health() {
   done
 
   # Check VITE_ URLs use localhost (they run in the browser, not the docker network)
-  if [[ -f "frontend/.env" ]]; then
+  if [[ -f "$FE_ENV" ]]; then
     local bad_vite
-    bad_vite=$(grep -nE '^VITE_.*URL=' frontend/.env | grep -v '^[0-9]*:#' | grep -E "(database|${SVC_CM}|backend|nats|webeoc|event-worker)[:/]" || true)
+    bad_vite=$(grep -nE '^VITE_.*URL=' "$FE_ENV" | grep -v "$COMMENT_FILTER" | grep -E "(database|${SVC_CM}|${SVC_BE}|nats|${SVC_WEBEOC}|${SVC_WORKER})[:/]" || true)
     if [[ -n "$bad_vite" ]]; then
-      warn "frontend/.env: VITE_ URLs reference docker service names but run in the browser — use localhost instead:"
+      warn "${FE_ENV}: VITE_ URLs reference docker service names but run in the browser — use localhost instead:"
       echo "$bad_vite" | while read -r line; do
         echo "  $line"
       done
@@ -267,12 +274,11 @@ cmd_health() {
   fi
 
   # Check frontend .env for non-VITE vars with localhost
-  if [[ -f "frontend/.env" ]]; then
+  if [[ -f "$FE_ENV" ]]; then
     local bad_fe
-    # grep out commented lines in .env
-    bad_fe=$(grep -nE "$BAD_URL_PATTERN" frontend/.env | grep -v '^[0-9]*:#' | grep -vE "$FE_URL_EXCLUDE" || true)
+    bad_fe=$(grep -nE "$BAD_URL_PATTERN" "$FE_ENV" | grep -v "$COMMENT_FILTER" | grep -vE "$FE_URL_EXCLUDE" || true)
     if [[ -n "$bad_fe" ]]; then
-      warn "frontend/.env has non-VITE URLs that won't work in containers:"
+      warn "${FE_ENV} has non-VITE URLs that won't work in containers:"
       echo "$bad_fe" | while read -r line; do
         echo "  $line"
       done
@@ -281,11 +287,11 @@ cmd_health() {
   fi
 
   # If containers are running, check service endpoints
-  if docker ps --format '{{.Names}}' | grep -q frontend; then
+  if docker ps --format '{{.Names}}' | grep -q "$SVC_FE"; then
     info "Containers detected — checking service endpoints..."
     local endpoints=(
-      "frontend|http://localhost:3000"
-      "backend|http://localhost:3001/api"
+      "${SVC_FE}|${FE_URL}"
+      "${SVC_BE}|http://localhost:3001/api"
       "${SVC_CM}|http://localhost:3003/api"
     )
     for entry in "${endpoints[@]}"; do
@@ -302,13 +308,13 @@ cmd_health() {
     # Frontend asset checks
     info "Checking frontend assets..."
     local fe_assets=(
-      "complaint page|http://localhost:3000/complaint/"
-      "app CSS|http://localhost:3000/src/assets/sass/app.compiled.css"
-      "user-mgmt CSS|http://localhost:3000/src/assets/sass/user-management.compiled.css"
-      "hwcr-assessment CSS|http://localhost:3000/src/assets/sass/hwcr-assessment.compiled.css"
-      "BC Sans font|http://localhost:3000/src/assets/fonts/bc-sans-regular.woff"
-      "bootstrap icons|http://localhost:3000/node_modules/bootstrap-icons/font/bootstrap-icons.css"
-      "index.tsx|http://localhost:3000/src/index.tsx"
+      "complaint page|${FE_URL}/complaint/"
+      "app CSS|${FE_URL}/src/assets/sass/app.compiled.css"
+      "user-mgmt CSS|${FE_URL}/src/assets/sass/user-management.compiled.css"
+      "hwcr-assessment CSS|${FE_URL}/src/assets/sass/hwcr-assessment.compiled.css"
+      "BC Sans font|${FE_URL}/src/assets/fonts/bc-sans-regular.woff"
+      "bootstrap icons|${FE_URL}/node_modules/bootstrap-icons/font/bootstrap-icons.css"
+      "index.tsx|${FE_URL}/src/index.tsx"
     )
     for entry in "${fe_assets[@]}"; do
       local name="${entry%%|*}"
