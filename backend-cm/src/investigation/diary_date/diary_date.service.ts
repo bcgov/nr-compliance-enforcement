@@ -6,6 +6,7 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { UserService } from "../../common/user.service";
 import { diary_date } from "../../../prisma/investigation/generated/diary_date";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { InvestigationService } from "../investigation/investigation.service";
 
 @Injectable()
 export class DiaryDateService {
@@ -13,6 +14,7 @@ export class DiaryDateService {
     private readonly prisma: InvestigationPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
+    private readonly investigationService: InvestigationService,
   ) {}
 
   private readonly logger = new Logger(DiaryDateService.name);
@@ -112,6 +114,9 @@ export class DiaryDateService {
 
     try {
       const mappedResult = this.mapper.map<diary_date, DiaryDate>(result as diary_date, "diary_date", "DiaryDate");
+
+      await this.investigationService.updateInvestigationTimestamp(input.investigationGuid);
+
       return mappedResult;
     } catch (error) {
       this.logger.error("Error mapping Diary Date:", error);
@@ -121,6 +126,14 @@ export class DiaryDateService {
 
   async delete(diaryDateGuid: string): Promise<boolean> {
     try {
+      const diaryDate = await this.prisma.diary_date.findUnique({
+        where: { diary_date_guid: diaryDateGuid },
+      });
+
+      if (!diaryDate) {
+        throw new Error(`Diary date with guid ${diaryDateGuid} not found`);
+      }
+
       // Soft delete by setting active_ind to false
       await withRlsTransaction(this.prisma, async (db) => {
         await db.diary_date.update({
@@ -132,6 +145,9 @@ export class DiaryDateService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(diaryDate.investigation_guid);
+
       return true;
     } catch (error) {
       this.logger.error("Error deleting Diary Date:", error);
@@ -141,6 +157,14 @@ export class DiaryDateService {
 
   async deleteByTask(taskGuid: string): Promise<boolean> {
     try {
+      const task = await this.prisma.task.findUnique({
+        where: { task_guid: taskGuid },
+      });
+
+      if (!task) {
+        throw new Error(`Task with guid ${taskGuid} not found`);
+      }
+
       await withRlsTransaction(this.prisma, async (db) => {
         await db.diary_date.updateMany({
           where: { task_guid: taskGuid },
@@ -151,6 +175,9 @@ export class DiaryDateService {
           },
         });
       });
+
+      await this.investigationService.updateInvestigationTimestamp(task.investigation_guid);
+
       return true;
     } catch (error) {
       this.logger.error("Error deleting DiaryDatesByTask:", error);

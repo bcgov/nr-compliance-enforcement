@@ -17,10 +17,9 @@ declare
    
     -- Variable to hold the JSONB data from staging_complaint.  Used to edit a complaint
     _edit_report_type            VARCHAR(120);
-    _edit_detail_text            VARCHAR(4000);
+    _edit_detail_text            TEXT;
     _edit_caller_name            VARCHAR(120);
     _edit_caller_address         VARCHAR(120);
-    _edit_address         		VARCHAR(120);
     _edit_caller_email           VARCHAR(120);
     _edit_caller_phone_1         VARCHAR(15);
     _edit_caller_phone_2         VARCHAR(15);
@@ -78,10 +77,7 @@ declare
    
    USERNAME_TXT CONSTANT varchar(8) = 'username';
   
-  
-   
 BEGIN
-   
    
     -- get the staged edit record.  There may be multiple for a given complaint, we just want the last one since that
     -- will contain all previous edits too
@@ -96,43 +92,68 @@ BEGIN
 
     -- These fields are retrieved to potentially update an existing complaint record
 	_edit_detail_text := edit_complaint_data ->> 'cos_call_details';
-    _edit_caller_name := edit_complaint_data ->> 'cos_caller_name';
-    _edit_caller_phone_1 := complaint.format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
-    _edit_caller_phone_2 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
-    _edit_caller_phone_3 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
-    _edit_caller_email := edit_complaint_data ->> 'cos_caller_email';
-    _edit_caller_address := edit_complaint_data ->> 'caller_address';
-    _edit_address := edit_complaint_data ->> 'address';
-    _edit_webeoc_reported_by_code := edit_complaint_data ->> 'cos_reffered_by_lst';
-    _edit_reported_by_other_text := edit_complaint_data ->> 'cos_reffered_by_txt';
-    _edit_webeoc_species := edit_complaint_data ->> 'species';
-    _edit_report_type := edit_complaint_data ->> 'report_type';
-    _edit_update_userid := substring(edit_complaint_data ->> USERNAME_TXT from 1 for 32);
-    _edit_complaint_status_code := UPPER(edit_complaint_data ->> 'status');
-   
-    _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
-    _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
-    _edit_incident_utc_date := _edit_incident_utc_datetime::DATE;
-    _edit_incident_utc_time := _edit_incident_utc_datetime::TIME;
-    _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
+  _edit_caller_name := left( edit_complaint_data ->> 'cos_caller_name', 100 )
+  ||
+  CASE
+  WHEN length( edit_complaint_data ->> 'cos_caller_name' ) > 100 THEN
+    '… DATA TRUNCATED'
+  ELSE
+    ''
+  END;
+  _edit_caller_phone_1 := complaint.format_phone_number(edit_complaint_data ->> 'cos_primary_phone');
+  _edit_caller_phone_2 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone');
+  _edit_caller_phone_3 := complaint.format_phone_number(edit_complaint_data ->> 'cos_alt_phone_2');
+  _edit_caller_email := left( edit_complaint_data ->> 'cos_caller_email', 100 )
+  ||
+  CASE
+  WHEN length( edit_complaint_data ->> 'cos_caller_email' ) > 100 THEN
+    '… DATA TRUNCATED'
+  ELSE
+    ''
+  END;
+  _edit_caller_address := left( edit_complaint_data ->> 'caller_address', 100 )
+  ||
+  CASE
+  WHEN length( edit_complaint_data ->> 'caller_address' ) > 100 THEN
+    '… DATA TRUNCATED'
+  ELSE
+    ''
+  END;
+  _edit_location_summary_text := left(edit_complaint_data ->> 'address', 100)
+  ||
+  CASE
+  WHEN length(edit_complaint_data ->> 'address') > 100 THEN
+    '… DATA TRUNCATED'
+  ELSE
+    ''
+  END;
+  _edit_webeoc_reported_by_code := edit_complaint_data ->> 'cos_reffered_by_lst';
+  _edit_reported_by_other_text := edit_complaint_data ->> 'cos_reffered_by_txt';
+  _edit_webeoc_species := edit_complaint_data ->> 'species';
+  _edit_report_type := edit_complaint_data ->> 'report_type';
+  _edit_update_userid := substring(edit_complaint_data ->> USERNAME_TXT from 1 for 32);
+  _edit_complaint_status_code := UPPER(edit_complaint_data ->> 'status');
+  _edit_location_detailed_text := edit_complaint_data ->> 'cos_location_description';
+  _edit_incident_utc_datetime := ( edit_complaint_data ->> 'incident_datetime' ):: timestamp AT            TIME zone 'America/Los_Angeles';
+  _edit_incident_utc_date := _edit_incident_utc_datetime::DATE;
+  _edit_incident_utc_time := _edit_incident_utc_datetime::TIME;
+  _edit_incident_reported_utc_timestmp := ( edit_complaint_data ->> 'created_by_datetime' ):: timestamp AT TIME zone 'America/Los_Angeles';
 	_edit_address_coordinates_lat := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_lat');
-    _edit_address_coordinates_long := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
+  _edit_address_coordinates_long := complaint.validate_coordinate_field(edit_complaint_data ->> 'address_coordinates_long');
    
-    -- Create a geometry point based on the latitude and longitude
-    IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND
-       _edit_address_coordinates_long IS NOT NULL AND _edit_address_coordinates_long <> '' THEN
-        _edit_location_geometry_point := ST_SetSRID(
-            ST_MakePoint(
-                CAST(_edit_address_coordinates_long AS NUMERIC),
-                CAST(_edit_address_coordinates_lat AS NUMERIC)
-            ),
-            4326
-        );
-    ELSE
-    	_edit_location_geometry_point := ST_SetSRID(ST_MakePoint(0, 0), 4326);
+  -- Create a geometry point based on the latitude and longitude
+  IF _edit_address_coordinates_lat IS NOT NULL AND _edit_address_coordinates_lat <> '' AND
+      _edit_address_coordinates_long IS NOT NULL AND _edit_address_coordinates_long <> '' THEN
+      _edit_location_geometry_point := ST_SetSRID(
+          ST_MakePoint(
+              CAST(_edit_address_coordinates_long AS NUMERIC),
+              CAST(_edit_address_coordinates_lat AS NUMERIC)
+          ),
+          4326
+      );
+  ELSE
+    _edit_location_geometry_point := ST_SetSRID(ST_MakePoint(0, 0), 4326);
 	END IF;
-
-
 
     -- Get the codes from our application (inserting if necessary) for the codes retrieved from WebEOC
     SELECT *
@@ -207,9 +228,9 @@ BEGIN
 	    update_edit_ind = true;
   end if;
  
-  if (COALESCE(_edit_address, '') <> COALESCE(current_complaint_record.location_summary_text, '')) then 
+  if (COALESCE(_edit_location_summary_text, '') <> COALESCE(current_complaint_record.location_summary_text, '')) then 
 	    UPDATE complaint.complaint
-	    SET location_summary_text  = _edit_address
+	    SET location_summary_text  = _edit_location_summary_text
 	    WHERE complaint_identifier = _complaint_identifier;
 	    update_edit_ind = true;
   end if;
