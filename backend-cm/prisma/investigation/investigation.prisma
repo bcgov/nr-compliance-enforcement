@@ -294,8 +294,42 @@ model investigation_business {
   update_utc_timestamp              DateTime?                           @db.Timestamp(6)
   investigation_alias               investigation_alias[]
   investigation_party               investigation_party?                @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+  investigation_business_address    investigation_business_address[]
   investigation_business_identifier investigation_business_identifier[]
   investigation_contact_method      investigation_contact_method[]
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_address {
+  investigation_business_address_guid String                 @id(map: "investigation_business_address_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid         String                 @db.Uuid
+  address_name                        String                 @db.VarChar(128)
+  address                             String?                @db.VarChar(120)
+  city                                String?                @db.VarChar(128)
+  province                            String?                @db.VarChar(64)
+  postal_code                         String?                @db.VarChar(16)
+  country                             String?                @db.VarChar(64)
+  is_primary                          Boolean                @default(false)
+  active_ind                          Boolean                @default(true)
+  create_user_id                      String                 @db.VarChar(32)
+  create_utc_timestamp                DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                      String?                @db.VarChar(32)
+  update_utc_timestamp                DateTime?              @db.Timestamp(6)
+  investigation_business              investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_business_address_business_fk")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_address_h {
+  h_investigation_business_address_guid String   @id(map: "pk_h_investigation_business_address") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                         String   @db.Uuid
+  operation_type                        String   @db.Char(1)
+  operation_user_id                     String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                 DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation         Json?
 
   @@schema("investigation")
 }

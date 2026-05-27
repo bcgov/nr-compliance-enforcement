@@ -5,11 +5,13 @@ import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
 import {
   Alias,
+  BusinessAddress,
   BusinessIdentifier,
   ContactMethod,
   CreateInspectionPartyInput,
   CreateInvestigationPartyInput,
   InvestigationAlias,
+  InvestigationBusinessAddress,
   InvestigationBusinessIdentifier,
   InvestigationContactMethod,
   InvestigationParty,
@@ -28,6 +30,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
+import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
 import z from "zod";
 import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
@@ -183,6 +186,37 @@ const buildLocalAliases = (aliases: Alias[]) => {
   return filtered?.length ? filtered.map((a: Alias) => ({ name: a.name })) : undefined;
 };
 
+const buildLocalAddresses = (addresses: BusinessAddressFormValue[] | undefined, isUpdate: boolean = false) => {
+  const mapped = (addresses ?? []).map((address) => ({
+    ...(isUpdate && address.businessAddressGuid ? { businessAddressGuid: address.businessAddressGuid } : {}),
+    addressName: address.addressName?.trim() ?? "",
+    address: address.address?.trim() || null,
+    city: address.city?.trim() || null,
+    province: address.province?.trim() || null,
+    postalCode: address.postalCode?.trim() || null,
+    country: address.country?.trim() || null,
+    isPrimary: address.isPrimary ?? false,
+  }));
+
+  return mapped.length ? mapped : undefined;
+};
+
+const mapAddressesFromInvestigationBusiness = (
+  addresses: Array<InvestigationBusinessAddress | null> | null | undefined,
+): BusinessAddressFormValue[] =>
+  addresses
+    ?.filter((address): address is InvestigationBusinessAddress => address != null)
+    .map((address, index) => ({
+      businessAddressGuid: address.businessAddressGuid ?? undefined,
+      addressName: address.addressName ?? "",
+      address: address.address ?? "",
+      city: address.city ?? "",
+      province: address.province ?? "",
+      postalCode: address.postalCode ?? "",
+      country: address.country ?? "",
+      isPrimary: address.isPrimary ?? index === 0,
+    })) ?? [];
+
 // Helper to map investigation contact methods to form phone/email arrays
 const mapInvestigationContactMethods = (contactMethods: ContactMethod[], typeCode: string) => {
   return (
@@ -315,6 +349,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             .map(toContactMethod),
           ContactMethods.EMAIL,
         ),
+        addresses: mapAddressesFromInvestigationBusiness(editParty.business?.addresses),
         contacts: [] as any[],
         partyAssociationRole: editParty.partyAssociationRole || "",
       };
@@ -336,6 +371,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       aliases: [] as Alias[],
       phoneNumbers: [] as any[],
       emailAddresses: [] as any[],
+      addresses: [] as BusinessAddressFormValue[],
       contacts: [] as any[],
       partyAssociationRole: "",
     };
@@ -367,9 +403,10 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         } else {
           input.business = {
             name: value.businessName,
-            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
+            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses, true),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
             aliases: buildLocalAliases(value.aliases),
+            addresses: buildLocalAddresses(value.addresses as BusinessAddressFormValue[], true),
           };
         }
 
@@ -399,6 +436,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
             aliases: buildLocalAliases(value.aliases),
+            addresses: buildLocalAddresses(value.addresses as BusinessAddressFormValue[]),
           };
         }
 
@@ -492,6 +530,17 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             ?.filter((a: Alias): a is Alias => a != null)
             .map((a: Alias) => ({
               name: a.name,
+            })),
+          addresses: party.business?.addresses
+            ?.filter((address: BusinessAddress | null): address is BusinessAddress => address != null)
+            .map((address: BusinessAddress) => ({
+              addressName: address.addressName ?? "",
+              address: address.address ?? null,
+              city: address.city ?? null,
+              province: address.province ?? null,
+              postalCode: address.postalCode ?? null,
+              country: address.country ?? null,
+              isPrimary: address.isPrimary ?? false,
             })),
         },
       }),

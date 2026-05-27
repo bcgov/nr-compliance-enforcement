@@ -30,6 +30,11 @@ import {
   InvestigationContactMethod,
   UpdateInvestigationContactMethodInput,
 } from "../investigation_contact_method/dto/investigation_contact_method";
+import {
+  CreateInvestigationBusinessAddressInput,
+  InvestigationBusinessAddress,
+  UpdateInvestigationBusinessAddressInput,
+} from "../investigation_business_address/dto/investigation_business_address";
 import { withRlsTransaction } from "src/pg-session-extension/with-rls-transaction";
 
 @Injectable()
@@ -43,10 +48,49 @@ export class InvestigationPartyService {
 
   private readonly logger = new Logger(InvestigationPartyService.name);
 
+  private _validateBusinessInput(business: {
+    name?: string;
+    addresses?: CreateInvestigationBusinessAddressInput[];
+  }): void {
+    for (const address of business.addresses ?? []) {
+      if (!address.addressName?.trim()) {
+        throw new Error("Address name is required.");
+      }
+    }
+  }
+
+  private _sortAddressesPrimaryLast<T extends { isPrimary?: boolean }>(addresses: T[]): T[] {
+    const nonPrimary = addresses.filter((a) => !a.isPrimary);
+    const primary = addresses.filter((a) => a.isPrimary);
+    return [...nonPrimary, ...primary];
+  }
+
+  private _mapAddressCreateData(
+    investigationBusinessGuid: string,
+    address: CreateInvestigationBusinessAddressInput | UpdateInvestigationBusinessAddressInput,
+  ) {
+    return {
+      investigation_business_guid: investigationBusinessGuid,
+      address_name: address.addressName.trim(),
+      address: address.address?.trim() || null,
+      city: address.city?.trim() || null,
+      province: address.province?.trim() || null,
+      postal_code: address.postalCode?.trim() || null,
+      country: address.country?.trim() || null,
+      is_primary: address.isPrimary ?? false,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+    };
+  }
+
   async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<Investigation> {
     for (const input of inputs) {
       if (!input.person && !input.business) {
         throw new Error("Each party input must include either a person or a business.");
+      }
+
+      if (input.business) {
+        this._validateBusinessInput(input.business);
       }
     }
 
@@ -171,6 +215,14 @@ export class InvestigationPartyService {
         })),
       });
     }
+
+    if (input.addresses?.length) {
+      await tx.investigation_business_address.createMany({
+        data: this._sortAddressesPrimaryLast(input.addresses).map((a) =>
+          this._mapAddressCreateData(investigationBusiness.investigation_business_guid, a),
+        ),
+      });
+    }
   }
 
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
@@ -264,6 +316,10 @@ export class InvestigationPartyService {
 
     if (!existingParty) {
       throw new Error("Party not found on this investigation.");
+    }
+
+    if (input.business) {
+      this._validateBusinessInput(input.business);
     }
 
     await this.prisma.$transaction(async (tx) => {
@@ -366,6 +422,16 @@ export class InvestigationPartyService {
         existingBusiness.aliases ?? [],
       );
       await Promise.all(aliasOps);
+    }
+
+    if (input.addresses) {
+      const addressOps = this._buildInvestigationBusinessAddressOperations(
+        tx,
+        existingBusiness.businessGuid,
+        input.addresses,
+        existingBusiness.addresses ?? [],
+      );
+      await Promise.all(addressOps);
     }
   }
 
@@ -531,6 +597,63 @@ export class InvestigationPartyService {
       operations.push(
         tx.investigation_alias.update({
           where: { investigation_alias_guid: a.aliasGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        }),
+      );
+    }
+
+    return operations;
+  }
+
+  private _buildInvestigationBusinessAddressOperations(
+    tx: any,
+    investigationBusinessGuid: string,
+    incoming: UpdateInvestigationBusinessAddressInput[],
+    existing: InvestigationBusinessAddress[],
+  ) {
+    const toCreate = incoming.filter((a) => !a.businessAddressGuid);
+    const toUpdate = this._sortAddressesPrimaryLast(incoming.filter((a) => a.businessAddressGuid));
+    const existingGuids = new Set(incoming.map((a) => a.businessAddressGuid).filter(Boolean));
+    const toDelete = existing.filter((a) => !existingGuids.has(a.businessAddressGuid));
+
+    const operations: Promise<any>[] = [];
+
+    for (const a of toCreate) {
+      operations.push(
+        tx.investigation_business_address.create({
+          data: this._mapAddressCreateData(investigationBusinessGuid, a),
+        }),
+      );
+    }
+
+    for (const a of toUpdate) {
+      operations.push(
+        tx.investigation_business_address.update({
+          where: { investigation_business_address_guid: a.businessAddressGuid },
+          data: {
+            address_name: a.addressName.trim(),
+            address: a.address?.trim() || null,
+            city: a.city?.trim() || null,
+            province: a.province?.trim() || null,
+            postal_code: a.postalCode?.trim() || null,
+            country: a.country?.trim() || null,
+            is_primary: a.isPrimary ?? false,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        }),
+      );
+    }
+
+    for (const a of toDelete) {
+      operations.push(
+        tx.investigation_business_address.update({
+          where: { investigation_business_address_guid: a.businessAddressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),

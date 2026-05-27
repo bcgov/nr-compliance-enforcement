@@ -13,6 +13,8 @@ import { investigation as _investigation } from "./investigation";
 import { investigation_alias as _investigation_alias } from "./investigation_alias";
 import { investigation_alias_h as _investigation_alias_h } from "./investigation_alias_h";
 import { investigation_business as _investigation_business } from "./investigation_business";
+import { investigation_business_address as _investigation_business_address } from "./investigation_business_address";
+import { investigation_business_address_h as _investigation_business_address_h } from "./investigation_business_address_h";
 import { investigation_business_h as _investigation_business_h } from "./investigation_business_h";
 import { investigation_business_identifier as _investigation_business_identifier } from "./investigation_business_identifier";
 import { investigation_business_identifier_h as _investigation_business_identifier_h } from "./investigation_business_identifier_h";
@@ -54,6 +56,8 @@ export namespace PrismaModel {
   export class investigation_alias extends _investigation_alias {}
   export class investigation_alias_h extends _investigation_alias_h {}
   export class investigation_business extends _investigation_business {}
+  export class investigation_business_address extends _investigation_business_address {}
+  export class investigation_business_address_h extends _investigation_business_address_h {}
   export class investigation_business_h extends _investigation_business_h {}
   export class investigation_business_identifier extends _investigation_business_identifier {}
   export class investigation_business_identifier_h extends _investigation_business_identifier_h {}
@@ -95,6 +99,8 @@ export namespace PrismaModel {
     investigation_alias,
     investigation_alias_h,
     investigation_business,
+    investigation_business_address,
+    investigation_business_address_h,
     investigation_business_h,
     investigation_business_identifier,
     investigation_business_identifier_h,
