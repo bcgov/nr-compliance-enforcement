@@ -97,6 +97,11 @@ test.describe("Investigation Party Form", () => {
     const businessNameInput = modal.locator("#businessName");
     await businessNameInput.fill("Acme Logging Ltd");
 
+    // Business number is required for Company parties
+    const businessNumberInput = modal.locator("#businessNumber");
+    // Generate a random business number to avoid clashes
+    await businessNumberInput.fill(Math.random().toString().substring(2, 10));
+
     // Select a party association role
     await selectItemById("party-role-select", "Party of Interest", page);
 
