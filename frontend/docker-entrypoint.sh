@@ -9,18 +9,10 @@ imported_files=$(grep -roh '@import "[^"]*"' "$SASS_DIR"/*.scss 2>/dev/null \
   | xargs -I{} basename {} \
   | sort -u)
 
-# Orphaned SCSS files that can't compile standalone (no variable imports).
-# TODO: delete these files or fix their imports, then remove this exclusion.
-SCSS_EXCLUDE="hwcr-complaint.scss"
-
 SASS_PAIRS=""
 for f in "$SASS_DIR"/*.scss; do
   base=$(basename "$f")
   if echo "$imported_files" | grep -qx "$base"; then
-    continue
-  fi
-  if echo "$SCSS_EXCLUDE" | grep -qw "$base"; then
-    echo "[entrypoint] Skipping orphaned SCSS: $base"
     continue
   fi
   name="${base%.scss}"
