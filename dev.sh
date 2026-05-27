@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+SVC_CM='backend-cm'
+
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
@@ -81,12 +83,12 @@ cmd_reset() {
   info "Starting all services (compose handles dependency ordering)..."
   docker compose up -d
 
-  wait_for_service "backend-cm" "http://localhost:3000/api"
+  wait_for_service "$SVC_CM" "http://localhost:3000/api"
 
   cmd_prisma
-  info "Awaiting backend-cm reload..."
+  info "Awaiting $SVC_CM reload..."
   sleep 5
-  wait_for_service "backend-cm" "http://localhost:3000/api"
+  wait_for_service "$SVC_CM" "http://localhost:3000/api"
   cmd_codegen
   info "Restarting frontend..."
   docker compose restart frontend
@@ -98,8 +100,8 @@ cmd_reset() {
 
 # helper for easy tailing
 cmd_logs() {
-  if [ $# -eq 0 ]; then
-    docker compose logs -f frontend backend backend-cm webeoc event-worker
+  if [[ $# -eq 0 ]]; then
+    docker compose logs -f frontend backend "$SVC_CM" webeoc event-worker
   else
     docker compose logs -f "$@"
   fi
@@ -121,7 +123,7 @@ cmd_errors_for() {
 
 # quickscan containers for error regex
 cmd_errors() {
-  local services=("frontend" "backend" "backend-cm" "webeoc" "event-worker" "database" "nats")
+  local services=("frontend" "backend" "$SVC_CM" "webeoc" "event-worker" "database" "nats")
   local found=0
   for svc in "${services[@]}"; do
     cmd_errors_for "$svc" || found=1
@@ -139,15 +141,15 @@ cmd_install() {
   docker exec frontend npm install
   info "Installing backend..."
   docker exec backend npm install --legacy-peer-deps
-  info "Installing backend-cm..."
-  docker exec backend-cm npm install --legacy-peer-deps
+  info "Installing $SVC_CM..."
+  docker exec "$SVC_CM" npm install --legacy-peer-deps
   info "Done."
 }
 
 # runs prisma gen in-container
 cmd_prisma() {
-  info "Running prisma-all in backend-cm..."
-  docker exec backend-cm npm run prisma-all
+  info "Running prisma-all in $SVC_CM..."
+  docker exec "$SVC_CM" npm run prisma-all
 }
 
 # runs codegen in-container
@@ -156,11 +158,18 @@ cmd_codegen() {
   docker exec frontend npm run codegen
 }
 
+# helper to pass through the import jobs for parks and laws data
 cmd_import() {
-  info "Running import:all in backend-cm..."
-  docker exec backend-cm npm run import:all
+  info "Running import:all in $SVC_CM..."
+  docker exec "$SVC_CM" npm run import:all
 }
 
+# convenient health check command 
+# verifies envs exist
+# if yq installed will scan docker compose ports and compare to env urls
+# checks frontend urls use localhost for correct loopback
+# IF containers are running then ping endpoints
+# IF frontend up, query scss assets servable
 cmd_health() {
   local issues=0
 
@@ -173,7 +182,7 @@ cmd_health() {
   esac
 
   # Check .env files exist
-  local services=("frontend" "backend" "backend-cm" "webeoc" "event-worker")
+  local services=("frontend" "backend" "$SVC_CM" "webeoc" "event-worker")
   for svc in "${services[@]}"; do
     if [[ ! -f "${svc}/.env" ]]; then
       warn "Missing ${svc}/.env"
@@ -192,7 +201,7 @@ cmd_health() {
   port_map=$(yq '.services | to_entries[] | select(.value.ports) | .key + " " + (.value.ports[] | sub("\"", "") | sub("\"", ""))' docker-compose.yml 2>/dev/null)
 
   # Check container-to-container URLs use the right internal port
-  local all_envs=("backend/.env" "backend-cm/.env" "webeoc/.env" "event-worker/.env")
+  local all_envs=("backend/.env" "${SVC_CM}/.env" "webeoc/.env" "event-worker/.env")
   for envfile in "${all_envs[@]}"; do
     [[ ! -f "$envfile" ]] && continue
     while IFS= read -r line; do
@@ -200,7 +209,6 @@ cmd_health() {
       local checked_svcs=""
       while IFS=' ' read -r svc mapping; do
         [[ "$checked_svcs" == *"|${svc}:${line}|"* ]] && continue
-        local container_port="${mapping##*:}"
         if [[ "$line" =~ ${svc}:([0-9]+) ]]; then
           local url_port="${BASH_REMATCH[1]}"
           local all_container_ports
@@ -221,11 +229,9 @@ cmd_health() {
     host_port_list=$(echo "$port_map" | awk '{split($2,a,":"); print a[1]}' | sort -u)
     while IFS= read -r line; do
       [[ "$line" =~ ^# ]] && continue
-      if [[ "$line" =~ localhost:([0-9]+) ]]; then
-        if ! echo "$host_port_list" | grep -qx "${BASH_REMATCH[1]}"; then
-          warn "frontend/.env: localhost:${BASH_REMATCH[1]} doesn't match any compose host port"
-          issues=1
-        fi
+      if [[ "$line" =~ localhost:([0-9]+) ]] && ! echo "$host_port_list" | grep -qx "${BASH_REMATCH[1]}"; then
+        warn "frontend/.env: localhost:${BASH_REMATCH[1]} doesn't match any compose host port"
+        issues=1
       fi
     done < "frontend/.env"
   fi
@@ -233,7 +239,7 @@ cmd_health() {
 
   # Scan backend .env files for URLs that won't work in containers
   # (frontend VITE_* vars are browser-side so localhost is correct there)
-  local backend_envs=("backend/.env" "backend-cm/.env" "webeoc/.env" "event-worker/.env")
+  local backend_envs=("backend/.env" "${SVC_CM}/.env" "webeoc/.env" "event-worker/.env")
   for envfile in "${backend_envs[@]}"; do
     [[ ! -f "$envfile" ]] && continue
     local bad_urls
@@ -246,6 +252,19 @@ cmd_health() {
       issues=1
     fi
   done
+
+  # Check VITE_ URLs use localhost (they run in the browser, not the docker network)
+  if [[ -f "frontend/.env" ]]; then
+    local bad_vite
+    bad_vite=$(grep -nE '^VITE_.*URL=' frontend/.env | grep -v '^[0-9]*:#' | grep -E "(database|${SVC_CM}|backend|nats|webeoc|event-worker)[:/]" || true)
+    if [[ -n "$bad_vite" ]]; then
+      warn "frontend/.env: VITE_ URLs reference docker service names but run in the browser — use localhost instead:"
+      echo "$bad_vite" | while read -r line; do
+        echo "  $line"
+      done
+      issues=1
+    fi
+  fi
 
   # Check frontend .env for non-VITE vars with localhost
   if [[ -f "frontend/.env" ]]; then
@@ -267,7 +286,7 @@ cmd_health() {
     local endpoints=(
       "frontend|http://localhost:3000"
       "backend|http://localhost:3001/api"
-      "backend-cm|http://localhost:3003/api"
+      "${SVC_CM}|http://localhost:3003/api"
     )
     for entry in "${endpoints[@]}"; do
       local name="${entry%%|*}"
