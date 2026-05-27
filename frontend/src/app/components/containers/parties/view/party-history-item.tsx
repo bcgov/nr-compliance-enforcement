@@ -35,7 +35,7 @@ const getEventDescription = (event: Event): string => {
   const formatValue = (value: string | null | undefined): string => {
     if (!value) return "";
     if (field === "sex") return SEX_LABELS[value] ?? value;
-    if (field === "phone number") return formatPhoneNumber(value) || value;
+    if (field.includes("phone number")) return formatPhoneNumber(value) || value;
     return value;
   };
 

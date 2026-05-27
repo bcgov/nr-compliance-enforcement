@@ -289,9 +289,7 @@ export class PartyService {
     const existingAliasGuids = new Set(existingAliases.map((a) => a.aliasGuid));
     const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid || !existingAliasGuids.has(a.aliasGuid));
     const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid && existingAliasGuids.has(a.aliasGuid));
-    const aliasesToDelete = existingAliases.filter(
-      (a) => !incomingAliases.some((ia) => ia.aliasGuid === a.aliasGuid),
-    );
+    const aliasesToDelete = existingAliases.filter((a) => !incomingAliases.some((ia) => ia.aliasGuid === a.aliasGuid));
 
     const operations: any = {};
 
@@ -673,17 +671,22 @@ export class PartyService {
       const incomingMethods = newB.contactMethods ?? [];
       for (const incoming of incomingMethods) {
         if (!incoming.contactMethodGuid) {
-          addEvent("ADDED", this._contactMethodLabel(incoming.typeCode), null, incoming.value);
+          addEvent("ADDED", `business ${this._contactMethodLabel(incoming.typeCode)}`, null, incoming.value);
         } else {
           const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
           if (existing && existing.value !== incoming.value) {
-            addEvent("EDITED", this._contactMethodLabel(incoming.typeCode), existing.value, incoming.value);
+            addEvent(
+              "EDITED",
+              `business ${this._contactMethodLabel(incoming.typeCode)}`,
+              existing.value,
+              incoming.value,
+            );
           }
         }
       }
       for (const existing of existingMethods) {
         if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-          addEvent("REMOVED", this._contactMethodLabel(existing.typeCode), existing.value, null);
+          addEvent("REMOVED", `business ${this._contactMethodLabel(existing.typeCode)}`, existing.value, null);
         }
       }
 
@@ -695,7 +698,65 @@ export class PartyService {
           addEvent("ADDED", "business contact", null, name);
           for (const cm of incoming.person?.contactMethods ?? []) {
             if (cm?.value) {
-              addEvent("ADDED", this._contactMethodLabel(cm.typeCode), null, cm.value);
+              const contactLabel = name
+                ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
+                : `contact ${this._contactMethodLabel(cm.typeCode)}`;
+              addEvent("ADDED", contactLabel, null, cm.value);
+            }
+          }
+        } else {
+          const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
+          if (!existingXref) continue;
+
+          const existingName = [existingXref.person?.firstName, existingXref.person?.lastName]
+            .filter(Boolean)
+            .join(" ");
+          const incomingName = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
+          const contactLabel = incomingName || existingName;
+
+          if (
+            existingXref.person?.firstName !== incoming.person?.firstName ||
+            existingXref.person?.lastName !== incoming.person?.lastName
+          ) {
+            addEvent("EDITED", "business contact name", existingName || null, incomingName || null);
+          }
+
+          const existingContactMethods = existingXref.person?.contactMethods ?? [];
+          const incomingContactMethods = incoming.person?.contactMethods ?? [];
+
+          for (const incomingCm of incomingContactMethods) {
+            if (!incomingCm.contactMethodGuid) {
+              if (incomingCm.value) {
+                addEvent(
+                  "ADDED",
+                  `${this._contactMethodLabel(incomingCm.typeCode)} in business contact ${contactLabel}`,
+                  null,
+                  incomingCm.value,
+                );
+              }
+            } else {
+              const existingCm = existingContactMethods.find(
+                (m) => m.contactMethodGuid === incomingCm.contactMethodGuid,
+              );
+              if (existingCm && existingCm.value !== incomingCm.value) {
+                addEvent(
+                  "EDITED",
+                  `${this._contactMethodLabel(incomingCm.typeCode)} in business contact ${contactLabel}`,
+                  existingCm.value,
+                  incomingCm.value,
+                );
+              }
+            }
+          }
+
+          for (const existingCm of existingContactMethods) {
+            if (!incomingContactMethods.find((m) => m.contactMethodGuid === existingCm.contactMethodGuid)) {
+              addEvent(
+                "REMOVED",
+                `${this._contactMethodLabel(existingCm.typeCode)} in business contact ${contactLabel}`,
+                existingCm.value,
+                null,
+              );
             }
           }
         }
