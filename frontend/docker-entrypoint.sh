@@ -4,27 +4,35 @@ set -e
 SASS_DIR="src/assets/sass"
 
 # Discover SCSS entry files: any .scss file that isn't @imported by another.
-find_entry_files() {
-  imported=$(grep -rh '@import' "$SASS_DIR"/*.scss 2>/dev/null \
-    | sed -n 's/.*@import ["'\'']\.\///' \
-    | sed 's/["'\''].*//' \
-    | sort -u)
+imported_files=$(grep -roh '@import "[^"]*"' "$SASS_DIR"/*.scss 2>/dev/null \
+  | sed 's/.*@import "//;s/"//' \
+  | xargs -I{} basename {} \
+  | sort -u)
 
-  for f in "$SASS_DIR"/*.scss; do
-    base=$(basename "$f")
-    echo "$imported" | grep -qx "$base" && continue
-    name="${base%.scss}"
-    echo "$SASS_DIR/${name}.scss:$SASS_DIR/${name}.compiled.css"
-  done
-}
+# Orphaned SCSS files that can't compile standalone (no variable imports).
+# TODO: delete these files or fix their imports, then remove this exclusion.
+SCSS_EXCLUDE="hwcr-complaint.scss"
 
-SASS_PAIRS=$(find_entry_files)
+SASS_PAIRS=""
+for f in "$SASS_DIR"/*.scss; do
+  base=$(basename "$f")
+  if echo "$imported_files" | grep -qx "$base"; then
+    continue
+  fi
+  if echo "$SCSS_EXCLUDE" | grep -qw "$base"; then
+    echo "[entrypoint] Skipping orphaned SCSS: $base"
+    continue
+  fi
+  name="${base%.scss}"
+  pair="$SASS_DIR/${name}.scss:$SASS_DIR/${name}.compiled.css"
+  SASS_PAIRS="${SASS_PAIRS:+$SASS_PAIRS }$pair"
+done
 
 echo "[entrypoint] Installing dependencies..."
 npm install
 
 echo "[entrypoint] SCSS entry files:"
-echo "$SASS_PAIRS" | while read -r pair; do echo "  $pair"; done
+for pair in $SASS_PAIRS; do echo "  $pair"; done
 
 echo "[entrypoint] Pre-compiling SCSS..."
 # shellcheck disable=SC2086
