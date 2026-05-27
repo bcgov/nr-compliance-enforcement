@@ -1,8 +1,46 @@
-import { FC } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
 import { z } from "zod";
+import { useStore } from "@tanstack/react-form";
+
+import countryCsvRaw from "@/assets/country-list.csv?raw";
+import provinceCsvRaw from "@/assets/province-list.csv?raw";
+
+const parseFirstCsvColumn = (csv: string): string[] => {
+  const lines = csv
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  // Drop header row (e.g. "Name,Code")
+  const dataLines = lines.slice(1);
+
+  const names: string[] = [];
+  for (const line of dataLines) {
+    // We only need the first column ("Name"), but some names contain commas and are quoted.
+    if (line.startsWith('"')) {
+      const endQuote = line.indexOf('",');
+      if (endQuote > 1) {
+        names.push(line.slice(1, endQuote).trim());
+      }
+      continue;
+    }
+    const firstComma = line.indexOf(",");
+    if (firstComma === -1) {
+      continue;
+    }
+    names.push(line.slice(0, firstComma).trim());
+  }
+
+  return names;
+};
+
+const COUNTRY_OPTIONS = parseFirstCsvColumn(countryCsvRaw);
+const CANADA_PROVINCE_OPTIONS = parseFirstCsvColumn(provinceCsvRaw);
+const DEFAULT_COUNTRY = "Canada";
+const DEFAULT_CANADA_PROVINCE = "British Columbia";
 
 interface BusinessAddressFieldsProps {
   addressIndex: number;
@@ -21,6 +59,41 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
   onRemoveAddress,
   onSetPrimaryAddress,
 }) => {
+  const selectedCountry = useStore(
+    form.store,
+    (state: any) => state.values?.addresses?.[addressIndex]?.country ?? "",
+  ) as string;
+
+  const selectedProvince = useStore(
+    form.store,
+    (state: any) => state.values?.addresses?.[addressIndex]?.province ?? "",
+  ) as string;
+
+  const isCanada = (selectedCountry || "").trim() === DEFAULT_COUNTRY;
+
+  useEffect(() => {
+    if (!selectedCountry) {
+      form.setFieldValue(`addresses[${addressIndex}].country`, DEFAULT_COUNTRY);
+    }
+  }, [addressIndex, form, selectedCountry]);
+
+  // If the country is not Canada, clear the province
+  useEffect(() => {
+    if (!isCanada) {
+      form.setFieldValue(`addresses[${addressIndex}].province`, "");
+    }
+  }, [addressIndex, form, isCanada]);
+
+  // If the country is Canada and the province is not set, set to the default province (BC)
+  useEffect(() => {
+    if (isCanada && !selectedProvince) {
+      form.setFieldValue(`addresses[${addressIndex}].province`, DEFAULT_CANADA_PROVINCE);
+    }
+  }, [addressIndex, form, isCanada, selectedProvince]);
+
+  const countryOptions = useMemo(() => COUNTRY_OPTIONS, []);
+  const provinceOptions = useMemo(() => CANADA_PROVINCE_OPTIONS, []);
+
   return (
     <div className="party-details-item">
       <div className="party-contact-header mb-3">
@@ -110,25 +183,42 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
           />
         )}
       />
-      <FormField
-        form={form}
-        name={`addresses[${addressIndex}].province` as any}
-        label="Province"
-        render={(field) => (
-          <CompInput
-            id={`business-province-${addressIndex}`}
-            divid={`business-province-${addressIndex}-div`}
-            type="input"
-            inputClass="comp-form-control comp-details-input"
-            value={field.state.value ?? ""}
-            error={field.state.meta.errors?.[0]?.message || ""}
-            maxLength={64}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter province..."
-            disabled={isDisabled}
-          />
-        )}
-      />
+      {isCanada && (
+        <FormField
+          form={form}
+          name={`addresses[${addressIndex}].province` as any}
+          label="Province"
+          render={(field) => {
+            const errorMessage = field.state.meta.errors?.[0]?.message || "";
+            const className = ["comp-form-control", "comp-details-input", errorMessage ? "is-invalid error-border" : ""]
+              .filter(Boolean)
+              .join(" ");
+
+            return (
+              <div id={`business-province-${addressIndex}-div`}>
+                <select
+                  id={`business-province-${addressIndex}`}
+                  className={className}
+                  value={field.state.value ?? ""}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  disabled={isDisabled}
+                >
+                  <option value="">Select province...</option>
+                  {provinceOptions.map((name) => (
+                    <option
+                      key={name}
+                      value={name}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
+              </div>
+            );
+          }}
+        />
+      )}
       <FormField
         form={form}
         name={`addresses[${addressIndex}].postalCode` as any}
@@ -152,20 +242,34 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         form={form}
         name={`addresses[${addressIndex}].country` as any}
         label="Country"
-        render={(field) => (
-          <CompInput
-            id={`business-country-${addressIndex}`}
-            divid={`business-country-${addressIndex}-div`}
-            type="input"
-            inputClass="comp-form-control comp-details-input"
-            value={field.state.value ?? ""}
-            error={field.state.meta.errors?.[0]?.message || ""}
-            maxLength={64}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter country..."
-            disabled={isDisabled}
-          />
-        )}
+        render={(field) => {
+          const errorMessage = field.state.meta.errors?.[0]?.message || "";
+          const className = ["comp-form-control", "comp-details-input", errorMessage ? "is-invalid error-border" : ""]
+            .filter(Boolean)
+            .join(" ");
+
+          return (
+            <div id={`business-country-${addressIndex}-div`}>
+              <select
+                id={`business-country-${addressIndex}`}
+                className={className}
+                value={field.state.value ?? ""}
+                onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                disabled={isDisabled}
+              >
+                {countryOptions.map((name) => (
+                  <option
+                    key={name}
+                    value={name}
+                  >
+                    {name}
+                  </option>
+                ))}
+              </select>
+              {errorMessage && <div className="error-message">{errorMessage}</div>}
+            </div>
+          );
+        }}
       />
     </div>
   );
