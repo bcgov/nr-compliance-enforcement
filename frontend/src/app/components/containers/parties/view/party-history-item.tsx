@@ -2,11 +2,14 @@ import { FC } from "react";
 import { formatTime } from "@/app/common/methods";
 import { Event } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 
 interface PartyHistoryItemProps {
   event: Event;
   appUsers?: AppUser[];
 }
+
+const SEX_LABELS: Record<string, string> = { M: "male", F: "female", U: "unknown" };
 
 const getIconByVerb = (verbCode: string): string => {
   const verbIcons: { [key: string]: string } = {
@@ -29,14 +32,20 @@ const getEventDescription = (event: Event): string => {
   const field = content?.field ?? "information";
   const oldValue = content?.oldValue;
   const newValue = content?.newValue;
+  const formatValue = (value: string | null | undefined): string => {
+    if (!value) return "";
+    if (field === "sex") return SEX_LABELS[value] ?? value;
+    if (field === "phone number") return formatPhoneNumber(value) || value;
+    return value;
+  };
 
   switch (verb) {
     case "ADDED":
-      return `added ${field}: ${newValue ?? ""}`;
+      return `added ${field}: ${formatValue(newValue)}`;
     case "REMOVED":
-      return `removed ${field}: ${oldValue ?? ""}`;
+      return `removed ${field}: ${formatValue(oldValue)}`;
     case "EDITED":
-      return `updated ${field} from "${oldValue ?? ""}" to "${newValue ?? ""}"`;
+      return `updated ${field} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
     default:
       return `performed ${verb.toLowerCase()} on ${field}`;
   }

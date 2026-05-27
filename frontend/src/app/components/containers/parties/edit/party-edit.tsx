@@ -191,7 +191,7 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
 
   if (businessNumber?.identifierValue) {
     identifiers.push({
-      ...(isUpdate && { businessIdentifierGuid: businessNumber.identifierGuid }),
+      ...(isUpdate && { businessIdentifierGuid: businessNumber.businessIdentifierGuid }),
       identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
       identifierValue: businessNumber.identifierValue,
     });
@@ -199,7 +199,7 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
 
   if (worksafeBCNumber?.identifierValue) {
     identifiers.push({
-      ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.identifierGuid }),
+      ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }),
       identifierCode: BusinessIdentifiers.WSBC_NUMBER,
       identifierValue: worksafeBCNumber.identifierValue,
     });
@@ -241,7 +241,7 @@ const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: Cont
 const buildBusinessUpdate = (value: any) => {
   return {
     name: value.businessName,
-    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+    aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
     contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,

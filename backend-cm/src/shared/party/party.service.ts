@@ -73,6 +73,7 @@ export class PartyService {
             },
             contact_method: {
               select: {
+                contact_method_guid: true,
                 contact_method_type: true,
                 contact_method_type_code: true,
                 contact_value: true,
@@ -285,10 +286,11 @@ export class PartyService {
   }
 
   private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
-    const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid);
-    const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid);
+    const existingAliasGuids = new Set(existingAliases.map((a) => a.aliasGuid));
+    const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid || !existingAliasGuids.has(a.aliasGuid));
+    const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid && existingAliasGuids.has(a.aliasGuid));
     const aliasesToDelete = existingAliases.filter(
-      (a) => !new Set(incomingAliases.map((a) => a.aliasGuid)).has(a.aliasGuid),
+      (a) => !incomingAliases.some((ia) => ia.aliasGuid === a.aliasGuid),
     );
 
     const operations: any = {};
@@ -541,6 +543,12 @@ export class PartyService {
     return operations;
   }
 
+  private _contactMethodLabel(typeCode: string): string {
+    if (typeCode === "PHONE") return "phone number";
+    if (typeCode === "EMAILADDR") return "email address";
+    return `contact method (${typeCode})`;
+  }
+
   private _partyChangeEvents(partyIdentifier: string, oldParty: Party, input: PartyUpdateInput): EventCreateInput[] {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
@@ -577,13 +585,11 @@ export class PartyService {
       compareField("middle name", oldP.middleName, newP.middleName);
       compareField("middle name 2", oldP.middleName2, newP.middleName2);
       compareField("last name", oldP.lastName, newP.lastName);
-      if (oldP.dateOfBirth && newP.dateOfBirth) {
-        compareField(
-          "date of birth",
-          oldP.dateOfBirth.toISOString().split("T")[0],
-          newP.dateOfBirth.toISOString().split("T")[0],
-        );
-      }
+      compareField(
+        "date of birth",
+        oldP.dateOfBirth ? oldP.dateOfBirth.toISOString().split("T")[0] : null,
+        newP.dateOfBirth ? (newP.dateOfBirth as Date).toISOString().split("T")[0] : null,
+      );
       compareField("driver's licence number", oldP.driversLicenseNumber, newP.driversLicenseNumber);
       compareField("driver's licence jurisdiction", oldP.driversLicenseJurisdiction, newP.driversLicenseJurisdiction);
       compareField("sex", oldP.sexCode, newP.sexCode);
@@ -593,17 +599,17 @@ export class PartyService {
 
       for (const incoming of incomingMethods) {
         if (!incoming.contactMethodGuid) {
-          addEvent("ADDED", `contact method (${incoming.typeCode})`, null, incoming.value);
+          addEvent("ADDED", this._contactMethodLabel(incoming.typeCode), null, incoming.value);
         } else {
           const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
           if (existing && existing.value !== incoming.value) {
-            addEvent("EDITED", `contact method (${incoming.typeCode})`, existing.value, incoming.value);
+            addEvent("EDITED", this._contactMethodLabel(incoming.typeCode), existing.value, incoming.value);
           }
         }
       }
       for (const existing of existingMethods) {
         if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-          addEvent("REMOVED", `contact method (${existing.typeCode})`, existing.value, null);
+          addEvent("REMOVED", this._contactMethodLabel(existing.typeCode), existing.value, null);
         }
       }
     }
@@ -667,17 +673,17 @@ export class PartyService {
       const incomingMethods = newB.contactMethods ?? [];
       for (const incoming of incomingMethods) {
         if (!incoming.contactMethodGuid) {
-          addEvent("ADDED", `contact method (${incoming.typeCode})`, null, incoming.value);
+          addEvent("ADDED", this._contactMethodLabel(incoming.typeCode), null, incoming.value);
         } else {
           const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
           if (existing && existing.value !== incoming.value) {
-            addEvent("EDITED", `contact method (${incoming.typeCode})`, existing.value, incoming.value);
+            addEvent("EDITED", this._contactMethodLabel(incoming.typeCode), existing.value, incoming.value);
           }
         }
       }
       for (const existing of existingMethods) {
         if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-          addEvent("REMOVED", `contact method (${existing.typeCode})`, existing.value, null);
+          addEvent("REMOVED", this._contactMethodLabel(existing.typeCode), existing.value, null);
         }
       }
 
@@ -687,6 +693,11 @@ export class PartyService {
         if (!incoming.businessPersonXrefGuid) {
           const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
           addEvent("ADDED", "business contact", null, name);
+          for (const cm of incoming.person?.contactMethods ?? []) {
+            if (cm?.value) {
+              addEvent("ADDED", this._contactMethodLabel(cm.typeCode), null, cm.value);
+            }
+          }
         }
       }
       for (const existing of existingXrefs) {
@@ -705,19 +716,25 @@ export class PartyService {
       include: {
         person: {
           include: {
-            contact_method: true,
+            contact_method: { where: { active_ind: true } },
           },
         },
         business: {
           include: {
-            alias: true,
-            business_identifier: true,
-            contact_method: true,
+            alias: { where: { active_ind: true } },
+            business_identifier: {
+              where: { active_ind: true },
+              include: {
+                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: true,
+              },
+            },
+            contact_method: { where: { active_ind: true } },
             business_person_xref: {
+              where: { active_ind: true },
               include: {
                 person: {
                   include: {
-                    contact_method: true,
+                    contact_method: { where: { active_ind: true } },
                   },
                 },
               },
