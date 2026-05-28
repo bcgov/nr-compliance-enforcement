@@ -295,7 +295,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           const found = editParty.business?.businessIdentifiers
             ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
             .find((bi) => bi.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
-          return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+          return found
+            ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+            : { identifierValue: "" };
         })(),
         worksafeBCNumber: (() => {
           const found = editParty.business?.businessIdentifiers
