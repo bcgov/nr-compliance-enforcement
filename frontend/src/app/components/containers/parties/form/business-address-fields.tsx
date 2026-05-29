@@ -41,7 +41,6 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
   const isCanada = (selectedCountry || "").trim() === DEFAULT_COUNTRY;
 
   useEffect(() => {
-    console.log(selectedCountry);
     if (!selectedCountry) {
       form.setFieldValue(`addresses[${addressIndex}].country`, DEFAULT_COUNTRY);
     }

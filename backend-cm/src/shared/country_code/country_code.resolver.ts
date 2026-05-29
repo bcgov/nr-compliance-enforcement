@@ -13,9 +13,7 @@ export class CountryCodeResolver {
   @Query("countries")
   @Roles(coreRoles)
   async findAll() {
-    console.log("in resolver");
     const c = await this.countryCodeService.findAll();
-    console.log(c);
     return c;
   }
 }
