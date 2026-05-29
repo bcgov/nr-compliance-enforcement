@@ -6,7 +6,6 @@ import { party } from "../../../prisma/shared/generated/party";
 import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
-import { PageInfo } from "../case_file/dto/case_file";
 import { Alias } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
@@ -231,114 +230,10 @@ export class PartyService {
         this._validateBusinessInput(input.business);
       }
 
-      const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
-        input.business?.contactPeople ?? [],
-        null,
-      );
-
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-        data = {
-          party_type: input.partyTypeCode,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-
-          person: {
-            create: {
-              first_name: input.person?.firstName,
-              middle_name: input.person?.middleName,
-              middle_name_2: input.person?.middleName2,
-              last_name: input.person?.lastName,
-              date_of_birth: input.person?.dateOfBirth,
-              drivers_license_number: input.person?.driversLicenseNumber,
-              drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-              sex_code: input.person?.sexCode,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              ...(input.person?.contactMethods?.length
-                ? {
-                    contact_method: {
-                      create: input.person.contactMethods.map((c) => ({
-                        contact_method_type: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-            },
-          },
-        };
+        data = this._buildPersonCreateData(input);
       } else {
-        data = {
-          party_type: input.partyTypeCode,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-          business: {
-            create: {
-              name: input.business?.name,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              ...(input.business?.aliases?.length
-                ? {
-                    alias: {
-                      create: input.business.aliases.map((a) => ({
-                        name: a.name,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.business?.identifiers?.length
-                ? {
-                    business_identifier: {
-                      create: input.business.identifiers.map((i) => ({
-                        business_identifier_code: i.identifierCode,
-                        identifier_value: this._normalizeIdentifierValue(i.identifierValue),
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.business?.addresses?.length
-                ? {
-                    business_address: {
-                      create: input.business.addresses.map((a) => ({
-                        address_name: a.addressName.trim(),
-                        address: a.address?.trim() || null,
-                        city: a.city?.trim() || null,
-                        country_subdivision_code: a.province?.trim() || null,
-                        postal_code: a.postalCode?.trim() || null,
-                        country_code: a.country?.trim() || null,
-                        is_primary: a.isPrimary ?? false,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.business?.contactMethods?.length
-                ? {
-                    contact_method: {
-                      create: input.business.contactMethods.map((c) => ({
-                        contact_method_type: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(Object.keys(businessPersonXrefOperations).length
-                ? { business_person_xref: businessPersonXrefOperations }
-                : {}),
-            },
-          },
-        };
+        data = this._buildBusinessCreateData(input);
       }
 
       const prismaParty = await this.prisma.party.create({
@@ -355,6 +250,193 @@ export class PartyService {
       this.logger.error("Error creating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);
     }
+  }
+
+  private _buildPersonCreateData(input: PartyCreateInput): any {
+    return {
+      party_type: input.partyTypeCode,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+      person: {
+        create: {
+          first_name: input.person?.firstName,
+          middle_name: input.person?.middleName,
+          middle_name_2: input.person?.middleName2,
+          last_name: input.person?.lastName,
+          date_of_birth: input.person?.dateOfBirth,
+          drivers_license_number: input.person?.driversLicenseNumber,
+          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+          sex_code: input.person?.sexCode,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          ...(input.person?.contactMethods?.length
+            ? {
+                contact_method: {
+                  create: input.person.contactMethods.map((c) => ({
+                    contact_method_type: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildBusinessCreateData(input: PartyCreateInput): any {
+    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+      input.business?.contactPeople ?? [],
+      null,
+    );
+
+    return {
+      party_type: input.partyTypeCode,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+      business: {
+        create: {
+          name: input.business?.name,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          ...(input.business?.aliases?.length
+            ? {
+                alias: {
+                  create: input.business.aliases.map((a) => ({
+                    name: a.name,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.identifiers?.length
+            ? {
+                business_identifier: {
+                  create: input.business.identifiers.map((i) => ({
+                    business_identifier_code: i.identifierCode,
+                    identifier_value: this._normalizeIdentifierValue(i.identifierValue),
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.addresses?.length
+            ? {
+                business_address: {
+                  create: input.business.addresses.map((a) => ({
+                    address_name: a.addressName.trim(),
+                    address: a.address?.trim() || null,
+                    city: a.city?.trim() || null,
+                    country_subdivision_code: a.province?.trim() || null,
+                    postal_code: a.postalCode?.trim() || null,
+                    country_code: a.country?.trim() || null,
+                    is_primary: a.isPrimary ?? false,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.contactMethods?.length
+            ? {
+                contact_method: {
+                  create: input.business.contactMethods.map((c) => ({
+                    contact_method_type: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(Object.keys(businessPersonXrefOperations).length
+            ? { business_person_xref: businessPersonXrefOperations }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
+    const personContactMethodOperations = this._buildContactMethodOperations(
+      input.person?.contactMethods ?? [],
+      existingPartyDto.person?.contactMethods ?? [],
+    );
+
+    return {
+      party_type: input.partyTypeCode,
+      update_user_id: this.user.getIdirUsername(),
+      update_utc_timestamp: new Date(),
+      person: {
+        update: {
+          first_name: input.person?.firstName,
+          middle_name: input.person?.middleName,
+          middle_name_2: input.person?.middleName2,
+          last_name: input.person?.lastName,
+          date_of_birth: input.person?.dateOfBirth,
+          drivers_license_number: input.person?.driversLicenseNumber,
+          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+          sex_code: input.person?.sexCode,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+          ...(Object.keys(personContactMethodOperations).length
+            ? { contact_method: personContactMethodOperations }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildBusinessUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
+    const aliasOperations = this._buildAliasOperations(
+      input.business?.aliases ?? [],
+      existingPartyDto.business?.aliases ?? [],
+    );
+
+    const contactMethodOperations = this._buildContactMethodOperations(
+      input.business?.contactMethods ?? [],
+      existingPartyDto.business?.contactMethods ?? [],
+    );
+
+    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
+      input.business?.identifiers ?? [],
+      existingPartyDto.business?.identifiers ?? [],
+    );
+
+    const businessAddressOperations = this._buildBusinessAddressOperations(
+      input.business?.addresses ?? [],
+      existingPartyDto.business?.addresses ?? [],
+    );
+
+    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+      input.business?.contactPeople ?? [],
+      existingPartyDto.business?.contactPeople ?? [],
+    );
+
+    return {
+      business: {
+        update: {
+          name: input.business?.name,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+          ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+          ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
+          ...(Object.keys(businessIdentifierOperations).length
+            ? { business_identifier: businessIdentifierOperations }
+            : {}),
+          ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
+          ...(Object.keys(businessPersonXrefOperations).length
+            ? { business_person_xref: businessPersonXrefOperations }
+            : {}),
+        },
+      },
+    };
   }
 
   private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
@@ -716,78 +798,10 @@ export class PartyService {
 
     let data: any;
 
-    const aliasOperations = this._buildAliasOperations(
-      input.business?.aliases ?? [],
-      existingPartyDto.business?.aliases ?? [],
-    );
-
-    const contactMethodOperations = this._buildContactMethodOperations(
-      input.business?.contactMethods ?? [],
-      existingPartyDto.business?.contactMethods ?? [],
-    );
-
-    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
-      input.business?.identifiers ?? [],
-      existingPartyDto.business?.identifiers ?? [],
-    );
-
-    const businessAddressOperations = this._buildBusinessAddressOperations(
-      input.business?.addresses ?? [],
-      existingPartyDto.business?.addresses ?? [],
-    );
-
-    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
-      input.business?.contactPeople ?? [],
-      existingPartyDto.business?.contactPeople ?? [],
-    );
-
-    const personContactMethodOperations = this._buildContactMethodOperations(
-      input.person?.contactMethods ?? [],
-      existingPartyDto.person?.contactMethods ?? [],
-    );
-
     if (input.partyTypeCode === PARTY_TYPES.Person) {
-      data = {
-        party_type: input.partyTypeCode,
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-        person: {
-          update: {
-            first_name: input.person?.firstName,
-            middle_name: input.person?.middleName,
-            middle_name_2: input.person?.middleName2,
-            last_name: input.person?.lastName,
-            date_of_birth: input.person?.dateOfBirth,
-            drivers_license_number: input.person?.driversLicenseNumber,
-            drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-            sex_code: input.person?.sexCode,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-            ...(Object.keys(personContactMethodOperations).length
-              ? { contact_method: personContactMethodOperations }
-              : {}),
-          },
-        },
-      };
+      data = this._buildPersonUpdateData(input, existingPartyDto);
     } else {
-      data = {
-        business: {
-          update: {
-            name: input.business?.name,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-            ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-            ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
-            ...(Object.keys(businessIdentifierOperations).length
-              ? { business_identifier: businessIdentifierOperations }
-              : {}),
-            ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
-            ...(Object.keys(businessPersonXrefOperations).length
-              ? { business_person_xref: businessPersonXrefOperations }
-              : {}),
-          },
-        },
-      };
+      data = this._buildBusinessUpdateData(input, existingPartyDto);
     }
     try {
       const prismaParty = await this.prisma.party.update({
@@ -961,7 +975,7 @@ export class PartyService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 }

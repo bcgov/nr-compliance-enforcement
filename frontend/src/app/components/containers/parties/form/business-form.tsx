@@ -8,7 +8,6 @@ import { z } from "zod";
 import { Button } from "react-bootstrap";
 import { BusinessAddressFormValue } from "./business-form-utils";
 import { BusinessAddressFields } from "./business-address-fields";
-import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 
@@ -218,24 +217,6 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         onAdd={handleAddPhoneNumber}
         onRemove={handleRemovePhoneNumber}
         onSetPrimary={handleSetPrimaryPhoneNumber}
-      />
-      <FormField
-        form={form}
-        name="add-phone-number-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-phone-number-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleAddPhoneNumber}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add phone number
-          </Button>
-        )}
       />
       {emailAddresses?.map((email: ContactMethod, index: number) => (
         <FormField
