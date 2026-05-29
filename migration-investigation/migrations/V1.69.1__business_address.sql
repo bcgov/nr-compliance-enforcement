@@ -5,9 +5,9 @@ CREATE TABLE
     address_name character varying(128) NOT NULL,
     address character varying(120),
     city character varying(128),
-    province character varying(64),
+    country_subdivision_code_ref character varying(16),
     postal_code character varying(16),
-    country character varying(64),
+    country_code_ref character varying(4),
     is_primary boolean NOT NULL DEFAULT false,
     active_ind boolean NOT NULL DEFAULT true,
     create_user_id character varying(32) NOT NULL,
@@ -32,11 +32,11 @@ COMMENT ON COLUMN investigation_business_address.address IS 'The street address 
 
 COMMENT ON COLUMN investigation_business_address.city IS 'The city of the business address.';
 
-COMMENT ON COLUMN investigation_business_address.province IS 'The province or state of the business address.';
+COMMENT ON COLUMN investigation_business_address.country_subdivision_code_ref IS 'Un-enforced FK to shared.country_subdivision.  The province or state of the business address.';
 
 COMMENT ON COLUMN investigation_business_address.postal_code IS 'The postal or ZIP code of the business address.';
 
-COMMENT ON COLUMN investigation_business_address.country IS 'The country of the business address.';
+COMMENT ON COLUMN investigation_business_address.country_code_ref IS 'Un-enforced FK to shared.country.  The country of the business address.';
 
 COMMENT ON COLUMN investigation_business_address.is_primary IS 'A boolean indicator of whether this is the primary address for the business.';
 

@@ -25,6 +25,7 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { formatDateOfBirth } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
+import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -312,7 +313,11 @@ type BusinessAddressDisplay = {
   isPrimary?: boolean | null;
 };
 
-const BusinessAddressesList: FC<{ addresses: ReadonlyArray<BusinessAddressDisplay> }> = ({ addresses }) => (
+const BusinessAddressesList: FC<{
+  addresses: ReadonlyArray<BusinessAddressDisplay>;
+  countryOptions: ReadonlyArray<Option>;
+  countrySubdivisionOptions: ReadonlyArray<Option>;
+}> = ({ addresses, countryOptions, countrySubdivisionOptions }) => (
   <>
     {addresses.map((businessAddress, index) => (
       <div
@@ -339,7 +344,8 @@ const BusinessAddressesList: FC<{ addresses: ReadonlyArray<BusinessAddressDispla
         {businessAddress.province && (
           <p>
             <b>Province: </b>
-            {businessAddress.province}
+            {countrySubdivisionOptions?.find((opt) => opt.value === businessAddress?.province)?.label ??
+              businessAddress.province}
           </p>
         )}
         {businessAddress.postalCode && (
@@ -351,7 +357,7 @@ const BusinessAddressesList: FC<{ addresses: ReadonlyArray<BusinessAddressDispla
         {businessAddress.country && (
           <p>
             <b>Country: </b>
-            {businessAddress.country}
+            {countryOptions?.find((opt) => opt.value === businessAddress?.country)?.label ?? businessAddress.country}
           </p>
         )}
       </div>
@@ -365,6 +371,8 @@ export const PartyView: FC = () => {
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const sexOptions = useAppSelector(selectSexDropdown);
+  const countryOptions = useAppSelector(selectCountries);
+  const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -695,7 +703,11 @@ export const PartyView: FC = () => {
               <>
                 <br />
                 <h4>Addresses</h4>
-                <BusinessAddressesList addresses={businessAddresses} />
+                <BusinessAddressesList
+                  addresses={businessAddresses}
+                  countryOptions={countryOptions}
+                  countrySubdivisionOptions={countrySubdivisionOptions}
+                />
               </>
             )}
             <br />

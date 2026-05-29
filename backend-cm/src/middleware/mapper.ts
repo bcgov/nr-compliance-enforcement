@@ -56,6 +56,8 @@ import { mapPrismaContactMethodToInvestigationContactMethod } from "../investiga
 import { mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier } from "../investigation/investigation_business_identifier/dto/investigation_business_identifier";
 import { mapPrismaAliasToInvestigationAlias } from "../investigation/investigation_alias/dto/investigation_alias";
 import { mapPrismaBusinessAddressToInvestigationBusinessAddress } from "../investigation/investigation_business_address/dto/investigation_business_address";
+import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/country_code";
+import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -93,6 +95,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
+  mapPrismaCountryCodeToCountryCode(mapper);
+  mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

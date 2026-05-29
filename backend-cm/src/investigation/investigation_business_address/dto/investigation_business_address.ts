@@ -87,7 +87,7 @@ export const mapPrismaBusinessAddressToInvestigationBusinessAddress = (mapper: M
     ),
     forMember(
       (dest) => dest.province,
-      mapFrom((src) => src.province ?? undefined),
+      mapFrom((src) => src.country_subdivision_code_ref ?? undefined),
     ),
     forMember(
       (dest) => dest.postalCode,
@@ -95,7 +95,7 @@ export const mapPrismaBusinessAddressToInvestigationBusinessAddress = (mapper: M
     ),
     forMember(
       (dest) => dest.country,
-      mapFrom((src) => src.country ?? undefined),
+      mapFrom((src) => src.country_code_ref ?? undefined),
     ),
     forMember(
       (dest) => dest.isPrimary,

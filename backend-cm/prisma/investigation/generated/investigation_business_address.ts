@@ -18,13 +18,13 @@ export class investigation_business_address {
   city?: string;
 
   @ApiPropertyOptional({ type: String })
-  province?: string;
+  country_subdivision_code_ref?: string;
 
   @ApiPropertyOptional({ type: String })
   postal_code?: string;
 
   @ApiPropertyOptional({ type: String })
-  country?: string;
+  country_code_ref?: string;
 
   @ApiProperty({ type: Boolean })
   is_primary: boolean;

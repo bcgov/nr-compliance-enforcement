@@ -1,4 +1,6 @@
 import { business } from "./business";
+import { country_code } from "./country_code";
+import { country_subdivision_code } from "./country_subdivision_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class business_address {
@@ -18,13 +20,13 @@ export class business_address {
   city?: string;
 
   @ApiPropertyOptional({ type: String })
-  province?: string;
+  country_subdivision_code?: string;
 
   @ApiPropertyOptional({ type: String })
   postal_code?: string;
 
   @ApiPropertyOptional({ type: String })
-  country?: string;
+  country_code?: string;
 
   @ApiProperty({ type: Boolean })
   is_primary: boolean;
@@ -46,4 +48,10 @@ export class business_address {
 
   @ApiProperty({ type: () => business })
   business: business;
+
+  @ApiPropertyOptional({ type: () => country_code })
+  country_code_business_address_country_codeTocountry_code?: country_code;
+
+  @ApiPropertyOptional({ type: () => country_subdivision_code })
+  country_subdivision_code_business_address_country_subdivision_codeTocountry_subdivision_code?: country_subdivision_code;
 }

@@ -29,8 +29,7 @@ export class PartyService {
 
   private _getBusinessNumberValue(identifiers?: BusinessIdentifier[]): string | undefined {
     const businessNumber = identifiers?.find((i) => {
-      const code =
-        typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
+      const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
       return code === BUSINESS_NUMBER_CODE;
     });
 
@@ -130,9 +129,9 @@ export class PartyService {
                 address_name: true,
                 address: true,
                 city: true,
-                province: true,
+                country_subdivision_code: true,
                 postal_code: true,
-                country: true,
+                country_code: true,
                 is_primary: true,
               },
               where: {
@@ -311,9 +310,9 @@ export class PartyService {
                         address_name: a.addressName.trim(),
                         address: a.address?.trim() || null,
                         city: a.city?.trim() || null,
-                        province: a.province?.trim() || null,
+                        country_subdivision_code: a.province?.trim() || null,
                         postal_code: a.postalCode?.trim() || null,
-                        country: a.country?.trim() || null,
+                        country_code: a.country?.trim() || null,
                         is_primary: a.isPrimary ?? false,
                         create_user_id: this.user.getIdirUsername(),
                         create_utc_timestamp: new Date(),
@@ -460,9 +459,7 @@ export class PartyService {
     existingAddresses: BusinessAddress[],
   ): any {
     const addressesToCreate = incomingAddresses.filter((a) => !a.businessAddressGuid);
-    const addressesToUpdate = this._sortAddressesPrimaryLast(
-      incomingAddresses.filter((a) => a.businessAddressGuid),
-    );
+    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.businessAddressGuid));
     const addressesToDelete = existingAddresses.filter(
       (a) => !new Set(incomingAddresses.map((ea) => ea.businessAddressGuid)).has(a.businessAddressGuid),
     );
@@ -474,9 +471,9 @@ export class PartyService {
         address_name: a.addressName.trim(),
         address: a.address?.trim() || null,
         city: a.city?.trim() || null,
-        province: a.province?.trim() || null,
+        country_subdivsion_code: a.province?.trim() || null,
         postal_code: a.postalCode?.trim() || null,
-        country: a.country?.trim() || null,
+        country_code: a.country?.trim() || null,
         is_primary: a.isPrimary ?? false,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
@@ -492,9 +489,9 @@ export class PartyService {
             address_name: a.addressName.trim(),
             address: a.address?.trim() || null,
             city: a.city?.trim() || null,
-            province: a.province?.trim() || null,
+            country_subdivision_code: a.province?.trim() || null,
             postal_code: a.postalCode?.trim() || null,
-            country: a.country?.trim() || null,
+            country_code: a.country?.trim() || null,
             is_primary: a.isPrimary ?? false,
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
@@ -784,9 +781,7 @@ export class PartyService {
             ...(Object.keys(businessIdentifierOperations).length
               ? { business_identifier: businessIdentifierOperations }
               : {}),
-            ...(Object.keys(businessAddressOperations).length
-              ? { business_address: businessAddressOperations }
-              : {}),
+            ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
             ...(Object.keys(businessPersonXrefOperations).length
               ? { business_person_xref: businessPersonXrefOperations }
               : {}),
