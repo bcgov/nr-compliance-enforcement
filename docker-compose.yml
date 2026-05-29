@@ -168,6 +168,11 @@ services:
       - "npm i --legacy-peer-deps && npm run start:dev"
     environment:
       NODE_ENV: development
+      # Windows/WSL2 bind mounts don't emit inotify events into the container so --watch sees nothing, these switch to polling
+      TSC_WATCHFILE: DynamicPriorityPolling
+      TSC_WATCHDIRECTORY: DynamicPriorityPolling
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
     hostname: backend
     image: registry.access.redhat.com/ubi8/nodejs-18-minimal@sha256:dfaa7bbc56a7fb02046d2e89e74a65693c522d8e25d4f318c676f0ad15e67168
     links:
@@ -251,6 +256,11 @@ services:
       NODE_ENV: development
       BACKEND_PORT: "3000"
       NATS_HOST: nats://nats:4222
+      # Windows/WSL2 bind mounts don't emit inotify events into the container so --watch sees nothing, these switch to polling
+      TSC_WATCHFILE: DynamicPriorityPolling
+      TSC_WATCHDIRECTORY: DynamicPriorityPolling
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
     image: node:20-bullseye
     ports: ["3003:3000"]
     volumes: ["./backend-cm:/app", "backend_cm_node_modules:/app/node_modules"]
@@ -274,6 +284,12 @@ services:
       - "sh"
       - "-c"
       - "npm i && npm run start:dev"
+    environment:
+      # Windows/WSL2 bind mounts don't emit inotify events into the container so --watch sees nothing, these switch to polling
+      TSC_WATCHFILE: DynamicPriorityPolling
+      TSC_WATCHDIRECTORY: DynamicPriorityPolling
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
     hostname: event-worker
     image: node:22-bookworm-slim
     links:
