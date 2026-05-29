@@ -38,30 +38,9 @@ export class CreateInvestigationBusinessAddressInput {
 }
 
 @InputType()
-export class UpdateInvestigationBusinessAddressInput {
+export class UpdateInvestigationBusinessAddressInput extends CreateInvestigationBusinessAddressInput {
   @Field(() => String, { nullable: true })
   businessAddressGuid?: string;
-
-  @Field(() => String)
-  addressName: string;
-
-  @Field(() => String, { nullable: true })
-  address?: string;
-
-  @Field(() => String, { nullable: true })
-  city?: string;
-
-  @Field(() => String, { nullable: true })
-  province?: string;
-
-  @Field(() => String, { nullable: true })
-  postalCode?: string;
-
-  @Field(() => String, { nullable: true })
-  country?: string;
-
-  @Field(() => Boolean, { nullable: true })
-  isPrimary?: boolean;
 }
 
 export const mapPrismaBusinessAddressToInvestigationBusinessAddress = (mapper: Mapper) => {
