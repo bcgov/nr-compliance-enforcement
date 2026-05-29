@@ -1661,7 +1661,13 @@ export class ComplaintService {
         }
       }
     } catch (error) {
-      this.logger.error(`Error adding organization data to complaints: ${error}`);
+      // token can invalidate during req to shared data. Parse generic error and change log level for unauths
+      const isUnauthorized = String(error).includes("UNAUTHENTICATED") || String(error).includes('"401"');
+      if (isUnauthorized) {
+        this.logger.log(`Skipped adding organization data to complaints - token unauthorized: ${error}`);
+      } else {
+        this.logger.error(`Error adding organization data to complaints: ${error}`);
+      }
     }
   };
 

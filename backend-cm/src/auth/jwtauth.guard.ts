@@ -2,6 +2,7 @@ import { Injectable, ExecutionContext, Logger, UnauthorizedException, HttpStatus
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { AuthGuard } from "@nestjs/passport";
+import { TokenExpiredError, JsonWebTokenError, NotBeforeError } from "jsonwebtoken";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
 @Injectable()
@@ -25,8 +26,25 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   }
 
   handleRequest(err, user, info) {
-    if (err || !user) {
-      this.logger.error(`JWT is not Valid. Err: ${err}. - User ${user}. - Info. ${info}`);
+    if (err) {
+      // auth flow error, log as error
+      this.logger.error(`JWT auth error. Err: ${err}. - Info. ${info}`);
+      throw new UnauthorizedException("Unauthorized", String(HttpStatus.UNAUTHORIZED));
+    }
+    if (!user) {
+      if (info instanceof TokenExpiredError) {
+        // Expected expiration
+        this.logger.log(`JWT expired at ${info.expiredAt}.`);
+      } else if (info instanceof JsonWebTokenError && info.message === "invalid signature") {
+        // well-formed token but signature failed, possible tampering
+        this.logger.warn(`JWT signature invalid - possible tampering. Info. ${info.message}`);
+      } else if (info instanceof JsonWebTokenError) {
+        // Malformed but not unusual
+        this.logger.log(`JWT is not Valid. Info. ${info.message}`);
+      } else {
+        // No token presented, or a non-Error info value
+        this.logger.log(`JWT is not Valid. Info. ${info?.message ?? info}`);
+      }
       throw new UnauthorizedException("Unauthorized", String(HttpStatus.UNAUTHORIZED));
     }
     return user;
