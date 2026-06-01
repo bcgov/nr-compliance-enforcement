@@ -541,12 +541,66 @@ export class PartyService {
     return operations;
   }
 
+  /** Maps a contact method type code to a readable label for history records. */
   private _contactMethodLabel(typeCode: string): string {
     if (typeCode === "PHONE") return "phone number";
     if (typeCode === "EMAILADDR") return "email address";
     return `contact method (${typeCode})`;
   }
 
+  /**
+   * Compares two sets of contact methods and emits events for any differences.
+   *
+   * @param labelFn - Returns the party history field label for a given type code e.g. "business phone number" or
+   *   "phone number in business contact John Doe".
+   * @param addEvent
+   */
+  private _compareContactMethods(
+    existingMethods: ContactMethod[],
+    incomingMethods: ContactMethod[],
+    labelFn: (typeCode: string) => string,
+    addEvent: (verb: string, field: string, oldValue: any, newValue: any) => void,
+  ): void {
+    // Detect added and edited contact methods
+    for (const incoming of incomingMethods) {
+      if (!incoming.contactMethodGuid) {
+        // No GUID means this is a newly added method
+        if (incoming.value) {
+          addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
+        }
+      } else {
+        // Has a GUID — check if the value was changed
+        const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
+        if (existing && existing.value !== incoming.value) {
+          addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
+        }
+      }
+    }
+
+    // Detect removed contact methods (present in existing but absent in incoming)
+    for (const existing of existingMethods) {
+      if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
+        addEvent("REMOVED", labelFn(existing.typeCode), existing.value, null);
+      }
+    }
+
+    // Detect primary contact method changes (e.g. user switched which phone number is primary)
+    const typeCodes = [
+      ...new Set([...existingMethods.map((m) => m.typeCode), ...incomingMethods.map((m) => m.typeCode)]),
+    ];
+    for (const typeCode of typeCodes) {
+      const oldPrimary = existingMethods.find((m) => m.isPrimary && m.typeCode === typeCode);
+      const newPrimary = incomingMethods.find((m) => m.isPrimary && m.typeCode === typeCode);
+      if (oldPrimary && newPrimary && oldPrimary.contactMethodGuid !== newPrimary.contactMethodGuid) {
+        addEvent("EDITED", `primary ${labelFn(typeCode)}`, oldPrimary.value, newPrimary.value);
+      }
+    }
+  }
+
+  /**
+   * Builds the list of party history events describing what changed between the existing party
+   * state and the incoming update input.
+   */
   private _partyChangeEvents(partyIdentifier: string, oldParty: Party, input: PartyUpdateInput): EventCreateInput[] {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
@@ -564,6 +618,7 @@ export class PartyService {
       });
     };
 
+    // Helper to compare a single scalar field and emit the appropriate event
     const compareField = (field: string, oldVal: any, newVal: any) => {
       const oldStr = oldVal != null && oldVal !== "" ? String(oldVal) : null;
       const newStr = newVal != null && newVal !== "" ? String(newVal) : null;
@@ -595,21 +650,7 @@ export class PartyService {
       const existingMethods = oldP.contactMethods ?? [];
       const incomingMethods = newP.contactMethods ?? [];
 
-      for (const incoming of incomingMethods) {
-        if (!incoming.contactMethodGuid) {
-          addEvent("ADDED", this._contactMethodLabel(incoming.typeCode), null, incoming.value);
-        } else {
-          const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
-          if (existing && existing.value !== incoming.value) {
-            addEvent("EDITED", this._contactMethodLabel(incoming.typeCode), existing.value, incoming.value);
-          }
-        }
-      }
-      for (const existing of existingMethods) {
-        if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-          addEvent("REMOVED", this._contactMethodLabel(existing.typeCode), existing.value, null);
-        }
-      }
+      this._compareContactMethods(existingMethods, incomingMethods, (tc) => this._contactMethodLabel(tc), addEvent);
     }
     // Party type: business
     else {
@@ -619,6 +660,7 @@ export class PartyService {
 
       compareField("business name", oldB.name, newB.name);
 
+      // Aliases
       const existingAliases = oldB.aliases ?? [];
       const incomingAliases = newB.aliases ?? [];
       for (const incoming of incomingAliases) {
@@ -637,6 +679,7 @@ export class PartyService {
         }
       }
 
+      // Business identifiers (e.g. business number, WorkSafeBC number)
       const existingIdentifiers = oldB.identifiers ?? [];
       const incomingIdentifiers = newB.identifiers ?? [];
       for (const incoming of incomingIdentifiers) {
@@ -667,33 +710,22 @@ export class PartyService {
         }
       }
 
+      // Business-level contact methods (phone/email belonging directly to the business)
       const existingMethods = oldB.contactMethods ?? [];
       const incomingMethods = newB.contactMethods ?? [];
-      for (const incoming of incomingMethods) {
-        if (!incoming.contactMethodGuid) {
-          addEvent("ADDED", `business ${this._contactMethodLabel(incoming.typeCode)}`, null, incoming.value);
-        } else {
-          const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
-          if (existing && existing.value !== incoming.value) {
-            addEvent(
-              "EDITED",
-              `business ${this._contactMethodLabel(incoming.typeCode)}`,
-              existing.value,
-              incoming.value,
-            );
-          }
-        }
-      }
-      for (const existing of existingMethods) {
-        if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-          addEvent("REMOVED", `business ${this._contactMethodLabel(existing.typeCode)}`, existing.value, null);
-        }
-      }
+      this._compareContactMethods(
+        existingMethods,
+        incomingMethods,
+        (tc) => `business ${this._contactMethodLabel(tc)}`,
+        addEvent,
+      );
 
+      // Contact people (named individuals associated with the business)
       const existingXrefs = oldB.contactPeople ?? [];
       const incomingXrefs = newB.contactPeople ?? [];
       for (const incoming of incomingXrefs) {
         if (!incoming.businessPersonXrefGuid) {
+          // New contact person being added
           const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
           addEvent("ADDED", "business contact", null, name);
           for (const cm of incoming.person?.contactMethods ?? []) {
@@ -705,6 +737,7 @@ export class PartyService {
             }
           }
         } else {
+          // Existing contact person being updated — diff their fields
           const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
           if (!existingXref) continue;
 
@@ -712,6 +745,7 @@ export class PartyService {
             .filter(Boolean)
             .join(" ");
           const incomingName = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
+          // Use the incoming name for the label so it reflects the current state
           const contactLabel = incomingName || existingName;
 
           if (
@@ -724,43 +758,16 @@ export class PartyService {
           const existingContactMethods = existingXref.person?.contactMethods ?? [];
           const incomingContactMethods = incoming.person?.contactMethods ?? [];
 
-          for (const incomingCm of incomingContactMethods) {
-            if (!incomingCm.contactMethodGuid) {
-              if (incomingCm.value) {
-                addEvent(
-                  "ADDED",
-                  `${this._contactMethodLabel(incomingCm.typeCode)} in business contact ${contactLabel}`,
-                  null,
-                  incomingCm.value,
-                );
-              }
-            } else {
-              const existingCm = existingContactMethods.find(
-                (m) => m.contactMethodGuid === incomingCm.contactMethodGuid,
-              );
-              if (existingCm && existingCm.value !== incomingCm.value) {
-                addEvent(
-                  "EDITED",
-                  `${this._contactMethodLabel(incomingCm.typeCode)} in business contact ${contactLabel}`,
-                  existingCm.value,
-                  incomingCm.value,
-                );
-              }
-            }
-          }
-
-          for (const existingCm of existingContactMethods) {
-            if (!incomingContactMethods.find((m) => m.contactMethodGuid === existingCm.contactMethodGuid)) {
-              addEvent(
-                "REMOVED",
-                `${this._contactMethodLabel(existingCm.typeCode)} in business contact ${contactLabel}`,
-                existingCm.value,
-                null,
-              );
-            }
-          }
+          this._compareContactMethods(
+            existingContactMethods,
+            incomingContactMethods,
+            (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
+            addEvent,
+          );
         }
       }
+
+      // Detect fully removed contact people
       for (const existing of existingXrefs) {
         if (!incomingXrefs.find((x) => x.businessPersonXrefGuid === existing.businessPersonXrefGuid)) {
           const name = [existing.person?.firstName, existing.person?.lastName].filter(Boolean).join(" ");
