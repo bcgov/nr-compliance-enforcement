@@ -78,13 +78,13 @@ export class ComplaintOutcomeController {
   }
 
   @Post("/createAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   async createAssessment(@Token() token, @Body() model: CreateAssessmentInput): Promise<ComplaintOutcomeDto> {
     return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   async updateAssessment(@Token() token, @Body() model: UpdateAssessmentInput): Promise<ComplaintOutcomeDto> {
     return await this.service.updateAssessment(token, model);
   }
