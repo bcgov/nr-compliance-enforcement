@@ -72,6 +72,7 @@ import { WebEOCComplaintUpdateList } from "@components/containers/complaints/web
 import { AgencyType } from "@apptypes/app/agency-types";
 import { CeebOutcomeReport } from "@components/containers/complaints/outcomes/ceeb/ceeb-outcome-report";
 import { NrosOutcomeReport } from "@components/containers/complaints/outcomes/nros/nros-outcome-report";
+import { MinesOutcomeReport } from "@components/containers/complaints/outcomes/mines/mines-outcome-report";
 import { LinkedComplaintList } from "./linked-complaint-list";
 import { CompCoordinateInput } from "@components/common/comp-coordinate-input";
 import { ExternalFileReference } from "@components/containers/complaints/outcomes/external-file-reference";
@@ -209,11 +210,12 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const enablePrivacyFeature =
     ownedByAgencyCode?.agency &&
-    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS);
+    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS || ownedByAgencyCode?.agency === AgencyType.MINES);
   const enableOfficeFeature =
     ownedByAgencyCode?.agency &&
     ownedByAgencyCode?.agency !== AgencyType.CEEB &&
-    ownedByAgencyCode?.agency !== AgencyType.NROS;
+    ownedByAgencyCode?.agency !== AgencyType.NROS &&
+    ownedByAgencyCode?.agency !== AgencyType.MINES;
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -1678,6 +1680,11 @@ export const ComplaintDetailsEdit: FC = () => {
         <NrosOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
+      {/* Mines ERS Outcome Report */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && ownedByAgencyCode?.agency === AgencyType.MINES && (
+        <MinesOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
+      )}
+
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
         <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
@@ -1686,7 +1693,8 @@ export const ComplaintDetailsEdit: FC = () => {
       {readOnly &&
         complaintType !== COMPLAINT_TYPES.GIR &&
         ownedByAgencyCode?.agency !== AgencyType.CEEB &&
-        ownedByAgencyCode?.agency !== AgencyType.NROS && (
+        ownedByAgencyCode?.agency !== AgencyType.NROS &&
+        ownedByAgencyCode?.agency !== AgencyType.MINES && (
           <ExternalFileReference onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} /> // External File Reference (index 2)
         )}
     </div>

@@ -9,7 +9,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { AgencyType } from "@/app/types/app/agency-types";
+import { AgencyType, AgencyNames } from "@/app/types/app/agency-types";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -40,7 +40,11 @@ function getAgencyLabel(officer: AppUser): string {
 }
 
 function getAgencyLabelByCode(agencyCode: string, agencyCodes: Agency[] | undefined): string {
-  return agencyCodes?.find(({ agency }) => agency === agencyCode)?.shortDescription ?? agencyCode;
+  return (
+    agencyCodes?.find(({ agency }) => agency === agencyCode)?.shortDescription ??
+    AgencyNames[agencyCode as keyof typeof AgencyNames]?.short ??
+    agencyCode
+  );
 }
 
 function getOfficeDisplayName(
@@ -87,6 +91,8 @@ function getAgencyDetailDisplay(
       return getTeamDisplayName(u.team_code as string | undefined, teams);
     case AgencyType.NROS:
       return getOfficeDisplayName(u, offices);
+    case AgencyType.MINES:
+      return getOfficeDisplayName(u, offices);
     default:
       return EMPTY;
   }
@@ -100,6 +106,7 @@ const AGENCY_TAB_CODES = [
   AgencyType.PARKS,
   AgencyType.CEEB,
   AgencyType.NROS,
+  AgencyType.MINES,
   AgencyType.SECTOR,
 ] as const;
 
@@ -109,6 +116,7 @@ const AGENCY_DETAIL_COLUMN_LABEL: Record<string, string> = {
   [AgencyType.PARKS]: "Park area",
   [AgencyType.CEEB]: "Team",
   [AgencyType.NROS]: "Office",
+  [AgencyType.MINES]: "Office",
   [AgencyType.SECTOR]: "—",
 };
 
@@ -216,6 +224,7 @@ export const SelectUser: FC<SelectUserProps> = ({
       if (UserService.hasRole(Roles.COS)) tabs.push(AgencyType.COS);
       if (UserService.hasRole(Roles.CEEB)) tabs.push(AgencyType.CEEB); // EPO
       if (UserService.hasRole(Roles.NROS)) tabs.push(AgencyType.NROS);
+      if (UserService.hasRole(Roles.MINES)) tabs.push(AgencyType.MINES);
       if (UserService.hasRole(Roles.PARKS)) tabs.push(AgencyType.PARKS);
       if (UserService.hasRole(Roles.NROS)) tabs.push(AgencyType.NROS);
       tabs.push(AgencyType.SECTOR); // Natural Resource Sector visible to all agency administrators

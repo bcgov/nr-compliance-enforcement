@@ -147,31 +147,31 @@ export class ComplaintOutcomeResolver {
   }
 
   @Mutation("createDecision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   createDecision(@Args("input") input: CreateDecisionInput) {
     return this.complaintOutcomeService.createDecision(input);
   }
 
   @Mutation("updateDecision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   updateDecision(@Args("input") input: UpdateDecisionInput) {
     return this.complaintOutcomeService.updateDecision(input);
   }
 
   @Mutation("createAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   createAuthorizationOutcome(@Args("input") input: CreateAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.createAuthorizationOutcome(input);
   }
 
   @Mutation("updateAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   updateAuthorizationOutcome(@Args("input") input: UpdateAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.updateAuthorizationOutcome(input);
   }
 
   @Mutation("deleteAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   deleteAuthorizationOutcome(@Args("input") input: DeleteAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.deleteAuthorizationOutcome(input);
   }

@@ -49,6 +49,7 @@ export class EmailService {
         case "EPO":
         case "PARKS":
         case "NROS":
+        case "MINES":
           recipientList.push(ref.email_address);
           break;
         default: {

@@ -4,6 +4,7 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   CEEB: "EPO",
   PARKS: "PARKS",
   NROS: "NROS",
+  MINES: "MINES",
 };
 
 const normalizeRoles = (clientRoles: string | string[] | undefined | null): string[] => {

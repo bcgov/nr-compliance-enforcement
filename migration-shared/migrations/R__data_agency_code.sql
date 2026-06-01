@@ -11,6 +11,7 @@ INSERT INTO shared.agency_code (
     ('ECCC', 'Environment and Climate Change Canada', 'Environment and Climate Change Canada', 40, TRUE, 'FLYWAY', NOW(), true),
     ('DFO', 'Fisheries and Oceans Canada', 'Fisheries and Oceans Canada', 50, TRUE, 'FLYWAY', NOW(), true),
     ('NROS', 'NROS', 'Natural Resource Officer Service', 60, TRUE, 'FLYWAY', NOW(), false),
+    ('MINES', 'Mines', 'Mines Health, Safety & Enforcement', 65, TRUE, 'FLYWAY', NOW(), false),
     ('NRS', 'Natural Resource Sector', 'Natural Resource Sector', 70, TRUE, 'FLYWAY', NOW(), false),
     ('OTH', 'Other', 'Other', 80, TRUE, 'FLYWAY', NOW(), true),
     ('POL', 'Police', 'Police', 90, TRUE, 'FLYWAY', NOW(), true)
