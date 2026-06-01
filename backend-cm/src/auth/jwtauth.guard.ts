@@ -2,7 +2,7 @@ import { Injectable, ExecutionContext, Logger, UnauthorizedException, HttpStatus
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { AuthGuard } from "@nestjs/passport";
-import { TokenExpiredError, JsonWebTokenError, NotBeforeError } from "jsonwebtoken";
+import { TokenExpiredError, JsonWebTokenError } from "jsonwebtoken";
 import { IS_PUBLIC_KEY } from "./decorators/public.decorator";
 
 @Injectable()
