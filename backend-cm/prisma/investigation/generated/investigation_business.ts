@@ -1,5 +1,6 @@
 import { investigation_alias } from "./investigation_alias";
 import { investigation_party } from "./investigation_party";
+import { investigation_business_address } from "./investigation_business_address";
 import { investigation_business_identifier } from "./investigation_business_identifier";
 import { investigation_contact_method } from "./investigation_contact_method";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -37,6 +38,9 @@ export class investigation_business {
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;
+
+  @ApiProperty({ isArray: true, type: () => investigation_business_address })
+  investigation_business_address: investigation_business_address[];
 
   @ApiProperty({ isArray: true, type: () => investigation_business_identifier })
   investigation_business_identifier: investigation_business_identifier[];

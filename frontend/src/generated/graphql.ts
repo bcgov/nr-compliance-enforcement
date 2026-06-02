@@ -149,12 +149,46 @@ export type AssessmentInput = {
 
 export type Business = {
   __typename?: 'Business';
+  addresses?: Maybe<Array<Maybe<BusinessAddress>>>;
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
   identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
+};
+
+export type BusinessAddress = {
+  __typename?: 'BusinessAddress';
+  address?: Maybe<Scalars['String']['output']>;
+  addressName?: Maybe<Scalars['String']['output']>;
+  businessAddressGuid?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
+  postalCode?: Maybe<Scalars['String']['output']>;
+  province?: Maybe<Scalars['String']['output']>;
+};
+
+export type BusinessAddressInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BusinessAddressUpdateInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  businessAddressGuid?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessIdentifier = {
@@ -187,6 +221,7 @@ export type BusinessIdentifierUpdateInput = {
 };
 
 export type BusinessInput = {
+  addresses?: InputMaybe<Array<InputMaybe<BusinessAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
@@ -214,6 +249,7 @@ export type BusinessPersonUpdateInput = {
 };
 
 export type BusinessUpdateInput = {
+  addresses?: InputMaybe<Array<InputMaybe<BusinessAddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
@@ -501,12 +537,23 @@ export type CreateInvestigationAliasInput = {
   name: Scalars['String']['input'];
 };
 
+export type CreateInvestigationBusinessAddressInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateInvestigationBusinessIdentifierInput = {
   businessIdentifierCode: Scalars['String']['input'];
   identifierValue: Scalars['String']['input'];
 };
 
 export type CreateInvestigationBusinessInput = {
+  addresses?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<CreateInvestigationAliasInput>>>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessIdentifierInput>>>;
   businessReference?: InputMaybe<Scalars['String']['input']>;
@@ -1139,6 +1186,7 @@ export type InvestigationAlias = {
 
 export type InvestigationBusiness = {
   __typename?: 'InvestigationBusiness';
+  addresses?: Maybe<Array<Maybe<InvestigationBusinessAddress>>>;
   aliases?: Maybe<Array<Maybe<InvestigationAlias>>>;
   businessGuid: Scalars['String']['output'];
   businessIdentifiers?: Maybe<Array<Maybe<InvestigationBusinessIdentifier>>>;
@@ -1146,6 +1194,18 @@ export type InvestigationBusiness = {
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   name: Scalars['String']['output'];
   partyGuid: Scalars['String']['output'];
+};
+
+export type InvestigationBusinessAddress = {
+  __typename?: 'InvestigationBusinessAddress';
+  address?: Maybe<Scalars['String']['output']>;
+  addressName?: Maybe<Scalars['String']['output']>;
+  businessAddressGuid?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
+  postalCode?: Maybe<Scalars['String']['output']>;
+  province?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationBusinessIdentifier = {
@@ -2689,6 +2749,17 @@ export type UpdateInvestigationAliasInput = {
   name: Scalars['String']['input'];
 };
 
+export type UpdateInvestigationBusinessAddressInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  businessAddressGuid?: InputMaybe<Scalars['String']['input']>;
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateInvestigationBusinessIdentifierInput = {
   businessIdentifierCode: Scalars['String']['input'];
   businessIdentifierGuid?: InputMaybe<Scalars['String']['input']>;
@@ -2696,6 +2767,7 @@ export type UpdateInvestigationBusinessIdentifierInput = {
 };
 
 export type UpdateInvestigationBusinessInput = {
+  addresses?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<UpdateInvestigationAliasInput>>>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessIdentifierInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;

@@ -50,6 +50,8 @@ export const CODE_TABLE_TYPES = {
   LEGISLATION_TYPE: "legislation-type",
   ENFORCEMENT_ACTION_TYPE: "enforcement-action-type",
   TICKET_OUTCOME_TYPE: "ticket-outcome-type",
+  COUNTRY: "country-type",
+  COUNTRY_SUBDIVISION: "country-subdivision-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

@@ -4,6 +4,7 @@ input CreateInvestigationBusinessInput {
   contactMethods: [CreateInvestigationContactMethodInput]
   businessIdentifiers: [CreateInvestigationBusinessIdentifierInput]
   aliases: [CreateInvestigationAliasInput]
+  addresses: [CreateInvestigationBusinessAddressInput]
 }
 
 input UpdateInvestigationBusinessInput {
@@ -11,4 +12,5 @@ input UpdateInvestigationBusinessInput {
   contactMethods: [UpdateInvestigationContactMethodInput]
   businessIdentifiers: [UpdateInvestigationBusinessIdentifierInput]
   aliases: [UpdateInvestigationAliasInput]
+  addresses: [UpdateInvestigationBusinessAddressInput]
 }

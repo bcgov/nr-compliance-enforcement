@@ -82,6 +82,8 @@ import { ExhibitModule } from "./investigation/exhibit/exhibit.module";
 import { TicketOutcomeCodeModule } from "./investigation/ticket_outcome_code/ticket_outcome_code.module";
 import { EnforcementActionModule } from "./investigation/enforcement_action/enforcement_action.module";
 import { EnforcementActionCodeModule } from "./investigation/enforcement_action_code/enforcement_action_code.module";
+import { CountryCodeModule } from "./shared/country_code/country_code.module";
+import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/country_subdivision_code.module";
 
 @Module({
   imports: [
@@ -162,6 +164,8 @@ import { EnforcementActionCodeModule } from "./investigation/enforcement_action_
     TicketOutcomeCodeModule,
     EnforcementActionModule,
     EnforcementActionCodeModule,
+    CountryCodeModule,
+    CountrySubdivisionCodeModule,
   ],
   controllers: [AppController],
   providers: [

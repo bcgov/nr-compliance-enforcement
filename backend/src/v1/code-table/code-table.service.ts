@@ -918,6 +918,23 @@ export class CodeTableService {
         const results = data.ticketOutcomeCodes;
         return results;
       }
+
+      case "country-type": {
+        const { data } = await get(token, {
+          query: "{ countries { countryCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.countries;
+        return results;
+      }
+
+      case "country-subdivision-type": {
+        const { data } = await get(token, {
+          query:
+            "{ countrySubdivisions { countrySubdivisionCode countryCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.countrySubdivisions;
+        return results;
+      }
     }
   };
 

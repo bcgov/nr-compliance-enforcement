@@ -52,6 +52,8 @@ import {
   fetchLegislationTypes,
   fetchEnforcementActionTypes,
   fetchTicketOutcomeTypes,
+  fetchCountryTypes,
+  fetchCountrySubdivisionTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -110,6 +112,8 @@ const initialState: CodeTableState = {
   "legislation-type": [],
   "enforcement-action-type": [],
   "ticket-outcome-type": [],
+  "country-type": [],
+  "country-subdivision-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -186,6 +190,8 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "legislation-type": legislationType,
       "enforcement-action-type": enforcementActionType,
       "ticket-outcome-type": ticketOutcomeType,
+      "country-type": countryType,
+      "country-subdivision-type": countrySubdivisionType,
     },
   } = state;
 
@@ -350,6 +356,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(ticketOutcomeType).any()) {
       dispatch(fetchTicketOutcomeTypes());
     }
+    if (!from(countryType).any()) {
+      dispatch(fetchCountryTypes());
+    }
+    if (!from(countrySubdivisionType).any()) {
+      dispatch(fetchCountrySubdivisionTypes());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -414,6 +426,8 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchLegislationTypes());
     dispatch(fetchEnforcementActionTypes());
     dispatch(fetchTicketOutcomeTypes());
+    dispatch(fetchCountryTypes());
+    dispatch(fetchCountrySubdivisionTypes());
   } catch (error) {
     console.error(error);
   }
