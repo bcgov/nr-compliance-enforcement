@@ -86,13 +86,13 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
     setAuthorizedErrorMessage("");
     setUnauthorizedErrorMessage("");
 
-    const identifier = id !== undefined ? caseId : leadIdentifier;
+    const identifier = id === undefined ? leadIdentifier : caseId;
 
     if (isValid()) {
       const data: PermitSite = {
         id,
-        type: !unauthorized ? "permit" : "site",
-        value: !unauthorized ? authorized : unauthorized,
+        type: unauthorized ? "site" : "permit",
+        value: unauthorized || authorized,
       };
 
       dispatch(upsertAuthorizationOutcome(identifier, leadIdentifier, data)).then(async (response) => {
