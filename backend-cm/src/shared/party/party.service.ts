@@ -553,7 +553,7 @@ export class PartyService {
         address_name: a.addressName.trim(),
         address: a.address?.trim() || null,
         city: a.city?.trim() || null,
-        country_subdivsion_code: a.province?.trim() || null,
+        country_subdivision_code: a.province?.trim() || null,
         postal_code: a.postalCode?.trim() || null,
         country_code: a.country?.trim() || null,
         is_primary: a.isPrimary ?? false,
