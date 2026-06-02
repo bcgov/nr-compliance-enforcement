@@ -18,6 +18,47 @@ datasource db {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model activity_note {
+  activity_note_guid                                                      String             @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid                                                      String             @db.Uuid
+  content_json                                                            Json
+  content_text                                                            String?
+  actioned_app_user_guid_ref                                              String?            @db.Uuid
+  reported_utc_timestamp                                                  DateTime?          @db.Timestamp(6)
+  reported_app_user_guid_ref                                              String?            @db.Uuid
+  active_ind                                                              Boolean            @default(true)
+  create_user_id                                                          String             @db.VarChar(32)
+  create_utc_timestamp                                                    DateTime           @default(now()) @db.Timestamp(6)
+  update_user_id                                                          String?            @db.VarChar(32)
+  update_utc_timestamp                                                    DateTime?          @db.Timestamp(6)
+  task_guid                                                               String?            @db.Uuid
+  activity_note_code                                                      String             @db.VarChar(16)
+  actioned_utc_date                                                       DateTime?          @db.Date
+  actioned_utc_time                                                       DateTime?          @db.Time(6)
+  activity_note_code_activity_note_activity_note_codeToactivity_note_code activity_note_code @relation("activity_note_activity_note_codeToactivity_note_code", fields: [activity_note_code], references: [activity_note_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_code")
+  task                                                                    task?              @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_task")
+  investigation                                                           investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model activity_note_code {
+  activity_note_code                                                 String          @id @db.VarChar(16)
+  short_description                                                  String          @db.VarChar(64)
+  long_description                                                   String?         @db.VarChar(256)
+  display_order                                                      Int?
+  active_ind                                                         Boolean         @default(true)
+  create_user_id                                                     String          @db.VarChar(32)
+  create_utc_timestamp                                               DateTime        @default(now()) @db.Timestamp(6)
+  update_user_id                                                     String?         @db.VarChar(32)
+  update_utc_timestamp                                               DateTime?       @db.Timestamp(6)
+  activity_note_activity_note_activity_note_codeToactivity_note_code activity_note[] @relation("activity_note_activity_note_codeToactivity_note_code")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contravention {
   contravention_guid             String                     @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   investigation_guid             String?                    @db.Uuid
@@ -32,6 +73,131 @@ model contravention {
   investigation                  investigation?             @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   contravention_party_xref       contravention_party_xref[]
 
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contravention_party_xref {
+  contravention_party_xref_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  contravention_guid            String               @db.Uuid
+  investigation_party_guid      String?              @db.Uuid
+  active_ind                    Boolean              @default(true)
+  create_user_id                String               @db.VarChar(32)
+  create_utc_timestamp          DateTime             @default(now()) @db.Timestamp(6)
+  update_user_id                String?              @db.VarChar(32)
+  update_utc_timestamp          DateTime?            @db.Timestamp(6)
+  contravention                 contravention        @relation(fields: [contravention_guid], references: [contravention_guid], onDelete: NoAction, onUpdate: NoAction)
+  investigation_party           investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction)
+  enforcement_action            enforcement_action[]
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model diary_date {
+  diary_date_guid          String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_guid       String        @db.Uuid
+  due_date                 DateTime      @db.Date
+  description              String        @db.VarChar(4000)
+  active_ind               Boolean       @default(true)
+  create_user_id           String        @db.VarChar(32)
+  app_create_utc_timestamp DateTime      @db.Timestamp(6)
+  app_create_user_guid_ref String?       @db.Uuid
+  app_update_utc_timestamp DateTime?     @db.Timestamp(6)
+  app_update_user_guid_ref String?       @db.Uuid
+  create_utc_timestamp     DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id           String?       @db.VarChar(32)
+  update_utc_timestamp     DateTime?     @db.Timestamp(6)
+  task_guid                String?       @db.Uuid
+  investigation            investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_investigation")
+  task                     task?         @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_task")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model enforcement_action {
+  enforcement_action_guid                                                                     String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  contravention_party_xref_guid                                                               String                   @db.Uuid
+  enforcement_action_code                                                                     String                   @db.VarChar(16)
+  date_issued                                                                                 DateTime                 @db.Date
+  geo_organization_unit_code_ref                                                              String                   @db.VarChar(16)
+  app_user_guid_ref                                                                           String                   @db.Uuid
+  active_ind                                                                                  Boolean                  @default(true)
+  create_user_id                                                                              String                   @db.VarChar(32)
+  create_utc_timestamp                                                                        DateTime                 @default(now()) @db.Timestamp(6)
+  update_user_id                                                                              String?                  @db.VarChar(32)
+  update_utc_timestamp                                                                        DateTime?                @db.Timestamp(6)
+  contravention_party_xref                                                                    contravention_party_xref @relation(fields: [contravention_party_xref_guid], references: [contravention_party_xref_guid], onDelete: NoAction, onUpdate: NoAction)
+  enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code enforcement_action_code  @relation("enforcement_action_enforcement_action_codeToenforcement_action_code", fields: [enforcement_action_code], references: [enforcement_action_code], onDelete: NoAction, onUpdate: NoAction)
+  ticket                                                                                      ticket[]
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model enforcement_action_code {
+  enforcement_action_code                                                                                                  String                                @id @db.VarChar(16)
+  short_description                                                                                                        String                                @db.VarChar(64)
+  long_description                                                                                                         String?                               @db.VarChar(256)
+  display_order                                                                                                            Int?
+  active_ind                                                                                                               Boolean                               @default(true)
+  create_user_id                                                                                                           String                                @db.VarChar(32)
+  create_utc_timestamp                                                                                                     DateTime                              @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                                           String?                               @db.VarChar(32)
+  update_utc_timestamp                                                                                                     DateTime?                             @db.Timestamp(6)
+  enforcement_action_enforcement_action_enforcement_action_codeToenforcement_action_code                                   enforcement_action[]                  @relation("enforcement_action_enforcement_action_codeToenforcement_action_code")
+  enforcement_action_code_agency_xref_enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code enforcement_action_code_agency_xref[] @relation("enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model enforcement_action_code_agency_xref {
+  enforcement_action_code_agency_xref_guid                                                                     String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  enforcement_action_code                                                                                      String                  @db.VarChar(16)
+  agency_code_ref                                                                                              String                  @db.VarChar(16)
+  active_ind                                                                                                   Boolean                 @default(true)
+  create_user_id                                                                                               String                  @db.VarChar(32)
+  create_utc_timestamp                                                                                         DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                               String?                 @db.VarChar(32)
+  update_utc_timestamp                                                                                         DateTime?               @db.Timestamp(6)
+  enforcement_action_code_enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code enforcement_action_code @relation("enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code", fields: [enforcement_action_code], references: [enforcement_action_code], onDelete: NoAction, onUpdate: NoAction, map: "enforcement_action_code_agency_xre_enforcement_action_code_fkey")
+
+  @@unique([enforcement_action_code, agency_code_ref], map: "uq_enforcement_action_code_agency")
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model enforcement_action_h {
+  h_enforcement_action_guid     String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exhibit {
+  exhibit_guid            String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  task_guid               String        @db.Uuid
+  investigation_guid      String        @db.Uuid
+  exhibit_number          Int
+  description             String
+  date_collected          DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Date
+  collected_user_guid_ref String        @db.Uuid
+  active_ind              Boolean       @default(true)
+  create_user_id          String        @db.VarChar(32)
+  create_utc_timestamp    DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id          String?       @db.VarChar(32)
+  update_utc_timestamp    DateTime?     @db.Timestamp(6)
+  investigation           investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__investigation")
+  task                    task          @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__task")
+
+  @@unique([investigation_guid, exhibit_number], map: "uq_exhibit_number_per_investigation")
   @@schema("investigation")
 }
 
@@ -52,6 +218,7 @@ model flyway_schema_history {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model investigation {
   investigation_guid                 String                       @id(map: "PK_investigation_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   investigation_description          String?                      @db.VarChar(4000)
@@ -88,6 +255,33 @@ model investigation {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_alias {
+  investigation_alias_guid    String                 @id(map: "investigation_alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid String                 @db.Uuid
+  name                        String                 @db.VarChar(512)
+  active_ind                  Boolean                @default(true)
+  create_user_id              String                 @db.VarChar(32)
+  create_utc_timestamp        DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id              String?                @db.VarChar(32)
+  update_utc_timestamp        DateTime?              @db.Timestamp(6)
+  investigation_business      investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_alias_business")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_alias_h {
+  h_investigation_alias_guid    String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_business {
   investigation_business_guid       String                              @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   business_guid_ref                 String?                             @db.Uuid
@@ -100,8 +294,42 @@ model investigation_business {
   update_utc_timestamp              DateTime?                           @db.Timestamp(6)
   investigation_alias               investigation_alias[]
   investigation_party               investigation_party?                @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
+  investigation_business_address    investigation_business_address[]
   investigation_business_identifier investigation_business_identifier[]
   investigation_contact_method      investigation_contact_method[]
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_address {
+  investigation_business_address_guid String                 @id(map: "investigation_business_address_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid         String                 @db.Uuid
+  address_name                        String                 @db.VarChar(128)
+  address                             String?                @db.VarChar(120)
+  city                                String?                @db.VarChar(128)
+  country_subdivision_code_ref        String?                @db.VarChar(16)
+  postal_code                         String?                @db.VarChar(16)
+  country_code_ref                    String?                @db.VarChar(4)
+  is_primary                          Boolean                @default(false)
+  active_ind                          Boolean                @default(true)
+  create_user_id                      String                 @db.VarChar(32)
+  create_utc_timestamp                DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                      String?                @db.VarChar(32)
+  update_utc_timestamp                DateTime?              @db.Timestamp(6)
+  investigation_business              investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_business_address_business_fk")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_address_h {
+  h_investigation_business_address_guid String   @id(map: "pk_h_investigation_business_address") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                         String   @db.Uuid
+  operation_type                        String   @db.Char(1)
+  operation_user_id                     String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                 DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation         Json?
 
   @@schema("investigation")
 }
@@ -114,6 +342,65 @@ model investigation_business_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_identifier {
+  investigation_business_identifier_guid String                 @id(map: "investigation_business_identifier_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_business_guid            String                 @db.Uuid
+  business_identifier_code_ref           String                 @db.VarChar(16)
+  identifier_value                       String                 @db.VarChar(256)
+  active_ind                             Boolean                @default(true)
+  create_user_id                         String                 @db.VarChar(32)
+  create_utc_timestamp                   DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                         String?                @db.VarChar(32)
+  update_utc_timestamp                   DateTime?              @db.Timestamp(6)
+  investigation_business                 investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_business_identifier_business")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_business_identifier_h {
+  h_investigation_business_identifier_guid String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                            String   @db.Uuid
+  operation_type                           String   @db.Char(1)
+  operation_user_id                        String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                    DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation            Json?
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_contact_method {
+  investigation_contact_method_guid String                  @id(map: "investigation_contact_method_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_person_guid         String?                 @db.Uuid
+  investigation_business_guid       String?                 @db.Uuid
+  contact_method_type_code_ref      String                  @db.VarChar(10)
+  contact_value                     String?                 @db.VarChar(512)
+  is_primary                        Boolean                 @default(false)
+  active_ind                        Boolean                 @default(true)
+  create_user_id                    String                  @db.VarChar(32)
+  create_utc_timestamp              DateTime                @default(now()) @db.Timestamp(6)
+  update_user_id                    String?                 @db.VarChar(32)
+  update_utc_timestamp              DateTime?               @db.Timestamp(6)
+  investigation_business            investigation_business? @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_business")
+  investigation_person              investigation_person?   @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_person")
+
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_contact_method_h {
+  h_investigation_contact_method_guid String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                       String   @db.Uuid
+  operation_type                      String   @db.Char(1)
+  operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation       Json?
 
   @@schema("investigation")
 }
@@ -284,23 +571,7 @@ model officer_investigation_xref_h {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model contravention_party_xref {
-  contravention_party_xref_guid String               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  contravention_guid            String               @db.Uuid
-  investigation_party_guid      String?              @db.Uuid
-  active_ind                    Boolean              @default(true)
-  create_user_id                String               @db.VarChar(32)
-  create_utc_timestamp          DateTime             @default(now()) @db.Timestamp(6)
-  update_user_id                String?              @db.VarChar(32)
-  update_utc_timestamp          DateTime?            @db.Timestamp(6)
-  contravention                 contravention        @relation(fields: [contravention_guid], references: [contravention_guid], onDelete: NoAction, onUpdate: NoAction)
-  investigation_party           investigation_party? @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction)
-  enforcement_action            enforcement_action[]
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model task {
   task_guid                                                                     String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   investigation_guid                                                            String                  @db.Uuid
@@ -330,6 +601,23 @@ model task {
   task_type_code_task_task_type_codeTotask_type_code                            task_type_code?         @relation("task_task_type_codeTotask_type_code", fields: [task_type_code], references: [task_type_code], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([investigation_guid, task_number], map: "unique_task_number_per_investigation")
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model task_category_type_code {
+  task_category_type_code                                                        String           @id @db.VarChar(16)
+  short_description                                                              String           @db.VarChar(64)
+  long_description                                                               String?          @db.VarChar(256)
+  display_order                                                                  Int?
+  active_ind                                                                     Boolean          @default(true)
+  create_user_id                                                                 String           @db.VarChar(32)
+  create_utc_timestamp                                                           DateTime         @default(now()) @db.Timestamp(6)
+  update_user_id                                                                 String?          @db.VarChar(32)
+  update_utc_timestamp                                                           DateTime?        @db.Timestamp(6)
+  task_task_task_category_type_codeTotask_category_type_code                     task[]           @relation("task_task_category_type_codeTotask_category_type_code")
+  task_type_code_task_type_code_task_category_type_codeTotask_category_type_code task_type_code[] @relation("task_type_code_task_category_type_codeTotask_category_type_code")
+
   @@schema("investigation")
 }
 
@@ -380,172 +668,6 @@ model task_type_code {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model task_category_type_code {
-  task_category_type_code                                                        String           @id @db.VarChar(16)
-  short_description                                                              String           @db.VarChar(64)
-  long_description                                                               String?          @db.VarChar(256)
-  display_order                                                                  Int?
-  active_ind                                                                     Boolean          @default(true)
-  create_user_id                                                                 String           @db.VarChar(32)
-  create_utc_timestamp                                                           DateTime         @default(now()) @db.Timestamp(6)
-  update_user_id                                                                 String?          @db.VarChar(32)
-  update_utc_timestamp                                                           DateTime?        @db.Timestamp(6)
-  task_task_task_category_type_codeTotask_category_type_code                     task[]           @relation("task_task_category_type_codeTotask_category_type_code")
-  task_type_code_task_type_code_task_category_type_codeTotask_category_type_code task_type_code[] @relation("task_type_code_task_category_type_codeTotask_category_type_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model diary_date {
-  diary_date_guid          String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid       String        @db.Uuid
-  due_date                 DateTime      @db.Date
-  description              String        @db.VarChar(4000)
-  active_ind               Boolean       @default(true)
-  create_user_id           String        @db.VarChar(32)
-  app_create_utc_timestamp DateTime      @db.Timestamp(6)
-  app_create_user_guid_ref String?       @db.Uuid
-  app_update_utc_timestamp DateTime?     @db.Timestamp(6)
-  app_update_user_guid_ref String?       @db.Uuid
-  create_utc_timestamp     DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id           String?       @db.VarChar(32)
-  update_utc_timestamp     DateTime?     @db.Timestamp(6)
-  task_guid                String?       @db.Uuid
-  investigation            investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_investigation")
-  task                     task?         @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_diary_date_task")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model activity_note {
-  activity_note_guid                                                      String             @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_guid                                                      String             @db.Uuid
-  content_json                                                            Json
-  content_text                                                            String?
-  actioned_app_user_guid_ref                                              String?            @db.Uuid
-  reported_utc_timestamp                                                  DateTime?          @db.Timestamp(6)
-  reported_app_user_guid_ref                                              String?            @db.Uuid
-  active_ind                                                              Boolean            @default(true)
-  create_user_id                                                          String             @db.VarChar(32)
-  create_utc_timestamp                                                    DateTime           @default(now()) @db.Timestamp(6)
-  update_user_id                                                          String?            @db.VarChar(32)
-  update_utc_timestamp                                                    DateTime?          @db.Timestamp(6)
-  task_guid                                                               String?            @db.Uuid
-  activity_note_code                                                      String             @db.VarChar(16)
-  actioned_utc_date                                                       DateTime?          @db.Date
-  actioned_utc_time                                                       DateTime?          @db.Time(6)
-  activity_note_code_activity_note_activity_note_codeToactivity_note_code activity_note_code @relation("activity_note_activity_note_codeToactivity_note_code", fields: [activity_note_code], references: [activity_note_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_code")
-  task                                                                    task?              @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_activity_note_task")
-  investigation                                                           investigation      @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model activity_note_code {
-  activity_note_code                                                 String          @id @db.VarChar(16)
-  short_description                                                  String          @db.VarChar(64)
-  long_description                                                   String?         @db.VarChar(256)
-  display_order                                                      Int?
-  active_ind                                                         Boolean         @default(true)
-  create_user_id                                                     String          @db.VarChar(32)
-  create_utc_timestamp                                               DateTime        @default(now()) @db.Timestamp(6)
-  update_user_id                                                     String?         @db.VarChar(32)
-  update_utc_timestamp                                               DateTime?       @db.Timestamp(6)
-  activity_note_activity_note_activity_note_codeToactivity_note_code activity_note[] @relation("activity_note_activity_note_codeToactivity_note_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model exhibit {
-  exhibit_guid            String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  task_guid               String        @db.Uuid
-  investigation_guid      String        @db.Uuid
-  exhibit_number          Int
-  description             String
-  date_collected          DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Date
-  collected_user_guid_ref String        @db.Uuid
-  active_ind              Boolean       @default(true)
-  create_user_id          String        @db.VarChar(32)
-  create_utc_timestamp    DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id          String?       @db.VarChar(32)
-  update_utc_timestamp    DateTime?     @db.Timestamp(6)
-  investigation           investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__investigation")
-  task                    task          @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__task")
-
-  @@unique([investigation_guid, exhibit_number], map: "uq_exhibit_number_per_investigation")
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model enforcement_action {
-  enforcement_action_guid                                                                     String                   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  contravention_party_xref_guid                                                               String                   @db.Uuid
-  enforcement_action_code                                                                     String                   @db.VarChar(16)
-  date_issued                                                                                 DateTime                 @db.Date
-  geo_organization_unit_code_ref                                                              String                   @db.VarChar(16)
-  app_user_guid_ref                                                                           String                   @db.Uuid
-  active_ind                                                                                  Boolean                  @default(true)
-  create_user_id                                                                              String                   @db.VarChar(32)
-  create_utc_timestamp                                                                        DateTime                 @default(now()) @db.Timestamp(6)
-  update_user_id                                                                              String?                  @db.VarChar(32)
-  update_utc_timestamp                                                                        DateTime?                @db.Timestamp(6)
-  contravention_party_xref                                                                    contravention_party_xref @relation(fields: [contravention_party_xref_guid], references: [contravention_party_xref_guid], onDelete: NoAction, onUpdate: NoAction)
-  enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code enforcement_action_code  @relation("enforcement_action_enforcement_action_codeToenforcement_action_code", fields: [enforcement_action_code], references: [enforcement_action_code], onDelete: NoAction, onUpdate: NoAction)
-  ticket                                                                                      ticket[]
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model enforcement_action_code {
-  enforcement_action_code                                                                                                  String                                @id @db.VarChar(16)
-  short_description                                                                                                        String                                @db.VarChar(64)
-  long_description                                                                                                         String?                               @db.VarChar(256)
-  display_order                                                                                                            Int?
-  active_ind                                                                                                               Boolean                               @default(true)
-  create_user_id                                                                                                           String                                @db.VarChar(32)
-  create_utc_timestamp                                                                                                     DateTime                              @default(now()) @db.Timestamp(6)
-  update_user_id                                                                                                           String?                               @db.VarChar(32)
-  update_utc_timestamp                                                                                                     DateTime?                             @db.Timestamp(6)
-  enforcement_action_enforcement_action_enforcement_action_codeToenforcement_action_code                                   enforcement_action[]                  @relation("enforcement_action_enforcement_action_codeToenforcement_action_code")
-  enforcement_action_code_agency_xref_enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code enforcement_action_code_agency_xref[] @relation("enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model enforcement_action_code_agency_xref {
-  enforcement_action_code_agency_xref_guid                                                                     String                  @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  enforcement_action_code                                                                                      String                  @db.VarChar(16)
-  agency_code_ref                                                                                              String                  @db.VarChar(16)
-  active_ind                                                                                                   Boolean                 @default(true)
-  create_user_id                                                                                               String                  @db.VarChar(32)
-  create_utc_timestamp                                                                                         DateTime                @default(now()) @db.Timestamp(6)
-  update_user_id                                                                                               String?                 @db.VarChar(32)
-  update_utc_timestamp                                                                                         DateTime?               @db.Timestamp(6)
-  enforcement_action_code_enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code enforcement_action_code @relation("enforcement_action_code_agency_xref_enforcement_action_codeToenforcement_action_code", fields: [enforcement_action_code], references: [enforcement_action_code], onDelete: NoAction, onUpdate: NoAction, map: "enforcement_action_code_agency_xre_enforcement_action_code_fkey")
-
-  @@unique([enforcement_action_code, agency_code_ref], map: "uq_enforcement_action_code_agency")
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model enforcement_action_h {
-  h_enforcement_action_guid     String   @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model ticket {
   ticket_guid                                                         String              @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   enforcement_action_guid                                             String              @db.Uuid
@@ -588,56 +710,6 @@ model ticket_outcome_code {
   update_user_id                                         String?   @db.VarChar(32)
   update_utc_timestamp                                   DateTime? @db.Timestamp(6)
   ticket_ticket_ticket_outcome_codeToticket_outcome_code ticket[]  @relation("ticket_ticket_outcome_codeToticket_outcome_code")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model investigation_alias {
-  investigation_alias_guid    String                 @id(map: "investigation_alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_business_guid String                 @db.Uuid
-  name                        String                 @db.VarChar(512)
-  active_ind                  Boolean                @default(true)
-  create_user_id              String                 @db.VarChar(32)
-  create_utc_timestamp        DateTime               @default(now()) @db.Timestamp(6)
-  update_user_id              String?                @db.VarChar(32)
-  update_utc_timestamp        DateTime?              @db.Timestamp(6)
-  investigation_business      investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_alias_business")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model investigation_business_identifier {
-  investigation_business_identifier_guid String                 @id(map: "investigation_business_identifier_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_business_guid            String                 @db.Uuid
-  business_identifier_code_ref           String                 @db.VarChar(16)
-  identifier_value                       String                 @db.VarChar(256)
-  active_ind                             Boolean                @default(true)
-  create_user_id                         String                 @db.VarChar(32)
-  create_utc_timestamp                   DateTime               @default(now()) @db.Timestamp(6)
-  update_user_id                         String?                @db.VarChar(32)
-  update_utc_timestamp                   DateTime?              @db.Timestamp(6)
-  investigation_business                 investigation_business @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_business_identifier_business")
-
-  @@schema("investigation")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model investigation_contact_method {
-  investigation_contact_method_guid String                  @id(map: "investigation_contact_method_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  investigation_person_guid         String?                 @db.Uuid
-  investigation_business_guid       String?                 @db.Uuid
-  contact_method_type_code_ref      String                  @db.VarChar(10)
-  contact_value                     String?                 @db.VarChar(512)
-  is_primary                        Boolean                 @default(false)
-  active_ind                        Boolean                 @default(true)
-  create_user_id                    String                  @db.VarChar(32)
-  create_utc_timestamp              DateTime                @default(now()) @db.Timestamp(6)
-  update_user_id                    String?                 @db.VarChar(32)
-  update_utc_timestamp              DateTime?               @db.Timestamp(6)
-  investigation_business            investigation_business? @relation(fields: [investigation_business_guid], references: [investigation_business_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_business")
-  investigation_person              investigation_person?   @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_contact_method_person")
 
   @@schema("investigation")
 }

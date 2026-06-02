@@ -43,6 +43,7 @@ import { AddBulkDownload } from "@/app/store/migrations/migration-43";
 import { RefreshJustificationCodes } from "@/app/store/migrations/migration-44";
 import { AddEnforcementActions } from "@/app/store/migrations/migration-45";
 import { AddInvestigationListUrl } from "@/app/store/migrations/migration-46";
+import { Countries } from "@/app/store/migrations/migration-47";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -100,6 +101,7 @@ migration = {
   ...RefreshJustificationCodes,
   ...AddEnforcementActions,
   ...AddInvestigationListUrl,
+  ...Countries,
 };
 
 export default migration;
