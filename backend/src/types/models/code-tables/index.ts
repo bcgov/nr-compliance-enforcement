@@ -75,6 +75,8 @@ export const AvailableCodeTables = [
   "legislation-type",
   "enforcement-action-type",
   "ticket-outcome-type",
+  "country-type",
+  "country-subdivision-type",
 ];
 
 export const AvailableAgencies = ["cos"];

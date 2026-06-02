@@ -17,6 +17,11 @@ import {
   InvestigationAlias,
   UpdateInvestigationAliasInput,
 } from "../../investigation_alias/dto/investigation_alias";
+import {
+  CreateInvestigationBusinessAddressInput,
+  InvestigationBusinessAddress,
+  UpdateInvestigationBusinessAddressInput,
+} from "../../investigation_business_address/dto/investigation_business_address";
 
 export class InvestigationBusiness implements BusinessDto {
   businessGuid: string;
@@ -27,6 +32,7 @@ export class InvestigationBusiness implements BusinessDto {
   contactMethods?: InvestigationContactMethod[];
   businessIdentifiers?: InvestigationBusinessIdentifier[];
   aliases?: InvestigationAlias[];
+  addresses?: InvestigationBusinessAddress[];
 }
 
 @InputType()
@@ -45,6 +51,9 @@ export class CreateInvestigationBusinessInput {
 
   @Field(() => [CreateInvestigationAliasInput], { nullable: true })
   aliases?: CreateInvestigationAliasInput[];
+
+  @Field(() => [CreateInvestigationBusinessAddressInput], { nullable: true })
+  addresses?: CreateInvestigationBusinessAddressInput[];
 }
 
 @InputType()
@@ -60,6 +69,9 @@ export class UpdateInvestigationBusinessInput {
 
   @Field(() => [UpdateInvestigationAliasInput], { nullable: true })
   aliases?: UpdateInvestigationAliasInput[];
+
+  @Field(() => [UpdateInvestigationBusinessAddressInput], { nullable: true })
+  addresses?: UpdateInvestigationBusinessAddressInput[];
 }
 
 export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
@@ -110,6 +122,16 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
     forMember(
       (dest) => dest.aliases,
       mapFrom((src) => mapper.mapArray(src.investigation_alias ?? [], "investigation_alias", "InvestigationAlias")),
+    ),
+    forMember(
+      (dest) => dest.addresses,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_business_address ?? [],
+          "investigation_business_address",
+          "InvestigationBusinessAddress",
+        ),
+      ),
     ),
   );
 };

@@ -82,6 +82,7 @@ test.describe("Investigation Party Form", () => {
   test("it adds a new local business party to investigation", async ({ page }) => {
     const addPartyButton = page.locator("#add-party-button");
     await addPartyButton.click();
+    let randomBusinessNumber = Math.random().toString().substring(2, 10);
 
     const modal = page.locator(".modal").first();
     await expect(modal).toBeVisible();
@@ -96,6 +97,11 @@ test.describe("Investigation Party Form", () => {
     // Fill in business name
     const businessNameInput = modal.locator("#businessName");
     await businessNameInput.fill("Acme Logging Ltd");
+
+    // Business number is required for Company parties
+    const businessNumberInput = modal.locator("#businessNumber");
+    // Generate a random business number to avoid clashes
+    await businessNumberInput.fill(randomBusinessNumber);
 
     // Select a party association role
     await selectItemById("party-role-select", "Party of Interest", page);
