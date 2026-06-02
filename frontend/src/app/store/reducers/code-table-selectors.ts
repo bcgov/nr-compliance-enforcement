@@ -130,3 +130,13 @@ export const selectTicketOutcomes = createSelector([selectCodeTables], (codeTabl
   const { "ticket-outcome-type": items } = codeTables;
   return items.map(({ ticketOutcomeCode: value, longDescription: label }) => ({ label, value }));
 });
+
+export const selectCountries = createSelector([selectCodeTables], (codeTables) => {
+  const { "country-type": items } = codeTables;
+  return items.map(({ countryCode: value, longDescription: label }) => ({ label, value }));
+});
+
+export const selectCountrySubdivisions = createSelector([selectCodeTables], (codeTables) => {
+  const { "country-subdivision-type": items } = codeTables;
+  return items.map(({ countrySubdivisionCode: value, longDescription: label }) => ({ label, value }));
+});

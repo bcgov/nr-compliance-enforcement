@@ -68,6 +68,16 @@ export const GET_INVESTIGATION = gql`
             aliasGuid
             name
           }
+          addresses {
+            businessAddressGuid
+            addressName
+            address
+            city
+            province
+            postalCode
+            country
+            isPrimary
+          }
         }
         partyAssociationRole
       }

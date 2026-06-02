@@ -6,6 +6,9 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
+import { BusinessAddressFormValue } from "./business-form-utils";
+import { BusinessAddressFields } from "./business-address-fields";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 
 type BusinessFormFieldsProps = {
@@ -15,13 +18,17 @@ type BusinessFormFieldsProps = {
   businessGuid?: string;
 };
 
-export const BusinessForm: FC<BusinessFormFieldsProps> = ({
+export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   form,
   isDisabled,
   showContactPeople = true,
   businessGuid,
 }) => {
   const {
+    addresses,
+    handleAddAddress,
+    handleRemoveAddress,
+    handleSetPrimaryAddress,
     phoneNumbers,
     handleAddPhoneNumber,
     handleRemovePhoneNumber,
@@ -125,16 +132,26 @@ export const BusinessForm: FC<BusinessFormFieldsProps> = ({
         form={form}
         name="businessNumber.identifierValue"
         label="Business number"
+        required
+        validators={{
+          onChange: ({ value }: { value: string | undefined }) =>
+            value && value.trim().length > 0 ? undefined : "Business number is required",
+        }}
         render={(field) => (
           <CompInput
             id="businessNumber"
             divid=""
             type="input"
             inputClass="comp-form-control comp-details-input"
-            value={field.state.value}
-            error={field.state.meta.errors?.[0]?.message || ""}
+            value={field.state.value ?? ""}
+            error={getFieldErrorMessage(field)}
             maxLength={16}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+            onChange={(evt: any) => {
+              field.handleChange(evt?.target?.value || "");
+              if (getFieldErrorMessage(field)) {
+                field.setMeta({ errorMap: {}, errorSourceMap: {} });
+              }
+            }}
             disabled={isDisabled}
           />
         )}
@@ -149,12 +166,48 @@ export const BusinessForm: FC<BusinessFormFieldsProps> = ({
             divid=""
             type="input"
             inputClass="comp-form-control comp-details-input"
-            value={field.state.value}
+            value={field.state.value ?? ""}
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={16}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
             disabled={isDisabled}
           />
+        )}
+      />
+      {addresses?.map((address: BusinessAddressFormValue, index: number) => (
+        <FormField
+          key={address.businessAddressGuid || `address-${index}`}
+          form={form}
+          name={`address-block-${index}` as any}
+          label={index === 0 ? "Address" : ""}
+          render={() => (
+            <BusinessAddressFields
+              addressIndex={index}
+              form={form}
+              isDisabled={isDisabled}
+              isPrimary={address.isPrimary || false}
+              onRemoveAddress={handleRemoveAddress}
+              onSetPrimaryAddress={handleSetPrimaryAddress}
+            />
+          )}
+        />
+      ))}
+      <FormField
+        form={form}
+        name="add-address-placeholder"
+        label=""
+        render={() => (
+          <Button
+            id="add-address-button"
+            variant="outline-primary"
+            size="sm"
+            onClick={handleAddAddress}
+            type="button"
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {/**/}
+            Add address
+          </Button>
         )}
       />
       <PartyPhoneFields

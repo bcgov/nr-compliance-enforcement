@@ -1,0 +1,20 @@
+input BusinessAddressInput {
+  addressName: String!
+  address: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  isPrimary: Boolean
+}
+
+input BusinessAddressUpdateInput {
+  businessAddressGuid: String
+  addressName: String!
+  address: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  isPrimary: Boolean
+}

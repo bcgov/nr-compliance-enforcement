@@ -5,6 +5,7 @@ import { Alias } from "../../alias/dto/alias";
 import { BusinessIdentifier } from "../../business_identifier/dto/business_identifier";
 import { ContactMethod } from "../../contact_method/dto/contact_method";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { BusinessAddress } from "../../business_address/dto/business_address";
 
 export class Business implements BusinessDto {
   businessGuid: string;
@@ -12,6 +13,7 @@ export class Business implements BusinessDto {
   name: string;
   aliases: Alias[];
   identifiers: BusinessIdentifier[];
+  addresses: BusinessAddress[];
   contactMethods: ContactMethod[];
   contactPeople: BusinessPersonXref[];
 }
@@ -37,6 +39,12 @@ export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {
       (dest) => dest.identifiers,
       mapWithArguments((src) =>
         mapper.mapArray(src.business_identifier ?? [], "business_identifier", "BusinessIdentifier"),
+      ),
+    ),
+    forMember(
+      (dest) => dest.addresses,
+      mapWithArguments((src) =>
+        mapper.mapArray(src.business_address ?? [], "business_address", "BusinessAddress"),
       ),
     ),
     forMember(
