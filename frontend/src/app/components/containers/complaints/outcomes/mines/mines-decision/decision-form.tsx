@@ -233,7 +233,7 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleSaveButtonClick = () => {
-    const identifier = id !== undefined ? caseId : leadIdentifier;
+    const identifier = id === undefined ? leadIdentifier : caseId;
     resetErrorMessages();
 
     if (isValid()) {
@@ -301,7 +301,7 @@ export const DecisionForm: FC<props> = ({
     if (
       data.actionTaken === CASE_ACTION_CODE.RESPREC &&
       data.inspectionNumber &&
-      !data.inspectionNumber.match(/^\d{1,10}$/)
+      !/^\d{1,10}$/.exec(data.inspectionNumber)
     ) {
       setInspectionNumberErrorMessage("Invalid format. Please only include numbers.");
       _isValid = false;
