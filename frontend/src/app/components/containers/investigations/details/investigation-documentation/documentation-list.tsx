@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDate, truncateString } from "@common/methods";
+import { formatDate, truncateFilenameString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
@@ -176,7 +176,7 @@ export const DocumentationList: FC<Props> = ({
             onClick={(e) => handleFileClick(e, attachment.id ?? "")}
             title={`Download ${displayName}`}
           >
-            {truncateString(displayName, 15)}
+            {truncateFilenameString(displayName, 15)}
           </a>
         );
       },
