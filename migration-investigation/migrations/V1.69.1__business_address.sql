@@ -91,8 +91,3 @@ CREATE UNIQUE INDEX investigation_business_address_primary_unique
 ON investigation_business_address (investigation_business_guid)
 WHERE is_primary = true
 AND active_ind = true;
-
-CREATE UNIQUE INDEX business_identifier_bnum_active_unique
-ON investigation_business_identifier (identifier_value)
-WHERE business_identifier_code_ref = 'BNUM'
-AND active_ind = true;
