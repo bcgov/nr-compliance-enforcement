@@ -169,11 +169,10 @@ export const DocumentationList: FC<Props> = ({
       getValue: (attachment) => attachment.name ?? "",
       renderCell: (attachment) => {
         const displayName = getDisplayFilename(attachment.name);
-        const isTruncated = (displayName?.length ?? 0) > 15;
         return (
           <a
             href={`${config.COMS_URL}/object/${attachment.id}`}
-            className={`comp-cell-link${isTruncated ? " comp-horizontal-fade" : ""}`}
+            className="comp-cell-link"
             onClick={(e) => handleFileClick(e, attachment.id ?? "")}
             title={`Download ${displayName}`}
           >

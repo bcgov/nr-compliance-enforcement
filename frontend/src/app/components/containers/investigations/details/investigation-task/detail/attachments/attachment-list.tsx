@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { generateApiParameters, get } from "@/app/common/api";
 import config from "@/config";
-import { truncateFilenameString, truncateString } from "@/app/common/methods";
+import { truncateFilenameString } from "@/app/common/methods";
 
 type TaskAttachmentListProps = {
   attachments: Attachment[];
@@ -18,7 +18,13 @@ type TaskAttachmentListProps = {
   onEdit: (attachment: Attachment) => void;
 };
 
-const downloadAttachment = async (dispatch: any, objectId: string | undefined, filename: string) => {
+const downloadAttachment = async (
+  e: React.MouseEvent<HTMLAnchorElement>,
+  dispatch: any,
+  objectId: string | undefined,
+  filename: string,
+) => {
+  e.preventDefault();
   if (!objectId) return;
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}?download=url`);
   const response = await get<string>(dispatch, parameters);
@@ -109,15 +115,15 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
       getValue: (attachment) => getDisplayFilename(attachment.name).toLowerCase(),
       renderCell: (attachment) => {
         const displayName = getDisplayFilename(attachment.name);
-        //const isTruncated = (displayName?.length ?? 0) > 15;
-        const isTruncated = false;
         return (
-          <button
-            className={`btn btn-link p-0 border-0 text-body${isTruncated ? " comp-horizontal-fade" : ""}`}
-            onClick={() => downloadAttachment(dispatch, attachment.id, displayName)}
+          <a
+            href={`${config.COMS_URL}/object/${attachment.id}`}
+            className="btn btn-link p-0 border-0 text-body"
+            onClick={(e) => downloadAttachment(e, dispatch, attachment.id, displayName)}
+            title={`Download ${displayName}`}
           >
             {truncateFilenameString(displayName, 15)}
-          </button>
+          </a>
         );
       },
     },
