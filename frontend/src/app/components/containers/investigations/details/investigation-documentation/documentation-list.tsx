@@ -2,12 +2,11 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDate } from "@common/methods";
+import { formatDate, truncateString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
 import { getDisplayFilename } from "@common/attachment-utils";
-import { getFileTypeIcon } from "@components/common/file-type-icon";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Attachment } from "./hooks/use-investigation-attachments";
@@ -80,8 +79,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "File type",
       sortKey: "fileType",
-      headerClassName: "comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-min-width-50",
+      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.fileType ?? "",
       renderCell: (attachment) => attachment.fileType ?? "",
@@ -89,8 +88,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "ID",
       sortKey: "sequenceNumber",
-      headerClassName: "comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-min-width-50",
+      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.sequenceNumber ?? "",
       renderCell: (attachment) => attachment.sequenceNumber ?? "",
@@ -98,8 +97,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "Description",
       sortKey: "description",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-250 comp-cell-min-width-250",
+      cellClassName: "comp-cell-width-250 comp-cell-min-width-250",
       isSortable: true,
       getValue: (attachment) => attachment.description ?? "",
       renderCell: (attachment) => attachment.description ?? "-",
@@ -107,8 +106,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "Title",
       sortKey: "title",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-175 comp-cell-min-width-175",
+      cellClassName: "comp-cell-width-175 comp-cell-min-width-175",
       isSortable: true,
       getValue: (attachment) => attachment.title ?? "",
       renderCell: (attachment) => attachment.title ?? "-",
@@ -116,8 +115,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "Date",
       sortKey: "date",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-50 comp-cell-min-width-50",
+      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.date ?? "",
       renderCell: (attachment) => (attachment.date ? formatDate(attachment.date) : "-"),
@@ -134,8 +133,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "Location",
       sortKey: "location",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-175 comp-cell-min-width-175",
+      cellClassName: "comp-cell-width-175 comp-cell-min-width-175",
       isSortable: true,
       getValue: (attachment) => attachment.location ?? "",
       renderCell: (attachment) => attachment.location ?? "-",
@@ -143,8 +142,8 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "Task",
       sortKey: "taskNumber",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-width-150 comp-cell-min-width-150",
+      headerClassName: "comp-cell-width-50 comp-cell-min-width-50",
+      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => (attachment.task ? `Task ${attachment.task.taskNumber}` : ""),
       renderCell: (attachment) => {
@@ -164,24 +163,22 @@ export const DocumentationList: FC<Props> = ({
     {
       label: "File name",
       sortKey: "name",
-      headerClassName: "comp-cell-width-150 comp-cell-min-width-150",
-      cellClassName: "comp-cell-min-width-200",
+      headerClassName: "comp-cell-width-50 comp-cell-min-width-50",
+      cellClassName: "comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.name ?? "",
       renderCell: (attachment) => {
         const displayName = getDisplayFilename(attachment.name);
+        const isTruncated = (displayName?.length ?? 0) > 15;
         return (
-          <>
-            <i className={`bi ${getFileTypeIcon(attachment.fileType)} me-1 fs-5`} />
-            <a
-              href={`${config.COMS_URL}/object/${attachment.id}`}
-              className="comp-cell-link"
-              onClick={(e) => handleFileClick(e, attachment.id ?? "")}
-              title={`Download ${displayName}`}
-            >
-              {displayName}
-            </a>
-          </>
+          <a
+            href={`${config.COMS_URL}/object/${attachment.id}`}
+            className={`comp-cell-link${isTruncated ? " comp-horizontal-fade" : ""}`}
+            onClick={(e) => handleFileClick(e, attachment.id ?? "")}
+            title={`Download ${displayName}`}
+          >
+            {truncateString(displayName, 15)}
+          </a>
         );
       },
     },

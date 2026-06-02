@@ -1207,3 +1207,12 @@ td.actions-col {
     color: #212529;
   }
 }
+
+.comp-horizontal-fade {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-mask-image: linear-gradient(to right, #000 80%, transparent);
+  mask-image: linear-gradient(to right, #000 80%, transparent);
+}
