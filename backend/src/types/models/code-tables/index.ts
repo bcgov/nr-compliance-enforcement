@@ -77,6 +77,7 @@ export const AvailableCodeTables = [
   "ticket-outcome-type",
   "country-type",
   "country-subdivision-type",
+  "approximate-age-type",
 ];
 
 export const AvailableAgencies = ["cos"];

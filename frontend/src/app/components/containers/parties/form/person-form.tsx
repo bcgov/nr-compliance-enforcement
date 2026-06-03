@@ -4,10 +4,13 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@hooks/hooks";
-import { selectSexDropdown } from "@/app/store/reducers/code-table";
+import { selectSexDropdown, selectApproximateAgeDropdown } from "@/app/store/reducers/code-table";
 import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
+import { useStore } from "@tanstack/react-form";
+import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
+import { Badge } from "react-bootstrap";
 
 type PersonFormProps = {
   form: any;
@@ -19,8 +22,15 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     ?.filter((opt: { isActive?: boolean }) => opt.isActive !== false)
     .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
 
+  const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown)
+    ?.filter((opt: { activeInd?: boolean }) => opt.activeInd !== false)
+    .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
+
   const { phoneNumbers, handleAddPhoneNumber, handleRemovePhoneNumber, handleSetPrimaryPhoneNumber } =
     usePartyFormFields(form);
+
+  const dateOfBirth = useStore(form.store, (state: any) => state.values.dateOfBirth);
+  const approximateAgeCode = useStore(form.store, (state: any) => state.values.approximateAgeCode);
 
   return (
     <>
@@ -109,19 +119,63 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         name="dateOfBirth"
         label="Date of birth"
         render={(field) => (
-          <ValidationDatePicker
-            id="DateOfBirth"
-            classNamePrefix="comp-details-input"
-            className="comp-form-control comp-details-input"
-            selectedDate={field.state.value}
-            onChange={(date: Date | undefined) => field.handleChange(date ?? undefined)}
-            errMsg={field.state.meta.errors?.[0]?.message || ""}
-            isDisabled={isDisabled}
-            showYearDropdown={true}
-            yearDropdownItemNumber={100}
-          />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <ValidationDatePicker
+              id="DateOfBirth"
+              classNamePrefix="comp-details-input"
+              className="comp-form-control comp-details-input"
+              selectedDate={field.state.value}
+              onChange={(date: Date | undefined) => {
+                field.handleChange(date ?? null);
+                if (date) {
+                  form.setFieldValue("approximateAgeCode", undefined);
+                }
+              }}
+              errMsg={field.state.meta.errors?.[0]?.message || ""}
+              isDisabled={isDisabled}
+              showYearDropdown={true}
+              yearDropdownItemNumber={100}
+            />
+            {field.state.value instanceof Date && (
+              <span className="text-muted">{calculateAgeYears(field.state.value)} years old</span>
+            )}
+            <form.Subscribe selector={(state: any) => state.values.approximateAgeCode}>
+              {(approximateAgeCode: string | undefined) =>
+                isYoungPerson(field.state.value, approximateAgeCode) ? (
+                  <Badge bg="species-badge comp-species-badge">Young person</Badge>
+                ) : null
+              }
+            </form.Subscribe>
+          </div>
         )}
       />
+      <form.Subscribe selector={(state: any) => state.values.dateOfBirth}>
+        {(dateOfBirth: Date | undefined) =>
+          dateOfBirth ? null : (
+            <FormField
+              form={form}
+              name="approximateAgeCode"
+              label="Approximate age"
+              render={(field) => (
+                <CompSelect
+                  id="approximate-age-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={approximateAgeOptions}
+                  value={approximateAgeOptions?.find((opt: any) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value ?? "")}
+                  placeholder="Select approximate age"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
+            />
+          )
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="driversLicenseNumber"

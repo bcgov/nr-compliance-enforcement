@@ -78,6 +78,14 @@ export class PartyService {
     throw error;
   }
 
+  // if Date of birth is provided discard the approximate age code
+  private _resolveApproximateAgeCode(
+    dateOfBirth?: Date | null,
+    approximateAgeCode?: string | null,
+  ): string | null | undefined {
+    return dateOfBirth ? null : approximateAgeCode;
+  }
+
   async findOne(id: string) {
     const prismaParty = await this.prisma.party.findUnique({
       where: {
@@ -166,6 +174,7 @@ export class PartyService {
                     drivers_license_number: true,
                     drivers_license_jurisdiction: true,
                     sex_code: true,
+                    approximate_age_code: true,
                     contact_method: {
                       select: {
                         contact_method_guid: true,
@@ -198,6 +207,7 @@ export class PartyService {
             drivers_license_number: true,
             drivers_license_jurisdiction: true,
             sex_code: true,
+            approximate_age_code: true,
             contact_method: {
               select: {
                 contact_method_guid: true,
@@ -264,6 +274,10 @@ export class PartyService {
           middle_name_2: input.person?.middleName2,
           last_name: input.person?.lastName,
           date_of_birth: input.person?.dateOfBirth,
+          approximate_age_code: this._resolveApproximateAgeCode(
+            input.person?.dateOfBirth,
+            input.person?.approximateAgeCode,
+          ),
           drivers_license_number: input.person?.driversLicenseNumber,
           drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
           sex_code: input.person?.sexCode,
@@ -380,6 +394,10 @@ export class PartyService {
           middle_name_2: input.person?.middleName2,
           last_name: input.person?.lastName,
           date_of_birth: input.person?.dateOfBirth,
+          approximate_age_code: this._resolveApproximateAgeCode(
+            input.person?.dateOfBirth,
+            input.person?.approximateAgeCode,
+          ),
           drivers_license_number: input.person?.driversLicenseNumber,
           drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
           sex_code: input.person?.sexCode,

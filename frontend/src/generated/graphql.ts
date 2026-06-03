@@ -106,6 +106,15 @@ export type AppUserTeamXref = {
   teamGuid?: Maybe<Scalars['String']['output']>;
 };
 
+export type ApproximateAgeCode = {
+  __typename?: 'ApproximateAgeCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  approximateAgeCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type Assessment = {
   __typename?: 'Assessment';
   actionJustificationActiveIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -437,6 +446,25 @@ export type CosGeoOrgUnit = {
   regionName?: Maybe<Scalars['String']['output']>;
   zoneCode?: Maybe<Scalars['String']['output']>;
   zoneName?: Maybe<Scalars['String']['output']>;
+};
+
+export type Country = {
+  __typename?: 'Country';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  countryCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type CountrySubdivision = {
+  __typename?: 'CountrySubdivision';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  countryCode?: Maybe<Scalars['String']['output']>;
+  countrySubdivisionCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
 export type CreateAppUserInput = {
@@ -1972,6 +2000,7 @@ export type PermitSiteInput = {
 
 export type Person = {
   __typename?: 'Person';
+  approximateAgeCode?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
   driversLicenseJurisdiction?: Maybe<Scalars['String']['output']>;
@@ -2042,6 +2071,7 @@ export type Query = {
   appUserTeamXref?: Maybe<AppUserTeamXref>;
   appUserTeamXrefs: Array<Maybe<AppUserTeamXref>>;
   appUsers: Array<Maybe<AppUser>>;
+  approximateAgeCodes: Array<Maybe<ApproximateAgeCode>>;
   caseFile?: Maybe<CaseFile>;
   caseFiles: Array<CaseFile>;
   caseFilesByActivityIds: Array<CaseFile>;
@@ -2052,6 +2082,8 @@ export type Query = {
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
+  countries: Array<Maybe<Country>>;
+  countrySubdivisions: Array<Maybe<CountrySubdivision>>;
   diaryDates?: Maybe<Array<DiaryDate>>;
   diaryDatesByTask?: Maybe<Array<DiaryDate>>;
   dischargeCodes: Array<Maybe<DischargeCode>>;

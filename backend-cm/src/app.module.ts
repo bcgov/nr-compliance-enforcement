@@ -84,6 +84,7 @@ import { EnforcementActionModule } from "./investigation/enforcement_action/enfo
 import { EnforcementActionCodeModule } from "./investigation/enforcement_action_code/enforcement_action_code.module";
 import { CountryCodeModule } from "./shared/country_code/country_code.module";
 import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/country_subdivision_code.module";
+import { ApproximateAgeCodeModule } from "src/shared/approximate_age_code/approximate_age_code.module";
 
 @Module({
   imports: [
@@ -166,6 +167,7 @@ import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/
     EnforcementActionCodeModule,
     CountryCodeModule,
     CountrySubdivisionCodeModule,
+    ApproximateAgeCodeModule,
   ],
   controllers: [AppController],
   providers: [

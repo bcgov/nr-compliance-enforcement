@@ -23,6 +23,7 @@ import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-a
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
+import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -211,6 +212,15 @@ export const fetchCountrySubdivisionTypes = (): AppThunk => async (dispatch) => 
   const response = await get<Array<CountrySubdivisionType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.COUNTRY_SUBDIVISION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchApproximateAgeTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.APPROXIMATE_AGE}`);
+  const response = await get<Array<ApproximateAgeType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.APPROXIMATE_AGE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

@@ -4,6 +4,7 @@ input PersonInput {
   middleName2: String
   lastName: String!
   dateOfBirth: DateTime
+  approximateAgeCode: String
   driversLicenseNumber: String
   driversLicenseJurisdiction: String
   sexCode: String
@@ -17,6 +18,7 @@ input PersonUpdateInput {
   middleName2: String
   lastName: String!
   dateOfBirth: DateTime
+  approximateAgeCode: String
   driversLicenseNumber: String
   driversLicenseJurisdiction: String
   sexCode: String

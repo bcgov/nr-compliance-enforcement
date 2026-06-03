@@ -632,8 +632,28 @@ export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAb
 };
 
 // Normalize to UTC date-only
-export const toDateOfBirth = (value: any): Date | undefined => {
+export const toDateOfBirth = (value: any): Date | null | undefined => {
   const d = value?.dateOfBirth;
+  if (d === null) return null;
   if (!(d instanceof Date)) return undefined;
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+};
+
+// Determine an age based on a DOB
+export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age;
+};
+
+// Returns true if under 18 based on DOB
+export const isYoungPerson = (dob: Date | null | undefined, approximateAgeCode: string | null | undefined): boolean => {
+  console.log(approximateAgeCode);
+  if (dob instanceof Date) {
+    return calculateAgeYears(dob) <= 18;
+  }
+  return approximateAgeCode === "18UNDER";
 };

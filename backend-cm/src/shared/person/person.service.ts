@@ -27,6 +27,7 @@ export class PersonService {
         drivers_license_number: true,
         drivers_license_jurisdiction: true,
         sex_code: true,
+        approximate_age_code: true,
         contact_method: {
           select: {
             contact_value: true,

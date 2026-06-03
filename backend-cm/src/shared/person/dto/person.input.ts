@@ -27,6 +27,9 @@ export class PersonInput {
   dateOfBirth?: Date;
 
   @Field(() => String, { nullable: true })
+  approximateAgeCode?: string;
+
+  @Field(() => String, { nullable: true })
   driversLicenseNumber?: string;
 
   @Field(() => String, { nullable: true })

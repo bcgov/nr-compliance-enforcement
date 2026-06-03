@@ -16,13 +16,18 @@ import {
 import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
-import { selectAgencyDropdown, selectCodeTable, selectSexDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectAgencyDropdown,
+  selectApproximateAgeDropdown,
+  selectCodeTable,
+  selectSexDropdown,
+} from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { formatDateOfBirth } from "@common/methods";
+import { calculateAgeYears, formatDateOfBirth, isYoungPerson } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
@@ -60,6 +65,7 @@ export const GET_PARTY = gql`
         middleName2
         lastName
         dateOfBirth
+        approximateAgeCode
         driversLicenseNumber
         driversLicenseJurisdiction
         sexCode
@@ -197,12 +203,23 @@ export type PartyParams = {
   id: string;
 };
 
-const PersonIdentifyingInfo: FC<{ person: Person; sexOptions: ReadonlyArray<Option> }> = ({ person, sexOptions }) => (
+const PersonIdentifyingInfo: FC<{
+  person: Person;
+  sexOptions: ReadonlyArray<Option>;
+  approximateAgeOptions: ReadonlyArray<Option>;
+}> = ({ person, sexOptions, approximateAgeOptions }) => (
   <>
     {person.dateOfBirth !== null && (
       <p>
         <b>Date of birth: </b>
         {formatDateOfBirth(person.dateOfBirth)}
+      </p>
+    )}
+    {person.approximateAgeCode && (
+      <p>
+        <b>Approximate age: </b>
+        {approximateAgeOptions?.find((opt) => opt.value === person?.approximateAgeCode)?.label ??
+          person.approximateAgeCode}
       </p>
     )}
     {person.driversLicenseNumber && (
@@ -371,6 +388,7 @@ export const PartyView: FC = () => {
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const sexOptions = useAppSelector(selectSexDropdown);
+  const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown);
   const countryOptions = useAppSelector(selectCountries);
   const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
 
@@ -414,6 +432,9 @@ export const PartyView: FC = () => {
     }
     return result;
   };
+
+  const personDob = partyData?.person?.dateOfBirth ? new Date(partyData.person.dateOfBirth) : null;
+  const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
@@ -623,6 +644,17 @@ export const PartyView: FC = () => {
                     })}
                   </>
                 )}
+                {(personDob || personIsYoung) && (
+                  <p className="d-flex align-items-center gap-2">
+                    {personDob && (
+                      <span>
+                        <b>Age: </b>
+                        {calculateAgeYears(personDob)}
+                      </span>
+                    )}
+                    {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
+                  </p>
+                )}
               </div>
               <div className="comp-details-section-header-actions party-details-summary-actions">
                 <Button
@@ -659,6 +691,7 @@ export const PartyView: FC = () => {
                 <PersonIdentifyingInfo
                   person={partyData.person}
                   sexOptions={sexOptions}
+                  approximateAgeOptions={approximateAgeOptions}
                 />
               )}
             </div>

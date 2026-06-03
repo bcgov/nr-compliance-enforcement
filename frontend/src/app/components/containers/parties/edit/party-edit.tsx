@@ -43,6 +43,7 @@ const PARTY_PERSON_FRAGMENT = gql`
     middleName2
     lastName
     dateOfBirth
+    approximateAgeCode
     driversLicenseNumber
     driversLicenseJurisdiction
     sexCode
@@ -319,6 +320,7 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     middleName2: value.middleName2?.trim() || null,
     lastName: value.lastName,
     dateOfBirth: toDateOfBirth(value),
+    approximateAgeCode: value.approximateAgeCode || undefined,
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
     sexCode: value.sexCode || undefined,
@@ -369,6 +371,7 @@ const PartyEdit: FC = () => {
         middleName2: person?.middleName2 || "",
         lastName: person?.lastName || "",
         dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
+        approximateAgeCode: person?.approximateAgeCode || "",
         driversLicenseNumber: person?.driversLicenseNumber || "",
         driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
         sexCode: person?.sexCode || "",
@@ -400,6 +403,7 @@ const PartyEdit: FC = () => {
       middleName2: "",
       lastName: "",
       dateOfBirth: undefined,
+      approximateAgeCode: "",
       driversLicenseNumber: "",
       driversLicenseJurisdiction: "",
       sexCode: "",

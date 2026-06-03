@@ -1,12 +1,11 @@
 // Clears cached inaction justification codes so the PARKS and CEEB rows are fetched
-export const Countries = {
-  47: (state: any) => {
+export const PersonProfileUpdates = {
+  48: (state: any) => {
     return {
       ...state,
       codeTables: {
         ...state.codeTables,
-        "country-type": [],
-        "country-subdivision-type": [],
+        "approximate-age-type": [],
       },
     };
   },

@@ -54,6 +54,7 @@ import {
   fetchTicketOutcomeTypes,
   fetchCountryTypes,
   fetchCountrySubdivisionTypes,
+  fetchApproximateAgeTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -114,6 +115,7 @@ const initialState: CodeTableState = {
   "ticket-outcome-type": [],
   "country-type": [],
   "country-subdivision-type": [],
+  "approximate-age-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -192,6 +194,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "ticket-outcome-type": ticketOutcomeType,
       "country-type": countryType,
       "country-subdivision-type": countrySubdivisionType,
+      "approximate-age-type": approximateAgeType,
     },
   } = state;
 
@@ -362,6 +365,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(countrySubdivisionType).any()) {
       dispatch(fetchCountrySubdivisionTypes());
     }
+    if (!from(approximateAgeType).any()) {
+      dispatch(fetchApproximateAgeTypes());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -428,6 +434,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchTicketOutcomeTypes());
     dispatch(fetchCountryTypes());
     dispatch(fetchCountrySubdivisionTypes());
+    dispatch(fetchApproximateAgeTypes());
   } catch (error) {
     console.error(error);
   }
@@ -1608,6 +1615,16 @@ export const selectHasQuantityEquipment = (state: RootState): Array<string> => {
 
   return data;
 };
+
+export const selectApproximateAgeDropdown = createSelector(
+  (state: RootState) => state.codeTables["approximate-age-type"],
+  (items) =>
+    items.map(({ approximateAgeCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
 
 const privacyDropdownOptions: Option[] = [
   { value: "Y", label: "Yes" },

@@ -935,6 +935,15 @@ export class CodeTableService {
         const results = data.countrySubdivisions;
         return results;
       }
+
+      case "approximate-age-type": {
+        const { data } = await get(token, {
+          query:
+            "{ approximateAgeCodes { approximateAgeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.approximateAgeCodes;
+        return results;
+      }
     }
   };
 

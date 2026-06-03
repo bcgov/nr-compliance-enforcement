@@ -52,6 +52,7 @@ export const CODE_TABLE_TYPES = {
   TICKET_OUTCOME_TYPE: "ticket-outcome-type",
   COUNTRY: "country-type",
   COUNTRY_SUBDIVISION: "country-subdivision-type",
+  APPROXIMATE_AGE: "approximate-age-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

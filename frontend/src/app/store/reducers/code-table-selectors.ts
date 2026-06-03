@@ -140,3 +140,8 @@ export const selectCountrySubdivisions = createSelector([selectCodeTables], (cod
   const { "country-subdivision-type": items } = codeTables;
   return items.map(({ countrySubdivisionCode: value, longDescription: label }) => ({ label, value }));
 });
+
+export const selectApproximateAges = createSelector([selectCodeTables], (codeTables) => {
+  const { "approximate-age-type": items } = codeTables;
+  return items.map(({ approximateAgeCode: value, longDescription: label }) => ({ label, value }));
+});
