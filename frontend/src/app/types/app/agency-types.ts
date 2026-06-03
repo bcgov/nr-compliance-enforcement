@@ -2,6 +2,7 @@ export const AgencyType = {
   COS: "COS",
   CEEB: "EPO",
   NROS: "NROS",
+  MINES: "MINES",
   PARKS: "PARKS",
   SECTOR: "NRS",
 };
@@ -12,4 +13,5 @@ export const AgencyNames = {
   PARKS: { short: "BC Parks", long: "BC Parks" },
   NRS: { short: "Natural Resource Sector", long: "Natural Resource Sector" },
   NROS: { short: "NROS", long: "Natural Resource Officer Service" },
+  MINES: { short: "Mines", long: "Mines Health, Safety & Enforcement" },
 };

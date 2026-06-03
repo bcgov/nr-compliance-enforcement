@@ -78,13 +78,13 @@ export class ComplaintOutcomeController {
   }
 
   @Post("/createAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   async createAssessment(@Token() token, @Body() model: CreateAssessmentInput): Promise<ComplaintOutcomeDto> {
     return await this.service.createAssessment(token, model);
   }
 
   @Patch("/updateAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   async updateAssessment(@Token() token, @Body() model: UpdateAssessmentInput): Promise<ComplaintOutcomeDto> {
     return await this.service.updateAssessment(token, model);
   }
@@ -201,7 +201,7 @@ export class ComplaintOutcomeController {
   }
 
   @Post("/decision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   async createDecision(
     @Token() token,
     @Body() model: CreateDecisionInput,
@@ -216,13 +216,13 @@ export class ComplaintOutcomeController {
   }
 
   @Patch("/decision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   async updateDecision(@Token() token, @Body() model: UpdateDecisionInput): Promise<ComplaintOutcomeDto> {
     return await this.service.updateDecision(token, model);
   }
 
   @Post("/site")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   async createAuthorizationOutcome(
     @Token() token,
     @Body() model: CreateAuthorizationOutcomeInput,
@@ -231,7 +231,7 @@ export class ComplaintOutcomeController {
   }
 
   @Patch("/site")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   async updateAuthorizationOutcome(
     @Token() token,
     @Body() model: UpdateAuthorizationOutcomeInput,
@@ -240,7 +240,7 @@ export class ComplaintOutcomeController {
   }
 
   @Delete("/site")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   async deleteAuthorizationOutcome(
     @Token() token,
     @Query("complaintOutcomeGuid") complaintOutcomeGuid: string,

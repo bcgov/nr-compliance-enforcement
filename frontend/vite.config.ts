@@ -17,7 +17,12 @@ export default defineConfig({
         if (!importer) return;
         const match = source.match(/assets\/sass\/(.+)\.scss$/);
         if (match) {
-          return path.resolve(__dirname, `src/assets/sass/${match[1]}.compiled.css`);
+          // Prefer the container's pre-compiled CSS, but fall back to Vite's
+          // native SCSS handling when it's absent (e.g. running vite directly).
+          const compiled = path.resolve(__dirname, `src/assets/sass/${match[1]}.compiled.css`);
+          if (fs.existsSync(compiled)) {
+            return compiled;
+          }
         }
       },
     },

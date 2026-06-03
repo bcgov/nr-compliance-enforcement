@@ -193,6 +193,9 @@ export const getUserAgency = () => {
   if (hasRole("NROS")) {
     agency = AgencyType.NROS;
   }
+  if (hasRole("MINES")) {
+    agency = AgencyType.MINES;
+  }
   return agency;
 };
 

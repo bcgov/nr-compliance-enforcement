@@ -69,13 +69,13 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       return false;
     }
 
-    if (!/^[\d-/]{1,20}$/.exec(authorized) && !unauthorized) {
-      setAuthorizedErrorMessage("Invalid format. Please only include numbers and ‘-' and '/’ characters.");
+    if (!authorized.match(/^[\d-/]{1,20}$/) && !unauthorized) {
+      setAuthorizedErrorMessage("Invalid format. Please only include numbers and '-' and '/' characters.");
       return false;
     }
 
-    if (!/^[\d-/]{1,20}$/.exec(unauthorized) && !authorized) {
-      setUnauthorizedErrorMessage("Invalid format. Please only include numbers and ‘-' and '/’ characters.");
+    if (!unauthorized.match(/^[\d-/]{1,20}$/) && !authorized) {
+      setUnauthorizedErrorMessage("Invalid format. Please only include numbers and '-' and '/' characters.");
       return false;
     }
 
