@@ -385,6 +385,15 @@ export const truncateString = (str: string, maxLength: number): string => {
   }
 };
 
+export const truncateFilenameString = (str: string, maxLength: number): string => {
+  if (!str || str.length <= maxLength) {
+    return str;
+  }
+  const frontChars = Math.ceil(maxLength / 2);
+  const backChars = Math.floor(maxLength / 2);
+  return `${str.substring(0, frontChars)}...${str.substring(str.length - backChars)}`;
+};
+
 export const removeFile = (fileList: FileList, fileToRemove: File): File[] => {
   // Convert the FileList to an array
   const filesArray = Array.from(fileList);
