@@ -6,6 +6,8 @@ import { app_user_h as _app_user_h } from "./app_user_h";
 import { app_user_team_xref as _app_user_team_xref } from "./app_user_team_xref";
 import { app_user_team_xref_h as _app_user_team_xref_h } from "./app_user_team_xref_h";
 import { business as _business } from "./business";
+import { business_address as _business_address } from "./business_address";
+import { business_address_h as _business_address_h } from "./business_address_h";
 import { business_h as _business_h } from "./business_h";
 import { business_identifier as _business_identifier } from "./business_identifier";
 import { business_identifier_code as _business_identifier_code } from "./business_identifier_code";
@@ -51,6 +53,8 @@ import { sex_code as _sex_code } from "./sex_code";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
+import { country_code as _country_code } from "./country_code";
+import { country_subdivision_code as _country_subdivision_code } from "./country_subdivision_code";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -61,6 +65,8 @@ export namespace PrismaModel {
   export class app_user_team_xref extends _app_user_team_xref {}
   export class app_user_team_xref_h extends _app_user_team_xref_h {}
   export class business extends _business {}
+  export class business_address extends _business_address {}
+  export class business_address_h extends _business_address_h {}
   export class business_h extends _business_h {}
   export class business_identifier extends _business_identifier {}
   export class business_identifier_code extends _business_identifier_code {}
@@ -106,6 +112,8 @@ export namespace PrismaModel {
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
+  export class country_code extends _country_code {}
+  export class country_subdivision_code extends _country_subdivision_code {}
 
   export const extraModels = [
     agency_code,
@@ -116,6 +124,8 @@ export namespace PrismaModel {
     app_user_team_xref,
     app_user_team_xref_h,
     business,
+    business_address,
+    business_address_h,
     business_h,
     business_identifier,
     business_identifier_code,
@@ -161,5 +171,7 @@ export namespace PrismaModel {
     team,
     team_code,
     team_h,
+    country_code,
+    country_subdivision_code,
   ];
 }

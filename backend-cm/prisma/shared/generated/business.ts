@@ -1,5 +1,6 @@
 import { alias } from "./alias";
 import { party } from "./party";
+import { business_address } from "./business_address";
 import { business_identifier } from "./business_identifier";
 import { business_person_xref } from "./business_person_xref";
 import { contact_method } from "./contact_method";
@@ -32,6 +33,9 @@ export class business {
 
   @ApiPropertyOptional({ type: () => party })
   party?: party;
+
+  @ApiProperty({ isArray: true, type: () => business_address })
+  business_address: business_address[];
 
   @ApiProperty({ isArray: true, type: () => business_identifier })
   business_identifier: business_identifier[];

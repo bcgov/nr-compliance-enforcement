@@ -34,7 +34,11 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
   } = useAppSelector((state) => selectComplaintDetails(state, complaintType));
 
   const park = usePark(parkGuid);
-  const enableOfficeFeature = complaintOwner && complaintOwner !== AgencyType.CEEB && complaintOwner !== AgencyType.NROS;
+  const enableOfficeFeature =
+    complaintOwner &&
+    complaintOwner !== AgencyType.CEEB &&
+    complaintOwner !== AgencyType.NROS &&
+    complaintOwner !== AgencyType.MINES;
 
   return (
     <section className="comp-details-section">

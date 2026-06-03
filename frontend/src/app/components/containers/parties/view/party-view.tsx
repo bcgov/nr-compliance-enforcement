@@ -25,6 +25,7 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { formatDateOfBirth } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
+import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -84,6 +85,16 @@ export const GET_PARTY = gql`
             businessIdentifierCode
             shortDescription
           }
+        }
+        addresses {
+          businessAddressGuid
+          addressName
+          address
+          city
+          province
+          postalCode
+          country
+          isPrimary
         }
         contactMethods {
           contactMethodGuid
@@ -291,12 +302,77 @@ const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> =
   </>
 );
 
+type BusinessAddressDisplay = {
+  businessAddressGuid?: string | null;
+  addressName?: string | null;
+  address?: string | null;
+  city?: string | null;
+  province?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  isPrimary?: boolean | null;
+};
+
+const BusinessAddressesList: FC<{
+  addresses: ReadonlyArray<BusinessAddressDisplay>;
+  countryOptions: ReadonlyArray<Option>;
+  countrySubdivisionOptions: ReadonlyArray<Option>;
+}> = ({ addresses, countryOptions, countrySubdivisionOptions }) => (
+  <>
+    {addresses.map((businessAddress, index) => (
+      <div
+        key={businessAddress.businessAddressGuid ?? `address-${index}`}
+        className="party-details-item"
+        style={index < addresses.length - 1 ? { marginBottom: "1em" } : undefined}
+      >
+        <h4 className="mb-3">
+          {businessAddress.addressName || `Address ${index + 1}`}
+          {businessAddress.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
+        </h4>
+        {businessAddress.address && (
+          <p>
+            <b>Address: </b>
+            {businessAddress.address}
+          </p>
+        )}
+        {businessAddress.city && (
+          <p>
+            <b>City: </b>
+            {businessAddress.city}
+          </p>
+        )}
+        {businessAddress.province && (
+          <p>
+            <b>Province: </b>
+            {countrySubdivisionOptions?.find((opt) => opt.value === businessAddress?.province)?.label ??
+              businessAddress.province}
+          </p>
+        )}
+        {businessAddress.postalCode && (
+          <p>
+            <b>Postal code: </b>
+            {businessAddress.postalCode}
+          </p>
+        )}
+        {businessAddress.country && (
+          <p>
+            <b>Country: </b>
+            {countryOptions?.find((opt) => opt.value === businessAddress?.country)?.label ?? businessAddress.country}
+          </p>
+        )}
+      </div>
+    ))}
+  </>
+);
+
 export const PartyView: FC = () => {
   const { id = "" } = useParams<PartyParams>();
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const sexOptions = useAppSelector(selectSexDropdown);
+  const countryOptions = useAppSelector(selectCountries);
+  const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -305,6 +381,9 @@ export const PartyView: FC = () => {
   });
 
   const partyData = data?.party;
+
+  const businessAddresses =
+    (partyData?.business as { addresses?: ReadonlyArray<BusinessAddressDisplay> } | undefined)?.addresses ?? [];
 
   let partyType;
   let partyId;
@@ -620,6 +699,17 @@ export const PartyView: FC = () => {
                 </>
               )}
             </div>
+            {businessAddresses.length > 0 && (
+              <>
+                <br />
+                <h4>Addresses</h4>
+                <BusinessAddressesList
+                  addresses={businessAddresses}
+                  countryOptions={countryOptions}
+                  countrySubdivisionOptions={countrySubdivisionOptions}
+                />
+              </>
+            )}
             <br />
             <h4>C&E history</h4>
             <div className="party-details-item">

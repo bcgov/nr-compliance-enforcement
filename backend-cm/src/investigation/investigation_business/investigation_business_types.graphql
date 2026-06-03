@@ -6,4 +6,5 @@ type InvestigationBusiness {
   contactMethods: [InvestigationContactMethod]
   businessIdentifiers: [InvestigationBusinessIdentifier]
   aliases: [InvestigationAlias]
+  addresses: [InvestigationBusinessAddress]
 }

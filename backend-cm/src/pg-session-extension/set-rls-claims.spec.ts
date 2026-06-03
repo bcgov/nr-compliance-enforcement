@@ -29,6 +29,12 @@ describe("setRlsClaims", () => {
     expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.agency_code = 'EPO'");
   });
 
+  it("maps MINES role -> MINES agency_code", async () => {
+    const tx = makeTx();
+    await setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["MINES"], exp: 1 });
+    expect(tx.$executeRawUnsafe).toHaveBeenCalledWith("SET LOCAL jwt.claims.agency_code = 'MINES'");
+  });
+
   it("error when client_roles has no agency", async () => {
     const tx = makeTx();
     await expect(setRlsClaims(tx, { idir_user_guid: "g", client_roles: ["READ ONLY"], exp: 1 })).rejects.toThrow(

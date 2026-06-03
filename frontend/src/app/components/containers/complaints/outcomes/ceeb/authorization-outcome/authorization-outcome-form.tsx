@@ -69,12 +69,12 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
       return false;
     }
 
-    if (!authorized.match(/^[\d-/]{1,20}$/) && !unauthorized) {
+    if (!/^[\d-/]{1,20}$/.exec(authorized) && !unauthorized) {
       setAuthorizedErrorMessage("Invalid format. Please only include numbers and ‘-' and '/’ characters.");
       return false;
     }
 
-    if (!unauthorized.match(/^[\d-/]{1,20}$/) && !authorized) {
+    if (!/^[\d-/]{1,20}$/.exec(unauthorized) && !authorized) {
       setUnauthorizedErrorMessage("Invalid format. Please only include numbers and ‘-' and '/’ characters.");
       return false;
     }
@@ -86,13 +86,13 @@ export const AuthoizationOutcomeForm: FC<props> = ({ id, type, value, leadIdenti
     setAuthorizedErrorMessage("");
     setUnauthorizedErrorMessage("");
 
-    const identifier = id !== undefined ? caseId : leadIdentifier;
+    const identifier = id === undefined ? leadIdentifier : caseId;
 
     if (isValid()) {
       const data: PermitSite = {
         id,
-        type: !unauthorized ? "permit" : "site",
-        value: !unauthorized ? authorized : unauthorized,
+        type: unauthorized ? "site" : "permit",
+        value: unauthorized || authorized,
       };
 
       dispatch(upsertAuthorizationOutcome(identifier, leadIdentifier, data)).then(async (response) => {

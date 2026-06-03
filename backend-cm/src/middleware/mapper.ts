@@ -43,6 +43,7 @@ import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investig
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 import { mapPrismaAliasToAlias } from "../shared/alias/dto/alias";
+import { mapPrismaBusinessAddressToBusinessAddress } from "../shared/business_address/dto/business_address";
 import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "../shared/business_identifier_code/dto/business_identifier_code";
 import { mapPrismaBusinessIdentifierToIdentifier } from "../shared/business_identifier/dto/business_identifier";
 import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "../shared/business_person_xref/dto/business_person_xref";
@@ -54,6 +55,9 @@ import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/
 import { mapPrismaContactMethodToInvestigationContactMethod } from "../investigation/investigation_contact_method/dto/investigation_contact_method";
 import { mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier } from "../investigation/investigation_business_identifier/dto/investigation_business_identifier";
 import { mapPrismaAliasToInvestigationAlias } from "../investigation/investigation_alias/dto/investigation_alias";
+import { mapPrismaBusinessAddressToInvestigationBusinessAddress } from "../investigation/investigation_business_address/dto/investigation_business_address";
+import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/country_code";
+import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -76,6 +80,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaAliasToAlias(mapper);
+  mapPrismaBusinessAddressToBusinessAddress(mapper);
   mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode(mapper);
   mapPrismaBusinessIdentifierToIdentifier(mapper);
   mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
@@ -90,6 +95,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAppUserTeamXrefToAppUserTeamXref(mapper);
   mapPrismaActivityNoteToActivityNote(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
+  mapPrismaCountryCodeToCountryCode(mapper);
+  mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);
@@ -110,6 +117,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToInvestigationContactMethod(mapper);
   mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier(mapper);
   mapPrismaAliasToInvestigationAlias(mapper);
+  mapPrismaBusinessAddressToInvestigationBusinessAddress(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

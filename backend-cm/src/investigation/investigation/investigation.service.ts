@@ -82,6 +82,11 @@ export class InvestigationService {
                       active_ind: true,
                     },
                   },
+                  investigation_business_address: {
+                    where: {
+                      active_ind: true,
+                    },
+                  },
                 },
               },
             },
