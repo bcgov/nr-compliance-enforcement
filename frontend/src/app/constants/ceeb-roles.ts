@@ -4,6 +4,7 @@ export const ROLE_OPTIONS: Array<Option> = [
   { value: "COS", label: "COS" },
   { value: "CEEB", label: "CEEB User" },
   { value: "NROS", label: "NROS User" },
+  { value: "MINES", label: "Mines User" },
   { value: "PARKS", label: "PARKS" },
   { value: "CEEB Section Head", label: "Section Head" },
   { value: "CEEB Compliance Coordinator", label: "Compliance Coordinator" },
@@ -35,6 +36,13 @@ export const COS_ROLE_OPTIONS: Array<Option> = [
 
 export const NROS_ROLE_OPTIONS: Array<Option> = [
   { value: "NROS", label: "NROS User" },
+  { value: "READ ONLY", label: "Read Only" },
+  { value: "Province-wide", label: "Province-wide" },
+  { value: "Case Access", label: "Case Access" },
+];
+
+export const MINES_ROLE_OPTIONS: Array<Option> = [
+  { value: "MINES", label: "Mines User" },
   { value: "READ ONLY", label: "Read Only" },
   { value: "Province-wide", label: "Province-wide" },
   { value: "Case Access", label: "Case Access" },

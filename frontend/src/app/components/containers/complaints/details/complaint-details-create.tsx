@@ -104,15 +104,17 @@ export const CreateComplaint: FC = () => {
   ];
 
   const privacyDropdown = useAppSelector(selectPrivacyDropdown);
-  const enablePrivacyFeature = agency && (agency === AgencyType.CEEB || agency === AgencyType.NROS);
-  const enableOfficeFeature = agency && agency !== AgencyType.CEEB && agency !== AgencyType.NROS;
+  const enablePrivacyFeature =
+    agency && (agency === AgencyType.CEEB || agency === AgencyType.NROS || agency === AgencyType.MINES);
+  const enableOfficeFeature =
+    agency && agency !== AgencyType.CEEB && agency !== AgencyType.NROS && agency !== AgencyType.MINES;
 
   const currentDate = useMemo(() => new Date(), []);
 
   const [complaintData, applyComplaintData] = useState<ComplaintAlias>();
 
   let initialComplaintType: string = COMPLAINT_TYPES.HWCR;
-  if (agency === AgencyType.CEEB || agency === AgencyType.NROS) {
+  if (agency === AgencyType.CEEB || agency === AgencyType.NROS || agency === AgencyType.MINES) {
     initialComplaintType = COMPLAINT_TYPES.ERS;
   } else if (agency === AgencyType.COS || agency === AgencyType.PARKS) {
     switch (activeTab) {

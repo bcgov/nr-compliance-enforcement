@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { NrosDecision } from "./nros-decision/decision";
+import { MinesDecision } from "./mines-decision/decision";
 import { useParams } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hooks";
 import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
@@ -10,11 +10,11 @@ import { Notes } from "@/app/components/containers/complaints/outcomes/notes";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ComplaintAssessments } from "../complaint-assessments/complaint-assessments";
 
-interface NROSOutcomeReportProps {
+interface MinesOutcomeReportProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const NrosOutcomeReport: FC<NROSOutcomeReportProps> = ({ onDirtyChange }) => {
+export const MinesOutcomeReport: FC<MinesOutcomeReportProps> = ({ onDirtyChange }) => {
   const { id = "" } = useParams<ComplaintParams>();
   const dispatch = useAppDispatch();
 
@@ -33,7 +33,7 @@ export const NrosOutcomeReport: FC<NROSOutcomeReportProps> = ({ onDirtyChange })
       </div>
       <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
       <AuthorizationOutcome onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} />
-      <NrosDecision onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
+      <MinesDecision onDirtyChange={(_, isDirty) => handleChildDirtyChange(2, isDirty)} />
       <Notes onDirtyChange={(_, isDirty) => handleChildDirtyChange(3, isDirty)} />
       <OutcomeAttachments onDirtyChange={(_, isDirty) => handleChildDirtyChange(4, isDirty)} />
     </section>
