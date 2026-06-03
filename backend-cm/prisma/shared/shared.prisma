@@ -839,13 +839,13 @@ model person {
   date_of_birth                                                          DateTime?              @db.Date
   drivers_license_number                                                 String?                @db.VarChar(64)
   drivers_license_jurisdiction                                           String?                @db.VarChar(64)
-  sex_code                                                               String?                @db.VarChar(16)
-  approximate_age_code                                                   String?                @db.VarChar(10)
+  approximate_age_code                                                   String?                @db.VarChar(16)
+  gender_code                                                            String?                @db.VarChar(16)
   business_person_xref                                                   business_person_xref[]
   contact_method                                                         contact_method[]
   party                                                                  party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?  @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
-  sex_code_person_sex_codeTosex_code                                     sex_code?              @relation("person_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__sex_code")
+  gender_code_person_gender_codeTogender_code                            gender_code?           @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
 
   @@schema("shared")
 }
@@ -858,22 +858,6 @@ model person_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
-
-  @@schema("shared")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model sex_code {
-  sex_code                         String    @id(map: "PK_sex_code") @db.VarChar(10)
-  short_description                String    @db.VarChar(50)
-  long_description                 String?   @db.VarChar(250)
-  display_order                    Int
-  active_ind                       Boolean
-  create_user_id                   String    @db.VarChar(32)
-  create_utc_timestamp             DateTime  @db.Timestamp(6)
-  update_user_id                   String?   @db.VarChar(32)
-  update_utc_timestamp             DateTime? @db.Timestamp(6)
-  person_person_sex_codeTosex_code person[]  @relation("person_sex_codeTosex_code")
 
   @@schema("shared")
 }
@@ -971,6 +955,22 @@ model approximate_age_code {
   update_user_id                                           String?   @db.VarChar(32)
   update_utc_timestamp                                     DateTime? @db.Timestamp(6)
   person_person_approximate_age_codeToapproximate_age_code person[]  @relation("person_approximate_age_codeToapproximate_age_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model gender_code {
+  gender_code                            String    @id(map: "gender_pk") @db.VarChar(16)
+  short_description                      String    @db.VarChar(64)
+  long_description                       String?   @db.VarChar(256)
+  display_order                          Int
+  active_ind                             Boolean   @default(true)
+  create_user_id                         String    @db.VarChar(32)
+  create_utc_timestamp                   DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                         String?   @db.VarChar(32)
+  update_utc_timestamp                   DateTime? @db.Timestamp(6)
+  person_person_gender_codeTogender_code person[]  @relation("person_gender_codeTogender_code")
 
   @@schema("shared")
 }

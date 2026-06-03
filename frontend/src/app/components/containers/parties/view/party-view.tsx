@@ -20,7 +20,7 @@ import {
   selectAgencyDropdown,
   selectApproximateAgeDropdown,
   selectCodeTable,
-  selectSexDropdown,
+  selectGenderDropdown,
 } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
@@ -68,7 +68,7 @@ export const GET_PARTY = gql`
         approximateAgeCode
         driversLicenseNumber
         driversLicenseJurisdiction
-        sexCode
+        genderCode
         contactMethods {
           contactMethodGuid
           typeCode
@@ -205,9 +205,9 @@ export type PartyParams = {
 
 const PersonIdentifyingInfo: FC<{
   person: Person;
-  sexOptions: ReadonlyArray<Option>;
+  genderOptions: ReadonlyArray<Option>;
   approximateAgeOptions: ReadonlyArray<Option>;
-}> = ({ person, sexOptions, approximateAgeOptions }) => (
+}> = ({ person, genderOptions, approximateAgeOptions }) => (
   <>
     {person.dateOfBirth !== null && (
       <p>
@@ -234,10 +234,10 @@ const PersonIdentifyingInfo: FC<{
         {person.driversLicenseJurisdiction}
       </p>
     )}
-    {person.sexCode && (
+    {person.genderCode && (
       <p>
-        <b>Sex: </b>
-        {sexOptions?.find((opt) => opt.value === person?.sexCode)?.label ?? person.sexCode}
+        <b>Gender: </b>
+        {genderOptions?.find((opt) => opt.value === person?.genderCode)?.label ?? person.genderCode}
       </p>
     )}
   </>
@@ -387,7 +387,7 @@ export const PartyView: FC = () => {
   const navigate = useNavigate();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const sexOptions = useAppSelector(selectSexDropdown);
+  const genderOptions = useAppSelector(selectGenderDropdown);
   const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown);
   const countryOptions = useAppSelector(selectCountries);
   const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
@@ -690,7 +690,7 @@ export const PartyView: FC = () => {
               {partyData?.person && (
                 <PersonIdentifyingInfo
                   person={partyData.person}
-                  sexOptions={sexOptions}
+                  genderOptions={genderOptions}
                   approximateAgeOptions={approximateAgeOptions}
                 />
               )}

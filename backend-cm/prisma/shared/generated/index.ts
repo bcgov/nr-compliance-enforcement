@@ -49,13 +49,13 @@ import { party_h as _party_h } from "./party_h";
 import { party_type_code as _party_type_code } from "./party_type_code";
 import { person as _person } from "./person";
 import { person_h as _person_h } from "./person_h";
-import { sex_code as _sex_code } from "./sex_code";
 import { team as _team } from "./team";
 import { team_code as _team_code } from "./team_code";
 import { team_h as _team_h } from "./team_h";
 import { country_code as _country_code } from "./country_code";
 import { country_subdivision_code as _country_subdivision_code } from "./country_subdivision_code";
 import { approximate_age_code as _approximate_age_code } from "./approximate_age_code";
+import { gender_code as _gender_code } from "./gender_code";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -109,13 +109,13 @@ export namespace PrismaModel {
   export class party_type_code extends _party_type_code {}
   export class person extends _person {}
   export class person_h extends _person_h {}
-  export class sex_code extends _sex_code {}
   export class team extends _team {}
   export class team_code extends _team_code {}
   export class team_h extends _team_h {}
   export class country_code extends _country_code {}
   export class country_subdivision_code extends _country_subdivision_code {}
   export class approximate_age_code extends _approximate_age_code {}
+  export class gender_code extends _gender_code {}
 
   export const extraModels = [
     agency_code,
@@ -169,12 +169,12 @@ export namespace PrismaModel {
     party_type_code,
     person,
     person_h,
-    sex_code,
     team,
     team_code,
     team_h,
     country_code,
     country_subdivision_code,
     approximate_age_code,
+    gender_code,
   ];
 }

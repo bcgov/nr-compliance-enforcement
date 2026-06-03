@@ -4,7 +4,7 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@hooks/hooks";
-import { selectSexDropdown, selectApproximateAgeDropdown } from "@/app/store/reducers/code-table";
+import { selectApproximateAgeDropdown, selectGenderDropdown } from "@/app/store/reducers/code-table";
 import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
@@ -18,8 +18,8 @@ type PersonFormProps = {
 };
 
 export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
-  const sexCodeOptions = useAppSelector(selectSexDropdown)
-    ?.filter((opt: { isActive?: boolean }) => opt.isActive !== false)
+  const genderCodeOptions = useAppSelector(selectGenderDropdown)
+    ?.filter((opt: { activeInd?: boolean }) => opt.activeInd !== false)
     .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
 
   const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown)
@@ -28,9 +28,6 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
 
   const { phoneNumbers, handleAddPhoneNumber, handleRemovePhoneNumber, handleSetPrimaryPhoneNumber } =
     usePartyFormFields(form);
-
-  const dateOfBirth = useStore(form.store, (state: any) => state.values.dateOfBirth);
-  const approximateAgeCode = useStore(form.store, (state: any) => state.values.approximateAgeCode);
 
   return (
     <>
@@ -216,17 +213,17 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
-        name="sexCode"
-        label="Sex"
+        name="genderCode"
+        label="Gender"
         render={(field) => (
           <CompSelect
-            id="sex-select"
+            id="gender-select"
             classNamePrefix="comp-select"
             className="comp-details-input"
-            options={sexCodeOptions}
-            value={sexCodeOptions?.find((opt: any) => opt.value === field.state.value)}
+            options={genderCodeOptions}
+            value={genderCodeOptions?.find((opt: any) => opt.value === field.state.value)}
             onChange={(option) => field.handleChange(option?.value ?? "")}
-            placeholder="Select sex"
+            placeholder="Select gender"
             isClearable={true}
             showInactive={false}
             enableValidation={true}

@@ -55,6 +55,7 @@ import {
   fetchCountryTypes,
   fetchCountrySubdivisionTypes,
   fetchApproximateAgeTypes,
+  fetchGenders,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -116,6 +117,7 @@ const initialState: CodeTableState = {
   "country-type": [],
   "country-subdivision-type": [],
   "approximate-age-type": [],
+  "gender-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -195,6 +197,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "country-type": countryType,
       "country-subdivision-type": countrySubdivisionType,
       "approximate-age-type": approximateAgeType,
+      "gender-type": genderType,
     },
   } = state;
 
@@ -367,6 +370,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(approximateAgeType).any()) {
       dispatch(fetchApproximateAgeTypes());
+    }
+    if (!from(genderType).any()) {
+      dispatch(fetchGenders());
     }
   } catch (error) {
     console.error(error);
@@ -1396,6 +1402,7 @@ export const selectCascadedCommunity =
       };
     });
   };
+
 export const selectSexDropdown = createSelector(
   (state: RootState) => state.codeTables.sex,
   (items) =>
@@ -1403,6 +1410,16 @@ export const selectSexDropdown = createSelector(
       label,
       value,
       isActive,
+    })),
+);
+
+export const selectGenderDropdown = createSelector(
+  (state: RootState) => state.codeTables["gender-type"],
+  (items) =>
+    items.map(({ genderCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
     })),
 );
 

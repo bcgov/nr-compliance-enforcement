@@ -36,7 +36,7 @@ export class PersonInput {
   driversLicenseJurisdiction?: string;
 
   @Field(() => String, { nullable: true })
-  sexCode?: string;
+  genderCode?: string;
 
   @Field(() => [ContactMethodInput], { nullable: true })
   contactMethods?: ContactMethodInput[];

@@ -59,6 +59,7 @@ import { mapPrismaBusinessAddressToInvestigationBusinessAddress } from "../inves
 import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/country_code";
 import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
 import { mapPrismaApproximateAgeCodeToApproximateAgeCode } from "src/shared/approximate_age_code/dto/approximate_age_code";
+import { mapPrismaGenderCodeToGenderCode } from "src/shared/gender/dto/gender_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -99,6 +100,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCountryCodeToCountryCode(mapper);
   mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode(mapper);
   mapPrismaApproximateAgeCodeToApproximateAgeCode(mapper);
+  mapPrismaGenderCodeToGenderCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

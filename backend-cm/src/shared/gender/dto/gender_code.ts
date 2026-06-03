@@ -1,22 +1,22 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
-import { sex_code } from "../../../../prisma/shared/generated/sex_code";
+import { gender_code } from "prisma/shared/generated/gender_code";
 
-export class SexCode {
-  sexCode: string;
+export class Gender {
+  genderCode: string;
   shortDescription: string;
   longDescription: string;
   displayOrder: number;
   activeIndicator: boolean;
 }
 
-export const mapPrismaSexCodeToSexCode = (mapper: Mapper) => {
-  createMap<sex_code, SexCode>(
+export const mapPrismaGenderCodeToGenderCode = (mapper: Mapper) => {
+  createMap<gender_code, Gender>(
     mapper,
-    "sex_code",
-    "SexCode",
+    "gender_code",
+    "Gender",
     forMember(
-      (dest) => dest.sexCode,
-      mapFrom((src) => src.sex_code),
+      (dest) => dest.genderCode,
+      mapFrom((src) => src.gender_code),
     ),
     forMember(
       (dest) => dest.shortDescription,

@@ -42,7 +42,7 @@ export const GET_INVESTIGATION = gql`
           dateOfBirth
           driversLicenseNumber
           driversLicenseJurisdiction
-          sexCode
+          genderCode
           contactMethods {
             contactMethodGuid
             contactMethodTypeCode

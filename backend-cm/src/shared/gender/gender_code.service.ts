@@ -2,22 +2,22 @@ import { Injectable, Logger } from "@nestjs/common";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
-import { sex_code } from "prisma/shared/generated/sex_code";
-import { SexCode } from "./dto/sex_code";
+import { gender_code } from "prisma/shared/generated/gender_code";
+import { Gender } from "src/shared/gender/dto/gender_code";
 
 @Injectable()
-export class SexCodeService {
+export class GenderCodeService {
   constructor(
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
   ) {}
 
-  private readonly logger = new Logger(SexCodeService.name);
+  private readonly logger = new Logger(GenderCodeService.name);
 
   async findAll() {
-    const prismaSexCodes = await this.prisma.sex_code.findMany({
+    const prismaGenderCodes = await this.prisma.gender_code.findMany({
       select: {
-        sex_code: true,
+        gender_code: true,
         short_description: true,
         long_description: true,
         display_order: true,
@@ -25,6 +25,6 @@ export class SexCodeService {
       },
     });
 
-    return this.mapper.mapArray<sex_code, SexCode>(prismaSexCodes as Array<sex_code>, "sex_code", "SexCode");
+    return this.mapper.mapArray<gender_code, Gender>(prismaGenderCodes as Array<gender_code>, "gender_code", "Gender");
   }
 }

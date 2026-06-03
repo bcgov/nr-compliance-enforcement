@@ -2006,36 +2006,38 @@ export type Person = {
   driversLicenseJurisdiction?: Maybe<Scalars['String']['output']>;
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
+  genderCode?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   middleName?: Maybe<Scalars['String']['output']>;
   middleName2?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
-  sexCode?: Maybe<Scalars['String']['output']>;
 };
 
 export type PersonInput = {
+  approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
+  genderCode?: InputMaybe<Scalars['String']['input']>;
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
   middleName2?: InputMaybe<Scalars['String']['input']>;
-  sexCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PersonUpdateInput = {
+  approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
+  genderCode?: InputMaybe<Scalars['String']['input']>;
   lastName: Scalars['String']['input'];
   middleName?: InputMaybe<Scalars['String']['input']>;
   middleName2?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
-  sexCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Prevention = {

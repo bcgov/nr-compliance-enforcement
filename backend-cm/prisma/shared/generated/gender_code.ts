@@ -1,9 +1,9 @@
 import { person } from "./person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class sex_code {
+export class gender_code {
   @ApiProperty({ type: String })
-  sex_code: string;
+  gender_code: string;
 
   @ApiProperty({ type: String })
   short_description: string;
@@ -15,7 +15,7 @@ export class sex_code {
   display_order: number;
 
   @ApiProperty({ type: Boolean })
-  active_ind: boolean;
+  active_ind: boolean = true;
 
   @ApiProperty({ type: String })
   create_user_id: string;
@@ -30,5 +30,5 @@ export class sex_code {
   update_utc_timestamp?: Date;
 
   @ApiProperty({ isArray: true, type: () => person })
-  person_person_sex_codeTosex_code: person[];
+  person_person_gender_codeTogender_code: person[];
 }

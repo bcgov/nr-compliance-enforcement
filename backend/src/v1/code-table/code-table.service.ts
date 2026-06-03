@@ -944,6 +944,14 @@ export class CodeTableService {
         const results = data.approximateAgeCodes;
         return results;
       }
+
+      case "gender-type": {
+        const { data } = await get(token, {
+          query: "{ genderCodes { genderCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.genderCodes;
+        return results;
+      }
     }
   };
 

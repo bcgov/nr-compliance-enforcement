@@ -224,3 +224,12 @@ export const fetchApproximateAgeTypes = (): AppThunk => async (dispatch) => {
     dispatch(setCodeTable(payload));
   }
 };
+
+export const fetchGenders = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.GENDER}`);
+  const response = await get<Array<ApproximateAgeType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.GENDER, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};

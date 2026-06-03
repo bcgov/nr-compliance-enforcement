@@ -2,7 +2,7 @@ import { business_person_xref } from "./business_person_xref";
 import { contact_method } from "./contact_method";
 import { party } from "./party";
 import { approximate_age_code } from "./approximate_age_code";
-import { sex_code } from "./sex_code";
+import { gender_code } from "./gender_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class person {
@@ -46,10 +46,10 @@ export class person {
   drivers_license_jurisdiction?: string;
 
   @ApiPropertyOptional({ type: String })
-  sex_code?: string;
+  approximate_age_code?: string;
 
   @ApiPropertyOptional({ type: String })
-  approximate_age_code?: string;
+  gender_code?: string;
 
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
@@ -63,6 +63,6 @@ export class person {
   @ApiPropertyOptional({ type: () => approximate_age_code })
   approximate_age_code_person_approximate_age_codeToapproximate_age_code?: approximate_age_code;
 
-  @ApiPropertyOptional({ type: () => sex_code })
-  sex_code_person_sex_codeTosex_code?: sex_code;
+  @ApiPropertyOptional({ type: () => gender_code })
+  gender_code_person_gender_codeTogender_code?: gender_code;
 }

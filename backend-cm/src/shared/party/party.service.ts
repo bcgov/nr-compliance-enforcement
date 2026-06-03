@@ -173,7 +173,7 @@ export class PartyService {
                     date_of_birth: true,
                     drivers_license_number: true,
                     drivers_license_jurisdiction: true,
-                    sex_code: true,
+                    gender_code: true,
                     approximate_age_code: true,
                     contact_method: {
                       select: {
@@ -206,7 +206,7 @@ export class PartyService {
             date_of_birth: true,
             drivers_license_number: true,
             drivers_license_jurisdiction: true,
-            sex_code: true,
+            gender_code: true,
             approximate_age_code: true,
             contact_method: {
               select: {
@@ -280,7 +280,7 @@ export class PartyService {
           ),
           drivers_license_number: input.person?.driversLicenseNumber,
           drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-          sex_code: input.person?.sexCode,
+          gender_code: input.person?.genderCode,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(input.person?.contactMethods?.length
@@ -400,7 +400,7 @@ export class PartyService {
           ),
           drivers_license_number: input.person?.driversLicenseNumber,
           drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-          sex_code: input.person?.sexCode,
+          gender_code: input.person?.genderCode,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
           ...(Object.keys(personContactMethodOperations).length
@@ -698,7 +698,7 @@ export class PartyService {
             date_of_birth: bpx.person.dateOfBirth,
             drivers_license_number: bpx.person.driversLicenseNumber,
             drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
-            sex_code: bpx.person.sexCode,
+            gender_code: bpx.person.genderCode,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
             ...(bpx.person.contactMethods?.length && {
@@ -750,7 +750,7 @@ export class PartyService {
                   date_of_birth: bpx.person.dateOfBirth,
                   drivers_license_number: bpx.person.driversLicenseNumber,
                   drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
-                  sex_code: bpx.person.sexCode,
+                  gender_code: bpx.person.genderCode,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
                   ...(contactMethodOps && {
@@ -967,7 +967,7 @@ export class PartyService {
               date_of_birth: true,
               drivers_license_number: true,
               drivers_license_jurisdiction: true,
-              sex_code: true,
+              gender_code: true,
               contact_method: {
                 where: { active_ind: true },
                 select: {

@@ -46,7 +46,7 @@ const PARTY_PERSON_FRAGMENT = gql`
     approximateAgeCode
     driversLicenseNumber
     driversLicenseJurisdiction
-    sexCode
+    genderCode
   }
 `;
 
@@ -323,7 +323,7 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     approximateAgeCode: value.approximateAgeCode || undefined,
     driversLicenseNumber: value.driversLicenseNumber || undefined,
     driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
-    sexCode: value.sexCode || undefined,
+    genderCode: value.genderCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
 }
@@ -374,7 +374,7 @@ const PartyEdit: FC = () => {
         approximateAgeCode: person?.approximateAgeCode || "",
         driversLicenseNumber: person?.driversLicenseNumber || "",
         driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
-        sexCode: person?.sexCode || "",
+        genderCode: person?.genderCode || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -406,7 +406,7 @@ const PartyEdit: FC = () => {
       approximateAgeCode: "",
       driversLicenseNumber: "",
       driversLicenseJurisdiction: "",
-      sexCode: "",
+      genderCode: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

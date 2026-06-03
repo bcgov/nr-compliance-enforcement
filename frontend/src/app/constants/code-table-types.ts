@@ -53,6 +53,7 @@ export const CODE_TABLE_TYPES = {
   COUNTRY: "country-type",
   COUNTRY_SUBDIVISION: "country-subdivision-type",
   APPROXIMATE_AGE: "approximate-age-type",
+  GENDER: "gender-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

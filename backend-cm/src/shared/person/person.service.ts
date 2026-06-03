@@ -26,7 +26,7 @@ export class PersonService {
         date_of_birth: true,
         drivers_license_number: true,
         drivers_license_jurisdiction: true,
-        sex_code: true,
+        gender_code: true,
         approximate_age_code: true,
         contact_method: {
           select: {
@@ -77,7 +77,7 @@ export class PersonService {
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
         drivers_license_jurisdiction: input.driversLicenseJurisdiction,
-        sex_code: input.sexCode,
+        gender_code: input.genderCode,
         create_user_id: "system",
         contact_method: input.contactMethods
           ? {
@@ -119,7 +119,7 @@ export class PersonService {
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
         drivers_license_jurisdiction: input.driversLicenseJurisdiction,
-        sex_code: input.sexCode,
+        gender_code: input.genderCode,
       },
       include: {
         contact_method: {

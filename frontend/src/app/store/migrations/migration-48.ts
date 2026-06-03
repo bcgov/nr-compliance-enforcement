@@ -6,6 +6,7 @@ export const PersonProfileUpdates = {
       codeTables: {
         ...state.codeTables,
         "approximate-age-type": [],
+        "gender-age-type": [],
       },
     };
   },
