@@ -8,6 +8,7 @@ type Party {
   createdDateTime: DateTime
   person: Person
   business: Business
+  addresses: [Address]
 }
 
 type PageInfo {
@@ -30,6 +31,7 @@ input PartyCreateInput {
   shortDescription: String
   person: PersonInput
   business: BusinessInput
+  addresses: [AddressInput]
 }
 
 input PartyUpdateInput {
@@ -38,6 +40,7 @@ input PartyUpdateInput {
   shortDescription: String
   person: PersonUpdateInput
   business: BusinessUpdateInput
+  addresses: [AddressUpdateInput]
 }
 
 input PartyFilters {

@@ -31,7 +31,7 @@ import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
-import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { toDateOfBirth } from "@/app/common/methods";
 
@@ -248,9 +248,9 @@ const buildContactMethods = (phoneNumbers: ContactMethod[], emailAddresses: Cont
   return methods;
 };
 
-const buildAddresses = (addresses: BusinessAddressFormValue[] | undefined, isUpdate: boolean) =>
+const buildAddresses = (addresses: AddressFormValue[] | undefined, isUpdate: boolean) =>
   (addresses ?? []).map((address) => ({
-    ...(isUpdate && address.businessAddressGuid ? { businessAddressGuid: address.businessAddressGuid } : {}),
+    ...(isUpdate && address.addressGuid ? { addressGuid: address.addressGuid } : {}),
     addressName: address.addressName?.trim() ?? "",
     address: address.address?.trim() || null,
     city: address.city?.trim() || null,
@@ -260,9 +260,9 @@ const buildAddresses = (addresses: BusinessAddressFormValue[] | undefined, isUpd
     isPrimary: address.isPrimary ?? false,
   }));
 
-const mapAddressesFromPartyData = (addresses: any[] | undefined): BusinessAddressFormValue[] =>
+const mapAddressesFromPartyData = (addresses: any[] | undefined): AddressFormValue[] =>
   addresses?.map((address, index) => ({
-    businessAddressGuid: address.businessAddressGuid,
+    addressGuid: address.addressGuid,
     addressName: address.addressName ?? "",
     address: address.address ?? "",
     city: address.city ?? "",
@@ -281,7 +281,7 @@ const validateBusinessForm = async (value: any, businessGuid?: string): Promise<
     return "Business number is required.";
   }
 
-  const addresses = (value.addresses as BusinessAddressFormValue[] | undefined) ?? [];
+  const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
   const missingNameIndex = addresses.findIndex((address) => !address.addressName?.trim());
   if (missingNameIndex >= 0) {
     return "Address name is required.";
@@ -296,7 +296,6 @@ const buildBusinessUpdate = (value: any) => {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
-    addresses: buildAddresses(value.addresses, true),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
     contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,
   };
@@ -308,7 +307,6 @@ const buildBusinessCreate = (value: any) => {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, false),
-    addresses: buildAddresses(value.addresses, false),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
     contactPeople: value.contacts?.length ? buildContactPeopleForCreate(value.contacts) : undefined,
   };
@@ -402,7 +400,7 @@ const PartyEdit: FC = () => {
           : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
-        addresses: mapAddressesFromPartyData(partyData.party.business?.addresses),
+        addresses: mapAddressesFromPartyData(partyData.party.addresses),
       };
     }
     return {
@@ -446,6 +444,7 @@ const PartyEdit: FC = () => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
+          addresses: buildAddresses(value.addresses, true),
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
@@ -453,6 +452,7 @@ const PartyEdit: FC = () => {
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
+          addresses: buildAddresses(value.addresses, true),
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };

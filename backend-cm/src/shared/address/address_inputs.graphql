@@ -1,4 +1,4 @@
-input BusinessAddressInput {
+input AddressInput {
   addressName: String!
   address: String
   city: String
@@ -8,8 +8,8 @@ input BusinessAddressInput {
   isPrimary: Boolean
 }
 
-input BusinessAddressUpdateInput {
-  businessAddressGuid: String
+input AddressUpdateInput {
+  addressGuid: String
   addressName: String!
   address: String
   city: String

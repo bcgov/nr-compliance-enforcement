@@ -1,5 +1,5 @@
-export type BusinessAddressFormValue = {
-  businessAddressGuid?: string;
+export type AddressFormValue = {
+  addressGuid?: string;
   addressName?: string;
   address?: string;
   city?: string;
@@ -9,7 +9,7 @@ export type BusinessAddressFormValue = {
   isPrimary?: boolean;
 };
 
-export const createEmptyAddress = (): BusinessAddressFormValue => ({
+export const createEmptyAddress = (): AddressFormValue => ({
   addressName: "",
   address: "",
   city: "",

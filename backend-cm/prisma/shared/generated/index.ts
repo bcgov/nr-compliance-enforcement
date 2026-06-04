@@ -6,8 +6,6 @@ import { app_user_h as _app_user_h } from "./app_user_h";
 import { app_user_team_xref as _app_user_team_xref } from "./app_user_team_xref";
 import { app_user_team_xref_h as _app_user_team_xref_h } from "./app_user_team_xref_h";
 import { business as _business } from "./business";
-import { business_address as _business_address } from "./business_address";
-import { business_address_h as _business_address_h } from "./business_address_h";
 import { business_h as _business_h } from "./business_h";
 import { business_identifier as _business_identifier } from "./business_identifier";
 import { business_identifier_code as _business_identifier_code } from "./business_identifier_code";
@@ -56,6 +54,8 @@ import { country_code as _country_code } from "./country_code";
 import { country_subdivision_code as _country_subdivision_code } from "./country_subdivision_code";
 import { approximate_age_code as _approximate_age_code } from "./approximate_age_code";
 import { gender_code as _gender_code } from "./gender_code";
+import { address as _address } from "./address";
+import { address_h as _address_h } from "./address_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -66,8 +66,6 @@ export namespace PrismaModel {
   export class app_user_team_xref extends _app_user_team_xref {}
   export class app_user_team_xref_h extends _app_user_team_xref_h {}
   export class business extends _business {}
-  export class business_address extends _business_address {}
-  export class business_address_h extends _business_address_h {}
   export class business_h extends _business_h {}
   export class business_identifier extends _business_identifier {}
   export class business_identifier_code extends _business_identifier_code {}
@@ -116,6 +114,8 @@ export namespace PrismaModel {
   export class country_subdivision_code extends _country_subdivision_code {}
   export class approximate_age_code extends _approximate_age_code {}
   export class gender_code extends _gender_code {}
+  export class address extends _address {}
+  export class address_h extends _address_h {}
 
   export const extraModels = [
     agency_code,
@@ -126,8 +126,6 @@ export namespace PrismaModel {
     app_user_team_xref,
     app_user_team_xref_h,
     business,
-    business_address,
-    business_address_h,
     business_h,
     business_identifier,
     business_identifier_code,
@@ -176,5 +174,7 @@ export namespace PrismaModel {
     country_subdivision_code,
     approximate_age_code,
     gender_code,
+    address,
+    address_h,
   ];
 }

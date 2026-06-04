@@ -2,10 +2,7 @@ import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
 import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import {
-  BusinessAddressFormValue,
-  createEmptyAddress,
-} from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue, createEmptyAddress } from "@/app/components/containers/parties/form/business-form-utils";
 
 const toContactSnapshot = (contact: BusinessPerson) => ({
   businessPersonXrefGuid: contact.businessPersonXrefGuid,
@@ -142,9 +139,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     (indexToRemove: number) => {
       const currentAddresses = form.getFieldValue("addresses") || [];
       const removingPrimary = currentAddresses[indexToRemove]?.isPrimary;
-      const newAddresses = currentAddresses.filter(
-        (_: BusinessAddressFormValue, index: number) => index !== indexToRemove,
-      );
+      const newAddresses = currentAddresses.filter((_: AddressFormValue, index: number) => index !== indexToRemove);
 
       if (removingPrimary && newAddresses.length > 0) {
         newAddresses[0].isPrimary = true;
@@ -158,7 +153,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
   const handleSetPrimaryAddress = useCallback(
     (index: number) => {
       const currentAddresses = form.getFieldValue("addresses") || [];
-      const updatedAddresses = currentAddresses.map((address: BusinessAddressFormValue, i: number) => ({
+      const updatedAddresses = currentAddresses.map((address: AddressFormValue, i: number) => ({
         ...address,
         isPrimary: i === index,
       }));

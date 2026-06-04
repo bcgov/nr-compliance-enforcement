@@ -49,6 +49,39 @@ export type ActivityNoteInput = {
   taskGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Address = {
+  __typename?: 'Address';
+  address?: Maybe<Scalars['String']['output']>;
+  addressGuid?: Maybe<Scalars['String']['output']>;
+  addressName?: Maybe<Scalars['String']['output']>;
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
+  postalCode?: Maybe<Scalars['String']['output']>;
+  province?: Maybe<Scalars['String']['output']>;
+};
+
+export type AddressInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AddressUpdateInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  addressGuid?: InputMaybe<Scalars['String']['input']>;
+  addressName: Scalars['String']['input'];
+  city?: InputMaybe<Scalars['String']['input']>;
+  country?: InputMaybe<Scalars['String']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  postalCode?: InputMaybe<Scalars['String']['input']>;
+  province?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AgeCode = {
   __typename?: 'AgeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -75,9 +108,7 @@ export type Alias = {
 };
 
 export type AliasInput = {
-  businessGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  personGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AliasUpdateInput = {
@@ -159,46 +190,12 @@ export type AssessmentInput = {
 
 export type Business = {
   __typename?: 'Business';
-  addresses?: Maybe<Array<Maybe<BusinessAddress>>>;
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
   identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
-};
-
-export type BusinessAddress = {
-  __typename?: 'BusinessAddress';
-  address?: Maybe<Scalars['String']['output']>;
-  addressName?: Maybe<Scalars['String']['output']>;
-  businessAddressGuid?: Maybe<Scalars['String']['output']>;
-  city?: Maybe<Scalars['String']['output']>;
-  country?: Maybe<Scalars['String']['output']>;
-  isPrimary?: Maybe<Scalars['Boolean']['output']>;
-  postalCode?: Maybe<Scalars['String']['output']>;
-  province?: Maybe<Scalars['String']['output']>;
-};
-
-export type BusinessAddressInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
-  addressName: Scalars['String']['input'];
-  city?: InputMaybe<Scalars['String']['input']>;
-  country?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
-  postalCode?: InputMaybe<Scalars['String']['input']>;
-  province?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type BusinessAddressUpdateInput = {
-  address?: InputMaybe<Scalars['String']['input']>;
-  addressName: Scalars['String']['input'];
-  businessAddressGuid?: InputMaybe<Scalars['String']['input']>;
-  city?: InputMaybe<Scalars['String']['input']>;
-  country?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
-  postalCode?: InputMaybe<Scalars['String']['input']>;
-  province?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessIdentifier = {
@@ -231,7 +228,6 @@ export type BusinessIdentifierUpdateInput = {
 };
 
 export type BusinessInput = {
-  addresses?: InputMaybe<Array<InputMaybe<BusinessAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
@@ -259,7 +255,6 @@ export type BusinessPersonUpdateInput = {
 };
 
 export type BusinessUpdateInput = {
-  addresses?: InputMaybe<Array<InputMaybe<BusinessAddressUpdateInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
@@ -1938,6 +1933,7 @@ export type ParkInput = {
 
 export type Party = {
   __typename?: 'Party';
+  addresses?: Maybe<Array<Maybe<Address>>>;
   business?: Maybe<Business>;
   createdDateTime?: Maybe<Scalars['DateTime']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
@@ -1958,6 +1954,7 @@ export type PartyAssociationRole = {
 };
 
 export type PartyCreateInput = {
+  addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
   business?: InputMaybe<BusinessInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
@@ -1988,6 +1985,7 @@ export type PartyTypeCode = {
 };
 
 export type PartyUpdateInput = {
+  addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];

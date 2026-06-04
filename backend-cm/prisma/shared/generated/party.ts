@@ -1,3 +1,4 @@
+import { address } from "./address";
 import { business } from "./business";
 import { party_type_code } from "./party_type_code";
 import { person } from "./person";
@@ -21,6 +22,9 @@ export class party {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiProperty({ isArray: true, type: () => address })
+  address: address[];
 
   @ApiPropertyOptional({ type: () => business })
   business?: business;

@@ -30,7 +30,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
-import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import z from "zod";
 import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";
@@ -187,7 +187,7 @@ const buildLocalAliases = (aliases: Alias[]) => {
   return filtered?.length ? filtered.map((a: Alias) => ({ name: a.name })) : undefined;
 };
 
-const buildLocalAddresses = (addresses: BusinessAddressFormValue[] | undefined, isUpdate: boolean = false) => {
+const buildLocalAddresses = (addresses: AddressFormValue[] | undefined, isUpdate: boolean = false) => {
   const mapped = (addresses ?? []).map((address) => ({
     ...(isUpdate && address.businessAddressGuid ? { businessAddressGuid: address.businessAddressGuid } : {}),
     addressName: address.addressName?.trim() ?? "",
@@ -204,7 +204,7 @@ const buildLocalAddresses = (addresses: BusinessAddressFormValue[] | undefined, 
 
 const mapAddressesFromInvestigationBusiness = (
   addresses: Array<InvestigationBusinessAddress | null> | null | undefined,
-): BusinessAddressFormValue[] =>
+): AddressFormValue[] =>
   addresses
     ?.filter((address): address is InvestigationBusinessAddress => address != null)
     .map((address, index) => ({
@@ -353,7 +353,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       aliases: [] as Alias[],
       phoneNumbers: [] as any[],
       emailAddresses: [] as any[],
-      addresses: [] as BusinessAddressFormValue[],
+      addresses: [] as AddressFormValue[],
       contacts: [] as any[],
       partyAssociationRole: "",
     };
@@ -388,7 +388,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses, true),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
             aliases: buildLocalAliases(value.aliases),
-            addresses: buildLocalAddresses(value.addresses as BusinessAddressFormValue[], true),
+            addresses: buildLocalAddresses(value.addresses as AddressFormValue[], true),
           };
         }
 
@@ -418,7 +418,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
             aliases: buildLocalAliases(value.aliases),
-            addresses: buildLocalAddresses(value.addresses as BusinessAddressFormValue[]),
+            addresses: buildLocalAddresses(value.addresses as AddressFormValue[]),
           };
         }
 

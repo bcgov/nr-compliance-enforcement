@@ -6,7 +6,7 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
-import { BusinessAddressFormValue } from "./business-form-utils";
+import { AddressFormValue } from "./business-form-utils";
 import { BusinessAddressFields } from "./business-address-fields";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
@@ -174,7 +174,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
           />
         )}
       />
-      {addresses?.map((address: BusinessAddressFormValue, index: number) => (
+      {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField
           key={address.businessAddressGuid || `address-${index}`}
           form={form}

@@ -10,7 +10,7 @@ import { Alias } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
-import { BusinessAddress } from "src/shared/business_address/dto/business_address";
+import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
@@ -38,7 +38,7 @@ export class PartyService {
   private _validateBusinessInput(business: {
     name?: string;
     identifiers?: BusinessIdentifier[];
-    addresses?: BusinessAddress[];
+    addresses?: Address[];
   }): void {
     if (!business.name?.trim()) {
       throw new Error("Name is required.");
@@ -102,6 +102,22 @@ export class PartyService {
             long_description: true,
           },
         },
+        address: {
+          select: {
+            address_guid: true,
+            party_guid: true,
+            address_name: true,
+            address: true,
+            city: true,
+            country_subdivision_code: true,
+            postal_code: true,
+            country_code: true,
+            is_primary: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
             alias: {
@@ -124,22 +140,6 @@ export class PartyService {
                     short_description: true,
                   },
                 },
-              },
-              where: {
-                active_ind: true,
-              },
-            },
-            business_address: {
-              select: {
-                business_address_guid: true,
-                business_guid: true,
-                address_name: true,
-                address: true,
-                city: true,
-                country_subdivision_code: true,
-                postal_code: true,
-                country_code: true,
-                is_primary: true,
               },
               where: {
                 active_ind: true,
@@ -333,6 +333,23 @@ export class PartyService {
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
+      ...(input.addresses?.length
+        ? {
+            business_address: {
+              create: input.addresses.map((a) => ({
+                address_name: a.addressName.trim(),
+                address: a.address?.trim() || null,
+                city: a.city?.trim() || null,
+                country_subdivision_code: a.province?.trim() || null,
+                postal_code: a.postalCode?.trim() || null,
+                country_code: a.country?.trim() || null,
+                is_primary: a.isPrimary ?? false,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       business: {
         create: {
           name: input.business?.name,
@@ -355,23 +372,6 @@ export class PartyService {
                   create: input.business.identifiers.map((i) => ({
                     business_identifier_code: i.identifierCode,
                     identifier_value: this._normalizeIdentifierValue(i.identifierValue),
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
-          ...(input.business?.addresses?.length
-            ? {
-                business_address: {
-                  create: input.business.addresses.map((a) => ({
-                    address_name: a.addressName.trim(),
-                    address: a.address?.trim() || null,
-                    city: a.city?.trim() || null,
-                    country_subdivision_code: a.province?.trim() || null,
-                    postal_code: a.postalCode?.trim() || null,
-                    country_code: a.country?.trim() || null,
-                    is_primary: a.isPrimary ?? false,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -456,10 +456,7 @@ export class PartyService {
       existingPartyDto.business?.identifiers ?? [],
     );
 
-    const businessAddressOperations = this._buildBusinessAddressOperations(
-      input.business?.addresses ?? [],
-      existingPartyDto.business?.addresses ?? [],
-    );
+    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
 
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
@@ -467,6 +464,7 @@ export class PartyService {
     );
 
     return {
+      ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       business: {
         update: {
           name: input.business?.name,
@@ -477,7 +475,6 @@ export class PartyService {
           ...(Object.keys(businessIdentifierOperations).length
             ? { business_identifier: businessIdentifierOperations }
             : {}),
-          ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
           ...(Object.keys(businessPersonXrefOperations).length
             ? { business_person_xref: businessPersonXrefOperations }
             : {}),
@@ -577,20 +574,17 @@ export class PartyService {
     return operations;
   }
 
-  private _sortAddressesPrimaryLast(addresses: BusinessAddress[]): BusinessAddress[] {
+  private _sortAddressesPrimaryLast(addresses: Address[]): Address[] {
     const nonPrimary = addresses.filter((a) => !a.isPrimary);
     const primary = addresses.filter((a) => a.isPrimary);
     return [...nonPrimary, ...primary];
   }
 
-  private _buildBusinessAddressOperations(
-    incomingAddresses: BusinessAddress[],
-    existingAddresses: BusinessAddress[],
-  ): any {
-    const addressesToCreate = incomingAddresses.filter((a) => !a.businessAddressGuid);
-    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.businessAddressGuid));
+  private _buildAddressOperations(incomingAddresses: Address[], existingAddresses: Address[]): any {
+    const addressesToCreate = incomingAddresses.filter((a) => !a.addressGuid);
+    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.addressGuid));
     const addressesToDelete = existingAddresses.filter(
-      (a) => !new Set(incomingAddresses.map((ea) => ea.businessAddressGuid)).has(a.businessAddressGuid),
+      (a) => !new Set(incomingAddresses.map((ea) => ea.addressGuid)).has(a.addressGuid),
     );
 
     const operations: any = {};
@@ -613,7 +607,7 @@ export class PartyService {
     if (addressesToUpdate.length || addressesToDelete.length) {
       operations.update = [
         ...addressesToUpdate.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
+          where: { address_guid: a.addressGuid },
           data: {
             address_name: a.addressName.trim(),
             address: a.address?.trim() || null,
@@ -628,7 +622,7 @@ export class PartyService {
           },
         })),
         ...addressesToDelete.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
+          where: { address_guid: a.addressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -800,6 +794,7 @@ export class PartyService {
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
       include: {
+        address: true,
         person: {
           include: {
             contact_method: true,
@@ -810,7 +805,6 @@ export class PartyService {
           include: {
             alias: true,
             business_identifier: true,
-            business_address: true,
             contact_method: true,
             business_person_xref: {
               include: {

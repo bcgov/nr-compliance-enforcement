@@ -12,6 +12,7 @@ import {
   InvestigationParty,
   Person,
   ContactMethod,
+  Address,
 } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
 import { CaseActivities } from "@/app/constants/case-activities";
@@ -58,6 +59,16 @@ export const GET_PARTY = gql`
       shortDescription
       longDescription
       createdDateTime
+      addresses {
+        addressGuid
+        addressName
+        address
+        city
+        province
+        postalCode
+        country
+        isPrimary
+      }
       person {
         personGuid
         firstName
@@ -95,16 +106,6 @@ export const GET_PARTY = gql`
             businessIdentifierCode
             shortDescription
           }
-        }
-        addresses {
-          businessAddressGuid
-          addressName
-          address
-          city
-          province
-          postalCode
-          country
-          isPrimary
         }
         contactMethods {
           contactMethodGuid
@@ -339,62 +340,50 @@ const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> =
   </>
 );
 
-type BusinessAddressDisplay = {
-  businessAddressGuid?: string | null;
-  addressName?: string | null;
-  address?: string | null;
-  city?: string | null;
-  province?: string | null;
-  postalCode?: string | null;
-  country?: string | null;
-  isPrimary?: boolean | null;
-};
-
-const BusinessAddressesList: FC<{
-  addresses: ReadonlyArray<BusinessAddressDisplay>;
+const AddressesList: FC<{
+  addresses: ReadonlyArray<Address>;
   countryOptions: ReadonlyArray<Option>;
   countrySubdivisionOptions: ReadonlyArray<Option>;
 }> = ({ addresses, countryOptions, countrySubdivisionOptions }) => (
   <>
-    {addresses.map((businessAddress, index) => (
+    {addresses.map((address, index) => (
       <div
-        key={businessAddress.businessAddressGuid ?? `address-${index}`}
+        key={address.addressGuid ?? `address-${index}`}
         className="party-details-item"
         style={index < addresses.length - 1 ? { marginBottom: "1em" } : undefined}
       >
         <h4 className="mb-3">
-          {businessAddress.addressName || `Address ${index + 1}`}
-          {businessAddress.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
+          {address.addressName || `Address ${index + 1}`}
+          {address.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
         </h4>
-        {businessAddress.address && (
+        {address.address && (
           <p>
             <b>Address: </b>
-            {businessAddress.address}
+            {address.address}
           </p>
         )}
-        {businessAddress.city && (
+        {address.city && (
           <p>
             <b>City: </b>
-            {businessAddress.city}
+            {address.city}
           </p>
         )}
-        {businessAddress.province && (
+        {address.province && (
           <p>
             <b>Province: </b>
-            {countrySubdivisionOptions?.find((opt) => opt.value === businessAddress?.province)?.label ??
-              businessAddress.province}
+            {countrySubdivisionOptions?.find((opt) => opt.value === address?.province)?.label ?? address.province}
           </p>
         )}
-        {businessAddress.postalCode && (
+        {address.postalCode && (
           <p>
             <b>Postal code: </b>
-            {businessAddress.postalCode}
+            {address.postalCode}
           </p>
         )}
-        {businessAddress.country && (
+        {address.country && (
           <p>
             <b>Country: </b>
-            {countryOptions?.find((opt) => opt.value === businessAddress?.country)?.label ?? businessAddress.country}
+            {countryOptions?.find((opt) => opt.value === address?.country)?.label ?? address.country}
           </p>
         )}
       </div>
@@ -420,8 +409,7 @@ export const PartyView: FC = () => {
 
   const partyData = data?.party;
 
-  const businessAddresses =
-    (partyData?.business as { addresses?: ReadonlyArray<BusinessAddressDisplay> } | undefined)?.addresses ?? [];
+  const addresses = (partyData?.addresses ?? []).filter((a): a is Address => a != null);
 
   let partyType;
   let partyId;
@@ -763,12 +751,12 @@ export const PartyView: FC = () => {
                 </>
               )}
             </div>
-            {businessAddresses.length > 0 && (
+            {addresses?.length > 0 && (
               <>
                 <br />
                 <h4>Addresses</h4>
-                <BusinessAddressesList
-                  addresses={businessAddresses}
+                <AddressesList
+                  addresses={addresses}
                   countryOptions={countryOptions}
                   countrySubdivisionOptions={countrySubdivisionOptions}
                 />

@@ -1,9 +1,10 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
-import { business_address } from "prisma/shared/generated/business_address";
+import { Field, InputType } from "@nestjs/graphql";
+import { address } from "prisma/shared/generated/address";
 
-export class BusinessAddress {
-  businessAddressGuid: string;
-  businessGuid: string;
+export class Address {
+  addressGuid: string;
+  partyGuid: string;
   addressName: string;
   address?: string;
   city?: string;
@@ -13,18 +14,48 @@ export class BusinessAddress {
   isPrimary?: boolean;
 }
 
-export const mapPrismaBusinessAddressToBusinessAddress = (mapper: Mapper) => {
-  createMap<business_address, BusinessAddress>(
+@InputType()
+export class AddressInput {
+  @Field(() => String)
+  addressGuid: string;
+
+  @Field(() => String)
+  partyGuid: string;
+
+  @Field(() => String)
+  addressName: string;
+
+  @Field(() => String, { nullable: true })
+  address?: string;
+
+  @Field(() => String, { nullable: true })
+  city?: string;
+
+  @Field(() => String, { nullable: true })
+  province?: string;
+
+  @Field(() => String, { nullable: true })
+  postalCode?: string;
+
+  @Field(() => String, { nullable: true })
+  country?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isPrimary?: boolean;
+}
+
+export const mapPrismaAddressToAddress = (mapper: Mapper) => {
+  createMap<address, Address>(
     mapper,
-    "business_address",
-    "BusinessAddress",
+    "address",
+    "Address",
     forMember(
-      (dest) => dest.businessAddressGuid,
-      mapFrom((src) => src.business_address_guid),
+      (dest) => dest.addressGuid,
+      mapFrom((src) => src.address_guid),
     ),
     forMember(
-      (dest) => dest.businessGuid,
-      mapFrom((src) => src.business_guid),
+      (dest) => dest.partyGuid,
+      mapFrom((src) => src.party_guid),
     ),
     forMember(
       (dest) => dest.addressName,

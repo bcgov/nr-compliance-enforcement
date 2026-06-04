@@ -1,4 +1,4 @@
-import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { party } from "../../../../prisma/shared/generated/party";
 import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
@@ -9,6 +9,7 @@ import { IsOptional } from "class-validator";
 import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
+import { Address, AddressInput } from "../../address/dto/address";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -18,6 +19,7 @@ export class Party implements PartyDto {
   createdDateTime: Date;
   person: Person;
   business: Business;
+  addresses: [Address];
 }
 
 @InputType()
@@ -32,6 +34,10 @@ export class PartyCreateInput {
   @Field(() => Business, { nullable: true })
   @IsOptional()
   business?: Business;
+
+  @Field(() => [AddressInput], { nullable: true })
+  @IsOptional()
+  addresses?: AddressInput[];
 }
 
 @InputType()
@@ -46,6 +52,10 @@ export class PartyUpdateInput {
   @Field(() => Business, { nullable: true })
   @IsOptional()
   business?: Business;
+
+  @Field(() => [AddressInput], { nullable: true })
+  @IsOptional()
+  addresses?: AddressInput[];
 }
 
 @InputType()
@@ -106,6 +116,11 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.business,
       mapFrom((src) => mapper.map<business, Business>(src.business, "business", "Business")),
+    ),
+
+    forMember(
+      (dest) => dest.addresses,
+      mapWithArguments((src) => mapper.mapArray(src.address ?? [], "address", "Address")),
     ),
   );
 };
