@@ -1046,6 +1046,15 @@ export type ExhibitResult = {
   pageInfo: PageInfo;
 };
 
+export type GenderCode = {
+  __typename?: 'GenderCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  genderCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type GeoOrgUnitTypeCode = {
   __typename?: 'GeoOrgUnitTypeCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2003,7 +2012,9 @@ export type Person = {
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
-  driversLicenseJurisdiction?: Maybe<Scalars['String']['output']>;
+  driversLicenseClass?: Maybe<Scalars['String']['output']>;
+  driversLicenseCountryCode?: Maybe<Scalars['String']['output']>;
+  driversLicenseCountrySubdivisionCode?: Maybe<Scalars['String']['output']>;
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
@@ -2017,7 +2028,9 @@ export type PersonInput = {
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
-  driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
@@ -2030,7 +2043,9 @@ export type PersonUpdateInput = {
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
-  driversLicenseJurisdiction?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
+  driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
@@ -2098,6 +2113,7 @@ export type Query = {
   enforcementActions: Array<Maybe<EnforcementAction>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
+  genderCodes: Array<Maybe<GenderCode>>;
   geoOrgUnitTypeCodes: Array<Maybe<GeoOrgUnitTypeCode>>;
   geoOrganizationUnitCodes: Array<Maybe<GeoOrganizationUnitCode>>;
   getActivityNote?: Maybe<ActivityNote>;

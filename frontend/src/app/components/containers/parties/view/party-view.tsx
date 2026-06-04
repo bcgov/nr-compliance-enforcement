@@ -67,7 +67,9 @@ export const GET_PARTY = gql`
         dateOfBirth
         approximateAgeCode
         driversLicenseNumber
-        driversLicenseJurisdiction
+        driversLicenseClass
+        driversLicenseCountryCode
+        driversLicenseCountrySubdivisionCode
         genderCode
         contactMethods {
           contactMethodGuid
@@ -207,7 +209,9 @@ const PersonIdentifyingInfo: FC<{
   person: Person;
   genderOptions: ReadonlyArray<Option>;
   approximateAgeOptions: ReadonlyArray<Option>;
-}> = ({ person, genderOptions, approximateAgeOptions }) => (
+  countryOptions: ReadonlyArray<Option>;
+  countrySubdivisionOptions: ReadonlyArray<Option>;
+}> = ({ person, genderOptions, approximateAgeOptions, countryOptions, countrySubdivisionOptions }) => (
   <>
     {person.dateOfBirth !== null && (
       <p>
@@ -228,10 +232,24 @@ const PersonIdentifyingInfo: FC<{
         {person.driversLicenseNumber}
       </p>
     )}
-    {person.driversLicenseJurisdiction && (
+    {person.driversLicenseClass && (
       <p>
-        <b>Driver's licence jurisdiction: </b>
-        {person.driversLicenseJurisdiction}
+        <b>Driver's licence class: </b>
+        {person.driversLicenseClass}
+      </p>
+    )}
+    {person.driversLicenseCountryCode && (
+      <p>
+        <b>Driver's licence country: </b>
+        {countryOptions?.find((opt) => opt.value === person?.driversLicenseCountryCode)?.label ??
+          person.driversLicenseCountryCode}
+      </p>
+    )}
+    {person.driversLicenseCountrySubdivisionCode && (
+      <p>
+        <b>Driver's licence province: </b>
+        {countrySubdivisionOptions?.find((opt) => opt.value === person?.driversLicenseCountrySubdivisionCode)?.label ??
+          person.driversLicenseCountrySubdivisionCode}
       </p>
     )}
     {person.genderCode && (
@@ -692,6 +710,8 @@ export const PartyView: FC = () => {
                   person={partyData.person}
                   genderOptions={genderOptions}
                   approximateAgeOptions={approximateAgeOptions}
+                  countryOptions={countryOptions}
+                  countrySubdivisionOptions={countrySubdivisionOptions}
                 />
               )}
             </div>

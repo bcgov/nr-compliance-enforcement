@@ -826,26 +826,30 @@ model party_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person {
-  person_guid                                                            String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  first_name                                                             String                 @db.VarChar(128)
-  middle_name                                                            String?                @db.VarChar(128)
-  middle_name_2                                                          String?                @db.VarChar(128)
-  last_name                                                              String                 @db.VarChar(128)
-  create_user_id                                                         String                 @db.VarChar(32)
-  create_utc_timestamp                                                   DateTime               @default(now()) @db.Timestamp(6)
-  update_user_id                                                         String?                @db.VarChar(32)
-  update_utc_timestamp                                                   DateTime?              @db.Timestamp(6)
-  party_guid                                                             String?                @unique(map: "UQ_person_party_guid") @db.Uuid
-  date_of_birth                                                          DateTime?              @db.Date
-  drivers_license_number                                                 String?                @db.VarChar(64)
-  drivers_license_jurisdiction                                           String?                @db.VarChar(64)
-  approximate_age_code                                                   String?                @db.VarChar(16)
-  gender_code                                                            String?                @db.VarChar(16)
+  person_guid                                                            String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  first_name                                                             String                    @db.VarChar(128)
+  middle_name                                                            String?                   @db.VarChar(128)
+  middle_name_2                                                          String?                   @db.VarChar(128)
+  last_name                                                              String                    @db.VarChar(128)
+  create_user_id                                                         String                    @db.VarChar(32)
+  create_utc_timestamp                                                   DateTime                  @default(now()) @db.Timestamp(6)
+  update_user_id                                                         String?                   @db.VarChar(32)
+  update_utc_timestamp                                                   DateTime?                 @db.Timestamp(6)
+  party_guid                                                             String?                   @unique(map: "UQ_person_party_guid") @db.Uuid
+  date_of_birth                                                          DateTime?                 @db.Date
+  drivers_license_number                                                 String?                   @db.VarChar(64)
+  approximate_age_code                                                   String?                   @db.VarChar(16)
+  gender_code                                                            String?                   @db.VarChar(16)
+  drivers_license_class                                                  String?                   @db.VarChar(128)
+  drivers_license_country_code                                           String?                   @db.VarChar(4)
+  drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
   business_person_xref                                                   business_person_xref[]
   contact_method                                                         contact_method[]
-  party                                                                  party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
-  approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?  @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
-  gender_code_person_gender_codeTogender_code                            gender_code?           @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
+  party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
+  approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
+  country_code                                                           country_code?             @relation(fields: [drivers_license_country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_code")
+  country_subdivision_code                                               country_subdivision_code? @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
+  gender_code_person_gender_codeTogender_code                            gender_code?              @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
 
   @@schema("shared")
 }
@@ -921,6 +925,7 @@ model country_code {
   update_utc_timestamp                                                         DateTime?                  @db.Timestamp(6)
   business_address_business_address_country_codeTocountry_code                 business_address[]         @relation("business_address_country_codeTocountry_code")
   country_subdivision_code_country_subdivision_code_country_codeTocountry_code country_subdivision_code[] @relation("country_subdivision_code_country_codeTocountry_code")
+  person                                                                       person[]
 
   @@schema("shared")
 }
@@ -939,6 +944,7 @@ model country_subdivision_code {
   update_utc_timestamp                                                                 DateTime?          @db.Timestamp(6)
   business_address_business_address_country_subdivision_codeTocountry_subdivision_code business_address[] @relation("business_address_country_subdivision_codeTocountry_subdivision_code")
   country_code_country_subdivision_code_country_codeTocountry_code                     country_code       @relation("country_subdivision_code_country_codeTocountry_code", fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "country_subdivision_country_code_fk")
+  person                                                                               person[]
 
   @@schema("shared")
 }

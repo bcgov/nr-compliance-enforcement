@@ -45,7 +45,9 @@ const PARTY_PERSON_FRAGMENT = gql`
     dateOfBirth
     approximateAgeCode
     driversLicenseNumber
-    driversLicenseJurisdiction
+    driversLicenseClass
+    driversLicenseCountryCode
+    driversLicenseCountrySubdivisionCode
     genderCode
   }
 `;
@@ -322,7 +324,9 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     dateOfBirth: toDateOfBirth(value),
     approximateAgeCode: value.approximateAgeCode || undefined,
     driversLicenseNumber: value.driversLicenseNumber || undefined,
-    driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
+    driversLicenseClass: value.driversLicenseClass || undefined,
+    driversLicenseCountryCode: value.driversLicenseCountryCode || undefined,
+    driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
     genderCode: value.genderCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
   };
@@ -373,7 +377,9 @@ const PartyEdit: FC = () => {
         dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
         approximateAgeCode: person?.approximateAgeCode || "",
         driversLicenseNumber: person?.driversLicenseNumber || "",
-        driversLicenseJurisdiction: person?.driversLicenseJurisdiction || "",
+        driversLicenseClass: person?.driversLicenseClass || "",
+        driversLicenseCountryCode: person?.driversLicenseCountryCode || "",
+        driversLicenseCountrySubdivisionCode: person?.driversLicenseCountrySubdivisionCode || "",
         genderCode: person?.genderCode || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
@@ -405,7 +411,9 @@ const PartyEdit: FC = () => {
       dateOfBirth: undefined,
       approximateAgeCode: "",
       driversLicenseNumber: "",
-      driversLicenseJurisdiction: "",
+      driversLicenseClass: "",
+      driversLicenseCountryCode: "",
+      driversLicenseCountrySubdivisionCode: "",
       genderCode: "",
       businessName: "",
       businessNumber: {},

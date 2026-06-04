@@ -6,7 +6,9 @@ input PersonInput {
   dateOfBirth: DateTime
   approximateAgeCode: String
   driversLicenseNumber: String
-  driversLicenseJurisdiction: String
+  driversLicenseClass: String
+  driversLicenseCountryCode: String
+  driversLicenseCountrySubdivisionCode: String
   genderCode: String
   contactMethods: [ContactMethodInput]
 }
@@ -20,7 +22,9 @@ input PersonUpdateInput {
   dateOfBirth: DateTime
   approximateAgeCode: String
   driversLicenseNumber: String
-  driversLicenseJurisdiction: String
+  driversLicenseClass: String
+  driversLicenseCountryCode: String
+  driversLicenseCountrySubdivisionCode: String
   genderCode: String
   contactMethods: [ContactMethodInput]
 }

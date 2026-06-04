@@ -25,7 +25,9 @@ export class PersonService {
         last_name: true,
         date_of_birth: true,
         drivers_license_number: true,
-        drivers_license_jurisdiction: true,
+        drivers_license_class: true,
+        drivers_license_country_code: true,
+        drivers_license_country_subdivision_code: true,
         gender_code: true,
         approximate_age_code: true,
         contact_method: {
@@ -76,7 +78,9 @@ export class PersonService {
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
-        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
+        drivers_license_class: input.driversLicenseClass,
+        drivers_license_country_code: input.driversLicenseCountryCode,
+        drivers_license_country_subdivision_code: input.driversLicenseCountrySubdivisionCode,
         gender_code: input.genderCode,
         create_user_id: "system",
         contact_method: input.contactMethods
@@ -118,7 +122,9 @@ export class PersonService {
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
-        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
+        drivers_license_class: input.driversLicenseClass,
+        drivers_license_country_code: input.driversLicenseCountryCode,
+        drivers_license_country_subdivision_code: input.driversLicenseCountrySubdivisionCode,
         gender_code: input.genderCode,
       },
       include: {

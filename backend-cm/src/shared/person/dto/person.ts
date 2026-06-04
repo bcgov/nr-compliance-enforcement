@@ -13,7 +13,9 @@ export class Person implements PersonDto {
   dateOfBirth?: Date;
   approximateAgeCode?: string;
   driversLicenseNumber?: string;
-  driversLicenseJurisdiction?: string;
+  driversLicenseClass?: string;
+  driversLicenseCountryCode?: string;
+  driversLicenseCountrySubdivisionCode?: string;
   genderCode?: string;
   contactMethods?: ContactMethod[];
 }
@@ -52,8 +54,16 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
       mapFrom((src) => src.drivers_license_number ?? undefined),
     ),
     forMember(
-      (dest) => dest.driversLicenseJurisdiction,
-      mapFrom((src) => src.drivers_license_jurisdiction ?? undefined),
+      (dest) => dest.driversLicenseClass,
+      mapFrom((src) => src.drivers_license_class ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.driversLicenseCountryCode,
+      mapFrom((src) => src.drivers_license_country_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.driversLicenseCountrySubdivisionCode,
+      mapFrom((src) => src.drivers_license_country_subdivision_code ?? undefined),
     ),
     forMember(
       (dest) => dest.genderCode,

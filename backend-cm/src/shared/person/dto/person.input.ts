@@ -33,7 +33,13 @@ export class PersonInput {
   driversLicenseNumber?: string;
 
   @Field(() => String, { nullable: true })
-  driversLicenseJurisdiction?: string;
+  driversLicenseClass?: string;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseCountryCode?: string;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseCountrySubdivisionCode?: string;
 
   @Field(() => String, { nullable: true })
   genderCode?: string;

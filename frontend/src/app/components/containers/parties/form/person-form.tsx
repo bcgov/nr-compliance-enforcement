@@ -8,9 +8,9 @@ import { selectApproximateAgeDropdown, selectGenderDropdown } from "@/app/store/
 import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
-import { useStore } from "@tanstack/react-form";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Badge } from "react-bootstrap";
+import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 
 type PersonFormProps = {
   form: any;
@@ -25,6 +25,16 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
   const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown)
     ?.filter((opt: { activeInd?: boolean }) => opt.activeInd !== false)
     .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
+
+  const countryOptions = useAppSelector(selectCountries).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
+
+  const subdivisionOptions = useAppSelector(selectCountrySubdivisions).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
 
   const { phoneNumbers, handleAddPhoneNumber, handleRemovePhoneNumber, handleSetPrimaryPhoneNumber } =
     usePartyFormFields(form);
@@ -192,25 +202,89 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           />
         )}
       />
-      <FormField
-        form={form}
-        name="driversLicenseJurisdiction"
-        label="Driver's licence jurisdiction"
-        render={(field) => (
-          <CompInput
-            id="DriversLicenseJurisdiction"
-            divid=""
-            type="input"
-            inputClass="comp-form-control comp-details-input"
-            defaultValue={field.state.value}
-            error={field.state.meta.errors?.[0]?.message || ""}
-            maxLength={50}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter driver's licence jurisdiction..."
-            disabled={isDisabled}
-          />
-        )}
-      />
+      <form.Subscribe selector={(state: any) => state.values.driversLicenseNumber}>
+        {(driversLicenseNumber: string | undefined) =>
+          driversLicenseNumber ? (
+            <>
+              <FormField
+                form={form}
+                name="driversLicenseClass"
+                label="Driver's licence class"
+                render={(field) => (
+                  <CompInput
+                    id="DriversLicenseClass"
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input"
+                    defaultValue={field.state.value}
+                    error={field.state.meta.errors?.[0]?.message || ""}
+                    maxLength={128}
+                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                    placeholder="Enter driver's licence class..."
+                    disabled={isDisabled}
+                  />
+                )}
+              />
+              <FormField
+                form={form}
+                name="driversLicenseCountryCode"
+                label="Driver's licence country"
+                required
+                validators={{ onChange: z.string().min(1, "Country is required") }}
+                render={(field) => (
+                  <CompSelect
+                    id="driversLicenseCountry-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input"
+                    options={countryOptions}
+                    value={countryOptions?.find((opt: any) => opt.value === field.state.value)}
+                    onChange={(option) => {
+                      const newValue = option?.value ?? "";
+                      field.handleChange(newValue);
+                      if (newValue !== "CA") {
+                        form.setFieldValue("driversLicenseCountrySubdivisionCode", undefined);
+                      }
+                    }}
+                    placeholder="Select country"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    isDisabled={isDisabled}
+                  />
+                )}
+              />
+              <form.Subscribe selector={(state: any) => state.values.driversLicenseCountryCode}>
+                {(countryCode: string | undefined) =>
+                  countryCode === "CA" ? (
+                    <FormField
+                      form={form}
+                      name="driversLicenseCountrySubdivisionCode"
+                      label="Driver's licence province"
+                      render={(field) => (
+                        <CompSelect
+                          id="driversLicenseSubdivision-select"
+                          classNamePrefix="comp-select"
+                          className="comp-details-input"
+                          options={subdivisionOptions}
+                          value={subdivisionOptions?.find((opt: any) => opt.value === field.state.value)}
+                          onChange={(option) => field.handleChange(option?.value ?? "")}
+                          placeholder="Select province"
+                          isClearable={true}
+                          showInactive={false}
+                          enableValidation={true}
+                          errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                          isDisabled={isDisabled}
+                        />
+                      )}
+                    />
+                  ) : null
+                }
+              </form.Subscribe>
+            </>
+          ) : null
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="genderCode"

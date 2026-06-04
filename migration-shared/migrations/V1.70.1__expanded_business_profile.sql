@@ -97,3 +97,35 @@ ALTER TABLE person
     REFERENCES gender_code (gender_code);
 
 COMMENT ON COLUMN shared.person.gender_code IS 'The gender category of the person. References gender_code.';
+
+-- Add DL Class and Jurisdiction
+
+ALTER TABLE person
+    DROP COLUMN drivers_license_jurisdiction;
+
+ALTER TABLE person
+    ADD COLUMN drivers_license_class character varying(128);
+
+COMMENT ON COLUMN shared.person.drivers_license_class IS 'The class of the person''s driver''s licence.';
+
+ALTER TABLE person
+    ADD COLUMN drivers_license_country_code character varying(4);
+
+ALTER TABLE person
+    ADD CONSTRAINT fk_person__drivers_license_country_code
+    FOREIGN KEY (drivers_license_country_code)
+    REFERENCES country_code (country_code);
+
+COMMENT ON COLUMN shared.person.drivers_license_country_code IS 'The country that issued the person''s driver''s licence. References country_code.';
+
+-- Add subdivision of issue (FK to country_subdivision_code)
+ALTER TABLE person
+    ADD COLUMN drivers_license_country_subdivision_code character varying(16);
+
+ALTER TABLE person
+    ADD CONSTRAINT fk_person__drivers_license_country_subdivision_code
+    FOREIGN KEY (drivers_license_country_subdivision_code)
+    REFERENCES country_subdivision_code (country_subdivision_code);
+
+COMMENT ON COLUMN shared.person.drivers_license_country_subdivision_code IS 'The country subdivision (province, state, etc.) that issued the person''s driver''s licence. References country_subdivision_code.';
+
