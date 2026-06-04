@@ -122,12 +122,12 @@ export class EventProcessorService implements OnModuleInit {
       }
 
       // Create stream if it doesn't exist
-      if (!streamExists) {
-        await this.jsm.streams.add(streamConfig);
-        this.logger.log("Stream created successfully");
-      } else {
+      if (streamExists) {
         await this.jsm.streams.update(STREAMS.EVENTS, streamConfig);
         this.logger.debug("Stream updated with current subject list");
+      } else {
+        await this.jsm.streams.add(streamConfig);
+        this.logger.log("Stream created successfully");
       }
 
       // Setup consumer

@@ -18,6 +18,8 @@ import { STREAM_TOPICS } from "../../common/nats_constants";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
+type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
+
 @Injectable()
 export class PartyService {
   constructor(
@@ -584,6 +586,16 @@ export class PartyService {
 
     if (addressesToUpdate.length || addressesToDelete.length) {
       operations.update = [
+        // Deactivations must come before primary-flag updates to avoid violating the
+        // unique-active-primary-per-business constraint when the deleted address is primary.
+        ...addressesToDelete.map((a) => ({
+          where: { business_address_guid: a.businessAddressGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
         ...addressesToUpdate.map((a) => ({
           where: { business_address_guid: a.businessAddressGuid },
           data: {
@@ -595,14 +607,6 @@ export class PartyService {
             country_code: a.country?.trim() || null,
             is_primary: a.isPrimary ?? false,
             active_ind: true,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
-        ...addressesToDelete.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
-          data: {
-            active_ind: false,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
           },
@@ -791,41 +795,33 @@ export class PartyService {
    *
    * @param labelFn - Returns the party history field label for a given type code e.g. "business phone number" or
    *   "phone number in business contact John Doe".
-   * @param addEvent
    */
   private _compareContactMethods(
     existingMethods: ContactMethod[],
     incomingMethods: ContactMethod[],
     labelFn: (typeCode: string) => string,
-    addEvent: (verb: string, field: string, oldValue: any, newValue: any) => void,
+    addEvent: AddEventFn,
   ): void {
     // Detect added and edited contact methods
     for (const incoming of incomingMethods) {
-      if (!incoming.contactMethodGuid) {
-        // No GUID means this is a newly added method
-        if (incoming.value) {
-          addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
-        }
-      } else {
-        // Has a GUID — check if the value was changed
+      if (incoming.contactMethodGuid) {
         const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
         if (existing && existing.value !== incoming.value) {
           addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
         }
+      } else if (incoming.value) {
+        addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
       }
     }
 
     // Detect removed contact methods (present in existing but absent in incoming)
-    for (const existing of existingMethods) {
-      if (!incomingMethods.find((m) => m.contactMethodGuid === existing.contactMethodGuid)) {
-        addEvent("REMOVED", labelFn(existing.typeCode), existing.value, null);
-      }
-    }
+    const incomingGuids = new Set(incomingMethods.map((m) => m.contactMethodGuid));
+    existingMethods
+      .filter((m) => !incomingGuids.has(m.contactMethodGuid))
+      .forEach((m) => addEvent("REMOVED", labelFn(m.typeCode), m.value, null));
 
     // Detect primary contact method changes (e.g. user switched which phone number is primary)
-    const typeCodes = [
-      ...new Set([...existingMethods.map((m) => m.typeCode), ...incomingMethods.map((m) => m.typeCode)]),
-    ];
+    const typeCodes = new Set([...existingMethods.map((m) => m.typeCode), ...incomingMethods.map((m) => m.typeCode)]);
     for (const typeCode of typeCodes) {
       const oldPrimary = existingMethods.find((m) => m.isPrimary && m.typeCode === typeCode);
       const newPrimary = incomingMethods.find((m) => m.isPrimary && m.typeCode === typeCode);
@@ -833,6 +829,233 @@ export class PartyService {
         addEvent("EDITED", `primary ${labelFn(typeCode)}`, oldPrimary.value, newPrimary.value);
       }
     }
+  }
+
+  /** Compares a single scalar field and emits an ADDED/REMOVED/EDITED event for any change. */
+  private _compareField(field: string, oldVal: any, newVal: any, addEvent: AddEventFn): void {
+    const oldStr = oldVal != null && oldVal !== "" ? String(oldVal) : null;
+    const newStr = newVal != null && newVal !== "" ? String(newVal) : null;
+    if (oldStr === newStr) return;
+    if (oldStr && newStr) {
+      addEvent("EDITED", field, oldVal, newVal);
+    } else if (oldStr) {
+      addEvent("REMOVED", field, oldVal, null);
+    } else {
+      addEvent("ADDED", field, null, newVal);
+    }
+  }
+
+  private _diffAliases(existingAliases: Alias[], incomingAliases: Alias[], addEvent: AddEventFn): void {
+    for (const incoming of incomingAliases) {
+      if (incoming.aliasGuid) {
+        const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);
+        if (existing && existing.name !== incoming.name) {
+          addEvent("EDITED", "alias", existing.name, incoming.name);
+        }
+      } else {
+        addEvent("ADDED", "alias", null, incoming.name);
+      }
+    }
+    const incomingGuids = new Set(incomingAliases.map((a) => a.aliasGuid));
+    existingAliases
+      .filter((a) => !incomingGuids.has(a.aliasGuid))
+      .forEach((a) => addEvent("REMOVED", "alias", a.name, null));
+  }
+
+  private _diffBusinessIdentifiers(
+    existingIdentifiers: BusinessIdentifier[],
+    incomingIdentifiers: BusinessIdentifier[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingIdentifiers) {
+      if (incoming.businessIdentifierGuid) {
+        const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
+        if (existing && existing.identifierValue !== incoming.identifierValue) {
+          addEvent(
+            "EDITED",
+            `identifier (${incoming.identifierCode})`,
+            existing.identifierValue,
+            incoming.identifierValue,
+          );
+        }
+      } else {
+        addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
+      }
+    }
+    const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
+    existingIdentifiers
+      .filter((i) => !incomingGuids.has(i.businessIdentifierGuid))
+      .forEach((i) =>
+        addEvent(
+          "REMOVED",
+          `identifier (${i.identifierCode?.businessIdentifierCode ?? i.identifierCode})`,
+          i.identifierValue,
+          null,
+        ),
+      );
+  }
+
+  private _diffBusinessAddresses(
+    existingAddresses: BusinessAddress[],
+    incomingAddresses: BusinessAddress[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingAddresses) {
+      if (incoming.businessAddressGuid) {
+        const existing = existingAddresses.find((a) => a.businessAddressGuid === incoming.businessAddressGuid);
+        if (!existing) continue;
+        const label = incoming.addressName || existing.addressName;
+        this._compareField("address name", existing.addressName, incoming.addressName, addEvent);
+        this._compareField(`street address in address "${label}"`, existing.address, incoming.address, addEvent);
+        this._compareField(`city in address "${label}"`, existing.city, incoming.city, addEvent);
+        this._compareField(`province in address "${label}"`, existing.province, incoming.province, addEvent);
+        this._compareField(`postal code in address "${label}"`, existing.postalCode, incoming.postalCode, addEvent);
+        this._compareField(`country in address "${label}"`, existing.country, incoming.country, addEvent);
+      } else if (incoming.addressName) {
+        addEvent("ADDED", "address", null, incoming.addressName, {
+          streetAddress: incoming.address ?? null,
+          city: incoming.city ?? null,
+          province: incoming.province ?? null,
+          postalCode: incoming.postalCode ?? null,
+          country: incoming.country ?? null,
+        });
+      }
+    }
+    const incomingGuids = new Set(incomingAddresses.map((a) => a.businessAddressGuid));
+    existingAddresses
+      .filter((a) => !incomingGuids.has(a.businessAddressGuid))
+      .forEach((a) =>
+        addEvent("REMOVED", "address", a.addressName, null, {
+          streetAddress: a.address ?? null,
+          city: a.city ?? null,
+          province: a.province ?? null,
+          postalCode: a.postalCode ?? null,
+          country: a.country ?? null,
+        }),
+      );
+    // Detect when the primary address switches from one address to another
+    const oldPrimary = existingAddresses.find((a) => a.isPrimary);
+    const newPrimary = incomingAddresses.find((a) => a.isPrimary);
+    if (oldPrimary && newPrimary && oldPrimary.businessAddressGuid !== newPrimary.businessAddressGuid) {
+      addEvent("EDITED", "primary address", oldPrimary.addressName, newPrimary.addressName);
+    }
+  }
+
+  private _diffNewContact(incoming: BusinessPersonXref, addEvent: AddEventFn): void {
+    const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
+    addEvent("ADDED", "business contact", null, name);
+    for (const cm of incoming.person?.contactMethods ?? []) {
+      if (cm?.value) {
+        const contactLabel = name
+          ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
+          : `contact ${this._contactMethodLabel(cm.typeCode)}`;
+        addEvent("ADDED", contactLabel, null, cm.value);
+      }
+    }
+  }
+
+  private _diffExistingContact(
+    existingXrefs: BusinessPersonXref[],
+    incoming: BusinessPersonXref,
+    addEvent: AddEventFn,
+  ): void {
+    const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
+    if (!existingXref) return;
+
+    const existingName = [existingXref.person?.firstName, existingXref.person?.lastName].filter(Boolean).join(" ");
+    const incomingName = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
+    const contactLabel = incomingName || existingName;
+
+    if (
+      existingXref.person?.firstName !== incoming.person?.firstName ||
+      existingXref.person?.lastName !== incoming.person?.lastName
+    ) {
+      addEvent("EDITED", "business contact name", existingName || null, incomingName || null);
+    }
+
+    this._compareContactMethods(
+      existingXref.person?.contactMethods ?? [],
+      incoming.person?.contactMethods ?? [],
+      (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
+      addEvent,
+    );
+  }
+
+  private _diffContactPeople(
+    existingXrefs: BusinessPersonXref[],
+    incomingXrefs: BusinessPersonXref[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingXrefs) {
+      if (incoming.businessPersonXrefGuid) {
+        this._diffExistingContact(existingXrefs, incoming, addEvent);
+      } else {
+        this._diffNewContact(incoming, addEvent);
+      }
+    }
+    const incomingGuids = new Set(incomingXrefs.map((x) => x.businessPersonXrefGuid));
+    existingXrefs
+      .filter((x) => !incomingGuids.has(x.businessPersonXrefGuid))
+      .forEach((x) => {
+        const name = [x.person?.firstName, x.person?.lastName].filter(Boolean).join(" ");
+        addEvent("REMOVED", "business contact", name, null);
+      });
+  }
+
+  private _diffPersonChanges(
+    oldPerson: Party["person"],
+    newPerson: PartyUpdateInput["person"],
+    addEvent: AddEventFn,
+  ): void {
+    if (!oldPerson || !newPerson) return;
+    this._compareField("first name", oldPerson.firstName, newPerson.firstName, addEvent);
+    this._compareField("middle name", oldPerson.middleName, newPerson.middleName, addEvent);
+    this._compareField("middle name 2", oldPerson.middleName2, newPerson.middleName2, addEvent);
+    this._compareField("last name", oldPerson.lastName, newPerson.lastName, addEvent);
+    this._compareField(
+      "date of birth",
+      oldPerson.dateOfBirth ? oldPerson.dateOfBirth.toISOString().split("T")[0] : null,
+      newPerson.dateOfBirth ? (newPerson.dateOfBirth as Date).toISOString().split("T")[0] : null,
+      addEvent,
+    );
+    this._compareField(
+      "driver's licence number",
+      oldPerson.driversLicenseNumber,
+      newPerson.driversLicenseNumber,
+      addEvent,
+    );
+    this._compareField(
+      "driver's licence jurisdiction",
+      oldPerson.driversLicenseJurisdiction,
+      newPerson.driversLicenseJurisdiction,
+      addEvent,
+    );
+    this._compareField("sex", oldPerson.sexCode, newPerson.sexCode, addEvent);
+    this._compareContactMethods(
+      oldPerson.contactMethods ?? [],
+      newPerson.contactMethods ?? [],
+      (tc) => this._contactMethodLabel(tc),
+      addEvent,
+    );
+  }
+
+  private _diffBusinessChanges(
+    oldBusiness: Party["business"],
+    newBusiness: PartyUpdateInput["business"],
+    addEvent: AddEventFn,
+  ): void {
+    if (!oldBusiness || !newBusiness) return;
+    this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
+    this._diffAliases(oldBusiness.aliases ?? [], newBusiness.aliases ?? [], addEvent);
+    this._diffBusinessIdentifiers(oldBusiness.identifiers ?? [], newBusiness.identifiers ?? [], addEvent);
+    this._diffBusinessAddresses(oldBusiness.addresses ?? [], newBusiness.addresses ?? [], addEvent);
+    this._compareContactMethods(
+      oldBusiness.contactMethods ?? [],
+      newBusiness.contactMethods ?? [],
+      (tc) => `business ${this._contactMethodLabel(tc)}`,
+      addEvent,
+    );
+    this._diffContactPeople(oldBusiness.contactPeople ?? [], newBusiness.contactPeople ?? [], addEvent);
   }
 
   /**
@@ -843,7 +1066,7 @@ export class PartyService {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
 
-    const addEvent = (verb: string, field: string, oldValue: any, newValue: any) => {
+    const addEvent: AddEventFn = (verb, field, oldValue, newValue, extraContent) => {
       events.push({
         eventVerbTypeCode: verb,
         sourceId: partyIdentifier,
@@ -852,203 +1075,14 @@ export class PartyService {
         actorEntityTypeCode: "USER",
         targetId: partyIdentifier,
         targetEntityTypeCode: "PARTY",
-        content: { field, oldValue: oldValue ?? null, newValue: newValue ?? null },
+        content: { field, oldValue: oldValue ?? null, newValue: newValue ?? null, ...extraContent },
       });
     };
 
-    // Helper to compare a single scalar field and emit the appropriate event
-    const compareField = (field: string, oldVal: any, newVal: any) => {
-      const oldStr = oldVal != null && oldVal !== "" ? String(oldVal) : null;
-      const newStr = newVal != null && newVal !== "" ? String(newVal) : null;
-      if (oldStr === newStr) return;
-      if (!oldStr && newStr) addEvent("ADDED", field, null, newVal);
-      else if (oldStr && !newStr) addEvent("REMOVED", field, oldVal, null);
-      else addEvent("EDITED", field, oldVal, newVal);
-    };
-
-    // Party type: person
     if (input.partyTypeCode === PARTY_TYPES.Person) {
-      const oldP = oldParty.person;
-      const newP = input.person;
-      if (!oldP || !newP) return events;
-
-      compareField("first name", oldP.firstName, newP.firstName);
-      compareField("middle name", oldP.middleName, newP.middleName);
-      compareField("middle name 2", oldP.middleName2, newP.middleName2);
-      compareField("last name", oldP.lastName, newP.lastName);
-      compareField(
-        "date of birth",
-        oldP.dateOfBirth ? oldP.dateOfBirth.toISOString().split("T")[0] : null,
-        newP.dateOfBirth ? (newP.dateOfBirth as Date).toISOString().split("T")[0] : null,
-      );
-      compareField("driver's licence number", oldP.driversLicenseNumber, newP.driversLicenseNumber);
-      compareField("driver's licence jurisdiction", oldP.driversLicenseJurisdiction, newP.driversLicenseJurisdiction);
-      compareField("sex", oldP.sexCode, newP.sexCode);
-
-      const existingMethods = oldP.contactMethods ?? [];
-      const incomingMethods = newP.contactMethods ?? [];
-
-      this._compareContactMethods(existingMethods, incomingMethods, (tc) => this._contactMethodLabel(tc), addEvent);
-    }
-    // Party type: business
-    else {
-      const oldB = oldParty.business;
-      const newB = input.business;
-      if (!oldB || !newB) return events;
-
-      compareField("business name", oldB.name, newB.name);
-
-      // Aliases
-      const existingAliases = oldB.aliases ?? [];
-      const incomingAliases = newB.aliases ?? [];
-      for (const incoming of incomingAliases) {
-        if (!incoming.aliasGuid) {
-          addEvent("ADDED", "alias", null, incoming.name);
-        } else {
-          const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);
-          if (existing && existing.name !== incoming.name) {
-            addEvent("EDITED", "alias", existing.name, incoming.name);
-          }
-        }
-      }
-      for (const existing of existingAliases) {
-        if (!incomingAliases.find((a) => a.aliasGuid === existing.aliasGuid)) {
-          addEvent("REMOVED", "alias", existing.name, null);
-        }
-      }
-
-      // Business identifiers (e.g. business number, WorkSafeBC number)
-      const existingIdentifiers = oldB.identifiers ?? [];
-      const incomingIdentifiers = newB.identifiers ?? [];
-      for (const incoming of incomingIdentifiers) {
-        if (!incoming.businessIdentifierGuid) {
-          addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
-        } else {
-          const existing = existingIdentifiers.find(
-            (i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid,
-          );
-          if (existing && existing.identifierValue !== incoming.identifierValue) {
-            addEvent(
-              "EDITED",
-              `identifier (${incoming.identifierCode})`,
-              existing.identifierValue,
-              incoming.identifierValue,
-            );
-          }
-        }
-      }
-      for (const existing of existingIdentifiers) {
-        if (!incomingIdentifiers.find((i) => i.businessIdentifierGuid === existing.businessIdentifierGuid)) {
-          addEvent(
-            "REMOVED",
-            `identifier (${existing.identifierCode?.businessIdentifierCode ?? existing.identifierCode})`,
-            existing.identifierValue,
-            null,
-          );
-        }
-      }
-
-      // Business addresses
-      const existingAddresses = oldB.addresses ?? [];
-      const incomingAddresses = newB.addresses ?? [];
-      for (const incoming of incomingAddresses) {
-        if (!incoming.businessAddressGuid) {
-          if (incoming.addressName) {
-            addEvent("ADDED", "address", null, incoming.addressName);
-          }
-        } else {
-          const existing = existingAddresses.find((a) => a.businessAddressGuid === incoming.businessAddressGuid);
-          if (!existing) continue;
-          // Use the incoming address name as the context label for field-level changes
-          const label = incoming.addressName || existing.addressName;
-          compareField("address name", existing.addressName, incoming.addressName);
-          compareField(`street address in address "${label}"`, existing.address, incoming.address);
-          compareField(`city in address "${label}"`, existing.city, incoming.city);
-          compareField(`province in address "${label}"`, existing.province, incoming.province);
-          compareField(`postal code in address "${label}"`, existing.postalCode, incoming.postalCode);
-          compareField(`country in address "${label}"`, existing.country, incoming.country);
-        }
-      }
-      for (const existing of existingAddresses) {
-        if (!incomingAddresses.find((a) => a.businessAddressGuid === existing.businessAddressGuid)) {
-          addEvent("REMOVED", "address", existing.addressName, null);
-        }
-      }
-      // Detect when the primary address switches from one address to another
-      const oldPrimaryAddress = existingAddresses.find((a) => a.isPrimary);
-      const newPrimaryAddress = incomingAddresses.find((a) => a.isPrimary);
-      if (
-        oldPrimaryAddress &&
-        newPrimaryAddress &&
-        oldPrimaryAddress.businessAddressGuid !== newPrimaryAddress.businessAddressGuid
-      ) {
-        addEvent("EDITED", "primary address", oldPrimaryAddress.addressName, newPrimaryAddress.addressName);
-      }
-
-      // Business-level contact methods (phone/email belonging directly to the business)
-      const existingMethods = oldB.contactMethods ?? [];
-      const incomingMethods = newB.contactMethods ?? [];
-      this._compareContactMethods(
-        existingMethods,
-        incomingMethods,
-        (tc) => `business ${this._contactMethodLabel(tc)}`,
-        addEvent,
-      );
-
-      // Contact people (named individuals associated with the business)
-      const existingXrefs = oldB.contactPeople ?? [];
-      const incomingXrefs = newB.contactPeople ?? [];
-      for (const incoming of incomingXrefs) {
-        if (!incoming.businessPersonXrefGuid) {
-          // New contact person being added
-          const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
-          addEvent("ADDED", "business contact", null, name);
-          for (const cm of incoming.person?.contactMethods ?? []) {
-            if (cm?.value) {
-              const contactLabel = name
-                ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
-                : `contact ${this._contactMethodLabel(cm.typeCode)}`;
-              addEvent("ADDED", contactLabel, null, cm.value);
-            }
-          }
-        } else {
-          // Existing contact person being updated — diff their fields
-          const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
-          if (!existingXref) continue;
-
-          const existingName = [existingXref.person?.firstName, existingXref.person?.lastName]
-            .filter(Boolean)
-            .join(" ");
-          const incomingName = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
-          // Use the incoming name for the label so it reflects the current state
-          const contactLabel = incomingName || existingName;
-
-          if (
-            existingXref.person?.firstName !== incoming.person?.firstName ||
-            existingXref.person?.lastName !== incoming.person?.lastName
-          ) {
-            addEvent("EDITED", "business contact name", existingName || null, incomingName || null);
-          }
-
-          const existingContactMethods = existingXref.person?.contactMethods ?? [];
-          const incomingContactMethods = incoming.person?.contactMethods ?? [];
-
-          this._compareContactMethods(
-            existingContactMethods,
-            incomingContactMethods,
-            (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
-            addEvent,
-          );
-        }
-      }
-
-      // Detect fully removed contact people
-      for (const existing of existingXrefs) {
-        if (!incomingXrefs.find((x) => x.businessPersonXrefGuid === existing.businessPersonXrefGuid)) {
-          const name = [existing.person?.firstName, existing.person?.lastName].filter(Boolean).join(" ");
-          addEvent("REMOVED", "business contact", name, null);
-        }
-      }
+      this._diffPersonChanges(oldParty.person, input.person, addEvent);
+    } else {
+      this._diffBusinessChanges(oldParty.business, input.business, addEvent);
     }
 
     return events;
@@ -1073,10 +1107,6 @@ export class PartyService {
             },
             business_address: { where: { active_ind: true } },
             contact_method: { where: { active_ind: true } },
-            // alias: true,
-            // business_identifier: true,
-            // business_address: true,
-            // contact_method: true,
             business_person_xref: {
               where: { active_ind: true },
               include: {

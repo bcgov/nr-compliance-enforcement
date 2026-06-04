@@ -1,7 +1,5 @@
-import { PartyView } from "./party-view";
-import { PartyHeader } from "./party-header";
-import { PartyTabs } from "./party-tabs";
-import { PartyHistoryTab } from "./party-history-tab";
-import { PartyHistoryItem } from "./party-history-item";
-
-export { PartyView, PartyHeader, PartyTabs, PartyHistoryTab, PartyHistoryItem };
+export { PartyView } from "./party-view";
+export { PartyHeader } from "./party-header";
+export { PartyTabs } from "./party-tabs";
+export { PartyHistoryTab } from "./party-history-tab";
+export { PartyHistoryItem } from "./party-history-item";
