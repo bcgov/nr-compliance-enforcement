@@ -312,7 +312,6 @@ export class PartyService {
                 alias: {
                   create: input.person.aliases.map((a) => ({
                     name: a.name,
-                    person_guid: a.personGuid,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),

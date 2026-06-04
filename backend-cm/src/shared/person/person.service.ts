@@ -105,7 +105,6 @@ export class PersonService {
                 (a) =>
                   ({
                     name: a.name,
-                    person_guid: a.personGuid,
                   }) as any,
               ),
             }

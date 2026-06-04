@@ -318,6 +318,7 @@ const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-
 
 // Shared base fields for person create/update.
 function buildPersonBase(value: any, isUpdate: boolean) {
+  console.log(value);
   return {
     firstName: value.firstName,
     middleNames: value.middleNames?.trim() || null,
@@ -389,11 +390,13 @@ const PartyEdit: FC = () => {
         worksafeBCNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
-        aliases:
-          partyData.party.business?.aliases?.map((a: Alias) => ({
-            aliasGuid: a.aliasGuid,
-            name: a.name,
-          })) || [],
+        aliases: (partyData.party.business
+          ? (partyData.party.business.aliases ?? [])
+          : (partyData.party.person?.aliases ?? [])
+        ).map((a: Alias) => ({
+          aliasGuid: a.aliasGuid,
+          name: a.name,
+        })),
         phoneNumbers: partyData.party.business
           ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, ContactMethods.PHONE)
           : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, ContactMethods.PHONE),

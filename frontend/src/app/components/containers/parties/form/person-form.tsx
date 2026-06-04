@@ -47,6 +47,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     handleRemoveAlias,
   } = usePartyFormFields(form);
 
+  console.log(aliases);
+
   return (
     <>
       <FormField

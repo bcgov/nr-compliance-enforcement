@@ -660,7 +660,6 @@ export const calculateAgeYears = (dob: Date, today: Date = new Date()): number =
 
 // Returns true if under 18 based on DOB
 export const isYoungPerson = (dob: Date | null | undefined, approximateAgeCode: string | null | undefined): boolean => {
-  console.log(approximateAgeCode);
   if (dob instanceof Date) {
     return calculateAgeYears(dob) <= 18;
   }
