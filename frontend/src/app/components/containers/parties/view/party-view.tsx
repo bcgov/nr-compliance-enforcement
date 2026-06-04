@@ -708,23 +708,6 @@ export const PartyView: FC = () => {
                   </>
                 )}
               </div>
-              {/* <br />
-          //     <h4>C&E history</h4>
-          //     <div className="party-details-item">
-          //       <p>
-          //         <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
-          //       </p>
-          //     </div>
-          //     <br />
-          //     <h4>Additional information</h4>
-          //     <div className="party-details-item">
-          //       <p>
-          //         <i>&#8226; Related people, vehicles etc.</i>
-          //       </p>
-          //     </div>
-          //   </section> */}
-              {/* // )} */}
-              {/* </div> */}
               <br />
               <h4>Identifying information</h4>
               <div className="party-details-item">
