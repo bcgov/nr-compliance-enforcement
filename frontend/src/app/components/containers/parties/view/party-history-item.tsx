@@ -3,6 +3,8 @@ import { formatTime } from "@/app/common/methods";
 import { Event } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { formatPhoneNumber } from "react-phone-number-input/input";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 
 interface PartyHistoryItemProps {
   event: Event;
@@ -21,7 +23,10 @@ const getIconByVerb = (verbCode: string): string => {
   return verbIcons[verbCode] || "bi-clock";
 };
 
-const getEventDescription = (event: Event): string => {
+const useEventDescription = (event: Event): string => {
+  const countries = useAppSelector(selectCountries);
+  const countrySubdivisions = useAppSelector(selectCountrySubdivisions);
+
   const verb = event.eventVerbTypeCode.eventVerbTypeCode;
   const content = event.content as { field?: string; oldValue?: string; newValue?: string } | null;
 
@@ -36,6 +41,8 @@ const getEventDescription = (event: Event): string => {
     if (!value) return "";
     if (field === "sex") return SEX_LABELS[value] ?? value;
     if (field.includes("phone number")) return formatPhoneNumber(value) || value;
+    if (field.includes("country")) return countries.find((c) => c.value === value)?.label ?? value;
+    if (field.includes("province")) return countrySubdivisions.find((s) => s.value === value)?.label ?? value;
     return value;
   };
 
@@ -52,6 +59,8 @@ const getEventDescription = (event: Event): string => {
 };
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {
+  const eventDescription = useEventDescription(event);
+
   const getActorName = () => {
     const actorId = event.actorId;
     if (actorId && event.actorEntityTypeCode?.eventEntityTypeCode === "USER" && appUsers) {
@@ -69,7 +78,7 @@ export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers })
       <span className="me-3 text-muted">{formatTime(event.publishedTimestamp)}</span>
       <span className="me-3 text-muted">{`•`}</span>
       <span className="fw-bold me-2">{getActorName()}</span>
-      <span>{getEventDescription(event)}</span>
+      <span>{eventDescription}</span>
     </li>
   );
 };

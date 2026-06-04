@@ -6,15 +6,17 @@ import { party } from "../../../prisma/shared/generated/party";
 import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
-import { PageInfo } from "../case_file/dto/case_file";
 import { Alias } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { BusinessAddress } from "src/shared/business_address/dto/business_address";
 import { PARTY_TYPES } from "src/common/party";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
+
+const BUSINESS_NUMBER_CODE = "BNUM";
 
 @Injectable()
 export class PartyService {
@@ -27,6 +29,58 @@ export class PartyService {
   ) {}
 
   private readonly logger = new Logger(PartyService.name);
+
+  private _getBusinessNumberValue(identifiers?: BusinessIdentifier[]): string | undefined {
+    const businessNumber = identifiers?.find((i) => {
+      const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
+      return code === BUSINESS_NUMBER_CODE;
+    });
+
+    return businessNumber?.identifierValue;
+  }
+
+  private _validateBusinessInput(business: {
+    name?: string;
+    identifiers?: BusinessIdentifier[];
+    addresses?: BusinessAddress[];
+  }): void {
+    if (!business.name?.trim()) {
+      throw new Error("Name is required.");
+    }
+
+    const businessNumberValue = this._getBusinessNumberValue(business.identifiers);
+
+    if (!businessNumberValue?.trim()) {
+      throw new Error("Business number is required.");
+    }
+
+    for (const address of business.addresses ?? []) {
+      if (!address.addressName?.trim()) {
+        throw new Error("Address name is required.");
+      }
+    }
+  }
+
+  private _normalizeIdentifierValue(value?: string): string {
+    return value?.trim() ?? "";
+  }
+
+  private _isBusinessNumberUniqueViolation(error: unknown): boolean {
+    if (!error || typeof error !== "object" || (error as { code?: string }).code !== "P2002") {
+      return false;
+    }
+
+    const target = (error as { meta?: { target?: string[] } }).meta?.target;
+    return Array.isArray(target) && target.includes("identifier_value");
+  }
+
+  private _rethrowIfBusinessNumberConflict(error: unknown): never {
+    if (this._isBusinessNumberUniqueViolation(error)) {
+      throw new Error("This business number is already in use.");
+    }
+
+    throw error;
+  }
 
   async findOne(id: string) {
     const prismaParty = await this.prisma.party.findUnique({
@@ -66,6 +120,22 @@ export class PartyService {
                     short_description: true,
                   },
                 },
+              },
+              where: {
+                active_ind: true,
+              },
+            },
+            business_address: {
+              select: {
+                business_address_guid: true,
+                business_guid: true,
+                address_name: true,
+                address: true,
+                city: true,
+                country_subdivision_code: true,
+                postal_code: true,
+                country_code: true,
+                is_primary: true,
               },
               where: {
                 active_ind: true,
@@ -161,97 +231,14 @@ export class PartyService {
     let data: any;
 
     try {
-      const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
-        input.business?.contactPeople ?? [],
-        null,
-      );
+      if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
+        this._validateBusinessInput(input.business);
+      }
 
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-        data = {
-          party_type: input.partyTypeCode,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-
-          person: {
-            create: {
-              first_name: input.person?.firstName,
-              middle_name: input.person?.middleName,
-              middle_name_2: input.person?.middleName2,
-              last_name: input.person?.lastName,
-              date_of_birth: input.person?.dateOfBirth,
-              drivers_license_number: input.person?.driversLicenseNumber,
-              drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-              sex_code: input.person?.sexCode,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              ...(input.person?.contactMethods?.length
-                ? {
-                    contact_method: {
-                      create: input.person.contactMethods.map((c) => ({
-                        contact_method_type: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-            },
-          },
-        };
+        data = this._buildPersonCreateData(input);
       } else {
-        data = {
-          party_type: input.partyTypeCode,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-          business: {
-            create: {
-              name: input.business?.name,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              ...(input.business?.aliases?.length
-                ? {
-                    alias: {
-                      create: input.business.aliases.map((a) => ({
-                        name: a.name,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.business?.identifiers?.length
-                ? {
-                    business_identifier: {
-                      create: input.business.identifiers.map((i) => ({
-                        business_identifier_code: i.identifierCode,
-                        identifier_value: i.identifierValue,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.business?.contactMethods?.length
-                ? {
-                    contact_method: {
-                      create: input.business.contactMethods.map((c) => ({
-                        contact_method_type: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(Object.keys(businessPersonXrefOperations).length
-                ? { business_person_xref: businessPersonXrefOperations }
-                : {}),
-            },
-          },
-        };
+        data = this._buildBusinessCreateData(input);
       }
 
       const prismaParty = await this.prisma.party.create({
@@ -280,9 +267,196 @@ export class PartyService {
 
       return createdParty;
     } catch (error) {
-      this.logger.error("Error creating party:", error.message);
-      throw error;
+      this.logger.error("Error creating party:", (error as Error)?.message);
+      this._rethrowIfBusinessNumberConflict(error);
     }
+  }
+
+  private _buildPersonCreateData(input: PartyCreateInput): any {
+    return {
+      party_type: input.partyTypeCode,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+      person: {
+        create: {
+          first_name: input.person?.firstName,
+          middle_name: input.person?.middleName,
+          middle_name_2: input.person?.middleName2,
+          last_name: input.person?.lastName,
+          date_of_birth: input.person?.dateOfBirth,
+          drivers_license_number: input.person?.driversLicenseNumber,
+          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+          sex_code: input.person?.sexCode,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          ...(input.person?.contactMethods?.length
+            ? {
+                contact_method: {
+                  create: input.person.contactMethods.map((c) => ({
+                    contact_method_type: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildBusinessCreateData(input: PartyCreateInput): any {
+    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+      input.business?.contactPeople ?? [],
+      null,
+    );
+
+    return {
+      party_type: input.partyTypeCode,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+      business: {
+        create: {
+          name: input.business?.name,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          ...(input.business?.aliases?.length
+            ? {
+                alias: {
+                  create: input.business.aliases.map((a) => ({
+                    name: a.name,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.identifiers?.length
+            ? {
+                business_identifier: {
+                  create: input.business.identifiers.map((i) => ({
+                    business_identifier_code: i.identifierCode,
+                    identifier_value: this._normalizeIdentifierValue(i.identifierValue),
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.addresses?.length
+            ? {
+                business_address: {
+                  create: input.business.addresses.map((a) => ({
+                    address_name: a.addressName.trim(),
+                    address: a.address?.trim() || null,
+                    city: a.city?.trim() || null,
+                    country_subdivision_code: a.province?.trim() || null,
+                    postal_code: a.postalCode?.trim() || null,
+                    country_code: a.country?.trim() || null,
+                    is_primary: a.isPrimary ?? false,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.business?.contactMethods?.length
+            ? {
+                contact_method: {
+                  create: input.business.contactMethods.map((c) => ({
+                    contact_method_type: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(Object.keys(businessPersonXrefOperations).length
+            ? { business_person_xref: businessPersonXrefOperations }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
+    const personContactMethodOperations = this._buildContactMethodOperations(
+      input.person?.contactMethods ?? [],
+      existingPartyDto.person?.contactMethods ?? [],
+    );
+
+    return {
+      party_type: input.partyTypeCode,
+      update_user_id: this.user.getIdirUsername(),
+      update_utc_timestamp: new Date(),
+      person: {
+        update: {
+          first_name: input.person?.firstName,
+          middle_name: input.person?.middleName,
+          middle_name_2: input.person?.middleName2,
+          last_name: input.person?.lastName,
+          date_of_birth: input.person?.dateOfBirth,
+          drivers_license_number: input.person?.driversLicenseNumber,
+          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
+          sex_code: input.person?.sexCode,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+          ...(Object.keys(personContactMethodOperations).length
+            ? { contact_method: personContactMethodOperations }
+            : {}),
+        },
+      },
+    };
+  }
+
+  private _buildBusinessUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
+    const aliasOperations = this._buildAliasOperations(
+      input.business?.aliases ?? [],
+      existingPartyDto.business?.aliases ?? [],
+    );
+
+    const contactMethodOperations = this._buildContactMethodOperations(
+      input.business?.contactMethods ?? [],
+      existingPartyDto.business?.contactMethods ?? [],
+    );
+
+    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
+      input.business?.identifiers ?? [],
+      existingPartyDto.business?.identifiers ?? [],
+    );
+
+    const businessAddressOperations = this._buildBusinessAddressOperations(
+      input.business?.addresses ?? [],
+      existingPartyDto.business?.addresses ?? [],
+    );
+
+    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
+      input.business?.contactPeople ?? [],
+      existingPartyDto.business?.contactPeople ?? [],
+    );
+
+    return {
+      business: {
+        update: {
+          name: input.business?.name,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+          ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+          ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
+          ...(Object.keys(businessIdentifierOperations).length
+            ? { business_identifier: businessIdentifierOperations }
+            : {}),
+          ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
+          ...(Object.keys(businessPersonXrefOperations).length
+            ? { business_person_xref: businessPersonXrefOperations }
+            : {}),
+        },
+      },
+    };
   }
 
   private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
@@ -342,7 +516,7 @@ export class PartyService {
     if (identifiersToCreate.length) {
       operations.create = identifiersToCreate.map((i) => ({
         business_identifier_code: i.identifierCode,
-        identifier_value: i.identifierValue,
+        identifier_value: this._normalizeIdentifierValue(i.identifierValue),
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
@@ -355,7 +529,7 @@ export class PartyService {
           where: { business_identifier_guid: i.businessIdentifierGuid },
           data: {
             business_identifier_code: i.identifierCode,
-            identifier_value: i.identifierValue,
+            identifier_value: this._normalizeIdentifierValue(i.identifierValue),
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
@@ -363,6 +537,70 @@ export class PartyService {
         })),
         ...identifiersToDelete.map((i) => ({
           where: { business_identifier_guid: i.businessIdentifierGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _sortAddressesPrimaryLast(addresses: BusinessAddress[]): BusinessAddress[] {
+    const nonPrimary = addresses.filter((a) => !a.isPrimary);
+    const primary = addresses.filter((a) => a.isPrimary);
+    return [...nonPrimary, ...primary];
+  }
+
+  private _buildBusinessAddressOperations(
+    incomingAddresses: BusinessAddress[],
+    existingAddresses: BusinessAddress[],
+  ): any {
+    const addressesToCreate = incomingAddresses.filter((a) => !a.businessAddressGuid);
+    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.businessAddressGuid));
+    const addressesToDelete = existingAddresses.filter(
+      (a) => !new Set(incomingAddresses.map((ea) => ea.businessAddressGuid)).has(a.businessAddressGuid),
+    );
+
+    const operations: any = {};
+
+    if (addressesToCreate.length) {
+      operations.create = this._sortAddressesPrimaryLast(addressesToCreate).map((a) => ({
+        address_name: a.addressName.trim(),
+        address: a.address?.trim() || null,
+        city: a.city?.trim() || null,
+        country_subdivision_code: a.province?.trim() || null,
+        postal_code: a.postalCode?.trim() || null,
+        country_code: a.country?.trim() || null,
+        is_primary: a.isPrimary ?? false,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (addressesToUpdate.length || addressesToDelete.length) {
+      operations.update = [
+        ...addressesToUpdate.map((a) => ({
+          where: { business_address_guid: a.businessAddressGuid },
+          data: {
+            address_name: a.addressName.trim(),
+            address: a.address?.trim() || null,
+            city: a.city?.trim() || null,
+            country_subdivision_code: a.province?.trim() || null,
+            postal_code: a.postalCode?.trim() || null,
+            country_code: a.country?.trim() || null,
+            is_primary: a.isPrimary ?? false,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...addressesToDelete.map((a) => ({
+          where: { business_address_guid: a.businessAddressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -710,6 +948,43 @@ export class PartyService {
         }
       }
 
+      // Business addresses
+      const existingAddresses = oldB.addresses ?? [];
+      const incomingAddresses = newB.addresses ?? [];
+      for (const incoming of incomingAddresses) {
+        if (!incoming.businessAddressGuid) {
+          if (incoming.addressName) {
+            addEvent("ADDED", "address", null, incoming.addressName);
+          }
+        } else {
+          const existing = existingAddresses.find((a) => a.businessAddressGuid === incoming.businessAddressGuid);
+          if (!existing) continue;
+          // Use the incoming address name as the context label for field-level changes
+          const label = incoming.addressName || existing.addressName;
+          compareField("address name", existing.addressName, incoming.addressName);
+          compareField(`street address in address "${label}"`, existing.address, incoming.address);
+          compareField(`city in address "${label}"`, existing.city, incoming.city);
+          compareField(`province in address "${label}"`, existing.province, incoming.province);
+          compareField(`postal code in address "${label}"`, existing.postalCode, incoming.postalCode);
+          compareField(`country in address "${label}"`, existing.country, incoming.country);
+        }
+      }
+      for (const existing of existingAddresses) {
+        if (!incomingAddresses.find((a) => a.businessAddressGuid === existing.businessAddressGuid)) {
+          addEvent("REMOVED", "address", existing.addressName, null);
+        }
+      }
+      // Detect when the primary address switches from one address to another
+      const oldPrimaryAddress = existingAddresses.find((a) => a.isPrimary);
+      const newPrimaryAddress = incomingAddresses.find((a) => a.isPrimary);
+      if (
+        oldPrimaryAddress &&
+        newPrimaryAddress &&
+        oldPrimaryAddress.businessAddressGuid !== newPrimaryAddress.businessAddressGuid
+      ) {
+        addEvent("EDITED", "primary address", oldPrimaryAddress.addressName, newPrimaryAddress.addressName);
+      }
+
       // Business-level contact methods (phone/email belonging directly to the business)
       const existingMethods = oldB.contactMethods ?? [];
       const incomingMethods = newB.contactMethods ?? [];
@@ -796,7 +1071,12 @@ export class PartyService {
                 business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: true,
               },
             },
+            business_address: { where: { active_ind: true } },
             contact_method: { where: { active_ind: true } },
+            // alias: true,
+            // business_identifier: true,
+            // business_address: true,
+            // contact_method: true,
             business_person_xref: {
               where: { active_ind: true },
               include: {
@@ -816,74 +1096,16 @@ export class PartyService {
 
     const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
+    if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
+      this._validateBusinessInput(input.business);
+    }
+
     let data: any;
 
-    const aliasOperations = this._buildAliasOperations(
-      input.business?.aliases ?? [],
-      existingPartyDto.business?.aliases ?? [],
-    );
-
-    const contactMethodOperations = this._buildContactMethodOperations(
-      input.business?.contactMethods ?? [],
-      existingPartyDto.business?.contactMethods ?? [],
-    );
-
-    const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
-      input.business?.identifiers ?? [],
-      existingPartyDto.business?.identifiers ?? [],
-    );
-
-    const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
-      input.business?.contactPeople ?? [],
-      existingPartyDto.business?.contactPeople ?? [],
-    );
-
-    const personContactMethodOperations = this._buildContactMethodOperations(
-      input.person?.contactMethods ?? [],
-      existingPartyDto.person?.contactMethods ?? [],
-    );
-
     if (input.partyTypeCode === PARTY_TYPES.Person) {
-      data = {
-        party_type: input.partyTypeCode,
-        update_user_id: this.user.getIdirUsername(),
-        update_utc_timestamp: new Date(),
-        person: {
-          update: {
-            first_name: input.person?.firstName,
-            middle_name: input.person?.middleName,
-            middle_name_2: input.person?.middleName2,
-            last_name: input.person?.lastName,
-            date_of_birth: input.person?.dateOfBirth,
-            drivers_license_number: input.person?.driversLicenseNumber,
-            drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-            sex_code: input.person?.sexCode,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-            ...(Object.keys(personContactMethodOperations).length
-              ? { contact_method: personContactMethodOperations }
-              : {}),
-          },
-        },
-      };
+      data = this._buildPersonUpdateData(input, existingPartyDto);
     } else {
-      data = {
-        business: {
-          update: {
-            name: input.business?.name,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-            ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-            ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
-            ...(Object.keys(businessIdentifierOperations).length
-              ? { business_identifier: businessIdentifierOperations }
-              : {}),
-            ...(Object.keys(businessPersonXrefOperations).length
-              ? { business_person_xref: businessPersonXrefOperations }
-              : {}),
-          },
-        },
-      };
+      data = this._buildBusinessUpdateData(input, existingPartyDto);
     }
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
@@ -904,8 +1126,8 @@ export class PartyService {
 
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
-      this.logger.error("Error creating party:", error.message);
-      throw error;
+      this.logger.error("Error updating party:", (error as Error)?.message);
+      this._rethrowIfBusinessNumberConflict(error);
     }
   }
 
@@ -1063,7 +1285,7 @@ export class PartyService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 }
