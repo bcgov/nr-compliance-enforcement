@@ -7,8 +7,7 @@ export class Person implements PersonDto {
   personGuid: string;
   partyGuid: string;
   firstName: string;
-  middleName?: string;
-  middleName2?: string;
+  middleNames?: string;
   lastName: string;
   dateOfBirth?: Date;
   approximateAgeCode?: string;
@@ -34,12 +33,8 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
       mapFrom((src) => src.first_name),
     ),
     forMember(
-      (dest) => dest.middleName,
-      mapFrom((src) => src.middle_name),
-    ),
-    forMember(
-      (dest) => dest.middleName2,
-      mapFrom((src) => src.middle_name_2),
+      (dest) => dest.middleNames,
+      mapFrom((src) => src.middle_names),
     ),
     forMember(
       (dest) => dest.lastName,

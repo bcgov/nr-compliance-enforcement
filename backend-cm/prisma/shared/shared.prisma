@@ -828,8 +828,7 @@ model party_type_code {
 model person {
   person_guid                                                            String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   first_name                                                             String                    @db.VarChar(128)
-  middle_name                                                            String?                   @db.VarChar(128)
-  middle_name_2                                                          String?                   @db.VarChar(128)
+  middle_names                                                           String?                   @db.VarChar(256)
   last_name                                                              String                    @db.VarChar(128)
   create_user_id                                                         String                    @db.VarChar(32)
   create_utc_timestamp                                                   DateTime                  @default(now()) @db.Timestamp(6)

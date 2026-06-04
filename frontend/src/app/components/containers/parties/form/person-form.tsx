@@ -85,38 +85,19 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
-        name="middleName"
-        label="Middle name"
+        name="middleNames"
+        label="Middle names"
         render={(field) => (
           <CompInput
-            id="MiddleName"
+            id="MiddleNames"
             divid=""
             type="input"
             inputClass="comp-form-control comp-details-input"
             defaultValue={field.state.value}
             error={field.state.meta.errors?.[0]?.message || ""}
-            maxLength={50}
+            maxLength={256}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter middle name..."
-            disabled={isDisabled}
-          />
-        )}
-      />
-      <FormField
-        form={form}
-        name="middleName2"
-        label="Middle name 2"
-        render={(field) => (
-          <CompInput
-            id="MiddleName2"
-            divid=""
-            type="input"
-            inputClass="comp-form-control comp-details-input"
-            defaultValue={field.state.value}
-            error={field.state.meta.errors?.[0]?.message || ""}
-            maxLength={50}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter middle name 2..."
+            placeholder="Enter middle names..."
             disabled={isDisabled}
           />
         )}

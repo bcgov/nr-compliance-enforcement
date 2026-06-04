@@ -15,10 +15,7 @@ export class PersonInput {
   firstName: string;
 
   @Field(() => String, { nullable: true })
-  middleName?: string;
-
-  @Field(() => String, { nullable: true })
-  middleName2?: string;
+  middleNames?: string;
 
   @Field(() => String)
   lastName: string;

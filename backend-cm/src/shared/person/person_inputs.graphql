@@ -1,7 +1,6 @@
 input PersonInput {
   firstName: String!
-  middleName: String
-  middleName2: String
+  middleNames: String
   lastName: String!
   dateOfBirth: DateTime
   approximateAgeCode: String
@@ -16,8 +15,7 @@ input PersonInput {
 input PersonUpdateInput {
   personGuid: String!
   firstName: String!
-  middleName: String
-  middleName2: String
+  middleNames: String
   lastName: String!
   dateOfBirth: DateTime
   approximateAgeCode: String

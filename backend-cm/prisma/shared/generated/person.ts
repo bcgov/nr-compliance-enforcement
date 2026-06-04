@@ -15,10 +15,7 @@ export class person {
   first_name: string;
 
   @ApiPropertyOptional({ type: String })
-  middle_name?: string;
-
-  @ApiPropertyOptional({ type: String })
-  middle_name_2?: string;
+  middle_names?: string;
 
   @ApiProperty({ type: String })
   last_name: string;

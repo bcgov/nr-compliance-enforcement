@@ -167,8 +167,7 @@ export class PartyService {
                   select: {
                     person_guid: true,
                     first_name: true,
-                    middle_name: true,
-                    middle_name_2: true,
+                    middle_names: true,
                     last_name: true,
                     date_of_birth: true,
                     drivers_license_number: true,
@@ -202,8 +201,7 @@ export class PartyService {
           select: {
             person_guid: true,
             first_name: true,
-            middle_name: true,
-            middle_name_2: true,
+            middle_names: true,
             last_name: true,
             date_of_birth: true,
             drivers_license_number: true,
@@ -274,8 +272,7 @@ export class PartyService {
       person: {
         create: {
           first_name: input.person?.firstName,
-          middle_name: input.person?.middleName,
-          middle_name_2: input.person?.middleName2,
+          middle_names: input.person?.middleNames,
           last_name: input.person?.lastName,
           date_of_birth: input.person?.dateOfBirth,
           approximate_age_code: this._resolveApproximateAgeCode(
@@ -396,8 +393,7 @@ export class PartyService {
       person: {
         update: {
           first_name: input.person?.firstName,
-          middle_name: input.person?.middleName,
-          middle_name_2: input.person?.middleName2,
+          middle_names: input.person?.middleNames,
           last_name: input.person?.lastName,
           date_of_birth: input.person?.dateOfBirth,
           approximate_age_code: this._resolveApproximateAgeCode(
@@ -700,8 +696,7 @@ export class PartyService {
         person: {
           create: {
             first_name: bpx.person.firstName,
-            middle_name: bpx.person.middleName,
-            middle_name_2: bpx.person.middleName2,
+            middle_names: bpx.person.middleNames,
             last_name: bpx.person.lastName,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
@@ -748,8 +743,7 @@ export class PartyService {
               person: {
                 update: {
                   first_name: bpx.person.firstName,
-                  middle_name: bpx.person.middleName,
-                  middle_name_2: bpx.person.middleName2,
+                  middle_names: bpx.person.middleNames,
                   last_name: bpx.person.lastName,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
@@ -961,8 +955,7 @@ export class PartyService {
             select: {
               person_guid: true,
               first_name: true,
-              middle_name: true,
-              middle_name_2: true,
+              middle_names: true,
               last_name: true,
               date_of_birth: true,
               drivers_license_number: true,

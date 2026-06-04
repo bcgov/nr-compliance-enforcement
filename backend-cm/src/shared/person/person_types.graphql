@@ -1,8 +1,7 @@
 type Person {
   personGuid: String
   firstName: String
-  middleName: String
-  middleName2: String
+  middleNames: String
   lastName: String
   dateOfBirth: DateTime
   approximateAgeCode: String

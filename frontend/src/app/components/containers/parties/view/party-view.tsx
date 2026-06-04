@@ -61,8 +61,7 @@ export const GET_PARTY = gql`
       person {
         personGuid
         firstName
-        middleName
-        middleName2
+        middleNames
         lastName
         dateOfBirth
         approximateAgeCode
@@ -438,12 +437,9 @@ export const PartyView: FC = () => {
   const displayName = () => {
     let result = "";
     if (partyData?.person) {
-      const parts = [
-        partyData.person?.firstName,
-        partyData.person?.middleName,
-        partyData.person?.middleName2,
-        partyData.person?.lastName,
-      ].filter(Boolean);
+      const parts = [partyData.person?.firstName, partyData.person?.middleNames, partyData.person?.lastName].filter(
+        Boolean,
+      );
       result = parts.join(" ");
     } else if (partyData?.business) {
       result = `${partyData.business?.name}`;

@@ -118,7 +118,6 @@ ALTER TABLE person
 
 COMMENT ON COLUMN shared.person.drivers_license_country_code IS 'The country that issued the person''s driver''s licence. References country_code.';
 
--- Add subdivision of issue (FK to country_subdivision_code)
 ALTER TABLE person
     ADD COLUMN drivers_license_country_subdivision_code character varying(16);
 
@@ -129,3 +128,15 @@ ALTER TABLE person
 
 COMMENT ON COLUMN shared.person.drivers_license_country_subdivision_code IS 'The country subdivision (province, state, etc.) that issued the person''s driver''s licence. References country_subdivision_code.';
 
+-- Convert Middle Name 1 and Middle Name 2 to Middle Names
+
+ALTER TABLE person
+    DROP COLUMN middle_name_2;
+
+ALTER TABLE person
+    RENAME COLUMN middle_name TO middle_names;
+
+ALTER TABLE person
+    ALTER COLUMN middle_names TYPE character varying(256);
+
+COMMENT ON COLUMN shared.person.middle_names IS 'The middle name(s) of the person.';

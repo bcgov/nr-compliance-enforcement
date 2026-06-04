@@ -20,8 +20,7 @@ export class PersonService {
       select: {
         person_guid: true,
         first_name: true,
-        middle_name: true,
-        middle_name_2: true,
+        middle_names: true,
         last_name: true,
         date_of_birth: true,
         drivers_license_number: true,
@@ -73,8 +72,7 @@ export class PersonService {
     const prismaPerson = await this.prisma.person.create({
       data: {
         first_name: input.firstName,
-        middle_name: input.middleName,
-        middle_name_2: input.middleName2,
+        middle_names: input.middleNames,
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
@@ -117,8 +115,7 @@ export class PersonService {
       where: { person_guid: personGuid },
       data: {
         first_name: input.firstName,
-        middle_name: input.middleName,
-        middle_name_2: input.middleName2,
+        middle_names: input.middleNames,
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,

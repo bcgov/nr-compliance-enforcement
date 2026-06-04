@@ -39,8 +39,7 @@ const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
     personGuid
     firstName
-    middleName
-    middleName2
+    middleNames
     lastName
     dateOfBirth
     approximateAgeCode
@@ -318,8 +317,7 @@ const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-
 function buildPersonBase(value: any, isUpdate: boolean) {
   return {
     firstName: value.firstName,
-    middleName: value.middleName?.trim() || null,
-    middleName2: value.middleName2?.trim() || null,
+    middleNames: value.middleNames?.trim() || null,
     lastName: value.lastName,
     dateOfBirth: toDateOfBirth(value),
     approximateAgeCode: value.approximateAgeCode || undefined,
@@ -371,8 +369,7 @@ const PartyEdit: FC = () => {
         partyType: partyData.party.partyTypeCode || "",
         personGuid: person?.personGuid || "",
         firstName: person?.firstName || "",
-        middleName: person?.middleName || "",
-        middleName2: person?.middleName2 || "",
+        middleNames: person?.middleNames || "",
         lastName: person?.lastName || "",
         dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
         approximateAgeCode: person?.approximateAgeCode || "",
@@ -405,8 +402,7 @@ const PartyEdit: FC = () => {
       partyType: null,
       personGuid: "",
       firstName: "",
-      middleName: "",
-      middleName2: "",
+      middleNames: "",
       lastName: "",
       dateOfBirth: undefined,
       approximateAgeCode: "",
