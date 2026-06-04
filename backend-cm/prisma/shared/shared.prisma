@@ -43,14 +43,16 @@ model agency_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model alias {
   alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid        String    @db.Uuid
+  business_guid        String?   @db.Uuid
   name                 String    @db.VarChar(512)
   active_ind           Boolean   @default(true)
   create_user_id       String    @db.VarChar(32)
   create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
   update_user_id       String?   @db.VarChar(32)
   update_utc_timestamp DateTime? @db.Timestamp(6)
-  business             business  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
+  person_guid          String?   @db.Uuid
+  business             business? @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
+  person               person?   @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_person_fk")
 
   @@schema("shared")
 }
@@ -842,6 +844,7 @@ model person {
   drivers_license_class                                                  String?                   @db.VarChar(128)
   drivers_license_country_code                                           String?                   @db.VarChar(4)
   drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
+  alias                                                                  alias[]
   business_person_xref                                                   business_person_xref[]
   contact_method                                                         contact_method[]
   party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")

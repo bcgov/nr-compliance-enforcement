@@ -11,4 +11,5 @@ type Person {
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
   contactMethods: [ContactMethod]
+  aliases: [Alias]
 }

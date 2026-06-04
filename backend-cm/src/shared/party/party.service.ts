@@ -222,6 +222,14 @@ export class PartyService {
                 active_ind: true,
               },
             },
+            alias: {
+              select: {
+                name: true,
+              },
+              where: {
+                active_ind: true,
+              },
+            },
           },
         },
       },
@@ -293,6 +301,18 @@ export class PartyService {
                     contact_method_type: c.typeCode,
                     contact_value: c.value,
                     is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.person?.aliases?.length
+            ? {
+                alias: {
+                  create: input.person.aliases.map((a) => ({
+                    name: a.name,
+                    person_guid: a.personGuid,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -386,6 +406,11 @@ export class PartyService {
       existingPartyDto.person?.contactMethods ?? [],
     );
 
+    const personAliasOperations = this._buildAliasOperations(
+      input.person?.aliases ?? [],
+      existingPartyDto.person?.aliases ?? [],
+    );
+
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
@@ -410,6 +435,7 @@ export class PartyService {
           ...(Object.keys(personContactMethodOperations).length
             ? { contact_method: personContactMethodOperations }
             : {}),
+          ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
         },
       },
     };
@@ -778,6 +804,7 @@ export class PartyService {
         person: {
           include: {
             contact_method: true,
+            alias: true,
           },
         },
         business: {
@@ -977,6 +1004,12 @@ export class PartyService {
                       long_description: true,
                     },
                   },
+                },
+              },
+              alias: {
+                where: { active_ind: true },
+                select: {
+                  name: true,
                 },
               },
             },

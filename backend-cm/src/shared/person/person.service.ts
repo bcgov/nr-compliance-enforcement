@@ -41,6 +41,11 @@ export class PersonService {
             },
           },
         },
+        alias: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -58,6 +63,7 @@ export class PersonService {
             contact_method_type_code: true,
           },
         },
+        alias: true,
       },
     });
 
@@ -89,6 +95,17 @@ export class PersonService {
                     contact_value: cm.value,
                     contact_method_type_code: cm.typeCode,
                     create_user_id: "system",
+                  }) as any,
+              ),
+            }
+          : undefined,
+        alias: input.aliases
+          ? {
+              create: input.aliases.map(
+                (a) =>
+                  ({
+                    name: a.name,
+                    person_guid: a.personGuid,
                   }) as any,
               ),
             }
@@ -130,6 +147,7 @@ export class PersonService {
             contact_method_type_code: true,
           },
         },
+        alias: true,
       },
     });
     return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
@@ -138,7 +156,7 @@ export class PersonService {
   async delete(personGuid: string): Promise<Person> {
     const existingPerson = await this.prisma.person.findUnique({
       where: { person_guid: personGuid },
-      include: { contact_method: true },
+      include: { contact_method: true, alias: true },
     });
     if (!existingPerson) throw new Error("Person not found");
 

@@ -9,8 +9,9 @@ import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
-import { Badge } from "react-bootstrap";
+import { Badge, Button } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
+import { Alias } from "@/generated/graphql";
 
 type PersonFormProps = {
   form: any;
@@ -36,8 +37,15 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     label: opt.label,
   }));
 
-  const { phoneNumbers, handleAddPhoneNumber, handleRemovePhoneNumber, handleSetPrimaryPhoneNumber } =
-    usePartyFormFields(form);
+  const {
+    phoneNumbers,
+    handleAddPhoneNumber,
+    handleRemovePhoneNumber,
+    handleSetPrimaryPhoneNumber,
+    aliases,
+    handleAddAlias,
+    handleRemoveAlias,
+  } = usePartyFormFields(form);
 
   return (
     <>
@@ -100,6 +108,61 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             placeholder="Enter middle names..."
             disabled={isDisabled}
           />
+        )}
+      />
+      {aliases?.map((alias: Alias, index: number) => (
+        <FormField
+          key={alias.aliasGuid || `alias-${index}`}
+          form={form}
+          name={`aliases[${index}].name` as any}
+          label={index === 0 ? "Alias" : ""}
+          render={(field) => (
+            <div className="party-alias-container">
+              <div className="party-multiple-value-container">
+                <CompInput
+                  id={`alias-${index}`}
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  value={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={512}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  placeholder="Enter alias..."
+                  disabled={isDisabled}
+                />
+              </div>
+
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => handleRemoveAlias(index)}
+                type="button"
+              >
+                <i className="bi bi-trash" />
+                {/**/}
+                Remove
+              </Button>
+            </div>
+          )}
+        />
+      ))}
+      <FormField
+        form={form}
+        name="add-alias-placeholder"
+        label=""
+        render={() => (
+          <Button
+            id="add-alias-button"
+            variant="outline-primary"
+            size="sm"
+            onClick={handleAddAlias}
+            type="button"
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {/**/}
+            Add alias
+          </Button>
         )}
       />
       <FormField

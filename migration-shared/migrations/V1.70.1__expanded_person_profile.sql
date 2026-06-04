@@ -140,3 +140,29 @@ ALTER TABLE person
     ALTER COLUMN middle_names TYPE character varying(256);
 
 COMMENT ON COLUMN shared.person.middle_names IS 'The middle name(s) of the person.';
+
+-- Enable Aliases for people
+
+ALTER TABLE alias
+    ALTER COLUMN business_guid DROP NOT NULL;
+
+ALTER TABLE alias
+    ADD COLUMN person_guid uuid;
+
+ALTER TABLE alias
+    ADD CONSTRAINT alias_person_fk
+    FOREIGN KEY (person_guid)
+    REFERENCES person (person_guid);
+
+ALTER TABLE alias
+    ADD CONSTRAINT alias_exactly_one_owner
+    CHECK (
+      (business_guid IS NOT NULL AND person_guid IS NULL)
+      OR (business_guid IS NULL AND person_guid IS NOT NULL)
+    );
+
+COMMENT ON TABLE shared.alias IS 'Contains alternative names or aliases associated with a business or person.';
+
+COMMENT ON COLUMN shared.alias.business_guid IS 'The unique identifier of the business to which the alias belongs. Null when the alias belongs to a person.';
+
+COMMENT ON COLUMN shared.alias.person_guid IS 'The unique identifier of the person to which the alias belongs. Null when the alias belongs to a business.';

@@ -48,6 +48,9 @@ const PARTY_PERSON_FRAGMENT = gql`
     driversLicenseCountryCode
     driversLicenseCountrySubdivisionCode
     genderCode
+    aliases {
+      name
+    }
   }
 `;
 
@@ -327,6 +330,7 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
     genderCode: value.genderCode || undefined,
     contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
+    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
   };
 }
 

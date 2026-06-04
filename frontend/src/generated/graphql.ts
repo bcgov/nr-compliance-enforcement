@@ -77,6 +77,7 @@ export type Alias = {
 export type AliasInput = {
   businessGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+  personGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AliasUpdateInput = {
@@ -2009,6 +2010,7 @@ export type PermitSiteInput = {
 
 export type Person = {
   __typename?: 'Person';
+  aliases?: Maybe<Array<Maybe<Alias>>>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
@@ -2024,6 +2026,7 @@ export type Person = {
 };
 
 export type PersonInput = {
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2038,6 +2041,7 @@ export type PersonInput = {
 };
 
 export type PersonUpdateInput = {
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;

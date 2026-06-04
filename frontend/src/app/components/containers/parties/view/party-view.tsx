@@ -77,6 +77,9 @@ export const GET_PARTY = gql`
           value
           isPrimary
         }
+        aliases {
+          name
+        }
       }
       business {
         name
@@ -692,6 +695,18 @@ export const PartyView: FC = () => {
               {partyData?.business?.aliases && (
                 <>
                   {partyData.business.aliases.map((alias) => {
+                    return (
+                      <p key={alias?.aliasGuid}>
+                        <b>Alias: </b>
+                        {alias?.name}
+                      </p>
+                    );
+                  })}
+                </>
+              )}
+              {partyData?.person?.aliases && (
+                <>
+                  {partyData.person.aliases.map((alias) => {
                     return (
                       <p key={alias?.aliasGuid}>
                         <b>Alias: </b>
