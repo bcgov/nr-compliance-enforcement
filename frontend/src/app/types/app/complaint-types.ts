@@ -3,7 +3,7 @@ import { Roles } from "./roles";
 export const COMPLAINT_TYPE_AGENCY_MAPPING = {
   HWCR: ["COS", "PARKS"],
   GIR: ["COS", "PARKS"],
-  ERS: ["COS", "PARKS", "EPO", "NROS"],
+  ERS: ["COS", "PARKS", "EPO", "NROS", "MINES"],
 };
 
 export const COMPLAINT_TYPE_EXTERNAL_AGENCY_MAPPING = {
@@ -24,6 +24,10 @@ export const CEEB_TYPES = {
   SECTOR: "SECTOR",
 };
 export const NROS_TYPES = {
+  ERS: "ERS",
+  SECTOR: "SECTOR",
+};
+export const MINES_TYPES = {
   ERS: "ERS",
   SECTOR: "SECTOR",
 };
@@ -58,6 +62,8 @@ export const complaintTypeForRole = (roleType: string) => {
       return CEEB_TYPES;
     case Roles.NROS:
       return NROS_TYPES;
+    case Roles.MINES:
+      return MINES_TYPES;
     case Roles.COS:
     case Roles.GLOBAL_ADMINISTRATOR:
     case Roles.AGENCY_ADMINISTRATOR:

@@ -24,6 +24,7 @@ import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/
 import {
   CEEB_ROLE_OPTIONS,
   NROS_ROLE_OPTIONS,
+  MINES_ROLE_OPTIONS,
   COS_ROLE_OPTIONS,
   PARKS_ROLE_OPTIONS,
   ROLE_OPTIONS,
@@ -140,6 +141,7 @@ export const EditUser: FC<EditUserProps> = ({
     const roleToAgency: Array<[string, string]> = [
       ["CEEB", AgencyType.CEEB],
       ["NROS", AgencyType.NROS],
+      ["MINES", AgencyType.MINES],
       ["COS", AgencyType.COS],
       ["PARKS", AgencyType.PARKS],
     ];
@@ -162,7 +164,12 @@ export const EditUser: FC<EditUserProps> = ({
       }
     }
 
-    if ((primaryAgency === AgencyType.NROS || primaryAgency === AgencyType.COS) && officerData.office_guid) {
+    if (
+      (primaryAgency === AgencyType.NROS ||
+        primaryAgency === AgencyType.COS ||
+        primaryAgency === AgencyType.MINES) &&
+      officerData.office_guid
+    ) {
       const officeGuid =
         typeof officerData.office_guid === "string" ? officerData.office_guid : officerData.office_guid.office_guid;
       const currentOffice = mapValueToDropdownList(officeGuid, offices);
@@ -201,6 +208,9 @@ export const EditUser: FC<EditUserProps> = ({
         break;
       case AgencyType.NROS:
         setRoleList(NROS_ROLE_OPTIONS);
+        break;
+      case AgencyType.MINES:
+        setRoleList(MINES_ROLE_OPTIONS);
         break;
       case AgencyType.COS:
         setRoleList(COS_ROLE_OPTIONS);
@@ -380,6 +390,7 @@ export const EditUser: FC<EditUserProps> = ({
         return res;
       }
       case AgencyType.NROS:
+      case AgencyType.MINES:
       case AgencyType.COS:
       default: {
         const officerId = officer?.value ? officer.value : "";
@@ -458,7 +469,11 @@ export const EditUser: FC<EditUserProps> = ({
     const agency = currentAgency ?? selectedAgency;
     if (agency?.value === AgencyType.CEEB) {
       return "Team";
-    } else if (agency?.value === AgencyType.COS || agency?.value === AgencyType.NROS) {
+    } else if (
+      agency?.value === AgencyType.COS ||
+      agency?.value === AgencyType.NROS ||
+      agency?.value === AgencyType.MINES
+    ) {
       return "Office";
     } else if (agency?.value === AgencyType.PARKS) {
       return "Park area";
@@ -630,7 +645,9 @@ export const EditUser: FC<EditUserProps> = ({
               {(currentAgency?.value === AgencyType.COS ||
                 selectedAgency?.value === AgencyType.COS ||
                 currentAgency?.value === AgencyType.NROS ||
-                selectedAgency?.value === AgencyType.NROS) && (
+                selectedAgency?.value === AgencyType.NROS ||
+                currentAgency?.value === AgencyType.MINES ||
+                selectedAgency?.value === AgencyType.MINES) && (
                 <CompSelect
                   id="species-select-id"
                   showInactive={false}

@@ -11,7 +11,7 @@ export class LeadResolver {
   constructor(private readonly leadService: LeadService) {}
 
   @Query("getLeadsByActionTaken")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   findOne(@Args("actionCode") actionCode: string) {
     return this.leadService.getLeadsByActionTaken(actionCode);
   }

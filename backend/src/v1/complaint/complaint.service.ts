@@ -1385,7 +1385,10 @@ export class ComplaintService {
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if ((agencies.includes("EPO") || agencies.includes("NROS")) && filters.actionTaken) {
+      if (
+        (agencies.includes("EPO") || agencies.includes("NROS") || agencies.includes("MINES")) &&
+        filters.actionTaken
+      ) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
 
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
@@ -1466,7 +1469,7 @@ export class ComplaintService {
             "AllegationComplaint",
             "AllegationComplaintDto",
           );
-          if (agencies.includes("EPO") || agencies.includes("NROS")) {
+          if (agencies.includes("EPO") || agencies.includes("NROS") || agencies.includes("MINES")) {
             // Get the authorization id from the case management system
             const ids = items.map((item) => item.id);
             const { data, errors } = await get(token, {
@@ -1661,7 +1664,13 @@ export class ComplaintService {
         }
       }
     } catch (error) {
-      this.logger.error(`Error adding organization data to complaints: ${error}`);
+      // token can invalidate during req to shared data. Parse generic error and change log level for unauths
+      const isUnauthorized = String(error).includes("UNAUTHENTICATED") || String(error).includes('"401"');
+      if (isUnauthorized) {
+        this.logger.log(`Skipped adding organization data to complaints - token unauthorized: ${error}`);
+      } else {
+        this.logger.error(`Error adding organization data to complaints: ${error}`);
+      }
     }
   };
 
@@ -1718,7 +1727,10 @@ export class ComplaintService {
       builder = this._applyReferralFilters(builder, filters?.status, agencies, complaintType);
 
       // -- filter by complaint identifiers returned by case management if actionTaken filter is present
-      if ((agencies.includes("EPO") || agencies.includes("NROS")) && filters.actionTaken) {
+      if (
+        (agencies.includes("EPO") || agencies.includes("NROS") || agencies.includes("MINES")) &&
+        filters.actionTaken
+      ) {
         const complaintIdentifiers = await this._getComplaintsByActionTaken(token, filters.actionTaken);
         builder.andWhere("complaint.complaint_identifier IN(:...complaint_identifiers)", {
           complaint_identifiers: complaintIdentifiers,
