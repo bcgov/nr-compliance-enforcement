@@ -277,6 +277,23 @@ export class PartyService {
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
+      ...(input.addresses?.length
+        ? {
+            address: {
+              create: input.addresses.map((a) => ({
+                address_name: a.addressName.trim(),
+                address: a.address?.trim() || null,
+                city: a.city?.trim() || null,
+                country_subdivision_code: a.province?.trim() || null,
+                postal_code: a.postalCode?.trim() || null,
+                country_code: a.country?.trim() || null,
+                is_primary: a.isPrimary ?? false,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       person: {
         create: {
           first_name: input.person?.firstName,
@@ -335,7 +352,7 @@ export class PartyService {
       create_utc_timestamp: new Date(),
       ...(input.addresses?.length
         ? {
-            business_address: {
+            address: {
               create: input.addresses.map((a) => ({
                 address_name: a.addressName.trim(),
                 address: a.address?.trim() || null,
@@ -410,10 +427,13 @@ export class PartyService {
       existingPartyDto.person?.aliases ?? [],
     );
 
+    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
+
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
+      ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       person: {
         update: {
           first_name: input.person?.firstName,
@@ -465,6 +485,8 @@ export class PartyService {
 
     return {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
+      update_user_id: this.user.getIdirUsername(),
+      update_utc_timestamp: new Date(),
       business: {
         update: {
           name: input.business?.name,

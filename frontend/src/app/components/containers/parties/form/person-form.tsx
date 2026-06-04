@@ -12,6 +12,8 @@ import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { Alias } from "@/generated/graphql";
+import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFields } from "@/app/components/containers/parties/form/party-address-fields";
 
 type PersonFormProps = {
   form: any;
@@ -38,6 +40,10 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
   }));
 
   const {
+    addresses,
+    handleAddAddress,
+    handleRemoveAddress,
+    handleSetPrimaryAddress,
     phoneNumbers,
     handleAddPhoneNumber,
     handleRemovePhoneNumber,
@@ -46,8 +52,6 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     handleAddAlias,
     handleRemoveAlias,
   } = usePartyFormFields(form);
-
-  console.log(aliases);
 
   return (
     <>
@@ -350,6 +354,42 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             errorMessage={field.state.meta.errors?.[0]?.message || ""}
             isDisabled={isDisabled}
           />
+        )}
+      />
+      {addresses?.map((address: AddressFormValue, index: number) => (
+        <FormField
+          key={address.addressGuid || `address-${index}`}
+          form={form}
+          name={`address-block-${index}` as any}
+          label={index === 0 ? "Address" : ""}
+          render={() => (
+            <AddressFields
+              addressIndex={index}
+              form={form}
+              isDisabled={isDisabled}
+              isPrimary={address.isPrimary || false}
+              onRemoveAddress={handleRemoveAddress}
+              onSetPrimaryAddress={handleSetPrimaryAddress}
+            />
+          )}
+        />
+      ))}
+      <FormField
+        form={form}
+        name="add-address-placeholder"
+        label=""
+        render={() => (
+          <Button
+            id="add-address-button"
+            variant="outline-primary"
+            size="sm"
+            onClick={handleAddAddress}
+            type="button"
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {/**/}
+            Add address
+          </Button>
         )}
       />
       <PartyPhoneFields

@@ -11,7 +11,7 @@ import { CompSelect } from "@/app/components/common/comp-select";
 const DEFAULT_COUNTRY = "CA";
 const DEFAULT_CANADA_PROVINCE = "CA-BC";
 
-interface BusinessAddressFieldsProps {
+interface AddressFieldsProps {
   addressIndex: number;
   form: any;
   isDisabled: boolean;
@@ -20,7 +20,7 @@ interface BusinessAddressFieldsProps {
   onSetPrimaryAddress: (index: number) => void;
 }
 
-export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
+export const AddressFields: FC<AddressFieldsProps> = ({
   addressIndex,
   form,
   isDisabled,
@@ -83,7 +83,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
           <input
             type="radio"
             id={`address-primary-${addressIndex}`}
-            name="primaryBusinessAddress"
+            name="primaryAddress"
             checked={isPrimary || false}
             onChange={() => onSetPrimaryAddress(addressIndex)}
             disabled={isDisabled}
@@ -101,8 +101,8 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         }}
         render={(field) => (
           <CompInput
-            id={`business-address-name-${addressIndex}`}
-            divid={`business-address-name-${addressIndex}-div`}
+            id={`address-name-${addressIndex}`}
+            divid={`address-name-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -120,8 +120,8 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         label="Street address"
         render={(field) => (
           <CompInput
-            id={`business-address-${addressIndex}`}
-            divid={`business-address-${addressIndex}-div`}
+            id={`address-${addressIndex}`}
+            divid={`address-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -139,8 +139,8 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         label="City"
         render={(field) => (
           <CompInput
-            id={`business-city-${addressIndex}`}
-            divid={`business-city-${addressIndex}-div`}
+            id={`city-${addressIndex}`}
+            divid={`city-${addressIndex}-div`}
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
@@ -160,7 +160,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
             label="Province"
             render={(field) => (
               <CompSelect
-                id="business-address-province"
+                id="address-province"
                 classNamePrefix="comp-select"
                 className="comp-details-input"
                 options={provinceOptions}
@@ -180,8 +180,8 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
             label="Postal code"
             render={(field) => (
               <CompInput
-                id={`business-postal-code-${addressIndex}`}
-                divid={`business-postal-code-${addressIndex}-div`}
+                id={`postal-code-${addressIndex}`}
+                divid={`postal-code-${addressIndex}-div`}
                 type="input"
                 inputClass="comp-form-control comp-details-input"
                 value={field.state.value ?? ""}
@@ -201,7 +201,7 @@ export const BusinessAddressFields: FC<BusinessAddressFieldsProps> = ({
         label="Country"
         render={(field) => (
           <CompSelect
-            id="business-address-country"
+            id="address-country"
             classNamePrefix="comp-select"
             className="comp-details-input"
             options={countryOptions}

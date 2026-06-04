@@ -7,7 +7,7 @@ import { ContactPersonFields } from "@/app/components/containers/parties/edit/co
 import { z } from "zod";
 import { Button } from "react-bootstrap";
 import { AddressFormValue } from "./business-form-utils";
-import { BusinessAddressFields } from "./business-address-fields";
+import { AddressFields } from "./party-address-fields";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 
@@ -176,12 +176,12 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
       />
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField
-          key={address.businessAddressGuid || `address-${index}`}
+          key={address.addressGuid || `address-${index}`}
           form={form}
           name={`address-block-${index}` as any}
           label={index === 0 ? "Address" : ""}
           render={() => (
-            <BusinessAddressFields
+            <AddressFields
               addressIndex={index}
               form={form}
               isDisabled={isDisabled}
