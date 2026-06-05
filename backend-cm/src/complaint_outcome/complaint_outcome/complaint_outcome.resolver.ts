@@ -27,7 +27,7 @@ export class ComplaintOutcomeResolver {
   constructor(private readonly complaintOutcomeService: ComplaintOutcomeService) {}
 
   @Mutation("createAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   createAssessment(@Args("input") input: CreateAssessmentInput) {
     return this.complaintOutcomeService.createAssessment(input);
   }
@@ -69,7 +69,7 @@ export class ComplaintOutcomeResolver {
   }
 
   @Mutation("updateAssessment")
-  @Roles(Role.COS, Role.PARKS, Role.CEEB)
+  @Roles(Role.COS, Role.PARKS, Role.CEEB, Role.NROS, Role.MINES)
   updateAssessment(@Args("input") input: UpdateAssessmentInput) {
     return this.complaintOutcomeService.updateAssessment(input);
   }
@@ -147,31 +147,31 @@ export class ComplaintOutcomeResolver {
   }
 
   @Mutation("createDecision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   createDecision(@Args("input") input: CreateDecisionInput) {
     return this.complaintOutcomeService.createDecision(input);
   }
 
   @Mutation("updateDecision")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   updateDecision(@Args("input") input: UpdateDecisionInput) {
     return this.complaintOutcomeService.updateDecision(input);
   }
 
   @Mutation("createAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   createAuthorizationOutcome(@Args("input") input: CreateAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.createAuthorizationOutcome(input);
   }
 
   @Mutation("updateAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   updateAuthorizationOutcome(@Args("input") input: UpdateAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.updateAuthorizationOutcome(input);
   }
 
   @Mutation("deleteAuthorizationOutcome")
-  @Roles(Role.CEEB, Role.NROS)
+  @Roles(Role.CEEB, Role.NROS, Role.MINES)
   deleteAuthorizationOutcome(@Args("input") input: DeleteAuthorizationOutcomeInput) {
     return this.complaintOutcomeService.deleteAuthorizationOutcome(input);
   }

@@ -23,7 +23,7 @@ import {
 import { ComplaintMapWithServerSideClustering } from "./complaint-map-with-server-side-clustering";
 import { useNavigate } from "react-router-dom";
 import { ComplaintListTabs } from "./complaint-list-tabs";
-import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES, NROS_TYPES } from "@apptypes/app/complaint-types";
+import { COMPLAINT_TYPES, CEEB_TYPES, HWCR_ONLY_TYPES, SECTOR_TYPES, NROS_TYPES, MINES_TYPES } from "@apptypes/app/complaint-types";
 import { selectCurrentOfficer } from "@store/reducers/officer";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
@@ -56,6 +56,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       dispatch(setActiveTab(CEEB_TYPES.ERS));
     } else if (UserService.hasRole([Roles.NROS])) {
       dispatch(setActiveTab(NROS_TYPES.ERS));
+    } else if (UserService.hasRole([Roles.MINES])) {
+      dispatch(setActiveTab(MINES_TYPES.ERS));
     }
   }, [dispatch]);
 
@@ -64,6 +66,8 @@ export const Complaints: FC<Props> = ({ defaultComplaintType }) => {
       return CEEB_TYPES.ERS;
     } else if (UserService.hasRole([Roles.NROS])) {
       return NROS_TYPES.ERS;
+    } else if (UserService.hasRole([Roles.MINES])) {
+      return MINES_TYPES.ERS;
     } else if (UserService.hasRole([Roles.SECTOR])) {
       return SECTOR_TYPES.SECTOR;
     } else {
@@ -277,6 +281,9 @@ const getComplaintTypes = (showSectorView: boolean) => {
     case UserService.hasRole(Roles.NROS):
       returnTypes = NROS_TYPES;
       break;
+    case UserService.hasRole(Roles.MINES):
+      returnTypes = MINES_TYPES;
+      break;
     case UserService.hasRole(Roles.HWCR_ONLY):
       returnTypes = HWCR_ONLY_TYPES;
       break;
@@ -333,6 +340,8 @@ const getFilters = (
   } else if (UserService.hasRole(Roles.PARKS)) {
     filters = { ...filters, area: defaultParkArea };
   } else if (UserService.hasRole(Roles.NROS)) {
+    filters = { ...filters, region: defaultRegion };
+  } else if (UserService.hasRole(Roles.MINES)) {
     filters = { ...filters, region: defaultRegion };
   } else if (currentOfficer && !UserService.hasRole(Roles.CEEB_COMPLIANCE_COORDINATOR)) {
     const { first_name: firstName, last_name: lastName, app_user_guid: id } = currentOfficer;

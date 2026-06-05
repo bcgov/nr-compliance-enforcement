@@ -306,7 +306,7 @@ export const searchOfficers =
           return false;
         } else if (agency === "COS") {
           return !fromAdminOffice && nameMatch && roleMatch;
-        } else if (agency === "EPO" || agency === "PARKS" || agency === "NROS") {
+        } else if (agency === "EPO" || agency === "PARKS" || agency === "NROS" || agency === "MINES") {
           return roleMatch && nameMatch;
         } else {
           return false;
@@ -344,6 +344,8 @@ const mapAgencyToRole = (agency: string): string => {
     role = "CEEB";
   } else if (agency === "NROS") {
     role = "NROS";
+  } else if (agency === "MINES") {
+    role = "MINES";
   } else if (agency === "PARKS") {
     role = "PARKS";
   }
@@ -374,7 +376,7 @@ export const filterOfficerByAgency = (agency: string, officers: AppUser[]): AppU
       if (officer.deactivate_ind) {
         return agency === agencyCodeForDeactivatedOfficer;
       } else return !fromAdminOffice && roleMatch;
-    } else if (agency === "EPO" || agency === "NROS") {
+    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES") {
       let result = officer.deactivate_ind === true ? agency === agencyCodeForDeactivatedOfficer : roleMatch;
       return result;
     } else if (agency === "PARKS") {
@@ -524,7 +526,7 @@ export const selectOfficersByZoneAgencyAndRole =
           return result;
         });
       }
-    } else if (agency === "EPO" || agency === "NROS") {
+    } else if (agency === "EPO" || agency === "NROS" || agency === "MINES") {
       //only include officers who have the agency role and do not have the read only role
       return officers.filter((officer) => {
         result = officer?.user_roles.includes(role) && !officer?.user_roles.includes(Roles.READ_ONLY);

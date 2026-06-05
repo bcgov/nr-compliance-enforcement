@@ -76,13 +76,14 @@ export class WebeocService {
       let response;
       if (action === "POST") {
         try {
-          // try to refresh an existing session
-          let response = await axios.get(authUrl, config);
+          // supress global axios interceptor that treats the webeoc session renew as an error log
+          let response = await axios.get(authUrl, { ...config, suppressErrorLog: true } as AxiosRequestConfig);
           if (response.status === 200) {
             await this.setCookie(cachedCookie); // Session renewed, extend the cookie expiration time by 20 minutes
           }
         } catch {
-          // session is expired, create a new session
+          // rather than lean on the interceptor error log, just log it as info so it's visible but not alerting
+          this.logger.log(`WebEOC session expired or absent, creating a new session from ${this.baseUri}`);
           response = await axios.post(authUrl, credentials, config);
           const newCookie = response.headers["set-cookie"]?.[0] || "";
           await this.setCookie(newCookie);
