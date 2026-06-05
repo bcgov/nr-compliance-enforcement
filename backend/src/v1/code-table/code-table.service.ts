@@ -952,6 +952,22 @@ export class CodeTableService {
         const results = data.genderCodes;
         return results;
       }
+
+      case "complexion-type": {
+        const { data } = await get(token, {
+          query: "{ complexionCodes { complexionCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.complexionCodes;
+        return results;
+      }
+
+      case "build-type": {
+        const { data } = await get(token, {
+          query: "{ buildCodes { buildCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.buildCodes;
+        return results;
+      }
     }
   };
 

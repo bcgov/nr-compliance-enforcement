@@ -807,9 +807,13 @@ model person {
   drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
   height_cm                                                              Decimal?                  @db.Decimal(5, 1)
   weight_kg                                                              Decimal?                  @db.Decimal(5, 1)
+  complexion_code                                                        String?                   @db.VarChar(16)
+  build_code                                                             String?                   @db.VarChar(16)
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
+  build_code_person_build_codeTobuild_code                               build_code?               @relation("person_build_codeTobuild_code", fields: [build_code], references: [build_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__build_code")
+  complexion_code_person_complexion_codeTocomplexion_code                complexion_code?          @relation("person_complexion_codeTocomplexion_code", fields: [complexion_code], references: [complexion_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__complexion_code")
   country_code                                                           country_code?             @relation(fields: [drivers_license_country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_code")
   country_subdivision_code                                               country_subdivision_code? @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
   gender_code_person_gender_codeTogender_code                            gender_code?              @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
@@ -975,6 +979,38 @@ model business_address_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model build_code {
+  build_code                           String    @id(map: "build_pk") @db.VarChar(16)
+  short_description                    String    @db.VarChar(64)
+  long_description                     String?   @db.VarChar(256)
+  display_order                        Int
+  active_ind                           Boolean   @default(true)
+  create_user_id                       String    @db.VarChar(32)
+  create_utc_timestamp                 DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                       String?   @db.VarChar(32)
+  update_utc_timestamp                 DateTime? @db.Timestamp(6)
+  person_person_build_codeTobuild_code person[]  @relation("person_build_codeTobuild_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model complexion_code {
+  complexion_code                                String    @id(map: "complexion_pk") @db.VarChar(16)
+  short_description                              String    @db.VarChar(64)
+  long_description                               String?   @db.VarChar(256)
+  display_order                                  Int
+  active_ind                                     Boolean   @default(true)
+  create_user_id                                 String    @db.VarChar(32)
+  create_utc_timestamp                           DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                                 String?   @db.VarChar(32)
+  update_utc_timestamp                           DateTime? @db.Timestamp(6)
+  person_person_complexion_codeTocomplexion_code person[]  @relation("person_complexion_codeTocomplexion_code")
 
   @@schema("shared")
 }

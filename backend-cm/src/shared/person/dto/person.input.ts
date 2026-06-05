@@ -35,4 +35,10 @@ export class PersonInput {
 
   @Field(() => [AliasInput], { nullable: true })
   aliases?: AliasInput[];
+
+  @Field(() => String, { nullable: true })
+  complexionCode?: string;
+
+  @Field(() => String, { nullable: true })
+  buildCode?: string;
 }

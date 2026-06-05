@@ -332,11 +332,84 @@ AND active_ind = true;
 
 -- Add height and weight for people.   Store only in metric and convert to imperial on front end 
 
--- Descriptors — Wave 1: height & weight on shared.person
 ALTER TABLE shared.person
     ADD COLUMN height_cm numeric(5,1),
     ADD COLUMN weight_kg numeric(5,1);
 
 COMMENT ON COLUMN shared.person.height_cm IS 'The person''s height in centimetres. Stored as the canonical metric value; the UI provides a ft/in display toggle that converts for entry and display only.';
 COMMENT ON COLUMN shared.person.weight_kg IS 'The person''s weight in kilograms. Stored as the canonical metric value; the UI provides a lb display toggle that converts for entry and display only.';
+
+-- Add complexion for people.
+
+CREATE TABLE complexion_code (
+    complexion_code character varying(16) NOT NULL,
+    short_description character varying(64) NOT NULL,
+    long_description character varying(256),
+    display_order integer NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now(),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT complexion_pk
+      PRIMARY KEY (complexion_code)
+);
+
+COMMENT ON TABLE shared.complexion_code IS 'Contains the complexion options for a person. For example FAIR = Fair, OLIVE = Olive.';
+
+COMMENT ON COLUMN shared.complexion_code.complexion_code IS 'A human readable code used to identify a complexion.';
+COMMENT ON COLUMN shared.complexion_code.short_description IS 'The short description of the complexion.';
+COMMENT ON COLUMN shared.complexion_code.long_description IS 'The long description of the complexion.';
+COMMENT ON COLUMN shared.complexion_code.display_order IS 'The order in which the complexions should be displayed when presented to a user in a list.';
+COMMENT ON COLUMN shared.complexion_code.active_ind IS 'A boolean indicator to determine if a complexion is active.';
+COMMENT ON COLUMN shared.complexion_code.create_user_id IS 'The id of the user that created the complexion.';
+COMMENT ON COLUMN shared.complexion_code.create_utc_timestamp IS 'The timestamp when the complexion was created. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN shared.complexion_code.update_user_id IS 'The id of the user that updated the complexion.';
+COMMENT ON COLUMN shared.complexion_code.update_utc_timestamp IS 'The timestamp when the complexion was updated. The timestamp is stored in UTC with no Offset.';
+
+ALTER TABLE person
+    ADD COLUMN complexion_code character varying(16);
+
+ALTER TABLE person
+    ADD CONSTRAINT fk_person__complexion_code
+    FOREIGN KEY (complexion_code)
+    REFERENCES complexion_code (complexion_code);
+
+COMMENT ON COLUMN shared.person.complexion_code IS 'The complexion of the person. References complexion_code.';
+
+CREATE TABLE build_code (
+    build_code character varying(16) NOT NULL,
+    short_description character varying(64) NOT NULL,
+    long_description character varying(256),
+    display_order integer NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now(),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT build_pk
+      PRIMARY KEY (build_code)
+);
+
+COMMENT ON TABLE shared.build_code IS 'Contains the build options for a person. For example SLENDER = Slender, MEDIUM = Medium, LARGE = Large.';
+
+COMMENT ON COLUMN shared.build_code.build_code IS 'A human readable code used to identify a build.';
+COMMENT ON COLUMN shared.build_code.short_description IS 'The short description of the build.';
+COMMENT ON COLUMN shared.build_code.long_description IS 'The long description of the build.';
+COMMENT ON COLUMN shared.build_code.display_order IS 'The order in which the builds should be displayed when presented to a user in a list.';
+COMMENT ON COLUMN shared.build_code.active_ind IS 'A boolean indicator to determine if a build is active.';
+COMMENT ON COLUMN shared.build_code.create_user_id IS 'The id of the user that created the build.';
+COMMENT ON COLUMN shared.build_code.create_utc_timestamp IS 'The timestamp when the build was created. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN shared.build_code.update_user_id IS 'The id of the user that updated the build.';
+COMMENT ON COLUMN shared.build_code.update_utc_timestamp IS 'The timestamp when the build was updated. The timestamp is stored in UTC with no Offset.';
+
+ALTER TABLE person
+    ADD COLUMN build_code character varying(16);
+
+ALTER TABLE person
+    ADD CONSTRAINT fk_person__build_code
+    FOREIGN KEY (build_code)
+    REFERENCES build_code (build_code);
+
+COMMENT ON COLUMN shared.person.build_code IS 'The build of the person. References build_code.';
 

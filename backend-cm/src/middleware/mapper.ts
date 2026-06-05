@@ -60,6 +60,8 @@ import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/c
 import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
 import { mapPrismaApproximateAgeCodeToApproximateAgeCode } from "src/shared/approximate_age_code/dto/approximate_age_code";
 import { mapPrismaGenderCodeToGenderCode } from "src/shared/gender/dto/gender_code";
+import { mapPrismaComplexionCodeToComplexionCode } from "src/shared/complexion_code/dto/complexion_code";
+import { mapPrismaBuildCodeToBuildCode } from "src/shared/build_code/dto/build_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -101,6 +103,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode(mapper);
   mapPrismaApproximateAgeCodeToApproximateAgeCode(mapper);
   mapPrismaGenderCodeToGenderCode(mapper);
+  mapPrismaComplexionCodeToComplexionCode(mapper);
+  mapPrismaBuildCodeToBuildCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

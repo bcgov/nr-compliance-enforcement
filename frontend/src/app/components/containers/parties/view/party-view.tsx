@@ -20,7 +20,9 @@ import { PartyTypes } from "@/app/constants/party-types";
 import {
   selectAgencyDropdown,
   selectApproximateAgeDropdown,
+  selectBuildDropdown,
   selectCodeTable,
+  selectComplexionDropdown,
   selectGenderDropdown,
 } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -95,6 +97,8 @@ export const GET_PARTY = gql`
         genderCode
         heightInCm
         weightInKg
+        complexionCode
+        buildCode
       }
       business {
         name
@@ -393,6 +397,8 @@ export const PartyView: FC = () => {
   const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown);
   const countryOptions = useAppSelector(selectCountries);
   const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
+  const complexionOptions = useAppSelector(selectComplexionDropdown);
+  const buildOptions = useAppSelector(selectBuildDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -757,6 +763,20 @@ export const PartyView: FC = () => {
                     <p>
                       <b>Weight: </b>
                       {partyData?.person?.weightInKg} kg ({imperialWeight} lbs)
+                    </p>
+                  )}
+                  {partyData?.person?.complexionCode && (
+                    <p>
+                      <b>Complexion: </b>
+                      {complexionOptions?.find((opt) => opt.value === partyData?.person?.complexionCode)?.label ??
+                        partyData?.person.complexionCode}
+                    </p>
+                  )}
+                  {partyData?.person?.buildCode && (
+                    <p>
+                      <b>Build: </b>
+                      {buildOptions?.find((opt) => opt.value === partyData?.person?.buildCode)?.label ??
+                        partyData?.person.buildCode}
                     </p>
                   )}
                 </div>

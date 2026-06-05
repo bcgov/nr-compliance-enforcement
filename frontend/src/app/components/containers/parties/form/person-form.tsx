@@ -4,7 +4,12 @@ import { CompInput } from "@/app/components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@hooks/hooks";
-import { selectApproximateAgeDropdown, selectGenderDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectApproximateAgeDropdown,
+  selectBuildDropdown,
+  selectComplexionDropdown,
+  selectGenderDropdown,
+} from "@/app/store/reducers/code-table";
 import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
@@ -36,6 +41,18 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
   }));
 
   const subdivisionOptions = useAppSelector(selectCountrySubdivisions).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
+
+  const complexionCodeOptions = useAppSelector(selectComplexionDropdown).map(
+    (opt: { value: string; label: string }) => ({
+      value: opt.value,
+      label: opt.label,
+    }),
+  );
+
+  const buildCodeOptions = useAppSelector(selectBuildDropdown).map((opt: { value: string; label: string }) => ({
     value: opt.value,
     label: opt.label,
   }));
@@ -368,6 +385,48 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       <WeightField
         form={form}
         isDisabled={isDisabled}
+      />
+      <FormField
+        form={form}
+        name="complexionCode"
+        label="Complexion"
+        render={(field) => (
+          <CompSelect
+            id="complexion-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={complexionCodeOptions}
+            value={complexionCodeOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder="Select complexion"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <FormField
+        form={form}
+        name="buildCode"
+        label="Build"
+        render={(field) => (
+          <CompSelect
+            id="build-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={buildCodeOptions}
+            value={buildCodeOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder="Select build"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
       />
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField

@@ -79,6 +79,8 @@ export const AvailableCodeTables = [
   "country-subdivision-type",
   "approximate-age-type",
   "gender-type",
+  "complexion-type",
+  "build-type",
 ];
 
 export const AvailableAgencies = ["cos"];

@@ -86,6 +86,8 @@ import { CountryCodeModule } from "./shared/country_code/country_code.module";
 import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/country_subdivision_code.module";
 import { ApproximateAgeCodeModule } from "./shared/approximate_age_code/approximate_age_code.module";
 import { GenderCodeModule } from "./shared/gender/gender_code.module";
+import { ComplexionCodeModule } from "src/shared/complexion_code/complexion_code.module";
+import { BuildCodeModule } from "src/shared/build_code/build_code.module";
 
 @Module({
   imports: [
@@ -170,6 +172,8 @@ import { GenderCodeModule } from "./shared/gender/gender_code.module";
     CountrySubdivisionCodeModule,
     ApproximateAgeCodeModule,
     GenderCodeModule,
+    ComplexionCodeModule,
+    BuildCodeModule,
   ],
   controllers: [AppController],
   providers: [

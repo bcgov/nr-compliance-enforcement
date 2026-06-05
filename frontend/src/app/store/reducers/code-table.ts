@@ -55,7 +55,9 @@ import {
   fetchCountryTypes,
   fetchCountrySubdivisionTypes,
   fetchApproximateAgeTypes,
-  fetchGenders,
+  fetchGenderTypes,
+  fetchComplexionTypes,
+  fetchBuildTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -118,6 +120,8 @@ const initialState: CodeTableState = {
   "country-subdivision-type": [],
   "approximate-age-type": [],
   "gender-type": [],
+  "complexion-type": [],
+  "build-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -198,6 +202,8 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "country-subdivision-type": countrySubdivisionType,
       "approximate-age-type": approximateAgeType,
       "gender-type": genderType,
+      "complexion-type": complexionType,
+      "build-type": buildType,
     },
   } = state;
 
@@ -374,6 +380,12 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(genderType).any()) {
       dispatch(fetchGenders());
     }
+    if (!from(complexionType).any()) {
+      dispatch(fetchComplexions());
+    }
+    if (!from(buildType).any()) {
+      dispatch(fetchBuilds());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -441,6 +453,9 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchCountryTypes());
     dispatch(fetchCountrySubdivisionTypes());
     dispatch(fetchApproximateAgeTypes());
+    dispatch(fetchGenderTypes());
+    dispatch(fetchComplexionTypes());
+    dispatch(fetchBuildTypes());
   } catch (error) {
     console.error(error);
   }
@@ -1637,6 +1652,26 @@ export const selectApproximateAgeDropdown = createSelector(
   (state: RootState) => state.codeTables["approximate-age-type"],
   (items) =>
     items.map(({ approximateAgeCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectComplexionDropdown = createSelector(
+  (state: RootState) => state.codeTables["complexion-type"],
+  (items) =>
+    items.map(({ complexionCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectBuildDropdown = createSelector(
+  (state: RootState) => state.codeTables["build-type"],
+  (items) =>
+    items.map(({ buildCode: value, shortDescription: label, activeInd }) => ({
       label,
       value,
       activeInd,

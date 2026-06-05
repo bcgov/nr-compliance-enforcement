@@ -24,6 +24,8 @@ import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
+import { ComplexionType } from "@/app/types/app/code-tables/complexion";
+import { BuildType } from "@/app/types/app/code-tables/build";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -225,11 +227,29 @@ export const fetchApproximateAgeTypes = (): AppThunk => async (dispatch) => {
   }
 };
 
-export const fetchGenders = (): AppThunk => async (dispatch) => {
+export const fetchGenderTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.GENDER}`);
   const response = await get<Array<ApproximateAgeType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.GENDER, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchComplexionTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLEXION}`);
+  const response = await get<Array<ComplexionType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.COMPLEXION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchBuildTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.BUILD}`);
+  const response = await get<Array<BuildType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.BUILD, data: response };
     dispatch(setCodeTable(payload));
   }
 };

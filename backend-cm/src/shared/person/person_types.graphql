@@ -13,4 +13,6 @@ type Person {
   aliases: [Alias]
   heightInCm: Float
   weightInKg: Float
+  complexionCode: String
+  buildCode: String
 }

@@ -47,7 +47,6 @@ const PARTY_PERSON_FRAGMENT = gql`
     driversLicenseClass
     driversLicenseCountryCode
     driversLicenseCountrySubdivisionCode
-    genderCode
   }
 `;
 
@@ -314,14 +313,16 @@ function buildPersonBase(value: any) {
     middleNames: value.middleNames?.trim() || null,
     lastName: value.lastName,
     dateOfBirth: toDateOfBirth(value),
-    approximateAgeCode: value.approximateAgeCode || undefined,
-    driversLicenseNumber: value.driversLicenseNumber || undefined,
-    driversLicenseClass: value.driversLicenseClass || undefined,
-    driversLicenseCountryCode: value.driversLicenseCountryCode || undefined,
-    driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
-    genderCode: value.genderCode || undefined,
-    heightInCm: value.heightInCm || undefined,
-    weightInKg: value.weightInKg || undefined,
+    approximateAgeCode: value.approximateAgeCode || null,
+    driversLicenseNumber: value.driversLicenseNumber || null,
+    driversLicenseClass: value.driversLicenseClass || null,
+    driversLicenseCountryCode: value.driversLicenseCountryCode || null,
+    driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || null,
+    genderCode: value.genderCode || null,
+    heightInCm: value.heightInCm || null,
+    weightInKg: value.weightInKg || null,
+    complexionCode: value.complexionCode || null,
+    buildCode: value.buildCode || null,
   };
 }
 
@@ -366,15 +367,17 @@ const PartyEdit: FC = () => {
         firstName: person?.firstName || "",
         middleNames: person?.middleNames || "",
         lastName: person?.lastName || "",
-        dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : undefined,
+        dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : null,
         approximateAgeCode: person?.approximateAgeCode || "",
         driversLicenseNumber: person?.driversLicenseNumber || "",
         driversLicenseClass: person?.driversLicenseClass || "",
         driversLicenseCountryCode: person?.driversLicenseCountryCode || "",
         driversLicenseCountrySubdivisionCode: person?.driversLicenseCountrySubdivisionCode || "",
         genderCode: person?.genderCode || "",
-        heightInCm: person?.heightInCm || "",
-        weightInKg: person?.weightInKg || "",
+        heightInCm: person?.heightInCm || null,
+        weightInKg: person?.weightInKg || null,
+        complexionCode: person?.complexionCode || "",
+        buildCode: person?.buildCode || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -398,15 +401,17 @@ const PartyEdit: FC = () => {
       firstName: "",
       middleNames: "",
       lastName: "",
-      dateOfBirth: undefined,
+      dateOfBirth: null,
       approximateAgeCode: "",
       driversLicenseNumber: "",
       driversLicenseClass: "",
       driversLicenseCountryCode: "",
       driversLicenseCountrySubdivisionCode: "",
       genderCode: "",
-      heightInCm: "",
-      weightInKg: "",
+      heightInCm: null,
+      weightInKg: null,
+      complexionCode: "",
+      buildCode: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

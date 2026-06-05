@@ -53,6 +53,8 @@ import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 import { GenderType } from "@/app/types/app/code-tables/gender";
+import { BuildType } from "@/app/types/app/code-tables/build";
+import { ComplexionType } from "@/app/types/app/code-tables/complexion";
 
 export interface CodeTableState {
   [key: string]:
@@ -110,7 +112,9 @@ export interface CodeTableState {
     | Array<CountryType>
     | Array<CountrySubdivisionType>
     | Array<ApproximateAgeType>
-    | Array<GenderType>;
+    | Array<GenderType>
+    | Array<ComplexionType>
+    | Array<BuildType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -166,4 +170,6 @@ export interface CodeTableState {
   "country-subdivision-type": Array<CountrySubdivisionType>;
   "approximate-age-type": Array<ApproximateAgeType>;
   "gender-type": Array<GenderType>;
+  "complexion-type": Array<ComplexionType>;
+  "build-type": Array<BuildType>;
 }

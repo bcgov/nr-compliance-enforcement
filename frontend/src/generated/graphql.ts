@@ -188,6 +188,15 @@ export type AssessmentInput = {
   locationType?: InputMaybe<KeyValuePairInput>;
 };
 
+export type BuildCode = {
+  __typename?: 'BuildCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  buildCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type Business = {
   __typename?: 'Business';
   aliases?: Maybe<Array<Maybe<Alias>>>;
@@ -385,6 +394,15 @@ export type ComplaintOutcome = {
   prevention?: Maybe<Array<Maybe<Prevention>>>;
   reviewComplete?: Maybe<CaseFileAction>;
   subject?: Maybe<Array<Maybe<Wildlife>>>;
+};
+
+export type ComplexionCode = {
+  __typename?: 'ComplexionCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  complexionCode?: Maybe<Scalars['String']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
 export type Configuration = {
@@ -2016,6 +2034,8 @@ export type Person = {
   __typename?: 'Person';
   aliases?: Maybe<Array<Maybe<Alias>>>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
+  buildCode?: Maybe<Scalars['String']['output']>;
+  complexionCode?: Maybe<Scalars['String']['output']>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
   driversLicenseClass?: Maybe<Scalars['String']['output']>;
   driversLicenseCountryCode?: Maybe<Scalars['String']['output']>;
@@ -2023,16 +2043,18 @@ export type Person = {
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
-  heightInCm?: Maybe<Scalars['Int']['output']>;
+  heightInCm?: Maybe<Scalars['Float']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   middleNames?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
-  weightInKg?: Maybe<Scalars['Int']['output']>;
+  weightInKg?: Maybe<Scalars['Float']['output']>;
 };
 
 export type PersonInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  buildCode?: InputMaybe<Scalars['String']['input']>;
+  complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
@@ -2040,15 +2062,17 @@ export type PersonInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
-  heightInCm?: InputMaybe<Scalars['Int']['input']>;
+  heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
-  weightInKg?: InputMaybe<Scalars['Int']['input']>;
+  weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type PersonUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  buildCode?: InputMaybe<Scalars['String']['input']>;
+  complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
@@ -2056,11 +2080,11 @@ export type PersonUpdateInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
-  heightInCm?: InputMaybe<Scalars['Int']['input']>;
+  heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
-  weightInKg?: InputMaybe<Scalars['Int']['input']>;
+  weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type Prevention = {
@@ -2097,6 +2121,7 @@ export type Query = {
   appUserTeamXrefs: Array<Maybe<AppUserTeamXref>>;
   appUsers: Array<Maybe<AppUser>>;
   approximateAgeCodes: Array<Maybe<ApproximateAgeCode>>;
+  buildCodes: Array<Maybe<BuildCode>>;
   caseFile?: Maybe<CaseFile>;
   caseFiles: Array<CaseFile>;
   caseFilesByActivityIds: Array<CaseFile>;
@@ -2104,6 +2129,7 @@ export type Query = {
   checkCaseNameExists: Scalars['Boolean']['output'];
   checkInspectionNameExists: Scalars['Boolean']['output'];
   checkInvestigationNameExists: Scalars['Boolean']['output'];
+  complexionCodes: Array<Maybe<ComplexionCode>>;
   configurationCodes: Array<Maybe<Configuration>>;
   conflictHistoryCodes: Array<Maybe<ConflictHistoryCode>>;
   cosGeoOrgUnits: Array<Maybe<CosGeoOrgUnit>>;
