@@ -12,7 +12,7 @@ import {
 } from "@common/methods";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import AttachmentEnum from "@constants/attachment-enum";
-import { AttachmentTypeConfig, getAttachmentConfig } from "@/app/types/app/attachment-config";
+import { AttachmentTypeConfig, getAttachmentConfig, isSecureAttachmentType } from "@/app/types/app/attachment-config";
 
 interface SaveAttachmentParams {
   dispatch: any;
@@ -116,8 +116,7 @@ export const getAttachments =
     const attachmentList: COMSObject[] = [];
     try {
       const attachmentConfig = getAttachmentConfig(attachmentType);
-      const bucketId =
-        attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+      const bucketId = isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
       const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}&latest=true`);
       const header = buildAttachmentHeader({
         attachmentConfig,
@@ -168,6 +167,15 @@ export const getAttachments =
     }
   };
 
+// decodeURIComponent throws an error on malformed names, fall back to the raw name
+const safeDecodeFilename = (name: string): string => {
+  try {
+    return decodeURIComponent(name);
+  } catch {
+    return name;
+  }
+};
+
 const deleteSingleAttachment = async ({
   dispatch,
   attachment,
@@ -188,7 +196,7 @@ const deleteSingleAttachment = async ({
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
       await patch<string>(dispatch, parameters);
     }
-    ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
+    ToggleSuccess(`Attachment ${safeDecodeFilename(attachment.name)} has been removed`);
   }
 };
 
@@ -209,7 +217,7 @@ export const deleteAttachments =
           });
         } catch (error) {
           console.error(error);
-          ToggleError(`Attachment ${decodeURIComponent(attachment.name)} could not be deleted`);
+          ToggleError(`Attachment ${safeDecodeFilename(attachment.name)} could not be deleted`);
         }
       }
     }
@@ -244,7 +252,7 @@ const saveSingleAttachment = async ({
     size: attachment.size,
   });
 
-  const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+  const bucketId = isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
 
   const parameters = existingAttachment
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
@@ -252,7 +260,7 @@ const saveSingleAttachment = async ({
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous, onUploadProgress);
 
-  if (isImage(attachment.name) && attachmentType !== AttachmentEnum.TASK_ATTACHMENT) {
+  if (isImage(attachment.name) && !isSecureAttachmentType(attachmentType)) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
@@ -336,7 +344,7 @@ export const saveAttachments =
     const attachmentConfig = getAttachmentConfig(attachmentType);
     const isComplaintAttachment = attachmentConfig.shouldUpdateComplaintDate ?? false;
 
-    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const bucketId = isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
     // Build header with both primary and sub header keys if applicable
@@ -377,7 +385,7 @@ export const saveAttachments =
 
 // Deletes and replaces the attachment metadata on a file.  Note that all custom meta-data is affected
 export const updateAttachmentMetadata =
-  (objectId: string, extendedMeta: Record<string, string>): AppThunk<Promise<void>> =>
+  (objectId: string, extendedMeta: Record<string, string>, silent: boolean = false): AppThunk<Promise<void>> =>
   async (dispatch) => {
     try {
       // Fetch versions to get the latest versionId as this is required to update metadata
@@ -401,10 +409,14 @@ export const updateAttachmentMetadata =
 
       await put<void>(dispatch, parameters, true, headers);
 
-      ToggleSuccess("Attachment updated successfully");
+      if (!silent) {
+        ToggleSuccess("Attachment updated successfully");
+      }
     } catch (error) {
       console.error(error);
-      ToggleError("Failed to update attachment");
+      if (!silent) {
+        ToggleError("Failed to update attachment");
+      }
     }
   };
 

@@ -4,72 +4,25 @@ import { ContraventionTable } from "@/app/components/containers/investigations/d
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_EDIT_ENFORCEMENT_ACTION, MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
+import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
-import { gql } from "graphql-request";
 import { FC, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
+import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
+
+export {
+  CREATE_ENFORCEMENT_ACTION,
+  UPDATE_ENFORCEMENT_ACTION,
+  REMOVE_ENFORCEMENT_ACTION,
+} from "./enforcement-action-mutations";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
   investigationData?: Investigation;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
-
-export const CREATE_ENFORCEMENT_ACTION = gql`
-  mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
-    createEnforcementAction(input: $input) {
-      enforcementActionIdentifier
-      enforcementActionCode {
-        enforcementActionCode
-        shortDescription
-      }
-      dateIssued
-      geoOrganizationUnitCode
-      appUserIdentifier
-      activeIndicator
-      ticket {
-        ticketIdentifier
-        ticketOutcomeCode
-        ticketAmount
-        ticketNumber
-        paidDate
-      }
-    }
-  }
-`;
-
-export const UPDATE_ENFORCEMENT_ACTION = gql`
-  mutation UpdateEnforcementAction($input: UpdateEnforcementActionInput!) {
-    updateEnforcementAction(input: $input) {
-      enforcementActionIdentifier
-      enforcementActionCode {
-        enforcementActionCode
-        shortDescription
-      }
-      dateIssued
-      geoOrganizationUnitCode
-      appUserIdentifier
-      activeIndicator
-      ticket {
-        ticketIdentifier
-        ticketOutcomeCode
-        ticketAmount
-        ticketNumber
-        paidDate
-      }
-    }
-  }
-`;
-
-export const REMOVE_ENFORCEMENT_ACTION = gql`
-  mutation RemoveEnforcementAction($enforcementActionId: String!) {
-    removeEnforcementAction(enforcementActionId: $enforcementActionId) {
-      enforcementActionIdentifier
-    }
-  }
-`;
 
 export const InvestigationContraventions: FC<InvestigationContraventionProps> = ({
   investigationGuid,
@@ -78,6 +31,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 }) => {
   const dispatch = useAppDispatch();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
+  const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
   const parties = investigationData?.parties as InvestigationParty[];
 
@@ -177,20 +131,41 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   };
 
   const onAddEnforcementAction = (contraventionId: string, partyGuid: string) => {
-    const contravention = contraventionId
-      ? contraventions?.find((c) => c?.contraventionIdentifier === contraventionId)
-      : undefined;
-
-    const party = partyGuid ? investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid) : undefined;
+    const contravention = contraventions?.find((c) => c?.contraventionIdentifier === contraventionId);
+    const party = investigationData?.parties?.find((p) => p?.partyIdentifier === partyGuid);
+    if (!contravention || !party) return;
 
     dispatch(
       openModal({
-        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
         modalSize: "lg",
+        modalType: MULTI_STEP_MODAL,
         data: {
-          contravention,
-          party,
-          onDirtyChange: handleChildDirtyChange,
+          titles: ["Add enforcement action"],
+          totalSteps: 1,
+          isEdit: false,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onRequestDelete: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+            onIsSavingChange: (isSaving: boolean) => void,
+            // eslint-disable-next-line react/no-unstable-nested-components
+          ) => (
+            <EnforcementActionViewEditContent
+              currentStep={currentStep}
+              investigationGuid={investigationGuid}
+              contravention={contravention as Contravention}
+              party={party as InvestigationParty}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onRequestDelete={onRequestDelete}
+              onClose={onClose}
+              onIsSavingChange={onIsSavingChange}
+              handleChildDirtyChange={handleChildDirtyChange}
+            />
+          ),
+          handleChildDirtyChange,
         },
         hideCallback,
       }),
@@ -204,16 +179,46 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
     const enforcementAction = (contraventionParty?.enforcementActions as EnforcementAction[])?.find(
       (ea) => ea?.enforcementActionIdentifier === enforcementActionId,
     );
+    if (!contravention || !party || !enforcementAction) return;
 
     dispatch(
       openModal({
-        modalType: ADD_EDIT_ENFORCEMENT_ACTION,
         modalSize: "lg",
+        modalType: MULTI_STEP_MODAL,
         data: {
-          contravention,
-          party,
-          enforcementAction,
-          onDirtyChange: handleChildDirtyChange,
+          titles: ["Enforcement action details", "Edit enforcement action"],
+          totalSteps: 2,
+          isEdit: true,
+          deleteFromStep: 1,
+          skipValidateForSteps: [0],
+          nextButtonLabel: "Edit",
+          hidePreviousButton: true,
+          isReadOnly,
+          content: (
+            currentStep: number,
+            onRequestValidate: (fn: (step: number) => Promise<boolean>) => void,
+            onRequestSave: (fn: () => Promise<void>) => void,
+            onRequestDelete: (fn: () => Promise<void>) => void,
+            onClose: () => void,
+            onIsSavingChange: (isSaving: boolean) => void,
+            // eslint-disable-next-line react/no-unstable-nested-components
+          ) => (
+            <EnforcementActionViewEditContent
+              currentStep={currentStep}
+              investigationGuid={investigationGuid}
+              contravention={contravention as Contravention}
+              party={party as InvestigationParty}
+              enforcementAction={enforcementAction}
+              isReadOnly={isReadOnly}
+              onRequestValidate={onRequestValidate}
+              onRequestSave={onRequestSave}
+              onRequestDelete={onRequestDelete}
+              onClose={onClose}
+              onIsSavingChange={onIsSavingChange}
+              handleChildDirtyChange={handleChildDirtyChange}
+            />
+          ),
+          handleChildDirtyChange,
         },
         hideCallback,
       }),
@@ -294,6 +299,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               investigationGuid={investigationGuid}
               partyGuid={partyGuid}
               isReadOnly={isReadOnly}
+              enforcementActionsWithAttachments={enforcementActionsWithAttachments}
               onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
               onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
               onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
@@ -315,6 +321,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                 investigationGuid={investigationGuid}
                 partyGuid={null}
                 isReadOnly={isReadOnly}
+                enforcementActionsWithAttachments={enforcementActionsWithAttachments}
                 onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
                 onAddEnforcementAction={(id, pGuid) => onAddEnforcementAction(id, pGuid)}
                 onEdit={(id, pGuid) => openContraventionModal(id, pGuid)}

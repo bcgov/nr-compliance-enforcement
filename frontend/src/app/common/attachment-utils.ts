@@ -4,7 +4,7 @@ import { COMSObject } from "@apptypes/coms/object";
 import axios, { AxiosProgressEvent } from "axios";
 import config from "@/config";
 import { AUTH_TOKEN } from "@service/user-service";
-import { getAttachmentConfig } from "@apptypes/app/attachment-config";
+import { getAttachmentConfig, isSecureAttachmentType } from "@apptypes/app/attachment-config";
 
 export const RETRY_CONFIG = {
   MAX_RETRIES: 3,
@@ -199,6 +199,7 @@ export interface ObjectMetadata {
 export interface ParsedObjectMetadata {
   objectId: string;
   taskId: string | null;
+  enforcementActionId: string | null;
   attachmentType: AttachmentEnum | null;
   takenBy: string | null;
   sequenceNumber: string | null;
@@ -214,7 +215,7 @@ export interface ParsedObjectMetadata {
  * Which bucket to use based on attachment type.
  */
 const getBucketForAttachmentType = (attachmentType: AttachmentEnum): string => {
-  return attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+  return isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
 };
 
 /**
@@ -301,6 +302,7 @@ export const fetchObjectsMetadata = async (
 
   for (const item of results) {
     const taskIdMeta = item.metadata.find((m) => m.key === "task-id");
+    const enforcementActionIdMeta = item.metadata.find((m) => m.key === "enforcement-action-id");
     const attachmentTypeMeta = item.metadata.find((m) => m.key === "attachment-type");
     const takenByMeta = item.metadata.find((m) => m.key === "taken-by");
     const sequenceMeta = item.metadata.find((m) => m.key === "sequence-number");
@@ -322,6 +324,7 @@ export const fetchObjectsMetadata = async (
     metadataMap.set(item.objectId, {
       objectId: item.objectId,
       taskId: taskIdMeta?.value ?? null,
+      enforcementActionId: enforcementActionIdMeta?.value ?? null,
       attachmentType: validAttachmentType,
       date: dateMeta?.value ?? null,
       takenBy: takenByMeta?.value ?? null,
