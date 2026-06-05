@@ -1934,6 +1934,7 @@ export type ParkInput = {
 export type Party = {
   __typename?: 'Party';
   addresses?: Maybe<Array<Maybe<Address>>>;
+  aliases?: Maybe<Array<Maybe<Alias>>>;
   business?: Maybe<Business>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   createdDateTime?: Maybe<Scalars['DateTime']['output']>;
@@ -1956,6 +1957,7 @@ export type PartyAssociationRole = {
 
 export type PartyCreateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   business?: InputMaybe<BusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
@@ -1988,6 +1990,7 @@ export type PartyTypeCode = {
 
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
+  aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;

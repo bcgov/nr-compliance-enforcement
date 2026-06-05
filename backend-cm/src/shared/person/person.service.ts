@@ -29,11 +29,6 @@ export class PersonService {
         drivers_license_country_subdivision_code: true,
         gender_code: true,
         approximate_age_code: true,
-        alias: {
-          select: {
-            name: true,
-          },
-        },
       },
     });
 
@@ -44,9 +39,6 @@ export class PersonService {
     const prismaPerson = await this.prisma.person.findUnique({
       where: {
         person_guid: id,
-      },
-      include: {
-        alias: true,
       },
     });
 
@@ -70,16 +62,6 @@ export class PersonService {
         drivers_license_country_subdivision_code: input.driversLicenseCountrySubdivisionCode,
         gender_code: input.genderCode,
         create_user_id: "system",
-        alias: input.aliases
-          ? {
-              create: input.aliases.map(
-                (a) =>
-                  ({
-                    name: a.name,
-                  }) as any,
-              ),
-            }
-          : undefined,
       },
     });
     return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
@@ -103,9 +85,6 @@ export class PersonService {
         drivers_license_country_code: input.driversLicenseCountryCode,
         drivers_license_country_subdivision_code: input.driversLicenseCountrySubdivisionCode,
         gender_code: input.genderCode,
-      },
-      include: {
-        alias: true,
       },
     });
     return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");

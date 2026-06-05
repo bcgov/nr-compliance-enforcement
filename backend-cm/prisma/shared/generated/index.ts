@@ -55,7 +55,7 @@ import { country_subdivision_code as _country_subdivision_code } from "./country
 import { approximate_age_code as _approximate_age_code } from "./approximate_age_code";
 import { gender_code as _gender_code } from "./gender_code";
 import { address as _address } from "./address";
-import { address_h as _address_h } from "./address_h";
+import { business_address_h as _business_address_h } from "./business_address_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -115,7 +115,7 @@ export namespace PrismaModel {
   export class approximate_age_code extends _approximate_age_code {}
   export class gender_code extends _gender_code {}
   export class address extends _address {}
-  export class address_h extends _address_h {}
+  export class business_address_h extends _business_address_h {}
 
   export const extraModels = [
     agency_code,
@@ -175,6 +175,6 @@ export namespace PrismaModel {
     approximate_age_code,
     gender_code,
     address,
-    address_h,
+    business_address_h,
   ];
 }

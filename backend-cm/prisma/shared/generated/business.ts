@@ -1,4 +1,3 @@
-import { alias } from "./alias";
 import { party } from "./party";
 import { business_identifier } from "./business_identifier";
 import { business_person_xref } from "./business_person_xref";
@@ -25,9 +24,6 @@ export class business {
 
   @ApiPropertyOptional({ type: String })
   party_guid?: string;
-
-  @ApiProperty({ isArray: true, type: () => alias })
-  alias: alias[];
 
   @ApiPropertyOptional({ type: () => party })
   party?: party;

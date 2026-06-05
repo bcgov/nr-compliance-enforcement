@@ -141,38 +141,60 @@ ALTER TABLE person
 
 COMMENT ON COLUMN shared.person.middle_names IS 'The middle name(s) of the person.';
 
--- Enable Aliases for people
+-- Enable Aliases for people.  This involves a refactor of the table to bring it up to the party level
 
-ALTER TABLE alias
-    ALTER COLUMN business_guid DROP NOT NULL;
+DROP TRIGGER IF EXISTS alias_history_trigger ON alias;
+DROP TABLE IF EXISTS alias;
 
-ALTER TABLE alias
-    ADD COLUMN person_guid uuid;
+CREATE TABLE
+  alias (
+    alias_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    party_guid uuid NOT NULL,
+    name character varying(512) NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now (),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT alias_pk PRIMARY KEY (alias_guid),
+    CONSTRAINT alias_party_fk
+      FOREIGN KEY (party_guid)
+      REFERENCES party (party_guid)
+  );
 
-ALTER TABLE alias
-    ADD CONSTRAINT alias_person_fk
-    FOREIGN KEY (person_guid)
-    REFERENCES person (person_guid);
+COMMENT ON TABLE alias IS 'Contains alternative names or aliases associated with a party (person or business).';
 
-ALTER TABLE alias
-    ADD CONSTRAINT alias_exactly_one_owner
-    CHECK (
-      (business_guid IS NOT NULL AND person_guid IS NULL)
-      OR (business_guid IS NULL AND person_guid IS NOT NULL)
-    );
+COMMENT ON COLUMN alias.alias_guid IS 'The system-generated unique identifier for the alias record.';
 
-COMMENT ON TABLE shared.alias IS 'Contains alternative names or aliases associated with a business or person.';
+COMMENT ON COLUMN alias.party_guid IS 'The unique identifier of the party (person or business) associated with the alias.';
 
-COMMENT ON COLUMN shared.alias.business_guid IS 'The unique identifier of the business to which the alias belongs. Null when the alias belongs to a person.';
+COMMENT ON COLUMN alias.name IS 'The alias name used to identify or reference the party.';
 
-COMMENT ON COLUMN shared.alias.person_guid IS 'The unique identifier of the person to which the alias belongs. Null when the alias belongs to a business.';
+COMMENT ON COLUMN alias.active_ind IS 'A boolean indicator to determine if the alias is active.';
+
+COMMENT ON COLUMN alias.create_user_id IS 'The id of the user that created the alias.';
+
+COMMENT ON COLUMN alias.create_utc_timestamp IS 'The timestamp when the alias was created. The timestamp is stored in UTC with no Offset.';
+
+COMMENT ON COLUMN alias.update_user_id IS 'The id of the user that updated the alias.';
+
+COMMENT ON COLUMN alias.update_utc_timestamp IS 'The timestamp when the alias was updated. The timestamp is stored in UTC with no Offset.';
+
+
+CREATE TRIGGER alias_history_trigger
+BEFORE INSERT OR DELETE OR UPDATE
+ON alias
+FOR EACH ROW
+EXECUTE FUNCTION audit_history (
+  'alias_h',
+  'alias_guid'
+);
 
 -- Add addresses for people.   This involves a refactor of the business_address table to be generic.
 
 DROP TRIGGER IF EXISTS business_address_history_trigger ON business_address;
 DROP INDEX IF EXISTS business_address_primary_unique;
 DROP TABLE IF EXISTS business_address;
-DROP TABLE IF EXISTS business_address_h;
 
 CREATE TABLE
   address (
@@ -232,34 +254,6 @@ COMMENT ON COLUMN address.update_user_id IS 'The id of the user that updated the
 
 COMMENT ON COLUMN address.update_utc_timestamp IS 'The timestamp when the address was updated. The timestamp is stored in UTC with no Offset.';
 
-CREATE TABLE
-  address_h (
-    h_address_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
-    target_row_id uuid NOT NULL,
-    operation_type character(1) NOT NULL,
-    operation_user_id character varying(32) DEFAULT CURRENT_USER NOT NULL,
-    operation_executed_at timestamp without time zone DEFAULT now () NOT NULL,
-    data_after_executed_operation jsonb
-  );
-
-COMMENT ON TABLE address_h IS 'Stores the audit history for address records.';
-
-COMMENT ON COLUMN address_h.h_address_guid IS 'The system-generated unique identifier for the address history record.';
-
-COMMENT ON COLUMN address_h.target_row_id IS 'The unique identifier of the address record affected by the operation.';
-
-COMMENT ON COLUMN address_h.operation_type IS 'The type of database operation executed on the address record. For example I = Insert, U = Update, D = Delete.';
-
-COMMENT ON COLUMN address_h.operation_user_id IS 'The id of the user that executed the operation.';
-
-COMMENT ON COLUMN address_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
-
-COMMENT ON COLUMN address_h.data_after_executed_operation IS 'A JSON representation of the address record after the operation was executed.';
-
-ALTER TABLE address_h
-ADD CONSTRAINT pk_h_address
-PRIMARY KEY (h_address_guid);
-
 CREATE TRIGGER address_history_trigger
 BEFORE INSERT OR DELETE OR UPDATE
 ON address
@@ -278,7 +272,6 @@ AND active_ind = true;
 
 DROP TRIGGER IF EXISTS contact_method_history_trigger ON contact_method;
 DROP TABLE IF EXISTS contact_method;
-DROP TABLE IF EXISTS contact_method_h;
 
 CREATE TABLE
   contact_method (
@@ -322,36 +315,6 @@ COMMENT ON COLUMN contact_method.create_utc_timestamp IS 'The timestamp when the
 COMMENT ON COLUMN contact_method.update_user_id IS 'The id of the user that updated the contact method.';
 
 COMMENT ON COLUMN contact_method.update_utc_timestamp IS 'The timestamp when the contact method was updated. The timestamp is stored in UTC with no Offset.';
-
--- Audit history table
-CREATE TABLE
-  contact_method_h (
-    h_contact_method_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
-    target_row_id uuid NOT NULL,
-    operation_type character(1) NOT NULL,
-    operation_user_id character varying(32) DEFAULT CURRENT_USER NOT NULL,
-    operation_executed_at timestamp without time zone DEFAULT now () NOT NULL,
-    data_after_executed_operation jsonb
-  );
-
-COMMENT ON TABLE contact_method_h IS 'Stores the audit history for contact method records.';
-
-COMMENT ON COLUMN contact_method_h.h_contact_method_guid IS 'The system-generated unique identifier for the contact method history record.';
-
-COMMENT ON COLUMN contact_method_h.target_row_id IS 'The unique identifier of the contact method record affected by the operation.';
-
-COMMENT ON COLUMN contact_method_h.operation_type IS 'The type of database operation executed on the contact method record. For example I = Insert, U = Update, D = Delete.';
-
-COMMENT ON COLUMN contact_method_h.operation_user_id IS 'The id of the user that executed the operation.';
-
-COMMENT ON COLUMN contact_method_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
-
-COMMENT ON COLUMN contact_method_h.data_after_executed_operation IS 'A JSON representation of the contact method record after the operation was executed.';
-
-ALTER TABLE contact_method_h
-ADD CONSTRAINT pk_h_contact_method
-PRIMARY KEY (h_contact_method_guid);
-
 
 CREATE TRIGGER contact_method_history_trigger
 BEFORE INSERT OR DELETE OR UPDATE

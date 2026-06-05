@@ -48,9 +48,6 @@ const PARTY_PERSON_FRAGMENT = gql`
     driversLicenseCountryCode
     driversLicenseCountrySubdivisionCode
     genderCode
-    aliases {
-      name
-    }
   }
 `;
 
@@ -294,7 +291,6 @@ const validateBusinessForm = async (value: any, businessGuid?: string): Promise<
 const buildBusinessUpdate = (value: any) => {
   return {
     name: value.businessName,
-    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,
   };
@@ -304,7 +300,6 @@ const buildBusinessUpdate = (value: any) => {
 const buildBusinessCreate = (value: any) => {
   return {
     name: value.businessName,
-    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, false),
     contactPeople: value.contacts?.length ? buildContactPeopleForCreate(value.contacts) : undefined,
   };
@@ -325,7 +320,6 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     driversLicenseCountryCode: value.driversLicenseCountryCode || undefined,
     driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
     genderCode: value.genderCode || undefined,
-    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
   };
 }
 
@@ -384,10 +378,7 @@ const PartyEdit: FC = () => {
         worksafeBCNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
-        aliases: (partyData.party.business
-          ? (partyData.party.business.aliases ?? [])
-          : (partyData.party.person?.aliases ?? [])
-        ).map((a: Alias) => ({
+        aliases: partyData.party.aliases.map((a: Alias) => ({
           aliasGuid: a.aliasGuid,
           name: a.name,
         })),
@@ -440,6 +431,7 @@ const PartyEdit: FC = () => {
           partyTypeCode: value.partyType,
           addresses: buildAddresses(value.addresses, true),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+          aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
@@ -449,6 +441,7 @@ const PartyEdit: FC = () => {
           partyTypeCode: value.partyType,
           addresses: buildAddresses(value.addresses, true),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
+          aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };

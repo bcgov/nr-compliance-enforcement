@@ -11,6 +11,7 @@ import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
 import { Address, AddressInput } from "../../address/dto/address";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { Alias } from "src/shared/alias/dto/alias";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -22,6 +23,7 @@ export class Party implements PartyDto {
   business: Business;
   addresses: [Address];
   contactMethods: [ContactMethod];
+  aliases: [Alias];
 }
 
 @InputType()
@@ -44,6 +46,10 @@ export class PartyCreateInput {
   @Field(() => [ContactMethod], { nullable: true })
   @IsOptional()
   contactMethods?: ContactMethod[];
+
+  @Field(() => [Alias], { nullable: true })
+  @IsOptional()
+  aliases?: Alias[];
 }
 
 @InputType()
@@ -66,6 +72,10 @@ export class PartyUpdateInput {
   @Field(() => [ContactMethod], { nullable: true })
   @IsOptional()
   contactMethods?: ContactMethod[];
+
+  @Field(() => [Alias], { nullable: true })
+  @IsOptional()
+  aliases?: Alias[];
 }
 
 @InputType()
@@ -136,6 +146,11 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.contactMethods,
       mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
+    ),
+
+    forMember(
+      (dest) => dest.aliases,
+      mapWithArguments((src) => mapper.mapArray(src.alias ?? [], "alias", "Alias")),
     ),
   );
 };

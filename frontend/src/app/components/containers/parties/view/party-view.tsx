@@ -76,6 +76,10 @@ export const GET_PARTY = gql`
         value
         isPrimary
       }
+      aliases {
+        aliasGuid
+        name
+      }
       person {
         personGuid
         firstName
@@ -88,17 +92,10 @@ export const GET_PARTY = gql`
         driversLicenseCountryCode
         driversLicenseCountrySubdivisionCode
         genderCode
-        aliases {
-          name
-        }
       }
       business {
         name
         businessGuid
-        aliases {
-          aliasGuid
-          name
-        }
         identifiers {
           businessIdentifierGuid
           identifierValue
@@ -673,21 +670,9 @@ export const PartyView: FC = () => {
                 <b>Name: </b>
                 {displayName()}
               </p>
-              {partyData?.business?.aliases && (
+              {partyData?.aliases && (
                 <>
-                  {partyData.business.aliases.map((alias) => {
-                    return (
-                      <p key={alias?.aliasGuid}>
-                        <b>Alias: </b>
-                        {alias?.name}
-                      </p>
-                    );
-                  })}
-                </>
-              )}
-              {partyData?.person?.aliases && (
-                <>
-                  {partyData.person.aliases.map((alias) => {
+                  {partyData.aliases.map((alias) => {
                     return (
                       <p key={alias?.aliasGuid}>
                         <b>Alias: </b>

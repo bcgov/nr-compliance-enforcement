@@ -129,17 +129,17 @@ export class PartyService {
             active_ind: true,
           },
         },
+        alias: {
+          select: {
+            alias_guid: true,
+            name: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
-            alias: {
-              select: {
-                alias_guid: true,
-                name: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
             business_identifier: {
               select: {
                 business_identifier_guid: true,
@@ -212,14 +212,6 @@ export class PartyService {
             drivers_license_country_subdivision_code: true,
             gender_code: true,
             approximate_age_code: true,
-            alias: {
-              select: {
-                name: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
           },
         },
       },
@@ -297,6 +289,17 @@ export class PartyService {
             },
           }
         : {}),
+      ...(input.aliases?.length
+        ? {
+            alias: {
+              create: input.aliases.map((a) => ({
+                name: a.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       person: {
         create: {
           first_name: input.person?.firstName,
@@ -314,17 +317,6 @@ export class PartyService {
           gender_code: input.person?.genderCode,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
-          ...(input.person?.aliases?.length
-            ? {
-                alias: {
-                  create: input.person.aliases.map((a) => ({
-                    name: a.name,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
         },
       },
     };
@@ -370,22 +362,22 @@ export class PartyService {
             },
           }
         : {}),
+      ...(input.aliases?.length
+        ? {
+            alias: {
+              create: input.aliases.map((a) => ({
+                name: a.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       business: {
         create: {
           name: input.business?.name,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
-          ...(input.business?.aliases?.length
-            ? {
-                alias: {
-                  create: input.business.aliases.map((a) => ({
-                    name: a.name,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
           ...(input.business?.identifiers?.length
             ? {
                 business_identifier: {
@@ -412,10 +404,7 @@ export class PartyService {
       existingPartyDto.contactMethods ?? [],
     );
 
-    const personAliasOperations = this._buildAliasOperations(
-      input.person?.aliases ?? [],
-      existingPartyDto.person?.aliases ?? [],
-    );
+    const personAliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
 
     const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
 
@@ -425,6 +414,7 @@ export class PartyService {
       update_utc_timestamp: new Date(),
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(personContactMethodOperations).length ? { contact_method: personContactMethodOperations } : {}),
+      ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
       person: {
         update: {
           first_name: input.person?.firstName,
@@ -442,17 +432,13 @@ export class PartyService {
           gender_code: input.person?.genderCode,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
-          ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
         },
       },
     };
   }
 
   private _buildBusinessUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
-    const aliasOperations = this._buildAliasOperations(
-      input.business?.aliases ?? [],
-      existingPartyDto.business?.aliases ?? [],
-    );
+    const aliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
 
     const contactMethodOperations = this._buildContactMethodOperations(
       input.contactMethods ?? [],
@@ -474,6 +460,7 @@ export class PartyService {
     return {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
       ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
+      ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
       business: {
@@ -481,7 +468,6 @@ export class PartyService {
           name: input.business?.name,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
-          ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
           ...(Object.keys(businessIdentifierOperations).length
             ? { business_identifier: businessIdentifierOperations }
             : {}),
@@ -815,10 +801,10 @@ export class PartyService {
       include: {
         address: true,
         contact_method: true,
+        alias: true,
         person: true,
         business: {
           include: {
-            alias: true,
             business_identifier: true,
             business_person_xref: {
               include: {
@@ -961,6 +947,12 @@ export class PartyService {
               },
             },
           },
+          alias: {
+            where: { active_ind: true },
+            select: {
+              name: true,
+            },
+          },
           business: {
             select: {
               business_guid: true,
@@ -993,12 +985,6 @@ export class PartyService {
               drivers_license_country_code: true,
               drivers_license_country_subdivision_code: true,
               gender_code: true,
-              alias: {
-                where: { active_ind: true },
-                select: {
-                  name: true,
-                },
-              },
             },
           },
         },

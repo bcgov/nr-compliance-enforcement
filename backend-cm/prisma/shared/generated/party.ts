@@ -1,4 +1,5 @@
 import { address } from "./address";
+import { alias } from "./alias";
 import { business } from "./business";
 import { contact_method } from "./contact_method";
 import { party_type_code } from "./party_type_code";
@@ -26,6 +27,9 @@ export class party {
 
   @ApiProperty({ isArray: true, type: () => address })
   address: address[];
+
+  @ApiProperty({ isArray: true, type: () => alias })
+  alias: alias[];
 
   @ApiPropertyOptional({ type: () => business })
   business?: business;

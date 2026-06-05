@@ -10,6 +10,7 @@ type Party {
   business: Business
   addresses: [Address]
   contactMethods: [ContactMethod]
+  aliases: [Alias]
 }
 
 type PageInfo {
@@ -34,6 +35,7 @@ input PartyCreateInput {
   business: BusinessInput
   addresses: [AddressInput]
   contactMethods: [ContactMethodInput]
+  aliases: [AliasInput]
 }
 
 input PartyUpdateInput {
@@ -44,6 +46,7 @@ input PartyUpdateInput {
   business: BusinessUpdateInput
   addresses: [AddressUpdateInput]
   contactMethods: [ContactMethodInput]
+  aliases: [AliasInput]
 }
 
 input PartyFilters {

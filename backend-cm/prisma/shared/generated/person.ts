@@ -1,4 +1,3 @@
-import { alias } from "./alias";
 import { business_person_xref } from "./business_person_xref";
 import { party } from "./party";
 import { approximate_age_code } from "./approximate_age_code";
@@ -55,9 +54,6 @@ export class person {
 
   @ApiPropertyOptional({ type: String })
   drivers_license_country_subdivision_code?: string;
-
-  @ApiProperty({ isArray: true, type: () => alias })
-  alias: alias[];
 
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];

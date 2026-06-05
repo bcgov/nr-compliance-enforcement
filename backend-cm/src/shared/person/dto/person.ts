@@ -16,7 +16,6 @@ export class Person implements PersonDto {
   driversLicenseCountryCode?: string;
   driversLicenseCountrySubdivisionCode?: string;
   genderCode?: string;
-  aliases?: Alias[];
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -67,10 +66,6 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.approximateAgeCode,
       mapFrom((src) => src.approximate_age_code ?? undefined),
-    ),
-    forMember(
-      (dest) => dest.aliases,
-      mapWithArguments((src) => mapper.mapArray(src.alias ?? [], "alias", "Alias")),
     ),
   );
 };

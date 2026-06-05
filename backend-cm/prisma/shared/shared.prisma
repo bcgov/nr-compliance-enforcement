@@ -43,16 +43,14 @@ model agency_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model alias {
   alias_guid           String    @id(map: "alias_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid        String?   @db.Uuid
+  party_guid           String    @db.Uuid
   name                 String    @db.VarChar(512)
   active_ind           Boolean   @default(true)
   create_user_id       String    @db.VarChar(32)
   create_utc_timestamp DateTime  @default(now()) @db.Timestamp(6)
   update_user_id       String?   @db.VarChar(32)
   update_utc_timestamp DateTime? @db.Timestamp(6)
-  person_guid          String?   @db.Uuid
-  business             business? @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_business_fk")
-  person               person?   @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_person_fk")
+  party                party     @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "alias_party_fk")
 
   @@schema("shared")
 }
@@ -142,7 +140,6 @@ model business {
   update_user_id       String?                @db.VarChar(32)
   update_utc_timestamp DateTime?              @db.Timestamp(6)
   party_guid           String?                @unique(map: "UQ_business_party_guid") @db.Uuid
-  alias                alias[]
   party                party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
   business_identifier  business_identifier[]
   business_person_xref business_person_xref[]
@@ -371,7 +368,7 @@ model contact_method {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method_h {
-  h_contact_method_guid         String   @id(map: "pk_h_contact_method") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  h_contact_method_guid         String   @id(map: "PK_h_contact_method") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
@@ -735,6 +732,7 @@ model party {
   update_user_id       String?          @db.VarChar(32)
   update_utc_timestamp DateTime?        @db.Timestamp(6)
   address              address[]
+  alias                alias[]
   business             business?
   contact_method       contact_method[]
   party_type_code      party_type_code? @relation(fields: [party_type], references: [party_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_party__party_type")
@@ -807,7 +805,6 @@ model person {
   drivers_license_class                                                  String?                   @db.VarChar(128)
   drivers_license_country_code                                           String?                   @db.VarChar(4)
   drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
-  alias                                                                  alias[]
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
@@ -969,8 +966,8 @@ model address {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model address_h {
-  h_address_guid                String   @id(map: "pk_h_address") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+model business_address_h {
+  h_business_address_guid       String   @id(map: "pk_h_business_address") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   target_row_id                 String   @db.Uuid
   operation_type                String   @db.Char(1)
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)

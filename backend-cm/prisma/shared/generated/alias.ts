@@ -1,13 +1,12 @@
-import { business } from "./business";
-import { person } from "./person";
+import { party } from "./party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class alias {
   @ApiProperty({ type: String })
   alias_guid: string;
 
-  @ApiPropertyOptional({ type: String })
-  business_guid?: string;
+  @ApiProperty({ type: String })
+  party_guid: string;
 
   @ApiProperty({ type: String })
   name: string;
@@ -27,12 +26,6 @@ export class alias {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: String })
-  person_guid?: string;
-
-  @ApiPropertyOptional({ type: () => business })
-  business?: business;
-
-  @ApiPropertyOptional({ type: () => person })
-  person?: person;
+  @ApiProperty({ type: () => party })
+  party: party;
 }
