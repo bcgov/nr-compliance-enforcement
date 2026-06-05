@@ -4,5 +4,4 @@ type Business {
   aliases: [Alias]
   identifiers: [BusinessIdentifier]
   contactPeople: [BusinessPerson]
-  contactMethods: [ContactMethod]
 }

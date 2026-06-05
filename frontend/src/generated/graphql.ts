@@ -192,7 +192,6 @@ export type Business = {
   __typename?: 'Business';
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
-  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
   identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
@@ -229,7 +228,6 @@ export type BusinessIdentifierUpdateInput = {
 
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   name: Scalars['String']['input'];
@@ -239,25 +237,27 @@ export type BusinessPerson = {
   __typename?: 'BusinessPerson';
   business?: Maybe<Business>;
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   person?: Maybe<Person>;
 };
 
 export type BusinessPersonInput = {
   business?: InputMaybe<BusinessInput>;
   businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   person?: InputMaybe<PersonInput>;
 };
 
 export type BusinessPersonUpdateInput = {
   business?: InputMaybe<BusinessUpdateInput>;
   businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   person?: InputMaybe<PersonUpdateInput>;
 };
 
 export type BusinessUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
   identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1935,6 +1935,7 @@ export type Party = {
   __typename?: 'Party';
   addresses?: Maybe<Array<Maybe<Address>>>;
   business?: Maybe<Business>;
+  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   createdDateTime?: Maybe<Scalars['DateTime']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   partyIdentifier?: Maybe<Scalars['String']['output']>;
@@ -1956,6 +1957,7 @@ export type PartyAssociationRole = {
 export type PartyCreateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressInput>>>;
   business?: InputMaybe<BusinessInput>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonInput>;
@@ -1987,6 +1989,7 @@ export type PartyTypeCode = {
 export type PartyUpdateInput = {
   addresses?: InputMaybe<Array<InputMaybe<AddressUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonUpdateInput>;
@@ -2010,7 +2013,6 @@ export type Person = {
   __typename?: 'Person';
   aliases?: Maybe<Array<Maybe<Alias>>>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
-  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
   driversLicenseClass?: Maybe<Scalars['String']['output']>;
   driversLicenseCountryCode?: Maybe<Scalars['String']['output']>;
@@ -2026,7 +2028,6 @@ export type Person = {
 export type PersonInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
@@ -2041,7 +2042,6 @@ export type PersonInput = {
 export type PersonUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
-  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;

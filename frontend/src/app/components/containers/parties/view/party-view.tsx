@@ -69,6 +69,13 @@ export const GET_PARTY = gql`
         country
         isPrimary
       }
+      contactMethods {
+        contactMethodGuid
+        typeCode
+        typeDescription
+        value
+        isPrimary
+      }
       person {
         personGuid
         firstName
@@ -81,13 +88,6 @@ export const GET_PARTY = gql`
         driversLicenseCountryCode
         driversLicenseCountrySubdivisionCode
         genderCode
-        contactMethods {
-          contactMethodGuid
-          typeCode
-          typeDescription
-          value
-          isPrimary
-        }
         aliases {
           name
         }
@@ -107,13 +107,6 @@ export const GET_PARTY = gql`
             shortDescription
           }
         }
-        contactMethods {
-          contactMethodGuid
-          typeCode
-          typeDescription
-          value
-          isPrimary
-        }
         contactPeople {
           businessPersonXrefGuid
           business {
@@ -123,13 +116,13 @@ export const GET_PARTY = gql`
             personGuid
             firstName
             lastName
-            contactMethods {
-              contactMethodGuid
-              typeCode
-              typeDescription
-              value
-              isPrimary
-            }
+          }
+          contactMethods {
+            contactMethodGuid
+            typeCode
+            typeDescription
+            value
+            isPrimary
           }
         }
       }
@@ -721,13 +714,8 @@ export const PartyView: FC = () => {
             <h4>Contact information</h4>
 
             <div className="party-details-item">
-              {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                <ContactMethodsList contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>} />
-              )}
-              {partyData?.business?.contactMethods && (
-                <ContactMethodsList
-                  contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
-                />
+              {partyData?.contactMethods && partyData.contactMethods.length > 0 && (
+                <ContactMethodsList contactMethods={partyData.contactMethods as ReadonlyArray<ContactMethod>} />
               )}
               {partyData?.business?.contactPeople && (
                 <>
@@ -739,9 +727,9 @@ export const PartyView: FC = () => {
                           <b>Name: </b>
                           {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                         </p>
-                        {contactPerson?.person?.contactMethods && (
+                        {contactPerson?.contactMethods && (
                           <ContactMethodsList
-                            contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
+                            contactMethods={contactPerson.contactMethods as ReadonlyArray<ContactMethod>}
                           />
                         )}
                         {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}

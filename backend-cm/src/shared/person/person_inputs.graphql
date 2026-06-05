@@ -9,7 +9,6 @@ input PersonInput {
   driversLicenseCountryCode: String
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
-  contactMethods: [ContactMethodInput]
   aliases: [AliasInput]
 }
 
@@ -25,6 +24,5 @@ input PersonUpdateInput {
   driversLicenseCountryCode: String
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
-  contactMethods: [ContactMethodInput]
   aliases: [AliasInput]
 }

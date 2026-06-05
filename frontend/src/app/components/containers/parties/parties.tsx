@@ -20,16 +20,16 @@ const SEARCH_PARTIES = gql`
         shortDescription
         longDescription
         createdDateTime
+        contactMethods {
+          typeCode
+          value
+          isPrimary
+        }
         person {
           personGuid
           firstName
           lastName
           dateOfBirth
-          contactMethods {
-            typeCode
-            value
-            isPrimary
-          }
         }
         business {
           businessGuid
@@ -39,11 +39,6 @@ const SEARCH_PARTIES = gql`
             identifierCode {
               businessIdentifierCode
             }
-          }
-          contactMethods {
-            typeCode
-            value
-            isPrimary
           }
         }
       }

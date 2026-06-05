@@ -3,7 +3,6 @@ input BusinessInput {
   aliases: [AliasInput]
   identifiers: [BusinessIdentifierInput]
   contactPeople: [BusinessPersonInput]
-  contactMethods: [ContactMethodInput]
 }
 
 input BusinessUpdateInput {
@@ -12,5 +11,4 @@ input BusinessUpdateInput {
   aliases: [AliasUpdateInput]
   identifiers: [BusinessIdentifierUpdateInput]
   contactPeople: [BusinessPersonUpdateInput]
-  contactMethods: [ContactMethodInput]
 }

@@ -2,15 +2,6 @@ import { InputType, Field } from "@nestjs/graphql";
 import { AliasInput } from "../../alias/dto/alias";
 
 @InputType()
-export class ContactMethodInput {
-  @Field(() => String)
-  typeCode: string;
-
-  @Field(() => String)
-  value: string;
-}
-
-@InputType()
 export class PersonInput {
   @Field(() => String)
   firstName: string;
@@ -41,9 +32,6 @@ export class PersonInput {
 
   @Field(() => String, { nullable: true })
   genderCode?: string;
-
-  @Field(() => [ContactMethodInput], { nullable: true })
-  contactMethods?: ContactMethodInput[];
 
   @Field(() => [AliasInput], { nullable: true })
   aliases?: AliasInput[];

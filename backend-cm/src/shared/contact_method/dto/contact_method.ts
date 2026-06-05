@@ -1,5 +1,6 @@
 import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { contact_method } from "../../../../prisma/shared/generated/contact_method";
+import { Field, InputType } from "@nestjs/graphql";
 
 export class ContactMethod {
   contactMethodGuid: string;
@@ -8,6 +9,15 @@ export class ContactMethod {
   typeDescription: string;
   value: string;
   isPrimary: boolean;
+}
+
+@InputType()
+export class ContactMethodInput {
+  @Field(() => String)
+  typeCode: string;
+
+  @Field(() => String)
+  value: string;
 }
 
 export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {

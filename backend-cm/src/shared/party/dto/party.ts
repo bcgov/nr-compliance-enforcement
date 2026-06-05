@@ -10,6 +10,7 @@ import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
 import { Address, AddressInput } from "../../address/dto/address";
+import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -20,6 +21,7 @@ export class Party implements PartyDto {
   person: Person;
   business: Business;
   addresses: [Address];
+  contactMethods: [ContactMethod];
 }
 
 @InputType()
@@ -38,6 +40,10 @@ export class PartyCreateInput {
   @Field(() => [AddressInput], { nullable: true })
   @IsOptional()
   addresses?: AddressInput[];
+
+  @Field(() => [ContactMethod], { nullable: true })
+  @IsOptional()
+  contactMethods?: ContactMethod[];
 }
 
 @InputType()
@@ -56,6 +62,10 @@ export class PartyUpdateInput {
   @Field(() => [AddressInput], { nullable: true })
   @IsOptional()
   addresses?: AddressInput[];
+
+  @Field(() => [ContactMethod], { nullable: true })
+  @IsOptional()
+  contactMethods?: ContactMethod[];
 }
 
 @InputType()
@@ -121,6 +131,11 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.addresses,
       mapWithArguments((src) => mapper.mapArray(src.address ?? [], "address", "Address")),
+    ),
+
+    forMember(
+      (dest) => dest.contactMethods,
+      mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
     ),
   );
 };

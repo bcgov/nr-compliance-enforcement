@@ -273,3 +273,96 @@ CREATE UNIQUE INDEX address_primary_unique
 ON address (party_guid)
 WHERE is_primary = true
 AND active_ind = true;
+
+-- Add email addresses for people.   This involves a refactor of the contact method table FKs
+
+DROP TRIGGER IF EXISTS contact_method_history_trigger ON contact_method;
+DROP TABLE IF EXISTS contact_method;
+DROP TABLE IF EXISTS contact_method_h;
+
+CREATE TABLE
+  contact_method (
+    contact_method_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    party_guid uuid NOT NULL,
+    contact_method_type character varying(10) NOT NULL,
+    contact_value character varying(512) NOT NULL,
+    is_primary boolean NOT NULL DEFAULT false,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now (),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT contact_method_pk PRIMARY KEY (contact_method_guid),
+    CONSTRAINT contact_method_party_fk
+      FOREIGN KEY (party_guid)
+      REFERENCES party (party_guid),
+    CONSTRAINT contact_method_type_fk
+      FOREIGN KEY (contact_method_type)
+      REFERENCES contact_method_type_code (contact_method_type_code)
+  );
+
+COMMENT ON TABLE contact_method IS 'Stores phone, email, and other contact methods associated with a party (person or business).';
+
+COMMENT ON COLUMN contact_method.contact_method_guid IS 'The system-generated unique identifier for the contact method record.';
+
+COMMENT ON COLUMN contact_method.party_guid IS 'The unique identifier of the party (person or business) associated with the contact method.';
+
+COMMENT ON COLUMN contact_method.contact_method_type IS 'The type of contact method. References contact_method_type_code (e.g. PHONE, EMAIL).';
+
+COMMENT ON COLUMN contact_method.contact_value IS 'The contact value itself (phone number, email address, etc.).';
+
+COMMENT ON COLUMN contact_method.is_primary IS 'A boolean indicator of whether this is the primary contact method of its type for the party.';
+
+COMMENT ON COLUMN contact_method.active_ind IS 'A boolean indicator to determine if the contact method is active.';
+
+COMMENT ON COLUMN contact_method.create_user_id IS 'The id of the user that created the contact method.';
+
+COMMENT ON COLUMN contact_method.create_utc_timestamp IS 'The timestamp when the contact method was created. The timestamp is stored in UTC with no Offset.';
+
+COMMENT ON COLUMN contact_method.update_user_id IS 'The id of the user that updated the contact method.';
+
+COMMENT ON COLUMN contact_method.update_utc_timestamp IS 'The timestamp when the contact method was updated. The timestamp is stored in UTC with no Offset.';
+
+-- Audit history table
+CREATE TABLE
+  contact_method_h (
+    h_contact_method_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    target_row_id uuid NOT NULL,
+    operation_type character(1) NOT NULL,
+    operation_user_id character varying(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at timestamp without time zone DEFAULT now () NOT NULL,
+    data_after_executed_operation jsonb
+  );
+
+COMMENT ON TABLE contact_method_h IS 'Stores the audit history for contact method records.';
+
+COMMENT ON COLUMN contact_method_h.h_contact_method_guid IS 'The system-generated unique identifier for the contact method history record.';
+
+COMMENT ON COLUMN contact_method_h.target_row_id IS 'The unique identifier of the contact method record affected by the operation.';
+
+COMMENT ON COLUMN contact_method_h.operation_type IS 'The type of database operation executed on the contact method record. For example I = Insert, U = Update, D = Delete.';
+
+COMMENT ON COLUMN contact_method_h.operation_user_id IS 'The id of the user that executed the operation.';
+
+COMMENT ON COLUMN contact_method_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
+
+COMMENT ON COLUMN contact_method_h.data_after_executed_operation IS 'A JSON representation of the contact method record after the operation was executed.';
+
+ALTER TABLE contact_method_h
+ADD CONSTRAINT pk_h_contact_method
+PRIMARY KEY (h_contact_method_guid);
+
+
+CREATE TRIGGER contact_method_history_trigger
+BEFORE INSERT OR DELETE OR UPDATE
+ON contact_method
+FOR EACH ROW
+EXECUTE FUNCTION audit_history (
+  'contact_method_h',
+  'contact_method_guid'
+);
+
+CREATE UNIQUE INDEX contact_method_primary_unique
+ON contact_method (party_guid, contact_method_type)
+WHERE is_primary = true
+AND active_ind = true;

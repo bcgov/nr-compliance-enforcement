@@ -9,6 +9,7 @@ type Party {
   person: Person
   business: Business
   addresses: [Address]
+  contactMethods: [ContactMethod]
 }
 
 type PageInfo {
@@ -32,6 +33,7 @@ input PartyCreateInput {
   person: PersonInput
   business: BusinessInput
   addresses: [AddressInput]
+  contactMethods: [ContactMethodInput]
 }
 
 input PartyUpdateInput {
@@ -41,6 +43,7 @@ input PartyUpdateInput {
   person: PersonUpdateInput
   business: BusinessUpdateInput
   addresses: [AddressUpdateInput]
+  contactMethods: [ContactMethodInput]
 }
 
 input PartyFilters {

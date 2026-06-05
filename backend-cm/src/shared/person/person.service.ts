@@ -29,18 +29,6 @@ export class PersonService {
         drivers_license_country_subdivision_code: true,
         gender_code: true,
         approximate_age_code: true,
-        contact_method: {
-          select: {
-            contact_value: true,
-            contact_method_type: true,
-            contact_method_type_code: {
-              select: {
-                short_description: true,
-                long_description: true,
-              },
-            },
-          },
-        },
         alias: {
           select: {
             name: true,
@@ -58,11 +46,6 @@ export class PersonService {
         person_guid: id,
       },
       include: {
-        contact_method: {
-          include: {
-            contact_method_type_code: true,
-          },
-        },
         alias: true,
       },
     });
@@ -87,18 +70,6 @@ export class PersonService {
         drivers_license_country_subdivision_code: input.driversLicenseCountrySubdivisionCode,
         gender_code: input.genderCode,
         create_user_id: "system",
-        contact_method: input.contactMethods
-          ? {
-              create: input.contactMethods.map(
-                (cm) =>
-                  ({
-                    contact_value: cm.value,
-                    contact_method_type_code: cm.typeCode,
-                    create_user_id: "system",
-                  }) as any,
-              ),
-            }
-          : undefined,
         alias: input.aliases
           ? {
               create: input.aliases.map(
@@ -109,13 +80,6 @@ export class PersonService {
               ),
             }
           : undefined,
-      },
-      include: {
-        contact_method: {
-          include: {
-            contact_method_type_code: true,
-          },
-        },
       },
     });
     return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
@@ -141,11 +105,6 @@ export class PersonService {
         gender_code: input.genderCode,
       },
       include: {
-        contact_method: {
-          include: {
-            contact_method_type_code: true,
-          },
-        },
         alias: true,
       },
     });
@@ -155,19 +114,11 @@ export class PersonService {
   async delete(personGuid: string): Promise<Person> {
     const existingPerson = await this.prisma.person.findUnique({
       where: { person_guid: personGuid },
-      include: { contact_method: true, alias: true },
     });
     if (!existingPerson) throw new Error("Person not found");
 
     const prismaPerson = await this.prisma.person.delete({
       where: { person_guid: personGuid },
-      include: {
-        contact_method: {
-          include: {
-            contact_method_type_code: true,
-          },
-        },
-      },
     });
     return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
   }

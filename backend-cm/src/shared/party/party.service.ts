@@ -118,6 +118,17 @@ export class PartyService {
             active_ind: true,
           },
         },
+        contact_method: {
+          select: {
+            contact_method_type: true,
+            contact_method_type_code: true,
+            contact_value: true,
+            is_primary: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
             alias: {
@@ -145,17 +156,6 @@ export class PartyService {
                 active_ind: true,
               },
             },
-            contact_method: {
-              select: {
-                contact_method_type: true,
-                contact_method_type_code: true,
-                contact_value: true,
-                is_primary: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
             business_person_xref: {
               include: {
                 business: {
@@ -176,16 +176,18 @@ export class PartyService {
                     drivers_license_country_subdivision_code: true,
                     gender_code: true,
                     approximate_age_code: true,
-                    contact_method: {
+                    party: {
                       select: {
-                        contact_method_guid: true,
-                        contact_method_type: true,
-                        contact_method_type_code: true,
-                        contact_value: true,
-                        is_primary: true,
-                      },
-                      where: {
-                        active_ind: true,
+                        contact_method: {
+                          where: { active_ind: true },
+                          select: {
+                            contact_method_guid: true,
+                            contact_method_type: true,
+                            contact_value: true,
+                            is_primary: true,
+                            contact_method_type_code: true,
+                          },
+                        },
                       },
                     },
                   },
@@ -210,18 +212,6 @@ export class PartyService {
             drivers_license_country_subdivision_code: true,
             gender_code: true,
             approximate_age_code: true,
-            contact_method: {
-              select: {
-                contact_method_guid: true,
-                contact_method_type: true,
-                contact_method_type_code: true,
-                contact_value: true,
-                is_primary: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
             alias: {
               select: {
                 name: true,
@@ -294,6 +284,19 @@ export class PartyService {
             },
           }
         : {}),
+      ...(input.contactMethods?.length
+        ? {
+            contact_method: {
+              create: input.contactMethods.map((c) => ({
+                contact_method_type: c.typeCode,
+                contact_value: c.value,
+                is_primary: c.isPrimary,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       person: {
         create: {
           first_name: input.person?.firstName,
@@ -311,19 +314,6 @@ export class PartyService {
           gender_code: input.person?.genderCode,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
-          ...(input.person?.contactMethods?.length
-            ? {
-                contact_method: {
-                  create: input.person.contactMethods.map((c) => ({
-                    contact_method_type: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
           ...(input.person?.aliases?.length
             ? {
                 alias: {
@@ -367,6 +357,19 @@ export class PartyService {
             },
           }
         : {}),
+      ...(input.contactMethods?.length
+        ? {
+            contact_method: {
+              create: input.contactMethods.map((c) => ({
+                contact_method_type: c.typeCode,
+                contact_value: c.value,
+                is_primary: c.isPrimary,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
       business: {
         create: {
           name: input.business?.name,
@@ -395,19 +398,6 @@ export class PartyService {
                 },
               }
             : {}),
-          ...(input.business?.contactMethods?.length
-            ? {
-                contact_method: {
-                  create: input.business.contactMethods.map((c) => ({
-                    contact_method_type: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
           ...(Object.keys(businessPersonXrefOperations).length
             ? { business_person_xref: businessPersonXrefOperations }
             : {}),
@@ -418,8 +408,8 @@ export class PartyService {
 
   private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
     const personContactMethodOperations = this._buildContactMethodOperations(
-      input.person?.contactMethods ?? [],
-      existingPartyDto.person?.contactMethods ?? [],
+      input.contactMethods ?? [],
+      existingPartyDto.contactMethods ?? [],
     );
 
     const personAliasOperations = this._buildAliasOperations(
@@ -434,6 +424,7 @@ export class PartyService {
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
+      ...(Object.keys(personContactMethodOperations).length ? { contact_method: personContactMethodOperations } : {}),
       person: {
         update: {
           first_name: input.person?.firstName,
@@ -451,9 +442,6 @@ export class PartyService {
           gender_code: input.person?.genderCode,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
-          ...(Object.keys(personContactMethodOperations).length
-            ? { contact_method: personContactMethodOperations }
-            : {}),
           ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
         },
       },
@@ -467,8 +455,8 @@ export class PartyService {
     );
 
     const contactMethodOperations = this._buildContactMethodOperations(
-      input.business?.contactMethods ?? [],
-      existingPartyDto.business?.contactMethods ?? [],
+      input.contactMethods ?? [],
+      existingPartyDto.contactMethods ?? [],
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
@@ -485,6 +473,7 @@ export class PartyService {
 
     return {
       ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
+      ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
       business: {
@@ -493,7 +482,6 @@ export class PartyService {
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
           ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-          ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
           ...(Object.keys(businessIdentifierOperations).length
             ? { business_identifier: businessIdentifierOperations }
             : {}),
@@ -741,22 +729,27 @@ export class PartyService {
             last_name: bpx.person.lastName,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
-            ...(bpx.person.contactMethods?.length && {
-              contact_method: {
-                create: bpx.person.contactMethods.map((cm) => ({
-                  contact_method_type_code: {
-                    connect: {
-                      contact_method_type_code: cm.typeCode,
-                    },
+            party: {
+              create: {
+                party_type: PARTY_TYPES.Contact,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+                ...(bpx.contactMethods?.length && {
+                  contact_method: {
+                    create: bpx.contactMethods.map((cm) => ({
+                      contact_method_type_code: {
+                        connect: { contact_method_type_code: cm.typeCode },
+                      },
+                      contact_value: cm.value,
+                      is_primary: cm.isPrimary,
+                      active_ind: true,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
                   },
-                  contact_value: cm.value,
-                  is_primary: cm.isPrimary,
-                  active_ind: true,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                })),
+                }),
               },
-            }),
+            },
           },
         },
         active_ind: true,
@@ -770,12 +763,12 @@ export class PartyService {
         ...xrefsToUpdate.map((bpx) => {
           // Find the corresponding existing xref to get existing contact methods
           const existingXref = existingXrefs?.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
-          const existingContactMethods = existingXref?.person?.contactMethods || [];
+          const existingContactMethods = existingXref?.contactMethods || [];
 
           // Build contact method operations if there are any
           const contactMethodOps =
-            bpx.person.contactMethods?.length || existingContactMethods.length
-              ? this._buildContactMethodOperations(bpx.person.contactMethods || [], existingContactMethods)
+            bpx.contactMethods?.length || existingContactMethods.length
+              ? this._buildContactMethodOperations(bpx.contactMethods || [], existingContactMethods)
               : undefined;
 
           return {
@@ -788,9 +781,13 @@ export class PartyService {
                   last_name: bpx.person.lastName,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
-                  ...(contactMethodOps && {
-                    contact_method: contactMethodOps,
-                  }),
+                  party: {
+                    update: {
+                      ...(contactMethodOps && {
+                        contact_method: contactMethodOps,
+                      }),
+                    },
+                  },
                 },
               },
               active_ind: true,
@@ -817,24 +814,15 @@ export class PartyService {
     const existingParty = await this.prisma.party.findUnique({
       include: {
         address: true,
-        person: {
-          include: {
-            contact_method: true,
-            alias: true,
-          },
-        },
+        contact_method: true,
+        person: true,
         business: {
           include: {
             alias: true,
             business_identifier: true,
-            contact_method: true,
             business_person_xref: {
               include: {
-                person: {
-                  include: {
-                    contact_method: true,
-                  },
-                },
+                person: true,
               },
             },
           },
@@ -844,7 +832,7 @@ export class PartyService {
     });
     if (!existingParty) throw new Error("Party not found");
 
-    const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
+    const existingPartyDto = this.mapper.map<party, Party>(existingParty as unknown as party, "party", "Party");
 
     if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
       this._validateBusinessInput(input.business);
@@ -957,6 +945,22 @@ export class PartyService {
               long_description: true,
             },
           },
+          contact_method: {
+            where: { active_ind: true },
+            select: {
+              contact_method_guid: true,
+              contact_method_type: true,
+              contact_value: true,
+              is_primary: true,
+              contact_method_type_code: {
+                select: {
+                  contact_method_type_code: true,
+                  short_description: true,
+                  long_description: true,
+                },
+              },
+            },
+          },
           business: {
             select: {
               business_guid: true,
@@ -969,22 +973,6 @@ export class PartyService {
                   business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
                     select: {
                       business_identifier_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
-                },
-              },
-              contact_method: {
-                where: { active_ind: true },
-                select: {
-                  contact_method_guid: true,
-                  contact_method_type: true,
-                  contact_value: true,
-                  is_primary: true,
-                  contact_method_type_code: {
-                    select: {
-                      contact_method_type_code: true,
                       short_description: true,
                       long_description: true,
                     },
@@ -1005,22 +993,6 @@ export class PartyService {
               drivers_license_country_code: true,
               drivers_license_country_subdivision_code: true,
               gender_code: true,
-              contact_method: {
-                where: { active_ind: true },
-                select: {
-                  contact_method_guid: true,
-                  contact_method_type: true,
-                  contact_value: true,
-                  is_primary: true,
-                  contact_method_type_code: {
-                    select: {
-                      contact_method_type_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
-                },
-              },
               alias: {
                 where: { active_ind: true },
                 select: {

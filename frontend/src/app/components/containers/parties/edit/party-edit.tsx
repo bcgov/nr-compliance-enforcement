@@ -136,16 +136,16 @@ const mapContactsFromPartyData = (contactPeople: BusinessPerson[] | undefined) =
         personGuid: p.person?.personGuid,
         firstName: p.person?.firstName,
         lastName: p.person?.lastName,
-        contactMethods:
-          p.person?.contactMethods
-            ?.filter((cm): cm is ContactMethod => cm != null)
-            .map((cm: ContactMethod) => ({
-              contactMethodGuid: cm.contactMethodGuid,
-              typeCode: cm.typeCode,
-              value: cm.value,
-              isPrimary: determineContactMethodPrimary(cm, p.person?.contactMethods || [], cm.typeCode || ""),
-            })) || [],
       },
+      contactMethods:
+        p.contactMethods
+          ?.filter((cm): cm is ContactMethod => cm != null)
+          .map((cm: ContactMethod) => ({
+            contactMethodGuid: cm.contactMethodGuid,
+            typeCode: cm.typeCode,
+            value: cm.value,
+            isPrimary: determineContactMethodPrimary(cm, p.contactMethods || [], cm.typeCode || ""),
+          })) || [],
     })) || []
   );
 };
@@ -161,33 +161,33 @@ const buildContactPeopleForUpdate = (contacts: BusinessPerson[]) => {
       personGuid: c.person?.personGuid ?? "",
       firstName: c.person?.firstName ?? "",
       lastName: c.person?.lastName ?? "",
-      contactMethods: c.person?.contactMethods
-        ?.filter((cm): cm is ContactMethod => cm != null)
-        .map((cm: ContactMethod) => ({
-          contactMethodGuid: cm.contactMethodGuid,
-          typeCode: cm.typeCode ?? "",
-          value: cm.value ?? "",
-          isPrimary: cm.isPrimary ?? false,
-        })),
     },
+    contactMethods: c.contactMethods
+      ?.filter((cm): cm is ContactMethod => cm != null)
+      .map((cm: ContactMethod) => ({
+        contactMethodGuid: cm.contactMethodGuid,
+        typeCode: cm.typeCode ?? "",
+        value: cm.value ?? "",
+        isPrimary: cm.isPrimary ?? false,
+      })),
   }));
 };
 
 // Helper to build contact people for creates
 const buildContactPeopleForCreate = (contacts: BusinessPerson[]) => {
   return contacts.map((c: BusinessPerson) => ({
+    contactMethods: c.contactMethods?.length
+      ? c.contactMethods
+          .filter((cm): cm is ContactMethod => cm != null)
+          .map((cm: ContactMethod) => ({
+            typeCode: cm.typeCode ?? "",
+            value: cm.value ?? "",
+            isPrimary: cm.isPrimary ?? false,
+          }))
+      : undefined,
     person: {
       firstName: c.person?.firstName ?? "",
       lastName: c.person?.lastName ?? "",
-      contactMethods: c.person?.contactMethods?.length
-        ? c.person.contactMethods
-            .filter((cm): cm is ContactMethod => cm != null)
-            .map((cm: ContactMethod) => ({
-              typeCode: cm.typeCode ?? "",
-              value: cm.value ?? "",
-              isPrimary: cm.isPrimary ?? false,
-            }))
-        : undefined,
     },
   }));
 };
@@ -296,7 +296,6 @@ const buildBusinessUpdate = (value: any) => {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
-    contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
     contactPeople: value.contacts?.length ? buildContactPeopleForUpdate(value.contacts) : undefined,
   };
 };
@@ -307,7 +306,6 @@ const buildBusinessCreate = (value: any) => {
     name: value.businessName,
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, false),
-    contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
     contactPeople: value.contacts?.length ? buildContactPeopleForCreate(value.contacts) : undefined,
   };
 };
@@ -316,7 +314,6 @@ const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-
 
 // Shared base fields for person create/update.
 function buildPersonBase(value: any, isUpdate: boolean) {
-  console.log(value);
   return {
     firstName: value.firstName,
     middleNames: value.middleNames?.trim() || null,
@@ -395,10 +392,8 @@ const PartyEdit: FC = () => {
           aliasGuid: a.aliasGuid,
           name: a.name,
         })),
-        phoneNumbers: partyData.party.business
-          ? mapContactMethodsFromPartyData(partyData.party.business.contactMethods, ContactMethods.PHONE)
-          : mapContactMethodsFromPartyData(partyData.party.person?.contactMethods, ContactMethods.PHONE),
-        emailAddresses: mapContactMethodsFromPartyData(partyData.party.business?.contactMethods, ContactMethods.EMAIL),
+        phoneNumbers: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.PHONE),
+        emailAddresses: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
         addresses: mapAddressesFromPartyData(partyData.party.addresses),
       };
@@ -445,6 +440,7 @@ const PartyEdit: FC = () => {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
           addresses: buildAddresses(value.addresses, true),
+          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
@@ -453,6 +449,7 @@ const PartyEdit: FC = () => {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
           addresses: buildAddresses(value.addresses, true),
+          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
           business: value.partyType === "CMP" ? buildBusinessCreate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };

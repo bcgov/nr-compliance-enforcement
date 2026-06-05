@@ -2,10 +2,12 @@ input BusinessPersonInput {
   businessPersonXrefGuid: String
   person: PersonInput
   business: BusinessInput
+  contactMethods: [ContactMethodInput]
 }
 
 input BusinessPersonUpdateInput {
   businessPersonXrefGuid: String
   person: PersonUpdateInput
   business: BusinessUpdateInput
+  contactMethods: [ContactMethodInput]
 }

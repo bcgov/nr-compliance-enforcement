@@ -1,6 +1,5 @@
 import { alias } from "./alias";
 import { business_person_xref } from "./business_person_xref";
-import { contact_method } from "./contact_method";
 import { party } from "./party";
 import { approximate_age_code } from "./approximate_age_code";
 import { country_code } from "./country_code";
@@ -62,9 +61,6 @@ export class person {
 
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
-
-  @ApiProperty({ isArray: true, type: () => contact_method })
-  contact_method: contact_method[];
 
   @ApiPropertyOptional({ type: () => party })
   party?: party;
