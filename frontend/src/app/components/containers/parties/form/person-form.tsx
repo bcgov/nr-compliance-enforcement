@@ -11,7 +11,7 @@ import { PartyPhoneFields } from "@/app/components/containers/parties/form/party
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
-import { Alias } from "@/generated/graphql";
+import { Alias, ContactMethod } from "@/generated/graphql";
 import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
 import { AddressFields } from "@/app/components/containers/parties/form/party-address-fields";
 
@@ -48,6 +48,10 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     handleAddPhoneNumber,
     handleRemovePhoneNumber,
     handleSetPrimaryPhoneNumber,
+    emailAddresses,
+    handleAddEmail,
+    handleRemoveEmail,
+    handleSetPrimaryEmail,
     aliases,
     handleAddAlias,
     handleRemoveAlias,
@@ -399,6 +403,71 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         onAdd={handleAddPhoneNumber}
         onRemove={handleRemovePhoneNumber}
         onSetPrimary={handleSetPrimaryPhoneNumber}
+      />
+      {emailAddresses?.map((email: ContactMethod, index: number) => (
+        <FormField
+          key={email.contactMethodGuid || `email-${index}`}
+          form={form}
+          name={`emailAddresses[${index}].value` as any}
+          label={index === 0 ? "Email" : ""}
+          render={(field) => (
+            <div className="party-contact-method">
+              {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
+              {index > 0 && <div className="party-primary-contact-spacer"></div>}
+
+              <input
+                type="radio"
+                id={`email-primary-${index}`}
+                name="primaryEmail"
+                checked={email.isPrimary || false}
+                onChange={() => handleSetPrimaryEmail(index)}
+                disabled={isDisabled}
+              />
+
+              <div className="party-multiple-value-container">
+                <CompInput
+                  id={`email-${index}`}
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  value={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={512}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  disabled={isDisabled}
+                />
+              </div>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => handleRemoveEmail(index)}
+                type="button"
+              >
+                <i className="bi bi-trash" />
+                {/**/}
+                Remove
+              </Button>
+            </div>
+          )}
+        />
+      ))}
+      <FormField
+        form={form}
+        name="add-email-placeholder"
+        label=""
+        render={() => (
+          <Button
+            id="add-email-button"
+            variant="outline-primary"
+            size="sm"
+            onClick={handleAddEmail}
+            type="button"
+          >
+            <i className="bi bi-plus-circle me-1" />
+            {/**/}
+            Add email
+          </Button>
+        )}
       />
     </>
   );

@@ -325,7 +325,6 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     driversLicenseCountryCode: value.driversLicenseCountryCode || undefined,
     driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
     genderCode: value.genderCode || undefined,
-    contactMethods: buildContactMethods(value.phoneNumbers ?? [], [], isUpdate),
     aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
   };
 }
