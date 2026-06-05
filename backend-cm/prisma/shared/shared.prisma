@@ -805,6 +805,8 @@ model person {
   drivers_license_class                                                  String?                   @db.VarChar(128)
   drivers_license_country_code                                           String?                   @db.VarChar(4)
   drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
+  height_cm                                                              Decimal?                  @db.Decimal(5, 1)
+  weight_kg                                                              Decimal?                  @db.Decimal(5, 1)
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")

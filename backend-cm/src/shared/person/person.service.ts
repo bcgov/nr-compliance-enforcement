@@ -43,7 +43,7 @@ export class PersonService {
     });
 
     try {
-      return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
+      return this.mapper.map<person, Person>(prismaPerson as unknown as person, "person", "Person");
     } catch (error) {
       this.logger.error("Error mapping person", error);
     }
@@ -64,7 +64,7 @@ export class PersonService {
         create_user_id: "system",
       },
     });
-    return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
+    return this.mapper.map<person, Person>(prismaPerson as unknown as person, "person", "Person");
   }
 
   async update(personGuid: string, input: PersonInput): Promise<Person> {
@@ -87,7 +87,7 @@ export class PersonService {
         gender_code: input.genderCode,
       },
     });
-    return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
+    return this.mapper.map<person, Person>(prismaPerson as unknown as person, "person", "Person");
   }
 
   async delete(personGuid: string): Promise<Person> {
@@ -99,6 +99,6 @@ export class PersonService {
     const prismaPerson = await this.prisma.person.delete({
       where: { person_guid: personGuid },
     });
-    return this.mapper.map<person, Person>(prismaPerson as person, "person", "Person");
+    return this.mapper.map<person, Person>(prismaPerson as unknown as person, "person", "Person");
   }
 }

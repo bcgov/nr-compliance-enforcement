@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
 import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { AddressFormValue, createEmptyAddress } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue, createEmptyAddress } from "@/app/components/containers/parties/form/party-form-utils";
 
 const toContactSnapshot = (contact: BusinessPerson) => ({
   businessPersonXrefGuid: contact.businessPersonXrefGuid,

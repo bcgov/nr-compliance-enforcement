@@ -2023,9 +2023,11 @@ export type Person = {
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
+  heightInCm?: Maybe<Scalars['Int']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   middleNames?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
+  weightInKg?: Maybe<Scalars['Int']['output']>;
 };
 
 export type PersonInput = {
@@ -2038,8 +2040,10 @@ export type PersonInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  heightInCm?: InputMaybe<Scalars['Int']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
+  weightInKg?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type PersonUpdateInput = {
@@ -2052,9 +2056,11 @@ export type PersonUpdateInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  heightInCm?: InputMaybe<Scalars['Int']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
+  weightInKg?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Prevention = {

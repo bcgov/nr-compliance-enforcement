@@ -212,13 +212,15 @@ export class PartyService {
             drivers_license_country_subdivision_code: true,
             gender_code: true,
             approximate_age_code: true,
+            height_cm: true,
+            weight_kg: true,
           },
         },
       },
     });
 
     try {
-      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+      return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error mapping party of interest", error);
     }
@@ -247,7 +249,7 @@ export class PartyService {
         },
       });
 
-      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+      return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error creating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);
@@ -315,6 +317,8 @@ export class PartyService {
           drivers_license_country_code: input.person?.driversLicenseCountryCode,
           drivers_license_country_subdivision_code: input.person?.driversLicenseCountrySubdivisionCode,
           gender_code: input.person?.genderCode,
+          height_cm: input.person?.heightInCm,
+          weight_kg: input.person?.weightInKg,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -430,6 +434,8 @@ export class PartyService {
           drivers_license_country_code: input.person?.driversLicenseCountryCode,
           drivers_license_country_subdivision_code: input.person?.driversLicenseCountrySubdivisionCode,
           gender_code: input.person?.genderCode,
+          height_cm: input.person?.heightInCm,
+          weight_kg: input.person?.weightInKg,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -842,7 +848,7 @@ export class PartyService {
         },
       });
 
-      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+      return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error updating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);

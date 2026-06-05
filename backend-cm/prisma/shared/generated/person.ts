@@ -55,6 +55,12 @@ export class person {
   @ApiPropertyOptional({ type: String })
   drivers_license_country_subdivision_code?: string;
 
+  @ApiPropertyOptional({ type: Number })
+  height_cm?: number;
+
+  @ApiPropertyOptional({ type: Number })
+  weight_kg?: number;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 

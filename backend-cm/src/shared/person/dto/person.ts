@@ -1,7 +1,6 @@
-import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
+import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
 import { person } from "../../../../prisma/shared/generated/person";
 import { PersonDto } from "../../../common/party";
-import { Alias } from "../../alias/dto/alias";
 
 export class Person implements PersonDto {
   personGuid: string;
@@ -16,6 +15,8 @@ export class Person implements PersonDto {
   driversLicenseCountryCode?: string;
   driversLicenseCountrySubdivisionCode?: string;
   genderCode?: string;
+  heightInCm: number;
+  weightInKg: number;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -66,6 +67,14 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.approximateAgeCode,
       mapFrom((src) => src.approximate_age_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.heightInCm,
+      mapFrom((src) => src.height_cm ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.weightInKg,
+      mapFrom((src) => src.weight_kg ?? undefined),
     ),
   );
 };

@@ -32,6 +32,7 @@ import { calculateAgeYears, formatDateOfBirth, isYoungPerson } from "@common/met
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
+import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -92,6 +93,8 @@ export const GET_PARTY = gql`
         driversLicenseCountryCode
         driversLicenseCountrySubdivisionCode
         genderCode
+        heightInCm
+        weightInKg
       }
       business {
         name
@@ -431,6 +434,9 @@ export const PartyView: FC = () => {
   const personDob = partyData?.person?.dateOfBirth ? new Date(partyData.person.dateOfBirth) : null;
   const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
 
+  const imperialHeight = cmToFeetInches(partyData?.person?.heightInCm ?? 0);
+  const imperialWeight = kgToLb(partyData?.person?.weightInKg ?? 0);
+
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
       (partyRole) => partyRole.partyAssociationRole === roleCode && partyRole.caseActivityTypeCode === activityType,
@@ -733,6 +739,27 @@ export const PartyView: FC = () => {
                   countryOptions={countryOptions}
                   countrySubdivisionOptions={countrySubdivisionOptions}
                 />
+              </>
+            )}
+
+            {partyData?.person && (
+              <>
+                <br />
+                <h4>Physical descriptors</h4>
+                <div className="party-details-item">
+                  {partyData?.person?.heightInCm && (
+                    <p>
+                      <b>Height: </b>
+                      {partyData?.person?.heightInCm} cm ({imperialHeight.feet} feet {imperialHeight.inches} inches)
+                    </p>
+                  )}
+                  {partyData?.person?.weightInKg && (
+                    <p>
+                      <b>Weight: </b>
+                      {partyData?.person?.weightInKg} kg ({imperialWeight} lbs)
+                    </p>
+                  )}
+                </div>
               </>
             )}
             <br />

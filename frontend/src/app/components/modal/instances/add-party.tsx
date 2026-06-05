@@ -30,7 +30,7 @@ import { PartyTypeCodes } from "@/app/constants/party-types";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
-import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import z from "zod";
 import { formatDateOfBirth, toDateOfBirth } from "@/app/common/methods";

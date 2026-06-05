@@ -31,7 +31,7 @@ import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
-import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { toDateOfBirth } from "@/app/common/methods";
 
@@ -308,7 +308,7 @@ const buildBusinessCreate = (value: any) => {
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
 // Shared base fields for person create/update.
-function buildPersonBase(value: any, isUpdate: boolean) {
+function buildPersonBase(value: any) {
   return {
     firstName: value.firstName,
     middleNames: value.middleNames?.trim() || null,
@@ -320,15 +320,17 @@ function buildPersonBase(value: any, isUpdate: boolean) {
     driversLicenseCountryCode: value.driversLicenseCountryCode || undefined,
     driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || undefined,
     genderCode: value.genderCode || undefined,
+    heightInCm: value.heightInCm || undefined,
+    weightInKg: value.weightInKg || undefined,
   };
 }
 
 function buildPersonForCreate(value: any): PersonInput {
-  return buildPersonBase(value, false);
+  return buildPersonBase(value);
 }
 
 function buildPersonForUpdate(value: any): PersonUpdateInput {
-  return { personGuid: value.personGuid, ...buildPersonBase(value, true) };
+  return { personGuid: value.personGuid, ...buildPersonBase(value) };
 }
 
 const PartyEdit: FC = () => {
@@ -371,6 +373,8 @@ const PartyEdit: FC = () => {
         driversLicenseCountryCode: person?.driversLicenseCountryCode || "",
         driversLicenseCountrySubdivisionCode: person?.driversLicenseCountrySubdivisionCode || "",
         genderCode: person?.genderCode || "",
+        heightInCm: person?.heightInCm || "",
+        weightInKg: person?.weightInKg || "",
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -401,6 +405,8 @@ const PartyEdit: FC = () => {
       driversLicenseCountryCode: "",
       driversLicenseCountrySubdivisionCode: "",
       genderCode: "",
+      heightInCm: "",
+      weightInKg: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

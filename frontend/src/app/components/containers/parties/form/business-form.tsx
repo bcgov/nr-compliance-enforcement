@@ -6,7 +6,7 @@ import { usePartyFormFields } from "@/app/components/containers/parties/hooks/us
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
-import { AddressFormValue } from "./business-form-utils";
+import { AddressFormValue } from "./party-form-utils";
 import { AddressFields } from "./party-address-fields";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";

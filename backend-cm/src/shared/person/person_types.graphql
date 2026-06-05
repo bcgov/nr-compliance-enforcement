@@ -11,4 +11,6 @@ type Person {
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
   aliases: [Alias]
+  heightInCm: Float
+  weightInKg: Float
 }

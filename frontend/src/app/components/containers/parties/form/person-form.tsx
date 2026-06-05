@@ -12,8 +12,9 @@ import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { Alias, ContactMethod } from "@/generated/graphql";
-import { AddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
 import { AddressFields } from "@/app/components/containers/parties/form/party-address-fields";
+import { HeightField, WeightField } from "@/app/components/containers/parties/form/height-weight-fields";
 
 type PersonFormProps = {
   form: any;
@@ -359,6 +360,14 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             isDisabled={isDisabled}
           />
         )}
+      />
+      <HeightField
+        form={form}
+        isDisabled={isDisabled}
+      />
+      <WeightField
+        form={form}
+        isDisabled={isDisabled}
       />
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField

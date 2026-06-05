@@ -10,6 +10,8 @@ input PersonInput {
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
   aliases: [AliasInput]
+  heightInCm: Float
+  weightInKg: Float
 }
 
 input PersonUpdateInput {
@@ -25,4 +27,6 @@ input PersonUpdateInput {
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
   aliases: [AliasInput]
+  heightInCm: Float
+  weightInKg: Float
 }

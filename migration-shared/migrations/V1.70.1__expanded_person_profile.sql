@@ -329,3 +329,14 @@ CREATE UNIQUE INDEX contact_method_primary_unique
 ON contact_method (party_guid, contact_method_type)
 WHERE is_primary = true
 AND active_ind = true;
+
+-- Add height and weight for people.   Store only in metric and convert to imperial on front end 
+
+-- Descriptors — Wave 1: height & weight on shared.person
+ALTER TABLE shared.person
+    ADD COLUMN height_cm numeric(5,1),
+    ADD COLUMN weight_kg numeric(5,1);
+
+COMMENT ON COLUMN shared.person.height_cm IS 'The person''s height in centimetres. Stored as the canonical metric value; the UI provides a ft/in display toggle that converts for entry and display only.';
+COMMENT ON COLUMN shared.person.weight_kg IS 'The person''s weight in kilograms. Stored as the canonical metric value; the UI provides a lb display toggle that converts for entry and display only.';
+
