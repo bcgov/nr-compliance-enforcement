@@ -1107,6 +1107,24 @@ export type HWCROutcomeCode = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type HairColourCode = {
+  __typename?: 'HairColourCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  hairColourCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type HairLengthCode = {
+  __typename?: 'HairLengthCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  hairLengthCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type IPMAuthCategoryCodeType = {
   __typename?: 'IPMAuthCategoryCodeType';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2043,6 +2061,9 @@ export type Person = {
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
+  hairColourCode?: Maybe<Scalars['String']['output']>;
+  hairColourOther?: Maybe<Scalars['String']['output']>;
+  hairLengthCode?: Maybe<Scalars['String']['output']>;
   heightInCm?: Maybe<Scalars['Float']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   middleNames?: Maybe<Scalars['String']['output']>;
@@ -2062,6 +2083,9 @@ export type PersonInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourOther?: InputMaybe<Scalars['String']['input']>;
+  hairLengthCode?: InputMaybe<Scalars['String']['input']>;
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
@@ -2080,6 +2104,9 @@ export type PersonUpdateInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourCode?: InputMaybe<Scalars['String']['input']>;
+  hairColourOther?: InputMaybe<Scalars['String']['input']>;
+  hairLengthCode?: InputMaybe<Scalars['String']['input']>;
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
@@ -2169,6 +2196,8 @@ export type Query = {
   getLeadsByEquipment?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getLeadsByOutcomeAnimal?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getParksByArea?: Maybe<Array<Maybe<Park>>>;
+  hairColourCodes: Array<Maybe<HairColourCode>>;
+  hairLengthCodes: Array<Maybe<HairLengthCode>>;
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;

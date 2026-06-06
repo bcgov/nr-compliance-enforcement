@@ -6,6 +6,8 @@ import { complexion_code } from "./complexion_code";
 import { country_code } from "./country_code";
 import { country_subdivision_code } from "./country_subdivision_code";
 import { gender_code } from "./gender_code";
+import { hair_colour_code } from "./hair_colour_code";
+import { hair_length_code } from "./hair_length_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class person {
@@ -69,6 +71,15 @@ export class person {
   @ApiPropertyOptional({ type: String })
   build_code?: string;
 
+  @ApiPropertyOptional({ type: String })
+  hair_colour_code?: string;
+
+  @ApiPropertyOptional({ type: String })
+  hair_colour_other?: string;
+
+  @ApiPropertyOptional({ type: String })
+  hair_length_code?: string;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 
@@ -92,4 +103,10 @@ export class person {
 
   @ApiPropertyOptional({ type: () => gender_code })
   gender_code_person_gender_codeTogender_code?: gender_code;
+
+  @ApiPropertyOptional({ type: () => hair_colour_code })
+  hair_colour_code_person_hair_colour_codeTohair_colour_code?: hair_colour_code;
+
+  @ApiPropertyOptional({ type: () => hair_length_code })
+  hair_length_code_person_hair_length_codeTohair_length_code?: hair_length_code;
 }

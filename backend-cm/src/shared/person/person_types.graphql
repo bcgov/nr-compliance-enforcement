@@ -15,4 +15,7 @@ type Person {
   weightInKg: Float
   complexionCode: String
   buildCode: String
+  hairColourCode: String
+  hairLengthCode: String
+  hairColourOther: String
 }

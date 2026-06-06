@@ -968,6 +968,22 @@ export class CodeTableService {
         const results = data.buildCodes;
         return results;
       }
+
+      case "hair-colour-type": {
+        const { data } = await get(token, {
+          query: "{ hairColourCodes { hairColourCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.hairColourCodes;
+        return results;
+      }
+
+      case "hair-length-type": {
+        const { data } = await get(token, {
+          query: "{ hairLengthCodes { hairLengthCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.hairLengthCodes;
+        return results;
+      }
     }
   };
 

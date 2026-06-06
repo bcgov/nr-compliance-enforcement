@@ -62,6 +62,8 @@ import { mapPrismaApproximateAgeCodeToApproximateAgeCode } from "src/shared/appr
 import { mapPrismaGenderCodeToGenderCode } from "src/shared/gender/dto/gender_code";
 import { mapPrismaComplexionCodeToComplexionCode } from "src/shared/complexion_code/dto/complexion_code";
 import { mapPrismaBuildCodeToBuildCode } from "src/shared/build_code/dto/build_code";
+import { mapPrismaHairColourCodeToHairColourCode } from "src/shared/hair_colour_code/dto/hair_colour_code";
+import { mapPrismaHairLengthCodeToHairLengthCode } from "src/shared/hair_length_code/dto/hair_length_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -105,6 +107,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaGenderCodeToGenderCode(mapper);
   mapPrismaComplexionCodeToComplexionCode(mapper);
   mapPrismaBuildCodeToBuildCode(mapper);
+  mapPrismaHairColourCodeToHairColourCode(mapper);
+  mapPrismaHairLengthCodeToHairLengthCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

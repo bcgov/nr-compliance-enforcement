@@ -9,6 +9,8 @@ export const PersonProfileUpdates = {
         "gender-type": [],
         "complexion-type": [],
         "build-type": [],
+        "hair-colour-type": [],
+        "hair-length-type": [],
       },
     };
   },

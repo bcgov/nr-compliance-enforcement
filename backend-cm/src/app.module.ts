@@ -88,6 +88,9 @@ import { ApproximateAgeCodeModule } from "./shared/approximate_age_code/approxim
 import { GenderCodeModule } from "./shared/gender/gender_code.module";
 import { ComplexionCodeModule } from "src/shared/complexion_code/complexion_code.module";
 import { BuildCodeModule } from "src/shared/build_code/build_code.module";
+import { HairLengthCode } from "src/shared/hair_length_code/dto/hair_length_code";
+import { HairColourCodeModule } from "src/shared/hair_colour_code/hair_colour_code.module";
+import { HairLengthCodeModule } from "src/shared/hair_length_code/hair_length_code.module";
 
 @Module({
   imports: [
@@ -174,6 +177,8 @@ import { BuildCodeModule } from "src/shared/build_code/build_code.module";
     GenderCodeModule,
     ComplexionCodeModule,
     BuildCodeModule,
+    HairColourCodeModule,
+    HairLengthCodeModule,
   ],
   controllers: [AppController],
   providers: [

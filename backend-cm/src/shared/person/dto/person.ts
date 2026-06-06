@@ -19,6 +19,9 @@ export class Person implements PersonDto {
   weightInKg?: number;
   complexionCode?: string;
   buildCode?: string;
+  hairColourCode?: string;
+  hairLengthCode?: string;
+  hairColourOther?: string;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -85,6 +88,18 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.buildCode,
       mapFrom((src) => src.build_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.hairColourCode,
+      mapFrom((src) => src.hair_colour_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.hairLengthCode,
+      mapFrom((src) => src.hair_length_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.hairColourOther,
+      mapFrom((src) => src.hair_colour_other ?? undefined),
     ),
   );
 };

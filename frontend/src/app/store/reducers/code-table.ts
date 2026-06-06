@@ -58,6 +58,8 @@ import {
   fetchGenderTypes,
   fetchComplexionTypes,
   fetchBuildTypes,
+  fetchHairColourTypes,
+  fetchHairLengthTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -122,6 +124,8 @@ const initialState: CodeTableState = {
   "gender-type": [],
   "complexion-type": [],
   "build-type": [],
+  "hair-colour-type": [],
+  "hair-length-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -204,6 +208,8 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "gender-type": genderType,
       "complexion-type": complexionType,
       "build-type": buildType,
+      "hair-colour-type": hairColourType,
+      "hair-length-type": hairLengthType,
     },
   } = state;
 
@@ -378,13 +384,19 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       dispatch(fetchApproximateAgeTypes());
     }
     if (!from(genderType).any()) {
-      dispatch(fetchGenders());
+      dispatch(fetchGenderTypes());
     }
     if (!from(complexionType).any()) {
-      dispatch(fetchComplexions());
+      dispatch(fetchComplexionTypes());
     }
     if (!from(buildType).any()) {
-      dispatch(fetchBuilds());
+      dispatch(fetchBuildTypes());
+    }
+    if (!from(hairColourType).any()) {
+      dispatch(fetchHairColourTypes());
+    }
+    if (!from(hairLengthType).any()) {
+      dispatch(fetchHairLengthTypes());
     }
   } catch (error) {
     console.error(error);
@@ -1672,6 +1684,26 @@ export const selectBuildDropdown = createSelector(
   (state: RootState) => state.codeTables["build-type"],
   (items) =>
     items.map(({ buildCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectHairColourDropdown = createSelector(
+  (state: RootState) => state.codeTables["hair-colour-type"],
+  (items) =>
+    items.map(({ hairColourCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectHairLengthDropdown = createSelector(
+  (state: RootState) => state.codeTables["hair-length-type"],
+  (items) =>
+    items.map(({ hairLengthCode: value, shortDescription: label, activeInd }) => ({
       label,
       value,
       activeInd,

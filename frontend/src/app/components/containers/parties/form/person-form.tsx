@@ -9,6 +9,8 @@ import {
   selectBuildDropdown,
   selectComplexionDropdown,
   selectGenderDropdown,
+  selectHairColourDropdown,
+  selectHairLengthDropdown,
 } from "@/app/store/reducers/code-table";
 import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
@@ -53,6 +55,16 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
   );
 
   const buildCodeOptions = useAppSelector(selectBuildDropdown).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
+
+  const hairColourOptions = useAppSelector(selectHairColourDropdown).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
+
+  const hairLengthOptions = useAppSelector(selectHairLengthDropdown).map((opt: { value: string; label: string }) => ({
     value: opt.value,
     label: opt.label,
   }));
@@ -268,7 +280,14 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             defaultValue={field.state.value}
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={50}
-            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+            onChange={(evt: any) => {
+              field.handleChange(evt?.target?.value || "");
+              if (!evt?.target?.value) {
+                form.setFieldValue("driversLicenseClass", null);
+                form.setFieldValue("driversLicenseCountryCode", null);
+                form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
+              }
+            }}
             placeholder="Enter driver's licence number..."
             disabled={isDisabled}
           />
@@ -302,7 +321,13 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                 name="driversLicenseCountryCode"
                 label="Driver's licence country"
                 required
-                validators={{ onChange: z.string().min(1, "Country is required") }}
+                validators={{
+                  onChange: ({ value }: { value: string | null | undefined }) => {
+                    const requiresCountry = !!form.getFieldValue("driversLicenseNumber");
+                    const isEmpty = value === null || value === undefined || value === "";
+                    return requiresCountry && isEmpty ? { message: "Country is required" } : undefined;
+                  },
+                }}
                 render={(field) => (
                   <CompSelect
                     id="driversLicenseCountry-select"
@@ -314,7 +339,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                       const newValue = option?.value ?? "";
                       field.handleChange(newValue);
                       if (newValue !== "CA") {
-                        form.setFieldValue("driversLicenseCountrySubdivisionCode", undefined);
+                        form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
                       }
                     }}
                     placeholder="Select country"
@@ -420,6 +445,79 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             value={buildCodeOptions?.find((opt: any) => opt.value === field.state.value)}
             onChange={(option) => field.handleChange(option?.value ?? "")}
             placeholder="Select build"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <FormField
+        form={form}
+        name="hairColourCode"
+        label="Hair colour"
+        render={(field) => (
+          <CompSelect
+            id="hair-colour-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={hairColourOptions}
+            value={hairColourOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => {
+              const newValue = option?.value ?? "";
+              field.handleChange(newValue);
+              if (newValue !== "OTH") {
+                form.setFieldValue("hairColourOther", null);
+              }
+            }}
+            placeholder="Select hair colour"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.hairColourCode}>
+        {(hairColourCode: string | undefined) =>
+          hairColourCode === "OTH" ? (
+            <FormField
+              form={form}
+              name="hairColourOther"
+              label="Other hair colour"
+              render={(field) => (
+                <CompInput
+                  id="hairColourOther"
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  defaultValue={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={128}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  placeholder="Enter other hair colour"
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
+      <FormField
+        form={form}
+        name="hairLengthCode"
+        label="Hair length"
+        render={(field) => (
+          <CompSelect
+            id="hair-length-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={hairLengthOptions}
+            value={hairLengthOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder="Select hair length"
             isClearable={true}
             showInactive={false}
             enableValidation={true}

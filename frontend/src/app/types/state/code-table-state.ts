@@ -55,6 +55,8 @@ import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-
 import { GenderType } from "@/app/types/app/code-tables/gender";
 import { BuildType } from "@/app/types/app/code-tables/build";
 import { ComplexionType } from "@/app/types/app/code-tables/complexion";
+import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
+import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 
 export interface CodeTableState {
   [key: string]:
@@ -114,7 +116,9 @@ export interface CodeTableState {
     | Array<ApproximateAgeType>
     | Array<GenderType>
     | Array<ComplexionType>
-    | Array<BuildType>;
+    | Array<BuildType>
+    | Array<HairColourType>
+    | Array<HairLengthType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -172,4 +176,6 @@ export interface CodeTableState {
   "gender-type": Array<GenderType>;
   "complexion-type": Array<ComplexionType>;
   "build-type": Array<BuildType>;
+  "hair-colour-type": Array<HairColourType>;
+  "hair-length-type": Array<HairLengthType>;
 }

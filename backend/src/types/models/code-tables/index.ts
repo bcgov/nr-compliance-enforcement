@@ -81,6 +81,8 @@ export const AvailableCodeTables = [
   "gender-type",
   "complexion-type",
   "build-type",
+  "hair-colour-type",
+  "hair-length-type",
 ];
 
 export const AvailableAgencies = ["cos"];

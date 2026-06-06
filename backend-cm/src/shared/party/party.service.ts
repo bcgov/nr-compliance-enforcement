@@ -12,6 +12,8 @@ import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
+import { hair_colour_code } from "prisma/shared/generated/hair_colour_code";
+import { hair_length_code } from "prisma/shared/generated/hair_length_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -177,6 +179,9 @@ export class PartyService {
                     gender_code: true,
                     complexion_code: true,
                     build_code: true,
+                    hair_colour_code: true,
+                    hair_length_code: true,
+                    hair_colour_other: true,
                     approximate_age_code: true,
                     party: {
                       select: {
@@ -215,6 +220,9 @@ export class PartyService {
             gender_code: true,
             complexion_code: true,
             build_code: true,
+            hair_colour_code: true,
+            hair_length_code: true,
+            hair_colour_other: true,
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -325,6 +333,9 @@ export class PartyService {
           weight_kg: input.person?.weightInKg,
           complexion_code: input.person?.complexionCode,
           build_code: input.person?.buildCode,
+          hair_colour_code: input.person?.hairColourCode,
+          hair_length_code: input.person?.hairLengthCode,
+          hair_colour_other: input.person?.hairColourOther,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -440,10 +451,13 @@ export class PartyService {
           drivers_license_country_code: input.person?.driversLicenseCountryCode,
           drivers_license_country_subdivision_code: input.person?.driversLicenseCountrySubdivisionCode,
           gender_code: input.person?.genderCode,
-          complexion_code: input.person?.complexionCode,
-          build_code: input.person?.buildCode,
           height_cm: input.person?.heightInCm,
           weight_kg: input.person?.weightInKg,
+          complexion_code: input.person?.complexionCode,
+          build_code: input.person?.buildCode,
+          hair_colour_code: input.person?.hairColourCode,
+          hair_length_code: input.person?.hairLengthCode,
+          hair_colour_other: input.person?.hairColourOther,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -1000,6 +1014,9 @@ export class PartyService {
               drivers_license_country_subdivision_code: true,
               gender_code: true,
               complexion_code: true,
+              hair_colour_code: true,
+              hair_length_code: true,
+              hair_colour_other: true,
               build_code: true,
             },
           },

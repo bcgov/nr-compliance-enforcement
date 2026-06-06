@@ -24,6 +24,8 @@ import {
   selectCodeTable,
   selectComplexionDropdown,
   selectGenderDropdown,
+  selectHairColourDropdown,
+  selectHairLengthDropdown,
 } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
@@ -99,6 +101,9 @@ export const GET_PARTY = gql`
         weightInKg
         complexionCode
         buildCode
+        hairColourCode
+        hairLengthCode
+        hairColourOther
       }
       business {
         name
@@ -399,6 +404,8 @@ export const PartyView: FC = () => {
   const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
   const complexionOptions = useAppSelector(selectComplexionDropdown);
   const buildOptions = useAppSelector(selectBuildDropdown);
+  const hairColourOptions = useAppSelector(selectHairColourDropdown);
+  const hairLengthOptions = useAppSelector(selectHairLengthDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -777,6 +784,21 @@ export const PartyView: FC = () => {
                       <b>Build: </b>
                       {buildOptions?.find((opt) => opt.value === partyData?.person?.buildCode)?.label ??
                         partyData?.person.buildCode}
+                    </p>
+                  )}
+                  {partyData?.person?.hairColourCode && (
+                    <p>
+                      <b>Hair color: </b>
+                      {hairColourOptions?.find((opt) => opt.value === partyData?.person?.hairColourCode)?.label ??
+                        partyData?.person.hairColourCode}
+                      {partyData?.person?.hairColourOther && ` (${partyData?.person?.hairColourOther})`}
+                    </p>
+                  )}
+                  {partyData?.person?.hairLengthCode && (
+                    <p>
+                      <b>Hair length: </b>
+                      {hairLengthOptions?.find((opt) => opt.value === partyData?.person?.hairLengthCode)?.label ??
+                        partyData?.person.hairLengthCode}
                     </p>
                   )}
                 </div>

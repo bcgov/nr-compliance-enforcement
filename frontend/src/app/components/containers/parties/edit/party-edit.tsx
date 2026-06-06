@@ -323,6 +323,9 @@ function buildPersonBase(value: any) {
     weightInKg: value.weightInKg || null,
     complexionCode: value.complexionCode || null,
     buildCode: value.buildCode || null,
+    hairColourCode: value.hairColourCode || null,
+    hairLengthCode: value.hairLengthCode || null,
+    hairColourOther: value.hairColourOther || null,
   };
 }
 
@@ -369,15 +372,19 @@ const PartyEdit: FC = () => {
         lastName: person?.lastName || "",
         dateOfBirth: person?.dateOfBirth ? parseDateOnly(String(person.dateOfBirth)) : null,
         approximateAgeCode: person?.approximateAgeCode || "",
-        driversLicenseNumber: person?.driversLicenseNumber || "",
-        driversLicenseClass: person?.driversLicenseClass || "",
-        driversLicenseCountryCode: person?.driversLicenseCountryCode || "",
-        driversLicenseCountrySubdivisionCode: person?.driversLicenseCountrySubdivisionCode || "",
+        driversLicenseNumber: person?.driversLicenseNumber || null,
+        driversLicenseClass: person?.driversLicenseClass || null,
+        driversLicenseCountryCode: person?.driversLicenseCountryCode || null,
+        driversLicenseCountrySubdivisionCode: person?.driversLicenseCountrySubdivisionCode || null,
         genderCode: person?.genderCode || "",
         heightInCm: person?.heightInCm || null,
         weightInKg: person?.weightInKg || null,
         complexionCode: person?.complexionCode || "",
         buildCode: person?.buildCode || "",
+        hairColourCode: person?.hairColourCode || "",
+        hairLengthCode: person?.hairLengthCode || "",
+        hairColourOther: person?.hairColourOther || null,
+
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -412,6 +419,9 @@ const PartyEdit: FC = () => {
       weightInKg: null,
       complexionCode: "",
       buildCode: "",
+      hairColourCode: "",
+      hairLengthCode: "",
+      hairColourOther: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
