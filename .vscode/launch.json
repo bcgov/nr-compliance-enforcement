@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Docker: Attach to Backend",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/backend",
+      "remoteRoot": "app",
+      
+    }
+    {
+      "name": "Docker: Attach to Backend CM",
+      "type": "node",
+      "request": "attach",
+      "restart": true,
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/backend-cm",
+      "remoteRoot": "app",
+      
+    }
+  ]
+}
