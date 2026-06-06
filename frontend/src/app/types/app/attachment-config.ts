@@ -20,6 +20,10 @@ const ATTACHMENT_TYPE_CONFIG: Record<AttachmentEnum, AttachmentTypeConfig> = {
     subHeaderKey: "x-amz-meta-task-id",
     shouldUpdateComplaintDate: false,
   },
+  [AttachmentEnum.PARTY_ATTACHMENT]: {
+    headerKey: "x-amz-meta-party-id",
+    shouldUpdateComplaintDate: false,
+  },
 };
 
 export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentTypeConfig => {
