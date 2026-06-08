@@ -76,7 +76,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     let toastId: ReturnType<typeof ToggleInformation> | undefined;
     try {
       toastId = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

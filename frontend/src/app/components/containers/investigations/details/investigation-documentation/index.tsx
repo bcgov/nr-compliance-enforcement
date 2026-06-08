@@ -59,7 +59,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
     let toastDownloadInfo: any;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

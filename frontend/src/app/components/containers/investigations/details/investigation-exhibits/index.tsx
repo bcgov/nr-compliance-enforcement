@@ -108,7 +108,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
     if (!investigationGuid || isExporting) return;
 
     const toastId = ToggleInformation("Export in progress, please wait...", {
-      position: "top-right",
+      position: "bottom-right",
       autoClose: false,
       closeOnClick: false,
       closeButton: false,

@@ -272,7 +272,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     let toastDownloadInfo;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

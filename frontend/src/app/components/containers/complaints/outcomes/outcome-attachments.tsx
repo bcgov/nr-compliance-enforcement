@@ -89,7 +89,7 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
 
     if (attachmentsToAdd?.length) {
       toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

@@ -185,7 +185,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     if (!files) return;
 
     const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-      position: "top-right",
+      position: "bottom-right",
       autoClose: false,
       closeOnClick: false,
       closeButton: false,

@@ -29,7 +29,7 @@ export const BulkDownloadButton = ({
   const handleBulkDownload = async () => {
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: "bottom-right",
         autoClose: false,
         closeOnClick: false,
         closeButton: false,
