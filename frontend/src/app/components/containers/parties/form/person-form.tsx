@@ -9,6 +9,7 @@ import {
   selectBuildDropdown,
   selectComplexionDropdown,
   selectEyeColourDropdown,
+  selectFacialHairStyleDropdown,
   selectGenderDropdown,
   selectHairColourDropdown,
   selectHairLengthDropdown,
@@ -19,10 +20,12 @@ import { PartyPhoneFields } from "@/app/components/containers/parties/form/party
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
 import { Badge, Button } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
-import { Alias, ContactMethod } from "@/generated/graphql";
+import { Alias, ContactMethod, PersonFacialHairStyleCode } from "@/generated/graphql";
 import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
 import { AddressFields } from "@/app/components/containers/parties/form/party-address-fields";
 import { HeightField, WeightField } from "@/app/components/containers/parties/form/height-weight-fields";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
+import Option from "@apptypes/app/option";
 
 type PersonFormProps = {
   form: any;
@@ -74,6 +77,13 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     value: opt.value,
     label: opt.label,
   }));
+
+  const facialHairStyleOptions = useAppSelector(selectFacialHairStyleDropdown).map(
+    (opt: { value: string; label: string }) => ({
+      value: opt.value,
+      label: opt.label,
+    }),
+  );
 
   const {
     addresses,
@@ -584,6 +594,44 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           ) : null
         }
       </form.Subscribe>
+      <FormField
+        form={form}
+        name="facialHairStyleCodes"
+        label="Facial hair style"
+        render={(field) => (
+          <ValidationMultiSelect
+            id="facial-hair-style-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={facialHairStyleOptions}
+            values={(field.state.value ?? []).map(
+              (fhs: PersonFacialHairStyleCode) =>
+                facialHairStyleOptions.find((o) => o.value === fhs.facialHairStyleCode) ?? {
+                  value: fhs.facialHairStyleCode,
+                  label: fhs.facialHairStyleCode,
+                },
+            )}
+            onChange={(options: Option[]) => {
+              const current = field.state.value ?? [];
+              field.handleChange(
+                (options ?? []).map((o) => {
+                  const existing = current.find(
+                    (fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value,
+                  );
+                  return {
+                    personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
+                    personGuid: existing?.personGuid,
+                    facialHairStyleCode: o.value,
+                  };
+                }),
+              );
+            }}
+            placeholder="Select facial hair styles"
+            isClearable={true}
+            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          />
+        )}
+      />
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField
           key={address.addressGuid || `address-${index}`}

@@ -1,6 +1,7 @@
-import { Mapper, createMap, forMember, mapFrom } from "@automapper/core";
+import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
 import { person } from "../../../../prisma/shared/generated/person";
 import { PersonDto } from "../../../common/party";
+import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 
 export class Person implements PersonDto {
   personGuid: string;
@@ -24,6 +25,7 @@ export class Person implements PersonDto {
   hairColourOther?: string;
   eyeColourCode?: string;
   eyeColourOther?: string;
+  facialHairStyleCodes?: [PersonFacialHairStyleCode];
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -110,6 +112,16 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.eyeColourOther,
       mapFrom((src) => src.eye_colour_other ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.facialHairStyleCodes,
+      mapWithArguments((src) =>
+        mapper.mapArray(
+          src.person_facial_hair_style_code ?? [],
+          "person_facial_hair_style_code",
+          "PersonFacialHairStyleCode",
+        ),
+      ),
     ),
   );
 };

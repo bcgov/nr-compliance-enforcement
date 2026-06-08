@@ -9,6 +9,7 @@ import { eye_colour_code } from "./eye_colour_code";
 import { gender_code } from "./gender_code";
 import { hair_colour_code } from "./hair_colour_code";
 import { hair_length_code } from "./hair_length_code";
+import { person_facial_hair_style_code } from "./person_facial_hair_style_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class person {
@@ -87,6 +88,12 @@ export class person {
   @ApiPropertyOptional({ type: String })
   eye_colour_other?: string;
 
+  @ApiPropertyOptional({ type: Boolean })
+  facial_hair_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  additional_hair_descriptors?: string;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 
@@ -119,4 +126,7 @@ export class person {
 
   @ApiPropertyOptional({ type: () => hair_length_code })
   hair_length_code_person_hair_length_codeTohair_length_code?: hair_length_code;
+
+  @ApiProperty({ isArray: true, type: () => person_facial_hair_style_code })
+  person_facial_hair_style_code: person_facial_hair_style_code[];
 }

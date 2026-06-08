@@ -12,6 +12,7 @@ export const PersonProfileUpdates = {
         "hair-colour-type": [],
         "hair-length-type": [],
         "eye-colour-type": [],
+        "facial-hair-style-type": [],
       },
     };
   },

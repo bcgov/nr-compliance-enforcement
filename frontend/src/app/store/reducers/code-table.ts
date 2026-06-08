@@ -61,6 +61,7 @@ import {
   fetchHairColourTypes,
   fetchHairLengthTypes,
   fetchEyeColourTypes,
+  fetchFacialHairStyleTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -128,6 +129,7 @@ const initialState: CodeTableState = {
   "hair-colour-type": [],
   "hair-length-type": [],
   "eye-colour-type": [],
+  "facial-hair-style-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -213,6 +215,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "hair-colour-type": hairColourType,
       "hair-length-type": hairLengthType,
       "eye-colour-type": eyeColourType,
+      "facial-hair-style-type": facialHairStyleType,
     },
   } = state;
 
@@ -404,6 +407,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(eyeColourType).any()) {
       dispatch(fetchEyeColourTypes());
     }
+    if (!from(facialHairStyleType).any()) {
+      dispatch(fetchFacialHairStyleTypes());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -477,6 +483,7 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchHairColourTypes());
     dispatch(fetchHairLengthTypes());
     dispatch(fetchEyeColourTypes());
+    dispatch(fetchFacialHairStyleTypes());
   } catch (error) {
     console.error(error);
   }
@@ -1723,6 +1730,16 @@ export const selectEyeColourDropdown = createSelector(
   (state: RootState) => state.codeTables["eye-colour-type"],
   (items) =>
     items.map(({ eyeColourCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectFacialHairStyleDropdown = createSelector(
+  (state: RootState) => state.codeTables["facial-hair-style-type"],
+  (items) =>
+    items.map(({ facialHairStyleCode: value, shortDescription: label, activeInd }) => ({
       label,
       value,
       activeInd,

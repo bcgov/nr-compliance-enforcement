@@ -19,6 +19,7 @@ input PersonInput {
   hairColourOther: String
   eyeColourCode: String
   eyeColourOther: String
+  facialHairStyleCodes: [PersonFacialHairStyleCodeInput]
 }
 
 input PersonUpdateInput {
@@ -43,4 +44,5 @@ input PersonUpdateInput {
   hairColourOther: String
   eyeColourCode: String
   eyeColourOther: String
+  facialHairStyleCodes: [PersonFacialHairStyleCodeInput]
 }

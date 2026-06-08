@@ -65,6 +65,8 @@ import { mapPrismaBuildCodeToBuildCode } from "src/shared/build_code/dto/build_c
 import { mapPrismaHairColourCodeToHairColourCode } from "src/shared/hair_colour_code/dto/hair_colour_code";
 import { mapPrismaHairLengthCodeToHairLengthCode } from "src/shared/hair_length_code/dto/hair_length_code";
 import { mapPrismaEyeColourCodeToEyeColourCode } from "src/shared/eye_colour_code/dto/eye_colour_code";
+import { mapPrismaFacialHairStyleCodeToFacialHairStyleCode } from "src/shared/facial_hair_style_code/dto/facial_hair_style_code";
+import { mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -111,6 +113,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaHairColourCodeToHairColourCode(mapper);
   mapPrismaHairLengthCodeToHairLengthCode(mapper);
   mapPrismaEyeColourCodeToEyeColourCode(mapper);
+  mapPrismaFacialHairStyleCodeToFacialHairStyleCode(mapper);
+  mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

@@ -24,6 +24,7 @@ import {
   selectCodeTable,
   selectComplexionDropdown,
   selectEyeColourDropdown,
+  selectFacialHairStyleDropdown,
   selectGenderDropdown,
   selectHairColourDropdown,
   selectHairLengthDropdown,
@@ -107,6 +108,10 @@ export const GET_PARTY = gql`
         hairColourOther
         eyeColourCode
         eyeColourOther
+        facialHairStyleCodes {
+          personFacialStyleHairCodeGuid
+          facialHairStyleCode
+        }
       }
       business {
         name
@@ -410,6 +415,7 @@ export const PartyView: FC = () => {
   const hairColourOptions = useAppSelector(selectHairColourDropdown);
   const hairLengthOptions = useAppSelector(selectHairLengthDropdown);
   const eyeColourOptions = useAppSelector(selectEyeColourDropdown);
+  const facialHairStyleOptions = useAppSelector(selectFacialHairStyleDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -805,6 +811,20 @@ export const PartyView: FC = () => {
                         partyData?.person.hairLengthCode}
                     </p>
                   )}
+                  {partyData?.person?.facialHairStyleCodes && (
+                    <>
+                      {partyData.person.facialHairStyleCodes.map((fhs) => {
+                        return (
+                          <p key={fhs?.personFacialStyleHairCodeGuid}>
+                            <b>Facial hair style: </b>
+                            {facialHairStyleOptions?.find((opt) => opt.value === fhs?.facialHairStyleCode)?.label ??
+                              fhs?.facialHairStyleCode}
+                          </p>
+                        );
+                      })}
+                    </>
+                  )}
+
                   {partyData?.person?.eyeColourCode && (
                     <p>
                       <b>Hair color: </b>

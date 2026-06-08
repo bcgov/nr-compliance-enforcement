@@ -91,6 +91,7 @@ import { BuildCodeModule } from "src/shared/build_code/build_code.module";
 import { HairColourCodeModule } from "src/shared/hair_colour_code/hair_colour_code.module";
 import { HairLengthCodeModule } from "src/shared/hair_length_code/hair_length_code.module";
 import { EyeColourCodeModule } from "src/shared/eye_colour_code/eye_colour_code.module";
+import { FacialHairStyleCodeModule } from "src/shared/facial_hair_style_code/facial_hair_style_code.module";
 
 @Module({
   imports: [
@@ -180,6 +181,7 @@ import { EyeColourCodeModule } from "src/shared/eye_colour_code/eye_colour_code.
     HairColourCodeModule,
     HairLengthCodeModule,
     EyeColourCodeModule,
+    FacialHairStyleCodeModule,
   ],
   controllers: [AppController],
   providers: [

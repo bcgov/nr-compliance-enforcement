@@ -12,6 +12,8 @@ import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
+import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { person_facial_hair_style_code } from "prisma/shared/generated/person_facial_hair_style_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -182,6 +184,13 @@ export class PartyService {
                     hair_colour_other: true,
                     eye_colour_code: true,
                     eye_colour_other: true,
+                    person_facial_hair_style_code: {
+                      select: {
+                        person_facial_hair_style_code_guid: true,
+                        facial_hair_style_code: true,
+                      },
+                      where: { active_ind: true },
+                    },
                     approximate_age_code: true,
                     party: {
                       select: {
@@ -225,6 +234,13 @@ export class PartyService {
             hair_colour_other: true,
             eye_colour_code: true,
             eye_colour_other: true,
+            person_facial_hair_style_code: {
+              select: {
+                person_facial_hair_style_code_guid: true,
+                facial_hair_style_code: true,
+              },
+              where: { active_ind: true },
+            },
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -340,6 +356,17 @@ export class PartyService {
           hair_colour_other: input.person?.hairColourOther,
           eye_colour_code: input.person?.eyeColourCode,
           eye_colour_other: input.person?.eyeColourOther,
+          ...(input.person?.facialHairStyleCodes?.length
+            ? {
+                person_facial_hair_style_code: {
+                  create: input.person.facialHairStyleCodes.map((fhs) => ({
+                    facial_hair_style_code: fhs.facialHairStyleCode,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -433,6 +460,11 @@ export class PartyService {
 
     const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
 
+    const facialHairStyleOperations = this._buildFacialHairStyleOperations(
+      input.person?.facialHairStyleCodes ?? [],
+      existingPartyDto.person?.facialHairStyleCodes ?? [],
+    );
+
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
@@ -464,6 +496,9 @@ export class PartyService {
           hair_colour_other: input.person?.hairColourOther,
           eye_colour_code: input.person?.eyeColourCode,
           eye_colour_other: input.person?.eyeColourOther,
+          ...(Object.keys(facialHairStyleOperations).length
+            ? { person_facial_hair_style_code: facialHairStyleOperations }
+            : {}),
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -665,6 +700,59 @@ export class PartyService {
     return operations;
   }
 
+  private _buildFacialHairStyleOperations(
+    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    existingFacialHairStyles: PersonFacialHairStyleCode[],
+  ): any {
+    console.dir(incomingFacialHairStyles, { depth: null });
+    console.dir(existingFacialHairStyles, { depth: null });
+    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
+    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
+    const fhsToDelete = existingFacialHairStyles.filter(
+      (fhs) =>
+        !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
+          fhs.personFacialStyleHairCodeGuid,
+        ),
+    );
+
+    const operations: any = {};
+
+    if (fhsToCreate.length) {
+      operations.create = fhsToCreate.map((fhs) => ({
+        facial_hair_style_code: fhs.facialHairStyleCode,
+        person_guid: fhs.personGuid,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (fhsToUpdate.length || fhsToDelete.length) {
+      operations.update = [
+        ...fhsToUpdate.map((fhs) => ({
+          where: { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid },
+          data: {
+            facial_hair_style_code: fhs.facialHairStyleCode,
+            person_guid: fhs.personGuid,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...fhsToDelete.map((fhs) => ({
+          where: { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
   /**
    * Sort contact methods so that the primary contact methods are last to preven updates
    * from violating the unique constraint in the database.
@@ -836,7 +924,11 @@ export class PartyService {
         address: true,
         contact_method: true,
         alias: true,
-        person: true,
+        person: {
+          include: {
+            person_facial_hair_style_code: true,
+          },
+        },
         business: {
           include: {
             business_identifier: true,
@@ -1023,6 +1115,7 @@ export class PartyService {
               hair_colour_code: true,
               hair_length_code: true,
               hair_colour_other: true,
+              person_facial_hair_style_code: true,
               eye_colour_code: true,
               eye_colour_other: true,
               build_code: true,
@@ -1032,6 +1125,8 @@ export class PartyService {
         orderByClause: orderBy,
       },
     );
+
+    // Todo: do I need all this crap in here?
 
     return {
       items: result.items,

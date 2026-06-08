@@ -992,6 +992,16 @@ export class CodeTableService {
         const results = data.eyeColourCodes;
         return results;
       }
+
+      case "facial-hair-style-type": {
+        const { data } = await get(token, {
+          query:
+            "{ facialHairStyleCodes { facialHairStyleCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+
+        const results = data.facialHairStyleCodes;
+        return results;
+      }
     }
   };
 

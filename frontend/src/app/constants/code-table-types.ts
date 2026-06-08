@@ -59,6 +59,7 @@ export const CODE_TABLE_TYPES = {
   HAIR_COLOUR: "hair-colour-type",
   HAIR_LENGTH: "hair-length-type",
   EYE_COLOUR: "eye-colour-type",
+  FACIAL_HAIR_STYLE: "facial-hair-style-type",
 
   //  ORGANIZATION_UNIT_TYPE: "organization-unit-type",
   //  ORGANIZATION_UNIT: "organization-unit",

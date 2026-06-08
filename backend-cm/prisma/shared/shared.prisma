@@ -789,42 +789,45 @@ model party_type_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model person {
-  person_guid                                                            String                    @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  first_name                                                             String                    @db.VarChar(128)
-  middle_names                                                           String?                   @db.VarChar(256)
-  last_name                                                              String                    @db.VarChar(128)
-  create_user_id                                                         String                    @db.VarChar(32)
-  create_utc_timestamp                                                   DateTime                  @default(now()) @db.Timestamp(6)
-  update_user_id                                                         String?                   @db.VarChar(32)
-  update_utc_timestamp                                                   DateTime?                 @db.Timestamp(6)
-  party_guid                                                             String?                   @unique(map: "UQ_person_party_guid") @db.Uuid
-  date_of_birth                                                          DateTime?                 @db.Date
-  drivers_license_number                                                 String?                   @db.VarChar(64)
-  approximate_age_code                                                   String?                   @db.VarChar(16)
-  gender_code                                                            String?                   @db.VarChar(16)
-  drivers_license_class                                                  String?                   @db.VarChar(128)
-  drivers_license_country_code                                           String?                   @db.VarChar(4)
-  drivers_license_country_subdivision_code                               String?                   @db.VarChar(16)
-  height_cm                                                              Decimal?                  @db.Decimal(5, 1)
-  weight_kg                                                              Decimal?                  @db.Decimal(5, 1)
-  complexion_code                                                        String?                   @db.VarChar(16)
-  build_code                                                             String?                   @db.VarChar(16)
-  hair_colour_code                                                       String?                   @db.VarChar(16)
-  hair_colour_other                                                      String?                   @db.VarChar(128)
-  hair_length_code                                                       String?                   @db.VarChar(16)
-  eye_colour_code                                                        String?                   @db.VarChar(16)
-  eye_colour_other                                                       String?                   @db.VarChar(128)
+  person_guid                                                            String                          @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  first_name                                                             String                          @db.VarChar(128)
+  middle_names                                                           String?                         @db.VarChar(256)
+  last_name                                                              String                          @db.VarChar(128)
+  create_user_id                                                         String                          @db.VarChar(32)
+  create_utc_timestamp                                                   DateTime                        @default(now()) @db.Timestamp(6)
+  update_user_id                                                         String?                         @db.VarChar(32)
+  update_utc_timestamp                                                   DateTime?                       @db.Timestamp(6)
+  party_guid                                                             String?                         @unique(map: "UQ_person_party_guid") @db.Uuid
+  date_of_birth                                                          DateTime?                       @db.Date
+  drivers_license_number                                                 String?                         @db.VarChar(64)
+  approximate_age_code                                                   String?                         @db.VarChar(16)
+  gender_code                                                            String?                         @db.VarChar(16)
+  drivers_license_class                                                  String?                         @db.VarChar(128)
+  drivers_license_country_code                                           String?                         @db.VarChar(4)
+  drivers_license_country_subdivision_code                               String?                         @db.VarChar(16)
+  height_cm                                                              Decimal?                        @db.Decimal(5, 1)
+  weight_kg                                                              Decimal?                        @db.Decimal(5, 1)
+  complexion_code                                                        String?                         @db.VarChar(16)
+  build_code                                                             String?                         @db.VarChar(16)
+  hair_colour_code                                                       String?                         @db.VarChar(16)
+  hair_colour_other                                                      String?                         @db.VarChar(128)
+  hair_length_code                                                       String?                         @db.VarChar(16)
+  eye_colour_code                                                        String?                         @db.VarChar(16)
+  eye_colour_other                                                       String?                         @db.VarChar(128)
+  facial_hair_ind                                                        Boolean?
+  additional_hair_descriptors                                            String?                         @db.VarChar(512)
   business_person_xref                                                   business_person_xref[]
-  party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
-  approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
-  build_code_person_build_codeTobuild_code                               build_code?               @relation("person_build_codeTobuild_code", fields: [build_code], references: [build_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__build_code")
-  complexion_code_person_complexion_codeTocomplexion_code                complexion_code?          @relation("person_complexion_codeTocomplexion_code", fields: [complexion_code], references: [complexion_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__complexion_code")
-  country_code                                                           country_code?             @relation(fields: [drivers_license_country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_code")
-  country_subdivision_code                                               country_subdivision_code? @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
-  eye_colour_code_person_eye_colour_codeToeye_colour_code                eye_colour_code?          @relation("person_eye_colour_codeToeye_colour_code", fields: [eye_colour_code], references: [eye_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__eye_colour_code")
-  gender_code_person_gender_codeTogender_code                            gender_code?              @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
-  hair_colour_code_person_hair_colour_codeTohair_colour_code             hair_colour_code?         @relation("person_hair_colour_codeTohair_colour_code", fields: [hair_colour_code], references: [hair_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_colour_code")
-  hair_length_code_person_hair_length_codeTohair_length_code             hair_length_code?         @relation("person_hair_length_codeTohair_length_code", fields: [hair_length_code], references: [hair_length_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_length_code")
+  party                                                                  party?                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
+  approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?           @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
+  build_code_person_build_codeTobuild_code                               build_code?                     @relation("person_build_codeTobuild_code", fields: [build_code], references: [build_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__build_code")
+  complexion_code_person_complexion_codeTocomplexion_code                complexion_code?                @relation("person_complexion_codeTocomplexion_code", fields: [complexion_code], references: [complexion_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__complexion_code")
+  country_code                                                           country_code?                   @relation(fields: [drivers_license_country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_code")
+  country_subdivision_code                                               country_subdivision_code?       @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
+  eye_colour_code_person_eye_colour_codeToeye_colour_code                eye_colour_code?                @relation("person_eye_colour_codeToeye_colour_code", fields: [eye_colour_code], references: [eye_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__eye_colour_code")
+  gender_code_person_gender_codeTogender_code                            gender_code?                    @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
+  hair_colour_code_person_hair_colour_codeTohair_colour_code             hair_colour_code?               @relation("person_hair_colour_codeTohair_colour_code", fields: [hair_colour_code], references: [hair_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_colour_code")
+  hair_length_code_person_hair_length_codeTohair_length_code             hair_length_code?               @relation("person_hair_length_codeTohair_length_code", fields: [hair_length_code], references: [hair_length_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_length_code")
+  person_facial_hair_style_code                                          person_facial_hair_style_code[]
 
   @@schema("shared")
 }
@@ -1067,6 +1070,50 @@ model eye_colour_code {
   update_user_id                                 String?   @db.VarChar(32)
   update_utc_timestamp                           DateTime? @db.Timestamp(6)
   person_person_eye_colour_codeToeye_colour_code person[]  @relation("person_eye_colour_codeToeye_colour_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model facial_hair_style_code {
+  facial_hair_style_code                                                                                     String                          @id(map: "facial_hair_style_pk") @db.VarChar(16)
+  short_description                                                                                          String                          @db.VarChar(64)
+  long_description                                                                                           String?                         @db.VarChar(256)
+  display_order                                                                                              Int
+  active_ind                                                                                                 Boolean                         @default(true)
+  create_user_id                                                                                             String                          @db.VarChar(32)
+  create_utc_timestamp                                                                                       DateTime                        @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                             String?                         @db.VarChar(32)
+  update_utc_timestamp                                                                                       DateTime?                       @db.Timestamp(6)
+  person_facial_hair_style_code_person_facial_hair_style_code_facial_hair_style_codeTofacial_hair_style_code person_facial_hair_style_code[] @relation("person_facial_hair_style_code_facial_hair_style_codeTofacial_hair_style_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model person_facial_hair_style_code {
+  person_facial_hair_style_code_guid                                                                  String                 @id(map: "person_facial_hair_style_code_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  person_guid                                                                                         String                 @db.Uuid
+  facial_hair_style_code                                                                              String                 @db.VarChar(16)
+  active_ind                                                                                          Boolean                @default(true)
+  create_user_id                                                                                      String                 @db.VarChar(32)
+  create_utc_timestamp                                                                                DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                      String?                @db.VarChar(32)
+  update_utc_timestamp                                                                                DateTime?              @db.Timestamp(6)
+  facial_hair_style_code_person_facial_hair_style_code_facial_hair_style_codeTofacial_hair_style_code facial_hair_style_code @relation("person_facial_hair_style_code_facial_hair_style_codeTofacial_hair_style_code", fields: [facial_hair_style_code], references: [facial_hair_style_code], onDelete: NoAction, onUpdate: NoAction, map: "person_facial_hair_style_code_facial_hair_style_code_fk")
+  person                                                                                              person                 @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "person_facial_hair_style_code_person_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model person_facial_hair_style_code_h {
+  h_person_facial_hair_style_code_guid String   @id(map: "pk_h_person_facial_hair_style_code") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                        String   @db.Uuid
+  operation_type                       String   @db.Char(1)
+  operation_user_id                    String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation        Json?
 
   @@schema("shared")
 }

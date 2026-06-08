@@ -15,6 +15,8 @@ export class PersonService {
 
   private readonly logger = new Logger(PersonService.name);
 
+  // todo: is any thing in here actually used?
+
   async findAll() {
     const prismaPeople = await this.prisma.person.findMany({
       select: {

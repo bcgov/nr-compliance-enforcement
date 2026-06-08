@@ -58,6 +58,7 @@ import { ComplexionType } from "@/app/types/app/code-tables/complexion";
 import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
+import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 
 export interface CodeTableState {
   [key: string]:
@@ -120,7 +121,8 @@ export interface CodeTableState {
     | Array<BuildType>
     | Array<HairColourType>
     | Array<HairLengthType>
-    | Array<EyeColourType>;
+    | Array<EyeColourType>
+    | Array<FacialHairStyleType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -181,4 +183,5 @@ export interface CodeTableState {
   "hair-colour-type": Array<HairColourType>;
   "hair-length-type": Array<HairLengthType>;
   "eye-colour-type": Array<EyeColourType>;
+  "facial-hair-style-type": Array<FacialHairStyleType>;
 }

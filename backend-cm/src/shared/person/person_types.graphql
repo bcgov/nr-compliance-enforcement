@@ -20,4 +20,5 @@ type Person {
   hairColourOther: String
   eyeColourCode: String
   eyeColourOther: String
+  facialHairStyleCodes: [PersonFacialHairStyleCode]
 }

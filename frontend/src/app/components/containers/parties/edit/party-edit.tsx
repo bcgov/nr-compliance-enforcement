@@ -19,6 +19,7 @@ import {
   ContactMethod,
   PartyCreateInput,
   PartyUpdateInput,
+  PersonFacialHairStyleCode,
   PersonInput,
   PersonUpdateInput,
 } from "@/generated/graphql";
@@ -328,6 +329,12 @@ function buildPersonBase(value: any) {
     hairColourOther: value.hairColourOther || null,
     eyeColourCode: value.eyeColourCode || null,
     eyeColourOther: value.eyeColourOther || null,
+    facialHairStyleCodes:
+      value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+        personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+        personGuid: fhs.personGuid,
+        facialHairStyleCode: fhs.facialHairStyleCode,
+      })) || [],
   };
 }
 
@@ -388,7 +395,12 @@ const PartyEdit: FC = () => {
         hairColourOther: person?.hairColourOther || null,
         eyeColourCode: person?.eyeColourCode || "",
         eyeColourOther: person?.eyeColourOther || null,
-
+        facialHairStyleCodes:
+          person?.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+            personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+            personGuid: fhs.personGuid,
+            facialHairStyleCode: fhs.facialHairStyleCode,
+          })) ?? [],
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -428,6 +440,7 @@ const PartyEdit: FC = () => {
       hairColourOther: "",
       eyeColourCode: "",
       eyeColourOther: "",
+      facialHairStyleCodes: [],
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

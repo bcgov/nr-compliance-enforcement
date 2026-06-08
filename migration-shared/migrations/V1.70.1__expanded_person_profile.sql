@@ -538,3 +538,99 @@ ALTER TABLE person
     ADD COLUMN eye_colour_other character varying(128);
 
 COMMENT ON COLUMN shared.person.eye_colour_other IS 'A free-text eye colour description, used when eye_colour_code is OTH (Other).';
+
+-- Add Facial Hair to Person
+
+CREATE TABLE facial_hair_style_code (
+    facial_hair_style_code character varying(16) NOT NULL,
+    short_description character varying(64) NOT NULL,
+    long_description character varying(256),
+    display_order integer NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now(),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT facial_hair_style_pk
+      PRIMARY KEY (facial_hair_style_code)
+);
+
+COMMENT ON TABLE shared.facial_hair_style_code IS 'Contains the facial hair style options for a person. Local code set. For example GOATEE = Goatee, MUSTACHE = Mustache.';
+
+COMMENT ON COLUMN shared.facial_hair_style_code.facial_hair_style_code IS 'A human readable code used to identify a facial hair style.';
+COMMENT ON COLUMN shared.facial_hair_style_code.short_description IS 'The short description of the facial hair style.';
+COMMENT ON COLUMN shared.facial_hair_style_code.long_description IS 'The long description of the facial hair style.';
+COMMENT ON COLUMN shared.facial_hair_style_code.display_order IS 'The order in which the facial hair styles should be displayed when presented to a user in a list.';
+COMMENT ON COLUMN shared.facial_hair_style_code.active_ind IS 'A boolean indicator to determine if a facial hair style is active.';
+COMMENT ON COLUMN shared.facial_hair_style_code.create_user_id IS 'The id of the user that created the facial hair style.';
+COMMENT ON COLUMN shared.facial_hair_style_code.create_utc_timestamp IS 'The timestamp when the facial hair style was created. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN shared.facial_hair_style_code.update_user_id IS 'The id of the user that updated the facial hair style.';
+COMMENT ON COLUMN shared.facial_hair_style_code.update_utc_timestamp IS 'The timestamp when the facial hair style was updated. The timestamp is stored in UTC with no Offset.';
+
+ALTER TABLE person
+    ADD COLUMN facial_hair_ind boolean;
+
+COMMENT ON COLUMN shared.person.facial_hair_ind IS 'Indicates whether the person has facial hair. true = has facial hair, false = does not have facial hair, null = unknown / not assessed.';
+
+ALTER TABLE person
+    ADD COLUMN additional_hair_descriptors character varying(512);
+
+COMMENT ON COLUMN shared.person.additional_hair_descriptors IS 'Free-text additional hair descriptors for the person.';
+
+CREATE TABLE
+  person_facial_hair_style_code (
+    person_facial_hair_style_code_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    person_guid uuid NOT NULL,
+    facial_hair_style_code character varying(16) NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT NOW(),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT person_facial_hair_style_code_pk PRIMARY KEY (person_facial_hair_style_code_guid),
+    CONSTRAINT person_facial_hair_style_code_person_fk
+      FOREIGN KEY (person_guid)
+      REFERENCES person (person_guid),
+    CONSTRAINT person_facial_hair_style_code_facial_hair_style_code_fk
+      FOREIGN KEY (facial_hair_style_code)
+      REFERENCES facial_hair_style_code (facial_hair_style_code)
+  );
+
+COMMENT ON TABLE shared.person_facial_hair_style_code IS 'A junction table associating a person with their facial hair styles. A person may have multiple facial hair styles.';
+
+COMMENT ON COLUMN shared.person_facial_hair_style_code.person_facial_hair_style_code_guid IS 'A system generated unique identifier for the person facial hair style association.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.person_guid IS 'The person the facial hair style is associated with. References person.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.facial_hair_style_code IS 'The facial hair style associated with the person. References facial_hair_style_code.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.active_ind IS 'A boolean indicator to determine if the person facial hair style association is active. Used to support soft deletes.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.create_user_id IS 'The id of the user that created the person facial hair style association.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.create_utc_timestamp IS 'The timestamp when the person facial hair style association was created. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.update_user_id IS 'The id of the user that updated the person facial hair style association.';
+COMMENT ON COLUMN shared.person_facial_hair_style_code.update_utc_timestamp IS 'The timestamp when the person facial hair style association was updated. The timestamp is stored in UTC with no Offset.';
+
+CREATE TABLE
+  person_facial_hair_style_code_h (
+    h_person_facial_hair_style_code_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    target_row_id uuid NOT NULL,
+    operation_type character(1) NOT NULL,
+    operation_user_id character varying(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at timestamp without time zone DEFAULT now () NOT NULL,
+    data_after_executed_operation jsonb
+  );
+
+ALTER TABLE person_facial_hair_style_code_h
+ADD CONSTRAINT pk_h_person_facial_hair_style_code
+PRIMARY KEY (h_person_facial_hair_style_code_guid);
+
+CREATE TRIGGER person_facial_hair_style_code_history_trigger
+BEFORE INSERT OR DELETE OR UPDATE
+ON person_facial_hair_style_code
+FOR EACH ROW
+EXECUTE FUNCTION audit_history ('person_facial_hair_style_code_h', 'person_facial_hair_style_code_guid');
+
+COMMENT ON TABLE person_facial_hair_style_code_h IS 'Stores the audit history for person to facial hair style relationship records.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.h_person_facial_hair_style_code_guid IS 'The system-generated unique identifier for the person to facial hair style relationship history record.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.target_row_id IS 'The unique identifier of the person to facial hair style relationship record affected by the operation.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.operation_type IS 'The type of database operation executed on the person to facial hair style relationship record. For example I = Insert, U = Update, D = Delete.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.operation_user_id IS 'The id of the user that executed the operation.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN person_facial_hair_style_code_h.data_after_executed_operation IS 'A JSON representation of the person to facial hair style relationship record after the operation was executed.';

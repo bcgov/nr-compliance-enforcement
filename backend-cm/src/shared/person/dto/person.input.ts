@@ -1,5 +1,6 @@
 import { InputType, Field } from "@nestjs/graphql";
 import { AliasInput } from "../../alias/dto/alias";
+import { PersonFacialHairStyleCodeInput } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 
 @InputType()
 export class PersonInput {
@@ -56,4 +57,7 @@ export class PersonInput {
 
   @Field(() => String, { nullable: true })
   eyeColourOther?: string;
+
+  @Field(() => [PersonFacialHairStyleCodeInput], { nullable: true })
+  facialHairStyleCodes?: PersonFacialHairStyleCodeInput[];
 }
