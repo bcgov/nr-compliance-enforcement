@@ -20,6 +20,7 @@ RUN dnf -y install \
       gcc-c++ \
       make \
       jq \
+      postgresql \
       python3 \
       && dnf clean all
 
