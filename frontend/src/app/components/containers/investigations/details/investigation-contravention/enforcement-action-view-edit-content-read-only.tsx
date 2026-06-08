@@ -8,7 +8,7 @@ import { EnforcementActionAttachment } from "@/app/common/enforcement-action-att
 import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
 import config from "@/config";
 
-interface EnforcementActionViewEditContentProps {
+interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
   party: InvestigationParty;
   contraventionLabel: React.ReactNode;
@@ -27,7 +27,7 @@ const Field: FC<{ label: string; children: React.ReactNode }> = ({ label, childr
   </div>
 );
 
-export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
+export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewEditContentReadOnlyProps> = ({
   enforcementAction,
   party,
   contraventionLabel,
