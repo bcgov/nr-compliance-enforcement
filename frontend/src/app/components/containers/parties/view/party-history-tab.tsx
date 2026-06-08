@@ -88,12 +88,15 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
   }, [events, allOfficers]);
 
   const groupedEvents = useMemo(() => {
-    return events.reduce((groups: any, event: any) => {
-      const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
-      if (!groups[dateKey]) groups[dateKey] = [];
-      groups[dateKey].push(event);
-      return groups;
-    }, {});
+    return events.reduce(
+      (groups, event) => {
+        const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
+        if (!groups[dateKey]) groups[dateKey] = [];
+        groups[dateKey].push(event);
+        return groups;
+      },
+      {} as { [key: string]: Event[] },
+    );
   }, [events]);
 
   const toggleSortOrder = () => {

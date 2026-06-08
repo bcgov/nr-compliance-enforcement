@@ -433,7 +433,7 @@ export const PartyView: FC = () => {
     partyRelations: PartyRelation[];
     isPartyRelationLoading: boolean;
   } => {
-    const { relatedInvestigations, relatedInspections, isActivityLoading } = getRelatedActivities(
+    const { relatedInvestigations, relatedInspections, isActivityLoading } = GetRelatedActivities(
       partyId ?? "",
       partyType ?? "",
     );
@@ -459,7 +459,7 @@ export const PartyView: FC = () => {
 
     const uniqueCaseIds = [...new Set(relatedCases?.map((item) => item.caseIdentifier))];
 
-    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = getPartyRoles(id);
+    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = GetPartyRoles(id);
 
     for (let uniqueCaseId of uniqueCaseIds) {
       const partyRelation: PartyRelation = {};
@@ -520,7 +520,7 @@ export const PartyView: FC = () => {
     return { partyRelations, isPartyRelationLoading };
   };
 
-  const getRelatedActivities = (
+  const GetRelatedActivities = (
     partyId: string,
     partyType: string,
   ): {
@@ -553,7 +553,7 @@ export const PartyView: FC = () => {
     return { relatedInvestigations, relatedInspections, isActivityLoading };
   };
 
-  const getPartyRoles = (
+  const GetPartyRoles = (
     id: string,
   ): {
     rolesInInvestigations: InvestigationParty[];
