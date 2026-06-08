@@ -8,7 +8,7 @@ import { EnforcementActionAttachment } from "@/app/common/enforcement-action-att
 import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
 import config from "@/config";
 
-interface EnforcementActionReadOnlyPanelProps {
+interface EnforcementActionViewEditContentProps {
   enforcementAction: EnforcementAction;
   party: InvestigationParty;
   contraventionLabel: React.ReactNode;
@@ -27,7 +27,7 @@ const Field: FC<{ label: string; children: React.ReactNode }> = ({ label, childr
   </div>
 );
 
-export const EnforcementActionReadOnlyPanel: FC<EnforcementActionReadOnlyPanelProps> = ({
+export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditContentProps> = ({
   enforcementAction,
   party,
   contraventionLabel,
@@ -48,6 +48,30 @@ export const EnforcementActionReadOnlyPanel: FC<EnforcementActionReadOnlyPanelPr
     const downloadUrl = await get<string>(dispatch, parameters);
     window.open(downloadUrl, "_blank");
   };
+
+  const attachmentContent =
+    attachments.length === 0 ? (
+      <span className="text-muted">No attachments</span>
+    ) : (
+      <div className="d-flex flex-column gap-1">
+        {attachments.map((a) => (
+          <div
+            key={a.id}
+            className="d-flex align-items-center gap-2"
+          >
+            <i className="bi bi-paperclip" />
+            <a
+              href={`${config.COMS_URL}/object/${a.id}`}
+              className="comp-cell-link"
+              onClick={(e) => handleFileClick(e, a.id ?? "")}
+              title={`Download ${getDisplayFilename(a.name)}`}
+            >
+              {getDisplayFilename(a.name)}
+            </a>
+          </div>
+        ))}
+      </div>
+    );
 
   return (
     <>
@@ -76,7 +100,7 @@ export const EnforcementActionReadOnlyPanel: FC<EnforcementActionReadOnlyPanelPr
         {ticket && (
           <>
             <div className="col-6">
-              <Field label="Ticket amount">{ticket.ticketAmount != null ? `${ticket.ticketAmount}` : "—"}</Field>
+              <Field label="Ticket amount">{ticket.ticketAmount ? `${ticket.ticketAmount}` : "—"}</Field>
             </div>
             <div className="col-6">
               <Field label="Ticket outcome">{ticketOutcomeLabel || "—"}</Field>
@@ -89,30 +113,7 @@ export const EnforcementActionReadOnlyPanel: FC<EnforcementActionReadOnlyPanelPr
       </div>
 
       <Field label="Attachments">
-        {isLoadingAttachments ? (
-          <span className="text-muted">Loading…</span>
-        ) : attachments.length === 0 ? (
-          <span className="text-muted">No attachments</span>
-        ) : (
-          <div className="d-flex flex-column gap-1">
-            {attachments.map((a) => (
-              <div
-                key={a.id}
-                className="d-flex align-items-center gap-2"
-              >
-                <i className="bi bi-paperclip" />
-                <a
-                  href={`${config.COMS_URL}/object/${a.id}`}
-                  className="comp-cell-link"
-                  onClick={(e) => handleFileClick(e, a.id ?? "")}
-                  title={`Download ${getDisplayFilename(a.name)}`}
-                >
-                  {getDisplayFilename(a.name)}
-                </a>
-              </div>
-            ))}
-          </div>
-        )}
+        {isLoadingAttachments ? <span className="text-muted">Loading…</span> : attachmentContent}
       </Field>
     </>
   );

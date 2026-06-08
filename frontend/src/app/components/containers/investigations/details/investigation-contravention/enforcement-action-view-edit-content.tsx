@@ -6,7 +6,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { fetchEnforcementActionAttachments } from "@/app/common/enforcement-action-attachment-utils";
-import { EnforcementActionReadOnlyPanel } from "./enforcement-action-read-only-panel";
+import { EnforcementActionViewEditContentReadOnly } from "./enforcement-action-view-edit-content-read-only";
 import { EnforcementActionForm } from "./enforcement-action-form";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
@@ -66,8 +66,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
   const ticketOutcomeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.TICKET_OUTCOME_TYPE));
   const officers = useAppSelector(selectOfficers);
 
-  const communityLabel =
-    areaCodes.find((c) => c.area === enforcementAction?.geoOrganizationUnitCode)?.areaName ?? "";
+  const communityLabel = areaCodes.find((c) => c.area === enforcementAction?.geoOrganizationUnitCode)?.areaName ?? "";
 
   const enforcementActionLabel =
     enforcementActionCodes.find(
@@ -85,7 +84,7 @@ export const EnforcementActionViewEditContent: FC<EnforcementActionViewEditConte
     <>
       <div className={currentStep === 0 && enforcementAction ? "" : "d-none"}>
         {enforcementAction && (
-          <EnforcementActionReadOnlyPanel
+          <EnforcementActionViewEditContentReadOnly
             enforcementAction={enforcementAction}
             party={party}
             contraventionLabel={

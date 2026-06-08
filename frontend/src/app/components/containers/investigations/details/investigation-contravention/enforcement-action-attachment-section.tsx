@@ -42,7 +42,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
   const onFileSelect = useCallback(
     (files: FileList) => {
       const incoming = Array.from<File>(files);
-      setFilesToAdd((prev) => [...prev, ...incoming.filter((f) => !prev.some((e) => e.name === f.name))]);
+      setFilesToAdd((prev) => mergeNewFiles(prev, incoming));
       markDirty();
     },
     [markDirty],
@@ -58,7 +58,9 @@ export const EnforcementActionAttachmentSection = forwardRef<
     markDirty();
   };
 
-  const visibleExisting = existingAttachments.filter((a) => a.id && !removedIds.has(a.id));
+  const visibleExisting = existingAttachments.filter(
+    (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
+  );
 
   useImperativeHandle(ref, () => ({
     isDirty: () => filesToAdd.length > 0 || removedIds.size > 0,
@@ -82,11 +84,13 @@ export const EnforcementActionAttachmentSection = forwardRef<
       }
 
       // Sync metadata onto retained attachments
-      const toSync = existingAttachments.filter((a) => a.id && !removedIds.has(a.id));
+      const toSync = existingAttachments.filter(
+        (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
+      );
       if (toSync.length > 0) {
         await Promise.all(
           toSync.map((a) =>
-            dispatch(updateAttachmentMetadata(a.id!, { ...meta, "sequence-number": a.sequenceNumber ?? "" }, true)),
+            dispatch(updateAttachmentMetadata(a.id, { ...meta, "sequence-number": a.sequenceNumber ?? "" }, true)),
           ),
         );
       }
@@ -134,7 +138,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
               <button
                 type="button"
                 className="btn btn-link p-0 border-0 text-body"
-                onClick={() => handleRemoveExisting(a.id!)}
+                onClick={() => handleRemoveExisting(a.id)}
                 aria-label={`Remove ${getDisplayFilename(a.name)}`}
               >
                 <i className="bi bi-trash" />
@@ -146,7 +150,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
       )}
 
       {/* New file dropzone */}
-      <label className="comp-details-input-label">Add attachments</label>
+      <div className="comp-details-input-label">Add attachments</div>
       <AttachmentUpload
         onFileSelect={onFileSelect}
         previousValues={fileListToCOMSObjects(toFileList(filesToAdd))}
@@ -181,9 +185,15 @@ export const EnforcementActionAttachmentSection = forwardRef<
 
 EnforcementActionAttachmentSection.displayName = "EnforcementActionAttachmentSection";
 
-// helper function - convert a File[] back into a FileList for fileListToCOMSObjects.
+// convert to FileList for fileListToCOMSObjects
 function toFileList(files: File[]): FileList {
   const dt = new DataTransfer();
   files.forEach((f) => dt.items.add(f));
   return dt.files;
+}
+
+// merge new files into the list, ignore any already present by name
+function mergeNewFiles(existing: File[], incoming: File[]): File[] {
+  const existingNames = new Set(existing.map((f) => f.name));
+  return [...existing, ...incoming.filter((f) => !existingNames.has(f.name))];
 }

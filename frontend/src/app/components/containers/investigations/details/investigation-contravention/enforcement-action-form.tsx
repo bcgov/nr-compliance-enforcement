@@ -158,6 +158,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       if (!formValid) return;
 
       const value = form.state.values;
+      const paidDate =
+        value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null;
       onIsSavingChange?.(true);
       try {
         let enforcementActionId: string;
@@ -172,8 +174,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
               ticketOutcomeCode: value.ticketOutcomeCode,
               ticketAmount: Number.parseFloat(value.ticketAmount),
               ticketNumber: value.ticketNumber,
-              paidDate:
-                value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
+              paidDate,
             }),
           };
           await updateMutation.mutateAsync({ input });
@@ -190,8 +191,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
               ticketOutcomeCode: value.ticketOutcomeCode,
               ticketAmount: Number.parseFloat(value.ticketAmount),
               ticketNumber: value.ticketNumber,
-              paidDate:
-                value.ticketOutcomeCode === "PAID" && value.paidDate ? new Date(value.paidDate).toISOString() : null,
+              paidDate,
             }),
           };
           const created: any = await saveMutation.mutateAsync({ input });
