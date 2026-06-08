@@ -193,7 +193,6 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
 
   if (businessNumber?.identifierValue?.trim()) {
     identifiers.push({
-      // ...(isUpdate && { businessIdentifierGuid: businessNumber.businessIdentifierGuid }),
       ...(isUpdate && businessNumber.businessIdentifierGuid
         ? { businessIdentifierGuid: businessNumber.businessIdentifierGuid }
         : {}),
@@ -204,7 +203,6 @@ const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any, isUpdate: 
 
   if (worksafeBCNumber?.identifierValue?.trim()) {
     identifiers.push({
-      // ...(isUpdate && { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }),
       ...(isUpdate && worksafeBCNumber.businessIdentifierGuid
         ? { businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid }
         : {}),

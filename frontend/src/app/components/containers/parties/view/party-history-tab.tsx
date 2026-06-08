@@ -88,15 +88,12 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
   }, [events, allOfficers]);
 
   const groupedEvents = useMemo(() => {
-    return events.reduce(
-      (groups, event) => {
-        const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
-        if (!groups[dateKey]) groups[dateKey] = [];
-        groups[dateKey].push(event);
-        return groups;
-      },
-      {} as Record<string, Event[]>,
-    );
+    return events.reduce((groups: any, event: any) => {
+      const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(event);
+      return groups;
+    }, {});
   }, [events]);
 
   const toggleSortOrder = () => {
@@ -151,7 +148,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
             >
               <h6 className="px-0 mb-3">
                 <i className="bi bi-calendar me-3 text-primary"></i>
-                {formatDate(new Date(dateKey).toString())}
+                {formatDate(dateKey)}
               </h6>
               <hr className="px-0 m-0" />
               <ul className="px-0">

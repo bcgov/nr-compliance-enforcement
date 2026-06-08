@@ -433,7 +433,7 @@ export const PartyView: FC = () => {
     partyRelations: PartyRelation[];
     isPartyRelationLoading: boolean;
   } => {
-    const { relatedInvestigations, relatedInspections, isActivityLoading } = GetRelatedActivities(
+    const { relatedInvestigations, relatedInspections, isActivityLoading } = getRelatedActivities(
       partyId ?? "",
       partyType ?? "",
     );
@@ -459,7 +459,7 @@ export const PartyView: FC = () => {
 
     const uniqueCaseIds = [...new Set(relatedCases?.map((item) => item.caseIdentifier))];
 
-    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = GetPartyRoles(id);
+    const { rolesInInvestigations, rolesInInspections, isPartyRoleLoading } = getPartyRoles(id);
 
     for (let uniqueCaseId of uniqueCaseIds) {
       const partyRelation: PartyRelation = {};
@@ -520,7 +520,7 @@ export const PartyView: FC = () => {
     return { partyRelations, isPartyRelationLoading };
   };
 
-  const GetRelatedActivities = (
+  const getRelatedActivities = (
     partyId: string,
     partyType: string,
   ): {
@@ -553,7 +553,7 @@ export const PartyView: FC = () => {
     return { relatedInvestigations, relatedInspections, isActivityLoading };
   };
 
-  const GetPartyRoles = (
+  const getPartyRoles = (
     id: string,
   ): {
     rolesInInvestigations: InvestigationParty[];
@@ -643,70 +643,6 @@ export const PartyView: FC = () => {
                     <span>Edit party</span>
                   </Button>
                 </div>
-              </div>
-              <br />
-              <h4>Identifying information</h4>
-              <div className="party-details-item">
-                <p>
-                  <b>Name: </b>
-                  {displayName()}
-                </p>
-                {partyData?.business?.aliases && (
-                  <>
-                    {partyData.business.aliases.map((alias) => {
-                      return (
-                        <p key={alias?.aliasGuid}>
-                          <b>Alias: </b>
-                          {alias?.name}
-                        </p>
-                      );
-                    })}
-                  </>
-                )}
-                {partyData?.person && (
-                  <PersonIdentifyingInfo
-                    person={partyData.person}
-                    sexOptions={sexOptions}
-                  />
-                )}
-              </div>
-              {partyRelations && partyRelations.length > 0 && (
-                <AssociatedCasesAndActivities partyRelations={partyRelations} />
-              )}
-              <br />
-              <h4>Contact information</h4>
-              <div className="party-details-item">
-                {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                  <ContactMethodsList
-                    contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>}
-                  />
-                )}
-                {partyData?.business?.contactMethods && (
-                  <ContactMethodsList
-                    contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
-                  />
-                )}
-                {partyData?.business?.contactPeople && (
-                  <>
-                    <h4>Business contacts</h4>
-                    {partyData.business.contactPeople.map((contactPerson, index) => {
-                      return (
-                        <div key={contactPerson?.person?.personGuid}>
-                          <p>
-                            <b>Name: </b>
-                            {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
-                          </p>
-                          {contactPerson?.person?.contactMethods && (
-                            <ContactMethodsList
-                              contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
-                            />
-                          )}
-                          {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
-                        </div>
-                      );
-                    })}
-                  </>
-                )}
               </div>
               <br />
               <h4>Identifying information</h4>

@@ -868,31 +868,23 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
+      const code = typeof incoming.identifierCode === "string" ? incoming.identifierCode : incoming.identifierCode?.businessIdentifierCode;
       if (incoming.businessIdentifierGuid) {
         const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
         if (existing && existing.identifierValue !== incoming.identifierValue) {
-          addEvent(
-            "EDITED",
-            `identifier (${incoming.identifierCode})`,
-            existing.identifierValue,
-            incoming.identifierValue,
-          );
+          addEvent("EDITED", `identifier (${code})`, existing.identifierValue, incoming.identifierValue);
         }
       } else {
-        addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
+        addEvent("ADDED", `identifier (${code})`, null, incoming.identifierValue);
       }
     }
     const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
     existingIdentifiers
       .filter((i) => !incomingGuids.has(i.businessIdentifierGuid))
-      .forEach((i) =>
-        addEvent(
-          "REMOVED",
-          `identifier (${i.identifierCode?.businessIdentifierCode ?? i.identifierCode})`,
-          i.identifierValue,
-          null,
-        ),
-      );
+      .forEach((i) => {
+        const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
+        addEvent("REMOVED", `identifier (${code})`, i.identifierValue, null);
+      });
   }
 
   private _diffBusinessAddresses(
@@ -1015,7 +1007,7 @@ export class PartyService {
     this._compareField(
       "date of birth",
       oldPerson.dateOfBirth ? oldPerson.dateOfBirth.toISOString().split("T")[0] : null,
-      newPerson.dateOfBirth ? (newPerson.dateOfBirth as Date).toISOString().split("T")[0] : null,
+      newPerson.dateOfBirth ? newPerson.dateOfBirth.toISOString().split("T")[0] : null,
       addEvent,
     );
     this._compareField(
