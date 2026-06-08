@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -34,6 +34,7 @@ import { BusinessFormFields } from "@/app/components/containers/parties/form/bus
 import { BusinessAddressFormValue } from "@/app/components/containers/parties/form/business-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { toDateOfBirth } from "@/app/common/methods";
+import { PartyAttachments } from "../attachments/party-attachments";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -414,6 +415,12 @@ const PartyEdit: FC = () => {
     };
   }, [isEditMode, partyData]);
 
+  const [partyIdentifier, setPartyIdentifier] = useState<string>(id || "");
+  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
+  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
+
   const form = useForm({
     defaultValues,
     onSubmit: async ({ value }) => {
@@ -450,11 +457,22 @@ const PartyEdit: FC = () => {
     onError: (error: any) => {
       console.error("Error creating party:", error);
       handleBusinessPartyMutationError(form, error, "Failed to create party");
+      setPendingAttachmentsSaveAfterCreate(false);
     },
     onSuccess: (data: any) => {
-      ToggleSuccess("Party created successfully");
-      allowNavigation();
-      navigate(`/party/${data.createParty.partyIdentifier}`);
+      const newPartyIdentifier = data.createParty.partyIdentifier;
+      setPartyIdentifier(newPartyIdentifier);
+      if (pendingAttachmentsSaveAfterCreate) {
+        setPendingAttachmentsSaveAfterCreate(false);
+        setTriggerSaveAttachments(true);
+        setTimeout(() => {
+          setTriggerSaveAttachments(false);
+        }, 0);
+      } else {
+        ToggleSuccess("Party created successfully");
+        allowNavigation();
+        navigate(`/party/${data.createParty.partyIdentifier}`);
+      }
     },
   });
 
@@ -470,9 +488,9 @@ const PartyEdit: FC = () => {
     },
   });
 
-  const isDirty = useStore(form.baseStore, (state) =>
-    Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
-  );
+  const isDirty =
+    useStore(form.baseStore, (state) => Object.values(state.fieldMetaBase).some((field) => field?.isTouched)) ||
+    attachmentsDirty;
   const { allowNavigation } = useUnsavedChangesWarning(isDirty);
 
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
@@ -483,14 +501,17 @@ const PartyEdit: FC = () => {
   };
 
   const confirmCancelChanges = useCallback(() => {
-    form.reset();
-    allowNavigation();
-
-    if (isEditMode && id) {
-      navigate(`/party/${id}`);
-    } else {
-      navigateToPartyList();
-    }
+    setTriggerCancelAttachments(true);
+    setTimeout(() => {
+      setTriggerCancelAttachments(false);
+      form.reset();
+      allowNavigation();
+      if (isEditMode && id) {
+        navigate(`/party/${id}`);
+      } else {
+        navigateToPartyList();
+      }
+    }, 0);
   }, [navigate, isEditMode, id, form]);
 
   const cancelButtonClick = useCallback(() => {
@@ -508,11 +529,24 @@ const PartyEdit: FC = () => {
   }, [dispatch, confirmCancelChanges]);
 
   const saveButtonClick = useCallback(() => {
-    form.handleSubmit();
-  }, [form]);
+    if (isEditMode) {
+      setTriggerSaveAttachments(true);
+      setTimeout(() => {
+        setTriggerSaveAttachments(false);
+        form.handleSubmit();
+      }, 0);
+    } else {
+      setPendingAttachmentsSaveAfterCreate(true);
+      form.handleSubmit();
+    }
+  }, [form, isEditMode]);
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
+
+  const handleAttachmentsDirtyChange = (_index: number, dirty: boolean) => {
+    setAttachmentsDirty(dirty);
+  };
 
   return (
     <div className="comp-complaint-details">
@@ -527,6 +561,20 @@ const PartyEdit: FC = () => {
         <div className="comp-details-section-header">
           <h2>Party Details</h2>
         </div>
+
+        <PartyAttachments
+          partyId={partyIdentifier}
+          triggerSave={triggerSaveAttachments}
+          triggerCancel={triggerCancelAttachments}
+          onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
+          onSaved={() => {
+            if (!isEditMode) {
+              ToggleSuccess("Party created successfully");
+              allowNavigation();
+              navigate(`/party/${partyIdentifier}`);
+            }
+          }}
+        />
 
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>

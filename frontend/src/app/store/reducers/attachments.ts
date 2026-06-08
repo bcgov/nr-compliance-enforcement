@@ -33,6 +33,7 @@ interface DeleteAttachmentParams {
   attachment: COMSObject;
   identifier: string | null;
   isComplaintAttachment: boolean;
+  attachmentType: AttachmentEnum;
 }
 
 interface BuildHeaderParams {
@@ -117,7 +118,9 @@ export const getAttachments =
     try {
       const attachmentConfig = getAttachmentConfig(attachmentType);
       const bucketId =
-        attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+        attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT
+          ? config.SECURE_COMS_BUCKET
+          : config.COMS_BUCKET;
       const parameters = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}&latest=true`);
       const header = buildAttachmentHeader({
         attachmentConfig,
@@ -173,20 +176,22 @@ const deleteSingleAttachment = async ({
   attachment,
   identifier,
   isComplaintAttachment,
+  attachmentType,
 }: DeleteAttachmentParams) => {
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
   const response = await deleteMethod<string>(dispatch, parameters);
 
   if (response) {
-    if (isComplaintAttachment) {
+    if (isComplaintAttachment || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
       if (isImage(attachment.name)) {
         const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
         await deleteMethod<string>(dispatch, thumbParameters);
       }
-
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
-      await patch<string>(dispatch, parameters);
+      if (isComplaintAttachment) {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
+        await patch<string>(dispatch, parameters);
+      }
     }
     ToggleSuccess(`Attachment ${decodeURIComponent(attachment.name)} has been removed`);
   }
@@ -206,6 +211,7 @@ export const deleteAttachments =
             attachment,
             identifier,
             isComplaintAttachment,
+            attachmentType,
           });
         } catch (error) {
           console.error(error);
@@ -244,7 +250,10 @@ const saveSingleAttachment = async ({
     size: attachment.size,
   });
 
-  const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+  const bucketId =
+    attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT
+      ? config.SECURE_COMS_BUCKET
+      : config.COMS_BUCKET;
 
   const parameters = existingAttachment
     ? generateApiParameters(`${config.COMS_URL}/object/${existingAttachment.id}`)
@@ -263,7 +272,8 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const bucketId = config.COMS_BUCKET;
+    const bucketId =
+      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 
@@ -336,7 +346,10 @@ export const saveAttachments =
     const attachmentConfig = getAttachmentConfig(attachmentType);
     const isComplaintAttachment = attachmentConfig.shouldUpdateComplaintDate ?? false;
 
-    const bucketId = attachmentType === AttachmentEnum.TASK_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const bucketId =
+      attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT
+        ? config.SECURE_COMS_BUCKET
+        : config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
 
     // Build header with both primary and sub header keys if applicable
