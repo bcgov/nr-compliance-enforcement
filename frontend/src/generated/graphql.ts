@@ -1060,6 +1060,15 @@ export type ExhibitResult = {
   pageInfo: PageInfo;
 };
 
+export type EyeColourCode = {
+  __typename?: 'EyeColourCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  eyeColourCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
 export type GenderCode = {
   __typename?: 'GenderCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2059,6 +2068,8 @@ export type Person = {
   driversLicenseCountryCode?: Maybe<Scalars['String']['output']>;
   driversLicenseCountrySubdivisionCode?: Maybe<Scalars['String']['output']>;
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
+  eyeColourCode?: Maybe<Scalars['String']['output']>;
+  eyeColourOther?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
   hairColourCode?: Maybe<Scalars['String']['output']>;
@@ -2081,6 +2092,8 @@ export type PersonInput = {
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  eyeColourCode?: InputMaybe<Scalars['String']['input']>;
+  eyeColourOther?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
   hairColourCode?: InputMaybe<Scalars['String']['input']>;
@@ -2102,6 +2115,8 @@ export type PersonUpdateInput = {
   driversLicenseCountryCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseCountrySubdivisionCode?: InputMaybe<Scalars['String']['input']>;
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
+  eyeColourCode?: InputMaybe<Scalars['String']['input']>;
+  eyeColourOther?: InputMaybe<Scalars['String']['input']>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
   hairColourCode?: InputMaybe<Scalars['String']['input']>;
@@ -2174,6 +2189,7 @@ export type Query = {
   enforcementActions: Array<Maybe<EnforcementAction>>;
   equipmentCodes: Array<Maybe<EquipmentCode>>;
   equipmentStatusCodes: Array<Maybe<EquipmentStatusCode>>;
+  eyeColourCodes: Array<Maybe<EyeColourCode>>;
   genderCodes: Array<Maybe<GenderCode>>;
   geoOrgUnitTypeCodes: Array<Maybe<GeoOrgUnitTypeCode>>;
   geoOrganizationUnitCodes: Array<Maybe<GeoOrganizationUnitCode>>;

@@ -495,3 +495,46 @@ ALTER TABLE person
     REFERENCES hair_length_code (hair_length_code);
 
 COMMENT ON COLUMN shared.person.hair_length_code IS 'The hair length of the person. References hair_length_code.';
+
+-- Add eye colour for people
+
+CREATE TABLE eye_colour_code (
+    eye_colour_code character varying(16) NOT NULL,
+    short_description character varying(64) NOT NULL,
+    long_description character varying(256),
+    display_order integer NOT NULL,
+    active_ind boolean NOT NULL DEFAULT true,
+    create_user_id character varying(32) NOT NULL,
+    create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now(),
+    update_user_id character varying(32),
+    update_utc_timestamp timestamp without time zone,
+    CONSTRAINT eye_colour_pk
+      PRIMARY KEY (eye_colour_code)
+);
+
+COMMENT ON TABLE shared.eye_colour_code IS 'Contains the eye colour options for a person. Codes follow the NCIC eye colour (EYE) standard, except AMBER and OTH (Other) which are local codes. For example BLU = Blue, BRO = Brown.';
+
+COMMENT ON COLUMN shared.eye_colour_code.eye_colour_code IS 'A human readable code used to identify an eye colour. Follows the NCIC eye colour (EYE) standard where applicable.';
+COMMENT ON COLUMN shared.eye_colour_code.short_description IS 'The short description of the eye colour.';
+COMMENT ON COLUMN shared.eye_colour_code.long_description IS 'The long description of the eye colour.';
+COMMENT ON COLUMN shared.eye_colour_code.display_order IS 'The order in which the eye colours should be displayed when presented to a user in a list.';
+COMMENT ON COLUMN shared.eye_colour_code.active_ind IS 'A boolean indicator to determine if an eye colour is active.';
+COMMENT ON COLUMN shared.eye_colour_code.create_user_id IS 'The id of the user that created the eye colour.';
+COMMENT ON COLUMN shared.eye_colour_code.create_utc_timestamp IS 'The timestamp when the eye colour was created. The timestamp is stored in UTC with no Offset.';
+COMMENT ON COLUMN shared.eye_colour_code.update_user_id IS 'The id of the user that updated the eye colour.';
+COMMENT ON COLUMN shared.eye_colour_code.update_utc_timestamp IS 'The timestamp when the eye colour was updated. The timestamp is stored in UTC with no Offset.';
+
+ALTER TABLE person
+    ADD COLUMN eye_colour_code character varying(16);
+
+ALTER TABLE person
+    ADD CONSTRAINT fk_person__eye_colour_code
+    FOREIGN KEY (eye_colour_code)
+    REFERENCES eye_colour_code (eye_colour_code);
+
+COMMENT ON COLUMN shared.person.eye_colour_code IS 'The eye colour of the person. References eye_colour_code.';
+
+ALTER TABLE person
+    ADD COLUMN eye_colour_other character varying(128);
+
+COMMENT ON COLUMN shared.person.eye_colour_other IS 'A free-text eye colour description, used when eye_colour_code is OTH (Other).';

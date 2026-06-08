@@ -812,6 +812,8 @@ model person {
   hair_colour_code                                                       String?                   @db.VarChar(16)
   hair_colour_other                                                      String?                   @db.VarChar(128)
   hair_length_code                                                       String?                   @db.VarChar(16)
+  eye_colour_code                                                        String?                   @db.VarChar(16)
+  eye_colour_other                                                       String?                   @db.VarChar(128)
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?     @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
@@ -819,6 +821,7 @@ model person {
   complexion_code_person_complexion_codeTocomplexion_code                complexion_code?          @relation("person_complexion_codeTocomplexion_code", fields: [complexion_code], references: [complexion_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__complexion_code")
   country_code                                                           country_code?             @relation(fields: [drivers_license_country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_code")
   country_subdivision_code                                               country_subdivision_code? @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
+  eye_colour_code_person_eye_colour_codeToeye_colour_code                eye_colour_code?          @relation("person_eye_colour_codeToeye_colour_code", fields: [eye_colour_code], references: [eye_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__eye_colour_code")
   gender_code_person_gender_codeTogender_code                            gender_code?              @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
   hair_colour_code_person_hair_colour_codeTohair_colour_code             hair_colour_code?         @relation("person_hair_colour_codeTohair_colour_code", fields: [hair_colour_code], references: [hair_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_colour_code")
   hair_length_code_person_hair_length_codeTohair_length_code             hair_length_code?         @relation("person_hair_length_codeTohair_length_code", fields: [hair_length_code], references: [hair_length_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_length_code")
@@ -1048,6 +1051,22 @@ model hair_length_code {
   update_user_id                                   String?   @db.VarChar(32)
   update_utc_timestamp                             DateTime? @db.Timestamp(6)
   person_person_hair_length_codeTohair_length_code person[]  @relation("person_hair_length_codeTohair_length_code")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model eye_colour_code {
+  eye_colour_code                                String    @id(map: "eye_colour_pk") @db.VarChar(16)
+  short_description                              String    @db.VarChar(64)
+  long_description                               String?   @db.VarChar(256)
+  display_order                                  Int
+  active_ind                                     Boolean   @default(true)
+  create_user_id                                 String    @db.VarChar(32)
+  create_utc_timestamp                           DateTime  @default(now()) @db.Timestamp(6)
+  update_user_id                                 String?   @db.VarChar(32)
+  update_utc_timestamp                           DateTime? @db.Timestamp(6)
+  person_person_eye_colour_codeToeye_colour_code person[]  @relation("person_eye_colour_codeToeye_colour_code")
 
   @@schema("shared")
 }

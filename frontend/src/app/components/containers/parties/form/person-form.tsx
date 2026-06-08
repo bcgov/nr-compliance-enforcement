@@ -8,6 +8,7 @@ import {
   selectApproximateAgeDropdown,
   selectBuildDropdown,
   selectComplexionDropdown,
+  selectEyeColourDropdown,
   selectGenderDropdown,
   selectHairColourDropdown,
   selectHairLengthDropdown,
@@ -65,6 +66,11 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
   }));
 
   const hairLengthOptions = useAppSelector(selectHairLengthDropdown).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
+
+  const eyeColourOptions = useAppSelector(selectEyeColourDropdown).map((opt: { value: string; label: string }) => ({
     value: opt.value,
     label: opt.label,
   }));
@@ -526,6 +532,58 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           />
         )}
       />
+      <FormField
+        form={form}
+        name="eyeColourCode"
+        label="Eye colour"
+        render={(field) => (
+          <CompSelect
+            id="eye-colour-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={eyeColourOptions}
+            value={eyeColourOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => {
+              const newValue = option?.value ?? "";
+              field.handleChange(newValue);
+              if (newValue !== "OTH") {
+                form.setFieldValue("eyeColourOther", null);
+              }
+            }}
+            placeholder="Select eye colour"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.eyeColourCode}>
+        {(hairColourCode: string | undefined) =>
+          hairColourCode === "OTH" ? (
+            <FormField
+              form={form}
+              name="eyeColourOther"
+              label="Other eye colour"
+              render={(field) => (
+                <CompInput
+                  id="eyeColourOther"
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  defaultValue={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={128}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  placeholder="Enter other eye colour"
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField
           key={address.addressGuid || `address-${index}`}

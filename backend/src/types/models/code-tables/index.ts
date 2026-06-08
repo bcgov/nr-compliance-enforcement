@@ -82,6 +82,7 @@ export const AvailableCodeTables = [
   "complexion-type",
   "build-type",
   "hair-colour-type",
+  "eye-colour-type",
   "hair-length-type",
 ];
 

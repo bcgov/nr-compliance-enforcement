@@ -984,6 +984,14 @@ export class CodeTableService {
         const results = data.hairLengthCodes;
         return results;
       }
+
+      case "eye-colour-type": {
+        const { data } = await get(token, {
+          query: "{ eyeColourCodes { eyeColourCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.eyeColourCodes;
+        return results;
+      }
     }
   };
 

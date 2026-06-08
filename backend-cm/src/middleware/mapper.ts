@@ -64,6 +64,7 @@ import { mapPrismaComplexionCodeToComplexionCode } from "src/shared/complexion_c
 import { mapPrismaBuildCodeToBuildCode } from "src/shared/build_code/dto/build_code";
 import { mapPrismaHairColourCodeToHairColourCode } from "src/shared/hair_colour_code/dto/hair_colour_code";
 import { mapPrismaHairLengthCodeToHairLengthCode } from "src/shared/hair_length_code/dto/hair_length_code";
+import { mapPrismaEyeColourCodeToEyeColourCode } from "src/shared/eye_colour_code/dto/eye_colour_code";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -109,6 +110,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBuildCodeToBuildCode(mapper);
   mapPrismaHairColourCodeToHairColourCode(mapper);
   mapPrismaHairLengthCodeToHairLengthCode(mapper);
+  mapPrismaEyeColourCodeToEyeColourCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

@@ -12,8 +12,6 @@ import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
-import { hair_colour_code } from "prisma/shared/generated/hair_colour_code";
-import { hair_length_code } from "prisma/shared/generated/hair_length_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -182,6 +180,8 @@ export class PartyService {
                     hair_colour_code: true,
                     hair_length_code: true,
                     hair_colour_other: true,
+                    eye_colour_code: true,
+                    eye_colour_other: true,
                     approximate_age_code: true,
                     party: {
                       select: {
@@ -223,6 +223,8 @@ export class PartyService {
             hair_colour_code: true,
             hair_length_code: true,
             hair_colour_other: true,
+            eye_colour_code: true,
+            eye_colour_other: true,
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -336,6 +338,8 @@ export class PartyService {
           hair_colour_code: input.person?.hairColourCode,
           hair_length_code: input.person?.hairLengthCode,
           hair_colour_other: input.person?.hairColourOther,
+          eye_colour_code: input.person?.eyeColourCode,
+          eye_colour_other: input.person?.eyeColourOther,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -458,6 +462,8 @@ export class PartyService {
           hair_colour_code: input.person?.hairColourCode,
           hair_length_code: input.person?.hairLengthCode,
           hair_colour_other: input.person?.hairColourOther,
+          eye_colour_code: input.person?.eyeColourCode,
+          eye_colour_other: input.person?.eyeColourOther,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -1017,6 +1023,8 @@ export class PartyService {
               hair_colour_code: true,
               hair_length_code: true,
               hair_colour_other: true,
+              eye_colour_code: true,
+              eye_colour_other: true,
               build_code: true,
             },
           },

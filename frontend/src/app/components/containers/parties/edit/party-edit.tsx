@@ -326,6 +326,8 @@ function buildPersonBase(value: any) {
     hairColourCode: value.hairColourCode || null,
     hairLengthCode: value.hairLengthCode || null,
     hairColourOther: value.hairColourOther || null,
+    eyeColourCode: value.eyeColourCode || null,
+    eyeColourOther: value.eyeColourOther || null,
   };
 }
 
@@ -384,6 +386,8 @@ const PartyEdit: FC = () => {
         hairColourCode: person?.hairColourCode || "",
         hairLengthCode: person?.hairLengthCode || "",
         hairColourOther: person?.hairColourOther || null,
+        eyeColourCode: person?.eyeColourCode || "",
+        eyeColourOther: person?.eyeColourOther || null,
 
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
@@ -422,6 +426,8 @@ const PartyEdit: FC = () => {
       hairColourCode: "",
       hairLengthCode: "",
       hairColourOther: "",
+      eyeColourCode: "",
+      eyeColourOther: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

@@ -28,6 +28,7 @@ import { ComplexionType } from "@/app/types/app/code-tables/complexion";
 import { BuildType } from "@/app/types/app/code-tables/build";
 import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
+import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -270,6 +271,15 @@ export const fetchHairLengthTypes = (): AppThunk => async (dispatch) => {
   const response = await get<Array<HairLengthType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.HAIR_LENGTH, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEyeColourTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EYE_COLOUR}`);
+  const response = await get<Array<EyeColourType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.EYE_COLOUR, data: response };
     dispatch(setCodeTable(payload));
   }
 };

@@ -11,6 +11,7 @@ export const PersonProfileUpdates = {
         "build-type": [],
         "hair-colour-type": [],
         "hair-length-type": [],
+        "eye-colour-type": [],
       },
     };
   },

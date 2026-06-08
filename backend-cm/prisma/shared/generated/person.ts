@@ -5,6 +5,7 @@ import { build_code } from "./build_code";
 import { complexion_code } from "./complexion_code";
 import { country_code } from "./country_code";
 import { country_subdivision_code } from "./country_subdivision_code";
+import { eye_colour_code } from "./eye_colour_code";
 import { gender_code } from "./gender_code";
 import { hair_colour_code } from "./hair_colour_code";
 import { hair_length_code } from "./hair_length_code";
@@ -80,6 +81,12 @@ export class person {
   @ApiPropertyOptional({ type: String })
   hair_length_code?: string;
 
+  @ApiPropertyOptional({ type: String })
+  eye_colour_code?: string;
+
+  @ApiPropertyOptional({ type: String })
+  eye_colour_other?: string;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 
@@ -100,6 +107,9 @@ export class person {
 
   @ApiPropertyOptional({ type: () => country_subdivision_code })
   country_subdivision_code?: country_subdivision_code;
+
+  @ApiPropertyOptional({ type: () => eye_colour_code })
+  eye_colour_code_person_eye_colour_codeToeye_colour_code?: eye_colour_code;
 
   @ApiPropertyOptional({ type: () => gender_code })
   gender_code_person_gender_codeTogender_code?: gender_code;

@@ -23,6 +23,7 @@ import {
   selectBuildDropdown,
   selectCodeTable,
   selectComplexionDropdown,
+  selectEyeColourDropdown,
   selectGenderDropdown,
   selectHairColourDropdown,
   selectHairLengthDropdown,
@@ -104,6 +105,8 @@ export const GET_PARTY = gql`
         hairColourCode
         hairLengthCode
         hairColourOther
+        eyeColourCode
+        eyeColourOther
       }
       business {
         name
@@ -406,6 +409,7 @@ export const PartyView: FC = () => {
   const buildOptions = useAppSelector(selectBuildDropdown);
   const hairColourOptions = useAppSelector(selectHairColourDropdown);
   const hairLengthOptions = useAppSelector(selectHairLengthDropdown);
+  const eyeColourOptions = useAppSelector(selectEyeColourDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -799,6 +803,14 @@ export const PartyView: FC = () => {
                       <b>Hair length: </b>
                       {hairLengthOptions?.find((opt) => opt.value === partyData?.person?.hairLengthCode)?.label ??
                         partyData?.person.hairLengthCode}
+                    </p>
+                  )}
+                  {partyData?.person?.eyeColourCode && (
+                    <p>
+                      <b>Hair color: </b>
+                      {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
+                        partyData?.person.eyeColourCode}
+                      {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
                     </p>
                   )}
                 </div>

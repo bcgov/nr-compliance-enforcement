@@ -22,6 +22,8 @@ export class Person implements PersonDto {
   hairColourCode?: string;
   hairLengthCode?: string;
   hairColourOther?: string;
+  eyeColourCode?: string;
+  eyeColourOther?: string;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -100,6 +102,14 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.hairColourOther,
       mapFrom((src) => src.hair_colour_other ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.eyeColourCode,
+      mapFrom((src) => src.eye_colour_code ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.eyeColourOther,
+      mapFrom((src) => src.eye_colour_other ?? undefined),
     ),
   );
 };

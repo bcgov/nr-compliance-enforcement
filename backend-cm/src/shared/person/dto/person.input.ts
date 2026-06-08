@@ -41,4 +41,19 @@ export class PersonInput {
 
   @Field(() => String, { nullable: true })
   buildCode?: string;
+
+  @Field(() => String, { nullable: true })
+  hairColourCode?: string;
+
+  @Field(() => String, { nullable: true })
+  hairLengthCode?: string;
+
+  @Field(() => String, { nullable: true })
+  hairColourOther?: string;
+
+  @Field(() => String, { nullable: true })
+  eyeColourCode?: string;
+
+  @Field(() => String, { nullable: true })
+  eyeColourOther?: string;
 }

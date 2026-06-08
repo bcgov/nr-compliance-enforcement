@@ -60,6 +60,7 @@ import { build_code as _build_code } from "./build_code";
 import { complexion_code as _complexion_code } from "./complexion_code";
 import { hair_colour_code as _hair_colour_code } from "./hair_colour_code";
 import { hair_length_code as _hair_length_code } from "./hair_length_code";
+import { eye_colour_code as _eye_colour_code } from "./eye_colour_code";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -124,6 +125,7 @@ export namespace PrismaModel {
   export class complexion_code extends _complexion_code {}
   export class hair_colour_code extends _hair_colour_code {}
   export class hair_length_code extends _hair_length_code {}
+  export class eye_colour_code extends _eye_colour_code {}
 
   export const extraModels = [
     agency_code,
@@ -188,5 +190,6 @@ export namespace PrismaModel {
     complexion_code,
     hair_colour_code,
     hair_length_code,
+    eye_colour_code,
   ];
 }
