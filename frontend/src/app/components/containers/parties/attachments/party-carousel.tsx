@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useCallback, useEffect, useState, useRef } from "react";
 import { useAppDispatch } from "@hooks/hooks";
 import { getAttachments } from "@store/reducers/attachments";
 import { COMSObject } from "@apptypes/coms/object";
@@ -12,29 +12,39 @@ export const PartyCarousel: FC<{ partyId: string }> = ({ partyId }) => {
   const [currentSlide, setCurrentSlide] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+  const isMountedRef = useRef(true);
+  const sortItems = (items: COMSObject[]) =>
+    items.slice().sort((a, b) => {
+      const at = a?.createdAt ? Date.parse(a.createdAt.toString()) : 0;
+      const bt = b?.createdAt ? Date.parse(b.createdAt.toString()) : 0;
+      return bt - at;
+    });
 
-    const loadAttachments = async () => {
-      if (!partyId) return;
-      const items = await dispatch(getAttachments(partyId, undefined, AttachmentEnum.PARTY_ATTACHMENT, true));
-      if (!isMounted) return;
-      const sorted = items.slice().sort((a, b) => {
-        const at = a?.createdAt ? Date.parse(a.createdAt.toString()) : 0;
-        const bt = b?.createdAt ? Date.parse(b.createdAt.toString()) : 0;
-        return bt - at;
-      });
-      setAttachments(sorted);
-      setCurrentSlide(0);
-    };
-    const timer = setTimeout(() => {
-      void loadAttachments();
-    }, 500);
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
+  const loadAttachments = useCallback(async (): Promise<number> => {
+    if (!partyId) return 0;
+    const items = await dispatch(getAttachments(partyId, undefined, AttachmentEnum.PARTY_ATTACHMENT, true));
+    if (!isMountedRef.current) return 0;
+    const sorted = sortItems(items);
+    setAttachments(sorted);
+    setCurrentSlide(0);
+    return sorted.length;
   }, [dispatch, partyId]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    void loadAttachments();
+    const handleAttachmentsUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ identifier: string; attachmentType: AttachmentEnum }>;
+      if (customEvent?.detail?.attachmentType !== AttachmentEnum.PARTY_ATTACHMENT) return;
+      if (customEvent?.detail?.identifier !== partyId) return;
+      void loadAttachments();
+    };
+    window.addEventListener("attachments-updated", handleAttachmentsUpdated as EventListener);
+    return () => {
+      isMountedRef.current = false;
+      window.removeEventListener("attachments-updated", handleAttachmentsUpdated as EventListener);
+    };
+  }, [loadAttachments, partyId]);
 
   const total = attachments.length;
 
