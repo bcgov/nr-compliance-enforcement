@@ -172,6 +172,12 @@ const App: FC = () => {
                 element={pilotGate(<PartyView />)}
               />
             )}
+            {casesFeatureOn && (
+              <Route
+                path="/party/:id/:tabKey"
+                element={pilotGate(<PartyView />)}
+              />
+            )}
             {investigationsFeatureOn && (
               <Route
                 path="/investigations"

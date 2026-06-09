@@ -1,10 +1,9 @@
+import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
 import { ConsoleLogger, Logger } from "@nestjs/common";
 import { AppModule } from "./app.module";
-import dotenv from "dotenv";
 
 async function bootstrap() {
-  dotenv.config();
   const logger = new Logger("Bootstrap");
 
   try {
