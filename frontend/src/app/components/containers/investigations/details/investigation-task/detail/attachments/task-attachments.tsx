@@ -28,6 +28,7 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
 
   const { attachments, isLoading } = useInvestigationAttachments({
     investigationIdentifier: investigationGuid,
+    taskId: task?.taskIdentifier,
     tasks: task ? [task] : [],
     search: searchValues.search,
     taskFilter: searchValues.taskFilter,
