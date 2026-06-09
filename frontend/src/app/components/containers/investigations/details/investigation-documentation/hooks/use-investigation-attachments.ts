@@ -25,10 +25,12 @@ interface UseInvestigationAttachmentsParams {
   page: number;
   pageSize: number;
   enabled?: boolean;
+  taskId?: string;
 }
 
 export interface Attachment extends COMSObject {
   taskId: string | null;
+  enforcementActionId: string | null;
   taskNumber?: number;
   takenBy?: string | null;
   sequenceNumber?: string | null;
@@ -57,39 +59,43 @@ export const fetchAttachmentsWithMetadata = async (
   investigationIdentifier: string,
   taskId?: string,
 ): Promise<Attachment[]> => {
-  const attachments: COMSObject[] = [];
-  let currentPage = 1;
-  let hasMorePages = true;
+  const fetchByType = async (attachmentType: AttachmentEnum): Promise<COMSObject[]> => {
+    const collected: COMSObject[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+    while (hasMorePages) {
+      const searchResult = await searchAttachments({
+        headerId: investigationIdentifier,
+        subHeaderId: attachmentType === AttachmentEnum.TASK_ATTACHMENT ? taskId : undefined,
+        page: currentPage,
+        limit: FETCH_PAGE_SIZE,
+        attachmentType,
+      });
+      collected.push(...searchResult.attachments);
+      hasMorePages = searchResult.attachments.length === FETCH_PAGE_SIZE;
+      currentPage++;
+    }
+    return collected;
+  };
 
-  while (hasMorePages) {
-    const searchResult = await searchAttachments({
-      headerId: investigationIdentifier,
-      subHeaderId: taskId,
-      page: currentPage,
-      limit: FETCH_PAGE_SIZE,
-      attachmentType: AttachmentEnum.TASK_ATTACHMENT,
-    });
-
-    attachments.push(...searchResult.attachments);
-
-    hasMorePages = searchResult.attachments.length === FETCH_PAGE_SIZE;
-    currentPage++;
+  // don't include enforcement action attachments for tasks
+  const fetchAttachments = [fetchByType(AttachmentEnum.TASK_ATTACHMENT)];
+  if (!taskId) {
+    fetchAttachments.push(fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT));
   }
 
-  if (attachments.length === 0) {
-    return [];
-  }
+  const attachments = (await Promise.all(fetchAttachments)).flat();
+  if (attachments.length === 0) return [];
 
-  // Fetch metadata for all objects
   const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
   const metadataMap = await fetchObjectsMetadata(objectIds, AttachmentEnum.TASK_ATTACHMENT);
 
   return attachments.map((attachment) => {
     const metadata: ParsedObjectMetadata | undefined = attachment.id ? metadataMap.get(attachment.id) : undefined;
-
     return {
       ...attachment,
       taskId: metadata?.taskId ?? null,
+      enforcementActionId: metadata?.enforcementActionId ?? null,
       type: metadata?.attachmentType ?? null,
       takenBy: metadata?.takenBy ?? null,
       sequenceNumber: metadata?.sequenceNumber ?? null,
@@ -120,6 +126,7 @@ export const useInvestigationAttachments = (
     page,
     pageSize,
     enabled = true,
+    taskId,
   } = params;
 
   const officers = useAppSelector(selectOfficers);
@@ -130,8 +137,8 @@ export const useInvestigationAttachments = (
   };
 
   const query = useQuery({
-    queryKey: ["investigation-attachments-all", investigationIdentifier],
-    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier),
+    queryKey: ["investigation-attachments-all", investigationIdentifier, taskId],
+    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier, taskId),
     enabled: enabled && !!investigationIdentifier,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -160,9 +167,9 @@ export const useInvestigationAttachments = (
       };
     });
 
-    // Filter to only include attachments belonging to the provided tasks
+    // Filter to only include attachments belonging to the provided tasks or enforcement actions
     const taskIdentifiers = new Set(tasks.map((t) => t.taskIdentifier));
-    items = items.filter((a) => a.taskId && taskIdentifiers.has(a.taskId));
+    items = items.filter((a) => a.enforcementActionId || (a.taskId && taskIdentifiers.has(a.taskId)));
 
     // Filter by search term
     if (search) {

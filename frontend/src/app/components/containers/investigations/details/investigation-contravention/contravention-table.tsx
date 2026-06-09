@@ -15,6 +15,7 @@ interface ContraventionTableProps {
   investigationGuid: string;
   partyGuid: string | null;
   isReadOnly: boolean;
+  enforcementActionsWithAttachments?: Set<string>;
   onView?: (contraventionId: string, partyGuid: string | null) => void;
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
@@ -41,6 +42,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   investigationGuid,
   partyGuid,
   isReadOnly,
+  enforcementActionsWithAttachments,
   onView,
   onEdit,
   onAddEnforcementAction,
@@ -121,7 +123,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
         }
 
         return (
-          <div className="d-flex flex-column gap-1 align-items-center">
+          <div className="d-flex flex-column gap-1 align-items-start">
             {enforcementActions.filter(Boolean).map((ea) => {
               const actionLabel = enforcementActionCodes.find(
                 (c) => c.enforcementActionCode === ea.enforcementActionCode?.enforcementActionCode,
@@ -133,18 +135,30 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
 
               const label = ea.ticket ? `${actionLabel} (${outcomeLabel})` : actionLabel;
 
+              const hasAttachments = enforcementActionsWithAttachments?.has(ea.enforcementActionIdentifier);
+
               return (
-                <button
+                <div
                   key={ea.enforcementActionIdentifier}
-                  type="button"
-                  className="btn btn-link p-0 text-start"
-                  onClick={() =>
-                    onEditEnforcementAction(ea.enforcementActionIdentifier, c.contraventionIdentifier, partyGuid)
-                  }
-                  disabled={isReadOnly}
+                  className="d-flex align-items-center gap-1"
                 >
-                  {label}
-                </button>
+                  <i
+                    className={`bi bi-paperclip${hasAttachments ? "" : " invisible"}`}
+                    aria-label={hasAttachments ? "Has attachments" : undefined}
+                    aria-hidden={hasAttachments ? undefined : true}
+                    title={hasAttachments ? "Has attachments" : undefined}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 text-start"
+                    onClick={() =>
+                      onEditEnforcementAction(ea.enforcementActionIdentifier, c.contraventionIdentifier, partyGuid)
+                    }
+                    disabled={isReadOnly}
+                  >
+                    {label}
+                  </button>
+                </div>
               );
             })}
           </div>
