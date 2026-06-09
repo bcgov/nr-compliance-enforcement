@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { PartyHeader } from "./party-header";
+import { PartyTabs } from "./party-tabs";
+import { PartyHistoryTab } from "./party-history-tab";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import {
@@ -196,6 +198,7 @@ const GET_INVESTIGATION_PARTY_ROLES = gql`
 
 export type PartyParams = {
   id: string;
+  tabKey?: string;
 };
 
 const PersonIdentifyingInfo: FC<{ person: Person; sexOptions: ReadonlyArray<Option> }> = ({ person, sexOptions }) => (
@@ -367,8 +370,9 @@ const BusinessAddressesList: FC<{
 );
 
 export const PartyView: FC = () => {
-  const { id = "" } = useParams<PartyParams>();
+  const { id = "", tabKey } = useParams<PartyParams>();
   const navigate = useNavigate();
+  const currentTab = tabKey || "details";
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const sexOptions = useAppSelector(selectSexDropdown);
@@ -603,127 +607,137 @@ export const PartyView: FC = () => {
       {partyData && (
         <div className="comp-complaint-details">
           <PartyHeader partyData={partyData} />
-          <section className="comp-details-body comp-container party-details-section">
-            <hr className="comp-details-body-spacer"></hr>
-            <h2>Party details</h2>
-            <div className="party-details-summary-container">
-              <div className="party-details-summary-vcard-container">{id ? <PartyCarousel partyId={id} /> : ""}</div>
-              <div className="party-details-summary-info">
-                <h3>{displayName()}</h3>
-                {partyData?.business?.identifiers && (
+          <PartyTabs />
+          {currentTab === "history" ? (
+            <PartyHistoryTab partyIdentifier={id} />
+          ) : (
+            <section className="comp-details-body comp-container party-details-section">
+              <hr className="comp-details-body-spacer"></hr>
+              <h2>Party details</h2>
+              <div className="party-details-summary-container">
+                <div className="party-details-summary-vcard-container">
+                  {id ? <PartyCarousel partyId={id} /> : ""}
+                  <i className="bi bi-person-vcard party-details-summary-vcard"></i>
+                </div>
+                <div className="party-details-summary-info">
+                  <h3>{displayName()}</h3>
+                  {partyData?.business?.identifiers && (
+                    <>
+                      {partyData.business.identifiers.map((identifier) => {
+                        return (
+                          <p key={identifier?.businessIdentifierGuid}>
+                            <b>{identifier?.identifierCode?.shortDescription}: </b>
+                            {identifier?.identifierValue}
+                          </p>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+                <div className="comp-details-section-header-actions party-details-summary-actions">
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    id="details-screen-edit-button"
+                    onClick={editButtonClick}
+                  >
+                    <i className="bi bi-pencil"></i>
+                    <span>Edit party</span>
+                  </Button>
+                </div>
+              </div>
+              <br />
+              <h4>Identifying information</h4>
+              <div className="party-details-item">
+                <p>
+                  <b>Name: </b>
+                  {displayName()}
+                </p>
+                {partyData?.business?.aliases && (
                   <>
-                    {partyData.business.identifiers.map((identifier) => {
+                    {partyData.business.aliases.map((alias) => {
                       return (
-                        <p key={identifier?.businessIdentifierGuid}>
-                          <b>{identifier?.identifierCode?.shortDescription}: </b>
-                          {identifier?.identifierValue}
+                        <p key={alias?.aliasGuid}>
+                          <b>Alias: </b>
+                          {alias?.name}
                         </p>
                       );
                     })}
                   </>
                 )}
+                {partyData?.person && (
+                  <PersonIdentifyingInfo
+                    person={partyData.person}
+                    sexOptions={sexOptions}
+                  />
+                )}
               </div>
-              <div className="comp-details-section-header-actions party-details-summary-actions">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="details-screen-edit-button"
-                  onClick={editButtonClick}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit party</span>
-                </Button>
-              </div>
-            </div>
-            <br />
-            <h4>Identifying information</h4>
-            <div className="party-details-item">
-              <p>
-                <b>Name: </b>
-                {displayName()}
-              </p>
-              {partyData?.business?.aliases && (
-                <>
-                  {partyData.business.aliases.map((alias) => {
-                    return (
-                      <p key={alias?.aliasGuid}>
-                        <b>Alias: </b>
-                        {alias?.name}
-                      </p>
-                    );
-                  })}
-                </>
+              {partyRelations && partyRelations.length > 0 && (
+                <AssociatedCasesAndActivities partyRelations={partyRelations} />
               )}
-              {partyData?.person && (
-                <PersonIdentifyingInfo
-                  person={partyData.person}
-                  sexOptions={sexOptions}
-                />
-              )}
-            </div>
-            {partyRelations && partyRelations.length > 0 && (
-              <AssociatedCasesAndActivities partyRelations={partyRelations} />
-            )}
-            <br />
-            <h4>Contact information</h4>
+              <br />
+              <h4>Contact information</h4>
 
-            <div className="party-details-item">
-              {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                <ContactMethodsList contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>} />
-              )}
-              {partyData?.business?.contactMethods && (
-                <ContactMethodsList
-                  contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
-                />
-              )}
-              {partyData?.business?.contactPeople && (
+              <div className="party-details-item">
+                {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
+                  <ContactMethodsList
+                    contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>}
+                  />
+                )}
+                {partyData?.business?.contactMethods && (
+                  <ContactMethodsList
+                    contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
+                  />
+                )}
+                {partyData?.business?.contactPeople && (
+                  <>
+                    <h4>Business contacts</h4>
+                    {partyData.business.contactPeople.map((contactPerson, index) => {
+                      return (
+                        <div key={contactPerson?.person?.personGuid}>
+                          <p>
+                            <b>Name: </b>
+                            {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
+                          </p>
+                          {contactPerson?.person?.contactMethods && (
+                            <ContactMethodsList
+                              contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
+                            />
+                          )}
+                          {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+              {businessAddresses.length > 0 && (
                 <>
-                  <h4>Business contacts</h4>
-                  {partyData.business.contactPeople.map((contactPerson, index) => {
-                    return (
-                      <div key={contactPerson?.person?.personGuid}>
-                        <p>
-                          <b>Name: </b>
-                          {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
-                        </p>
-                        {contactPerson?.person?.contactMethods && (
-                          <ContactMethodsList
-                            contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
-                          />
-                        )}
-                        {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
-                      </div>
-                    );
-                  })}
+                  <br />
+                  <h4>Addresses</h4>
+                  <BusinessAddressesList
+                    addresses={businessAddresses}
+                    countryOptions={countryOptions}
+                    countrySubdivisionOptions={countrySubdivisionOptions}
+                  />
                 </>
               )}
-            </div>
-            {businessAddresses.length > 0 && (
-              <>
-                <br />
-                <h4>Addresses</h4>
-                <BusinessAddressesList
-                  addresses={businessAddresses}
-                  countryOptions={countryOptions}
-                  countrySubdivisionOptions={countrySubdivisionOptions}
-                />
-              </>
-            )}
-            <br />
-            <h4>C&E history</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
-              </p>
-            </div>
-            <br />
-            <h4>Additional information</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Related people, vehicles etc.</i>
-              </p>
-            </div>
-          </section>
+              <br />
+              <h4>C&E history</h4>
+              <div className="party-details-item">
+                <p>
+                  <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
+                </p>
+              </div>
+              <br />
+              <h4>Additional information</h4>
+              <div className="party-details-item">
+                <p>
+                  <i>&#8226; Related people, vehicles etc.</i>
+                </p>
+              </div>
+            </section>
+          )}
         </div>
       )}
     </>

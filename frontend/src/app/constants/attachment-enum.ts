@@ -3,6 +3,7 @@ export enum AttachmentEnum {
   OUTCOME_ATTACHMENT = 2,
   TASK_ATTACHMENT = 3,
   PARTY_ATTACHMENT = 4,
+  ENFORCEMENT_ACTION_ATTACHMENT = 4,
 }
 
 export default AttachmentEnum;

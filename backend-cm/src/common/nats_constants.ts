@@ -11,6 +11,8 @@ export const STREAM_TOPICS = {
   INVESTIGATION_ADDED_TO_CASE: `${EVENT_STREAM_NAME}.investigation.added_to_case`,
   INSPECTION_CLOSED: `${EVENT_STREAM_NAME}.inspection.closed`,
   INSPECTION_ADDED_TO_CASE: `${EVENT_STREAM_NAME}.inspection.added_to_case`,
+  PARTY_CREATED: `${EVENT_STREAM_NAME}.party.created`,
+  PARTY_UPDATED: `${EVENT_STREAM_NAME}.party.updated`,
 };
 
 export type StreamTopic = (typeof STREAM_TOPICS)[keyof typeof STREAM_TOPICS];
