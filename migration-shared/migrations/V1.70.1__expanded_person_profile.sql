@@ -254,6 +254,31 @@ COMMENT ON COLUMN address.update_user_id IS 'The id of the user that updated the
 
 COMMENT ON COLUMN address.update_utc_timestamp IS 'The timestamp when the address was updated. The timestamp is stored in UTC with no Offset.';
 
+CREATE TABLE
+  address_h (
+    h_address_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
+    target_row_id uuid NOT NULL,
+    operation_type character(1) NOT NULL,
+    operation_user_id character varying(32) DEFAULT CURRENT_USER NOT NULL,
+    operation_executed_at timestamp without time zone DEFAULT now () NOT NULL,
+    data_after_executed_operation jsonb
+  );
+
+COMMENT ON TABLE address_h IS 'Stores the audit history for address records.';
+
+COMMENT ON COLUMN address_h.h_address_guid IS 'The system-generated unique identifier for the address history record.';
+
+COMMENT ON COLUMN address_h.target_row_id IS 'The unique identifier of the address record affected by the operation.';
+
+COMMENT ON COLUMN address_h.operation_type IS 'The type of database operation executed on the address record. For example I = Insert, U = Update, D = Delete.';
+
+COMMENT ON COLUMN address_h.operation_user_id IS 'The id of the user that executed the operation.';
+
+COMMENT ON COLUMN address_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
+
+COMMENT ON COLUMN address_h.data_after_executed_operation IS 'A JSON representation of the address record after the operation was executed.';
+
+
 CREATE TRIGGER address_history_trigger
 BEFORE INSERT OR DELETE OR UPDATE
 ON address

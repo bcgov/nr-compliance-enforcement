@@ -6,6 +6,7 @@ type Party {
   longDescription: String
   shortDescription: String
   createdDateTime: DateTime
+  updatedDateTime: DateTime
   person: Person
   business: Business
   addresses: [Address]

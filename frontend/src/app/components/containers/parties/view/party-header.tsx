@@ -12,6 +12,7 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
   const partyId = partyData?.partyIdentifier || "Unknown";
   const partyType = partyData?.longDescription || "Unknown";
   const dateLogged = partyData?.createdDateTime ? new Date(partyData.createdDateTime).toString() : undefined;
+  const lastUpdated = partyData?.updatedDateTime ? new Date(partyData.updatedDateTime).toString() : undefined;
 
   return (
     <div className="comp-details-header">
@@ -56,6 +57,9 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
           id="comp-nature-of-complaint"
         >
           <span>{`Created on: ${formatDate(dateLogged)} ${formatTime(dateLogged)}`}</span>
+        </div>
+        <div className="mt-1 max-width-48ch">
+          <span>{`Last updated ${formatDate(lastUpdated)} ${formatTime(lastUpdated)}`}</span>
         </div>
       </div>
     </div>

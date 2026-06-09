@@ -1997,6 +1997,7 @@ export type Party = {
   partyTypeCode?: Maybe<Scalars['String']['output']>;
   person?: Maybe<Person>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+  updatedDateTime?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type PartyAssociationRole = {

@@ -96,6 +96,7 @@ export class PartyService {
         party_guid: true,
         party_type: true,
         create_utc_timestamp: true,
+        update_utc_timestamp: true,
         party_type_code: {
           select: {
             party_type_code: true,

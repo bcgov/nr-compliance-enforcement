@@ -66,6 +66,7 @@ export const GET_PARTY = gql`
       shortDescription
       longDescription
       createdDateTime
+      updatedDateTime
       addresses {
         addressGuid
         addressName
