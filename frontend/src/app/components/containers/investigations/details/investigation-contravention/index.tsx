@@ -12,12 +12,6 @@ import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-onl
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
 
-export {
-  CREATE_ENFORCEMENT_ACTION,
-  UPDATE_ENFORCEMENT_ACTION,
-  REMOVE_ENFORCEMENT_ACTION,
-} from "./enforcement-action-mutations";
-
 interface InvestigationContraventionProps {
   investigationGuid: string;
   investigationData?: Investigation;

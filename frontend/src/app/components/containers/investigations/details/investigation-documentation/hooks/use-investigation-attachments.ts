@@ -25,6 +25,7 @@ interface UseInvestigationAttachmentsParams {
   page: number;
   pageSize: number;
   enabled?: boolean;
+  taskId?: string;
 }
 
 export interface Attachment extends COMSObject {
@@ -77,12 +78,13 @@ export const fetchAttachmentsWithMetadata = async (
     return collected;
   };
 
-  const [taskObjects, eaObjects] = await Promise.all([
-    fetchByType(AttachmentEnum.TASK_ATTACHMENT),
-    fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT),
-  ]);
+  // don't include enforcement action attachments for tasks
+  const fetchAttachments = [fetchByType(AttachmentEnum.TASK_ATTACHMENT)];
+  if (!taskId) {
+    fetchAttachments.push(fetchByType(AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT));
+  }
 
-  const attachments = [...taskObjects, ...eaObjects];
+  const attachments = (await Promise.all(fetchAttachments)).flat();
   if (attachments.length === 0) return [];
 
   const objectIds = attachments.map((a) => a.id).filter((id): id is string => !!id);
@@ -124,6 +126,7 @@ export const useInvestigationAttachments = (
     page,
     pageSize,
     enabled = true,
+    taskId,
   } = params;
 
   const officers = useAppSelector(selectOfficers);
@@ -134,8 +137,8 @@ export const useInvestigationAttachments = (
   };
 
   const query = useQuery({
-    queryKey: ["investigation-attachments-all", investigationIdentifier],
-    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier),
+    queryKey: ["investigation-attachments-all", investigationIdentifier, taskId],
+    queryFn: () => fetchAttachmentsWithMetadata(investigationIdentifier, taskId),
     enabled: enabled && !!investigationIdentifier,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -164,7 +167,7 @@ export const useInvestigationAttachments = (
       };
     });
 
-    // Filter to only include attachments belonging to the provided tasks
+    // Filter to only include attachments belonging to the provided tasks or enforcement actions
     const taskIdentifiers = new Set(tasks.map((t) => t.taskIdentifier));
     items = items.filter((a) => a.enforcementActionId || (a.taskId && taskIdentifiers.has(a.taskId)));
 

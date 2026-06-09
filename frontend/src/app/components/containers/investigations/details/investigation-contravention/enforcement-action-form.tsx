@@ -22,11 +22,6 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import {
-  CREATE_ENFORCEMENT_ACTION,
-  UPDATE_ENFORCEMENT_ACTION,
-  REMOVE_ENFORCEMENT_ACTION,
-} from "./enforcement-action-mutations";
-import {
   EnforcementActionAttachmentSection,
   EnforcementActionAttachmentSectionHandle,
 } from "./enforcement-action-attachment-section";
@@ -39,6 +34,60 @@ const UPDATE_INVESTIGATION_TIMESTAMP = gql`
     updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
       investigationGuid
       updatedTimestamp
+    }
+  }
+`;
+
+const CREATE_ENFORCEMENT_ACTION = gql`
+  mutation CreateEnforcementAction($input: CreateEnforcementActionInput!) {
+    createEnforcementAction(input: $input) {
+      enforcementActionIdentifier
+      enforcementActionCode {
+        enforcementActionCode
+        shortDescription
+      }
+      dateIssued
+      geoOrganizationUnitCode
+      appUserIdentifier
+      activeIndicator
+      ticket {
+        ticketIdentifier
+        ticketOutcomeCode
+        ticketAmount
+        ticketNumber
+        paidDate
+      }
+    }
+  }
+`;
+
+const UPDATE_ENFORCEMENT_ACTION = gql`
+  mutation UpdateEnforcementAction($input: UpdateEnforcementActionInput!) {
+    updateEnforcementAction(input: $input) {
+      enforcementActionIdentifier
+      enforcementActionCode {
+        enforcementActionCode
+        shortDescription
+      }
+      dateIssued
+      geoOrganizationUnitCode
+      appUserIdentifier
+      activeIndicator
+      ticket {
+        ticketIdentifier
+        ticketOutcomeCode
+        ticketAmount
+        ticketNumber
+        paidDate
+      }
+    }
+  }
+`;
+
+const REMOVE_ENFORCEMENT_ACTION = gql`
+  mutation RemoveEnforcementAction($enforcementActionId: String!) {
+    removeEnforcementAction(enforcementActionId: $enforcementActionId) {
+      enforcementActionIdentifier
     }
   }
 `;
@@ -143,6 +192,12 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
       onDirtyChange?.(0, true);
     }
   }, [isFormDirty, onDirtyChange]);
+
+  useEffect(() => {
+    return () => {
+      onDirtyChange?.(0, false);
+    };
+  }, []);
 
   // Expose validate to modal
   useEffect(() => {
