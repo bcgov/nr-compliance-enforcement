@@ -158,7 +158,7 @@ export async function handlePersistAttachments({
 
   await Promise.all(tasks);
 
-  if (typeof globalThis.window !== "undefined" && identifier) {
+  if (globalThis.window !== undefined && identifier) {
     const detail = { identifier, attachmentType };
     const ev = new CustomEvent("attachments-updated", { detail });
     globalThis.window.dispatchEvent(ev);
