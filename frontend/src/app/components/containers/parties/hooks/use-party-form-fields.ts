@@ -167,7 +167,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleAddAlias = useCallback(() => {
     const currentAliases = form.getFieldValue("aliases") || [];
-    const newAliases = [...currentAliases, { aliasGuid: crypto.randomUUID(), name: "" }];
+    const newAliases = [...currentAliases, { aliasGuid: undefined, name: "" }];
     form.setFieldValue("aliases", newAliases);
     focusFieldById(`alias-${currentAliases.length}`);
   }, [form]);

@@ -2,6 +2,7 @@ import { Module, Global, OnModuleInit, Logger } from "@nestjs/common";
 import { DataSource } from "typeorm";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { RequestInterceptor, getRequest } from "./request-interceptor";
+import { agencyFromRoles } from "./agency-from-roles";
 
 /**
  * PgSessionModule is used to wrap all of the read queries to the database in a transaction
@@ -71,6 +72,9 @@ export class PgSessionModule implements OnModuleInit {
           if (user.client_roles) {
             const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
             await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`);
+
+            const agency = agencyFromRoles(user.client_roles);
+            await runner.query(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
           }
           // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
           await runner.query(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
@@ -180,10 +184,14 @@ export class PgSessionModule implements OnModuleInit {
               await originalQueryRunnerQuery(
                 `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
               );
+
+              const agency = agencyFromRoles(user.client_roles);
+              await originalQueryRunnerQuery(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
             }
 
             // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
             await originalQueryRunnerQuery(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
+
             // Execute the original query
             const result = await originalQueryRunnerQuery(query, parameters, useStructuredResult);
 

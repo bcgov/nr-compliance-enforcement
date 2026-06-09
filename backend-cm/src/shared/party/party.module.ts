@@ -11,6 +11,7 @@ import { InvestigationModule } from "../../investigation/investigation/investiga
 import { InspectionModule } from "../../inspection/inspection/inspection.module";
 import { CaseFileModule } from "../case_file/case_file.module";
 import { AppUserModule } from "src/shared/app_user/app_user.module";
+import { EventPublisherModule } from "../../event_publisher/event_publisher.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AppUserModule } from "src/shared/app_user/app_user.module";
     InvestigationModule,
     InspectionModule,
     CaseFileModule,
+    EventPublisherModule,
   ],
   providers: [PartyResolver, PartyService, PartyHistoryResolver, PartyHistoryService],
 })
