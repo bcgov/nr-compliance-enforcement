@@ -494,6 +494,7 @@ const PartyEdit: FC = () => {
   const { allowNavigation } = useUnsavedChangesWarning(isDirty);
 
   const partyTypeValue = useStore(form.store, (state) => state.values.partyType);
+  const currentFormValues = useStore(form.store, (state) => state.values);
 
   const navigateToPartyList = () => {
     allowNavigation();
@@ -528,7 +529,25 @@ const PartyEdit: FC = () => {
     );
   }, [dispatch, confirmCancelChanges]);
 
-  const saveButtonClick = useCallback(() => {
+  const saveButtonClick = useCallback(async () => {
+    const currentValues = currentFormValues;
+    if (currentValues.partyType === PartyTypeCodes.PERSON) {
+      if (!currentValues.partyType || currentValues.firstName?.trim() === "" || currentValues.lastName?.trim() === "") {
+        ToggleError("Validation error: Please fill in all required fields.");
+        return;
+      }
+    }
+
+    if (currentValues.partyType === PartyTypeCodes.BUSINESS) {
+      const validationError = await validateBusinessForm(
+        currentValues,
+        isEditMode ? partyData?.party?.business?.businessGuid : undefined,
+      );
+      if (validationError) {
+        ToggleError(validationError);
+        return;
+      }
+    }
     if (isEditMode) {
       setTriggerSaveAttachments(true);
       setTimeout(() => {
@@ -539,7 +558,7 @@ const PartyEdit: FC = () => {
       setPendingAttachmentsSaveAfterCreate(true);
       form.handleSubmit();
     }
-  }, [form, isEditMode]);
+  }, [form, isEditMode, partyData, currentFormValues]);
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
