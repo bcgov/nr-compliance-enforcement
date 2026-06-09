@@ -9,6 +9,7 @@ import {
   selectIsInEdit,
   selectIsReviewRequired,
   selectReviewComplete,
+  selectCeebAuthorization,
 } from "@/app/store/reducers/complaint-outcome-selectors";
 import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
 import { AnimalOutcomeSubject } from "@/app/types/state/complaint-outcomes-state";
@@ -21,6 +22,9 @@ import UserService from "@service/user-service";
 type validationResults = {
   canCloseComplaint: boolean;
   canQuickCloseComplaint: boolean;
+  canStartInvestigation: boolean;
+  canAddToCase: boolean;
+  validationMissing: string[];
   scrollToErrors: () => void;
   validationDetails: {
     noEditSections: boolean;
@@ -46,12 +50,16 @@ const useValidateComplaint = () => {
   const isReviewRequired = useAppSelector(selectIsReviewRequired);
   const reviewComplete = useAppSelector(selectReviewComplete);
   const complaint = useAppSelector(selectComplaint);
+  const authorization = useAppSelector(selectCeebAuthorization);
   const complaintType = getComplaintType(complaint);
 
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
     canCloseComplaint: false,
     canQuickCloseComplaint: false,
+    canStartInvestigation: true,
+    canAddToCase: true,
+    validationMissing: [],
     scrollToErrors: () => {},
     validationDetails: {
       noEditSections: false,
@@ -130,6 +138,20 @@ const useValidateComplaint = () => {
           ? !!complaint.referenceNumber
           : true;
 
+      // check validation for investigation/case actions (for CEEB/NROS/MINES)
+      const isAssigned = (complaint?.delegates ?? []).some((d) => d.type === "ASSIGNEE" && d.isActive);
+      const hasAssessment = assessments.length > 0;
+      const hasAuthorization = !!authorization?.id;
+      const requireValidation =
+        complaintType === COMPLAINT_TYPES.ERS && ["EPO", "NROS", "MINES"].includes(complaint?.ownedBy ?? "");
+      const validationMissing: string[] = [];
+      if (requireValidation) {
+        if (!isAssigned) validationMissing.push("assign the complaint");
+        if (!hasAssessment) validationMissing.push("complete the complaint assessment");
+        if (!hasAuthorization) validationMissing.push("populate the authorization section");
+      }
+      const canCreateCase = validationMissing.length === 0;
+
       const scrollToErrorSection = (
         assessmentCriteria: boolean,
         preventionCriteria: boolean,
@@ -140,6 +162,14 @@ const useValidateComplaint = () => {
         referenceNumberCriteria: boolean,
       ) => {
         const { assessment, prevention, equipment, animal, note, attachments, fileReview } = isInEdit;
+        if (requireValidation && !hasAuthorization) {
+          document.getElementById("ceeb-authorization")?.scrollIntoView({ block: "end" });
+          return;
+        }
+        if (requireValidation && !hasAssessment) {
+          document.getElementById("outcome-assessment")?.scrollIntoView({ block: "end" });
+          return;
+        }
         if (!preventionCriteria || prevention) {
           document.getElementById("outcome-prevention-education")?.scrollIntoView({ block: "end" });
         } else if (!equipmentCriteria || equipment) {
@@ -188,6 +218,9 @@ const useValidateComplaint = () => {
           animalCriteria &&
           animalCapturedCriteria &&
           fileReviewCriteria,
+        canStartInvestigation: canCreateCase,
+        canAddToCase: canCreateCase,
+        validationMissing: validationMissing,
         scrollToErrors,
         validationDetails: {
           noEditSections: noEditSections,
@@ -206,6 +239,7 @@ const useValidateComplaint = () => {
     validateComplaint();
   }, [
     assessments,
+    authorization,
     equipment,
     isInEdit,
     isReviewRequired,

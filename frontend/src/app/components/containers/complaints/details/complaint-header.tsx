@@ -190,6 +190,16 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
+  const startInvestigation = () => {
+    if (!validationResults.canStartInvestigation) {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError(`An investigation cannot be started until you ${validationResults.validationMissing.join(", ")}.`);
+    } else {
+      navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
+    }
+  };
+
   const openManageCollaboratorsModal = () => {
     document.body.click();
     dispatch(
@@ -231,20 +241,27 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const openCreateAddCaseModal = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: CREATE_ADD_CASE,
-        data: {
-          title: "Add to case",
-          complaint_identifier: id,
-          agency_code: complaintAgency,
-          onDirtyChange: handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
+    if (!validationResults.canAddToCase) {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError(`Before adding this complaint to a case, please ${validationResults.validationMissing.join(", ")}.`);
+    } else {
+      document.body.click();
+      dispatch(
+        openModal({
+          modalSize: "lg",
+          modalType: CREATE_ADD_CASE,
+          data: {
+            title: "Add to case",
+            complaint_identifier: id,
+            complaint_type: complaintType,
+            agency_code: complaintAgency,
+            onDirtyChange: handleChildDirtyChange,
+          },
+          hideCallback,
+        }),
+      );
+    }
   };
 
   const handleExportClick = async () => {
@@ -374,7 +391,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <Dropdown.Item
           as="button"
           id="start-investigation-button"
-          onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+          onClick={startInvestigation}
           disabled={complaintAgency !== userAgency}
         >
           <i className="bi bi-arrow-right-circle"></i>
@@ -524,7 +541,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       id="details-screen-start-investigation-button"
                       title="Start investigation"
                       variant="outline-light"
-                      onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+                      onClick={startInvestigation}
                       disabled={complaintAgency !== userAgency}
                     >
                       <i className="bi bi-arrow-right-circle"></i>
