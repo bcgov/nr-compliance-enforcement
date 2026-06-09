@@ -32,17 +32,17 @@ export const PartyCarousel: FC<{ partyId: string }> = ({ partyId }) => {
 
   useEffect(() => {
     isMountedRef.current = true;
-    void loadAttachments();
+    loadAttachments();
     const handleAttachmentsUpdated = (event: Event) => {
       const customEvent = event as CustomEvent<{ identifier: string; attachmentType: AttachmentEnum }>;
       if (customEvent?.detail?.attachmentType !== AttachmentEnum.PARTY_ATTACHMENT) return;
       if (customEvent?.detail?.identifier !== partyId) return;
-      void loadAttachments();
+      loadAttachments();
     };
-    window.addEventListener("attachments-updated", handleAttachmentsUpdated as EventListener);
+    window.addEventListener("attachments-updated", handleAttachmentsUpdated);
     return () => {
       isMountedRef.current = false;
-      window.removeEventListener("attachments-updated", handleAttachmentsUpdated as EventListener);
+      window.removeEventListener("attachments-updated", handleAttachmentsUpdated);
     };
   }, [loadAttachments, partyId]);
 
