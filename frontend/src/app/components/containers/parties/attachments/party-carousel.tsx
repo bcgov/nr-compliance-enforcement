@@ -39,10 +39,10 @@ export const PartyCarousel: FC<{ partyId: string }> = ({ partyId }) => {
       if (customEvent?.detail?.identifier !== partyId) return;
       loadAttachments();
     };
-    window.addEventListener("attachments-updated", handleAttachmentsUpdated);
+    globalThis.window.addEventListener("attachments-updated", handleAttachmentsUpdated);
     return () => {
       isMountedRef.current = false;
-      window.removeEventListener("attachments-updated", handleAttachmentsUpdated);
+      globalThis.window.removeEventListener("attachments-updated", handleAttachmentsUpdated);
     };
   }, [loadAttachments, partyId]);
 
