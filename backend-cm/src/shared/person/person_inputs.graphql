@@ -22,6 +22,11 @@ input PersonInput {
   facialHairIndicator: Boolean
   facialHairStyleCodes: [PersonFacialHairStyleCodeInput]
   additionalHairDescriptors: String
+  tattooIndicator: Boolean
+  tattooDescription: String
+  additionalDescriptors: String
+  comments: String
+  boloIndicator: Boolean
 }
 
 input PersonUpdateInput {
@@ -49,4 +54,9 @@ input PersonUpdateInput {
   facialHairIndicator: Boolean
   facialHairStyleCodes: [PersonFacialHairStyleCodeInput]
   additionalHairDescriptors: String
+  tattooIndicator: Boolean
+  tattooDescription: String
+  additionalDescriptors: String
+  comments: String
+  boloIndicator: Boolean
 }

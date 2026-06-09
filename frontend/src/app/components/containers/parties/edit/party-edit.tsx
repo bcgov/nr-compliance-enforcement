@@ -337,6 +337,11 @@ function buildPersonBase(value: any) {
         facialHairStyleCode: fhs.facialHairStyleCode,
       })) || [],
     additionalHairDescriptors: value.additionalHairDescriptors || null,
+    comments: value.comments || null,
+    tattooIndicator: value.tattooIndicator || null,
+    tattooDescription: value.tattooDescription || null,
+    additionalDescriptors: value.additionalDescriptors || null,
+    boloIndicator: value.boloIndicator || null,
   };
 }
 
@@ -407,6 +412,11 @@ const PartyEdit: FC = () => {
             facialHairStyleCode: fhs.facialHairStyleCode,
           })) ?? [],
         additionalHairDescriptors: person?.additionalHairDescriptors || null,
+        tattooIndicator: person?.tattooIndicator || null,
+        tattooDescription: person?.tattooDescription || null,
+        additionalDescriptors: person?.additionalDescriptors || null,
+        comments: person?.comments || null,
+        boloIndicator: person?.boloIndicator || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -449,6 +459,11 @@ const PartyEdit: FC = () => {
       facialHairIndicator: "",
       facialHairStyleCodes: [],
       additionalHairDescriptors: "",
+      boloIndicator: "",
+      comments: "",
+      tattooIndicator: "",
+      tattooDescription: "",
+      additionalDescriptors: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

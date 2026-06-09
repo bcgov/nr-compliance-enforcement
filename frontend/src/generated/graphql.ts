@@ -2068,10 +2068,13 @@ export type PermitSiteInput = {
 
 export type Person = {
   __typename?: 'Person';
+  additionalDescriptors?: Maybe<Scalars['String']['output']>;
   additionalHairDescriptors?: Maybe<Scalars['String']['output']>;
   aliases?: Maybe<Array<Maybe<Alias>>>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
+  boloIndicator?: Maybe<Scalars['Boolean']['output']>;
   buildCode?: Maybe<Scalars['String']['output']>;
+  comments?: Maybe<Scalars['String']['output']>;
   complexionCode?: Maybe<Scalars['String']['output']>;
   dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
   driversLicenseClass?: Maybe<Scalars['String']['output']>;
@@ -2091,6 +2094,8 @@ export type Person = {
   lastName?: Maybe<Scalars['String']['output']>;
   middleNames?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
+  tattooDescription?: Maybe<Scalars['String']['output']>;
+  tattooIndicator?: Maybe<Scalars['Boolean']['output']>;
   weightInKg?: Maybe<Scalars['Float']['output']>;
 };
 
@@ -2110,10 +2115,13 @@ export type PersonFacialHairStyleCodeInput = {
 };
 
 export type PersonInput = {
+  additionalDescriptors?: InputMaybe<Scalars['String']['input']>;
   additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
+  comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
@@ -2132,14 +2140,19 @@ export type PersonInput = {
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
+  tattooDescription?: InputMaybe<Scalars['String']['input']>;
+  tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type PersonUpdateInput = {
+  additionalDescriptors?: InputMaybe<Scalars['String']['input']>;
   additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
+  comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
   driversLicenseClass?: InputMaybe<Scalars['String']['input']>;
@@ -2159,6 +2172,8 @@ export type PersonUpdateInput = {
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
+  tattooDescription?: InputMaybe<Scalars['String']['input']>;
+  tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;
 };
 

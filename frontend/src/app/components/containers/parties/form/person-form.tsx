@@ -26,6 +26,7 @@ import { AddressFields } from "@/app/components/containers/parties/form/party-ad
 import { HeightField, WeightField } from "@/app/components/containers/parties/form/height-weight-fields";
 import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import Option from "@apptypes/app/option";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
 
 type PersonFormProps = {
   form: any;
@@ -105,6 +106,24 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
 
   return (
     <>
+      <FormField
+        form={form}
+        name="boloIndicator"
+        label="Caution / BOLO"
+        render={(field) => (
+          <Form.Check
+            type="checkbox"
+            id="bolo-ind"
+            label="Caution / BOLO"
+            checked={field.state.value === true}
+            onChange={(evt: any) => {
+              const checked = evt.target.checked;
+              field.handleChange(checked);
+            }}
+            disabled={isDisabled}
+          />
+        )}
+      />
       <FormField
         form={form}
         name="firstName"
@@ -679,6 +698,70 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           />
         )}
       />
+      <FormField
+        form={form}
+        name="tattooIndicator"
+        label="Has tattoos?"
+        render={(field) => (
+          <Form.Check
+            type="checkbox"
+            id="tattoo-ind"
+            label="Has tattoos?"
+            checked={field.state.value === true}
+            onChange={(evt: any) => {
+              const checked = evt.target.checked;
+              field.handleChange(checked);
+              if (!checked) {
+                // Clear any existing tattoo description
+                form.setFieldValue("tattooDescription", "");
+              }
+            }}
+            disabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.tattooIndicator}>
+        {(tattooIndicator: boolean | undefined) =>
+          tattooIndicator ? (
+            <FormField
+              form={form}
+              name="tattooDescription"
+              label="Tattoo description"
+              render={(field) => (
+                <CompInput
+                  id="tattoo-description"
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  defaultValue={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={512}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  placeholder="Enter tattoo description"
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
+      <FormField
+        form={form}
+        name="additionalDescriptors"
+        label="Additional descriptors"
+        render={(field) => (
+          <ValidationTextArea
+            id="description"
+            className="comp-form-control comp-details-input"
+            rows={4}
+            defaultValue={field.state.value}
+            onChange={(value: string) => field.handleChange(value)}
+            placeholderText="Enter additional descriptors"
+            maxLength={4000}
+            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          />
+        )}
+      />
       {addresses?.map((address: AddressFormValue, index: number) => (
         <FormField
           key={address.addressGuid || `address-${index}`}
@@ -786,6 +869,23 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             {/**/}
             Add email
           </Button>
+        )}
+      />
+      <FormField
+        form={form}
+        name="comments"
+        label="Comments"
+        render={(field) => (
+          <ValidationTextArea
+            id="comments"
+            className="comp-form-control comp-details-input"
+            rows={4}
+            defaultValue={field.state.value}
+            onChange={(value: string) => field.handleChange(value)}
+            placeholderText="Enter additional comments"
+            maxLength={4000}
+            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          />
         )}
       />
     </>

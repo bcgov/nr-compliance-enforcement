@@ -28,6 +28,11 @@ export class Person implements PersonDto {
   facialHairIndicator?: boolean;
   facialHairStyleCodes?: [PersonFacialHairStyleCode];
   additionalHairDescriptors?: string;
+  tattooIndicator?: boolean;
+  tattooDescription?: string;
+  additionalDescriptors?: string;
+  comments?: string;
+  boloIndicator?: boolean;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -132,6 +137,26 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
           "PersonFacialHairStyleCode",
         ),
       ),
+    ),
+    forMember(
+      (dest) => dest.tattooIndicator,
+      mapFrom((src) => src.tattoo_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.tattooDescription,
+      mapFrom((src) => src.tattoo_description ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.additionalDescriptors,
+      mapFrom((src) => src.additional_descriptors ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.comments,
+      mapFrom((src) => src.comments ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.boloIndicator,
+      mapFrom((src) => src.bolo_ind ?? undefined),
     ),
   );
 };

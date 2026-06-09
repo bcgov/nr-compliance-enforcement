@@ -114,6 +114,11 @@ export const GET_PARTY = gql`
           facialHairStyleCode
         }
         additionalHairDescriptors
+        tattooIndicator
+        tattooDescription
+        additionalDescriptors
+        comments
+        boloIndicator
       }
       business {
         name
@@ -657,7 +662,10 @@ export const PartyView: FC = () => {
                 <i className="bi bi-person-vcard party-details-summary-vcard"></i>
               </div>
               <div className="party-details-summary-info">
-                <h3>{displayName()}</h3>
+                <div className="d-flex align-items-center gap-2">
+                  <h3 className="mb-0">{displayName()}</h3>
+                  {partyData?.person?.boloIndicator && <Badge className="comp-danger-badge">Caution / BOLO</Badge>}
+                </div>
                 {partyData?.business?.identifiers && (
                   <>
                     {partyData.business.identifiers.map((identifier) => {
@@ -669,7 +677,7 @@ export const PartyView: FC = () => {
                       );
                     })}
                   </>
-                )}
+                )}{" "}
                 {(personDob || personIsYoung) && (
                   <p className="d-flex align-items-center gap-2">
                     {personDob && (
@@ -846,6 +854,24 @@ export const PartyView: FC = () => {
                       {partyData?.person?.additionalHairDescriptors}
                     </p>
                   )}
+                  {partyData?.person?.tattooIndicator != null && (
+                    <p>
+                      <b>Has tattoos: </b>
+                      {partyData.person.tattooIndicator ? "Yes" : "No"}
+                    </p>
+                  )}
+                  {partyData?.person?.tattooDescription && (
+                    <p>
+                      <b>Tattoo description: </b>
+                      {partyData?.person?.tattooDescription}
+                    </p>
+                  )}
+                  {partyData?.person?.additionalDescriptors && (
+                    <p>
+                      <b>Additional descriptors: </b>
+                      {partyData?.person?.additionalDescriptors}
+                    </p>
+                  )}
                 </div>
               </>
             )}
@@ -857,12 +883,22 @@ export const PartyView: FC = () => {
               </p>
             </div>
             <br />
-            <h4>Additional information</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Related people, vehicles etc.</i>
-              </p>
-            </div>
+            {partyData?.person?.comments && (
+              <>
+                <h4>Additional information</h4>
+                <div className="party-details-item">
+                  <p>
+                    {partyData?.person?.comments && (
+                      <p>
+                        <b>Comments: </b>
+                        {partyData?.person?.comments}
+                      </p>
+                    )}
+                  </p>
+                </div>
+                <br />
+              </>
+            )}
           </section>
         </div>
       )}

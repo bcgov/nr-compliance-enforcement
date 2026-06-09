@@ -23,4 +23,9 @@ type Person {
   facialHairIndicator: Boolean
   facialHairStyleCodes: [PersonFacialHairStyleCode]
   additionalHairDescriptors: String
+  tattooIndicator: Boolean
+  tattooDescription: String
+  additionalDescriptors: String
+  comments: String
+  boloIndicator: Boolean
 }

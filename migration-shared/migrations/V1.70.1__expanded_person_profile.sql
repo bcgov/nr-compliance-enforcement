@@ -634,3 +634,33 @@ COMMENT ON COLUMN person_facial_hair_style_code_h.operation_type IS 'The type of
 COMMENT ON COLUMN person_facial_hair_style_code_h.operation_user_id IS 'The id of the user that executed the operation.';
 COMMENT ON COLUMN person_facial_hair_style_code_h.operation_executed_at IS 'The timestamp when the operation was executed. The timestamp is stored in UTC with no Offset.';
 COMMENT ON COLUMN person_facial_hair_style_code_h.data_after_executed_operation IS 'A JSON representation of the person to facial hair style relationship record after the operation was executed.';
+
+-- Add Tattoo fields to person
+ALTER TABLE person
+    ADD COLUMN tattoo_ind boolean;
+
+COMMENT ON COLUMN shared.person.tattoo_ind IS 'Indicates whether the person has tattoos. true = has tattoos, false = does not have tattoos, null = unknown / not assessed.';
+
+ALTER TABLE person
+    ADD COLUMN tattoo_description character varying(512);
+
+COMMENT ON COLUMN shared.person.tattoo_description IS 'A free-text description of the person''s tattoos, used when tattoo_ind is true.';
+
+-- Add additional descriptors and comments to person
+
+ALTER TABLE person
+    ADD COLUMN additional_descriptors text;
+
+COMMENT ON COLUMN shared.person.additional_descriptors IS 'Free-text additional descriptors for the person.';
+
+ALTER TABLE person
+    ADD COLUMN comments text;
+
+COMMENT ON COLUMN shared.person.comments IS 'Free-text comments about the person.';
+
+-- Add BOLO field
+
+ALTER TABLE person
+    ADD COLUMN bolo_ind boolean;
+
+COMMENT ON COLUMN shared.person.bolo_ind IS 'Indicates whether the person has a caution flag or advises officers to be on the lookout (BOLO) for the invdividual.';

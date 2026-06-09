@@ -94,6 +94,21 @@ export class person {
   @ApiPropertyOptional({ type: String })
   additional_hair_descriptors?: string;
 
+  @ApiPropertyOptional({ type: Boolean })
+  tattoo_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  tattoo_description?: string;
+
+  @ApiPropertyOptional({ type: String })
+  additional_descriptors?: string;
+
+  @ApiPropertyOptional({ type: String })
+  comments?: string;
+
+  @ApiPropertyOptional({ type: Boolean })
+  bolo_ind?: boolean;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 
