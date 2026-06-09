@@ -108,10 +108,12 @@ export const GET_PARTY = gql`
         hairColourOther
         eyeColourCode
         eyeColourOther
+        facialHairIndicator
         facialHairStyleCodes {
           personFacialStyleHairCodeGuid
           facialHairStyleCode
         }
+        additionalHairDescriptors
       }
       business {
         name
@@ -796,6 +798,14 @@ export const PartyView: FC = () => {
                         partyData?.person.buildCode}
                     </p>
                   )}
+                  {partyData?.person?.eyeColourCode && (
+                    <p>
+                      <b>Hair color: </b>
+                      {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
+                        partyData?.person.eyeColourCode}
+                      {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
+                    </p>
+                  )}
                   {partyData?.person?.hairColourCode && (
                     <p>
                       <b>Hair color: </b>
@@ -811,6 +821,12 @@ export const PartyView: FC = () => {
                         partyData?.person.hairLengthCode}
                     </p>
                   )}
+                  {partyData?.person?.facialHairIndicator != null && (
+                    <p>
+                      <b>Has facial hair: </b>
+                      {partyData.person.facialHairIndicator ? "Yes" : "No"}
+                    </p>
+                  )}
                   {partyData?.person?.facialHairStyleCodes && (
                     <>
                       {partyData.person.facialHairStyleCodes.map((fhs) => {
@@ -824,13 +840,10 @@ export const PartyView: FC = () => {
                       })}
                     </>
                   )}
-
-                  {partyData?.person?.eyeColourCode && (
+                  {partyData?.person?.additionalHairDescriptors && (
                     <p>
-                      <b>Hair color: </b>
-                      {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
-                        partyData?.person.eyeColourCode}
-                      {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
+                      <b>Additional hair descriptors: </b>
+                      {partyData?.person?.additionalHairDescriptors}
                     </p>
                   )}
                 </div>

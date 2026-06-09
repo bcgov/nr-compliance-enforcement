@@ -13,7 +13,6 @@ import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
 import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
-import { person_facial_hair_style_code } from "prisma/shared/generated/person_facial_hair_style_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -184,6 +183,7 @@ export class PartyService {
                     hair_colour_other: true,
                     eye_colour_code: true,
                     eye_colour_other: true,
+                    facial_hair_ind: true,
                     person_facial_hair_style_code: {
                       select: {
                         person_facial_hair_style_code_guid: true,
@@ -191,6 +191,7 @@ export class PartyService {
                       },
                       where: { active_ind: true },
                     },
+                    additional_hair_descriptors: true,
                     approximate_age_code: true,
                     party: {
                       select: {
@@ -234,6 +235,7 @@ export class PartyService {
             hair_colour_other: true,
             eye_colour_code: true,
             eye_colour_other: true,
+            facial_hair_ind: true,
             person_facial_hair_style_code: {
               select: {
                 person_facial_hair_style_code_guid: true,
@@ -241,6 +243,7 @@ export class PartyService {
               },
               where: { active_ind: true },
             },
+            additional_hair_descriptors: true,
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -248,6 +251,8 @@ export class PartyService {
         },
       },
     });
+
+    console.dir(prismaParty, { depth: null });
 
     try {
       return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
@@ -356,6 +361,7 @@ export class PartyService {
           hair_colour_other: input.person?.hairColourOther,
           eye_colour_code: input.person?.eyeColourCode,
           eye_colour_other: input.person?.eyeColourOther,
+          facial_hair_ind: input.person?.facialHairIndicator,
           ...(input.person?.facialHairStyleCodes?.length
             ? {
                 person_facial_hair_style_code: {
@@ -367,6 +373,7 @@ export class PartyService {
                 },
               }
             : {}),
+          additional_hair_descriptors: input.person?.additionalHairDescriptors,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -496,9 +503,11 @@ export class PartyService {
           hair_colour_other: input.person?.hairColourOther,
           eye_colour_code: input.person?.eyeColourCode,
           eye_colour_other: input.person?.eyeColourOther,
+          facial_hair_ind: input.person?.facialHairIndicator,
           ...(Object.keys(facialHairStyleOperations).length
             ? { person_facial_hair_style_code: facialHairStyleOperations }
             : {}),
+          additional_hair_descriptors: input.person?.additionalHairDescriptors,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
@@ -704,8 +713,6 @@ export class PartyService {
     incomingFacialHairStyles: PersonFacialHairStyleCode[],
     existingFacialHairStyles: PersonFacialHairStyleCode[],
   ): any {
-    console.dir(incomingFacialHairStyles, { depth: null });
-    console.dir(existingFacialHairStyles, { depth: null });
     const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
     const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
     const fhsToDelete = existingFacialHairStyles.filter(
@@ -1115,7 +1122,9 @@ export class PartyService {
               hair_colour_code: true,
               hair_length_code: true,
               hair_colour_other: true,
+              facial_hair_ind: true,
               person_facial_hair_style_code: true,
+              additional_hair_descriptors: true,
               eye_colour_code: true,
               eye_colour_other: true,
               build_code: true,

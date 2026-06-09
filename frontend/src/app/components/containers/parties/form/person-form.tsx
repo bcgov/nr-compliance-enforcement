@@ -18,7 +18,7 @@ import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
-import { Badge, Button } from "react-bootstrap";
+import { Badge, Button, Form } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { Alias, ContactMethod, PersonFacialHairStyleCode } from "@/generated/graphql";
 import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
@@ -471,6 +471,58 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
+        name="eyeColourCode"
+        label="Eye colour"
+        render={(field) => (
+          <CompSelect
+            id="eye-colour-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={eyeColourOptions}
+            value={eyeColourOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => {
+              const newValue = option?.value ?? "";
+              field.handleChange(newValue);
+              if (newValue !== "OTH") {
+                form.setFieldValue("eyeColourOther", null);
+              }
+            }}
+            placeholder="Select eye colour"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.eyeColourCode}>
+        {(eyeColourCode: string | undefined) =>
+          eyeColourCode === "OTH" ? (
+            <FormField
+              form={form}
+              name="eyeColourOther"
+              label="Other eye colour"
+              render={(field) => (
+                <CompInput
+                  id="eyeColourOther"
+                  divid=""
+                  type="input"
+                  inputClass="comp-form-control comp-details-input"
+                  defaultValue={field.state.value}
+                  error={field.state.meta.errors?.[0]?.message || ""}
+                  maxLength={128}
+                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                  placeholder="Enter other eye colour"
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
+      <FormField
+        form={form}
         name="hairColourCode"
         label="Hair colour"
         render={(field) => (
@@ -544,50 +596,57 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
-        name="eyeColourCode"
-        label="Eye colour"
+        name="facialHairIndicator"
+        label="Facial hair"
         render={(field) => (
-          <CompSelect
-            id="eye-colour-select"
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={eyeColourOptions}
-            value={eyeColourOptions?.find((opt: any) => opt.value === field.state.value)}
-            onChange={(option) => {
-              const newValue = option?.value ?? "";
-              field.handleChange(newValue);
-              if (newValue !== "OTH") {
-                form.setFieldValue("eyeColourOther", null);
-              }
-            }}
-            placeholder="Select eye colour"
-            isClearable={true}
-            showInactive={false}
-            enableValidation={true}
-            errorMessage={field.state.meta.errors?.[0]?.message || ""}
-            isDisabled={isDisabled}
+          <Form.Check
+            type="checkbox"
+            id="facial-hair-ind"
+            label="Has facial hair"
+            checked={field.state.value === true}
+            onChange={(evt: any) => field.handleChange(evt.target.checked)}
+            disabled={isDisabled}
           />
         )}
       />
-      <form.Subscribe selector={(state: any) => state.values.eyeColourCode}>
-        {(hairColourCode: string | undefined) =>
-          hairColourCode === "OTH" ? (
+      <form.Subscribe selector={(state: any) => state.values.facialHairIndicator}>
+        {(facialHairIndicator: boolean | undefined) =>
+          facialHairIndicator ? (
             <FormField
               form={form}
-              name="eyeColourOther"
-              label="Other eye colour"
+              name="facialHairStyleCodes"
+              label="Facial hair style"
               render={(field) => (
-                <CompInput
-                  id="eyeColourOther"
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input"
-                  defaultValue={field.state.value}
-                  error={field.state.meta.errors?.[0]?.message || ""}
-                  maxLength={128}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  placeholder="Enter other eye colour"
-                  disabled={isDisabled}
+                <ValidationMultiSelect
+                  id="facial-hair-style-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={facialHairStyleOptions}
+                  values={(field.state.value ?? []).map(
+                    (fhs: PersonFacialHairStyleCode) =>
+                      facialHairStyleOptions.find((o) => o.value === fhs.facialHairStyleCode) ?? {
+                        value: fhs.facialHairStyleCode,
+                        label: fhs.facialHairStyleCode,
+                      },
+                  )}
+                  onChange={(options: Option[]) => {
+                    const current = field.state.value ?? [];
+                    field.handleChange(
+                      (options ?? []).map((o) => {
+                        const existing = current.find(
+                          (fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value,
+                        );
+                        return {
+                          personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
+                          personGuid: existing?.personGuid,
+                          facialHairStyleCode: o.value,
+                        };
+                      }),
+                    );
+                  }}
+                  placeholder="Select facial hair styles"
+                  isClearable={true}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
                 />
               )}
             />
@@ -596,39 +655,20 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       </form.Subscribe>
       <FormField
         form={form}
-        name="facialHairStyleCodes"
-        label="Facial hair style"
+        name="additionalHairDescriptors"
+        label="Additional hair descriptors"
         render={(field) => (
-          <ValidationMultiSelect
-            id="facial-hair-style-select"
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={facialHairStyleOptions}
-            values={(field.state.value ?? []).map(
-              (fhs: PersonFacialHairStyleCode) =>
-                facialHairStyleOptions.find((o) => o.value === fhs.facialHairStyleCode) ?? {
-                  value: fhs.facialHairStyleCode,
-                  label: fhs.facialHairStyleCode,
-                },
-            )}
-            onChange={(options: Option[]) => {
-              const current = field.state.value ?? [];
-              field.handleChange(
-                (options ?? []).map((o) => {
-                  const existing = current.find(
-                    (fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value,
-                  );
-                  return {
-                    personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
-                    personGuid: existing?.personGuid,
-                    facialHairStyleCode: o.value,
-                  };
-                }),
-              );
-            }}
-            placeholder="Select facial hair styles"
-            isClearable={true}
-            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          <CompInput
+            id="additional-hair-descriptors"
+            divid=""
+            type="input"
+            inputClass="comp-form-control comp-details-input"
+            defaultValue={field.state.value}
+            error={field.state.meta.errors?.[0]?.message || ""}
+            maxLength={512}
+            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+            placeholder="Enter additional hair descriptors"
+            disabled={isDisabled}
           />
         )}
       />

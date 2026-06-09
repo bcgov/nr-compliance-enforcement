@@ -329,12 +329,14 @@ function buildPersonBase(value: any) {
     hairColourOther: value.hairColourOther || null,
     eyeColourCode: value.eyeColourCode || null,
     eyeColourOther: value.eyeColourOther || null,
+    facialHairIndicator: value.facialHairIndicator || null,
     facialHairStyleCodes:
       value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
         personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
         personGuid: fhs.personGuid,
         facialHairStyleCode: fhs.facialHairStyleCode,
       })) || [],
+    additionalHairDescriptors: value.additionalHairDescriptors || null,
   };
 }
 
@@ -370,6 +372,8 @@ const PartyEdit: FC = () => {
       };
     });
 
+  console.log(partyData);
+
   const defaultValues = useMemo(() => {
     if (isEditMode && partyData?.party) {
       const person = partyData.party.person;
@@ -395,12 +399,14 @@ const PartyEdit: FC = () => {
         hairColourOther: person?.hairColourOther || null,
         eyeColourCode: person?.eyeColourCode || "",
         eyeColourOther: person?.eyeColourOther || null,
+        facialHairIndicator: person?.facialHairIndicator || null,
         facialHairStyleCodes:
           person?.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
             personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
             personGuid: fhs.personGuid,
             facialHairStyleCode: fhs.facialHairStyleCode,
           })) ?? [],
+        additionalHairDescriptors: person?.additionalHairDescriptors || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.identifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -440,7 +446,9 @@ const PartyEdit: FC = () => {
       hairColourOther: "",
       eyeColourCode: "",
       eyeColourOther: "",
+      facialHairIndicator: "",
       facialHairStyleCodes: [],
+      additionalHairDescriptors: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},

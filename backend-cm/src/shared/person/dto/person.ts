@@ -25,7 +25,9 @@ export class Person implements PersonDto {
   hairColourOther?: string;
   eyeColourCode?: string;
   eyeColourOther?: string;
+  facialHairIndicator?: boolean;
   facialHairStyleCodes?: [PersonFacialHairStyleCode];
+  additionalHairDescriptors?: string;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -112,6 +114,14 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.eyeColourOther,
       mapFrom((src) => src.eye_colour_other ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.facialHairIndicator,
+      mapFrom((src) => src.facial_hair_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.additionalHairDescriptors,
+      mapFrom((src) => src.additional_hair_descriptors ?? undefined),
     ),
     forMember(
       (dest) => dest.facialHairStyleCodes,

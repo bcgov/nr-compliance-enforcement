@@ -2068,6 +2068,7 @@ export type PermitSiteInput = {
 
 export type Person = {
   __typename?: 'Person';
+  additionalHairDescriptors?: Maybe<Scalars['String']['output']>;
   aliases?: Maybe<Array<Maybe<Alias>>>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
   buildCode?: Maybe<Scalars['String']['output']>;
@@ -2079,6 +2080,7 @@ export type Person = {
   driversLicenseNumber?: Maybe<Scalars['String']['output']>;
   eyeColourCode?: Maybe<Scalars['String']['output']>;
   eyeColourOther?: Maybe<Scalars['String']['output']>;
+  facialHairIndicator?: Maybe<Scalars['Boolean']['output']>;
   facialHairStyleCodes?: Maybe<Array<Maybe<PersonFacialHairStyleCode>>>;
   firstName?: Maybe<Scalars['String']['output']>;
   genderCode?: Maybe<Scalars['String']['output']>;
@@ -2108,6 +2110,7 @@ export type PersonFacialHairStyleCodeInput = {
 };
 
 export type PersonInput = {
+  additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
@@ -2119,6 +2122,7 @@ export type PersonInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   eyeColourCode?: InputMaybe<Scalars['String']['input']>;
   eyeColourOther?: InputMaybe<Scalars['String']['input']>;
+  facialHairIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   facialHairStyleCodes?: InputMaybe<Array<InputMaybe<PersonFacialHairStyleCodeInput>>>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
@@ -2132,6 +2136,7 @@ export type PersonInput = {
 };
 
 export type PersonUpdateInput = {
+  additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
@@ -2143,6 +2148,7 @@ export type PersonUpdateInput = {
   driversLicenseNumber?: InputMaybe<Scalars['String']['input']>;
   eyeColourCode?: InputMaybe<Scalars['String']['input']>;
   eyeColourOther?: InputMaybe<Scalars['String']['input']>;
+  facialHairIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   facialHairStyleCodes?: InputMaybe<Array<InputMaybe<PersonFacialHairStyleCodeInput>>>;
   firstName: Scalars['String']['input'];
   genderCode?: InputMaybe<Scalars['String']['input']>;
