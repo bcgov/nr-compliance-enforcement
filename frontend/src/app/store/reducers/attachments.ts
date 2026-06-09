@@ -264,7 +264,10 @@ const saveSingleAttachment = async ({
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous, onUploadProgress);
 
-  if (isImage(attachment.name) && !isSecureAttachmentType(attachmentType)) {
+  if (
+    isImage(attachment.name) &&
+    (!isSecureAttachmentType(attachmentType) || attachmentType === AttachmentEnum.PARTY_ATTACHMENT)
+  ) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,

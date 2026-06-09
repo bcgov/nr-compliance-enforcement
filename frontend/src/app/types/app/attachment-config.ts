@@ -37,4 +37,6 @@ export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentT
 
 // Stored in the secure bucket?
 export const isSecureAttachmentType = (attachmentType: AttachmentEnum): boolean =>
-  attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT;
+  attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
+  attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT ||
+  attachmentType === AttachmentEnum.PARTY_ATTACHMENT;
