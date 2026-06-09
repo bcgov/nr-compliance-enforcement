@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
+import { Col, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { z } from "zod";
 
 import { FormField } from "@/app/components/common/form-field";
@@ -96,36 +96,40 @@ export function HeightField({ form, isDisabled }: Readonly<HeightWeightFieldProp
                 error={error}
                 maxLength={3}
                 onChange={(evt: any) => handleCmChange(evt?.target?.value || "")}
-                placeholder="Enter height in cm..."
+                placeholder="Enter height in cm"
                 disabled={isDisabled}
               />
             ) : (
-              <>
-                <CompInput
-                  id="HeightFeet"
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input mt-3"
-                  value={feetInches ? String(feetInches.feet) : ""}
-                  error=""
-                  maxLength={1}
-                  onChange={(evt: any) => handleFeetChange(evt?.target?.value || "")}
-                  placeholder="Feet"
-                  disabled={isDisabled}
-                />
-                <CompInput
-                  id="HeightInches"
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input mt-3"
-                  value={feetInches ? String(feetInches.inches) : ""}
-                  error={error}
-                  maxLength={2}
-                  onChange={(evt: any) => handleInchesChange(evt?.target?.value || "")}
-                  placeholder="Inches"
-                  disabled={isDisabled}
-                />
-              </>
+              <Row className="mt-3">
+                <Col>
+                  <CompInput
+                    id="HeightFeet"
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input mt-3"
+                    value={feetInches ? String(feetInches.feet) : ""}
+                    error=""
+                    maxLength={1}
+                    onChange={(evt: any) => handleFeetChange(evt?.target?.value || "")}
+                    placeholder="Feet"
+                    disabled={isDisabled}
+                  />
+                </Col>
+                <Col>
+                  <CompInput
+                    id="HeightInches"
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input mt-3"
+                    value={feetInches ? String(feetInches.inches) : ""}
+                    error={error}
+                    maxLength={2}
+                    onChange={(evt: any) => handleInchesChange(evt?.target?.value || "")}
+                    placeholder="Inches"
+                    disabled={isDisabled}
+                  />
+                </Col>
+              </Row>
             )}
           </>
         );
@@ -199,7 +203,7 @@ export function WeightField({ form, isDisabled }: Readonly<HeightWeightFieldProp
                 error={error}
                 maxLength={3}
                 onChange={(evt: any) => handleKgChange(evt?.target?.value || "")}
-                placeholder="Enter weight in kg..."
+                placeholder="Enter weight in kg"
                 disabled={isDisabled}
               />
             ) : (

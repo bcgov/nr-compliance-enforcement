@@ -121,7 +121,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={50}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter first name..."
+            placeholder="Enter first name"
             disabled={isDisabled}
           />
         )}
@@ -142,7 +142,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={50}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter last name..."
+            placeholder="Enter last name"
             disabled={isDisabled}
           />
         )}
@@ -161,7 +161,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             error={field.state.meta.errors?.[0]?.message || ""}
             maxLength={256}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-            placeholder="Enter middle names..."
+            placeholder="Enter middle names"
             disabled={isDisabled}
           />
         )}
@@ -184,7 +184,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                   error={field.state.meta.errors?.[0]?.message || ""}
                   maxLength={512}
                   onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  placeholder="Enter alias..."
+                  placeholder="Enter alias"
                   disabled={isDisabled}
                 />
               </div>
@@ -304,7 +304,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                 form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
               }
             }}
-            placeholder="Enter driver's licence number..."
+            placeholder="Enter driver's licence number"
             disabled={isDisabled}
           />
         )}
@@ -327,7 +327,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                     error={field.state.meta.errors?.[0]?.message || ""}
                     maxLength={128}
                     onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                    placeholder="Enter driver's licence class..."
+                    placeholder="Enter driver's licence class"
                     disabled={isDisabled}
                   />
                 )}
@@ -604,7 +604,14 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             id="facial-hair-ind"
             label="Has facial hair"
             checked={field.state.value === true}
-            onChange={(evt: any) => field.handleChange(evt.target.checked)}
+            onChange={(evt: any) => {
+              const checked = evt.target.checked;
+              field.handleChange(checked);
+              if (!checked) {
+                // Clear any existing facial hair styles
+                form.setFieldValue("facialHairStyleCodes", []);
+              }
+            }}
             disabled={isDisabled}
           />
         )}

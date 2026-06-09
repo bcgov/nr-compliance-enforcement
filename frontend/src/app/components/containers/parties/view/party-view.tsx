@@ -800,7 +800,7 @@ export const PartyView: FC = () => {
                   )}
                   {partyData?.person?.eyeColourCode && (
                     <p>
-                      <b>Hair color: </b>
+                      <b>Eye colour: </b>
                       {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
                         partyData?.person.eyeColourCode}
                       {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
@@ -808,7 +808,7 @@ export const PartyView: FC = () => {
                   )}
                   {partyData?.person?.hairColourCode && (
                     <p>
-                      <b>Hair color: </b>
+                      <b>Hair colour: </b>
                       {hairColourOptions?.find((opt) => opt.value === partyData?.person?.hairColourCode)?.label ??
                         partyData?.person.hairColourCode}
                       {partyData?.person?.hairColourOther && ` (${partyData?.person?.hairColourOther})`}
