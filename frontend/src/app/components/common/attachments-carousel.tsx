@@ -123,7 +123,7 @@ export const Attachments: FC<Props> = ({
   const confirmFileUpdate = async (newFiles: FileList) => {
     let exisingFileNames: string[] = [];
 
-    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT) {
+    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
       exisingFileNames = slides.map((attachment) => {
         return getDisplayFilename(attachment.name);
       });
