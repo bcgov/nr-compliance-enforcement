@@ -5,7 +5,7 @@ import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
 import {
   Alias,
-  BusinessAddress,
+  Address,
   BusinessIdentifier,
   ContactMethod,
   CreateInspectionPartyInput,
@@ -189,7 +189,7 @@ const buildLocalAliases = (aliases: Alias[]) => {
 
 const buildLocalAddresses = (addresses: AddressFormValue[] | undefined, isUpdate: boolean = false) => {
   const mapped = (addresses ?? []).map((address) => ({
-    ...(isUpdate && address.businessAddressGuid ? { businessAddressGuid: address.businessAddressGuid } : {}),
+    ...(isUpdate && address.addressGuid ? { addressGuid: address.addressGuid } : {}),
     addressName: address.addressName?.trim() ?? "",
     address: address.address?.trim() || null,
     city: address.city?.trim() || null,
@@ -208,7 +208,7 @@ const mapAddressesFromInvestigationBusiness = (
   addresses
     ?.filter((address): address is InvestigationBusinessAddress => address != null)
     .map((address, index) => ({
-      businessAddressGuid: address.businessAddressGuid ?? undefined,
+      addressGuid: address.businessAddressGuid ?? undefined,
       addressName: address.addressName ?? "",
       address: address.address ?? "",
       city: address.city ?? "",
@@ -517,7 +517,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         business: {
           name: party.business.name,
           businessReference: party.business.businessGuid,
-          contactMethods: party.business?.contactMethods
+          contactMethods: party.contactMethods
             ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
             .map((cm: ContactMethod) => ({
               contactMethodTypeCode: cm.typeCode,
@@ -530,14 +530,14 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
               businessIdentifierCode: bi.identifierCode?.businessIdentifierCode,
               identifierValue: bi.identifierValue,
             })),
-          aliases: party.business?.aliases
+          aliases: party.aliases
             ?.filter((a: Alias): a is Alias => a != null)
             .map((a: Alias) => ({
               name: a.name,
             })),
-          addresses: party.business?.addresses
-            ?.filter((address: BusinessAddress | null): address is BusinessAddress => address != null)
-            .map((address: BusinessAddress) => ({
+          addresses: party.addresses
+            ?.filter((address: Address | null): address is Address => address != null)
+            .map((address: Address) => ({
               addressName: address.addressName ?? "",
               address: address.address ?? null,
               city: address.city ?? null,
