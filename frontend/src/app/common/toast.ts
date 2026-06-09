@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
-import { Id, toast, ToastOptions } from "react-toastify";
+import { Id, toast, ToastOptions, ToastPosition } from "react-toastify";
+
+export const TOAST_POSITION: ToastPosition = "bottom-right";
 
 export const ToggleSuccess = (message: string | ReactNode, options?: ToastOptions) => {
   toast.success(message, options);
