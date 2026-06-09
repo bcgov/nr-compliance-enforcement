@@ -32,7 +32,7 @@ import { CreateComplaintHeader } from "./create-complaint-header";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { createComplaint, selectComplaintDetails, setComplaint } from "@store/reducers/complaints";
 import { from } from "linq-to-typescript";
-import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@common/toast";
 import { useNavigate } from "react-router-dom";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
@@ -706,7 +706,7 @@ export const CreateComplaint: FC = () => {
     if (complaintId) {
       if (attachmentsToAdd?.length) {
         const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-          position: "bottom-right",
+          position: TOAST_POSITION,
           autoClose: false,
           closeOnClick: false,
           closeButton: false,

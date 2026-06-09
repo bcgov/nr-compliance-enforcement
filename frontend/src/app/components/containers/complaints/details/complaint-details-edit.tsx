@@ -50,7 +50,7 @@ import { from } from "linq-to-typescript";
 import { openModal } from "@store/reducers/app";
 import { useNavigate, useParams } from "react-router-dom";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
-import { DismissToast, ToggleError, ToggleInformation } from "@common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@common/toast";
 import { ComplaintHeader } from "./complaint-header";
 import { CallDetails } from "./call-details";
 import { CallerInformation } from "./caller-information";
@@ -381,7 +381,7 @@ export const ComplaintDetailsEdit: FC = () => {
 
         if (attachmentsToAdd?.length) {
           const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-            position: "bottom-right",
+            position: TOAST_POSITION,
             autoClose: false,
             closeOnClick: false,
             closeButton: false,

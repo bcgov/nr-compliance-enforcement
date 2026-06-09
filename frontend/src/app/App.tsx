@@ -1,6 +1,7 @@
 import { FC, ReactElement, useEffect } from "react";
 import { Route, BrowserRouter as Router, Routes, useParams } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { TOAST_POSITION } from "@/app/common/toast";
 import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoutes from "./components/routing";
@@ -83,7 +84,7 @@ const App: FC = () => {
         <Modal />
         <PageLoader />
         <ToastContainer //any options that might be overridden need to be given a default here
-          position="bottom-right"
+          position={TOAST_POSITION}
           // Disable toast auto-close for Playwright/WebDriver so toast assertions don't race the dismiss timer
           autoClose={typeof navigator !== "undefined" && navigator.webdriver ? false : 5000}
           hideProgressBar={false}

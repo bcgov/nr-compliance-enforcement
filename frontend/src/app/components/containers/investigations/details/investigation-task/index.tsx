@@ -8,7 +8,7 @@ import { TaskDetailEditModal } from "@/app/components/containers/investigations/
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Investigation, Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
-import { DismissToast, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation, ToggleSuccess } from "@/app/common/toast";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
@@ -76,7 +76,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     let toastId: ReturnType<typeof ToggleInformation> | undefined;
     try {
       toastId = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "bottom-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

@@ -11,7 +11,7 @@ import { DocumentationList } from "./documentation-list";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { useInvestigationAttachments, Attachment } from "./hooks/use-investigation-attachments";
 import { bulkDownload } from "@/app/store/reducers/bulk-download";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
 
@@ -59,7 +59,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
     let toastDownloadInfo: any;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "bottom-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,
