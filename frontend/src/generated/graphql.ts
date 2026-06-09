@@ -1991,6 +1991,7 @@ export type Party = {
   aliases?: Maybe<Array<Maybe<Alias>>>;
   business?: Maybe<Business>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
+  createdByUserGuid?: Maybe<Scalars['String']['output']>;
   createdDateTime?: Maybe<Scalars['DateTime']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   partyIdentifier?: Maybe<Scalars['String']['output']>;

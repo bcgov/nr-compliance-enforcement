@@ -13,6 +13,7 @@ import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
 import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { AppUserService } from "src/shared/app_user/app_user.service";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -20,6 +21,7 @@ const BUSINESS_NUMBER_CODE = "BNUM";
 export class PartyService {
   constructor(
     private readonly user: UserService,
+    private readonly appUser: AppUserService,
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
@@ -97,6 +99,7 @@ export class PartyService {
         party_type: true,
         create_utc_timestamp: true,
         update_utc_timestamp: true,
+        created_by_app_user_guid: true,
         party_type_code: {
           select: {
             party_type_code: true,
@@ -263,8 +266,6 @@ export class PartyService {
       },
     });
 
-    console.dir(prismaParty, { depth: null });
-
     try {
       return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
     } catch (error) {
@@ -281,9 +282,9 @@ export class PartyService {
       }
 
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-        data = this._buildPersonCreateData(input);
+        data = await this._buildPersonCreateData(input);
       } else {
-        data = this._buildBusinessCreateData(input);
+        data = await this._buildBusinessCreateData(input);
       }
 
       const prismaParty = await this.prisma.party.create({
@@ -302,11 +303,14 @@ export class PartyService {
     }
   }
 
-  private _buildPersonCreateData(input: PartyCreateInput): any {
+  private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
+    const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
+
     return {
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
+      created_by_app_user_guid: createdByUser.appUserGuid,
       ...(input.addresses?.length
         ? {
             address: {
@@ -397,16 +401,19 @@ export class PartyService {
     };
   }
 
-  private _buildBusinessCreateData(input: PartyCreateInput): any {
+  private async _buildBusinessCreateData(input: PartyCreateInput): Promise<any> {
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
       null,
     );
 
+    const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
+
     return {
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
+      created_by_app_user_guid: createdByUser.appUserGuid,
       ...(input.addresses?.length
         ? {
             address: {

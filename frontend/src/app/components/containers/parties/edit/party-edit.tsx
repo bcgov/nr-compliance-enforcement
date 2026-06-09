@@ -377,8 +377,6 @@ const PartyEdit: FC = () => {
       };
     });
 
-  console.log(partyData);
-
   const defaultValues = useMemo(() => {
     if (isEditMode && partyData?.party) {
       const person = partyData.party.person;

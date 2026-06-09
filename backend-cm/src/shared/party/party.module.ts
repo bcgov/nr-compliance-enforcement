@@ -10,6 +10,7 @@ import { UserModule } from "../../common/user.module";
 import { InvestigationModule } from "../../investigation/investigation/investigation.module";
 import { InspectionModule } from "../../inspection/inspection/inspection.module";
 import { CaseFileModule } from "../case_file/case_file.module";
+import { AppUserModule } from "src/shared/app_user/app_user.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CaseFileModule } from "../case_file/case_file.module";
     AutomapperModule,
     PaginationModule,
     UserModule,
+    AppUserModule,
     InvestigationModule,
     InspectionModule,
     CaseFileModule,

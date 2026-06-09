@@ -87,6 +87,7 @@ model app_user {
   office               office?              @relation(fields: [office_guid], references: [office_guid], onDelete: NoAction, onUpdate: NoAction, map: "app_user_office_fk")
   app_user_team_xref   app_user_team_xref[]
   case_file            case_file[]
+  party                party[]
 
   @@schema("shared")
 }
@@ -725,18 +726,20 @@ model park_area_xref {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model party {
-  party_guid           String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_type           String?          @db.VarChar(16)
-  create_user_id       String           @db.VarChar(32)
-  create_utc_timestamp DateTime         @default(now()) @db.Timestamp(6)
-  update_user_id       String?          @db.VarChar(32)
-  update_utc_timestamp DateTime?        @db.Timestamp(6)
-  address              address[]
-  alias                alias[]
-  business             business?
-  contact_method       contact_method[]
-  party_type_code      party_type_code? @relation(fields: [party_type], references: [party_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_party__party_type")
-  person               person?
+  party_guid               String           @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_type               String?          @db.VarChar(16)
+  create_user_id           String           @db.VarChar(32)
+  create_utc_timestamp     DateTime         @default(now()) @db.Timestamp(6)
+  update_user_id           String?          @db.VarChar(32)
+  update_utc_timestamp     DateTime?        @db.Timestamp(6)
+  created_by_app_user_guid String?          @db.Uuid
+  address                  address[]
+  alias                    alias[]
+  business                 business?
+  contact_method           contact_method[]
+  app_user                 app_user?        @relation(fields: [created_by_app_user_guid], references: [app_user_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_party__created_by_app_user_guid")
+  party_type_code          party_type_code? @relation(fields: [party_type], references: [party_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_party__party_type")
+  person                   person?
 
   @@schema("shared")
 }
@@ -1120,5 +1123,19 @@ model person_facial_hair_style_code_h {
   operation_executed_at                DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation        Json?
 
+  @@schema("shared")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model address_h {
+  h_address_guid                String   @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@ignore
   @@schema("shared")
 }

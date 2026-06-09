@@ -20,6 +20,7 @@ export class Party implements PartyDto {
   shortDescription: string;
   createdDateTime: Date;
   updatedDateTime: Date;
+  createdByUserGuid: string;
   person: Person;
   business: Business;
   addresses: [Address];
@@ -132,6 +133,11 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.updatedDateTime,
       mapFrom((src) => src.update_utc_timestamp),
+    ),
+
+    forMember(
+      (dest) => dest.createdByUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid),
     ),
 
     forMember(

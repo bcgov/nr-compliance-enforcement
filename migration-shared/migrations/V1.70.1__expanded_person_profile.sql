@@ -689,3 +689,15 @@ ALTER TABLE person
     ADD COLUMN bolo_ind boolean;
 
 COMMENT ON COLUMN shared.person.bolo_ind IS 'Indicates whether the person has a caution flag or advises officers to be on the lookout (BOLO) for the invdividual.';
+
+-- Explicitly track who created it
+
+ALTER TABLE party
+    ADD COLUMN created_by_app_user_guid uuid;
+
+ALTER TABLE party
+    ADD CONSTRAINT fk_party__created_by_app_user_guid
+    FOREIGN KEY (created_by_app_user_guid)
+    REFERENCES app_user (app_user_guid);
+
+COMMENT ON COLUMN shared.party.created_by_app_user_guid IS 'The app user that created the party. References app_user.';
