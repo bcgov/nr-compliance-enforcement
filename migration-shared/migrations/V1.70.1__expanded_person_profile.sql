@@ -195,6 +195,7 @@ EXECUTE FUNCTION audit_history (
 DROP TRIGGER IF EXISTS business_address_history_trigger ON business_address;
 DROP INDEX IF EXISTS business_address_primary_unique;
 DROP TABLE IF EXISTS business_address;
+DROP TABLE IF EXISTS business_address_h;
 
 CREATE TABLE
   address (

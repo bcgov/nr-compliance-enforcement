@@ -731,7 +731,7 @@ export class PartyService {
         // Deactivations must come before primary-flag updates to avoid violating the
         // unique-active-primary-per-business constraint when the deleted address is primary.
         ...addressesToDelete.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
+          where: { address_guid: a.addressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -1068,7 +1068,10 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
-      const code = typeof incoming.identifierCode === "string" ? incoming.identifierCode : incoming.identifierCode?.businessIdentifierCode;
+      const code =
+        typeof incoming.identifierCode === "string"
+          ? incoming.identifierCode
+          : incoming.identifierCode?.businessIdentifierCode;
       if (incoming.businessIdentifierGuid) {
         const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
         if (existing && existing.identifierValue !== incoming.identifierValue) {
@@ -1087,14 +1090,10 @@ export class PartyService {
       });
   }
 
-  private _diffBusinessAddresses(
-    existingAddresses: BusinessAddress[],
-    incomingAddresses: BusinessAddress[],
-    addEvent: AddEventFn,
-  ): void {
+  private _diffAddresses(existingAddresses: Address[], incomingAddresses: Address[], addEvent: AddEventFn): void {
     for (const incoming of incomingAddresses) {
-      if (incoming.businessAddressGuid) {
-        const existing = existingAddresses.find((a) => a.businessAddressGuid === incoming.businessAddressGuid);
+      if (incoming.addressGuid) {
+        const existing = existingAddresses.find((a) => a.addressGuid === incoming.addressGuid);
         if (!existing) continue;
         const label = incoming.addressName || existing.addressName;
         this._compareField("address name", existing.addressName, incoming.addressName, addEvent);
@@ -1113,9 +1112,9 @@ export class PartyService {
         });
       }
     }
-    const incomingGuids = new Set(incomingAddresses.map((a) => a.businessAddressGuid));
+    const incomingGuids = new Set(incomingAddresses.map((a) => a.addressGuid));
     existingAddresses
-      .filter((a) => !incomingGuids.has(a.businessAddressGuid))
+      .filter((a) => !incomingGuids.has(a.addressGuid))
       .forEach((a) =>
         addEvent("REMOVED", "address", a.addressName, null, {
           streetAddress: a.address ?? null,
@@ -1128,7 +1127,7 @@ export class PartyService {
     // Detect when the primary address switches from one address to another
     const oldPrimary = existingAddresses.find((a) => a.isPrimary);
     const newPrimary = incomingAddresses.find((a) => a.isPrimary);
-    if (oldPrimary && newPrimary && oldPrimary.businessAddressGuid !== newPrimary.businessAddressGuid) {
+    if (oldPrimary && newPrimary && oldPrimary.addressGuid !== newPrimary.addressGuid) {
       addEvent("EDITED", "primary address", oldPrimary.addressName, newPrimary.addressName);
     }
   }
@@ -1136,7 +1135,7 @@ export class PartyService {
   private _diffNewContact(incoming: BusinessPersonXref, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
     addEvent("ADDED", "business contact", null, name);
-    for (const cm of incoming.person?.contactMethods ?? []) {
+    for (const cm of incoming.contactMethods ?? []) {
       if (cm?.value) {
         const contactLabel = name
           ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
@@ -1166,8 +1165,8 @@ export class PartyService {
     }
 
     this._compareContactMethods(
-      existingXref.person?.contactMethods ?? [],
-      incoming.person?.contactMethods ?? [],
+      existingXref.contactMethods ?? [],
+      incoming.contactMethods ?? [],
       (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
       addEvent,
     );
@@ -1201,8 +1200,7 @@ export class PartyService {
   ): void {
     if (!oldPerson || !newPerson) return;
     this._compareField("first name", oldPerson.firstName, newPerson.firstName, addEvent);
-    this._compareField("middle name", oldPerson.middleName, newPerson.middleName, addEvent);
-    this._compareField("middle name 2", oldPerson.middleName2, newPerson.middleName2, addEvent);
+    this._compareField("middle name", oldPerson.middleNames, newPerson.middleNames, addEvent);
     this._compareField("last name", oldPerson.lastName, newPerson.lastName, addEvent);
     this._compareField(
       "date of birth",
@@ -1218,17 +1216,17 @@ export class PartyService {
     );
     this._compareField(
       "driver's licence jurisdiction",
-      oldPerson.driversLicenseJurisdiction,
-      newPerson.driversLicenseJurisdiction,
+      oldPerson.driversLicenseCountrySubdivisionCode,
+      newPerson.driversLicenseCountrySubdivisionCode,
       addEvent,
     );
-    this._compareField("sex", oldPerson.sexCode, newPerson.sexCode, addEvent);
-    this._compareContactMethods(
-      oldPerson.contactMethods ?? [],
-      newPerson.contactMethods ?? [],
-      (tc) => this._contactMethodLabel(tc),
-      addEvent,
-    );
+    this._compareField("sex", oldPerson.genderCode, newPerson.genderCode, addEvent);
+    //this._compareContactMethods(
+    //  oldPerson.contactMethods ?? [],
+    //  newPerson.contactMethods ?? [],
+    //  (tc) => this._contactMethodLabel(tc),
+    //  addEvent,
+    //);
   }
 
   private _diffBusinessChanges(
@@ -1238,15 +1236,15 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._diffAliases(oldBusiness.aliases ?? [], newBusiness.aliases ?? [], addEvent);
+    //this._diffAliases(oldBusiness.aliases ?? [], newBusiness.aliases ?? [], addEvent);
     this._diffBusinessIdentifiers(oldBusiness.identifiers ?? [], newBusiness.identifiers ?? [], addEvent);
-    this._diffBusinessAddresses(oldBusiness.addresses ?? [], newBusiness.addresses ?? [], addEvent);
-    this._compareContactMethods(
-      oldBusiness.contactMethods ?? [],
-      newBusiness.contactMethods ?? [],
-      (tc) => `business ${this._contactMethodLabel(tc)}`,
-      addEvent,
-    );
+    //this._diffBusinessAddresses(oldBusiness.addresses ?? [], newBusiness.addresses ?? [], addEvent);
+    //this._compareContactMethods(
+    //  oldBusiness.contactMethods ?? [],
+    //  newBusiness.contactMethods ?? [],
+    //  (tc) => `business ${this._contactMethodLabel(tc)}`,
+    //  addEvent,
+    //);
     this._diffContactPeople(oldBusiness.contactPeople ?? [], newBusiness.contactPeople ?? [], addEvent);
   }
 

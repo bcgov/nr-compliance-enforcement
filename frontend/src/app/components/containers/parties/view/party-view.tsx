@@ -711,7 +711,7 @@ export const PartyView: FC = () => {
                     <span>Edit party</span>
                   </Button>
                 </div>
-              </div>   
+              </div>
               <br />
               <h4>Identifying information</h4>
               <div className="party-details-item">
@@ -741,177 +741,7 @@ export const PartyView: FC = () => {
                   />
                 )}
               </div>
-            </div>
-            <br />  
-            {partyRelations && partyRelations.length > 0 && (
-              <AssociatedCasesAndActivities partyRelations={partyRelations} />
-            )}
-            <br />
-            <h4>Contact information</h4>
-
-            <div className="party-details-item">
-              {partyData?.contactMethods && partyData.contactMethods.length > 0 && (
-                <ContactMethodsList contactMethods={partyData.contactMethods as ReadonlyArray<ContactMethod>} />
-              )}
-              {partyData?.business?.contactPeople && (
-                <>
-                  <h4>Business contacts</h4>
-                  {partyData.business.contactPeople.map((contactPerson, index) => {
-                    return (
-                      <div key={contactPerson?.person?.personGuid}>
-                        <p>
-                          <b>Name: </b>
-                          {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
-                        </p>
-                        {contactPerson?.contactMethods && (
-                          <ContactMethodsList
-                            contactMethods={contactPerson.contactMethods as ReadonlyArray<ContactMethod>}
-                          />
-                        )}
-                        {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
-                      </div>
-                    );
-                  })}
-                </>
-              )}
-            </div>
-            {addresses?.length > 0 && (
-              <>
-                <br />
-                <h4>Addresses</h4>
-                <AddressesList
-                  addresses={addresses}
-                  countryOptions={countryOptions}
-                  countrySubdivisionOptions={countrySubdivisionOptions}
-                />
-              </>
-            )}
-
-            {partyData?.person && (
-              <>
-                <br />
-                <h4>Physical descriptors</h4>
-                <div className="party-details-item">
-                  {partyData?.person?.heightInCm && (
-                    <p>
-                      <b>Height: </b>
-                      {partyData?.person?.heightInCm} cm ({imperialHeight.feet} feet {imperialHeight.inches} inches)
-                    </p>
-                  )}
-                  {partyData?.person?.weightInKg && (
-                    <p>
-                      <b>Weight: </b>
-                      {partyData?.person?.weightInKg} kg ({imperialWeight} lbs)
-                    </p>
-                  )}
-                  {partyData?.person?.complexionCode && (
-                    <p>
-                      <b>Complexion: </b>
-                      {complexionOptions?.find((opt) => opt.value === partyData?.person?.complexionCode)?.label ??
-                        partyData?.person.complexionCode}
-                    </p>
-                  )}
-                  {partyData?.person?.buildCode && (
-                    <p>
-                      <b>Build: </b>
-                      {buildOptions?.find((opt) => opt.value === partyData?.person?.buildCode)?.label ??
-                        partyData?.person.buildCode}
-                    </p>
-                  )}
-                  {partyData?.person?.eyeColourCode && (
-                    <p>
-                      <b>Eye colour: </b>
-                      {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
-                        partyData?.person.eyeColourCode}
-                      {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
-                    </p>
-                  )}
-                  {partyData?.person?.hairColourCode && (
-                    <p>
-                      <b>Hair colour: </b>
-                      {hairColourOptions?.find((opt) => opt.value === partyData?.person?.hairColourCode)?.label ??
-                        partyData?.person.hairColourCode}
-                      {partyData?.person?.hairColourOther && ` (${partyData?.person?.hairColourOther})`}
-                    </p>
-                  )}
-                  {partyData?.person?.hairLengthCode && (
-                    <p>
-                      <b>Hair length: </b>
-                      {hairLengthOptions?.find((opt) => opt.value === partyData?.person?.hairLengthCode)?.label ??
-                        partyData?.person.hairLengthCode}
-                    </p>
-                  )}
-                  {partyData?.person?.facialHairIndicator != null && (
-                    <p>
-                      <b>Has facial hair: </b>
-                      {partyData.person.facialHairIndicator ? "Yes" : "No"}
-                    </p>
-                  )}
-                  {partyData?.person?.facialHairStyleCodes && (
-                    <>
-                      {partyData.person.facialHairStyleCodes.map((fhs) => {
-                        return (
-                          <p key={fhs?.personFacialStyleHairCodeGuid}>
-                            <b>Facial hair style: </b>
-                            {facialHairStyleOptions?.find((opt) => opt.value === fhs?.facialHairStyleCode)?.label ??
-                              fhs?.facialHairStyleCode}
-                          </p>
-                        );
-                      })}
-                    </>
-                  )}
-                  {partyData?.person?.additionalHairDescriptors && (
-                    <p>
-                      <b>Additional hair descriptors: </b>
-                      {partyData?.person?.additionalHairDescriptors}
-                    </p>
-                  )}
-                  {partyData?.person?.tattooIndicator != null && (
-                    <p>
-                      <b>Has tattoos: </b>
-                      {partyData.person.tattooIndicator ? "Yes" : "No"}
-                    </p>
-                  )}
-                  {partyData?.person?.tattooDescription && (
-                    <p>
-                      <b>Tattoo description: </b>
-                      {partyData?.person?.tattooDescription}
-                    </p>
-                  )}
-                  {partyData?.person?.additionalDescriptors && (
-                    <p>
-                      <b>Additional descriptors: </b>
-                      {partyData?.person?.additionalDescriptors}
-                    </p>
-                  )}
-                </div>
-              </>
-            )}
-            <br />
-            <h4>C&E history</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
-              </p>
-            </div>
-            <br />
-            {partyData?.person?.comments && (
-              <>
-                <h4>Additional information</h4>
-                <div className="party-details-item">
-                  <p>
-                    {partyData?.person?.comments && (
-                      <p>
-                        <b>Comments: </b>
-                        {partyData?.person?.comments}
-                      </p>
-                    )}
-                  </p>
-                </div>
-                <br />
-              </>
-            )}
-          </section>
+              <br />
               {partyRelations && partyRelations.length > 0 && (
                 <AssociatedCasesAndActivities partyRelations={partyRelations} />
               )}
@@ -919,15 +749,8 @@ export const PartyView: FC = () => {
               <h4>Contact information</h4>
 
               <div className="party-details-item">
-                {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                  <ContactMethodsList
-                    contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>}
-                  />
-                )}
-                {partyData?.business?.contactMethods && (
-                  <ContactMethodsList
-                    contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
-                  />
+                {partyData?.contactMethods && partyData.contactMethods.length > 0 && (
+                  <ContactMethodsList contactMethods={partyData.contactMethods as ReadonlyArray<ContactMethod>} />
                 )}
                 {partyData?.business?.contactPeople && (
                   <>
@@ -939,9 +762,9 @@ export const PartyView: FC = () => {
                             <b>Name: </b>
                             {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
                           </p>
-                          {contactPerson?.person?.contactMethods && (
+                          {contactPerson?.contactMethods && (
                             <ContactMethodsList
-                              contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
+                              contactMethods={contactPerson.contactMethods as ReadonlyArray<ContactMethod>}
                             />
                           )}
                           {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
@@ -951,15 +774,116 @@ export const PartyView: FC = () => {
                   </>
                 )}
               </div>
-              {businessAddresses.length > 0 && (
+              {addresses?.length > 0 && (
                 <>
                   <br />
                   <h4>Addresses</h4>
-                  <BusinessAddressesList
-                    addresses={businessAddresses}
+                  <AddressesList
+                    addresses={addresses}
                     countryOptions={countryOptions}
                     countrySubdivisionOptions={countrySubdivisionOptions}
                   />
+                </>
+              )}
+
+              {partyData?.person && (
+                <>
+                  <br />
+                  <h4>Physical descriptors</h4>
+                  <div className="party-details-item">
+                    {partyData?.person?.heightInCm && (
+                      <p>
+                        <b>Height: </b>
+                        {partyData?.person?.heightInCm} cm ({imperialHeight.feet} feet {imperialHeight.inches} inches)
+                      </p>
+                    )}
+                    {partyData?.person?.weightInKg && (
+                      <p>
+                        <b>Weight: </b>
+                        {partyData?.person?.weightInKg} kg ({imperialWeight} lbs)
+                      </p>
+                    )}
+                    {partyData?.person?.complexionCode && (
+                      <p>
+                        <b>Complexion: </b>
+                        {complexionOptions?.find((opt) => opt.value === partyData?.person?.complexionCode)?.label ??
+                          partyData?.person.complexionCode}
+                      </p>
+                    )}
+                    {partyData?.person?.buildCode && (
+                      <p>
+                        <b>Build: </b>
+                        {buildOptions?.find((opt) => opt.value === partyData?.person?.buildCode)?.label ??
+                          partyData?.person.buildCode}
+                      </p>
+                    )}
+                    {partyData?.person?.eyeColourCode && (
+                      <p>
+                        <b>Eye colour: </b>
+                        {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
+                          partyData?.person.eyeColourCode}
+                        {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
+                      </p>
+                    )}
+                    {partyData?.person?.hairColourCode && (
+                      <p>
+                        <b>Hair colour: </b>
+                        {hairColourOptions?.find((opt) => opt.value === partyData?.person?.hairColourCode)?.label ??
+                          partyData?.person.hairColourCode}
+                        {partyData?.person?.hairColourOther && ` (${partyData?.person?.hairColourOther})`}
+                      </p>
+                    )}
+                    {partyData?.person?.hairLengthCode && (
+                      <p>
+                        <b>Hair length: </b>
+                        {hairLengthOptions?.find((opt) => opt.value === partyData?.person?.hairLengthCode)?.label ??
+                          partyData?.person.hairLengthCode}
+                      </p>
+                    )}
+                    {partyData?.person?.facialHairIndicator != null && (
+                      <p>
+                        <b>Has facial hair: </b>
+                        {partyData.person.facialHairIndicator ? "Yes" : "No"}
+                      </p>
+                    )}
+                    {partyData?.person?.facialHairStyleCodes && (
+                      <>
+                        {partyData.person.facialHairStyleCodes.map((fhs) => {
+                          return (
+                            <p key={fhs?.personFacialStyleHairCodeGuid}>
+                              <b>Facial hair style: </b>
+                              {facialHairStyleOptions?.find((opt) => opt.value === fhs?.facialHairStyleCode)?.label ??
+                                fhs?.facialHairStyleCode}
+                            </p>
+                          );
+                        })}
+                      </>
+                    )}
+                    {partyData?.person?.additionalHairDescriptors && (
+                      <p>
+                        <b>Additional hair descriptors: </b>
+                        {partyData?.person?.additionalHairDescriptors}
+                      </p>
+                    )}
+                    {partyData?.person?.tattooIndicator != null && (
+                      <p>
+                        <b>Has tattoos: </b>
+                        {partyData.person.tattooIndicator ? "Yes" : "No"}
+                      </p>
+                    )}
+                    {partyData?.person?.tattooDescription && (
+                      <p>
+                        <b>Tattoo description: </b>
+                        {partyData?.person?.tattooDescription}
+                      </p>
+                    )}
+                    {partyData?.person?.additionalDescriptors && (
+                      <p>
+                        <b>Additional descriptors: </b>
+                        {partyData?.person?.additionalDescriptors}
+                      </p>
+                    )}
+                  </div>
                 </>
               )}
               <br />
@@ -970,12 +894,22 @@ export const PartyView: FC = () => {
                 </p>
               </div>
               <br />
-              <h4>Additional information</h4>
-              <div className="party-details-item">
-                <p>
-                  <i>&#8226; Related people, vehicles etc.</i>
-                </p>
-              </div>
+              {partyData?.person?.comments && (
+                <>
+                  <h4>Additional information</h4>
+                  <div className="party-details-item">
+                    <p>
+                      {partyData?.person?.comments && (
+                        <p>
+                          <b>Comments: </b>
+                          {partyData?.person?.comments}
+                        </p>
+                      )}
+                    </p>
+                  </div>
+                  <br />
+                </>
+              )}
             </section>
           )}
         </div>
