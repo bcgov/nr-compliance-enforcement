@@ -289,7 +289,7 @@ const validateBusinessForm = async (value: any, businessGuid?: string): Promise<
 const buildBusinessUpdate = (value: any) => {
   return {
     name: value.businessName,
-    aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+    aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber, true),
     addresses: buildAddresses(value.addresses, true),
     contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
