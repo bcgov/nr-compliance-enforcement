@@ -33,6 +33,7 @@ interface DeleteAttachmentParams {
   attachment: COMSObject;
   identifier: string | null;
   isComplaintAttachment: boolean;
+  attachmentType: AttachmentEnum;
 }
 
 interface BuildHeaderParams {
@@ -181,20 +182,22 @@ const deleteSingleAttachment = async ({
   attachment,
   identifier,
   isComplaintAttachment,
+  attachmentType,
 }: DeleteAttachmentParams) => {
   const parameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.id}`);
 
   const response = await deleteMethod<string>(dispatch, parameters);
 
   if (response) {
-    if (isComplaintAttachment) {
+    if (isComplaintAttachment || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
       if (isImage(attachment.name)) {
         const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${attachment.imageIconId}`);
         await deleteMethod<string>(dispatch, thumbParameters);
       }
-
-      const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
-      await patch<string>(dispatch, parameters);
+      if (isComplaintAttachment) {
+        const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/complaint/update-date-by-id/${identifier}`);
+        await patch<string>(dispatch, parameters);
+      }
     }
     ToggleSuccess(`Attachment ${safeDecodeFilename(attachment.name)} has been removed`);
   }
@@ -214,6 +217,7 @@ export const deleteAttachments =
             attachment,
             identifier,
             isComplaintAttachment,
+            attachmentType,
           });
         } catch (error) {
           console.error(error);
@@ -260,7 +264,10 @@ const saveSingleAttachment = async ({
 
   const response = await putFile<COMSObject>(dispatch, parameters, header, attachment, isSynchronous, onUploadProgress);
 
-  if (isImage(attachment.name) && !isSecureAttachmentType(attachmentType)) {
+  if (
+    isImage(attachment.name) &&
+    (!isSecureAttachmentType(attachmentType) || attachmentType === AttachmentEnum.PARTY_ATTACHMENT)
+  ) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
       identifier,
@@ -271,7 +278,8 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const bucketId = config.COMS_BUCKET;
+    const bucketId =
+      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 

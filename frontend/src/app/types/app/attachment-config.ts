@@ -25,6 +25,10 @@ const ATTACHMENT_TYPE_CONFIG: Record<AttachmentEnum, AttachmentTypeConfig> = {
     subHeaderKey: "x-amz-meta-enforcement-action-id",
     shouldUpdateComplaintDate: false,
   },
+  [AttachmentEnum.PARTY_ATTACHMENT]: {
+    headerKey: "x-amz-meta-party-id",
+    shouldUpdateComplaintDate: false,
+  },
 };
 
 export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentTypeConfig => {
@@ -33,4 +37,6 @@ export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentT
 
 // Stored in the secure bucket?
 export const isSecureAttachmentType = (attachmentType: AttachmentEnum): boolean =>
-  attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT;
+  attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
+  attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT ||
+  attachmentType === AttachmentEnum.PARTY_ATTACHMENT;

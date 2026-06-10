@@ -17,6 +17,7 @@ import {
   Address,
 } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
+import { PartyCarousel } from "@/app/components/containers/parties/attachments/party-carousel";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
 import {
@@ -668,9 +669,7 @@ export const PartyView: FC = () => {
               <hr className="comp-details-body-spacer"></hr>
               <h2>Party details</h2>
               <div className="party-details-summary-container">
-                <div className="party-details-summary-vcard-container">
-                  <i className="bi bi-person-vcard party-details-summary-vcard"></i>
-                </div>
+                <div className="party-details-summary-vcard-container">{id ? <PartyCarousel partyId={id} /> : ""}</div>
                 <div className="party-details-summary-info">
                   <div className="d-flex align-items-center gap-2">
                     <h3 className="mb-0">{displayName()}</h3>
