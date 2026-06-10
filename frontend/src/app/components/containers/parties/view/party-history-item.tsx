@@ -4,14 +4,24 @@ import { Event } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
+import {
+  selectApproximateAges,
+  selectBuilds,
+  selectComplexions,
+  selectCountries,
+  selectCountrySubdivisions,
+  selectEyeColours,
+  selectFacialHairStyles,
+  selectGenders,
+  selectHairColours,
+  selectHairLengths,
+} from "@/app/store/reducers/code-table-selectors";
+import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
 
 interface PartyHistoryItemProps {
   event: Event;
   appUsers?: AppUser[];
 }
-
-const SEX_LABELS: Record<string, string> = { M: "male", F: "female", U: "unknown" };
 
 const getIconByVerb = (verbCode: string): string => {
   const verbIcons: { [key: string]: string } = {
@@ -26,6 +36,14 @@ const getIconByVerb = (verbCode: string): string => {
 const useEventDescription = (event: Event): string => {
   const countries = useAppSelector(selectCountries);
   const countrySubdivisions = useAppSelector(selectCountrySubdivisions);
+  const approximateAges = useAppSelector(selectApproximateAges);
+  const genders = useAppSelector(selectGenders);
+  const complexions = useAppSelector(selectComplexions);
+  const builds = useAppSelector(selectBuilds);
+  const eyeColours = useAppSelector(selectEyeColours);
+  const hairColours = useAppSelector(selectHairColours);
+  const hairLengths = useAppSelector(selectHairLengths);
+  const facialHairStyles = useAppSelector(selectFacialHairStyles);
 
   const verb = event.eventVerbTypeCode.eventVerbTypeCode;
   const content = event.content as {
@@ -49,11 +67,30 @@ const useEventDescription = (event: Event): string => {
 
   const formatValue = (value: string | null | undefined): string => {
     if (!value) return "";
-    if (field === "sex") return SEX_LABELS[value] ?? value;
+    if (field === "gender") return genders.find((s) => s.value === value)?.label ?? value;
     if (field.includes("phone number")) return formatPhoneNumber(value) || value;
     if (field.includes("country")) return countries.find((c) => c.value === value)?.label ?? value;
     if (field.includes("province")) return countrySubdivisions.find((s) => s.value === value)?.label ?? value;
+    if (field === "approximate age") return approximateAges.find((s) => s.value === value)?.label ?? value;
+    if (field === "height") return formatHeight(Number.parseFloat(value)) || value;
+    if (field === "weight") return formatWeight(Number.parseFloat(value)) || value;
+    if (field === "complexion") return complexions.find((s) => s.value === value)?.label ?? value;
+    if (field === "build") return builds.find((s) => s.value === value)?.label ?? value;
+    if (field === "eye colour") return eyeColours.find((s) => s.value === value)?.label ?? value;
+    if (field === "hair colour") return hairColours.find((s) => s.value === value)?.label ?? value;
+    if (field === "hair length") return hairLengths.find((s) => s.value === value)?.label ?? value;
+    if (field === "facial hair style") return facialHairStyles.find((s) => s.value === value)?.label ?? value;
     return value;
+  };
+
+  const formatHeight = (metricHeight: number): string => {
+    const imperialHeight = cmToFeetInches(metricHeight ?? 0);
+    return `${metricHeight} cm (${imperialHeight.feet} feet ${imperialHeight.inches} inches)`;
+  };
+
+  const formatWeight = (metricWeight: number): string => {
+    const imperialWeight = kgToLb(metricWeight ?? 0);
+    return `${metricWeight} kg (${imperialWeight} lbs)`;
   };
 
   // Builds the detail portion for address add/remove events: "123 Main St, Victoria, British Columbia, V8V 1A1, Canada"

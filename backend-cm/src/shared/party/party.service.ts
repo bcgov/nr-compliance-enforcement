@@ -131,6 +131,7 @@ export class PartyService {
         },
         contact_method: {
           select: {
+            contact_method_guid: true,
             contact_method_type: true,
             contact_method_type_code: true,
             contact_value: true,
@@ -1193,6 +1194,40 @@ export class PartyService {
       });
   }
 
+  private _diffFacialHairTypes(
+    existingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingFacialHairStyles) {
+      if (incoming.personFacialStyleHairCodeGuid) {
+        const existing = existingFacialHairStyles.find(
+          (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
+        );
+        if (existing && existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
+          addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
+        }
+      } else {
+        addEvent("ADDED", "facial hair style", null, incoming.facialHairStyleCode);
+      }
+    }
+    const incomingGuids = new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
+    existingFacialHairStyles
+      .filter((fhs) => !incomingGuids.has(fhs.personFacialStyleHairCodeGuid))
+      .forEach((fhs) => addEvent("REMOVED", "facial hair style", fhs.facialHairStyleCode, null));
+  }
+
+  private _diffPartyChanges(oldParty: Party, newParty: PartyUpdateInput, addEvent: AddEventFn): void {
+    this._diffAliases(oldParty.aliases ?? [], newParty.aliases ?? [], addEvent);
+    this._compareContactMethods(
+      oldParty.contactMethods ?? [],
+      newParty.contactMethods ?? [],
+      (tc) => this._contactMethodLabel(tc),
+      addEvent,
+    );
+    this._diffAddresses(oldParty.addresses ?? [], newParty.addresses ?? [], addEvent);
+  }
+
   private _diffPersonChanges(
     oldPerson: Party["person"],
     newPerson: PartyUpdateInput["person"],
@@ -1208,6 +1243,7 @@ export class PartyService {
       newPerson.dateOfBirth ? newPerson.dateOfBirth.toISOString().split("T")[0] : null,
       addEvent,
     );
+    this._compareField("approximate age", oldPerson.approximateAgeCode, newPerson.approximateAgeCode, addEvent);
     this._compareField(
       "driver's licence number",
       oldPerson.driversLicenseNumber,
@@ -1215,18 +1251,50 @@ export class PartyService {
       addEvent,
     );
     this._compareField(
-      "driver's licence jurisdiction",
+      "driver's licence class",
+      oldPerson.driversLicenseClass,
+      newPerson.driversLicenseClass,
+      addEvent,
+    );
+    this._compareField(
+      "driver's licence country",
+      oldPerson.driversLicenseCountryCode,
+      newPerson.driversLicenseCountryCode,
+      addEvent,
+    );
+    this._compareField(
+      "driver's licence province",
       oldPerson.driversLicenseCountrySubdivisionCode,
       newPerson.driversLicenseCountrySubdivisionCode,
       addEvent,
     );
-    this._compareField("sex", oldPerson.genderCode, newPerson.genderCode, addEvent);
-    //this._compareContactMethods(
-    //  oldPerson.contactMethods ?? [],
-    //  newPerson.contactMethods ?? [],
-    //  (tc) => this._contactMethodLabel(tc),
-    //  addEvent,
-    //);
+    this._compareField("gender", oldPerson.genderCode, newPerson.genderCode, addEvent);
+    this._compareField("height", oldPerson.heightInCm, newPerson.heightInCm, addEvent);
+    this._compareField("weight", oldPerson.weightInKg, newPerson.weightInKg, addEvent);
+    this._compareField("complexion", oldPerson.complexionCode, newPerson.complexionCode, addEvent);
+    this._compareField("build", oldPerson.buildCode, newPerson.buildCode, addEvent);
+    this._compareField("eye colour", oldPerson.eyeColourCode, newPerson.eyeColourCode, addEvent);
+    this._compareField("other eye colour", oldPerson.eyeColourOther, newPerson.eyeColourOther, addEvent);
+    this._compareField("hair colour", oldPerson.hairColourCode, newPerson.hairColourCode, addEvent);
+    this._compareField("other hair colour", oldPerson.hairColourOther, newPerson.hairColourOther, addEvent);
+    this._compareField("hair length", oldPerson.hairLengthCode, newPerson.hairLengthCode, addEvent);
+    this._compareField("has facial hair", oldPerson.facialHairIndicator, newPerson.facialHairIndicator, addEvent);
+    this._diffFacialHairTypes(oldPerson.facialHairStyleCodes ?? [], newPerson.facialHairStyleCodes ?? [], addEvent);
+    this._compareField(
+      "additional hair descriptors",
+      oldPerson.additionalHairDescriptors,
+      newPerson.additionalHairDescriptors,
+      addEvent,
+    );
+    this._compareField("has tattoos", oldPerson.tattooIndicator, newPerson.tattooIndicator, addEvent);
+    this._compareField("tattoos", oldPerson.tattooDescription, newPerson.tattooDescription, addEvent);
+    this._compareField(
+      "additional descriptors",
+      oldPerson.additionalDescriptors,
+      newPerson.additionalDescriptors,
+      addEvent,
+    );
+    this._compareField("comments", oldPerson.comments, newPerson.comments, addEvent);
   }
 
   private _diffBusinessChanges(
@@ -1236,15 +1304,7 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    //this._diffAliases(oldBusiness.aliases ?? [], newBusiness.aliases ?? [], addEvent);
     this._diffBusinessIdentifiers(oldBusiness.identifiers ?? [], newBusiness.identifiers ?? [], addEvent);
-    //this._diffBusinessAddresses(oldBusiness.addresses ?? [], newBusiness.addresses ?? [], addEvent);
-    //this._compareContactMethods(
-    //  oldBusiness.contactMethods ?? [],
-    //  newBusiness.contactMethods ?? [],
-    //  (tc) => `business ${this._contactMethodLabel(tc)}`,
-    //  addEvent,
-    //);
     this._diffContactPeople(oldBusiness.contactPeople ?? [], newBusiness.contactPeople ?? [], addEvent);
   }
 
@@ -1269,9 +1329,14 @@ export class PartyService {
       });
     };
 
+    // Detect Party level changes
+    this._diffPartyChanges(oldParty, input, addEvent);
+
     if (input.partyTypeCode === PARTY_TYPES.Person) {
+      // Detect person level changes
       this._diffPersonChanges(oldParty.person, input.person, addEvent);
     } else {
+      // Detect business level changes
       this._diffBusinessChanges(oldParty.business, input.business, addEvent);
     }
 
@@ -1281,17 +1346,22 @@ export class PartyService {
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
     const existingParty = await this.prisma.party.findUnique({
       include: {
-        address: true,
-        contact_method: true,
-        alias: true,
+        address: { where: { active_ind: true } },
+        contact_method: { where: { active_ind: true } },
+        alias: { where: { active_ind: true } },
         person: {
           include: {
-            person_facial_hair_style_code: true,
+            person_facial_hair_style_code: { where: { active_ind: true } },
           },
         },
         business: {
           include: {
-            business_identifier: true,
+            business_identifier: {
+              where: { active_ind: true },
+              include: {
+                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: true,
+              },
+            },
             business_person_xref: {
               where: { active_ind: true },
               include: {

@@ -143,5 +143,40 @@ export const selectCountrySubdivisions = createSelector([selectCodeTables], (cod
 
 export const selectApproximateAges = createSelector([selectCodeTables], (codeTables) => {
   const { "approximate-age-type": items } = codeTables;
-  return items.map(({ approximateAgeCode: value, longDescription: label }) => ({ label, value }));
+  return items.map(({ approximateAgeCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectGenders = createSelector([selectCodeTables], (codeTables) => {
+  const { "gender-type": items } = codeTables;
+  return items.map(({ genderCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectComplexions = createSelector([selectCodeTables], (codeTables) => {
+  const { "complexion-type": items } = codeTables;
+  return items.map(({ complexionCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectBuilds = createSelector([selectCodeTables], (codeTables) => {
+  const { "build-type": items } = codeTables;
+  return items.map(({ buildCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectEyeColours = createSelector([selectCodeTables], (codeTables) => {
+  const { "eye-colour-type": items } = codeTables;
+  return items.map(({ eyeColourCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectHairColours = createSelector([selectCodeTables], (codeTables) => {
+  const { "hair-colour-type": items } = codeTables;
+  return items.map(({ hairColourCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectHairLengths = createSelector([selectCodeTables], (codeTables) => {
+  const { "hair-length-type": items } = codeTables;
+  return items.map(({ hairLengthCode: value, shortDescription: label }) => ({ label, value }));
+});
+
+export const selectFacialHairStyles = createSelector([selectCodeTables], (codeTables) => {
+  const { "facial-hair-style-type": items } = codeTables;
+  return items.map(({ facialHairStyleCode: value, shortDescription: label }) => ({ label, value }));
 });

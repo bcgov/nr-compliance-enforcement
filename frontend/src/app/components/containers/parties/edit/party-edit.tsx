@@ -492,7 +492,7 @@ const PartyEdit: FC = () => {
           partyTypeCode: value.partyType,
           addresses: buildAddresses(value.addresses, true),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
-          aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
           business: value.partyType === "CMP" ? buildBusinessUpdate(value) : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };

@@ -48,7 +48,7 @@ input PartyUpdateInput {
   business: BusinessUpdateInput
   addresses: [AddressUpdateInput]
   contactMethods: [ContactMethodInput]
-  aliases: [AliasInput]
+  aliases: [AliasUpdateInput]
 }
 
 input PartyFilters {

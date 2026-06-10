@@ -11,7 +11,7 @@ import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
 import { Address, AddressInput } from "../../address/dto/address";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
-import { Alias } from "src/shared/alias/dto/alias";
+import { Alias, AliasUpdateInput } from "src/shared/alias/dto/alias";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -75,9 +75,9 @@ export class PartyUpdateInput {
   @IsOptional()
   contactMethods?: ContactMethod[];
 
-  @Field(() => [Alias], { nullable: true })
+  @Field(() => [AliasUpdateInput], { nullable: true })
   @IsOptional()
-  aliases?: Alias[];
+  aliases?: AliasUpdateInput[];
 }
 
 @InputType()

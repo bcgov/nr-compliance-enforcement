@@ -12,6 +12,14 @@ export class AliasInput {
   name: string;
 }
 
+export class AliasUpdateInput {
+  @Field(() => String)
+  aliasGuid: string;
+
+  @Field(() => String)
+  name: string;
+}
+
 export const mapPrismaAliasToAlias = (mapper: Mapper) => {
   createMap<alias, Alias>(
     mapper,

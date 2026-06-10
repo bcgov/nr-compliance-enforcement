@@ -18,7 +18,9 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
   const lastUpdated = partyData?.updatedDateTime ? new Date(partyData.updatedDateTime).toString() : undefined;
   const getCreatedByDisplayName = (createdBy: string, officers: any) => {
     const officer = officers?.find((item: { app_user_guid: string }) => item.app_user_guid === createdBy);
-    return officer ? `${officer?.last_name}, ${officer?.first_name} (${officer?.agency_code?.shortDescription})` : "";
+    return officer
+      ? `by ${officer?.last_name}, ${officer?.first_name} (${officer?.agency_code?.shortDescription})`
+      : "";
   };
 
   return (
@@ -64,7 +66,6 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
           id="comp-nature-of-complaint"
         >
           <span>{`Created on: ${formatDate(dateLogged)} ${formatTime(dateLogged)}`}</span>
-          {" by "}
           {getCreatedByDisplayName(partyData?.createdByUserGuid ?? "", officers)}
         </div>
         <div className="mt-1 max-width-48ch">
