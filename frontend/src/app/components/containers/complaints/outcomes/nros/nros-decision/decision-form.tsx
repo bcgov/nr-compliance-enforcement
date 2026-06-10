@@ -30,6 +30,7 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 type props = {
   leadIdentifier: string;
   toggleEdit: Function;
+  onFormValidationChange?: (hasErrors: boolean) => void;
   //-- properties
   id?: string;
   schedule?: string;
@@ -49,6 +50,7 @@ type props = {
 export const DecisionForm: FC<props> = ({
   leadIdentifier,
   toggleEdit,
+  onFormValidationChange,
   //--
   id,
   schedule,
@@ -93,6 +95,35 @@ export const DecisionForm: FC<props> = ({
   const [inspectionNumberErrorMessage, setInspectionNumberErrorMessage] = useState("");
   const [actionTakenErrorMessage, setActionTakenErrorMessage] = useState("");
   const [ipmAuthCategoryErrorMessage, setIpmAuthCategoryErrorMessage] = useState("");
+
+  useEffect(() => {
+    const hasErrors = [
+      scheduleErrorMessage,
+      sectorErrorMessage,
+      dischargeErrorMessage,
+      dateActionTakenErrorMessage,
+      leadAgencyErrorMessage,
+      inspectionNumberErrorMessage,
+      actionTakenErrorMessage,
+      ipmAuthCategoryErrorMessage,
+    ].some((msg) => Boolean(msg?.trim()));
+
+    onFormValidationChange?.(hasErrors);
+  }, [
+    scheduleErrorMessage,
+    sectorErrorMessage,
+    dischargeErrorMessage,
+    dateActionTakenErrorMessage,
+    leadAgencyErrorMessage,
+    inspectionNumberErrorMessage,
+    actionTakenErrorMessage,
+    ipmAuthCategoryErrorMessage,
+    onFormValidationChange,
+  ]);
+
+  useEffect(() => {
+    return () => onFormValidationChange?.(false);
+  }, [onFormValidationChange]);
 
   //-- component data
 

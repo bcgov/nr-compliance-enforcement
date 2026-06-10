@@ -646,3 +646,13 @@ export const toDateOfBirth = (value: any): Date | undefined => {
   if (!(d instanceof Date)) return undefined;
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
 };
+
+/**
+ * Joins a list into a human-readable phrase using "and" before the last item,
+ * e.g. ["a"] -> "a", ["a", "b"] -> "a and b", ["a", "b", "c"] -> "a, b, and c".
+ */
+export const joinWithAnd = (items: string[]): string => {
+  if (items.length <= 1) return items.join("");
+  if (items.length === 2) return items.join(" and ");
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
+};

@@ -10,7 +10,7 @@ import {
   selectComplaintViewMode,
   selectRelatedData,
 } from "@store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -194,7 +194,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     if (!validationResults.canStartInvestigation) {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
-      ToggleError(`An investigation cannot be started until you ${validationResults.validationMissing.join(", ")}.`);
+      ToggleError(`An investigation cannot be started until you ${joinWithAnd(validationResults.validationMissing)}.`);
     } else {
       navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
     }
@@ -244,7 +244,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     if (!validationResults.canAddToCase) {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
-      ToggleError(`Before adding this complaint to a case, please ${validationResults.validationMissing.join(", ")}.`);
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
     } else {
       document.body.click();
       dispatch(

@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { updateComplaintLastUpdated, updateAllegationComplaintStatus } from "@store/reducers/complaints";
 import { AgencyType } from "@apptypes/app/agency-types";
+import { joinWithAnd } from "@common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 const CREATE_CASE_MUTATION = gql`
@@ -203,7 +204,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   const handleCreateAddCase = async () => {
     if (!validationResults.canAddToCase) {
-      ToggleError(`Before adding this complaint to a case, please ${validationResults.validationMissing.join(", ")}.`);
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
       return;
     }
     if (createOrAddOption === "add") {

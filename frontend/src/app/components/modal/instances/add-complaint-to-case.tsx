@@ -18,6 +18,7 @@ import {
 import { getCaseFile } from "@store/reducers/complaint-outcome-thunks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import useValidateComplaint from "@hooks/validate-complaint";
+import { joinWithAnd } from "@common/methods";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -118,7 +119,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     if (addComplaintErrorMessage) return;
 
     if (!validationResults.canAddToCase) {
-      ToggleError(`Before adding this complaint to a case, please ${validationResults.validationMissing.join(", ")}.`);
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
       return;
     }
 
