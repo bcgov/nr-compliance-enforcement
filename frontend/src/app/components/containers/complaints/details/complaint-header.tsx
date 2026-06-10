@@ -191,12 +191,12 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const startInvestigation = () => {
-    if (!validationResults.canStartInvestigation) {
+    if (validationResults.canStartInvestigation) {
+      navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
+    } else {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
       ToggleError(`An investigation cannot be started until you ${joinWithAnd(validationResults.validationMissing)}.`);
-    } else {
-      navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
     }
   };
 
@@ -241,11 +241,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const openCreateAddCaseModal = () => {
-    if (!validationResults.canAddToCase) {
-      validationResults.scrollToErrors();
-      dispatch(setIsInEdit({ showSectionErrors: true }));
-      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
-    } else {
+    if (validationResults.canAddToCase) {
       document.body.click();
       dispatch(
         openModal({
@@ -261,6 +257,10 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
           hideCallback,
         }),
       );
+    } else {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
     }
   };
 

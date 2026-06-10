@@ -39,6 +39,20 @@ type validationResults = {
   };
 };
 
+const getCaseValidationMessages = (
+  requireValidation: boolean,
+  isAssigned: boolean,
+  hasAssessment: boolean,
+  hasAuthorization: boolean,
+): string[] => {
+  if (!requireValidation) return [];
+  const messages: string[] = [];
+  if (!isAssigned) messages.push("assign the complaint");
+  if (!hasAssessment) messages.push("complete the complaint assessment");
+  if (!hasAuthorization) messages.push("populate the authorization section");
+  return messages;
+};
+
 const useValidateComplaint = () => {
   // Selectors
   const assessments = useAppSelector(selectAssessments);
@@ -144,12 +158,7 @@ const useValidateComplaint = () => {
       const hasAuthorization = !!authorization?.id;
       const requireValidation =
         complaintType === COMPLAINT_TYPES.ERS && ["EPO", "NROS", "MINES"].includes(complaint?.ownedBy ?? "");
-      const validationMissing: string[] = [];
-      if (requireValidation) {
-        if (!isAssigned) validationMissing.push("assign the complaint");
-        if (!hasAssessment) validationMissing.push("complete the complaint assessment");
-        if (!hasAuthorization) validationMissing.push("populate the authorization section");
-      }
+      const validationMissing = getCaseValidationMessages(requireValidation, isAssigned, hasAssessment, hasAuthorization);
       const canCreateCase = validationMissing.length === 0;
 
       const scrollToErrorSection = (

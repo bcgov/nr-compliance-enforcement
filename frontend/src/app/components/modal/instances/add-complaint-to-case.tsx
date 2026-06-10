@@ -83,7 +83,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
       markDirty();
       setSelectedComplaint(selected);
       dispatch(getComplaintById(selected.value as string, selected.complaintType));
-      dispatch(getCaseFile(selected.value as string));
+      dispatch(getCaseFile(selected.value));
     } else {
       setSelectedComplaint(null);
     }
