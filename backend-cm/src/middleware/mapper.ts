@@ -55,7 +55,6 @@ import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/
 import { mapPrismaContactMethodToInvestigationContactMethod } from "../investigation/investigation_contact_method/dto/investigation_contact_method";
 import { mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier } from "../investigation/investigation_business_identifier/dto/investigation_business_identifier";
 import { mapPrismaAliasToInvestigationAlias } from "../investigation/investigation_alias/dto/investigation_alias";
-import { mapPrismaBusinessAddressToInvestigationBusinessAddress } from "../investigation/investigation_business_address/dto/investigation_business_address";
 import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/country_code";
 import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
 import { mapPrismaApproximateAgeCodeToApproximateAgeCode } from "src/shared/approximate_age_code/dto/approximate_age_code";
@@ -67,6 +66,7 @@ import { mapPrismaHairLengthCodeToHairLengthCode } from "src/shared/hair_length_
 import { mapPrismaEyeColourCodeToEyeColourCode } from "src/shared/eye_colour_code/dto/eye_colour_code";
 import { mapPrismaFacialHairStyleCodeToFacialHairStyleCode } from "src/shared/facial_hair_style_code/dto/facial_hair_style_code";
 import { mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { mapPrismaAddressToInvestigationAddress } from "src/investigation/investigation_business_address/dto/investigation_business_address";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -135,7 +135,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToInvestigationContactMethod(mapper);
   mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier(mapper);
   mapPrismaAliasToInvestigationAlias(mapper);
-  mapPrismaBusinessAddressToInvestigationBusinessAddress(mapper);
+  mapPrismaAddressToInvestigationAddress(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

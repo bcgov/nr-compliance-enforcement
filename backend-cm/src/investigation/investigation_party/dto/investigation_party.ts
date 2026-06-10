@@ -13,6 +13,11 @@ import { investigation_party } from "../../../../prisma/investigation/generated/
 import { Field, InputType } from "@nestjs/graphql";
 import { PartyDto } from "../../../common/party";
 import { EnforcementAction } from "src/investigation/enforcement_action/dto/enforcement_action";
+import {
+  CreateInvestigationContactMethodInput,
+  InvestigationContactMethod,
+  UpdateInvestigationContactMethodInput,
+} from "src/investigation/investigation_contact_method/dto/investigation_contact_method";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -24,6 +29,7 @@ export class InvestigationParty implements PartyDto {
   partyReference?: string;
   partyAssociationRole?: string;
   enforcementActions?: EnforcementAction[];
+  contactMethods?: InvestigationContactMethod[];
 }
 
 @InputType()
@@ -42,6 +48,9 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => String)
   partyAssociationRole: string;
+
+  @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: CreateInvestigationContactMethodInput[];
 }
 
 @InputType()
@@ -57,6 +66,9 @@ export class UpdateInvestigationPartyInput {
 
   @Field(() => UpdateInvestigationBusinessInput, { nullable: true })
   business?: UpdateInvestigationBusinessInput;
+
+  @Field(() => [UpdateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: UpdateInvestigationContactMethodInput[];
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
@@ -117,6 +129,16 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
           (src.contravention_party_xref ?? []).map((x) => x.enforcement_action),
           "enforcement_action",
           "EnforcementAction",
+        ),
+      ),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_contact_method ?? [],
+          "investigation_contact_method",
+          "InvestigationContactMethod",
         ),
       ),
     ),

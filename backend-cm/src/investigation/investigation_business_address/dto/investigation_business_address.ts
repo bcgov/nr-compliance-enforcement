@@ -1,9 +1,9 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
-import { investigation_business_address } from "../../../../prisma/investigation/generated/investigation_business_address";
 import { Field, InputType } from "@nestjs/graphql";
+import { investigation_address } from "prisma/investigation/generated/investigation_address";
 
-export class InvestigationBusinessAddress {
-  businessAddressGuid: string;
+export class InvestigationAddress {
+  addressGuid: string;
   addressName: string;
   address?: string;
   city?: string;
@@ -14,7 +14,10 @@ export class InvestigationBusinessAddress {
 }
 
 @InputType()
-export class CreateInvestigationBusinessAddressInput {
+export class CreateInvestigationAddressInput {
+  @Field(() => String, { nullable: true })
+  addressGuid?: string;
+
   @Field(() => String)
   addressName: string;
 
@@ -37,20 +40,14 @@ export class CreateInvestigationBusinessAddressInput {
   isPrimary?: boolean;
 }
 
-@InputType()
-export class UpdateInvestigationBusinessAddressInput extends CreateInvestigationBusinessAddressInput {
-  @Field(() => String, { nullable: true })
-  businessAddressGuid?: string;
-}
-
-export const mapPrismaBusinessAddressToInvestigationBusinessAddress = (mapper: Mapper) => {
-  createMap<investigation_business_address, InvestigationBusinessAddress>(
+export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
+  createMap<investigation_address, InvestigationAddress>(
     mapper,
     "investigation_business_address",
     "InvestigationBusinessAddress",
     forMember(
-      (dest) => dest.businessAddressGuid,
-      mapFrom((src) => src.investigation_business_address_guid),
+      (dest) => dest.addressGuid,
+      mapFrom((src) => src.investigation_address_guid),
     ),
     forMember(
       (dest) => dest.addressName,

@@ -31,9 +31,8 @@ import {
   UpdateInvestigationContactMethodInput,
 } from "../investigation_contact_method/dto/investigation_contact_method";
 import {
-  CreateInvestigationBusinessAddressInput,
-  InvestigationBusinessAddress,
-  UpdateInvestigationBusinessAddressInput,
+  CreateInvestigationAddressInput,
+  InvestigationAddress,
 } from "../investigation_business_address/dto/investigation_business_address";
 import { withRlsTransaction } from "src/pg-session-extension/with-rls-transaction";
 
@@ -48,10 +47,7 @@ export class InvestigationPartyService {
 
   private readonly logger = new Logger(InvestigationPartyService.name);
 
-  private _validateBusinessInput(business: {
-    name?: string;
-    addresses?: CreateInvestigationBusinessAddressInput[];
-  }): void {
+  private _validateBusinessInput(business: { name?: string; addresses?: CreateInvestigationAddressInput[] }): void {
     for (const address of business.addresses ?? []) {
       if (!address.addressName?.trim()) {
         throw new Error("Address name is required.");
@@ -65,10 +61,7 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
-  private _mapAddressCreateData(
-    investigationBusinessGuid: string,
-    address: CreateInvestigationBusinessAddressInput | UpdateInvestigationBusinessAddressInput,
-  ) {
+  private _mapAddressCreateData(investigationBusinessGuid: string, address: CreateInvestigationAddressInput) {
     return {
       investigation_business_guid: investigationBusinessGuid,
       address_name: address.addressName.trim(),
@@ -148,25 +141,25 @@ export class InvestigationPartyService {
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
-        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
-        sex_code_ref: input.sexCode,
+        drivers_license_jurisdiction: input.driversLicenseCountrySubdivisionCode,
+        sex_code_ref: input.genderCode,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
     });
 
-    if (input.contactMethods?.length) {
-      await tx.investigation_contact_method.createMany({
-        data: input.contactMethods.map((cm) => ({
-          investigation_person_guid: investigationPerson.investigation_person_guid,
-          contact_method_type_code_ref: cm.contactMethodTypeCode,
-          contact_value: cm.contactValue,
-          is_primary: cm.isPrimary ?? false,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    //if (input.contactMethods?.length) {
+    //  await tx.investigation_contact_method.createMany({
+    //    data: input.contactMethods.map((cm) => ({
+    //      investigation_person_guid: investigationPerson.investigation_person_guid,
+    //      contact_method_type_code_ref: cm.contactMethodTypeCode,
+    //      contact_value: cm.contactValue,
+    //      is_primary: cm.isPrimary ?? false,
+    //      create_user_id: this.user.getIdirUsername(),
+    //      create_utc_timestamp: new Date(),
+    //   })),
+    // });
+    //}
   }
 
   private async createBusiness(tx: any, investigationPartyGuid: string, input: CreateInvestigationBusinessInput) {
@@ -180,18 +173,18 @@ export class InvestigationPartyService {
       },
     });
 
-    if (input.contactMethods?.length) {
-      await tx.investigation_contact_method.createMany({
-        data: input.contactMethods.map((cm) => ({
-          investigation_business_guid: investigationBusiness.investigation_business_guid,
-          contact_method_type_code_ref: cm.contactMethodTypeCode,
-          contact_value: cm.contactValue,
-          is_primary: cm.isPrimary ?? false,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    //if (input.contactMethods?.length) {
+    //  await tx.investigation_contact_method.createMany({
+    //    data: input.contactMethods.map((cm) => ({
+    //      investigation_business_guid: investigationBusiness.investigation_business_guid,
+    //      contact_method_type_code_ref: cm.contactMethodTypeCode,
+    //      contact_value: cm.contactValue,
+    //      is_primary: cm.isPrimary ?? false,
+    //      create_user_id: this.user.getIdirUsername(),
+    //      create_utc_timestamp: new Date(),
+    //    })),
+    //  });
+    //}
 
     if (input.businessIdentifiers?.length) {
       await tx.investigation_business_identifier.createMany({
@@ -205,24 +198,24 @@ export class InvestigationPartyService {
       });
     }
 
-    if (input.aliases?.length) {
-      await tx.investigation_alias.createMany({
-        data: input.aliases.map((a) => ({
-          investigation_business_guid: investigationBusiness.investigation_business_guid,
-          name: a.name,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    //if (input.aliases?.length) {
+    //  await tx.investigation_alias.createMany({
+    //    data: input.aliases.map((a) => ({
+    //      investigation_business_guid: investigationBusiness.investigation_business_guid,
+    //      name: a.name,
+    //      create_user_id: this.user.getIdirUsername(),
+    //      create_utc_timestamp: new Date(),
+    //    })),
+    //  });
+    //}
 
-    if (input.addresses?.length) {
-      await tx.investigation_business_address.createMany({
-        data: this._sortAddressesPrimaryLast(input.addresses).map((a) =>
-          this._mapAddressCreateData(investigationBusiness.investigation_business_guid, a),
-        ),
-      });
-    }
+    //if (input.addresses?.length) {
+    //  await tx.investigation_business_address.createMany({
+    //    data: this._sortAddressesPrimaryLast(input.addresses).map((a) =>
+    //      this._mapAddressCreateData(investigationBusiness.investigation_business_guid, a),
+    //    ),
+    //  });
+    //}
   }
 
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
@@ -360,23 +353,23 @@ export class InvestigationPartyService {
         last_name: input.lastName,
         date_of_birth: input.dateOfBirth,
         drivers_license_number: input.driversLicenseNumber,
-        drivers_license_jurisdiction: input.driversLicenseJurisdiction,
-        sex_code_ref: input.sexCode,
+        drivers_license_jurisdiction: input.driversLicenseCountrySubdivisionCode,
+        sex_code_ref: input.genderCode,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
       },
     });
 
-    if (input.contactMethods) {
-      const operations = this._buildInvestigationContactMethodOperations(
-        tx,
-        existingPerson.personGuid,
-        "person",
-        input.contactMethods,
-        existingPerson.contactMethods ?? [],
-      );
-      await Promise.all(operations);
-    }
+    //if (input.contactMethods) {
+    //  const operations = this._buildInvestigationContactMethodOperations(
+    //    tx,
+    //    existingPerson.personGuid,
+    //    "person",
+    //    input.contactMethods,
+    //    existingPerson.contactMethods ?? [],
+    //  );
+    //  await Promise.all(operations);
+    //}
   }
 
   private async updateBusiness(
@@ -393,16 +386,16 @@ export class InvestigationPartyService {
       },
     });
 
-    if (input.contactMethods) {
-      const contactMethodOps = this._buildInvestigationContactMethodOperations(
-        tx,
-        existingBusiness.businessGuid,
-        "business",
-        input.contactMethods,
-        existingBusiness.contactMethods ?? [],
-      );
-      await Promise.all(contactMethodOps);
-    }
+    //if (input.contactMethods) {
+    //  const contactMethodOps = this._buildInvestigationContactMethodOperations(
+    //    tx,
+    //    existingBusiness.businessGuid,
+    //    "business",
+    //    input.contactMethods,
+    //    existingBusiness.contactMethods ?? [],
+    //  );
+    //  await Promise.all(contactMethodOps);
+    //}
 
     if (input.businessIdentifiers) {
       const identifierOps = this._buildInvestigationBusinessIdentifierOperations(
@@ -414,25 +407,25 @@ export class InvestigationPartyService {
       await Promise.all(identifierOps);
     }
 
-    if (input.aliases) {
-      const aliasOps = this._buildInvestigationAliasOperations(
-        tx,
-        existingBusiness.businessGuid,
-        input.aliases,
-        existingBusiness.aliases ?? [],
-      );
-      await Promise.all(aliasOps);
-    }
+    //if (input.aliases) {
+    //  const aliasOps = this._buildInvestigationAliasOperations(
+    //    tx,
+    //    existingBusiness.businessGuid,
+    //    input.aliases,
+    //    existingBusiness.aliases ?? [],
+    //  );
+    //  await Promise.all(aliasOps);
+    //}
 
-    if (input.addresses) {
-      const addressOps = this._buildInvestigationBusinessAddressOperations(
-        tx,
-        existingBusiness.businessGuid,
-        input.addresses,
-        existingBusiness.addresses ?? [],
-      );
-      await Promise.all(addressOps);
-    }
+    //if (input.addresses) {
+    //  const addressOps = this._buildInvestigationBusinessAddressOperations(
+    //    tx,
+    //    existingBusiness.businessGuid,
+    //   input.addresses,
+    //    existingBusiness.addresses ?? [],
+    //  );
+    //  await Promise.all(addressOps);
+    //}
   }
 
   private _buildInvestigationContactMethodOperations(
@@ -612,13 +605,13 @@ export class InvestigationPartyService {
   private _buildInvestigationBusinessAddressOperations(
     tx: any,
     investigationBusinessGuid: string,
-    incoming: UpdateInvestigationBusinessAddressInput[],
-    existing: InvestigationBusinessAddress[],
+    incoming: CreateInvestigationAddressInput[],
+    existing: InvestigationAddress[],
   ) {
-    const toCreate = incoming.filter((a) => !a.businessAddressGuid);
-    const toUpdate = this._sortAddressesPrimaryLast(incoming.filter((a) => a.businessAddressGuid));
-    const existingGuids = new Set(incoming.map((a) => a.businessAddressGuid).filter(Boolean));
-    const toDelete = existing.filter((a) => !existingGuids.has(a.businessAddressGuid));
+    const toCreate = incoming.filter((a) => !a.addressGuid);
+    const toUpdate = this._sortAddressesPrimaryLast(incoming.filter((a) => a.addressGuid));
+    const existingGuids = new Set(incoming.map((a) => a.addressGuid).filter(Boolean));
+    const toDelete = existing.filter((a) => !existingGuids.has(a.addressGuid));
 
     const operations: Promise<any>[] = [];
 
@@ -633,7 +626,7 @@ export class InvestigationPartyService {
     for (const a of toUpdate) {
       operations.push(
         tx.investigation_business_address.update({
-          where: { investigation_business_address_guid: a.businessAddressGuid },
+          where: { investigation_business_address_guid: a.addressGuid },
           data: {
             address_name: a.addressName.trim(),
             address: a.address?.trim() || null,
@@ -653,7 +646,7 @@ export class InvestigationPartyService {
     for (const a of toDelete) {
       operations.push(
         tx.investigation_business_address.update({
-          where: { investigation_business_address_guid: a.businessAddressGuid },
+          where: { investigation_business_address_guid: a.addressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
