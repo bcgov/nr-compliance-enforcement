@@ -158,6 +158,12 @@ export async function handlePersistAttachments({
 
   await Promise.all(tasks);
 
+  if (globalThis.window !== undefined && identifier) {
+    const detail = { identifier, attachmentType };
+    const ev = new CustomEvent("attachments-updated", { detail });
+    globalThis.window.dispatchEvent(ev);
+  }
+
   // Clear the attachments since they've been added or saved.
   setAttachmentsToAdd(null);
   setAttachmentsToDelete(null);
