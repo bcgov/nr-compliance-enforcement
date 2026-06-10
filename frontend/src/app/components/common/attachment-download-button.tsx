@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { bulkDownload, selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { Id } from "react-toastify";
@@ -29,7 +29,7 @@ export const BulkDownloadButton = ({
   const handleBulkDownload = async () => {
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

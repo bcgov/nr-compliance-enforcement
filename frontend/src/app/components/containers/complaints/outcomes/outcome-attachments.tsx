@@ -12,7 +12,7 @@ import AttachmentEnum from "@constants/attachment-enum";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { selectComplaintViewMode } from "@/app/store/reducers/complaints";
-import { DismissToast, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -89,7 +89,7 @@ export const OutcomeAttachments: FC<OutcomeAttachmentProps> = ({ onDirtyChange }
 
     if (attachmentsToAdd?.length) {
       toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,

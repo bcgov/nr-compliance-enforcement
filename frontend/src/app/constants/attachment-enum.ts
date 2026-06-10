@@ -2,6 +2,8 @@ export enum AttachmentEnum {
   COMPLAINT_ATTACHMENT = 1,
   OUTCOME_ATTACHMENT = 2,
   TASK_ATTACHMENT = 3,
+  ENFORCEMENT_ACTION_ATTACHMENT = 4,
+  PARTY_ATTACHMENT = 5,
 }
 
 export default AttachmentEnum;

@@ -11,7 +11,7 @@ import { graphqlRequest } from "@/app/graphql/client";
 import { formatDateStr, escapeCsvCell } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 
 export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
   query SearchExhibitsByInvestigation($page: Int, $pageSize: Int, $filters: ExhibitFilters!) {
@@ -108,7 +108,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
     if (!investigationGuid || isExporting) return;
 
     const toastId = ToggleInformation("Export in progress, please wait...", {
-      position: "top-right",
+      position: TOAST_POSITION,
       autoClose: false,
       closeOnClick: false,
       closeButton: false,

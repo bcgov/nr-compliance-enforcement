@@ -35,7 +35,7 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { ExportComplaintModal } from "@/app/components/modal/instances/export-complaint-modal";
 import { COMSObject } from "@/app/types/coms/object";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 
 interface ComplaintHeaderProps {
@@ -289,7 +289,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     let toastDownloadInfo;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,
