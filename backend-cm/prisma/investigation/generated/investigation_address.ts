@@ -1,18 +1,30 @@
 import { investigation_party } from "./investigation_party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
-export class investigation_contact_method {
+export class investigation_address {
   @ApiProperty({ type: String })
-  investigation_contact_method_guid: string;
+  investigation_address_guid: string;
 
   @ApiProperty({ type: String })
   investigation_party_guid: string;
 
   @ApiProperty({ type: String })
-  contact_method_type_code_ref: string;
+  address_name: string;
 
-  @ApiProperty({ type: String })
-  contact_value: string;
+  @ApiPropertyOptional({ type: String })
+  address?: string;
+
+  @ApiPropertyOptional({ type: String })
+  city?: string;
+
+  @ApiPropertyOptional({ type: String })
+  country_subdivision_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  postal_code?: string;
+
+  @ApiPropertyOptional({ type: String })
+  country_code_ref?: string;
 
   @ApiProperty({ type: Boolean })
   is_primary: boolean;

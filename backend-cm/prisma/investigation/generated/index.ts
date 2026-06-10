@@ -13,8 +13,6 @@ import { investigation as _investigation } from "./investigation";
 import { investigation_alias as _investigation_alias } from "./investigation_alias";
 import { investigation_alias_h as _investigation_alias_h } from "./investigation_alias_h";
 import { investigation_business as _investigation_business } from "./investigation_business";
-import { investigation_business_address as _investigation_business_address } from "./investigation_business_address";
-import { investigation_business_address_h as _investigation_business_address_h } from "./investigation_business_address_h";
 import { investigation_business_h as _investigation_business_h } from "./investigation_business_h";
 import { investigation_business_identifier as _investigation_business_identifier } from "./investigation_business_identifier";
 import { investigation_business_identifier_h as _investigation_business_identifier_h } from "./investigation_business_identifier_h";
@@ -39,6 +37,9 @@ import { task_type_code as _task_type_code } from "./task_type_code";
 import { ticket as _ticket } from "./ticket";
 import { ticket_h as _ticket_h } from "./ticket_h";
 import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
+import { investigation_address as _investigation_address } from "./investigation_address";
+import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
+import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -56,8 +57,6 @@ export namespace PrismaModel {
   export class investigation_alias extends _investigation_alias {}
   export class investigation_alias_h extends _investigation_alias_h {}
   export class investigation_business extends _investigation_business {}
-  export class investigation_business_address extends _investigation_business_address {}
-  export class investigation_business_address_h extends _investigation_business_address_h {}
   export class investigation_business_h extends _investigation_business_h {}
   export class investigation_business_identifier extends _investigation_business_identifier {}
   export class investigation_business_identifier_h extends _investigation_business_identifier_h {}
@@ -82,6 +81,9 @@ export namespace PrismaModel {
   export class ticket extends _ticket {}
   export class ticket_h extends _ticket_h {}
   export class ticket_outcome_code extends _ticket_outcome_code {}
+  export class investigation_address extends _investigation_address {}
+  export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
+  export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
 
   export const extraModels = [
     activity_note,
@@ -99,8 +101,6 @@ export namespace PrismaModel {
     investigation_alias,
     investigation_alias_h,
     investigation_business,
-    investigation_business_address,
-    investigation_business_address_h,
     investigation_business_h,
     investigation_business_identifier,
     investigation_business_identifier_h,
@@ -125,5 +125,8 @@ export namespace PrismaModel {
     ticket,
     ticket_h,
     ticket_outcome_code,
+    investigation_address,
+    investigation_person_facial_hair_style_code_ref,
+    investigation_person_facial_hair_style_code_ref_h,
   ];
 }
