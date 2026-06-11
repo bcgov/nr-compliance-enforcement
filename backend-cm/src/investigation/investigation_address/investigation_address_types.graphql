@@ -1,5 +1,5 @@
-type InvestigationBusinessAddress {
-  businessAddressGuid: String
+type InvestigationAddress {
+  addressGuid: String
   addressName: String
   address: String
   city: String

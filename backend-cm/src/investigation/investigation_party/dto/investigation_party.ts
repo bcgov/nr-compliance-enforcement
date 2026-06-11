@@ -18,6 +18,15 @@ import {
   InvestigationContactMethod,
   UpdateInvestigationContactMethodInput,
 } from "src/investigation/investigation_contact_method/dto/investigation_contact_method";
+import {
+  CreateInvestigationAliasInput,
+  InvestigationAlias,
+  UpdateInvestigationAliasInput,
+} from "src/investigation/investigation_alias/dto/investigation_alias";
+import {
+  CreateInvestigationAddressInput,
+  InvestigationAddress,
+} from "src/investigation/investigation_address/dto/investigation_address";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -30,6 +39,8 @@ export class InvestigationParty implements PartyDto {
   partyAssociationRole?: string;
   enforcementActions?: EnforcementAction[];
   contactMethods?: InvestigationContactMethod[];
+  aliases?: InvestigationAlias[];
+  addresses?: InvestigationAddress[];
 }
 
 @InputType()
@@ -51,6 +62,12 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
   contactMethods?: CreateInvestigationContactMethodInput[];
+
+  @Field(() => [CreateInvestigationAliasInput], { nullable: true })
+  aliases?: CreateInvestigationAliasInput[];
+
+  @Field(() => [CreateInvestigationAddressInput], { nullable: true })
+  addresses?: CreateInvestigationAddressInput[];
 }
 
 @InputType()
@@ -69,6 +86,12 @@ export class UpdateInvestigationPartyInput {
 
   @Field(() => [UpdateInvestigationContactMethodInput], { nullable: true })
   contactMethods?: UpdateInvestigationContactMethodInput[];
+
+  @Field(() => [UpdateInvestigationAliasInput], { nullable: true })
+  aliases?: UpdateInvestigationAliasInput[];
+
+  @Field(() => [CreateInvestigationAddressInput], { nullable: true })
+  addresses?: CreateInvestigationAddressInput[];
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
@@ -140,6 +163,16 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
           "investigation_contact_method",
           "InvestigationContactMethod",
         ),
+      ),
+    ),
+    forMember(
+      (dest) => dest.aliases,
+      mapFrom((src) => mapper.mapArray(src.investigation_alias ?? [], "investigation_alias", "InvestigationAlias")),
+    ),
+    forMember(
+      (dest) => dest.addresses,
+      mapFrom((src) =>
+        mapper.mapArray(src.investigation_address ?? [], "investigation_address", "InvestigationAddress"),
       ),
     ),
   );

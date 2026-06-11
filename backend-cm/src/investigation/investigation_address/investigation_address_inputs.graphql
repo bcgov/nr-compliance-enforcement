@@ -1,4 +1,4 @@
-input CreateInvestigationBusinessAddressInput {
+input CreateInvestigationAddressInput {
   addressName: String!
   address: String
   city: String
@@ -8,8 +8,8 @@ input CreateInvestigationBusinessAddressInput {
   isPrimary: Boolean
 }
 
-input UpdateInvestigationBusinessAddressInput {
-  businessAddressGuid: String
+input UpdateInvestigationAddressInput {
+  addressGuid: String
   addressName: String!
   address: String
   city: String

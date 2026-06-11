@@ -5,7 +5,7 @@ import { PersonDto } from "../../../common/party";
 import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
-} from "src/investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCOdeRef";
+} from "src/investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 
 export class InvestigationPerson implements PersonDto {
   personGuid: string;
@@ -50,10 +50,7 @@ export class CreateInvestigationPersonInput {
   firstName: string;
 
   @Field(() => String, { nullable: true })
-  middleName?: string;
-
-  @Field(() => String, { nullable: true })
-  middleName2?: string;
+  middleNames?: string;
 
   @Field(() => String)
   lastName: string;
@@ -80,6 +77,12 @@ export class CreateInvestigationPersonInput {
   genderCode?: string;
 
   @Field(() => String, { nullable: true })
+  heightInCm?: string;
+
+  @Field(() => String, { nullable: true })
+  weightInKg?: string;
+
+  @Field(() => String, { nullable: true })
   complexionCode?: string;
 
   @Field(() => String, { nullable: true })
@@ -100,68 +103,35 @@ export class CreateInvestigationPersonInput {
   @Field(() => String, { nullable: true })
   eyeColourOther?: string;
 
+  @Field(() => Boolean, { nullable: true })
+  facialHairIndicator?: boolean;
+
   @Field(() => [InvestigationPersonFacialHairStyleCodeRefInput], { nullable: true })
   facialHairStyleCodes?: InvestigationPersonFacialHairStyleCodeRefInput[];
+
+  @Field(() => String, { nullable: true })
+  additionalHairDescriptors?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  tattooIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  tattooDescription?: string;
+
+  @Field(() => String, { nullable: true })
+  additionalDescriptors?: string;
+
+  @Field(() => String, { nullable: true })
+  comments?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  boloIndicator?: boolean;
 }
 
 @InputType()
-export class UpdateInvestigationPersonInput {
+export class UpdateInvestigationPersonInput extends CreateInvestigationPersonInput {
   @Field(() => String)
-  firstName: string;
-
-  @Field(() => String, { nullable: true })
-  middleName?: string;
-
-  @Field(() => String, { nullable: true })
-  middleName2?: string;
-
-  @Field(() => String)
-  lastName: string;
-
-  @Field(() => Date, { nullable: true })
-  dateOfBirth?: Date;
-
-  @Field(() => String, { nullable: true })
-  approximateAgeCode?: string;
-
-  @Field(() => String, { nullable: true })
-  driversLicenseNumber?: string;
-
-  @Field(() => String, { nullable: true })
-  driversLicenseClass?: string;
-
-  @Field(() => String, { nullable: true })
-  driversLicenseCountryCode?: string;
-
-  @Field(() => String, { nullable: true })
-  driversLicenseCountrySubdivisionCode?: string;
-
-  @Field(() => String, { nullable: true })
-  genderCode?: string;
-
-  @Field(() => String, { nullable: true })
-  complexionCode?: string;
-
-  @Field(() => String, { nullable: true })
-  buildCode?: string;
-
-  @Field(() => String, { nullable: true })
-  hairColourCode?: string;
-
-  @Field(() => String, { nullable: true })
-  hairLengthCode?: string;
-
-  @Field(() => String, { nullable: true })
-  hairColourOther?: string;
-
-  @Field(() => String, { nullable: true })
-  eyeColourCode?: string;
-
-  @Field(() => String, { nullable: true })
-  eyeColourOther?: string;
-
-  @Field(() => [InvestigationPersonFacialHairStyleCodeRefInput], { nullable: true })
-  facialHairStyleCodes?: InvestigationPersonFacialHairStyleCodeRefInput[];
+  investigationPersonGuid: string;
 }
 
 export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
@@ -274,8 +244,8 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
       mapWithArguments((src) =>
         mapper.mapArray(
           src.investigation_person_facial_hair_style_code_ref ?? [],
-          "person_facial_hair_style_code",
-          "PersonFacialHairStyleCode",
+          "investigation_person_facial_hair_style_code_ref",
+          "InvestigationPersonFacialHairStyleCodeRef",
         ),
       ),
     ),

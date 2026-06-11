@@ -11,11 +11,13 @@ import {
   CreateInspectionPartyInput,
   CreateInvestigationPartyInput,
   InvestigationAlias,
-  InvestigationBusinessAddress,
   InvestigationBusinessIdentifier,
   InvestigationContactMethod,
   InvestigationParty,
   Party,
+  InvestigationAddress,
+  InvestigationPersonFacialHairStyleCodeRef,
+  PersonFacialHairStyleCode,
 } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -202,13 +204,13 @@ const buildLocalAddresses = (addresses: AddressFormValue[] | undefined, isUpdate
   return mapped.length ? mapped : undefined;
 };
 
-const mapAddressesFromInvestigationBusiness = (
-  addresses: Array<InvestigationBusinessAddress | null> | null | undefined,
+const mapAddressesFromInvestigation = (
+  addresses: Array<InvestigationAddress | null> | null | undefined,
 ): AddressFormValue[] =>
   addresses
-    ?.filter((address): address is InvestigationBusinessAddress => address != null)
+    ?.filter((address): address is InvestigationAddress => address != null)
     .map((address, index) => ({
-      addressGuid: address.businessAddressGuid ?? undefined,
+      addressGuid: address.addressGuid ?? undefined,
       addressName: address.addressName ?? "",
       address: address.address ?? "",
       city: address.city ?? "",
@@ -280,16 +282,43 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     if (modalMode === "edit" && editParty) {
       return {
         partyType: editParty.partyTypeCode || "",
+        personGuid: editParty.person?.personGuid || "",
         firstName: editParty.person?.firstName || "",
-        middleName: editParty.person?.middleName || "",
-        middleName2: editParty.person?.middleName2 || "",
+        middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
           ? formatDateOfBirth(String(editParty.person.dateOfBirth))
           : undefined,
-        driversLicenseNumber: editParty.person?.driversLicenseNumber || "",
-        driversLicenseJurisdiction: editParty.person?.driversLicenseJurisdiction || "",
-        sexCode: editParty.person?.sexCode || "",
+        approximateAgeCode: editParty.person?.approximateAgeCode || "",
+        driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
+        driversLicenseClass: editParty.person?.driversLicenseClass || null,
+        driversLicenseCountryCode: editParty.person?.driversLicenseCountryCode || null,
+        driversLicenseCountrySubdivisionCode: editParty.person?.driversLicenseCountrySubdivisionCode || null,
+        genderCode: editParty.person?.genderCode || "",
+        heightInCm: editParty.person?.heightInCm || null,
+        weightInKg: editParty.person?.weightInKg || null,
+        complexionCode: editParty.person?.complexionCode || "",
+        buildCode: editParty.person?.buildCode || "",
+        hairColourCode: editParty.person?.hairColourCode || "",
+        hairLengthCode: editParty.person?.hairLengthCode || "",
+        hairColourOther: editParty.person?.hairColourOther || null,
+        eyeColourCode: editParty.person?.eyeColourCode || "",
+        eyeColourOther: editParty.person?.eyeColourOther || null,
+        facialHairIndicator: editParty.person?.facialHairIndicator || null,
+        facialHairStyleCodes:
+          editParty.person?.facialHairStyleCodes
+            ?.filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
+            .map((fhs) => ({
+              personFacialStyleHairCodeGuid: fhs?.investigationPersonFacialStyleHairCodeRefGuid,
+              personGuid: fhs?.investigationPersonGuid,
+              facialHairStyleCode: fhs?.facialHairStyleCodeRef,
+            })) ?? [],
+        additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
+        tattooIndicator: editParty.person?.tattooIndicator || null,
+        tattooDescription: editParty.person?.tattooDescription || null,
+        additionalDescriptors: editParty.person?.additionalDescriptors || null,
+        comments: editParty.person?.comments || null,
+        boloIndicator: editParty.person?.boloIndicator || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers
@@ -306,32 +335,25 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
         })(),
         aliases:
-          editParty.business?.aliases
+          editParty.aliases
             ?.filter((a): a is InvestigationAlias => a != null)
             .map((a) => ({
               aliasGuid: a.aliasGuid,
               name: a.name,
             })) || [],
-        phoneNumbers: editParty.person
-          ? mapInvestigationContactMethods(
-              (editParty.person.contactMethods ?? [])
-                .filter((cm): cm is InvestigationContactMethod => cm != null)
-                .map(toContactMethod),
-              ContactMethods.PHONE,
-            )
-          : mapInvestigationContactMethods(
-              (editParty.business?.contactMethods ?? [])
-                .filter((cm): cm is InvestigationContactMethod => cm != null)
-                .map(toContactMethod),
-              ContactMethods.PHONE,
-            ),
+        phoneNumbers: mapInvestigationContactMethods(
+          (editParty.contactMethods ?? [])
+            .filter((cm): cm is InvestigationContactMethod => cm != null)
+            .map(toContactMethod),
+          ContactMethods.PHONE,
+        ),
         emailAddresses: mapInvestigationContactMethods(
-          (editParty.business?.contactMethods ?? [])
+          (editParty.contactMethods ?? [])
             .filter((cm): cm is InvestigationContactMethod => cm != null)
             .map(toContactMethod),
           ContactMethods.EMAIL,
         ),
-        addresses: mapAddressesFromInvestigationBusiness(editParty.business?.addresses),
+        addresses: mapAddressesFromInvestigation(editParty.addresses),
         contacts: [] as any[],
         partyAssociationRole: editParty.partyAssociationRole || "",
       };
@@ -339,20 +361,40 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
     return {
       partyType: "",
+      personGuid: "",
       firstName: "",
-      middleName: "",
-      middleName2: "",
+      middleNames: "",
       lastName: "",
       dateOfBirth: undefined as Date | undefined,
+      approximateAgeCode: "",
       driversLicenseNumber: "",
-      driversLicenseJurisdiction: "",
-      sexCode: "",
+      driversLicenseClass: "",
+      driversLicenseCountryCode: "",
+      driversLicenseCountrySubdivisionCode: "",
+      genderCode: "",
+      heightInCm: null,
+      weightInKg: null,
+      complexionCode: "",
+      buildCode: "",
+      hairColourCode: "",
+      hairLengthCode: "",
+      hairColourOther: "",
+      eyeColourCode: "",
+      eyeColourOther: "",
+      facialHairIndicator: "",
+      facialHairStyleCodes: [] as PersonFacialHairStyleCode[],
+      additionalHairDescriptors: "",
+      boloIndicator: "",
+      comments: "",
+      tattooIndicator: "",
+      tattooDescription: "",
+      additionalDescriptors: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
       aliases: [] as Alias[],
-      phoneNumbers: [] as any[],
-      emailAddresses: [] as any[],
+      phoneNumbers: [] as ContactMethod[],
+      emailAddresses: [] as ContactMethod[],
       addresses: [] as AddressFormValue[],
       contacts: [] as any[],
       partyAssociationRole: "",
@@ -368,27 +410,51 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         const input: any = {
           partyIdentifier: editParty.partyIdentifier,
           partyAssociationRole: value.partyAssociationRole,
+          aliases: buildLocalAliases(value.aliases),
+          addresses: buildLocalAddresses(value.addresses, true),
+          contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
           input.person = {
+            personGuid: value.personGuid,
             firstName: value.firstName,
-            middleName: value.middleName?.trim() || undefined,
-            middleName2: value.middleName2?.trim() || undefined,
+            middleNames: value.middleNames?.trim() || undefined,
             lastName: value.lastName,
             dateOfBirth: toDateOfBirth(value),
-            driversLicenseNumber: value.driversLicenseNumber || undefined,
-            driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
-            sexCode: value.sexCode || undefined,
-            contactMethods: buildLocalContactMethods(value.phoneNumbers as any[], [], true),
+            approximateAgeCode: value.approximateAgeCode || null,
+            driversLicenseNumber: value.driversLicenseNumber || null,
+            driversLicenseClass: value.driversLicenseClass || null,
+            driversLicenseCountryCode: value.driversLicenseCountryCode || null,
+            driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || null,
+            genderCode: value.genderCode || null,
+            heightInCm: value.heightInCm || null,
+            weightInKg: value.weightInKg || null,
+            complexionCode: value.complexionCode || null,
+            buildCode: value.buildCode || null,
+            hairColourCode: value.hairColourCode || null,
+            hairLengthCode: value.hairLengthCode || null,
+            hairColourOther: value.hairColourOther || null,
+            eyeColourCode: value.eyeColourCode || null,
+            eyeColourOther: value.eyeColourOther || null,
+            facialHairIndicator: value.facialHairIndicator || null,
+            facialHairStyleCodes:
+              value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
+                investigationPersonGuid: fhs.personGuid,
+                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+              })) || [],
+            additionalHairDescriptors: value.additionalHairDescriptors || null,
+            comments: value.comments || null,
+            tattooIndicator: value.tattooIndicator || null,
+            tattooDescription: value.tattooDescription || null,
+            additionalDescriptors: value.additionalDescriptors || null,
+            boloIndicator: value.boloIndicator || null,
           };
         } else {
           input.business = {
             name: value.businessName,
-            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses, true),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            aliases: buildLocalAliases(value.aliases),
-            addresses: buildLocalAddresses(value.addresses as AddressFormValue[], true),
           };
         }
 
@@ -398,27 +464,50 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
+          aliases: buildLocalAliases(value.aliases),
+          addresses: buildLocalAddresses(value.addresses),
+          contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
           input.person = {
             firstName: value.firstName,
-            middleName: value.middleName?.trim() || undefined,
-            middleName2: value.middleName2?.trim() || undefined,
+            middleNames: value.middleNames?.trim() || undefined,
             lastName: value.lastName,
             dateOfBirth: toDateOfBirth(value),
-            driversLicenseNumber: value.driversLicenseNumber || undefined,
-            driversLicenseJurisdiction: value.driversLicenseJurisdiction || undefined,
-            sexCode: value.sexCode || undefined,
-            contactMethods: buildLocalContactMethods(value.phoneNumbers, []),
+            approximateAgeCode: value.approximateAgeCode || null,
+            driversLicenseNumber: value.driversLicenseNumber || null,
+            driversLicenseClass: value.driversLicenseClass || null,
+            driversLicenseCountryCode: value.driversLicenseCountryCode || null,
+            driversLicenseCountrySubdivisionCode: value.driversLicenseCountrySubdivisionCode || null,
+            genderCode: value.genderCode || null,
+            heightInCm: value.heightInCm || null,
+            weightInKg: value.weightInKg || null,
+            complexionCode: value.complexionCode || null,
+            buildCode: value.buildCode || null,
+            hairColourCode: value.hairColourCode || null,
+            hairLengthCode: value.hairLengthCode || null,
+            hairColourOther: value.hairColourOther || null,
+            eyeColourCode: value.eyeColourCode || null,
+            eyeColourOther: value.eyeColourOther || null,
+            facialHairIndicator: value.facialHairIndicator || null,
+            facialHairStyleCodes:
+              value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
+                investigationPersonGuid: fhs.personGuid,
+                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+              })) || [],
+            additionalHairDescriptors: value.additionalHairDescriptors || null,
+            comments: value.comments || null,
+            tattooIndicator: value.tattooIndicator || null,
+            tattooDescription: value.tattooDescription || null,
+            additionalDescriptors: value.additionalDescriptors || null,
+            boloIndicator: value.boloIndicator || null,
           };
         } else {
           input.business = {
             name: value.businessName,
-            contactMethods: buildLocalContactMethods(value.phoneNumbers, value.emailAddresses),
             businessIdentifiers: buildLocalBusinessIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            aliases: buildLocalAliases(value.aliases),
-            addresses: buildLocalAddresses(value.addresses as AddressFormValue[]),
           };
         }
 
@@ -493,58 +582,75 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,
+      aliases: party.aliases
+        ?.filter((a: Alias): a is Alias => a != null)
+        .map((a: Alias) => ({
+          name: a.name,
+        })),
+      contactMethods: party.contactMethods
+        ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
+        .map((cm: ContactMethod) => ({
+          contactMethodTypeCode: cm.typeCode,
+          contactValue: cm.value,
+          isPrimary: cm.isPrimary ?? false,
+        })),
+      addresses: party.addresses
+        ?.filter((address: Address | null): address is Address => address != null)
+        .map((address: Address) => ({
+          addressName: address.addressName ?? "",
+          address: address.address ?? null,
+          city: address.city ?? null,
+          province: address.province ?? null,
+          postalCode: address.postalCode ?? null,
+          country: address.country ?? null,
+          isPrimary: address.isPrimary ?? false,
+        })),
       ...(party.person?.lastName && {
         person: {
           firstName: party.person?.firstName || "",
           lastName: party.person?.lastName || "",
-          middleName: party.person?.middleName,
-          middleName2: party.person?.middleName2,
+          middleNames: party.person?.middleName,
           personReference: party.person?.personGuid,
           dateOfBirth: party.person?.dateOfBirth,
-          driversLicenseNumber: party.person?.driversLicenseNumber,
-          driversLicenseJurisdiction: party.person?.driversLicenseJurisdiction,
-          sexCode: party.person?.sexCode,
-          contactMethods: party.person?.contactMethods
-            ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
-            .map((cm: ContactMethod) => ({
-              contactMethodTypeCode: cm.typeCode,
-              contactValue: cm.value,
-              isPrimary: cm.isPrimary ?? false,
-            })),
+          approximateAgeCode: party.person?.approximateAgeCode || null,
+          driversLicenseNumber: party.person?.driversLicenseNumber || null,
+          driversLicenseClass: party.person?.driversLicenseClass || null,
+          driversLicenseCountryCode: party.person?.driversLicenseCountryCode || null,
+          driversLicenseCountrySubdivisionCode: party.person?.driversLicenseCountrySubdivisionCode || null,
+          genderCode: party.person?.genderCode || null,
+          heightInCm: party.person?.heightInCm || null,
+          weightInKg: party.person?.weightInKg || null,
+          complexionCode: party.person?.complexionCode || null,
+          buildCode: party.person?.buildCode || null,
+          hairColourCode: party.person?.hairColourCode || null,
+          hairLengthCode: party.person?.hairLengthCode || null,
+          hairColourOther: party.person?.hairColourOther || null,
+          eyeColourCode: party.person?.eyeColourCode || null,
+          eyeColourOther: party.person?.eyeColourOther || null,
+          facialHairIndicator: party.person?.facialHairIndicator || null,
+          facialHairStyleCodes:
+            party.person?.facialHairStyleCodes?.map((fhs: InvestigationPersonFacialHairStyleCodeRef) => ({
+              investigationPersonFacialStyleHairCodeRefGuid: fhs.investigationPersonFacialStyleHairCodeRefGuid,
+              investigationPersonGuid: fhs.investigationPersonGuid,
+              facialHairStyleCodeRef: fhs.facialHairStyleCodeRef,
+            })) || [],
+          additionalHairDescriptors: party.person?.additionalHairDescriptors || null,
+          comments: party.person?.comments || null,
+          tattooIndicator: party.person?.tattooIndicator || null,
+          tattooDescription: party.person?.tattooDescription || null,
+          additionalDescriptors: party.person?.additionalDescriptors || null,
+          boloIndicator: party.person?.boloIndicator || null,
         },
       }),
       ...(party.business?.name && {
         business: {
           name: party.business.name,
           businessReference: party.business.businessGuid,
-          contactMethods: party.contactMethods
-            ?.filter((cm: ContactMethod): cm is ContactMethod => cm != null)
-            .map((cm: ContactMethod) => ({
-              contactMethodTypeCode: cm.typeCode,
-              contactValue: cm.value,
-              isPrimary: cm.isPrimary ?? false,
-            })),
           businessIdentifiers: party.business?.identifiers
             ?.filter((bi: BusinessIdentifier): bi is BusinessIdentifier => bi != null)
             .map((bi: BusinessIdentifier) => ({
               businessIdentifierCode: bi.identifierCode?.businessIdentifierCode,
               identifierValue: bi.identifierValue,
-            })),
-          aliases: party.aliases
-            ?.filter((a: Alias): a is Alias => a != null)
-            .map((a: Alias) => ({
-              name: a.name,
-            })),
-          addresses: party.addresses
-            ?.filter((address: Address | null): address is Address => address != null)
-            .map((address: Address) => ({
-              addressName: address.addressName ?? "",
-              address: address.address ?? null,
-              city: address.city ?? null,
-              province: address.province ?? null,
-              postalCode: address.postalCode ?? null,
-              country: address.country ?? null,
-              isPrimary: address.isPrimary ?? false,
             })),
         },
       }),

@@ -43,8 +43,8 @@ export class CreateInvestigationAddressInput {
 export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
   createMap<investigation_address, InvestigationAddress>(
     mapper,
-    "investigation_business_address",
-    "InvestigationBusinessAddress",
+    "investigation_address",
+    "InvestigationAddress",
     forMember(
       (dest) => dest.addressGuid,
       mapFrom((src) => src.investigation_address_guid),
