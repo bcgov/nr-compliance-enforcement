@@ -39,9 +39,9 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
       parts.push(String(age));
     }
 
-    if (investigationParty.person?.sexCode) {
+    if (investigationParty.person?.genderCode) {
       const genderDescription = genderCodes?.find(
-        (code: any) => code.sex === investigationParty.person?.sexCode,
+        (code: any) => code.sex === investigationParty.person?.genderCode,
       )?.shortDescription;
       if (genderDescription) {
         parts.push(genderDescription);
