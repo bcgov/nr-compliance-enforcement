@@ -183,15 +183,15 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     return !hasErrors;
   };
 
+  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
+  const isDirty = isFormDirty || attachmentsDirty;
 
   useEffect(() => {
-    if (isFormDirty) {
-      onDirtyChange?.(0, true);
-    }
-  }, [isFormDirty, onDirtyChange]);
+    onDirtyChange?.(0, isDirty);
+  }, [isDirty, onDirtyChange]);
 
   useEffect(() => {
     return () => {
@@ -271,6 +271,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         }
 
         ToggleSuccess(isEdit ? "Enforcement action updated successfully" : "Enforcement action saved successfully");
+        onDirtyChange?.(0, false);
         onClose();
       } catch {
         ToggleError(isEdit ? "Failed to update enforcement action" : "Failed to save enforcement action");
@@ -293,6 +294,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         });
         await updateTimestampMutation.mutateAsync({ investigationGuid });
         ToggleSuccess("Enforcement action deleted successfully");
+        onDirtyChange?.(0, false);
         onClose();
       } catch {
         ToggleError("Failed to delete enforcement action");
@@ -541,7 +543,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         ref={attachmentsRef}
         investigationGuid={investigationGuid}
         existingAttachments={existingAttachments}
-        onDirtyChange={() => onDirtyChange?.(0, true)}
+        onDirtyChange={setAttachmentsDirty}
       />
     </form>
   );

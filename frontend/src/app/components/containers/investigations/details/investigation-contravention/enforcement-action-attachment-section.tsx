@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useState, useCallback } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useState, useCallback } from "react";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
 import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
@@ -8,6 +8,7 @@ import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import {
   buildEnforcementActionMeta,
   computeSequenceNumbers,
+  fetchEnforcementActionAttachments,
   EnforcementActionAttachment,
   EnforcementActionAttachmentFieldValues,
 } from "@/app/common/enforcement-action-attachment-utils";
@@ -25,7 +26,7 @@ interface EnforcementActionAttachmentSectionProps {
   investigationGuid: string;
   /** Existing attachments already in COMS for this EA (empty for a brand-new EA). */
   existingAttachments: EnforcementActionAttachment[];
-  onDirtyChange?: () => void;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 export const EnforcementActionAttachmentSection = forwardRef<
@@ -37,25 +38,22 @@ export const EnforcementActionAttachmentSection = forwardRef<
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
 
-  const markDirty = useCallback(() => onDirtyChange?.(), [onDirtyChange]);
+  const isSectionDirty = filesToAdd.length > 0 || removedIds.size > 0;
+  useEffect(() => {
+    onDirtyChange?.(isSectionDirty);
+  }, [isSectionDirty, onDirtyChange]);
 
-  const onFileSelect = useCallback(
-    (files: FileList) => {
-      const incoming = Array.from<File>(files);
-      setFilesToAdd((prev) => mergeNewFiles(prev, incoming));
-      markDirty();
-    },
-    [markDirty],
-  );
+  const onFileSelect = useCallback((files: FileList) => {
+    const incoming = Array.from<File>(files);
+    setFilesToAdd((prev) => mergeNewFiles(prev, incoming));
+  }, []);
 
   const handleRemoveStagedFile = (name: string) => {
     setFilesToAdd((prev) => prev.filter((f) => f.name !== name));
-    markDirty();
   };
 
   const handleRemoveExisting = (id: string) => {
     setRemovedIds((prev) => new Set(prev).add(id));
-    markDirty();
   };
 
   const visibleExisting = existingAttachments.filter(
@@ -67,8 +65,10 @@ export const EnforcementActionAttachmentSection = forwardRef<
     persist: async (enforcementActionId, fieldValues) => {
       const meta = buildEnforcementActionMeta(fieldValues, { investigationGuid, enforcementActionId });
 
+      const current = await fetchEnforcementActionAttachments(investigationGuid, enforcementActionId);
+
       // Deletes
-      const toDelete = existingAttachments.filter((a) => a.id && removedIds.has(a.id));
+      const toDelete = current.filter((a) => a.id && removedIds.has(a.id));
       if (toDelete.length > 0) {
         await handlePersistAttachments({
           dispatch,
@@ -84,7 +84,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
       }
 
       // Sync metadata onto retained attachments
-      const toSync = existingAttachments.filter(
+      const toSync = current.filter(
         (a): a is EnforcementActionAttachment & { id: string } => !!a.id && !removedIds.has(a.id),
       );
       if (toSync.length > 0) {
@@ -104,7 +104,7 @@ export const EnforcementActionAttachmentSection = forwardRef<
           closeButton: false,
           draggable: false,
         });
-        const sequences = computeSequenceNumbers(existingAttachments, fieldValues.fileType, filesToAdd);
+        const sequences = computeSequenceNumbers(current, fieldValues.fileType, filesToAdd);
         await uploadAttachmentsWithProgress({
           dispatch,
           files: filesToAdd,
