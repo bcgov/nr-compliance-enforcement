@@ -29,6 +29,18 @@ import { EnforcementActionAttachment } from "@/app/common/enforcement-action-att
 
 const VIOLATION_TICKET_CODES = new Set(["FDVT", "PRVT"]);
 
+// ticket_amount is stored as Decimal(10, 2) so enforce max amount
+const ticketAmountValidator = z
+  .string()
+  .min(1, "Ticket amount is required")
+  .refine(
+    (val) => {
+      const amount = Number.parseFloat(val);
+      return Number.isNaN(amount) || amount < 100_000_000;
+    },
+    { message: "Ticket amount must be less than 100,000,000" },
+  );
+
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
     updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
@@ -430,8 +442,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 label="Ticket amount"
                 required
                 validators={{
-                  onChange: z.string().min(1, "Ticket amount is required"),
-                  onSubmit: z.string().min(1, "Ticket amount is required"),
+                  onChange: ticketAmountValidator,
+                  onSubmit: ticketAmountValidator,
                 }}
                 render={(field) => (
                   <CompInput
