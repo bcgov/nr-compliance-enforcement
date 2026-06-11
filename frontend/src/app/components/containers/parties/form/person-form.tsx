@@ -104,6 +104,92 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     handleRemoveAlias,
   } = usePartyFormFields(form);
 
+  const renderAdditionalDriversLicenseFields = () => (
+    <>
+      <FormField
+        form={form}
+        name="driversLicenseClass"
+        label="Driver's licence class"
+        render={(field) => (
+          <CompInput
+            id="DriversLicenseClass"
+            divid=""
+            type="input"
+            inputClass="comp-form-control comp-details-input"
+            defaultValue={field.state.value}
+            error={field.state.meta.errors?.[0]?.message || ""}
+            maxLength={128}
+            onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+            placeholder="Enter driver's licence class"
+            disabled={isDisabled}
+          />
+        )}
+      />
+      <FormField
+        form={form}
+        name="driversLicenseCountryCode"
+        label="Driver's licence country"
+        required
+        validators={{
+          onChange: ({ value }: { value: string | null | undefined }) => {
+            const requiresCountry = !!form.getFieldValue("driversLicenseNumber");
+            const isEmpty = value === null || value === undefined || value === "";
+            return requiresCountry && isEmpty ? { message: "Country is required" } : undefined;
+          },
+        }}
+        render={(field) => (
+          <CompSelect
+            id="driversLicenseCountry-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={countryOptions}
+            value={countryOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => {
+              const newValue = option?.value ?? "";
+              field.handleChange(newValue);
+              if (newValue !== "CA") {
+                form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
+              }
+            }}
+            placeholder="Select country"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.driversLicenseCountryCode}>
+        {(countryCode: string | undefined) =>
+          countryCode === "CA" ? (
+            <FormField
+              form={form}
+              name="driversLicenseCountrySubdivisionCode"
+              label="Driver's licence province"
+              render={(field) => (
+                <CompSelect
+                  id="driversLicenseSubdivision-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={subdivisionOptions}
+                  value={subdivisionOptions?.find((opt: any) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value ?? "")}
+                  placeholder="Select province"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
+    </>
+  );
+
   return (
     <>
       <FormField
@@ -330,91 +416,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <form.Subscribe selector={(state: any) => state.values.driversLicenseNumber}>
         {(driversLicenseNumber: string | undefined) =>
-          driversLicenseNumber ? (
-            <>
-              <FormField
-                form={form}
-                name="driversLicenseClass"
-                label="Driver's licence class"
-                render={(field) => (
-                  <CompInput
-                    id="DriversLicenseClass"
-                    divid=""
-                    type="input"
-                    inputClass="comp-form-control comp-details-input"
-                    defaultValue={field.state.value}
-                    error={field.state.meta.errors?.[0]?.message || ""}
-                    maxLength={128}
-                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                    placeholder="Enter driver's licence class"
-                    disabled={isDisabled}
-                  />
-                )}
-              />
-              <FormField
-                form={form}
-                name="driversLicenseCountryCode"
-                label="Driver's licence country"
-                required
-                validators={{
-                  onChange: ({ value }: { value: string | null | undefined }) => {
-                    const requiresCountry = !!form.getFieldValue("driversLicenseNumber");
-                    const isEmpty = value === null || value === undefined || value === "";
-                    return requiresCountry && isEmpty ? { message: "Country is required" } : undefined;
-                  },
-                }}
-                render={(field) => (
-                  <CompSelect
-                    id="driversLicenseCountry-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input"
-                    options={countryOptions}
-                    value={countryOptions?.find((opt: any) => opt.value === field.state.value)}
-                    onChange={(option) => {
-                      const newValue = option?.value ?? "";
-                      field.handleChange(newValue);
-                      if (newValue !== "CA") {
-                        form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
-                      }
-                    }}
-                    placeholder="Select country"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                    isDisabled={isDisabled}
-                  />
-                )}
-              />
-              <form.Subscribe selector={(state: any) => state.values.driversLicenseCountryCode}>
-                {(countryCode: string | undefined) =>
-                  countryCode === "CA" ? (
-                    <FormField
-                      form={form}
-                      name="driversLicenseCountrySubdivisionCode"
-                      label="Driver's licence province"
-                      render={(field) => (
-                        <CompSelect
-                          id="driversLicenseSubdivision-select"
-                          classNamePrefix="comp-select"
-                          className="comp-details-input"
-                          options={subdivisionOptions}
-                          value={subdivisionOptions?.find((opt: any) => opt.value === field.state.value)}
-                          onChange={(option) => field.handleChange(option?.value ?? "")}
-                          placeholder="Select province"
-                          isClearable={true}
-                          showInactive={false}
-                          enableValidation={true}
-                          errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                          isDisabled={isDisabled}
-                        />
-                      )}
-                    />
-                  ) : null
-                }
-              </form.Subscribe>
-            </>
-          ) : null
+          driversLicenseNumber ? renderAdditionalDriversLicenseFields() : null
         }
       </form.Subscribe>
       <FormField
