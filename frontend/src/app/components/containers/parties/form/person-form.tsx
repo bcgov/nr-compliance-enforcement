@@ -129,44 +129,47 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     />
   );
 
-  const renderFacialHairStyleField = () => (
-    <FormField
-      form={form}
-      name="facialHairStyleCodes"
-      label="Facial hair style"
-      render={(field) => (
-        <ValidationMultiSelect
-          id="facial-hair-style-select"
-          classNamePrefix="comp-select"
-          className="comp-details-input"
-          options={facialHairStyleOptions}
-          values={(field.state.value ?? []).map(
-            (fhs: PersonFacialHairStyleCode) =>
-              facialHairStyleOptions.find((o) => o.value === fhs.facialHairStyleCode) ?? {
-                value: fhs.facialHairStyleCode,
-                label: fhs.facialHairStyleCode,
-              },
-          )}
-          onChange={(options: Option[]) => {
-            const current = field.state.value ?? [];
-            field.handleChange(
-              (options ?? []).map((o) => {
-                const existing = current.find((fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value);
-                return {
-                  personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
-                  personGuid: existing?.personGuid,
-                  facialHairStyleCode: o.value,
-                };
-              }),
-            );
-          }}
-          placeholder="Select facial hair styles"
-          isClearable={true}
-          errMsg={field.state.meta.errors?.[0]?.message || ""}
-        />
-      )}
-    />
-  );
+  const renderFacialHairStyleField = () => {
+    const mapFacialHairStyleToOption = (fhs: PersonFacialHairStyleCode) =>
+      facialHairStyleOptions.find((o) => o.value === fhs.facialHairStyleCode) ?? {
+        value: fhs.facialHairStyleCode,
+        label: fhs.facialHairStyleCode,
+      };
+
+    const mapOptionsToFacialHairStyleCodes = (options: Option[], current: PersonFacialHairStyleCode[]) =>
+      (options ?? []).map((o) => {
+        const existing = current.find((fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value);
+        return {
+          personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
+          personGuid: existing?.personGuid,
+          facialHairStyleCode: o.value,
+        };
+      });
+
+    return (
+      <FormField
+        form={form}
+        name="facialHairStyleCodes"
+        label="Facial hair style"
+        render={(field) => (
+          <ValidationMultiSelect
+            id="facial-hair-style-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={facialHairStyleOptions}
+            values={(field.state.value ?? []).map(mapFacialHairStyleToOption)}
+            onChange={(options: Option[]) => {
+              const current = field.state.value ?? [];
+              field.handleChange(mapOptionsToFacialHairStyleCodes(options, current));
+            }}
+            placeholder="Select facial hair styles"
+            isClearable={true}
+            errMsg={field.state.meta.errors?.[0]?.message || ""}
+          />
+        )}
+      />
+    );
+  };
 
   return (
     <>
