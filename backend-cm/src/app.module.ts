@@ -38,7 +38,6 @@ import { ScheduleSectorXrefModule } from "./complaint_outcome/schedule_sector_xr
 import { LeadModule } from "./complaint_outcome/lead/lead.module";
 import { CaseLocationCodeModule } from "./complaint_outcome/code-tables/case_location_code/case_location_code.module";
 import { IpmAuthCategoryCodeModule } from "./complaint_outcome/ipm_auth_category_code/ipm_auth_category_code.module";
-import { PersonModule } from "./shared/person/person.module";
 import { ParkModule } from "./shared/park/park.module";
 import { AgencyCodeModule } from "./shared/agency_code/agency_code.module";
 import { AutomapperModule, InjectMapper } from "@automapper/nestjs";
@@ -135,7 +134,6 @@ import { FacialHairStyleCodeModule } from "src/shared/facial_hair_style_code/fac
     LeadModule,
     CaseLocationCodeModule,
     IpmAuthCategoryCodeModule,
-    PersonModule,
     ParkModule,
     AgencyCodeModule,
     CaseFileModule,

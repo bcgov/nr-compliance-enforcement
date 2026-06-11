@@ -25,7 +25,7 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
-import { facial_hair_style_code } from "prisma/shared/generated/facial_hair_style_code";
+
 @Injectable()
 export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);

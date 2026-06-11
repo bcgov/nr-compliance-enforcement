@@ -96,7 +96,7 @@ export class PartyService {
   }
 
   async findOne(id: string) {
-    const prismaParty = await this.prisma.party.findUnique({
+    const prismaParty: any = await this.prisma.party.findUnique({
       where: {
         party_guid: id,
       },
@@ -274,7 +274,7 @@ export class PartyService {
     });
 
     try {
-      return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
+      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error mapping party of interest", error);
     }
@@ -294,16 +294,19 @@ export class PartyService {
         data = await this._buildBusinessCreateData(input);
       }
 
-      const prismaParty = await this.prisma.party.create({
+      const prismaParty: any = await this.prisma.party.create({
         data,
         include: {
           party_type_code: true,
           person: true,
           business: true,
+          address: true,
+          alias: true,
+          contact_method: true,
         },
       });
 
-      const createdParty = this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
+      const createdParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
 
       this.eventPublisher.publishEvent(
         {
@@ -1344,7 +1347,7 @@ export class PartyService {
   }
 
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
-    const existingParty = await this.prisma.party.findUnique({
+    const existingParty: any = await this.prisma.party.findUnique({
       include: {
         address: { where: { active_ind: true } },
         contact_method: { where: { active_ind: true } },
@@ -1375,7 +1378,7 @@ export class PartyService {
     });
     if (!existingParty) throw new Error("Party not found");
 
-    const existingPartyDto = this.mapper.map<party, Party>(existingParty as unknown as party, "party", "Party");
+    const existingPartyDto = this.mapper.map<party, Party>(existingParty as party, "party", "Party");
 
     if (input.partyTypeCode === PARTY_TYPES.Company && input.business) {
       this._validateBusinessInput(input.business);
@@ -1391,7 +1394,7 @@ export class PartyService {
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
 
-      const prismaParty = await this.prisma.party.update({
+      const prismaParty: any = await this.prisma.party.update({
         where: { party_guid: partyIdentifier },
         data: data,
         include: {
@@ -1405,7 +1408,7 @@ export class PartyService {
         this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
       }
 
-      return this.mapper.map<party, Party>(prismaParty as unknown as party, "party", "Party");
+      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error updating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);
@@ -1510,12 +1513,6 @@ export class PartyService {
               },
             },
           },
-          alias: {
-            where: { active_ind: true },
-            select: {
-              name: true,
-            },
-          },
           business: {
             select: {
               business_guid: true,
@@ -1540,38 +1537,14 @@ export class PartyService {
             select: {
               person_guid: true,
               first_name: true,
-              middle_names: true,
               last_name: true,
               date_of_birth: true,
-              drivers_license_number: true,
-              drivers_license_class: true,
-              drivers_license_country_code: true,
-              drivers_license_country_subdivision_code: true,
-              gender_code: true,
-              complexion_code: true,
-              hair_colour_code: true,
-              hair_length_code: true,
-              hair_colour_other: true,
-              facial_hair_ind: true,
-              person_facial_hair_style_code: true,
-              additional_hair_descriptors: true,
-              tattoo_ind: true,
-              tattoo_description: true,
-              additional_descriptors: true,
-              comments: true,
-              bolo_ind: true,
-              approximate_age_code: true,
-              eye_colour_code: true,
-              eye_colour_other: true,
-              build_code: true,
             },
           },
         },
         orderByClause: orderBy,
       },
     );
-
-    // Todo: do I need all this crap in here?
 
     return {
       items: result.items,
