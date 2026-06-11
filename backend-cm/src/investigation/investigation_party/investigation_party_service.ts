@@ -38,7 +38,7 @@ import { withRlsTransaction } from "src/pg-session-extension/with-rls-transactio
 import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
-} from "src/investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
+} from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 
 @Injectable()
 export class InvestigationPartyService {

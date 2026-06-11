@@ -5,7 +5,7 @@ import { PersonDto } from "../../../common/party";
 import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
-} from "src/investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
+} from "../../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 
 export class InvestigationPerson implements PersonDto {
   personGuid: string;
