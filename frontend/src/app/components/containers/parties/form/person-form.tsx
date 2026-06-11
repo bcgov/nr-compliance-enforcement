@@ -136,9 +136,12 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         label: fhs.facialHairStyleCode,
       };
 
+    const findExistingFacialHairStyle = (current: PersonFacialHairStyleCode[], optionValue: string) =>
+      current.find((fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === optionValue);
+
     const mapOptionsToFacialHairStyleCodes = (options: Option[], current: PersonFacialHairStyleCode[]) =>
       (options ?? []).map((o) => {
-        const existing = current.find((fhs: PersonFacialHairStyleCode) => fhs.facialHairStyleCode === o.value);
+        const existing = findExistingFacialHairStyle(current, o.value ?? "");
         return {
           personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
           personGuid: existing?.personGuid,
