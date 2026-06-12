@@ -235,20 +235,11 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 }
 
 // Helper to build business object for creates
-export const buildBusinessCreate = (value: any, contactPeople?: any[]) => {
+export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
     name: value.businessName,
     identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-    ...(contactPeople !== undefined ? { contactPeople: contactPeople.length ? contactPeople : undefined } : {}),
-  };
-};
-
-// Helper to build business object for updates
-export const buildBusinessUpdate = (value: any, contactPeople?: any[]) => {
-  return {
-    name: value.businessName,
-    identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-    ...(contactPeople !== undefined ? { contactPeople: contactPeople.length ? contactPeople : undefined } : {}),
+    ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
 };
 

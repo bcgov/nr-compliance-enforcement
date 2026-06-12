@@ -32,8 +32,7 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
   buildAddresses,
-  buildBusinessCreate,
-  buildBusinessUpdate,
+  buildBusinessCreateUpdate,
   buildContactMethods,
   buildPersonForCreate,
   buildPersonForUpdate,
@@ -330,7 +329,9 @@ const PartyEdit: FC = () => {
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
           aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
           business:
-            value.partyType === "CMP" ? buildBusinessUpdate(value, buildContactPeopleForUpdate(value.contacts)) : null,
+            value.partyType === "CMP"
+              ? buildBusinessCreateUpdate(value, buildContactPeopleForUpdate(value.contacts))
+              : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
         updatePartyMutation.mutate({ partyIdentifier: id, input: updateInput });
@@ -341,7 +342,9 @@ const PartyEdit: FC = () => {
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
           aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
           business:
-            value.partyType === "CMP" ? buildBusinessCreate(value, buildContactPeopleForCreate(value.contacts)) : null,
+            value.partyType === "CMP"
+              ? buildBusinessCreateUpdate(value, buildContactPeopleForCreate(value.contacts))
+              : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };
         createPartyMutation.mutate({ input: createInput });
