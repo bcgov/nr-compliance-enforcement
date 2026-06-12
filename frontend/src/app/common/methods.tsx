@@ -646,3 +646,10 @@ export const toDateOfBirth = (value: any): Date | undefined => {
   if (!(d instanceof Date)) return undefined;
   return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
 };
+
+// Joins a list using "and" before the last item
+export const joinWithAnd = (items: string[]): string => {
+  if (items.length <= 1) return items.join("");
+  if (items.length === 2) return items.join(" and ");
+  return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
+};

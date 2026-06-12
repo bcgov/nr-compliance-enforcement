@@ -264,7 +264,7 @@ export const DecisionForm: FC<props> = ({
   };
 
   const handleSaveButtonClick = () => {
-    const identifier = id !== undefined ? caseId : leadIdentifier;
+    const identifier = id === undefined ? leadIdentifier : caseId;
     resetErrorMessages();
 
     if (isValid()) {
