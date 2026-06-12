@@ -154,6 +154,7 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any) => 
 
   if (businessNumber?.identifierValue) {
     identifiers.push({
+      businessIdentifierGuid: businessNumber.businessIdentifierGuid,
       identifierCode: BusinessIdentifiers.BUSINESS_NUMBER,
       identifierValue: businessNumber.identifierValue,
     });
@@ -161,6 +162,7 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any) => 
 
   if (worksafeBCNumber?.identifierValue) {
     identifiers.push({
+      businessIdentifierGuid: worksafeBCNumber.businessIdentifierGuid,
       identifierCode: BusinessIdentifiers.WSBC_NUMBER,
       identifierValue: worksafeBCNumber.identifierValue,
     });
