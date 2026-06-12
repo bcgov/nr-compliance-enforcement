@@ -133,8 +133,8 @@ export class InvestigationPartyService {
                 ? {
                     investigation_contact_method: {
                       create: input.contactMethods.map((c) => ({
-                        contact_method_type_code_ref: c.contactMethodTypeCode,
-                        contact_value: c.contactValue,
+                        contact_method_type_code_ref: c.typeCode,
+                        contact_value: c.value,
                         is_primary: c.isPrimary,
                         create_user_id: this.user.getIdirUsername(),
                         create_utc_timestamp: new Date(),
@@ -246,7 +246,7 @@ export class InvestigationPartyService {
       await tx.investigation_business_identifier.createMany({
         data: input.businessIdentifiers.map((bi) => ({
           investigation_business_guid: investigationBusiness.investigation_business_guid,
-          business_identifier_code_ref: bi.businessIdentifierCode,
+          business_identifier_code_ref: bi.identifierCode,
           identifier_value: bi.identifierValue,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
@@ -491,8 +491,8 @@ export class InvestigationPartyService {
 
     if (toCreate.length) {
       operations.create = this._sortContactMethodsPrimaryLast(toCreate).map((cm) => ({
-        contact_method_type_code_ref: cm.contactMethodTypeCode,
-        contact_value: cm.contactValue,
+        contact_method_type_code_ref: cm.typeCode,
+        contact_value: cm.value,
         is_primary: cm.isPrimary,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
@@ -513,7 +513,7 @@ export class InvestigationPartyService {
         ...toUpdate.map((cm) => ({
           where: { investigation_contact_method_guid: cm.contactMethodGuid },
           data: {
-            contact_value: cm.contactValue,
+            contact_value: cm.value,
             is_primary: cm.isPrimary,
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
@@ -535,7 +535,7 @@ export class InvestigationPartyService {
     const toCreate = incoming.filter((bi) => !bi.businessIdentifierGuid);
     const toUpdate = incoming.filter((bi) => bi.businessIdentifierGuid);
     const existingGuids = new Set(incoming.map((bi) => bi.businessIdentifierGuid).filter(Boolean));
-    const toDelete = existing.filter((bi) => !existingGuids.has(bi.businessIdentifierGuid));
+    const toDelete = existing.filter((bi) => !existingGuids.has(bi.identifierCode));
 
     const operations: Promise<any>[] = [];
 
@@ -544,7 +544,7 @@ export class InvestigationPartyService {
         tx.investigation_business_identifier.create({
           data: {
             investigation_business_guid: investigationBusinessGuid,
-            business_identifier_code_ref: bi.businessIdentifierCode,
+            business_identifier_code_ref: bi.identifierCode,
             identifier_value: bi.identifierValue,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
@@ -558,7 +558,7 @@ export class InvestigationPartyService {
         tx.investigation_business_identifier.update({
           where: { investigation_business_identifier_guid: bi.businessIdentifierGuid },
           data: {
-            business_identifier_code_ref: bi.businessIdentifierCode,
+            business_identifier_code_ref: bi.identifierCode,
             identifier_value: bi.identifierValue,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),

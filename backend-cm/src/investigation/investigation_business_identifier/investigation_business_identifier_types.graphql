@@ -1,5 +1,5 @@
 type InvestigationBusinessIdentifier {
-  businessIdentifierGuid: String!
-  businessIdentifierCode: String!
+  businessIdentifierGuid: String
+  identifierCode: String!
   identifierValue: String!
 }

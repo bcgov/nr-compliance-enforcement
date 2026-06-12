@@ -42,6 +42,7 @@ import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
+import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -131,10 +132,7 @@ export const GET_PARTY = gql`
         identifiers {
           businessIdentifierGuid
           identifierValue
-          identifierCode {
-            businessIdentifierCode
-            shortDescription
-          }
+          identifierCode
         }
         contactPeople {
           businessPersonXrefGuid
@@ -680,7 +678,11 @@ export const PartyView: FC = () => {
                       {partyData.business.identifiers.map((identifier) => {
                         return (
                           <p key={identifier?.businessIdentifierGuid}>
-                            <b>{identifier?.identifierCode?.shortDescription}: </b>
+                            <b>
+                              {BUSINESS_IDENTIFIER_LABELS[identifier?.identifierCode ?? ""] ??
+                                identifier?.identifierCode}
+                              :{" "}
+                            </b>
                             {identifier?.identifierValue}
                           </p>
                         );

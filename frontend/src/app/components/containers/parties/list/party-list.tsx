@@ -34,9 +34,7 @@ const getBusinessNumber = (identifiers: any[] | undefined): string => {
   if (!identifiers?.length) {
     return "-";
   }
-  const businessNumber = identifiers.find(
-    (id) => id.identifierCode?.businessIdentifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
-  );
+  const businessNumber = identifiers.find((id) => id.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
   return businessNumber?.identifierValue ?? "-";
 };
 

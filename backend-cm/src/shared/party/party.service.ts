@@ -36,11 +36,7 @@ export class PartyService {
   private readonly logger = new Logger(PartyService.name);
 
   private _getBusinessNumberValue(identifiers?: BusinessIdentifier[]): string | undefined {
-    const businessNumber = identifiers?.find((i) => {
-      const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
-      return code === BUSINESS_NUMBER_CODE;
-    });
-
+    const businessNumber = identifiers?.find((i) => i.identifierCode === BUSINESS_NUMBER_CODE);
     return businessNumber?.identifierValue;
   }
 
@@ -157,12 +153,7 @@ export class PartyService {
                 business_identifier_guid: true,
                 business_guid: true,
                 identifier_value: true,
-                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
-                  select: {
-                    business_identifier_code: true,
-                    short_description: true,
-                  },
-                },
+                business_identifier_code: true,
               },
               where: {
                 active_ind: true,
@@ -1072,25 +1063,25 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
-      const code =
-        typeof incoming.identifierCode === "string"
-          ? incoming.identifierCode
-          : incoming.identifierCode?.businessIdentifierCode;
       if (incoming.businessIdentifierGuid) {
         const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
         if (existing && existing.identifierValue !== incoming.identifierValue) {
-          addEvent("EDITED", `identifier (${code})`, existing.identifierValue, incoming.identifierValue);
+          addEvent(
+            "EDITED",
+            `identifier (${incoming.identifierCode})`,
+            existing.identifierValue,
+            incoming.identifierValue,
+          );
         }
       } else {
-        addEvent("ADDED", `identifier (${code})`, null, incoming.identifierValue);
+        addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
       }
     }
     const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
     existingIdentifiers
       .filter((i) => !incomingGuids.has(i.businessIdentifierGuid))
       .forEach((i) => {
-        const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
-        addEvent("REMOVED", `identifier (${code})`, i.identifierValue, null);
+        addEvent("REMOVED", `identifier (${i.identifierCode})`, i.identifierValue, null);
       });
   }
 

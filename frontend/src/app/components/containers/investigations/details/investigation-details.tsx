@@ -39,8 +39,8 @@ export const GET_INVESTIGATION = gql`
         }
         contactMethods {
           contactMethodGuid
-          contactMethodTypeCode
-          contactValue
+          typeCode
+          value
           isPrimary
         }
         addresses {
@@ -91,7 +91,7 @@ export const GET_INVESTIGATION = gql`
           name
           businessIdentifiers {
             businessIdentifierGuid
-            businessIdentifierCode
+            identifierCode
             identifierValue
           }
         }
