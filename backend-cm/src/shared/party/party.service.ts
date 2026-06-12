@@ -17,7 +17,6 @@ import { AppUserService } from "src/shared/app_user/app_user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
-import { PersonInput } from "src/shared/person/dto/person.input";
 import { Person } from "src/shared/person/dto/person";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
