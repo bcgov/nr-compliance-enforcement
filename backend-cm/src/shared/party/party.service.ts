@@ -1163,6 +1163,7 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     if (!oldPerson || !newPerson) return;
+    this._compareField("Caution / BOLO", oldPerson.boloIndicator, newPerson.boloIndicator, addEvent);
     this._compareField("first name", oldPerson.firstName, newPerson.firstName, addEvent);
     this._compareField("middle name", oldPerson.middleNames, newPerson.middleNames, addEvent);
     this._compareField("last name", oldPerson.lastName, newPerson.lastName, addEvent);
