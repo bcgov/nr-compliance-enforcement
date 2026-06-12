@@ -170,36 +170,7 @@ export class PartyService {
                   select: {
                     person_guid: true,
                     first_name: true,
-                    middle_names: true,
                     last_name: true,
-                    date_of_birth: true,
-                    drivers_license_number: true,
-                    drivers_license_class: true,
-                    drivers_license_country_code: true,
-                    drivers_license_country_subdivision_code: true,
-                    gender_code: true,
-                    complexion_code: true,
-                    build_code: true,
-                    hair_colour_code: true,
-                    hair_length_code: true,
-                    hair_colour_other: true,
-                    eye_colour_code: true,
-                    eye_colour_other: true,
-                    facial_hair_ind: true,
-                    person_facial_hair_style_code: {
-                      select: {
-                        person_facial_hair_style_code_guid: true,
-                        facial_hair_style_code: true,
-                      },
-                      where: { active_ind: true },
-                    },
-                    additional_hair_descriptors: true,
-                    tattoo_ind: true,
-                    tattoo_description: true,
-                    additional_descriptors: true,
-                    comments: true,
-                    bolo_ind: true,
-                    approximate_age_code: true,
                     party: {
                       select: {
                         contact_method: {
@@ -319,7 +290,7 @@ export class PartyService {
     }
   }
 
-  private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
+  private async _buildCommonPartyCreateData(input: PartyCreateInput): Promise<any> {
     const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
 
     return {
@@ -368,6 +339,14 @@ export class PartyService {
             },
           }
         : {}),
+    };
+  }
+
+  private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
+    const common = await this._buildCommonPartyCreateData(input);
+
+    return {
+      ...common,
       person: {
         create: {
           first_name: input.person?.firstName,
@@ -423,54 +402,10 @@ export class PartyService {
       null,
     );
 
-    const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
+    const common = await this._buildCommonPartyCreateData(input);
 
     return {
-      party_type: input.partyTypeCode,
-      create_user_id: this.user.getIdirUsername(),
-      create_utc_timestamp: new Date(),
-      created_by_app_user_guid: createdByUser.appUserGuid,
-      ...(input.addresses?.length
-        ? {
-            address: {
-              create: input.addresses.map((a) => ({
-                address_name: a.addressName.trim(),
-                address: a.address?.trim() || null,
-                city: a.city?.trim() || null,
-                country_subdivision_code: a.province?.trim() || null,
-                postal_code: a.postalCode?.trim() || null,
-                country_code: a.country?.trim() || null,
-                is_primary: a.isPrimary ?? false,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              })),
-            },
-          }
-        : {}),
-      ...(input.contactMethods?.length
-        ? {
-            contact_method: {
-              create: input.contactMethods.map((c) => ({
-                contact_method_type: c.typeCode,
-                contact_value: c.value,
-                is_primary: c.isPrimary,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              })),
-            },
-          }
-        : {}),
-      ...(input.aliases?.length
-        ? {
-            alias: {
-              create: input.aliases.map((a) => ({
-                name: a.name,
-                create_user_id: this.user.getIdirUsername(),
-                create_utc_timestamp: new Date(),
-              })),
-            },
-          }
-        : {}),
+      ...common,
       business: {
         create: {
           name: input.business?.name,

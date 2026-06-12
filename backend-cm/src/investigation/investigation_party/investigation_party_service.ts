@@ -65,21 +65,6 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
-  private _mapAddressCreateData(partyGuid: string, address: CreateInvestigationAddressInput) {
-    return {
-      investigation_party_guid: partyGuid,
-      address_name: address.addressName.trim(),
-      address: address.address?.trim() || null,
-      city: address.city?.trim() || null,
-      country_subdivision_code_ref: address.province?.trim() || null,
-      postal_code: address.postalCode?.trim() || null,
-      country_code_ref: address.country?.trim() || null,
-      is_primary: address.isPrimary ?? false,
-      create_user_id: this.user.getIdirUsername(),
-      create_utc_timestamp: new Date(),
-    };
-  }
-
   async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<Investigation> {
     for (const input of inputs) {
       if (!input.person && !input.business) {
@@ -175,31 +160,43 @@ export class InvestigationPartyService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  private _buildPersonFieldData(input: CreateInvestigationPersonInput | UpdateInvestigationPersonInput) {
+    return {
+      first_name: input.firstName,
+      middle_names: input.middleNames,
+      last_name: input.lastName,
+      date_of_birth: input.dateOfBirth,
+      approximate_age_code_ref: this._resolveApproximateAgeCode(input.dateOfBirth, input.approximateAgeCode),
+      drivers_license_number: input.driversLicenseNumber,
+      drivers_license_class: input.driversLicenseClass,
+      drivers_license_country_code_ref: input.driversLicenseCountryCode,
+      drivers_license_country_subdivision_code_ref: input.driversLicenseCountrySubdivisionCode,
+      gender_code_ref: input.genderCode,
+      height_cm: input.heightInCm,
+      weight_kg: input.weightInKg,
+      complexion_code_ref: input.complexionCode,
+      build_code_ref: input.buildCode,
+      hair_colour_code_ref: input.hairColourCode,
+      hair_length_code_ref: input.hairLengthCode,
+      hair_colour_other: input.hairColourOther,
+      eye_colour_code_ref: input.eyeColourCode,
+      eye_colour_other: input.eyeColourOther,
+      facial_hair_ind: input.facialHairIndicator,
+      additional_hair_descriptors: input.additionalHairDescriptors,
+      tattoo_ind: input.tattooIndicator,
+      tattoo_description: input.tattooDescription,
+      additional_descriptors: input.additionalDescriptors,
+      comments: input.comments,
+      bolo_ind: input.boloIndicator,
+    };
+  }
+
   private async createPerson(tx: any, investigationPartyGuid: string, input: CreateInvestigationPersonInput) {
     await tx.investigation_person.create({
       data: {
         person_guid_ref: input.personReference,
         investigation_party_guid: investigationPartyGuid,
-        first_name: input.firstName,
-        middle_names: input.middleNames,
-        last_name: input.lastName,
-        date_of_birth: input.dateOfBirth,
-        approximate_age_code_ref: this._resolveApproximateAgeCode(input.dateOfBirth, input.approximateAgeCode),
-        drivers_license_number: input.driversLicenseNumber,
-        drivers_license_class: input.driversLicenseClass,
-        drivers_license_country_code_ref: input.driversLicenseCountryCode,
-        drivers_license_country_subdivision_code_ref: input.driversLicenseCountrySubdivisionCode,
-        gender_code_ref: input.genderCode,
-        height_cm: input.heightInCm,
-        weight_kg: input.weightInKg,
-        complexion_code_ref: input.complexionCode,
-        build_code_ref: input.buildCode,
-        hair_colour_code_ref: input.hairColourCode,
-        hair_length_code_ref: input.hairLengthCode,
-        hair_colour_other: input.hairColourOther,
-        eye_colour_code_ref: input.eyeColourCode,
-        eye_colour_other: input.eyeColourOther,
-        facial_hair_ind: input.facialHairIndicator,
+        ...this._buildPersonFieldData(input),
         ...(input.facialHairStyleCodes?.length
           ? {
               investigation_person_facial_hair_style_code_ref: {
@@ -406,26 +403,7 @@ export class InvestigationPartyService {
     await tx.investigation_person.update({
       where: { investigation_person_guid: existingPerson.personGuid },
       data: {
-        first_name: input.firstName,
-        middle_names: input.middleNames,
-        last_name: input.lastName,
-        date_of_birth: input.dateOfBirth,
-        approximate_age_code_ref: this._resolveApproximateAgeCode(input.dateOfBirth, input.approximateAgeCode),
-        drivers_license_number: input.driversLicenseNumber,
-        drivers_license_class: input.driversLicenseClass,
-        drivers_license_country_code_ref: input.driversLicenseCountryCode,
-        drivers_license_country_subdivision_code_ref: input.driversLicenseCountrySubdivisionCode,
-        gender_code_ref: input.genderCode,
-        height_cm: input.heightInCm,
-        weight_kg: input.weightInKg,
-        complexion_code_ref: input.complexionCode,
-        build_code_ref: input.buildCode,
-        hair_colour_code_ref: input.hairColourCode,
-        hair_length_code_ref: input.hairLengthCode,
-        hair_colour_other: input.hairColourOther,
-        eye_colour_code_ref: input.eyeColourCode,
-        eye_colour_other: input.eyeColourOther,
-        facial_hair_ind: input.facialHairIndicator,
+        ...this._buildPersonFieldData(input),
         ...(Object.keys(facialHairStyleOperations).length
           ? { investigation_person_facial_hair_style_code_ref: facialHairStyleOperations }
           : {}),
