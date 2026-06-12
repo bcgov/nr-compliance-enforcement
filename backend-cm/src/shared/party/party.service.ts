@@ -17,6 +17,8 @@ import { AppUserService } from "src/shared/app_user/app_user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
+import { PersonInput } from "src/shared/person/dto/person.input";
+import { Person } from "src/shared/person/dto/person";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -342,6 +344,37 @@ export class PartyService {
     };
   }
 
+  private _buildPersonFieldData(person?: Person): any {
+    return {
+      first_name: person?.firstName,
+      middle_names: person?.middleNames,
+      last_name: person?.lastName,
+      date_of_birth: person?.dateOfBirth,
+      approximate_age_code: this._resolveApproximateAgeCode(person?.dateOfBirth, person?.approximateAgeCode),
+      drivers_license_number: person?.driversLicenseNumber,
+      drivers_license_class: person?.driversLicenseClass,
+      drivers_license_country_code: person?.driversLicenseCountryCode,
+      drivers_license_country_subdivision_code: person?.driversLicenseCountrySubdivisionCode,
+      gender_code: person?.genderCode,
+      height_cm: person?.heightInCm,
+      weight_kg: person?.weightInKg,
+      complexion_code: person?.complexionCode,
+      build_code: person?.buildCode,
+      hair_colour_code: person?.hairColourCode,
+      hair_length_code: person?.hairLengthCode,
+      hair_colour_other: person?.hairColourOther,
+      eye_colour_code: person?.eyeColourCode,
+      eye_colour_other: person?.eyeColourOther,
+      facial_hair_ind: person?.facialHairIndicator,
+      additional_hair_descriptors: person?.additionalHairDescriptors,
+      tattoo_ind: person?.tattooIndicator,
+      tattoo_description: person?.tattooDescription,
+      additional_descriptors: person?.additionalDescriptors,
+      comments: person?.comments,
+      bolo_ind: person?.boloIndicator,
+    };
+  }
+
   private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
     const common = await this._buildCommonPartyCreateData(input);
 
@@ -349,29 +382,7 @@ export class PartyService {
       ...common,
       person: {
         create: {
-          first_name: input.person?.firstName,
-          middle_names: input.person?.middleNames,
-          last_name: input.person?.lastName,
-          date_of_birth: input.person?.dateOfBirth,
-          approximate_age_code: this._resolveApproximateAgeCode(
-            input.person?.dateOfBirth,
-            input.person?.approximateAgeCode,
-          ),
-          drivers_license_number: input.person?.driversLicenseNumber,
-          drivers_license_class: input.person?.driversLicenseClass,
-          drivers_license_country_code: input.person?.driversLicenseCountryCode,
-          drivers_license_country_subdivision_code: input.person?.driversLicenseCountrySubdivisionCode,
-          gender_code: input.person?.genderCode,
-          height_cm: input.person?.heightInCm,
-          weight_kg: input.person?.weightInKg,
-          complexion_code: input.person?.complexionCode,
-          build_code: input.person?.buildCode,
-          hair_colour_code: input.person?.hairColourCode,
-          hair_length_code: input.person?.hairLengthCode,
-          hair_colour_other: input.person?.hairColourOther,
-          eye_colour_code: input.person?.eyeColourCode,
-          eye_colour_other: input.person?.eyeColourOther,
-          facial_hair_ind: input.person?.facialHairIndicator,
+          ...this._buildPersonFieldData(input.person),
           ...(input.person?.facialHairStyleCodes?.length
             ? {
                 person_facial_hair_style_code: {
@@ -383,12 +394,6 @@ export class PartyService {
                 },
               }
             : {}),
-          additional_hair_descriptors: input.person?.additionalHairDescriptors,
-          tattoo_ind: input.person?.tattooIndicator,
-          tattoo_description: input.person?.tattooDescription,
-          additional_descriptors: input.person?.additionalDescriptors,
-          comments: input.person?.comments,
-          bolo_ind: input.person?.boloIndicator,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         },
@@ -455,38 +460,10 @@ export class PartyService {
       ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
       person: {
         update: {
-          first_name: input.person?.firstName,
-          middle_names: input.person?.middleNames,
-          last_name: input.person?.lastName,
-          date_of_birth: input.person?.dateOfBirth,
-          approximate_age_code: this._resolveApproximateAgeCode(
-            input.person?.dateOfBirth,
-            input.person?.approximateAgeCode,
-          ),
-          drivers_license_number: input.person?.driversLicenseNumber,
-          drivers_license_class: input.person?.driversLicenseClass,
-          drivers_license_country_code: input.person?.driversLicenseCountryCode,
-          drivers_license_country_subdivision_code: input.person?.driversLicenseCountrySubdivisionCode,
-          gender_code: input.person?.genderCode,
-          height_cm: input.person?.heightInCm,
-          weight_kg: input.person?.weightInKg,
-          complexion_code: input.person?.complexionCode,
-          build_code: input.person?.buildCode,
-          hair_colour_code: input.person?.hairColourCode,
-          hair_length_code: input.person?.hairLengthCode,
-          hair_colour_other: input.person?.hairColourOther,
-          eye_colour_code: input.person?.eyeColourCode,
-          eye_colour_other: input.person?.eyeColourOther,
-          facial_hair_ind: input.person?.facialHairIndicator,
+          ...this._buildPersonFieldData(input.person),
           ...(Object.keys(facialHairStyleOperations).length
             ? { person_facial_hair_style_code: facialHairStyleOperations }
             : {}),
-          additional_hair_descriptors: input.person?.additionalHairDescriptors,
-          tattoo_ind: input.person?.tattooIndicator,
-          tattoo_description: input.person?.tattooDescription,
-          additional_descriptors: input.person?.additionalDescriptors,
-          comments: input.person?.comments,
-          bolo_ind: input.person?.boloIndicator,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
         },
