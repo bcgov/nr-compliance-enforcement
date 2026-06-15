@@ -513,7 +513,7 @@ export class InvestigationPartyService {
     const toCreate = incoming.filter((bi) => !bi.businessIdentifierGuid);
     const toUpdate = incoming.filter((bi) => bi.businessIdentifierGuid);
     const existingGuids = new Set(incoming.map((bi) => bi.businessIdentifierGuid).filter(Boolean));
-    const toDelete = existing.filter((bi) => !existingGuids.has(bi.identifierCode));
+    const toDelete = existing.filter((bi) => !existingGuids.has(bi.businessIdentifierGuid));
 
     const operations: Promise<any>[] = [];
 

@@ -395,8 +395,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
     const party = fullPartyData?.party ?? selectedParty;
 
-    console.log(party.person);
-
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,

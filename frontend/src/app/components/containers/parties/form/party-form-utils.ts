@@ -195,7 +195,7 @@ export function buildPersonBase(value: any) {
     firstName: value.firstName,
     middleNames: value.middleNames?.trim() || null,
     lastName: value.lastName,
-    dateOfBirth: new Date(value?.dateOfBirth),
+    dateOfBirth: value?.dateOfBirth ? new Date(value.dateOfBirth) : null,
     approximateAgeCode: value.approximateAgeCode || null,
     driversLicenseNumber: value.driversLicenseNumber || null,
     driversLicenseClass: value.driversLicenseClass || null,
