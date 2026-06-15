@@ -6,8 +6,13 @@ type Party {
   longDescription: String
   shortDescription: String
   createdDateTime: DateTime
+  updatedDateTime: DateTime
+  createdByUserGuid: String
   person: Person
   business: Business
+  addresses: [Address]
+  contactMethods: [ContactMethod]
+  aliases: [Alias]
 }
 
 type PageInfo {
@@ -30,6 +35,9 @@ input PartyCreateInput {
   shortDescription: String
   person: PersonInput
   business: BusinessInput
+  addresses: [AddressInput]
+  contactMethods: [ContactMethodInput]
+  aliases: [AliasInput]
 }
 
 input PartyUpdateInput {
@@ -38,6 +46,9 @@ input PartyUpdateInput {
   shortDescription: String
   person: PersonUpdateInput
   business: BusinessUpdateInput
+  addresses: [AddressUpdateInput]
+  contactMethods: [ContactMethodInput]
+  aliases: [AliasUpdateInput]
 }
 
 input PartyFilters {

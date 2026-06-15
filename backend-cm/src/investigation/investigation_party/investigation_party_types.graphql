@@ -7,4 +7,7 @@ type InvestigationParty {
   business: InvestigationBusiness
   partyAssociationRole: String
   enforcementActions: [EnforcementAction]
+  addresses: [InvestigationAddress]
+  contactMethods: [InvestigationContactMethod]
+  aliases: [InvestigationAlias]
 }

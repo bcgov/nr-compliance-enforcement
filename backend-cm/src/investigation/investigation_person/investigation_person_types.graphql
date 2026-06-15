@@ -3,12 +3,30 @@ type InvestigationPerson {
   partyGuid: String!
   personReference: String
   firstName: String!
-  middleName: String
-  middleName2: String
+  middleNames: String
   lastName: String!
   dateOfBirth: DateTime
+  approximateAgeCode: String
   driversLicenseNumber: String
-  driversLicenseJurisdiction: String
-  sexCode: String
-  contactMethods: [InvestigationContactMethod]
+  driversLicenseClass: String
+  driversLicenseCountryCode: String
+  driversLicenseCountrySubdivisionCode: String
+  genderCode: String
+  heightInCm: Float
+  weightInKg: Float
+  complexionCode: String
+  buildCode: String
+  hairColourCode: String
+  hairLengthCode: String
+  hairColourOther: String
+  eyeColourCode: String
+  eyeColourOther: String
+  facialHairIndicator: Boolean
+  facialHairStyleCodes: [InvestigationPersonFacialHairStyleCodeRef]
+  additionalHairDescriptors: String
+  tattooIndicator: Boolean
+  tattooDescription: String
+  additionalDescriptors: String
+  comments: String
+  boloIndicator: Boolean
 }

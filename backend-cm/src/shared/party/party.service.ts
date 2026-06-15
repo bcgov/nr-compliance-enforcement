@@ -10,11 +10,14 @@ import { Alias } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
-import { BusinessAddress } from "src/shared/business_address/dto/business_address";
+import { Address } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
+import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { AppUserService } from "src/shared/app_user/app_user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
+import { Person } from "src/shared/person/dto/person";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -24,6 +27,7 @@ type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, ex
 export class PartyService {
   constructor(
     private readonly user: UserService,
+    private readonly appUser: AppUserService,
     private readonly prisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly paginationUtility: PaginationUtility,
@@ -33,18 +37,14 @@ export class PartyService {
   private readonly logger = new Logger(PartyService.name);
 
   private _getBusinessNumberValue(identifiers?: BusinessIdentifier[]): string | undefined {
-    const businessNumber = identifiers?.find((i) => {
-      const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
-      return code === BUSINESS_NUMBER_CODE;
-    });
-
+    const businessNumber = identifiers?.find((i) => i.identifierCode === BUSINESS_NUMBER_CODE);
     return businessNumber?.identifierValue;
   }
 
   private _validateBusinessInput(business: {
     name?: string;
     identifiers?: BusinessIdentifier[];
-    addresses?: BusinessAddress[];
+    addresses?: Address[];
   }): void {
     if (!business.name?.trim()) {
       throw new Error("Name is required.");
@@ -84,8 +84,16 @@ export class PartyService {
     throw error;
   }
 
+  // if Date of birth is provided discard the approximate age code
+  private _resolveApproximateAgeCode(
+    dateOfBirth?: Date | null,
+    approximateAgeCode?: string | null,
+  ): string | null | undefined {
+    return dateOfBirth ? null : approximateAgeCode;
+  }
+
   async findOne(id: string) {
-    const prismaParty = await this.prisma.party.findUnique({
+    const prismaParty: any = await this.prisma.party.findUnique({
       where: {
         party_guid: id,
       },
@@ -93,6 +101,8 @@ export class PartyService {
         party_guid: true,
         party_type: true,
         create_utc_timestamp: true,
+        update_utc_timestamp: true,
+        created_by_app_user_guid: true,
         party_type_code: {
           select: {
             party_type_code: true,
@@ -100,56 +110,51 @@ export class PartyService {
             long_description: true,
           },
         },
+        address: {
+          select: {
+            address_guid: true,
+            party_guid: true,
+            address_name: true,
+            address: true,
+            city: true,
+            country_subdivision_code: true,
+            postal_code: true,
+            country_code: true,
+            is_primary: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
+        contact_method: {
+          select: {
+            contact_method_guid: true,
+            contact_method_type: true,
+            contact_method_type_code: true,
+            contact_value: true,
+            is_primary: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
+        alias: {
+          select: {
+            alias_guid: true,
+            name: true,
+          },
+          where: {
+            active_ind: true,
+          },
+        },
         business: {
           include: {
-            alias: {
-              select: {
-                alias_guid: true,
-                name: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
             business_identifier: {
               select: {
                 business_identifier_guid: true,
                 business_guid: true,
                 identifier_value: true,
-                business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
-                  select: {
-                    business_identifier_code: true,
-                    short_description: true,
-                  },
-                },
-              },
-              where: {
-                active_ind: true,
-              },
-            },
-            business_address: {
-              select: {
-                business_address_guid: true,
-                business_guid: true,
-                address_name: true,
-                address: true,
-                city: true,
-                country_subdivision_code: true,
-                postal_code: true,
-                country_code: true,
-                is_primary: true,
-              },
-              where: {
-                active_ind: true,
-              },
-            },
-            contact_method: {
-              select: {
-                contact_method_guid: true,
-                contact_method_type: true,
-                contact_method_type_code: true,
-                contact_value: true,
-                is_primary: true,
+                business_identifier_code: true,
               },
               where: {
                 active_ind: true,
@@ -166,23 +171,19 @@ export class PartyService {
                   select: {
                     person_guid: true,
                     first_name: true,
-                    middle_name: true,
-                    middle_name_2: true,
                     last_name: true,
-                    date_of_birth: true,
-                    drivers_license_number: true,
-                    drivers_license_jurisdiction: true,
-                    sex_code: true,
-                    contact_method: {
+                    party: {
                       select: {
-                        contact_method_guid: true,
-                        contact_method_type: true,
-                        contact_method_type_code: true,
-                        contact_value: true,
-                        is_primary: true,
-                      },
-                      where: {
-                        active_ind: true,
+                        contact_method: {
+                          where: { active_ind: true },
+                          select: {
+                            contact_method_guid: true,
+                            contact_method_type: true,
+                            contact_value: true,
+                            is_primary: true,
+                            contact_method_type_code: true,
+                          },
+                        },
                       },
                     },
                   },
@@ -198,25 +199,38 @@ export class PartyService {
           select: {
             person_guid: true,
             first_name: true,
-            middle_name: true,
-            middle_name_2: true,
+            middle_names: true,
             last_name: true,
             date_of_birth: true,
             drivers_license_number: true,
-            drivers_license_jurisdiction: true,
-            sex_code: true,
-            contact_method: {
+            drivers_license_class: true,
+            drivers_license_country_code: true,
+            drivers_license_country_subdivision_code: true,
+            gender_code: true,
+            complexion_code: true,
+            build_code: true,
+            hair_colour_code: true,
+            hair_length_code: true,
+            hair_colour_other: true,
+            eye_colour_code: true,
+            eye_colour_other: true,
+            facial_hair_ind: true,
+            person_facial_hair_style_code: {
               select: {
-                contact_method_guid: true,
-                contact_method_type: true,
-                contact_method_type_code: true,
-                contact_value: true,
-                is_primary: true,
+                person_facial_hair_style_code_guid: true,
+                facial_hair_style_code: true,
               },
-              where: {
-                active_ind: true,
-              },
+              where: { active_ind: true },
             },
+            additional_hair_descriptors: true,
+            tattoo_ind: true,
+            tattoo_description: true,
+            additional_descriptors: true,
+            comments: true,
+            bolo_ind: true,
+            approximate_age_code: true,
+            height_cm: true,
+            weight_kg: true,
           },
         },
       },
@@ -238,17 +252,20 @@ export class PartyService {
       }
 
       if (input.partyTypeCode === PARTY_TYPES.Person || input.partyTypeCode === PARTY_TYPES.Contact) {
-        data = this._buildPersonCreateData(input);
+        data = await this._buildPersonCreateData(input);
       } else {
-        data = this._buildBusinessCreateData(input);
+        data = await this._buildBusinessCreateData(input);
       }
 
-      const prismaParty = await this.prisma.party.create({
+      const prismaParty: any = await this.prisma.party.create({
         data,
         include: {
           party_type_code: true,
           person: true,
           business: true,
+          address: true,
+          alias: true,
+          contact_method: true,
         },
       });
 
@@ -274,103 +291,136 @@ export class PartyService {
     }
   }
 
-  private _buildPersonCreateData(input: PartyCreateInput): any {
+  private async _buildCommonPartyCreateData(input: PartyCreateInput): Promise<any> {
+    const createdByUser = await this.appUser.findOne(undefined, this.user.getUserGuid());
+
     return {
       party_type: input.partyTypeCode,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
+      created_by_app_user_guid: createdByUser.appUserGuid,
+      ...(input.addresses?.length
+        ? {
+            address: {
+              create: input.addresses.map((a) => ({
+                address_name: a.addressName.trim(),
+                address: a.address?.trim() || null,
+                city: a.city?.trim() || null,
+                country_subdivision_code: a.province?.trim() || null,
+                postal_code: a.postalCode?.trim() || null,
+                country_code: a.country?.trim() || null,
+                is_primary: a.isPrimary ?? false,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
+      ...(input.contactMethods?.length
+        ? {
+            contact_method: {
+              create: input.contactMethods.map((c) => ({
+                contact_method_type: c.typeCode,
+                contact_value: c.value,
+                is_primary: c.isPrimary,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
+      ...(input.aliases?.length
+        ? {
+            alias: {
+              create: input.aliases.map((a) => ({
+                name: a.name,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              })),
+            },
+          }
+        : {}),
+    };
+  }
+
+  private _buildPersonFieldData(person?: Person): any {
+    return {
+      first_name: person?.firstName,
+      middle_names: person?.middleNames,
+      last_name: person?.lastName,
+      date_of_birth: person?.dateOfBirth,
+      approximate_age_code: this._resolveApproximateAgeCode(person?.dateOfBirth, person?.approximateAgeCode),
+      drivers_license_number: person?.driversLicenseNumber,
+      drivers_license_class: person?.driversLicenseClass,
+      drivers_license_country_code: person?.driversLicenseCountryCode,
+      drivers_license_country_subdivision_code: person?.driversLicenseCountrySubdivisionCode,
+      gender_code: person?.genderCode,
+      height_cm: person?.heightInCm,
+      weight_kg: person?.weightInKg,
+      complexion_code: person?.complexionCode,
+      build_code: person?.buildCode,
+      hair_colour_code: person?.hairColourCode,
+      hair_length_code: person?.hairLengthCode,
+      hair_colour_other: person?.hairColourOther,
+      eye_colour_code: person?.eyeColourCode,
+      eye_colour_other: person?.eyeColourOther,
+      facial_hair_ind: person?.facialHairIndicator,
+      additional_hair_descriptors: person?.additionalHairDescriptors,
+      tattoo_ind: person?.tattooIndicator,
+      tattoo_description: person?.tattooDescription,
+      additional_descriptors: person?.additionalDescriptors,
+      comments: person?.comments,
+      bolo_ind: person?.boloIndicator,
+    };
+  }
+
+  private async _buildPersonCreateData(input: PartyCreateInput): Promise<any> {
+    const common = await this._buildCommonPartyCreateData(input);
+
+    return {
+      ...common,
       person: {
         create: {
-          first_name: input.person?.firstName,
-          middle_name: input.person?.middleName,
-          middle_name_2: input.person?.middleName2,
-          last_name: input.person?.lastName,
-          date_of_birth: input.person?.dateOfBirth,
-          drivers_license_number: input.person?.driversLicenseNumber,
-          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-          sex_code: input.person?.sexCode,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-          ...(input.person?.contactMethods?.length
+          ...this._buildPersonFieldData(input.person),
+          ...(input.person?.facialHairStyleCodes?.length
             ? {
-                contact_method: {
-                  create: input.person.contactMethods.map((c) => ({
-                    contact_method_type: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
+                person_facial_hair_style_code: {
+                  create: input.person.facialHairStyleCodes.map((fhs) => ({
+                    facial_hair_style_code: fhs.facialHairStyleCode,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
                 },
               }
             : {}),
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
         },
       },
     };
   }
 
-  private _buildBusinessCreateData(input: PartyCreateInput): any {
+  private async _buildBusinessCreateData(input: PartyCreateInput): Promise<any> {
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
       null,
     );
 
+    const common = await this._buildCommonPartyCreateData(input);
+
     return {
-      party_type: input.partyTypeCode,
-      create_user_id: this.user.getIdirUsername(),
-      create_utc_timestamp: new Date(),
+      ...common,
       business: {
         create: {
           name: input.business?.name,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
-          ...(input.business?.aliases?.length
-            ? {
-                alias: {
-                  create: input.business.aliases.map((a) => ({
-                    name: a.name,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
           ...(input.business?.identifiers?.length
             ? {
                 business_identifier: {
                   create: input.business.identifiers.map((i) => ({
                     business_identifier_code: i.identifierCode,
                     identifier_value: this._normalizeIdentifierValue(i.identifierValue),
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
-          ...(input.business?.addresses?.length
-            ? {
-                business_address: {
-                  create: input.business.addresses.map((a) => ({
-                    address_name: a.addressName.trim(),
-                    address: a.address?.trim() || null,
-                    city: a.city?.trim() || null,
-                    country_subdivision_code: a.province?.trim() || null,
-                    postal_code: a.postalCode?.trim() || null,
-                    country_code: a.country?.trim() || null,
-                    is_primary: a.isPrimary ?? false,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
-            : {}),
-          ...(input.business?.contactMethods?.length
-            ? {
-                contact_method: {
-                  create: input.business.contactMethods.map((c) => ({
-                    contact_method_type: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -387,43 +437,45 @@ export class PartyService {
 
   private _buildPersonUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
     const personContactMethodOperations = this._buildContactMethodOperations(
-      input.person?.contactMethods ?? [],
-      existingPartyDto.person?.contactMethods ?? [],
+      input.contactMethods ?? [],
+      existingPartyDto.contactMethods ?? [],
+    );
+
+    const personAliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
+
+    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
+
+    const facialHairStyleOperations = this._buildFacialHairStyleOperations(
+      input.person?.facialHairStyleCodes ?? [],
+      existingPartyDto.person?.facialHairStyleCodes ?? [],
     );
 
     return {
       party_type: input.partyTypeCode,
       update_user_id: this.user.getIdirUsername(),
       update_utc_timestamp: new Date(),
+      ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
+      ...(Object.keys(personContactMethodOperations).length ? { contact_method: personContactMethodOperations } : {}),
+      ...(Object.keys(personAliasOperations).length ? { alias: personAliasOperations } : {}),
       person: {
         update: {
-          first_name: input.person?.firstName,
-          middle_name: input.person?.middleName,
-          middle_name_2: input.person?.middleName2,
-          last_name: input.person?.lastName,
-          date_of_birth: input.person?.dateOfBirth,
-          drivers_license_number: input.person?.driversLicenseNumber,
-          drivers_license_jurisdiction: input.person?.driversLicenseJurisdiction,
-          sex_code: input.person?.sexCode,
+          ...this._buildPersonFieldData(input.person),
+          ...(Object.keys(facialHairStyleOperations).length
+            ? { person_facial_hair_style_code: facialHairStyleOperations }
+            : {}),
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
-          ...(Object.keys(personContactMethodOperations).length
-            ? { contact_method: personContactMethodOperations }
-            : {}),
         },
       },
     };
   }
 
   private _buildBusinessUpdateData(input: PartyUpdateInput, existingPartyDto: Party): any {
-    const aliasOperations = this._buildAliasOperations(
-      input.business?.aliases ?? [],
-      existingPartyDto.business?.aliases ?? [],
-    );
+    const aliasOperations = this._buildAliasOperations(input.aliases ?? [], existingPartyDto.aliases ?? []);
 
     const contactMethodOperations = this._buildContactMethodOperations(
-      input.business?.contactMethods ?? [],
-      existingPartyDto.business?.contactMethods ?? [],
+      input.contactMethods ?? [],
+      existingPartyDto.contactMethods ?? [],
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
@@ -431,10 +483,7 @@ export class PartyService {
       existingPartyDto.business?.identifiers ?? [],
     );
 
-    const businessAddressOperations = this._buildBusinessAddressOperations(
-      input.business?.addresses ?? [],
-      existingPartyDto.business?.addresses ?? [],
-    );
+    const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
 
     const businessPersonXrefOperations = this._buildBusinessPersonXrefOperations(
       input.business?.contactPeople ?? [],
@@ -442,17 +491,19 @@ export class PartyService {
     );
 
     return {
+      ...(Object.keys(addressOperations).length ? { address: addressOperations } : {}),
+      ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
+      ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
+      update_user_id: this.user.getIdirUsername(),
+      update_utc_timestamp: new Date(),
       business: {
         update: {
           name: input.business?.name,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
-          ...(Object.keys(aliasOperations).length ? { alias: aliasOperations } : {}),
-          ...(Object.keys(contactMethodOperations).length ? { contact_method: contactMethodOperations } : {}),
           ...(Object.keys(businessIdentifierOperations).length
             ? { business_identifier: businessIdentifierOperations }
             : {}),
-          ...(Object.keys(businessAddressOperations).length ? { business_address: businessAddressOperations } : {}),
           ...(Object.keys(businessPersonXrefOperations).length
             ? { business_person_xref: businessPersonXrefOperations }
             : {}),
@@ -551,20 +602,17 @@ export class PartyService {
     return operations;
   }
 
-  private _sortAddressesPrimaryLast(addresses: BusinessAddress[]): BusinessAddress[] {
+  private _sortAddressesPrimaryLast(addresses: Address[]): Address[] {
     const nonPrimary = addresses.filter((a) => !a.isPrimary);
     const primary = addresses.filter((a) => a.isPrimary);
     return [...nonPrimary, ...primary];
   }
 
-  private _buildBusinessAddressOperations(
-    incomingAddresses: BusinessAddress[],
-    existingAddresses: BusinessAddress[],
-  ): any {
-    const addressesToCreate = incomingAddresses.filter((a) => !a.businessAddressGuid);
-    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.businessAddressGuid));
+  private _buildAddressOperations(incomingAddresses: Address[], existingAddresses: Address[]): any {
+    const addressesToCreate = incomingAddresses.filter((a) => !a.addressGuid);
+    const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.addressGuid));
     const addressesToDelete = existingAddresses.filter(
-      (a) => !new Set(incomingAddresses.map((ea) => ea.businessAddressGuid)).has(a.businessAddressGuid),
+      (a) => !new Set(incomingAddresses.map((ea) => ea.addressGuid)).has(a.addressGuid),
     );
 
     const operations: any = {};
@@ -589,7 +637,7 @@ export class PartyService {
         // Deactivations must come before primary-flag updates to avoid violating the
         // unique-active-primary-per-business constraint when the deleted address is primary.
         ...addressesToDelete.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
+          where: { address_guid: a.addressGuid },
           data: {
             active_ind: false,
             update_user_id: this.user.getIdirUsername(),
@@ -597,7 +645,7 @@ export class PartyService {
           },
         })),
         ...addressesToUpdate.map((a) => ({
-          where: { business_address_guid: a.businessAddressGuid },
+          where: { address_guid: a.addressGuid },
           data: {
             address_name: a.addressName.trim(),
             address: a.address?.trim() || null,
@@ -607,6 +655,57 @@ export class PartyService {
             country_code: a.country?.trim() || null,
             is_primary: a.isPrimary ?? false,
             active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+      ];
+    }
+
+    return operations;
+  }
+
+  private _buildFacialHairStyleOperations(
+    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    existingFacialHairStyles: PersonFacialHairStyleCode[],
+  ): any {
+    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
+    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
+    const fhsToDelete = existingFacialHairStyles.filter(
+      (fhs) =>
+        !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
+          fhs.personFacialStyleHairCodeGuid,
+        ),
+    );
+
+    const operations: any = {};
+
+    if (fhsToCreate.length) {
+      operations.create = fhsToCreate.map((fhs) => ({
+        facial_hair_style_code: fhs.facialHairStyleCode,
+        person_guid: fhs.personGuid,
+        active_ind: true,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      }));
+    }
+
+    if (fhsToUpdate.length || fhsToDelete.length) {
+      operations.update = [
+        ...fhsToUpdate.map((fhs) => ({
+          where: { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid },
+          data: {
+            facial_hair_style_code: fhs.facialHairStyleCode,
+            person_guid: fhs.personGuid,
+            active_ind: true,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        })),
+        ...fhsToDelete.map((fhs) => ({
+          where: { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid },
+          data: {
+            active_ind: false,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
           },
@@ -697,31 +796,31 @@ export class PartyService {
         person: {
           create: {
             first_name: bpx.person.firstName,
-            middle_name: bpx.person.middleName,
-            middle_name_2: bpx.person.middleName2,
+            middle_names: bpx.person.middleNames,
             last_name: bpx.person.lastName,
-            date_of_birth: bpx.person.dateOfBirth,
-            drivers_license_number: bpx.person.driversLicenseNumber,
-            drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
-            sex_code: bpx.person.sexCode,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
-            ...(bpx.person.contactMethods?.length && {
-              contact_method: {
-                create: bpx.person.contactMethods.map((cm) => ({
-                  contact_method_type_code: {
-                    connect: {
-                      contact_method_type_code: cm.typeCode,
-                    },
+            party: {
+              create: {
+                party_type: PARTY_TYPES.Contact,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+                ...(bpx.contactMethods?.length && {
+                  contact_method: {
+                    create: bpx.contactMethods.map((cm) => ({
+                      contact_method_type_code: {
+                        connect: { contact_method_type_code: cm.typeCode },
+                      },
+                      contact_value: cm.value,
+                      is_primary: cm.isPrimary,
+                      active_ind: true,
+                      create_user_id: this.user.getIdirUsername(),
+                      create_utc_timestamp: new Date(),
+                    })),
                   },
-                  contact_value: cm.value,
-                  is_primary: cm.isPrimary,
-                  active_ind: true,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                })),
+                }),
               },
-            }),
+            },
           },
         },
         active_ind: true,
@@ -735,12 +834,12 @@ export class PartyService {
         ...xrefsToUpdate.map((bpx) => {
           // Find the corresponding existing xref to get existing contact methods
           const existingXref = existingXrefs?.find((ex) => ex.businessPersonXrefGuid === bpx.businessPersonXrefGuid);
-          const existingContactMethods = existingXref?.person?.contactMethods || [];
+          const existingContactMethods = existingXref?.contactMethods || [];
 
           // Build contact method operations if there are any
           const contactMethodOps =
-            bpx.person.contactMethods?.length || existingContactMethods.length
-              ? this._buildContactMethodOperations(bpx.person.contactMethods || [], existingContactMethods)
+            bpx.contactMethods?.length || existingContactMethods.length
+              ? this._buildContactMethodOperations(bpx.contactMethods || [], existingContactMethods)
               : undefined;
 
           return {
@@ -749,18 +848,17 @@ export class PartyService {
               person: {
                 update: {
                   first_name: bpx.person.firstName,
-                  middle_name: bpx.person.middleName,
-                  middle_name_2: bpx.person.middleName2,
+                  middle_names: bpx.person.middleNames,
                   last_name: bpx.person.lastName,
-                  date_of_birth: bpx.person.dateOfBirth,
-                  drivers_license_number: bpx.person.driversLicenseNumber,
-                  drivers_license_jurisdiction: bpx.person.driversLicenseJurisdiction,
-                  sex_code: bpx.person.sexCode,
                   update_user_id: this.user.getIdirUsername(),
                   update_utc_timestamp: new Date(),
-                  ...(contactMethodOps && {
-                    contact_method: contactMethodOps,
-                  }),
+                  party: {
+                    update: {
+                      ...(contactMethodOps && {
+                        contact_method: contactMethodOps,
+                      }),
+                    },
+                  },
                 },
               },
               active_ind: true,
@@ -868,33 +966,32 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
-      const code = typeof incoming.identifierCode === "string" ? incoming.identifierCode : incoming.identifierCode?.businessIdentifierCode;
       if (incoming.businessIdentifierGuid) {
         const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
         if (existing && existing.identifierValue !== incoming.identifierValue) {
-          addEvent("EDITED", `identifier (${code})`, existing.identifierValue, incoming.identifierValue);
+          addEvent(
+            "EDITED",
+            `identifier (${incoming.identifierCode})`,
+            existing.identifierValue,
+            incoming.identifierValue,
+          );
         }
       } else {
-        addEvent("ADDED", `identifier (${code})`, null, incoming.identifierValue);
+        addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
       }
     }
     const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
     existingIdentifiers
       .filter((i) => !incomingGuids.has(i.businessIdentifierGuid))
       .forEach((i) => {
-        const code = typeof i.identifierCode === "string" ? i.identifierCode : i.identifierCode?.businessIdentifierCode;
-        addEvent("REMOVED", `identifier (${code})`, i.identifierValue, null);
+        addEvent("REMOVED", `identifier (${i.identifierCode})`, i.identifierValue, null);
       });
   }
 
-  private _diffBusinessAddresses(
-    existingAddresses: BusinessAddress[],
-    incomingAddresses: BusinessAddress[],
-    addEvent: AddEventFn,
-  ): void {
+  private _diffAddresses(existingAddresses: Address[], incomingAddresses: Address[], addEvent: AddEventFn): void {
     for (const incoming of incomingAddresses) {
-      if (incoming.businessAddressGuid) {
-        const existing = existingAddresses.find((a) => a.businessAddressGuid === incoming.businessAddressGuid);
+      if (incoming.addressGuid) {
+        const existing = existingAddresses.find((a) => a.addressGuid === incoming.addressGuid);
         if (!existing) continue;
         const label = incoming.addressName || existing.addressName;
         this._compareField("address name", existing.addressName, incoming.addressName, addEvent);
@@ -913,9 +1010,9 @@ export class PartyService {
         });
       }
     }
-    const incomingGuids = new Set(incomingAddresses.map((a) => a.businessAddressGuid));
+    const incomingGuids = new Set(incomingAddresses.map((a) => a.addressGuid));
     existingAddresses
-      .filter((a) => !incomingGuids.has(a.businessAddressGuid))
+      .filter((a) => !incomingGuids.has(a.addressGuid))
       .forEach((a) =>
         addEvent("REMOVED", "address", a.addressName, null, {
           streetAddress: a.address ?? null,
@@ -928,7 +1025,7 @@ export class PartyService {
     // Detect when the primary address switches from one address to another
     const oldPrimary = existingAddresses.find((a) => a.isPrimary);
     const newPrimary = incomingAddresses.find((a) => a.isPrimary);
-    if (oldPrimary && newPrimary && oldPrimary.businessAddressGuid !== newPrimary.businessAddressGuid) {
+    if (oldPrimary && newPrimary && oldPrimary.addressGuid !== newPrimary.addressGuid) {
       addEvent("EDITED", "primary address", oldPrimary.addressName, newPrimary.addressName);
     }
   }
@@ -936,7 +1033,7 @@ export class PartyService {
   private _diffNewContact(incoming: BusinessPersonXref, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
     addEvent("ADDED", "business contact", null, name);
-    for (const cm of incoming.person?.contactMethods ?? []) {
+    for (const cm of incoming.contactMethods ?? []) {
       if (cm?.value) {
         const contactLabel = name
           ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
@@ -966,8 +1063,8 @@ export class PartyService {
     }
 
     this._compareContactMethods(
-      existingXref.person?.contactMethods ?? [],
-      incoming.person?.contactMethods ?? [],
+      existingXref.contactMethods ?? [],
+      incoming.contactMethods ?? [],
       (tc) => `${this._contactMethodLabel(tc)} in business contact ${contactLabel}`,
       addEvent,
     );
@@ -994,15 +1091,49 @@ export class PartyService {
       });
   }
 
+  private _diffFacialHairTypes(
+    existingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    addEvent: AddEventFn,
+  ): void {
+    for (const incoming of incomingFacialHairStyles) {
+      if (incoming.personFacialStyleHairCodeGuid) {
+        const existing = existingFacialHairStyles.find(
+          (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
+        );
+        if (existing && existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
+          addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
+        }
+      } else {
+        addEvent("ADDED", "facial hair style", null, incoming.facialHairStyleCode);
+      }
+    }
+    const incomingGuids = new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
+    existingFacialHairStyles
+      .filter((fhs) => !incomingGuids.has(fhs.personFacialStyleHairCodeGuid))
+      .forEach((fhs) => addEvent("REMOVED", "facial hair style", fhs.facialHairStyleCode, null));
+  }
+
+  private _diffPartyChanges(oldParty: Party, newParty: PartyUpdateInput, addEvent: AddEventFn): void {
+    this._diffAliases(oldParty.aliases ?? [], newParty.aliases ?? [], addEvent);
+    this._compareContactMethods(
+      oldParty.contactMethods ?? [],
+      newParty.contactMethods ?? [],
+      (tc) => this._contactMethodLabel(tc),
+      addEvent,
+    );
+    this._diffAddresses(oldParty.addresses ?? [], newParty.addresses ?? [], addEvent);
+  }
+
   private _diffPersonChanges(
     oldPerson: Party["person"],
     newPerson: PartyUpdateInput["person"],
     addEvent: AddEventFn,
   ): void {
     if (!oldPerson || !newPerson) return;
+    this._compareField("Caution / BOLO", oldPerson.boloIndicator, newPerson.boloIndicator, addEvent);
     this._compareField("first name", oldPerson.firstName, newPerson.firstName, addEvent);
-    this._compareField("middle name", oldPerson.middleName, newPerson.middleName, addEvent);
-    this._compareField("middle name 2", oldPerson.middleName2, newPerson.middleName2, addEvent);
+    this._compareField("middle name", oldPerson.middleNames, newPerson.middleNames, addEvent);
     this._compareField("last name", oldPerson.lastName, newPerson.lastName, addEvent);
     this._compareField(
       "date of birth",
@@ -1010,6 +1141,7 @@ export class PartyService {
       newPerson.dateOfBirth ? newPerson.dateOfBirth.toISOString().split("T")[0] : null,
       addEvent,
     );
+    this._compareField("approximate age", oldPerson.approximateAgeCode, newPerson.approximateAgeCode, addEvent);
     this._compareField(
       "driver's licence number",
       oldPerson.driversLicenseNumber,
@@ -1017,18 +1149,50 @@ export class PartyService {
       addEvent,
     );
     this._compareField(
-      "driver's licence jurisdiction",
-      oldPerson.driversLicenseJurisdiction,
-      newPerson.driversLicenseJurisdiction,
+      "driver's licence class",
+      oldPerson.driversLicenseClass,
+      newPerson.driversLicenseClass,
       addEvent,
     );
-    this._compareField("sex", oldPerson.sexCode, newPerson.sexCode, addEvent);
-    this._compareContactMethods(
-      oldPerson.contactMethods ?? [],
-      newPerson.contactMethods ?? [],
-      (tc) => this._contactMethodLabel(tc),
+    this._compareField(
+      "driver's licence country",
+      oldPerson.driversLicenseCountryCode,
+      newPerson.driversLicenseCountryCode,
       addEvent,
     );
+    this._compareField(
+      "driver's licence province",
+      oldPerson.driversLicenseCountrySubdivisionCode,
+      newPerson.driversLicenseCountrySubdivisionCode,
+      addEvent,
+    );
+    this._compareField("gender", oldPerson.genderCode, newPerson.genderCode, addEvent);
+    this._compareField("height", oldPerson.heightInCm, newPerson.heightInCm, addEvent);
+    this._compareField("weight", oldPerson.weightInKg, newPerson.weightInKg, addEvent);
+    this._compareField("complexion", oldPerson.complexionCode, newPerson.complexionCode, addEvent);
+    this._compareField("build", oldPerson.buildCode, newPerson.buildCode, addEvent);
+    this._compareField("eye colour", oldPerson.eyeColourCode, newPerson.eyeColourCode, addEvent);
+    this._compareField("other eye colour", oldPerson.eyeColourOther, newPerson.eyeColourOther, addEvent);
+    this._compareField("hair colour", oldPerson.hairColourCode, newPerson.hairColourCode, addEvent);
+    this._compareField("other hair colour", oldPerson.hairColourOther, newPerson.hairColourOther, addEvent);
+    this._compareField("hair length", oldPerson.hairLengthCode, newPerson.hairLengthCode, addEvent);
+    this._compareField("has facial hair", oldPerson.facialHairIndicator, newPerson.facialHairIndicator, addEvent);
+    this._diffFacialHairTypes(oldPerson.facialHairStyleCodes ?? [], newPerson.facialHairStyleCodes ?? [], addEvent);
+    this._compareField(
+      "additional hair descriptors",
+      oldPerson.additionalHairDescriptors,
+      newPerson.additionalHairDescriptors,
+      addEvent,
+    );
+    this._compareField("has tattoos", oldPerson.tattooIndicator, newPerson.tattooIndicator, addEvent);
+    this._compareField("tattoos", oldPerson.tattooDescription, newPerson.tattooDescription, addEvent);
+    this._compareField(
+      "additional descriptors",
+      oldPerson.additionalDescriptors,
+      newPerson.additionalDescriptors,
+      addEvent,
+    );
+    this._compareField("comments", oldPerson.comments, newPerson.comments, addEvent);
   }
 
   private _diffBusinessChanges(
@@ -1038,15 +1202,7 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._diffAliases(oldBusiness.aliases ?? [], newBusiness.aliases ?? [], addEvent);
     this._diffBusinessIdentifiers(oldBusiness.identifiers ?? [], newBusiness.identifiers ?? [], addEvent);
-    this._diffBusinessAddresses(oldBusiness.addresses ?? [], newBusiness.addresses ?? [], addEvent);
-    this._compareContactMethods(
-      oldBusiness.contactMethods ?? [],
-      newBusiness.contactMethods ?? [],
-      (tc) => `business ${this._contactMethodLabel(tc)}`,
-      addEvent,
-    );
     this._diffContactPeople(oldBusiness.contactPeople ?? [], newBusiness.contactPeople ?? [], addEvent);
   }
 
@@ -1071,9 +1227,14 @@ export class PartyService {
       });
     };
 
+    // Detect Party level changes
+    this._diffPartyChanges(oldParty, input, addEvent);
+
     if (input.partyTypeCode === PARTY_TYPES.Person) {
+      // Detect person level changes
       this._diffPersonChanges(oldParty.person, input.person, addEvent);
     } else {
+      // Detect business level changes
       this._diffBusinessChanges(oldParty.business, input.business, addEvent);
     }
 
@@ -1081,32 +1242,28 @@ export class PartyService {
   }
 
   async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
-    const existingParty = await this.prisma.party.findUnique({
+    const existingParty: any = await this.prisma.party.findUnique({
       include: {
+        address: { where: { active_ind: true } },
+        contact_method: { where: { active_ind: true } },
+        alias: { where: { active_ind: true } },
         person: {
           include: {
-            contact_method: { where: { active_ind: true } },
+            person_facial_hair_style_code: { where: { active_ind: true } },
           },
         },
         business: {
           include: {
-            alias: { where: { active_ind: true } },
             business_identifier: {
               where: { active_ind: true },
               include: {
                 business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: true,
               },
             },
-            business_address: { where: { active_ind: true } },
-            contact_method: { where: { active_ind: true } },
             business_person_xref: {
               where: { active_ind: true },
               include: {
-                person: {
-                  include: {
-                    contact_method: { where: { active_ind: true } },
-                  },
-                },
+                person: true,
               },
             },
           },
@@ -1132,7 +1289,7 @@ export class PartyService {
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
 
-      const prismaParty = await this.prisma.party.update({
+      const prismaParty: any = await this.prisma.party.update({
         where: { party_guid: partyIdentifier },
         data: data,
         include: {
@@ -1235,6 +1392,22 @@ export class PartyService {
               long_description: true,
             },
           },
+          contact_method: {
+            where: { active_ind: true },
+            select: {
+              contact_method_guid: true,
+              contact_method_type: true,
+              contact_value: true,
+              is_primary: true,
+              contact_method_type_code: {
+                select: {
+                  contact_method_type_code: true,
+                  short_description: true,
+                  long_description: true,
+                },
+              },
+            },
+          },
           business: {
             select: {
               business_guid: true,
@@ -1253,51 +1426,14 @@ export class PartyService {
                   },
                 },
               },
-              contact_method: {
-                where: { active_ind: true },
-                select: {
-                  contact_method_guid: true,
-                  contact_method_type: true,
-                  contact_value: true,
-                  is_primary: true,
-                  contact_method_type_code: {
-                    select: {
-                      contact_method_type_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
-                },
-              },
             },
           },
           person: {
             select: {
               person_guid: true,
               first_name: true,
-              middle_name: true,
-              middle_name_2: true,
               last_name: true,
               date_of_birth: true,
-              drivers_license_number: true,
-              drivers_license_jurisdiction: true,
-              sex_code: true,
-              contact_method: {
-                where: { active_ind: true },
-                select: {
-                  contact_method_guid: true,
-                  contact_method_type: true,
-                  contact_value: true,
-                  is_primary: true,
-                  contact_method_type_code: {
-                    select: {
-                      contact_method_type_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
-                },
-              },
             },
           },
         },

@@ -4,6 +4,9 @@ input CreateInvestigationPartyInput {
   person: CreateInvestigationPersonInput
   business: CreateInvestigationBusinessInput
   partyAssociationRole: String
+  addresses: [CreateInvestigationAddressInput]
+  contactMethods: [CreateInvestigationContactMethodInput]
+  aliases: [CreateInvestigationAliasInput]
 }
 
 input UpdateInvestigationPartyInput {
@@ -11,4 +14,7 @@ input UpdateInvestigationPartyInput {
   partyAssociationRole: String!
   person: UpdateInvestigationPersonInput
   business: UpdateInvestigationBusinessInput
+  addresses: [UpdateInvestigationAddressInput]
+  contactMethods: [UpdateInvestigationContactMethodInput]
+  aliases: [UpdateInvestigationAliasInput]
 }

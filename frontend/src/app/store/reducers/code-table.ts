@@ -54,6 +54,14 @@ import {
   fetchTicketOutcomeTypes,
   fetchCountryTypes,
   fetchCountrySubdivisionTypes,
+  fetchApproximateAgeTypes,
+  fetchGenderTypes,
+  fetchComplexionTypes,
+  fetchBuildTypes,
+  fetchHairColourTypes,
+  fetchHairLengthTypes,
+  fetchEyeColourTypes,
+  fetchFacialHairStyleTypes,
 } from "./code-table-thunks";
 import { TeamType } from "@apptypes/app/code-tables/team";
 import { CaseLocationType } from "@apptypes/app/code-tables/case-location";
@@ -114,6 +122,14 @@ const initialState: CodeTableState = {
   "ticket-outcome-type": [],
   "country-type": [],
   "country-subdivision-type": [],
+  "approximate-age-type": [],
+  "gender-type": [],
+  "complexion-type": [],
+  "build-type": [],
+  "hair-colour-type": [],
+  "hair-length-type": [],
+  "eye-colour-type": [],
+  "facial-hair-style-type": [],
 };
 
 export const codeTableSlice = createSlice({
@@ -192,6 +208,14 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "ticket-outcome-type": ticketOutcomeType,
       "country-type": countryType,
       "country-subdivision-type": countrySubdivisionType,
+      "approximate-age-type": approximateAgeType,
+      "gender-type": genderType,
+      "complexion-type": complexionType,
+      "build-type": buildType,
+      "hair-colour-type": hairColourType,
+      "hair-length-type": hairLengthType,
+      "eye-colour-type": eyeColourType,
+      "facial-hair-style-type": facialHairStyleType,
     },
   } = state;
 
@@ -362,6 +386,30 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     if (!from(countrySubdivisionType).any()) {
       dispatch(fetchCountrySubdivisionTypes());
     }
+    if (!from(approximateAgeType).any()) {
+      dispatch(fetchApproximateAgeTypes());
+    }
+    if (!from(genderType).any()) {
+      dispatch(fetchGenderTypes());
+    }
+    if (!from(complexionType).any()) {
+      dispatch(fetchComplexionTypes());
+    }
+    if (!from(buildType).any()) {
+      dispatch(fetchBuildTypes());
+    }
+    if (!from(hairColourType).any()) {
+      dispatch(fetchHairColourTypes());
+    }
+    if (!from(hairLengthType).any()) {
+      dispatch(fetchHairLengthTypes());
+    }
+    if (!from(eyeColourType).any()) {
+      dispatch(fetchEyeColourTypes());
+    }
+    if (!from(facialHairStyleType).any()) {
+      dispatch(fetchFacialHairStyleTypes());
+    }
   } catch (error) {
     console.error(error);
   }
@@ -428,6 +476,14 @@ export const fetchCaseCodeTables = (): AppThunk => async (dispatch) => {
     dispatch(fetchTicketOutcomeTypes());
     dispatch(fetchCountryTypes());
     dispatch(fetchCountrySubdivisionTypes());
+    dispatch(fetchApproximateAgeTypes());
+    dispatch(fetchGenderTypes());
+    dispatch(fetchComplexionTypes());
+    dispatch(fetchBuildTypes());
+    dispatch(fetchHairColourTypes());
+    dispatch(fetchHairLengthTypes());
+    dispatch(fetchEyeColourTypes());
+    dispatch(fetchFacialHairStyleTypes());
   } catch (error) {
     console.error(error);
   }
@@ -1389,6 +1445,7 @@ export const selectCascadedCommunity =
       };
     });
   };
+
 export const selectSexDropdown = createSelector(
   (state: RootState) => state.codeTables.sex,
   (items) =>
@@ -1396,6 +1453,16 @@ export const selectSexDropdown = createSelector(
       label,
       value,
       isActive,
+    })),
+);
+
+export const selectGenderDropdown = createSelector(
+  (state: RootState) => state.codeTables["gender-type"],
+  (items) =>
+    items.map(({ genderCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
     })),
 );
 
@@ -1608,6 +1675,76 @@ export const selectHasQuantityEquipment = (state: RootState): Array<string> => {
 
   return data;
 };
+
+export const selectApproximateAgeDropdown = createSelector(
+  (state: RootState) => state.codeTables["approximate-age-type"],
+  (items) =>
+    items.map(({ approximateAgeCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectComplexionDropdown = createSelector(
+  (state: RootState) => state.codeTables["complexion-type"],
+  (items) =>
+    items.map(({ complexionCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectBuildDropdown = createSelector(
+  (state: RootState) => state.codeTables["build-type"],
+  (items) =>
+    items.map(({ buildCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectHairColourDropdown = createSelector(
+  (state: RootState) => state.codeTables["hair-colour-type"],
+  (items) =>
+    items.map(({ hairColourCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectHairLengthDropdown = createSelector(
+  (state: RootState) => state.codeTables["hair-length-type"],
+  (items) =>
+    items.map(({ hairLengthCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectEyeColourDropdown = createSelector(
+  (state: RootState) => state.codeTables["eye-colour-type"],
+  (items) =>
+    items.map(({ eyeColourCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectFacialHairStyleDropdown = createSelector(
+  (state: RootState) => state.codeTables["facial-hair-style-type"],
+  (items) =>
+    items.map(({ facialHairStyleCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
 
 const privacyDropdownOptions: Option[] = [
   { value: "Y", label: "Yes" },

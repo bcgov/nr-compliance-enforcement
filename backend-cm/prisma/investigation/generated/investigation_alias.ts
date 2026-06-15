@@ -1,4 +1,4 @@
-import { investigation_business } from "./investigation_business";
+import { investigation_party } from "./investigation_party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class investigation_alias {
@@ -6,7 +6,7 @@ export class investigation_alias {
   investigation_alias_guid: string;
 
   @ApiProperty({ type: String })
-  investigation_business_guid: string;
+  investigation_party_guid: string;
 
   @ApiProperty({ type: String })
   name: string;
@@ -26,6 +26,6 @@ export class investigation_alias {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiProperty({ type: () => investigation_business })
-  investigation_business: investigation_business;
+  @ApiProperty({ type: () => investigation_party })
+  investigation_party: investigation_party;
 }
