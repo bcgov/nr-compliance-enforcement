@@ -121,8 +121,10 @@ export const ComplaintActionItems: FC<Props> = ({
     );
   };
 
-  const openCreateAddCaseModal = () => {
+  const openCreateAddCaseModal = async () => {
     document.body.click();
+    dispatch(getComplaintById(complaint_identifier, complaint_type));
+    dispatch(getCaseFile(complaint_identifier));
     dispatch(
       openModal({
         modalSize: "lg",
@@ -130,6 +132,7 @@ export const ComplaintActionItems: FC<Props> = ({
         data: {
           title: "Add to case",
           complaint_identifier: complaint_identifier,
+          complaint_type: complaint_type,
           agency_code: agency_code,
           onDirtyChange: handleChildDirtyChange,
         },

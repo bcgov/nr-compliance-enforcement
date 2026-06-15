@@ -1,6 +1,7 @@
 import { FC, memo, useState, useMemo, useEffect } from "react";
 import { Modal, Spinner, Button } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
+import useValidateComplaint from "@hooks/validate-complaint";
 import { selectModalData, isLoading, appUserGuid, isFeatureActive } from "@store/reducers/app";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import Option from "@apptypes/app/option";
@@ -15,7 +16,10 @@ import { FormField } from "@/app/components/common/form-field";
 import { CaseListSearch } from "@/app/components/common/case-list-search";
 import { Link } from "react-router-dom";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { updateComplaintLastUpdated } from "@store/reducers/complaints";
+import { updateComplaintLastUpdated, updateAllegationComplaintStatus } from "@store/reducers/complaints";
+import { AgencyType } from "@apptypes/app/agency-types";
+import { joinWithAnd } from "@common/methods";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -73,9 +77,10 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   const currentAppUserGuid = useAppSelector(appUserGuid);
   const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
   const showCreateCaseBtn = useAppSelector(isFeatureActive(FEATURE_TYPES.CREATE_CASE));
+  const validationResults = useValidateComplaint();
 
   // Vars
-  const { title, complaint_identifier, agency_code, onDirtyChange } = modalData;
+  const { title, complaint_identifier, complaint_type, agency_code, onDirtyChange } = modalData;
   const { markDirty } = useFormDirtyState(onDirtyChange);
   const createOrAddOptions: Option[] = showCreateCaseBtn
     ? [
@@ -146,6 +151,14 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
       if (complaint_identifier) {
         dispatch(updateComplaintLastUpdated(complaint_identifier));
       }
+      // CEEB/NROS/MINES complaints auto-close once added to a case
+      if (
+        complaint_type === COMPLAINT_TYPES.ERS &&
+        [AgencyType.CEEB, AgencyType.NROS, AgencyType.MINES].includes(agency_code) &&
+        complaint_identifier
+      ) {
+        dispatch(updateAllegationComplaintStatus(complaint_identifier, "CLOSED"));
+      }
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -174,6 +187,14 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
       if (complaint_identifier) {
         dispatch(updateComplaintLastUpdated(complaint_identifier));
       }
+      // CEEB/NROS/MINES complaints auto-close once added to a case;
+      if (
+        complaint_type === COMPLAINT_TYPES.ERS &&
+        [AgencyType.CEEB, AgencyType.NROS, AgencyType.MINES].includes(agency_code) &&
+        complaint_identifier
+      ) {
+        dispatch(updateAllegationComplaintStatus(complaint_identifier, "CLOSED"));
+      }
     },
     onError: (error: any) => {
       console.error("Error adding case to complaint:", error);
@@ -182,6 +203,10 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   });
 
   const handleCreateAddCase = async () => {
+    if (!validationResults.canAddToCase) {
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
+      return;
+    }
     if (createOrAddOption === "add") {
       if (selectedCase?.value) {
         const createCaseAcivityInput: CaseActivityCreateInput = {
@@ -321,6 +346,7 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
             id="outcome-save-button"
             title="Save Outcome"
             onClick={handleCreateAddCase}
+            disabled={loading}
           >
             <span>Save and Close</span>
           </Button>
