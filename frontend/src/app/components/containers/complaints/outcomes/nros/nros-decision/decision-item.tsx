@@ -13,7 +13,6 @@ import {
 import { CASE_ACTION_CODE } from "@constants/case_actions";
 
 type props = {
-  id?: string;
   schedule?: string;
   sector?: string;
   discharge: string;
@@ -22,7 +21,6 @@ type props = {
   rationale: string;
   inspectionNumber?: string;
   leadAgency?: string;
-  assignedTo: string;
   actionTaken: string;
   actionTakenDate: Date | null;
 };

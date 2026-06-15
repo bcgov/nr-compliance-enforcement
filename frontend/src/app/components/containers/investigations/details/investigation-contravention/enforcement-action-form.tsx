@@ -29,6 +29,18 @@ import { EnforcementActionAttachment } from "@/app/common/enforcement-action-att
 
 const VIOLATION_TICKET_CODES = new Set(["FDVT", "PRVT"]);
 
+// ticket_amount is stored as Decimal(10, 2) so enforce max amount
+const ticketAmountValidator = z
+  .string()
+  .min(1, "Ticket amount is required")
+  .refine(
+    (val) => {
+      const amount = Number.parseFloat(val);
+      return Number.isNaN(amount) || amount < 100_000_000;
+    },
+    { message: "Ticket amount must be less than 100,000,000" },
+  );
+
 const UPDATE_INVESTIGATION_TIMESTAMP = gql`
   mutation UpdateInvestigationTimestamp($investigationGuid: String!) {
     updateInvestigationTimestamp(investigationGuid: $investigationGuid) {
@@ -183,15 +195,15 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
     return !hasErrors;
   };
 
+  const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const isFormDirty = useStore(form.baseStore, (state) =>
     Object.values(state.fieldMetaBase).some((field) => field?.isTouched),
   );
+  const isDirty = isFormDirty || attachmentsDirty;
 
   useEffect(() => {
-    if (isFormDirty) {
-      onDirtyChange?.(0, true);
-    }
-  }, [isFormDirty, onDirtyChange]);
+    onDirtyChange?.(0, isDirty);
+  }, [isDirty, onDirtyChange]);
 
   useEffect(() => {
     return () => {
@@ -271,6 +283,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         }
 
         ToggleSuccess(isEdit ? "Enforcement action updated successfully" : "Enforcement action saved successfully");
+        onDirtyChange?.(0, false);
         onClose();
       } catch {
         ToggleError(isEdit ? "Failed to update enforcement action" : "Failed to save enforcement action");
@@ -293,6 +306,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         });
         await updateTimestampMutation.mutateAsync({ investigationGuid });
         ToggleSuccess("Enforcement action deleted successfully");
+        onDirtyChange?.(0, false);
         onClose();
       } catch {
         ToggleError("Failed to delete enforcement action");
@@ -428,8 +442,8 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
                 label="Ticket amount"
                 required
                 validators={{
-                  onChange: z.string().min(1, "Ticket amount is required"),
-                  onSubmit: z.string().min(1, "Ticket amount is required"),
+                  onChange: ticketAmountValidator,
+                  onSubmit: ticketAmountValidator,
                 }}
                 render={(field) => (
                   <CompInput
@@ -541,7 +555,7 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
         ref={attachmentsRef}
         investigationGuid={investigationGuid}
         existingAttachments={existingAttachments}
-        onDirtyChange={() => onDirtyChange?.(0, true)}
+        onDirtyChange={setAttachmentsDirty}
       />
     </form>
   );
