@@ -8,7 +8,6 @@ import {
 } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
-import { toDateOfBirth } from "@/app/common/methods";
 
 export type AddressFormValue = {
   addressGuid?: string;
@@ -196,7 +195,7 @@ export function buildPersonBase(value: any) {
     firstName: value.firstName,
     middleNames: value.middleNames?.trim() || null,
     lastName: value.lastName,
-    dateOfBirth: toDateOfBirth(value),
+    dateOfBirth: new Date(value?.dateOfBirth),
     approximateAgeCode: value.approximateAgeCode || null,
     driversLicenseNumber: value.driversLicenseNumber || null,
     driversLicenseClass: value.driversLicenseClass || null,

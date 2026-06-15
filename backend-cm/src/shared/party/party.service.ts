@@ -659,14 +659,6 @@ export class PartyService {
             update_utc_timestamp: new Date(),
           },
         })),
-        ...addressesToDelete.map((a) => ({
-          where: { address_guid: a.addressGuid },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
       ];
     }
 

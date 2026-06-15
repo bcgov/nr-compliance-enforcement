@@ -640,14 +640,6 @@ export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAb
   return formatted || whenAbsent;
 };
 
-// Normalize to UTC date-only
-export const toDateOfBirth = (value: any): Date | null | undefined => {
-  const d = value?.dateOfBirth;
-  if (d === null) return null;
-  if (!(d instanceof Date)) return undefined;
-  return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-};
-
 // Determine an age based on a DOB
 export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {
   let age = today.getFullYear() - dob.getFullYear();
@@ -658,7 +650,8 @@ export const calculateAgeYears = (dob: Date, today: Date = new Date()): number =
   return age;
 };
 
-// Returns true if under 18 based on DOB
+// Returns true if under the provinicial age of majority (19) based on DOB
+// Note that the federal age of majorty is 18.
 export const isYoungPerson = (dob: Date | null | undefined, approximateAgeCode: string | null | undefined): boolean => {
   if (dob instanceof Date) {
     return calculateAgeYears(dob) <= 18;

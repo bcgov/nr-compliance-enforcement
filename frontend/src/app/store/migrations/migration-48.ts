@@ -1,4 +1,4 @@
-// Clears cached inaction justification codes so the PARKS and CEEB rows are fetched
+// Adds new code tables for expanded person profiles
 export const PersonProfileUpdates = {
   48: (state: any) => {
     return {
