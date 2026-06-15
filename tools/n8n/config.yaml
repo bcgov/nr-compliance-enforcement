@@ -1,0 +1,46 @@
+---
+# RunbookParser config — the central manifest for the runbook-parser skill.
+#
+# Shaped like a Kubernetes CRD: `spec:` is human-authored (you edit this, comments are
+# preserved), `status:` is machine-owned (the parser appends/rewrites it on `build` and
+# never touches `spec`). Observed values — snippet inventory, drift state, per-source
+# timestamps, Tier-2 outcomes — live under `status:`.
+#
+# Tool:  tools/n8n/skills/runbook-parser/scripts/parser.py
+# Docs:  tools/n8n/skills/runbook-parser/SKILL.md  and  references/CONFIG.md
+kind: RunbookParser
+metadata:
+  name: n8n-parser
+  labels:
+    owner: Compliance and Enforcement
+spec:
+  root: tools/n8n/
+  destination: tools/n8n/snippets/
+  working_dir: /tmp
+  sources:
+    # Sources sharing a `name` combine into one snippet group in the same destination,
+    # producing more composable workflows in the same domain (e.g. crunchy + postgres).
+    - name: crunchy-triage
+      description: A set of snippets used to fetch and collect triage information from a crunchy db cluster in a given openshift namespace.
+      # If `doc` is set, the recombined snippets (code + documentation) are diffed against
+      # it to detect drift: src -> snippets -> doc; when src is one document, src == doc.
+      doc: null
+      # Pull from a wiki/doc/runbook URL ...
+      url: https://github.com/bcgov/wps/blob/main/docs/database/CLUSTER_DB.MD
+      # ... or from a file in the local codebase (set exactly one of url/file).
+      file: null
+    - name: crunchy-triage
+      description: A set of snippets used to fetch and collect triage information from a crunchy db cluster in a given openshift namespace.
+      doc: crunchy-disaster-recovery.md
+      url: https://github.com/bcgov/nr-compliance-enforcement/wiki/Disaster-Recovery
+      file: null
+    - name: crunchy-triage
+      description: A set of bash snippets that use psql to query key information about a postgres instance. Namely current vs max connections, memory usage, WAL details, long running queries, slow queries. Postgres version 17.
+      # Placeholder source: no url/file yet — contributes hand-authored snippets later.
+      doc: null
+      url: null
+      file: null
+  runbooks:
+    - name: crunchy-triage
+      snippets_from:
+        - crunchy-triage

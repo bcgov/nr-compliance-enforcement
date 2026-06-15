@@ -30,6 +30,11 @@ RUN curl -fsSL https://downloads-openshift-console.apps.gold.devops.gov.bc.ca/am
 
 RUN npm install -g npm && npm install -g n8n
 
+# Bundle the markdown render helper (jq-only) so n8n Execute-Command nodes can pipe a
+# snippet's JSON through it: ... | render.sh template.md
+COPY render.sh /usr/local/bin/render.sh
+RUN chmod +x /usr/local/bin/render.sh
+
 # ---- OpenShift-friendly writable dirs ----
 RUN mkdir -p /data $HOME/.n8n && \
       mkdir -p /opt/app-root/src/.n8n-files && \
