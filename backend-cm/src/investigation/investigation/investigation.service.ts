@@ -24,6 +24,7 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { Prisma } from ".prisma/investigation";
 
 @Injectable()
 export class InvestigationService {
@@ -240,93 +241,56 @@ export class InvestigationService {
 
     let prismaParties = null;
 
-    if (partyType == "Person") {
-      prismaParties = await this.prisma.investigation_person.findMany({
-        where: {
-          person_guid_ref: partyId,
-          active_ind: true,
-          investigation_party: {
-            is: {
-              active_ind: true,
-            },
-          },
-        },
+    const include = Prisma.validator<Prisma.investigation_personInclude>()({
+      investigation_party: {
         include: {
-          investigation_party: {
+          investigation: {
             include: {
-              investigation: {
+              contravention: {
                 include: {
-                  contravention: {
+                  contravention_party_xref: {
                     include: {
-                      contravention_party_xref: {
+                      enforcement_action: {
                         include: {
-                          enforcement_action: {
-                            include: {
-                              contravention_party_xref: true,
-                              enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
-                                true,
-                            },
-                            where: { active_ind: true },
-                          },
+                          contravention_party_xref: true,
+                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                            true,
                         },
                         where: { active_ind: true },
                       },
                     },
                     where: { active_ind: true },
                   },
-                  investigation_status_code: true,
                 },
+                where: { active_ind: true },
               },
-            },
-            where: {
-              active_ind: true,
+              investigation_status_code: true,
             },
           },
         },
+        where: {
+          active_ind: true,
+        },
+      },
+    });
+
+    if (partyType == "Person") {
+      prismaParties = await this.prisma.investigation_person.findMany({
+        where: {
+          person_guid_ref: partyId,
+          active_ind: true,
+          investigation_party: { is: { active_ind: true } },
+        },
+        include,
       });
     } else if (partyType == "Business") {
       prismaParties = await this.prisma.investigation_business.findMany({
         where: {
           business_guid_ref: partyId,
           active_ind: true,
-          investigation_party: {
-            is: {
-              active_ind: true,
-            },
-          },
+          investigation_party: { is: { active_ind: true } },
         },
-        include: {
-          investigation_party: {
-            include: {
-              investigation: {
-                include: {
-                  contravention: {
-                    include: {
-                      contravention_party_xref: {
-                        include: {
-                          enforcement_action: {
-                            include: {
-                              contravention_party_xref: true,
-                              enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
-                                true,
-                            },
-                            where: { active_ind: true },
-                          },
-                        },
-                        where: { active_ind: true },
-                      },
-                    },
-                    where: { active_ind: true },
-                  },
-                  investigation_status_code: true,
-                },
-              },
-            },
-            where: {
-              active_ind: true,
-            },
-          },
-        },
+        include,
       });
     }
 
