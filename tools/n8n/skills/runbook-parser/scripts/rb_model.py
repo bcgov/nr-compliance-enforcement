@@ -1,25 +1,40 @@
 """Domain dataclasses and the text-to-snippets bridge.
 
-:class:`Source`/:class:`Runbook`/:class:`Config` mirror the config's ``spec``;
-:class:`Snippet` is one Tier-1 chunk on disk. :func:`extract_snippets` turns a resolved
-source document into an ordered, uniquely-named list of :class:`Snippet`.
+:class:`Source`/:class:`Config` mirror the config's ``spec``; :class:`Snippet` is one
+raw chunk on disk. :func:`extract_snippets` turns a resolved source document into an
+ordered, uniquely-named list of :class:`Snippet`.
 """
 
 from __future__ import annotations
 
-import re
-from dataclasses import dataclass, field
-from pathlib import Path
+from dataclasses import dataclass
 from typing import Optional
 
 import rb_markdown
 
 
+def write_text_lf(path: Path, text: str) -> None:
+    """Write *text* with Unix (LF) line endings via bytes, bypassing the platform newline.
+
+    ``Path.write_text`` rewrites newlines to the OS separator (CRLF on Windows), which would
+    corrupt shell snippets and make committed output differ across machines. Every parser file
+    write goes through here so snippets and docs are deterministically LF.
+    """
+    data = text.replace("\r\n", "\n").replace("\r", "\n")
+    path.write_bytes(data.encode("utf-8"))
+
+
 @dataclass
 class Source:
-    """One ``spec.sources[]`` entry. Set exactly one of ``url``/``file``; neither = placeholder."""
+    """One ``spec.sources[]`` entry.
+
+    ``name`` is a unique id — used to target the source (e.g. for cleaning) and to prefix its
+    raw files. ``group`` is the merge bucket: sources sharing a ``group`` combine into one
+    snippet group. Set exactly one of ``url``/``file``; neither = placeholder.
+    """
 
     name: str
+    group: str = ""
     description: str = ""
     doc: Optional[str] = None
     url: Optional[str] = None
@@ -35,26 +50,23 @@ class Source:
         return "none"
 
     def docname(self) -> str:
-        """Slug used as the filename prefix for this source's snippets."""
-        if self.file:
-            return rb_markdown.slugify(Path(self.file).stem)
-        if self.url:
-            seg = self.url.rstrip("/").split("/")[-1]
-            return rb_markdown.slugify(re.sub(r"\.[A-Za-z0-9]+$", "", seg))
+        """Filename prefix for this source's raw snippets — its unique ``name``."""
         return rb_markdown.slugify(self.name)
 
 
 @dataclass
 class Snippet:
-    """A single Tier-1 chunk: its filename, language, source provenance and ordering."""
+    """A single raw chunk: its filename, code-fence tag, and source location.
 
-    id: str
+    ``codeblock_tag`` is the original markdown code-fence tag (e.g. ``bash``) for a code
+    chunk, kept so reconstruction reproduces the exact opener; it is ``None`` for prose.
+    ``line`` is the 1-based source line, which also gives document order within a source.
+    """
+
     file: str
     ext: str
-    lang: str
-    fence_info: Optional[str]
+    codeblock_tag: Optional[str]
     section: Optional[str]
-    order: int
     content: str
     source_index: int
     source_ref: str
@@ -62,15 +74,7 @@ class Snippet:
 
     def is_prose(self) -> bool:
         """True for a prose (``.md``) chunk, as opposed to an extracted code block."""
-        return self.ext == "md" and self.fence_info is None
-
-
-@dataclass
-class Runbook:
-    """One ``spec.runbooks[]`` entry — a named recombination of one or more groups."""
-
-    name: str
-    snippets_from: list[str] = field(default_factory=list)
+        return self.ext == "md" and self.codeblock_tag is None
 
 
 @dataclass
@@ -84,26 +88,24 @@ class Config:
     destination: Path
     working_dir: Path
     sources: list[Source]
-    runbooks: list[Runbook]
     status: dict
 
 
 def extract_snippets(src: Source, body: str) -> list[Snippet]:
-    """Decompose ``body`` into Tier-1 snippets for ``src``.
+    """Decompose ``body`` into raw snippets for ``src``.
 
     Each chunk becomes a ``<docname>_<section>.<ext>`` file; collisions within the source
-    (same section + extension) get a ``-2``/``-3`` suffix. ``order`` is the in-source index;
-    the caller offsets it per source so merged groups stay deterministically ordered.
+    (same section + extension) get a ``-2``/``-3`` suffix. Sections come from headings, so a
+    doc with no headings falls back to ``<docname>_intro`` (header-less docs still work).
     """
     snippets: list[Snippet] = []
     used: set[str] = set()
     docname = src.docname()
-    for order, ch in enumerate(rb_markdown.decompose(body)):
+    for ch in rb_markdown.decompose(body):
         if ch.kind == "prose":
-            ext, lang, info = "md", "md", None
+            ext, tag = "md", None
         else:
-            lang = rb_markdown.language_for(ch.info)
-            ext, info = lang, ch.info
+            ext, tag = rb_markdown.language_for(ch.info), ch.info
         base = f"{docname}_{rb_markdown.slugify(ch.section or 'intro')}"
         stem, n = base, 1
         while f"{stem}.{ext}" in used:
@@ -112,13 +114,10 @@ def extract_snippets(src: Source, body: str) -> list[Snippet]:
         used.add(f"{stem}.{ext}")
         snippets.append(
             Snippet(
-                id=stem,
                 file=f"{stem}.{ext}",
                 ext=ext,
-                lang=lang,
-                fence_info=info,
+                codeblock_tag=tag,
                 section=ch.section,
-                order=order,
                 content=ch.text,
                 source_index=src.index,
                 source_ref=src.file or src.url or src.name,

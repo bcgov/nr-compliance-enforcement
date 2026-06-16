@@ -10,11 +10,10 @@ metadata:
   name: <string>
   labels: { owner: <string> }
 spec:                        # human-authored; the parser only reads this
-  root: tools/n8n/           # repo-relative base for outputs (workflows/ live here)
-  destination: tools/n8n/snippets/   # where Tier-1 + Tier-2 snippets are written
-  working_dir: /tmp          # fetch cache for url sources (override: RUNBOOK_PARSER_CACHE)
+  root: tools/n8n/           # repo-relative base (resolves doc: targets)
+  destination: tools/n8n/snippets/   # where cleaned snippet-* live (in <group>/)
+  working_dir: /tmp          # where raws + a verbatim doc copy materialize (+ url cache); commit to VC raws
   sources: [ ... ]           # see below
-  runbooks: [ ... ]          # see below
 status: { ... }              # machine-owned; written by the parser (do not hand-maintain)
 ```
 
@@ -22,34 +21,30 @@ status: { ... }              # machine-owned; written by the parser (do not hand
 
 | Field         | Type            | Meaning                                                                 |
 | ------------- | --------------- | ----------------------------------------------------------------------- |
-| `name`        | string          | Group key. Sources sharing a `name` **merge** into one snippet group.   |
-| `description` | string          | What the snippets are. First non-empty wins for the merged group.       |
+| `name`        | string          | **Unique** id — targets the source (e.g. for cleaning) and prefixes its raw files. |
+| `group`       | string          | Merge bucket: sources sharing a `group` **merge** into one group (defaults to `name`). |
+| `description` | string          | What the snippets are — and the **prompt** that guides cleaning (what to produce / skip). |
 | `url`         | string \| null  | Wiki/doc/runbook to pull from. Set **exactly one** of `url`/`file`.     |
 | `file`        | string \| null  | Repo-relative file to pull from instead of a URL.                       |
 | `doc`         | string \| null  | Optional `root`-relative doc the snippets recombine into for drift.     |
 
-- **Merge:** same `name` -> one `destination/<name>/` group. Snippet order is
-  `(source index, in-source order)`, so a re-run is byte-stable. Combine domains this way
-  (e.g. a crunchy wiki source + a postgres `psql` source -> one `crunchy-triage` group).
+- **Merge:** same `group` -> one group (raw under `working_dir/<group>/`, cleaned in `<group>/`),
+  but each source still decomposes and round-trips **independently** (its own
+  `<name>_<section>` files). Combine domains this way — e.g. a `crunchy-dr-wiki` source and a
+  `postgres-triage` source, both `group: crunchy-triage`.
 - **Placeholder:** a source with neither `url` nor `file` (`kind: none`) contributes no
   extracted snippets — a slot for hand-authored snippets in the same group.
 - **url normalization:** GitHub `blob` URLs become `raw.githubusercontent.com`; GitHub
   `/wiki/Page` becomes the raw wiki `.md`. Fetches cache into `working_dir`.
 
-## spec.runbooks[]
+## The drift round-trip (`src -> snippets -> src`, per source)
 
-| Field           | Type      | Meaning                                                       |
-| --------------- | --------- | ------------------------------------------------------------ |
-| `name`          | string    | Output name -> `tools/n8n/workflows/<name>.md` (+ `.sh`).    |
-| `snippets_from` | [string]  | Group names to recombine, in order.                          |
-
-A runbook recombines the listed groups in order into a Markdown workflow (prose + code),
-and additionally a `.sh` of the shell snippets when the runbook contains any.
-
-## The drift round-trip (`src -> snippets -> doc`)
-
-The parser decomposes a source losslessly, so recombining the snippets reproduces the
-document. Drift detection compares that reconstruction against the doc target:
+Each source decomposes losslessly, so recombining *that source's* snippets reproduces *its*
+document byte-for-byte — independently, even when several sources share a group. Two sources
+in a group give two independent round-trips (the basis for backporting a snippet edit to the
+right doc). There is no whole-group reassembly; composing the cleaned blocks into runnable
+workflows is n8n's job. Drift detection compares a source's reconstruction against its doc
+target:
 
 - If `doc:` is set, the target is `root/doc`. If not, the target is the source itself
   (`src == doc`).
@@ -62,35 +57,37 @@ document. Drift detection compares that reconstruction against the doc target:
 
 ## status (written by the parser)
 
-Do not hand-maintain `status`, with one exception: the **`tier2`** and **`tier2_reason`**
-fields are yours to set when you adjust or drop a snippet — the parser preserves them
-across re-`build`s (keyed by group + file).
+The committed `status` tracks **cleaned** work, not every raw — per group: `sources`
+(parser-written: drift, etc.) plus the agent-maintained **`cleaned`**, **`skipped`**, and
+**`seals`** entries. The parser preserves `cleaned`/`skipped`/`seals` across builds and only
+rewrites `sources`. (The raw inventory reconstruction needs lives in
+`working_dir/<group>/index.yaml`, not here.)
 
 ```yaml
 status:
   groups:
     crunchy-triage:
-      sources:
-        - ref: crunchy-notes.md
-          kind: file
-          source_last_updated: "2025-11-06T17:22:20Z"   # file mtime; url is best-effort
-          doc: null
-          drift: in_sync
-      snippets:
-        - id: crunchy-notes_get-state-info
-          file: crunchy-notes_get-state-info.sh
-          lang: sh
-          section: "Get State Info"
-          order: 3
-          fence_info: bash               # original fence info, for faithful round-trip
-          provenance: { ref: crunchy-notes.md, line: 13 }
-          tier2: adjusted | dropped | pending
-          tier2_reason: "mutates cluster (patronictl reinit) — not idempotent"
+      sources:                          # parser-written
+        - name: crunchy-dr-wiki
+          ref: https://…/wiki/Disaster-Recovery
+          kind: url
+          doc: crunchy-disaster-recovery.md
+          drift: doc_missing
+      cleaned:                          # agent: the blocks you produced
+        - { snippet: snippet-cluster-status.sh, from: crunchy-dr-wiki }
+      skipped:                          # agent: raws intentionally left (with a reason)
+        - { raw: crunchy-dr-wiki_4-perform-pitr.sh, reason: "not idempotent — PITR" }
+      seals:                            # `seal`: sha(doc + cleaned code, comments excluded), per source
+        crunchy-dr-wiki: sha256:d846e79f…
 ```
+
+`seals` is the **snippet-code drift** baseline: `seal` writes it after cleaning, `check`
+recomputes it. It is distinct from `sources[].drift` above — that compares a *doc* to its
+reconstruction; the seal compares the *cleaned snippets'* code (comments excluded) to when
+they were last reconciled. See `CLEANING.md` and `SYNC.md`.
 
 ## Comment safety
 
 The parser rewrites only from a top-level `status:` marker to end-of-file; everything above
-(your commented `spec`) is left byte-for-byte. That is why machine-maintained timestamps
-live in `status`, not inline in `spec`. The `spec` is parsed with PyYAML, so any valid YAML
-is fine.
+(your commented `spec`) is left byte-for-byte — `spec` stays human-owned, `status` stays
+machine-owned. The `spec` is parsed with PyYAML, so any valid YAML is fine.

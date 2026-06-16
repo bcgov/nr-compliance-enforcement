@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # parser.py — RunbookParser: tangle code out of prose runbooks into version-controlled
-# snippets, recombine them into composable workflows, and detect doc/code drift.
+# snippets (per source, losslessly) and detect drift so edits can be backported upstream.
 #
 # Setup Instructions:
 #   1. Ensure Python 3.9+ is installed and on PATH.
@@ -10,16 +10,15 @@
 #        python tools/n8n/skills/runbook-parser/scripts/parser.py build
 #
 # It reads a `RunbookParser` config (default tools/n8n/config.yaml), decomposes each source
-# document into ordered, typed Tier-1 snippets under `destination/<group>/`, assembles
-# `runbooks` into tools/n8n/workflows/<name>.{md,sh}, and records the snippet inventory +
-# drift state into the config's machine-owned `status:` block (the `spec:` block is
-# read-only and never rewritten, so its comments are preserved).
+# document into ordered, typed raw snippets under `working_dir/<group>/` (+ an index sidecar),
+# and records each source's drift state into the config's machine-owned `status:` block (the
+# `spec:` block is read-only and never rewritten, so its comments are preserved).
 #
 # Commands:
-#   build      doc -> Tier-1 snippets + workflows + status      (default)
-#   check      regenerate doc from snippets, diff vs source/doc (read-only; exit 2 = drift)
-#   scaffold   copy a Tier-1 snippet to a snippet_<section> stub (+ list inline-code candidates)
-#   sync       reverse: recombine Tier-1 -> write the source doc/file (no-op when identical)
+#   build      doc -> raw snippets (+ a verbatim doc copy) + status        (default)
+#   check      reconstruct + recompute seals; report drift (read-only; exit 2 = drift)
+#   seal       record sha(doc + cleaned code, sans comments) + snapshot cleaned (after cleaning)
+#   diff       show how cleaned snippets diverged from their seal, to drive a doc back-port
 #
 # This file is the CLI entry point; the implementation lives in the sibling rb_*.py modules
 # (rb_markdown, rb_model, rb_config, rb_reconstruct, rb_commands, rb_log).
@@ -43,8 +42,8 @@ from rb_log import RunbookError, die, set_quiet  # noqa: E402
 _COMMANDS = {
     "build": rb_commands.cmd_build,
     "check": rb_commands.cmd_check,
-    "scaffold": rb_commands.cmd_scaffold,
-    "sync": rb_commands.cmd_sync,
+    "seal": rb_commands.cmd_seal,
+    "diff": rb_commands.cmd_diff,
 }
 
 
@@ -56,20 +55,22 @@ def parse_args(argv: Optional[list[str]]) -> argparse.Namespace:
         description="RunbookParser — decompose runbook docs into composable snippets.",
     )
     parser.add_argument("--config", default=default_config, help=f"config path (default {default_config})")
-    parser.add_argument("--source", action="append", help="limit to this source group name (repeatable)")
     parser.add_argument(
-        "--index", action="append", type=int, metavar="N",
-        help="limit to spec.sources[N], 0-based (repeatable) — a partial build scoped to that source",
+        "--group", action="append", metavar="GROUP",
+        help="limit to sources in this group, by exact group name (repeatable)",
+    )
+    parser.add_argument(
+        "--source", action="append", metavar="NAME",
+        help="limit to the source with this exact unique name (repeatable)",
     )
     parser.add_argument("--dry-run", action="store_true", help="show actions without writing")
-    parser.add_argument("--offline", action="store_true", help="never hit the network; require cache")
     parser.add_argument("-q", "--quiet", action="store_true", help="suppress progress output")
     parser.add_argument(
         "command",
         nargs="?",
         default="build",
         choices=list(_COMMANDS),
-        help="build (default) | check | scaffold | sync",
+        help="build (default) | check | seal | diff",
     )
     return parser.parse_args(argv)
 

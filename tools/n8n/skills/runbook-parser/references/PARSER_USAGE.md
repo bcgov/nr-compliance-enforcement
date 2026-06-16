@@ -11,10 +11,10 @@ python tools/n8n/skills/runbook-parser/scripts/parser.py <command> [options]
 
 | Command            | Does                                                                       | Exit codes                  |
 | ------------------ | -------------------------------------------------------------------------- | --------------------------- |
-| `build` (default)  | resolve sources -> extract Tier-1 snippets -> write files -> assemble workflows -> write `status` | 0 ok / 1 a source failed    |
-| `check`            | recombine snippets and diff against the source/doc; **read-only**          | 0 in-sync / 2 drift / 1 err |
-| `scaffold`         | copy Tier-1 snippets to `snippet_<section>` stubs and list inline-code candidates | 0 / 1                |
-| `sync`             | reverse: recombine Tier-1 and **write** the source doc/file (no-op when identical) | 0 / 1               |
+| `build` (default)  | resolve sources -> extract raws (+ a verbatim doc copy) -> write files -> write `status` | 0 ok / 1 a source failed |
+| `check`            | recombine and diff vs source/doc, **and** recompute seals; **read-only**   | 0 in-sync / 2 drift / 1 err |
+| `sync`             | reverse: recombine raw and **write** the source doc/file (no-op when identical) | 0 / 1               |
+| `seal`             | record sha(doc + cleaned code, comments excluded) into `status` (after cleaning) | 0 / 1               |
 
 `check` returns a distinct **2** for drift (vs **1** for a tool error) so CI can tell
 "docs and code diverged" from "the run failed" — like `git diff --exit-code`.
@@ -24,33 +24,31 @@ python tools/n8n/skills/runbook-parser/scripts/parser.py <command> [options]
 | Option            | Effect                                                                 |
 | ----------------- | --------------------------------------------------------------------- |
 | `--config PATH`   | config path (default `tools/n8n/config.yaml`)                         |
-| `--source NAME`   | limit to this source group; repeatable                               |
-| `--index N`       | limit to `spec.sources[N]` (0-based); repeatable — a partial build   |
+| `--group NAME`    | limit to sources in this group (exact name); repeatable             |
+| `--source NAME`   | limit to the source with this exact unique `name`; repeatable      |
 | `--dry-run`       | print intended writes/diffs without touching disk                    |
-| `--offline`       | never hit the network; require a `working_dir` cache for url sources |
 | `-q, --quiet`     | suppress progress output                                             |
 | `-h, --help`      | argparse help                                                        |
 
-## Partial builds (`--index` / `--source`)
+## Partial builds (`--group` / `--source`)
 
 Selecting a subset of sources makes `build` **partial** and non-destructive: only the chosen
-sources are fetched and written, pruning and `status` are scoped to them (other sources'
-files and status entries are left intact), and workflow recomposition is skipped (it needs
-the whole group — run a full `build` to refresh `workflows/`). This is the way to iterate on
-one source when several share a group `name`. Example — regenerate just the wiki source at
-index 1:
+sources are fetched and written, and pruning and `status` are scoped to them (other sources'
+files and status entries are left intact). `--group NAME` picks a whole group by name;
+`--source NAME` picks the source with that exact unique `name` — the way to iterate on one
+source when several share a `group`. Example — regenerate just the wiki:
 
 ```bash
-python tools/n8n/skills/runbook-parser/scripts/parser.py build --index 1
+python tools/n8n/skills/runbook-parser/scripts/parser.py build --source crunchy-dr-wiki
 ```
 
-## Cache and offline
+## Cache
 
-- `url:` sources are fetched once and cached under `working_dir`
+- `url:` sources are fetched and cached under `working_dir`
   (`runbook-parser-<hash>-<slug>.cache`). Override the location with the
   `RUNBOOK_PARSER_CACHE` environment variable (handy when `/tmp` is awkward locally).
-- On a fetch failure the parser falls back to the cache with a warning. `--offline` skips
-  the network entirely and errors if the cache is missing.
+- On a fetch failure the parser falls back to the cached copy with a warning (resilience if
+  upstream is briefly down).
 
 ## URL normalization
 
@@ -61,15 +59,28 @@ python tools/n8n/skills/runbook-parser/scripts/parser.py build --index 1
 ## Snippet layout
 
 ```
-snippets/<group>/
-  <srcdoc>_<section>.md      # Tier-1 prose chunk
-  <srcdoc>_<section>.sh      # Tier-1 code chunk (also .yaml/.sql/.json/.txt)
-  snippet_<section>.sh       # Tier-2 adjusted block (you create these via scaffold + edit)
+working_dir/<group>/         # raws — ephemeral (or version-controlled if working_dir is committed)
+  <name>.src.md              #   verbatim copy of the source doc (one half of the seal)
+  <name>_<section>.md        #   raw prose chunk (parser-written)
+  <name>_<section>.sh        #   raw code chunk (also .yaml/.sql/.json/.txt)
+  index.yaml                 #   raw inventory that reconstruction reads
+
+snippets/<group>/            # cleaned — committed
+  snippet-<section>.sh       #   cleaned block (the agent writes these)
 ```
 
-Names: `_` separates structural parts, `-` is kebab within a part. Multiple chunks in one
-section get a `-2`, `-3` suffix. Recombination order is taken from `status`, not filename
-sort, so names stay readable.
+Raw names: `_` separates structural parts, `-` is kebab within a part. Multiple chunks in one
+section get a `-2`, `-3` suffix. Reconstruction orders by source `line` (from `index.yaml`), not
+filename sort. A doc with no headings falls back to `<name>_intro`.
+
+## Seal (snippet-code drift)
+
+`seal` records one SHA per source in `status.groups.<group>.seals.<name>`, over the source's
+duplicated doc (hashed as-is) plus its cleaned snippets (comments and blank lines stripped).
+Run it after cleaning. `check` recomputes every stored seal and prints `SNIPPET CODE DRIFT`
+(exit 2) when a cleaned command — or the source doc — changed since the seal, while a
+comment-only edit is ignored. On a machine without the `working_dir` doc copy the seal
+refetches the source. Seals are preserved across `build`s (like `cleaned`/`skipped`).
 
 ## No-network smoke test
 
@@ -85,11 +96,9 @@ spec:
   working_dir: /tmp
   sources:
     - { name: crunchy-triage, description: scratch, file: crunchy-notes.md }
-  runbooks:
-    - { name: crunchy-triage, snippets_from: [crunchy-triage] }
 YAML
 P="python tools/n8n/skills/runbook-parser/scripts/parser.py --config /tmp/scratch.yaml"
-$P build            # writes snippets + workflows + status
+$P build            # writes snippets + status
 $P build            # idempotent: no further writes
 $P check            # in_sync (exit 0) — reconstruction matches the source
 

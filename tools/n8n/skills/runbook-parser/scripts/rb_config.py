@@ -7,7 +7,6 @@ cached URL fetch).
 
 from __future__ import annotations
 
-import datetime
 import hashlib
 import os
 import re
@@ -19,7 +18,7 @@ from typing import Any, Optional
 import yaml
 
 from rb_log import RunbookError, die, warn
-from rb_model import Config, Runbook, Source
+from rb_model import Config, Source, write_text_lf
 
 
 # --------------------------------------------------------------------------------------
@@ -49,18 +48,16 @@ def validate_config(data: Any) -> list[str]:
     for key in ("root", "destination"):
         if not spec.get(key):
             errors.append(f"spec.{key} is required")
-    names = set()
+    seen = set()
     for i, s in enumerate(spec.get("sources") or []):
         if not isinstance(s, dict) or not s.get("name"):
             errors.append(f"spec.sources[{i}] needs a name")
             continue
-        names.add(s["name"])
+        if s["name"] in seen:
+            errors.append(f"duplicate source name '{s['name']}' (names must be unique)")
+        seen.add(s["name"])
         if s.get("url") and s.get("file"):
             errors.append(f"source '{s['name']}' sets both url and file; pick one")
-    for i, r in enumerate(spec.get("runbooks") or []):
-        for g in (r.get("snippets_from") or []):
-            if g not in names:
-                errors.append(f"runbook '{r.get('name', i)}' references unknown group '{g}'")
     return errors
 
 
@@ -83,6 +80,7 @@ def load_config(path: Path) -> Config:
     sources = [
         Source(
             name=s.get("name", ""),
+            group=s.get("group") or s.get("name", ""),
             description=s.get("description", "") or "",
             doc=s.get("doc"),
             url=s.get("url"),
@@ -90,10 +88,6 @@ def load_config(path: Path) -> Config:
             index=i,
         )
         for i, s in enumerate(spec.get("sources") or [])
-    ]
-    runbooks = [
-        Runbook(name=r.get("name", ""), snippets_from=list(r.get("snippets_from") or []))
-        for r in (spec.get("runbooks") or [])
     ]
     return Config(
         path=path,
@@ -103,7 +97,6 @@ def load_config(path: Path) -> Config:
         destination=repo_root / spec["destination"],
         working_dir=Path(os.environ.get("RUNBOOK_PARSER_CACHE", spec.get("working_dir", "/tmp"))),
         sources=sources,
-        runbooks=runbooks,
         status=data.get("status") or {},
     )
 
@@ -131,27 +124,19 @@ def _cache_path(cfg: Config, url: str) -> Path:
     return cfg.working_dir / f"runbook-parser-{h}-{slug}.cache"
 
 
-def fetch_url(cfg: Config, url: str, offline: bool) -> str:
+def fetch_url(cfg: Config, url: str) -> str:
     """Fetch a URL (normalized to raw), caching into ``working_dir``.
 
-    Falls back to the cache on a network failure; with ``offline`` the network is never
-    touched and a missing cache is a hard error.
+    Falls back to the cache on a network failure (resilience if upstream is briefly down).
     """
     cache = _cache_path(cfg, url)
-    if offline:
-        if cache.is_file():
-            return cache.read_text(encoding="utf-8")
-        raise RunbookError(
-            f"--offline and no cache for {url}\n"
-            f"  run once online to populate {cache}, or use a local file: source"
-        )
     target = normalize_github_url(url)
     try:
         req = urllib.request.Request(target, headers={"User-Agent": "runbook-parser"})
         with urllib.request.urlopen(req, timeout=10) as resp:
-            body = resp.read().decode("utf-8")
+            body = resp.read().decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
         cfg.working_dir.mkdir(parents=True, exist_ok=True)
-        cache.write_text(body, encoding="utf-8")
+        write_text_lf(cache, body)
         return body
     except (urllib.error.URLError, TimeoutError, OSError) as e:
         if cache.is_file():
@@ -160,7 +145,7 @@ def fetch_url(cfg: Config, url: str, offline: bool) -> str:
         raise RunbookError(f"cannot fetch {url} ({e}) and no cache at {cache}")
 
 
-def resolve_source(cfg: Config, src: Source, offline: bool) -> Optional[str]:
+def resolve_source(cfg: Config, src: Source) -> Optional[str]:
     """Return the raw markdown for a source, or ``None`` for a placeholder (no url/file)."""
     kind = src.kind()
     if kind == "file":
@@ -169,15 +154,5 @@ def resolve_source(cfg: Config, src: Source, offline: bool) -> Optional[str]:
             raise RunbookError(f"source '{src.name}' file not found: {p}")
         return p.read_text(encoding="utf-8")
     if kind == "url":
-        return fetch_url(cfg, src.url, offline)
-    return None
-
-
-def source_timestamp(cfg: Config, src: Source) -> Optional[str]:
-    """Best-effort last-modified for a source (file mtime; URLs omitted — no git)."""
-    if src.kind() == "file":
-        p = cfg.repo_root / src.file
-        if p.is_file():
-            ts = datetime.datetime.fromtimestamp(p.stat().st_mtime, datetime.timezone.utc)
-            return ts.strftime("%Y-%m-%dT%H:%M:%SZ")
+        return fetch_url(cfg, src.url)
     return None

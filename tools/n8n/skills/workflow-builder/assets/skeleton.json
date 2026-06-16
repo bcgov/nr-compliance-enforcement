@@ -1,0 +1,100 @@
+{
+  "name": "triage-skeleton",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Production URL\n\nClick to run this triage:\n\n**https://YOUR-N8N-HOST/webhook/triage**\n\n(replace with the Webhook node's Production URL)",
+        "height": 240,
+        "width": 380,
+        "color": 4
+      },
+      "id": "note-prod-url",
+      "name": "Production URL",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 60]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "triage",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 320],
+      "webhookId": "webhook"
+    },
+    {
+      "parameters": {
+        "command": "echo '{\"replace_me\": \"add one Execute-Command node per cleaned snippet-*, chained, read-only\"}'"
+      },
+      "id": "step-1",
+      "name": "Collect (read-only, idempotent)",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [500, 320],
+      "notes": "READ-ONLY + IDEMPOTENT. Runs a cleaned snippet-*; safe to re-run."
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(i => i.json);\nconst md = `# Triage report\\n\\n\\`\\`\\`json\\n${JSON.stringify(rows, null, 2)}\\n\\`\\`\\``;\nreturn [{ json: { markdown: md } }];"
+      },
+      "id": "format",
+      "name": "Format output (markdown)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [740, 320]
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.markdown }}",
+        "options": {}
+      },
+      "id": "md2html",
+      "name": "Markdown to HTML",
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [980, 320]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.data }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              { "name": "Content-Type", "value": "text/html" }
+            ]
+          }
+        }
+      },
+      "id": "respond",
+      "name": "Respond to Webhook (HTML)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1220, 320]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Collect (read-only, idempotent)", "type": "main", "index": 0 }]]
+    },
+    "Collect (read-only, idempotent)": {
+      "main": [[{ "node": "Format output (markdown)", "type": "main", "index": 0 }]]
+    },
+    "Format output (markdown)": {
+      "main": [[{ "node": "Markdown to HTML", "type": "main", "index": 0 }]]
+    },
+    "Markdown to HTML": {
+      "main": [[{ "node": "Respond to Webhook (HTML)", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
