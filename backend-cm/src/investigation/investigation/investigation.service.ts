@@ -298,7 +298,29 @@ export class InvestigationService {
         include: {
           investigation_party: {
             include: {
-              investigation: true,
+              investigation: {
+                include: {
+                  contravention: {
+                    include: {
+                      contravention_party_xref: {
+                        include: {
+                          enforcement_action: {
+                            include: {
+                              contravention_party_xref: true,
+                              enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                                true,
+                            },
+                            where: { active_ind: true },
+                          },
+                        },
+                        where: { active_ind: true },
+                      },
+                    },
+                    where: { active_ind: true },
+                  },
+                  investigation_status_code: true,
+                },
+              },
             },
             where: {
               active_ind: true,
