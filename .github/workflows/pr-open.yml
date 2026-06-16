@@ -123,6 +123,31 @@ jobs:
           tags: |
             ${{ github.sha }}
 
+  # build prepackaged n8n images
+  # https://github.com/bcgov/action-builder-ghcr
+  build-n8n:
+    name: Build n8n
+    runs-on: ubuntu-22.04
+    outputs:
+      digest: ${{ steps.build-n8n.outputs.digest }}
+      sha: ${{ github.sha }}
+    timeout-minutes: 15
+    steps:
+      - uses: bcgov/action-builder-ghcr@v2.3.0
+        with:
+          package: n8n
+          build_file: tools/n8n/Dockerfile
+          build_context: tools/n8n/
+          tag: ${{ github.event.number }}
+          tag_fallback: latest
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/n8n
+          target: ${{ github.event.number }}
+          tags: |
+            ${{ github.sha }}
+
   tests:
     name: Tests
     if: (! github.event.pull_request.draft)
