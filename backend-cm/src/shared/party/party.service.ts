@@ -18,10 +18,6 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { Person } from "src/shared/person/dto/person";
-import { country_subdivision_code } from "prisma/shared/generated/country_subdivision_code";
-import { gender_code } from "prisma/shared/generated/gender_code";
-import { business_identifier } from "prisma/shared/generated/business_identifier";
-import { approximate_age_code } from "prisma/shared/generated/approximate_age_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
