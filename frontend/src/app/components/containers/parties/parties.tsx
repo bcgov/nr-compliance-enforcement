@@ -25,11 +25,18 @@ const SEARCH_PARTIES = gql`
           value
           isPrimary
         }
+        addresses {
+          address
+          city
+          province
+          isPrimary
+        }
         person {
           personGuid
           firstName
           lastName
           dateOfBirth
+          genderCode
         }
         business {
           businessGuid

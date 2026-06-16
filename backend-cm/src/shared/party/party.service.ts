@@ -18,6 +18,9 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { Person } from "src/shared/person/dto/person";
+import { country_subdivision_code } from "prisma/shared/generated/country_subdivision_code";
+import { gender_code } from "prisma/shared/generated/gender_code";
+import { business_identifier } from "prisma/shared/generated/business_identifier";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -1326,6 +1329,48 @@ export class PartyService {
           OR: [
             { party_type: { equals: term } },
             { business: { name: { contains: term, mode: "insensitive" } } },
+            {
+              business: {
+                business_identifier: {
+                  some: {
+                    identifier_value: {
+                      contains: term,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              },
+            },
+            {
+              contact_method: {
+                some: {
+                  contact_value: {
+                    contains: term,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+            {
+              address: {
+                some: {
+                  address: {
+                    contains: term,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+            {
+              address: {
+                some: {
+                  city: {
+                    contains: term,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
             { person: { first_name: { contains: term, mode: "insensitive" } } },
             { person: { last_name: { contains: term, mode: "insensitive" } } },
           ],
@@ -1349,20 +1394,12 @@ export class PartyService {
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
       switch (filters?.sortBy) {
-        case "firstName": {
-          orderBy = { person: { first_name: validSortOrder } };
-          break;
-        }
-        case "lastName": {
-          orderBy = { person: { last_name: validSortOrder } };
-          break;
-        }
-        case "name": {
-          orderBy = { business: { name: validSortOrder } };
-          break;
-        }
-        case "dateOfBirth": {
-          orderBy = { person: { date_of_birth: validSortOrder } };
+        case "partyName": {
+          if (filters.partyTypeCode === PARTY_TYPES.Company) {
+            orderBy = { business: { name: validSortOrder } };
+          } else {
+            orderBy = [{ person: { last_name: validSortOrder } }, { person: { first_name: validSortOrder } }];
+          }
           break;
         }
         default: {
@@ -1392,6 +1429,15 @@ export class PartyService {
               long_description: true,
             },
           },
+          address: {
+            select: {
+              address: true,
+              city: true,
+              country_subdivision_code: true,
+              is_primary: true,
+            },
+            where: { active_ind: true },
+          },
           contact_method: {
             where: { active_ind: true },
             select: {
@@ -1417,13 +1463,7 @@ export class PartyService {
                 select: {
                   business_identifier_guid: true,
                   identifier_value: true,
-                  business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
-                    select: {
-                      business_identifier_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
+                  business_identifier_code: true,
                 },
               },
             },
@@ -1434,6 +1474,7 @@ export class PartyService {
               first_name: true,
               last_name: true,
               date_of_birth: true,
+              gender_code: true,
             },
           },
         },
