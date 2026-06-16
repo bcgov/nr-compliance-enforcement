@@ -935,6 +935,73 @@ export class CodeTableService {
         const results = data.countrySubdivisions;
         return results;
       }
+
+      case "approximate-age-type": {
+        const { data } = await get(token, {
+          query:
+            "{ approximateAgeCodes { approximateAgeCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.approximateAgeCodes;
+        return results;
+      }
+
+      case "gender-type": {
+        const { data } = await get(token, {
+          query: "{ genderCodes { genderCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.genderCodes;
+        return results;
+      }
+
+      case "complexion-type": {
+        const { data } = await get(token, {
+          query: "{ complexionCodes { complexionCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.complexionCodes;
+        return results;
+      }
+
+      case "build-type": {
+        const { data } = await get(token, {
+          query: "{ buildCodes { buildCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.buildCodes;
+        return results;
+      }
+
+      case "hair-colour-type": {
+        const { data } = await get(token, {
+          query: "{ hairColourCodes { hairColourCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.hairColourCodes;
+        return results;
+      }
+
+      case "hair-length-type": {
+        const { data } = await get(token, {
+          query: "{ hairLengthCodes { hairLengthCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.hairLengthCodes;
+        return results;
+      }
+
+      case "eye-colour-type": {
+        const { data } = await get(token, {
+          query: "{ eyeColourCodes { eyeColourCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+        const results = data.eyeColourCodes;
+        return results;
+      }
+
+      case "facial-hair-style-type": {
+        const { data } = await get(token, {
+          query:
+            "{ facialHairStyleCodes { facialHairStyleCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+
+        const results = data.facialHairStyleCodes;
+        return results;
+      }
     }
   };
 

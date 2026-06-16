@@ -1,5 +1,6 @@
 import { business_address } from "./business_address";
 import { country_subdivision_code } from "./country_subdivision_code";
+import { person } from "./person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class country_code {
@@ -35,4 +36,7 @@ export class country_code {
 
   @ApiProperty({ isArray: true, type: () => country_subdivision_code })
   country_subdivision_code_country_subdivision_code_country_codeTocountry_code: country_subdivision_code[];
+
+  @ApiProperty({ isArray: true, type: () => person })
+  person: person[];
 }

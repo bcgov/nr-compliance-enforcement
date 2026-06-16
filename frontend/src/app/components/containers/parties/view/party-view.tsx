@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { PartyHeader } from "./party-header";
+import { PartyTabs } from "./party-tabs";
+import { PartyHistoryTab } from "./party-history-tab";
 import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import {
@@ -12,20 +14,35 @@ import {
   InvestigationParty,
   Person,
   ContactMethod,
+  Address,
 } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
+import { PartyCarousel } from "@/app/components/containers/parties/attachments/party-carousel";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { PartyTypes } from "@/app/constants/party-types";
-import { selectAgencyDropdown, selectCodeTable, selectSexDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectAgencyDropdown,
+  selectApproximateAgeDropdown,
+  selectBuildDropdown,
+  selectCodeTable,
+  selectComplexionDropdown,
+  selectEyeColourDropdown,
+  selectFacialHairStyleDropdown,
+  selectGenderDropdown,
+  selectHairColourDropdown,
+  selectHairLengthDropdown,
+} from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import Option from "@apptypes/app/option";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CASE_ACTIVITY_TYPES } from "@/app/constants/case-activity-types";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { formatDateOfBirth } from "@common/methods";
+import { calculateAgeYears, formatDateOfBirth, isYoungPerson } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { getUserAgency } from "@/app/service/user-service";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
+import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
+import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -53,55 +70,69 @@ export const GET_PARTY = gql`
       shortDescription
       longDescription
       createdDateTime
+      updatedDateTime
+      createdByUserGuid
+      addresses {
+        addressGuid
+        addressName
+        address
+        city
+        province
+        postalCode
+        country
+        isPrimary
+      }
+      contactMethods {
+        contactMethodGuid
+        typeCode
+        typeDescription
+        value
+        isPrimary
+      }
+      aliases {
+        aliasGuid
+        name
+      }
       person {
         personGuid
         firstName
-        middleName
-        middleName2
+        middleNames
         lastName
         dateOfBirth
+        approximateAgeCode
         driversLicenseNumber
-        driversLicenseJurisdiction
-        sexCode
-        contactMethods {
-          contactMethodGuid
-          typeCode
-          typeDescription
-          value
-          isPrimary
+        driversLicenseClass
+        driversLicenseCountryCode
+        driversLicenseCountrySubdivisionCode
+        genderCode
+        heightInCm
+        weightInKg
+        complexionCode
+        buildCode
+        hairColourCode
+        hairLengthCode
+        hairColourOther
+        eyeColourCode
+        eyeColourOther
+        facialHairIndicator
+        facialHairStyleCodes {
+          personFacialStyleHairCodeGuid
+          facialHairStyleCode
         }
+        additionalHairDescriptors
+        tattooIndicator
+        tattooDescription
+        additionalDescriptors
+        comments
+        boloIndicator
       }
       business {
         name
         businessGuid
-        aliases {
-          aliasGuid
-          name
-        }
         identifiers {
           businessIdentifierGuid
           identifierValue
-          identifierCode {
-            businessIdentifierCode
-            shortDescription
-          }
-        }
-        addresses {
-          businessAddressGuid
-          addressName
-          address
-          city
-          province
-          postalCode
-          country
-          isPrimary
-        }
-        contactMethods {
-          contactMethodGuid
-          typeCode
-          typeDescription
-          value
-          isPrimary
+          identifierCode
         }
         contactPeople {
           businessPersonXrefGuid
@@ -112,13 +143,13 @@ export const GET_PARTY = gql`
             personGuid
             firstName
             lastName
-            contactMethods {
-              contactMethodGuid
-              typeCode
-              typeDescription
-              value
-              isPrimary
-            }
+          }
+          contactMethods {
+            contactMethodGuid
+            typeCode
+            typeDescription
+            value
+            isPrimary
           }
         }
       }
@@ -195,14 +226,28 @@ const GET_INVESTIGATION_PARTY_ROLES = gql`
 
 export type PartyParams = {
   id: string;
+  tabKey?: string;
 };
 
-const PersonIdentifyingInfo: FC<{ person: Person; sexOptions: ReadonlyArray<Option> }> = ({ person, sexOptions }) => (
+const PersonIdentifyingInfo: FC<{
+  person: Person;
+  genderOptions: ReadonlyArray<Option>;
+  approximateAgeOptions: ReadonlyArray<Option>;
+  countryOptions: ReadonlyArray<Option>;
+  countrySubdivisionOptions: ReadonlyArray<Option>;
+}> = ({ person, genderOptions, approximateAgeOptions, countryOptions, countrySubdivisionOptions }) => (
   <>
     {person.dateOfBirth !== null && (
       <p>
         <b>Date of birth: </b>
         {formatDateOfBirth(person.dateOfBirth)}
+      </p>
+    )}
+    {person.approximateAgeCode && (
+      <p>
+        <b>Approximate age: </b>
+        {approximateAgeOptions?.find((opt) => opt.value === person?.approximateAgeCode)?.label ??
+          person.approximateAgeCode}
       </p>
     )}
     {person.driversLicenseNumber && (
@@ -211,16 +256,30 @@ const PersonIdentifyingInfo: FC<{ person: Person; sexOptions: ReadonlyArray<Opti
         {person.driversLicenseNumber}
       </p>
     )}
-    {person.driversLicenseJurisdiction && (
+    {person.driversLicenseClass && (
       <p>
-        <b>Driver's licence jurisdiction: </b>
-        {person.driversLicenseJurisdiction}
+        <b>Driver's licence class: </b>
+        {person.driversLicenseClass}
       </p>
     )}
-    {person.sexCode && (
+    {person.driversLicenseCountryCode && (
       <p>
-        <b>Sex: </b>
-        {sexOptions?.find((opt) => opt.value === person?.sexCode)?.label ?? person.sexCode}
+        <b>Driver's licence country: </b>
+        {countryOptions?.find((opt) => opt.value === person?.driversLicenseCountryCode)?.label ??
+          person.driversLicenseCountryCode}
+      </p>
+    )}
+    {person.driversLicenseCountrySubdivisionCode && (
+      <p>
+        <b>Driver's licence province: </b>
+        {countrySubdivisionOptions?.find((opt) => opt.value === person?.driversLicenseCountrySubdivisionCode)?.label ??
+          person.driversLicenseCountrySubdivisionCode}
+      </p>
+    )}
+    {person.genderCode && (
+      <p>
+        <b>Gender: </b>
+        {genderOptions?.find((opt) => opt.value === person?.genderCode)?.label ?? person.genderCode}
       </p>
     )}
   </>
@@ -302,62 +361,50 @@ const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> =
   </>
 );
 
-type BusinessAddressDisplay = {
-  businessAddressGuid?: string | null;
-  addressName?: string | null;
-  address?: string | null;
-  city?: string | null;
-  province?: string | null;
-  postalCode?: string | null;
-  country?: string | null;
-  isPrimary?: boolean | null;
-};
-
-const BusinessAddressesList: FC<{
-  addresses: ReadonlyArray<BusinessAddressDisplay>;
+const AddressesList: FC<{
+  addresses: ReadonlyArray<Address>;
   countryOptions: ReadonlyArray<Option>;
   countrySubdivisionOptions: ReadonlyArray<Option>;
 }> = ({ addresses, countryOptions, countrySubdivisionOptions }) => (
   <>
-    {addresses.map((businessAddress, index) => (
+    {addresses.map((address, index) => (
       <div
-        key={businessAddress.businessAddressGuid ?? `address-${index}`}
+        key={address.addressGuid ?? `address-${index}`}
         className="party-details-item"
         style={index < addresses.length - 1 ? { marginBottom: "1em" } : undefined}
       >
         <h4 className="mb-3">
-          {businessAddress.addressName || `Address ${index + 1}`}
-          {businessAddress.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
+          {address.addressName || `Address ${index + 1}`}
+          {address.isPrimary && <Badge className="ms-2 badge">Primary</Badge>}
         </h4>
-        {businessAddress.address && (
+        {address.address && (
           <p>
             <b>Address: </b>
-            {businessAddress.address}
+            {address.address}
           </p>
         )}
-        {businessAddress.city && (
+        {address.city && (
           <p>
             <b>City: </b>
-            {businessAddress.city}
+            {address.city}
           </p>
         )}
-        {businessAddress.province && (
+        {address.province && (
           <p>
             <b>Province: </b>
-            {countrySubdivisionOptions?.find((opt) => opt.value === businessAddress?.province)?.label ??
-              businessAddress.province}
+            {countrySubdivisionOptions?.find((opt) => opt.value === address?.province)?.label ?? address.province}
           </p>
         )}
-        {businessAddress.postalCode && (
+        {address.postalCode && (
           <p>
             <b>Postal code: </b>
-            {businessAddress.postalCode}
+            {address.postalCode}
           </p>
         )}
-        {businessAddress.country && (
+        {address.country && (
           <p>
             <b>Country: </b>
-            {countryOptions?.find((opt) => opt.value === businessAddress?.country)?.label ?? businessAddress.country}
+            {countryOptions?.find((opt) => opt.value === address?.country)?.label ?? address.country}
           </p>
         )}
       </div>
@@ -366,13 +413,21 @@ const BusinessAddressesList: FC<{
 );
 
 export const PartyView: FC = () => {
-  const { id = "" } = useParams<PartyParams>();
+  const { id = "", tabKey } = useParams<PartyParams>();
   const navigate = useNavigate();
+  const currentTab = tabKey || "details";
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const sexOptions = useAppSelector(selectSexDropdown);
+  const genderOptions = useAppSelector(selectGenderDropdown);
+  const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown);
   const countryOptions = useAppSelector(selectCountries);
   const countrySubdivisionOptions = useAppSelector(selectCountrySubdivisions);
+  const complexionOptions = useAppSelector(selectComplexionDropdown);
+  const buildOptions = useAppSelector(selectBuildDropdown);
+  const hairColourOptions = useAppSelector(selectHairColourDropdown);
+  const hairLengthOptions = useAppSelector(selectHairLengthDropdown);
+  const eyeColourOptions = useAppSelector(selectEyeColourDropdown);
+  const facialHairStyleOptions = useAppSelector(selectFacialHairStyleDropdown);
 
   const { data, isLoading } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", id],
@@ -382,8 +437,7 @@ export const PartyView: FC = () => {
 
   const partyData = data?.party;
 
-  const businessAddresses =
-    (partyData?.business as { addresses?: ReadonlyArray<BusinessAddressDisplay> } | undefined)?.addresses ?? [];
+  const addresses = (partyData?.addresses ?? []).filter((a): a is Address => a != null);
 
   let partyType;
   let partyId;
@@ -402,18 +456,21 @@ export const PartyView: FC = () => {
   const displayName = () => {
     let result = "";
     if (partyData?.person) {
-      const parts = [
-        partyData.person?.firstName,
-        partyData.person?.middleName,
-        partyData.person?.middleName2,
-        partyData.person?.lastName,
-      ].filter(Boolean);
+      const parts = [partyData.person?.firstName, partyData.person?.middleNames, partyData.person?.lastName].filter(
+        Boolean,
+      );
       result = parts.join(" ");
     } else if (partyData?.business) {
       result = `${partyData.business?.name}`;
     }
     return result;
   };
+
+  const personDob = partyData?.person?.dateOfBirth ? new Date(partyData.person.dateOfBirth) : null;
+  const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
+
+  const imperialHeight = cmToFeetInches(partyData?.person?.heightInCm ?? 0);
+  const imperialWeight = kgToLb(partyData?.person?.weightInKg ?? 0);
 
   const getPartyRoleText = (roleCode: string, activityType: string) => {
     const partyRoleText: string = partyRoles.find(
@@ -602,129 +659,260 @@ export const PartyView: FC = () => {
       {partyData && (
         <div className="comp-complaint-details">
           <PartyHeader partyData={partyData} />
-          <section className="comp-details-body comp-container party-details-section">
-            <hr className="comp-details-body-spacer"></hr>
-            <h2>Party details</h2>
-            <div className="party-details-summary-container">
-              <div className="party-details-summary-vcard-container">
-                <i className="bi bi-person-vcard party-details-summary-vcard"></i>
+          <PartyTabs />
+          {currentTab === "history" ? (
+            <PartyHistoryTab partyIdentifier={id} />
+          ) : (
+            <section className="comp-details-body comp-container party-details-section">
+              <hr className="comp-details-body-spacer"></hr>
+              <h2>Party details</h2>
+              <div className="party-details-summary-container">
+                <div className="party-details-summary-vcard-container">{id ? <PartyCarousel partyId={id} /> : ""}</div>
+                <div className="party-details-summary-info">
+                  <div className="d-flex align-items-center gap-2">
+                    <h3 className="mb-0">{displayName()}</h3>
+                    {partyData?.person?.boloIndicator && <Badge className="comp-danger-badge">Caution / BOLO</Badge>}
+                  </div>
+                  {partyData?.business?.identifiers && (
+                    <>
+                      {partyData.business.identifiers.map((identifier) => {
+                        return (
+                          <p key={identifier?.businessIdentifierGuid}>
+                            <b>
+                              {BUSINESS_IDENTIFIER_LABELS[identifier?.identifierCode ?? ""] ??
+                                identifier?.identifierCode}
+                              :{" "}
+                            </b>
+                            {identifier?.identifierValue}
+                          </p>
+                        );
+                      })}
+                    </>
+                  )}{" "}
+                  {(personDob || personIsYoung) && (
+                    <p className="d-flex align-items-center gap-2">
+                      {personDob && (
+                        <span>
+                          <b>Age: </b>
+                          {calculateAgeYears(personDob)}
+                        </span>
+                      )}
+                      {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
+                    </p>
+                  )}
+                </div>
+                <div className="comp-details-section-header-actions party-details-summary-actions">
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    id="details-screen-edit-button"
+                    onClick={editButtonClick}
+                  >
+                    <i className="bi bi-pencil"></i>
+                    <span>Edit party</span>
+                  </Button>
+                </div>
               </div>
-              <div className="party-details-summary-info">
-                <h3>{displayName()}</h3>
-                {partyData?.business?.identifiers && (
+              <br />
+              <h4>Identifying information</h4>
+              <div className="party-details-item">
+                <p>
+                  <b>Name: </b>
+                  {displayName()}
+                </p>
+                {partyData?.aliases && (
                   <>
-                    {partyData.business.identifiers.map((identifier) => {
+                    {partyData.aliases.map((alias) => {
                       return (
-                        <p key={identifier?.businessIdentifierGuid}>
-                          <b>{identifier?.identifierCode?.shortDescription}: </b>
-                          {identifier?.identifierValue}
+                        <p key={alias?.aliasGuid}>
+                          <b>Alias: </b>
+                          {alias?.name}
                         </p>
                       );
                     })}
                   </>
                 )}
+                {partyData?.person && (
+                  <PersonIdentifyingInfo
+                    person={partyData.person}
+                    genderOptions={genderOptions}
+                    approximateAgeOptions={approximateAgeOptions}
+                    countryOptions={countryOptions}
+                    countrySubdivisionOptions={countrySubdivisionOptions}
+                  />
+                )}
               </div>
-              <div className="comp-details-section-header-actions party-details-summary-actions">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="details-screen-edit-button"
-                  onClick={editButtonClick}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit party</span>
-                </Button>
-              </div>
-            </div>
-            <br />
-            <h4>Identifying information</h4>
-            <div className="party-details-item">
-              <p>
-                <b>Name: </b>
-                {displayName()}
-              </p>
-              {partyData?.business?.aliases && (
-                <>
-                  {partyData.business.aliases.map((alias) => {
-                    return (
-                      <p key={alias?.aliasGuid}>
-                        <b>Alias: </b>
-                        {alias?.name}
-                      </p>
-                    );
-                  })}
-                </>
+              <br />
+              {partyRelations && partyRelations.length > 0 && (
+                <AssociatedCasesAndActivities partyRelations={partyRelations} />
               )}
-              {partyData?.person && (
-                <PersonIdentifyingInfo
-                  person={partyData.person}
-                  sexOptions={sexOptions}
-                />
-              )}
-            </div>
-            {partyRelations && partyRelations.length > 0 && (
-              <AssociatedCasesAndActivities partyRelations={partyRelations} />
-            )}
-            <br />
-            <h4>Contact information</h4>
+              <br />
+              <h4>Contact information</h4>
 
-            <div className="party-details-item">
-              {partyData?.person?.contactMethods && partyData.person.contactMethods.length > 0 && (
-                <ContactMethodsList contactMethods={partyData.person.contactMethods as ReadonlyArray<ContactMethod>} />
-              )}
-              {partyData?.business?.contactMethods && (
-                <ContactMethodsList
-                  contactMethods={partyData.business.contactMethods as ReadonlyArray<ContactMethod>}
-                />
-              )}
-              {partyData?.business?.contactPeople && (
+              <div className="party-details-item">
+                {partyData?.contactMethods && partyData.contactMethods.length > 0 && (
+                  <ContactMethodsList contactMethods={partyData.contactMethods as ReadonlyArray<ContactMethod>} />
+                )}
+                {partyData?.business?.contactPeople && (
+                  <>
+                    <h4>Business contacts</h4>
+                    {partyData.business.contactPeople.map((contactPerson, index) => {
+                      return (
+                        <div key={contactPerson?.person?.personGuid}>
+                          <p>
+                            <b>Name: </b>
+                            {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
+                          </p>
+                          {contactPerson?.contactMethods && (
+                            <ContactMethodsList
+                              contactMethods={contactPerson.contactMethods as ReadonlyArray<ContactMethod>}
+                            />
+                          )}
+                          {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+              {addresses?.length > 0 && (
                 <>
-                  <h4>Business contacts</h4>
-                  {partyData.business.contactPeople.map((contactPerson, index) => {
-                    return (
-                      <div key={contactPerson?.person?.personGuid}>
-                        <p>
-                          <b>Name: </b>
-                          {contactPerson?.person?.lastName}, {contactPerson?.person?.firstName}
-                        </p>
-                        {contactPerson?.person?.contactMethods && (
-                          <ContactMethodsList
-                            contactMethods={contactPerson.person.contactMethods as ReadonlyArray<ContactMethod>}
-                          />
-                        )}
-                        {index < (partyData.business?.contactPeople?.length ?? 0) - 1 && <hr />}
-                      </div>
-                    );
-                  })}
+                  <br />
+                  <h4>Addresses</h4>
+                  <AddressesList
+                    addresses={addresses}
+                    countryOptions={countryOptions}
+                    countrySubdivisionOptions={countrySubdivisionOptions}
+                  />
                 </>
               )}
-            </div>
-            {businessAddresses.length > 0 && (
-              <>
-                <br />
-                <h4>Addresses</h4>
-                <BusinessAddressesList
-                  addresses={businessAddresses}
-                  countryOptions={countryOptions}
-                  countrySubdivisionOptions={countrySubdivisionOptions}
-                />
-              </>
-            )}
-            <br />
-            <h4>C&E history</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
-              </p>
-            </div>
-            <br />
-            <h4>Additional information</h4>
-            <div className="party-details-item">
-              <p>
-                <i>&#8226; Related people, vehicles etc.</i>
-              </p>
-            </div>
-          </section>
+
+              {partyData?.person && (
+                <>
+                  <br />
+                  <h4>Physical descriptors</h4>
+                  <div className="party-details-item">
+                    {partyData?.person?.heightInCm && (
+                      <p>
+                        <b>Height: </b>
+                        {partyData?.person?.heightInCm} cm ({imperialHeight.feet} feet {imperialHeight.inches} inches)
+                      </p>
+                    )}
+                    {partyData?.person?.weightInKg && (
+                      <p>
+                        <b>Weight: </b>
+                        {partyData?.person?.weightInKg} kg ({imperialWeight} lbs)
+                      </p>
+                    )}
+                    {partyData?.person?.complexionCode && (
+                      <p>
+                        <b>Complexion: </b>
+                        {complexionOptions?.find((opt) => opt.value === partyData?.person?.complexionCode)?.label ??
+                          partyData?.person.complexionCode}
+                      </p>
+                    )}
+                    {partyData?.person?.buildCode && (
+                      <p>
+                        <b>Build: </b>
+                        {buildOptions?.find((opt) => opt.value === partyData?.person?.buildCode)?.label ??
+                          partyData?.person.buildCode}
+                      </p>
+                    )}
+                    {partyData?.person?.eyeColourCode && (
+                      <p>
+                        <b>Eye colour: </b>
+                        {eyeColourOptions?.find((opt) => opt.value === partyData?.person?.eyeColourCode)?.label ??
+                          partyData?.person.eyeColourCode}
+                        {partyData?.person?.eyeColourOther && ` (${partyData?.person?.eyeColourOther})`}
+                      </p>
+                    )}
+                    {partyData?.person?.hairColourCode && (
+                      <p>
+                        <b>Hair colour: </b>
+                        {hairColourOptions?.find((opt) => opt.value === partyData?.person?.hairColourCode)?.label ??
+                          partyData?.person.hairColourCode}
+                        {partyData?.person?.hairColourOther && ` (${partyData?.person?.hairColourOther})`}
+                      </p>
+                    )}
+                    {partyData?.person?.hairLengthCode && (
+                      <p>
+                        <b>Hair length: </b>
+                        {hairLengthOptions?.find((opt) => opt.value === partyData?.person?.hairLengthCode)?.label ??
+                          partyData?.person.hairLengthCode}
+                      </p>
+                    )}
+                    {partyData?.person?.facialHairIndicator != null && (
+                      <p>
+                        <b>Has facial hair: </b>
+                        {partyData.person.facialHairIndicator ? "Yes" : "No"}
+                      </p>
+                    )}
+                    {partyData?.person?.facialHairStyleCodes && (
+                      <>
+                        {partyData.person.facialHairStyleCodes.map((fhs) => {
+                          return (
+                            <p key={fhs?.personFacialStyleHairCodeGuid}>
+                              <b>Facial hair style: </b>
+                              {facialHairStyleOptions?.find((opt) => opt.value === fhs?.facialHairStyleCode)?.label ??
+                                fhs?.facialHairStyleCode}
+                            </p>
+                          );
+                        })}
+                      </>
+                    )}
+                    {partyData?.person?.additionalHairDescriptors && (
+                      <p>
+                        <b>Additional hair descriptors: </b>
+                        {partyData?.person?.additionalHairDescriptors}
+                      </p>
+                    )}
+                    {partyData?.person?.tattooIndicator != null && (
+                      <p>
+                        <b>Has tattoos: </b>
+                        {partyData.person.tattooIndicator ? "Yes" : "No"}
+                      </p>
+                    )}
+                    {partyData?.person?.tattooDescription && (
+                      <p>
+                        <b>Tattoo description: </b>
+                        {partyData?.person?.tattooDescription}
+                      </p>
+                    )}
+                    {partyData?.person?.additionalDescriptors && (
+                      <p>
+                        <b>Additional descriptors: </b>
+                        {partyData?.person?.additionalDescriptors}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+              <br />
+              <h4>C&E history</h4>
+              <div className="party-details-item">
+                <p>
+                  <i>&#8226; Agencies that dealt with Party, Officer, Contravention Enf Action, Site etc..</i>
+                </p>
+              </div>
+              <br />
+              {partyData?.person?.comments && (
+                <>
+                  <h4>Additional information</h4>
+                  <div className="party-details-item">
+                    <p>
+                      {partyData?.person?.comments && (
+                        <p>
+                          <b>Comments: </b>
+                          {partyData?.person?.comments}
+                        </p>
+                      )}
+                    </p>
+                  </div>
+                  <br />
+                </>
+              )}
+            </section>
+          )}
         </div>
       )}
     </>

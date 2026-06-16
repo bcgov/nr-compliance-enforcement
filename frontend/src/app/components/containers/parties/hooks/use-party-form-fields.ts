@@ -2,10 +2,7 @@ import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
 import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import {
-  BusinessAddressFormValue,
-  createEmptyAddress,
-} from "@/app/components/containers/parties/form/business-form-utils";
+import { AddressFormValue, createEmptyAddress } from "@/app/components/containers/parties/form/party-form-utils";
 
 const toContactSnapshot = (contact: BusinessPerson) => ({
   businessPersonXrefGuid: contact.businessPersonXrefGuid,
@@ -14,15 +11,15 @@ const toContactSnapshot = (contact: BusinessPerson) => ({
     personGuid: contact.person?.personGuid,
     firstName: contact.person?.firstName,
     lastName: contact.person?.lastName,
-    contactMethods: (contact.person?.contactMethods || [])
-      .filter((cm): cm is ContactMethod => cm != null)
-      .map((cm) => ({
-        contactMethodGuid: cm.contactMethodGuid,
-        typeCode: cm.typeCode,
-        value: cm.value,
-        isPrimary: cm.isPrimary ?? false, // adds default
-      })),
   },
+  contactMethods: (contact.contactMethods || [])
+    .filter((cm): cm is ContactMethod => cm != null)
+    .map((cm) => ({
+      contactMethodGuid: cm.contactMethodGuid,
+      typeCode: cm.typeCode,
+      value: cm.value,
+      isPrimary: cm.isPrimary ?? false, // adds default
+    })),
 });
 
 export const usePartyFormFields = (form: any, businessGuid?: string) => {
@@ -142,9 +139,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     (indexToRemove: number) => {
       const currentAddresses = form.getFieldValue("addresses") || [];
       const removingPrimary = currentAddresses[indexToRemove]?.isPrimary;
-      const newAddresses = currentAddresses.filter(
-        (_: BusinessAddressFormValue, index: number) => index !== indexToRemove,
-      );
+      const newAddresses = currentAddresses.filter((_: AddressFormValue, index: number) => index !== indexToRemove);
 
       if (removingPrimary && newAddresses.length > 0) {
         newAddresses[0].isPrimary = true;
@@ -158,7 +153,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
   const handleSetPrimaryAddress = useCallback(
     (index: number) => {
       const currentAddresses = form.getFieldValue("addresses") || [];
-      const updatedAddresses = currentAddresses.map((address: BusinessAddressFormValue, i: number) => ({
+      const updatedAddresses = currentAddresses.map((address: AddressFormValue, i: number) => ({
         ...address,
         isPrimary: i === index,
       }));
@@ -172,7 +167,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleAddAlias = useCallback(() => {
     const currentAliases = form.getFieldValue("aliases") || [];
-    const newAliases = [...currentAliases, { aliasGuid: crypto.randomUUID(), name: "" }];
+    const newAliases = [...currentAliases, { aliasGuid: undefined, name: "" }];
     form.setFieldValue("aliases", newAliases);
     focusFieldById(`alias-${currentAliases.length}`);
   }, [form]);
@@ -200,8 +195,8 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
         personGuid: "",
         firstName: "",
         lastName: "",
-        contactMethods: [],
       },
+      contactMethods: [],
     };
     form.setFieldValue("contacts", [...currentContacts, newContact]);
     focusFieldById(`contact-firstName-${currentContacts.length}`);
@@ -222,9 +217,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
       // Check if this will be the first contact method of this type for this contact
       const existingMethodsOfType =
-        currentContacts[contactIndex]?.person?.contactMethods?.filter(
-          (cm: ContactMethod) => cm?.typeCode === typeCode,
-        ) || [];
+        currentContacts[contactIndex]?.contactMethods?.filter((cm: ContactMethod) => cm?.typeCode === typeCode) || [];
 
       const newContactMethod = {
         contactMethodGuid: undefined, // ← Should be undefined, not empty string
@@ -242,18 +235,18 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
               personGuid: contact.person?.personGuid,
               firstName: contact.person?.firstName,
               lastName: contact.person?.lastName,
-              contactMethods: [
-                ...(contact.person?.contactMethods || [])
-                  .filter((cm): cm is ContactMethod => cm != null)
-                  .map((cm) => ({
-                    contactMethodGuid: cm.contactMethodGuid,
-                    typeCode: cm.typeCode,
-                    value: cm.value,
-                    isPrimary: cm.isPrimary ?? false,
-                  })),
-                newContactMethod,
-              ],
             },
+            contactMethods: [
+              ...(contact.contactMethods || [])
+                .filter((cm): cm is ContactMethod => cm != null)
+                .map((cm) => ({
+                  contactMethodGuid: cm.contactMethodGuid,
+                  typeCode: cm.typeCode,
+                  value: cm.value,
+                  isPrimary: cm.isPrimary ?? false,
+                })),
+              newContactMethod,
+            ],
           };
         }
         return toContactSnapshot(contact);
@@ -276,7 +269,7 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
       const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
         if (index === contactIndex) {
-          const contactMethods = (contact.person?.contactMethods || []).filter((cm): cm is ContactMethod => cm != null);
+          const contactMethods = (contact.contactMethods || []).filter((cm): cm is ContactMethod => cm != null);
 
           const methodToRemove = contactMethods[methodIndex];
           const removingPrimary = methodToRemove?.isPrimary || false;
@@ -305,11 +298,11 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
           return {
             businessPersonXrefGuid: contact.businessPersonXrefGuid,
             business: { businessGuid: contact.business?.businessGuid },
+            contactMethods: newContactMethods,
             person: {
               personGuid: contact.person?.personGuid,
               firstName: contact.person?.firstName,
               lastName: contact.person?.lastName,
-              contactMethods: newContactMethods,
             },
           };
         }
@@ -333,25 +326,25 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
               personGuid: c.person?.personGuid,
               firstName: c.person?.firstName,
               lastName: c.person?.lastName,
-              contactMethods: (c.person?.contactMethods || [])
-                .filter((cm): cm is ContactMethod => cm != null)
-                .map((cm, cmIdx) => {
-                  if (cm?.typeCode === contactMethodType) {
-                    return {
-                      contactMethodGuid: cm.contactMethodGuid,
-                      typeCode: cm.typeCode,
-                      value: cm.value,
-                      isPrimary: cmIdx === contactMethodIndex,
-                    };
-                  }
+            },
+            contactMethods: (c.contactMethods || [])
+              .filter((cm): cm is ContactMethod => cm != null)
+              .map((cm, cmIdx) => {
+                if (cm?.typeCode === contactMethodType) {
                   return {
                     contactMethodGuid: cm.contactMethodGuid,
                     typeCode: cm.typeCode,
                     value: cm.value,
-                    isPrimary: cm.isPrimary ?? false, // ← Add default
+                    isPrimary: cmIdx === contactMethodIndex,
                   };
-                }),
-            },
+                }
+                return {
+                  contactMethodGuid: cm.contactMethodGuid,
+                  typeCode: cm.typeCode,
+                  value: cm.value,
+                  isPrimary: cm.isPrimary ?? false, // ← Add default
+                };
+              }),
           };
         }
         // Transform the unchanged contact too

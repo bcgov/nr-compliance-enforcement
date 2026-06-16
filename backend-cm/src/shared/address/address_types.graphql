@@ -1,0 +1,10 @@
+type Address {
+  addressGuid: String
+  addressName: String
+  address: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  isPrimary: Boolean
+}

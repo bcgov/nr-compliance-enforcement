@@ -3,7 +3,5 @@ type Business {
   name: String
   aliases: [Alias]
   identifiers: [BusinessIdentifier]
-  addresses: [BusinessAddress]
   contactPeople: [BusinessPerson]
-  contactMethods: [ContactMethod]
 }

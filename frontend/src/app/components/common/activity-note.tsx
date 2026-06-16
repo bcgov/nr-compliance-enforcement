@@ -104,11 +104,11 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
-    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? undefined,
+    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime);
-    return d && initialData?.actionedTime ? formatLocalTime(d) : null;
+    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date();
+    return formatLocalTime(d);
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 

@@ -1,10 +1,11 @@
 input CreateInvestigationBusinessIdentifierInput {
-  businessIdentifierCode: String!
+  businessGuid: String
   identifierValue: String!
+  identifierCode: String!
 }
 
 input UpdateInvestigationBusinessIdentifierInput {
   businessIdentifierGuid: String
-  businessIdentifierCode: String!
+  identifierCode: String!
   identifierValue: String!
 }

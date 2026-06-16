@@ -1938,6 +1938,21 @@ tr:has(> .comp-cell-child-expanded) {
   border-color: $gray-200;
 }
 
+.comp-danger-badge {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+
+  flex-direction: row;
+  padding: 4px 8px;
+
+  pointer-events: none;
+  background-color: $bc-gov-danger !important;
+  border-color: $bc-gov-danger !important;
+  color: white;
+  border-radius: 100px;
+}
+
 .comp-in-progress-btn {
   width: auto;
 

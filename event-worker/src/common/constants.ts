@@ -14,4 +14,6 @@ export const STREAM_TOPICS = {
   INVESTIGATION_ADDED_TO_CASE: `${eventsStreamName}.investigation.added_to_case`,
   INSPECTION_CLOSED: `${eventsStreamName}.inspection.closed`,
   INSPECTION_ADDED_TO_CASE: `${eventsStreamName}.inspection.added_to_case`,
+  PARTY_CREATED: `${eventsStreamName}.party.created`,
+  PARTY_UPDATED: `${eventsStreamName}.party.updated`,
 };

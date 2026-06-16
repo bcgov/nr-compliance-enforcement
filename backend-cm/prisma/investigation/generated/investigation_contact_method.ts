@@ -1,22 +1,18 @@
-import { investigation_business } from "./investigation_business";
-import { investigation_person } from "./investigation_person";
+import { investigation_party } from "./investigation_party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class investigation_contact_method {
   @ApiProperty({ type: String })
   investigation_contact_method_guid: string;
 
-  @ApiPropertyOptional({ type: String })
-  investigation_person_guid?: string;
-
-  @ApiPropertyOptional({ type: String })
-  investigation_business_guid?: string;
+  @ApiProperty({ type: String })
+  investigation_party_guid: string;
 
   @ApiProperty({ type: String })
   contact_method_type_code_ref: string;
 
-  @ApiPropertyOptional({ type: String })
-  contact_value?: string;
+  @ApiProperty({ type: String })
+  contact_value: string;
 
   @ApiProperty({ type: Boolean })
   is_primary: boolean;
@@ -36,9 +32,6 @@ export class investigation_contact_method {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: () => investigation_business })
-  investigation_business?: investigation_business;
-
-  @ApiPropertyOptional({ type: () => investigation_person })
-  investigation_person?: investigation_person;
+  @ApiProperty({ type: () => investigation_party })
+  investigation_party: investigation_party;
 }

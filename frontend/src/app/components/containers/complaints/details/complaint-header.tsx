@@ -10,7 +10,7 @@ import {
   selectComplaintViewMode,
   selectRelatedData,
 } from "@store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -35,7 +35,7 @@ import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { ExportComplaintModal } from "@/app/components/modal/instances/export-complaint-modal";
 import { COMSObject } from "@/app/types/coms/object";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 
 interface ComplaintHeaderProps {
@@ -190,6 +190,16 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
+  const startInvestigation = () => {
+    if (validationResults.canStartInvestigation) {
+      navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
+    } else {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError(`An investigation cannot be started until you ${joinWithAnd(validationResults.validationMissing)}.`);
+    }
+  };
+
   const openManageCollaboratorsModal = () => {
     document.body.click();
     dispatch(
@@ -231,20 +241,27 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   };
 
   const openCreateAddCaseModal = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: CREATE_ADD_CASE,
-        data: {
-          title: "Add to case",
-          complaint_identifier: id,
-          agency_code: complaintAgency,
-          onDirtyChange: handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
+    if (validationResults.canAddToCase) {
+      document.body.click();
+      dispatch(
+        openModal({
+          modalSize: "lg",
+          modalType: CREATE_ADD_CASE,
+          data: {
+            title: "Add to case",
+            complaint_identifier: id,
+            complaint_type: complaintType,
+            agency_code: complaintAgency,
+            onDirtyChange: handleChildDirtyChange,
+          },
+          hideCallback,
+        }),
+      );
+    } else {
+      validationResults.scrollToErrors();
+      dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
+    }
   };
 
   const handleExportClick = async () => {
@@ -272,7 +289,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     let toastDownloadInfo;
     try {
       toastDownloadInfo = ToggleInformation("Download in progress, do not close the NatSuite application.", {
-        position: "top-right",
+        position: TOAST_POSITION,
         autoClose: false,
         closeOnClick: false,
         closeButton: false,
@@ -374,7 +391,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
         <Dropdown.Item
           as="button"
           id="start-investigation-button"
-          onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+          onClick={startInvestigation}
           disabled={complaintAgency !== userAgency}
         >
           <i className="bi bi-arrow-right-circle"></i>
@@ -524,7 +541,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       id="details-screen-start-investigation-button"
                       title="Start investigation"
                       variant="outline-light"
-                      onClick={() => navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`)}
+                      onClick={startInvestigation}
                       disabled={complaintAgency !== userAgency}
                     >
                       <i className="bi bi-arrow-right-circle"></i>

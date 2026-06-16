@@ -1,5 +1,5 @@
 type BusinessIdentifier {
   businessIdentifierGuid: String
   identifierValue: String
-  identifierCode: BusinessIdentifierCode
+  identifierCode: String
 }

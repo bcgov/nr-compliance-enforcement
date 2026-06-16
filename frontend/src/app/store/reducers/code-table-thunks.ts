@@ -23,6 +23,13 @@ import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-a
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
+import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
+import { ComplexionType } from "@/app/types/app/code-tables/complexion";
+import { BuildType } from "@/app/types/app/code-tables/build";
+import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
+import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
+import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
+import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 
 export const fetchDischargeTypes = (): AppThunk => async (dispatch) => {
   const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.DISCHARGE}`);
@@ -211,6 +218,80 @@ export const fetchCountrySubdivisionTypes = (): AppThunk => async (dispatch) => 
   const response = await get<Array<CountrySubdivisionType>>(dispatch, parameters);
   if (response && from(response).any()) {
     const payload = { key: CODE_TABLE_TYPES.COUNTRY_SUBDIVISION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchApproximateAgeTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.APPROXIMATE_AGE}`);
+  const response = await get<Array<ApproximateAgeType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.APPROXIMATE_AGE, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchGenderTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.GENDER}`);
+  const response = await get<Array<ApproximateAgeType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.GENDER, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchComplexionTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.COMPLEXION}`);
+  const response = await get<Array<ComplexionType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.COMPLEXION, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchBuildTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.BUILD}`);
+  const response = await get<Array<BuildType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.BUILD, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchHairColourTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.HAIR_COLOUR}`);
+  const response = await get<Array<HairColourType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.HAIR_COLOUR, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchHairLengthTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.HAIR_LENGTH}`);
+  const response = await get<Array<HairLengthType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.HAIR_LENGTH, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchEyeColourTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.EYE_COLOUR}`);
+  const response = await get<Array<EyeColourType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.EYE_COLOUR, data: response };
+    dispatch(setCodeTable(payload));
+  }
+};
+
+export const fetchFacialHairStyleTypes = (): AppThunk => async (dispatch) => {
+  const parameters = generateApiParameters(
+    `${config.API_BASE_URL}/v1/code-table/${CODE_TABLE_TYPES.FACIAL_HAIR_STYLE}`,
+  );
+  const response = await get<Array<FacialHairStyleType>>(dispatch, parameters);
+  if (response && from(response).any()) {
+    const payload = { key: CODE_TABLE_TYPES.FACIAL_HAIR_STYLE, data: response };
     dispatch(setCodeTable(payload));
   }
 };

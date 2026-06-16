@@ -128,7 +128,7 @@ test.describe("Investigation Party Form", () => {
     await expect(modal).toBeVisible();
 
     // Edit the sex code
-    await selectItemById("sex-select", "Male", page);
+    await selectItemById("gender-select", "Man/boy", page);
 
     // Save
     const saveButton = modal.locator("#add-party-save-button");

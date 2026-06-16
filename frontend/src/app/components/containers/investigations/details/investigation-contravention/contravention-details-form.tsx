@@ -1,7 +1,7 @@
 import { getUserAgency } from "@/app/service/user-service";
 import { Contravention, LegislationSource } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -30,6 +30,7 @@ export interface ContraventionDetailsFormValues {
 
 interface ContraventionDetailsFormProps {
   contravention?: Contravention;
+  discoveryDate?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate?: (validateForm: () => Promise<boolean>) => void;
   onRequestValues?: (getValues: () => ContraventionDetailsFormValues) => void;
@@ -74,16 +75,22 @@ const formatLegislationSourceUrl = (source: LegislationSource) => {
 
 export const ContraventionDetailsForm = ({
   contravention,
+  discoveryDate,
   onDirtyChange,
   onRequestValidate,
   onRequestValues,
 }: ContraventionDetailsFormProps) => {
+  const defaultDate = useMemo(
+    () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
   const form = useForm({
     defaultValues: {
       act: "",
       regulation: "",
       section: "",
-      contraventionDate: null as Date | null,
+      contraventionDate: defaultDate as Date | null,
       communityCode: "",
       subsection: "",
     },

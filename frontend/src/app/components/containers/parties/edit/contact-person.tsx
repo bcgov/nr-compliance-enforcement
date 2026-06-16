@@ -28,7 +28,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
   onSetPrimaryContact,
 }) => {
   const phoneNumbers =
-    contact.person?.contactMethods
+    contact.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(
         (item): item is { method: ContactMethod; originalIndex: number } =>
@@ -36,7 +36,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       ) || [];
 
   const emails =
-    contact.person?.contactMethods
+    contact.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
 
@@ -95,7 +95,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         <FormField
           key={method.contactMethodGuid || `contact-phone-${displayIndex}`}
           form={form}
-          name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value`}
+          name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value`}
           label={displayIndex === 0 ? "Phone number" : ""}
           render={(field) => (
             <div className="party-contact-method">
@@ -159,7 +159,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         <FormField
           key={method?.contactMethodGuid || `contact-email-${displayIndex}`}
           form={form}
-          name={`contacts[${contactIndex}].person.contactMethods[${originalIndex}].value` as any}
+          name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value` as any}
           label={displayIndex === 0 ? "Email" : ""}
           render={(field) => (
             <div className="party-contact-method">

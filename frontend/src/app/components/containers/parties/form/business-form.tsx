@@ -1,15 +1,14 @@
 import { FC } from "react";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
-import { ContactMethod, Alias, BusinessPerson } from "@/generated/graphql";
+import { BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
 import { Button } from "react-bootstrap";
-import { BusinessAddressFormValue } from "./business-form-utils";
-import { BusinessAddressFields } from "./business-address-fields";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
-import { PartyPhoneFields } from "@/app/components/containers/parties/form/party-phone-fields";
+import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
+import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
 
 type BusinessFormFieldsProps = {
   form: any;
@@ -73,60 +72,12 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
           />
         )}
       />
-      {aliases?.map((alias: Alias, index: number) => (
-        <FormField
-          key={alias.aliasGuid || `alias-${index}`}
-          form={form}
-          name={`aliases[${index}].name` as any}
-          label={index === 0 ? "Alias" : ""}
-          render={(field) => (
-            <div className="party-alias-container">
-              <div className="party-multiple-value-container">
-                <CompInput
-                  id={`alias-${index}`}
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input"
-                  value={field.state.value}
-                  error={field.state.meta.errors?.[0]?.message || ""}
-                  maxLength={512}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  placeholder="Enter alias..."
-                  disabled={isDisabled}
-                />
-              </div>
-
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => handleRemoveAlias(index)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
-          )}
-        />
-      ))}
-      <FormField
+      <PartyAliasFields
         form={form}
-        name="add-alias-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-alias-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleAddAlias}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add alias
-          </Button>
-        )}
+        isDisabled={isDisabled}
+        aliases={aliases}
+        onAdd={handleAddAlias}
+        onRemove={handleRemoveAlias}
       />
       <FormField
         form={form}
@@ -174,114 +125,21 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
           />
         )}
       />
-      {addresses?.map((address: BusinessAddressFormValue, index: number) => (
-        <FormField
-          key={address.businessAddressGuid || `address-${index}`}
-          form={form}
-          name={`address-block-${index}` as any}
-          label={index === 0 ? "Address" : ""}
-          render={() => (
-            <BusinessAddressFields
-              addressIndex={index}
-              form={form}
-              isDisabled={isDisabled}
-              isPrimary={address.isPrimary || false}
-              onRemoveAddress={handleRemoveAddress}
-              onSetPrimaryAddress={handleSetPrimaryAddress}
-            />
-          )}
-        />
-      ))}
-      <FormField
-        form={form}
-        name="add-address-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-address-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleAddAddress}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add address
-          </Button>
-        )}
-      />
-      <PartyPhoneFields
+      <PartyContactFields
         form={form}
         isDisabled={isDisabled}
+        addresses={addresses}
+        onAddAddress={handleAddAddress}
+        onRemoveAddress={handleRemoveAddress}
+        onSetPrimaryAddress={handleSetPrimaryAddress}
         phoneNumbers={phoneNumbers}
-        onAdd={handleAddPhoneNumber}
-        onRemove={handleRemovePhoneNumber}
-        onSetPrimary={handleSetPrimaryPhoneNumber}
-      />
-      {emailAddresses?.map((email: ContactMethod, index: number) => (
-        <FormField
-          key={email.contactMethodGuid || `email-${index}`}
-          form={form}
-          name={`emailAddresses[${index}].value` as any}
-          label={index === 0 ? "Email" : ""}
-          render={(field) => (
-            <div className="party-contact-method">
-              {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {index > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`email-primary-${index}`}
-                name="primaryEmail"
-                checked={email.isPrimary || false}
-                onChange={() => handleSetPrimaryEmail(index)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <CompInput
-                  id={`email-${index}`}
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input"
-                  value={field.state.value}
-                  error={field.state.meta.errors?.[0]?.message || ""}
-                  maxLength={512}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  disabled={isDisabled}
-                />
-              </div>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => handleRemoveEmail(index)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
-          )}
-        />
-      ))}
-      <FormField
-        form={form}
-        name="add-email-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-email-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleAddEmail}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add email
-          </Button>
-        )}
+        onAddPhoneNumber={handleAddPhoneNumber}
+        onRemovePhoneNumber={handleRemovePhoneNumber}
+        onSetPrimaryPhoneNumber={handleSetPrimaryPhoneNumber}
+        emailAddresses={emailAddresses}
+        onAddEmail={handleAddEmail}
+        onRemoveEmail={handleRemoveEmail}
+        onSetPrimaryEmail={handleSetPrimaryEmail}
       />
       {showContactPeople && (
         <>

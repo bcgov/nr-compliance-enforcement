@@ -1,5 +1,5 @@
-import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation_party } from "./investigation_party";
+import { investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class investigation_person {
@@ -16,10 +16,7 @@ export class investigation_person {
   first_name: string;
 
   @ApiPropertyOptional({ type: String })
-  middle_name?: string;
-
-  @ApiPropertyOptional({ type: String })
-  middle_name_2?: string;
+  middle_names?: string;
 
   @ApiProperty({ type: String })
   last_name: string;
@@ -46,14 +43,71 @@ export class investigation_person {
   drivers_license_number?: string;
 
   @ApiPropertyOptional({ type: String })
-  drivers_license_jurisdiction?: string;
+  approximate_age_code_ref?: string;
 
   @ApiPropertyOptional({ type: String })
-  sex_code_ref?: string;
+  gender_code_ref?: string;
 
-  @ApiProperty({ isArray: true, type: () => investigation_contact_method })
-  investigation_contact_method: investigation_contact_method[];
+  @ApiPropertyOptional({ type: String })
+  drivers_license_class?: string;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_country_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  drivers_license_country_subdivision_code_ref?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  height_cm?: number;
+
+  @ApiPropertyOptional({ type: Number })
+  weight_kg?: number;
+
+  @ApiPropertyOptional({ type: String })
+  complexion_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  build_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  hair_colour_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  hair_colour_other?: string;
+
+  @ApiPropertyOptional({ type: String })
+  hair_length_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  eye_colour_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  eye_colour_other?: string;
+
+  @ApiPropertyOptional({ type: Boolean })
+  facial_hair_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  additional_hair_descriptors?: string;
+
+  @ApiPropertyOptional({ type: Boolean })
+  tattoo_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  tattoo_description?: string;
+
+  @ApiPropertyOptional({ type: String })
+  additional_descriptors?: string;
+
+  @ApiPropertyOptional({ type: String })
+  comments?: string;
+
+  @ApiPropertyOptional({ type: Boolean })
+  bolo_ind?: boolean;
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;
+
+  @ApiProperty({ isArray: true, type: () => investigation_person_facial_hair_style_code_ref })
+  investigation_person_facial_hair_style_code_ref: investigation_person_facial_hair_style_code_ref[];
 }

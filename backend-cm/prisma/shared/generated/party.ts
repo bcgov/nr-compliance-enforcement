@@ -1,4 +1,8 @@
+import { address } from "./address";
+import { alias } from "./alias";
 import { business } from "./business";
+import { contact_method } from "./contact_method";
+import { app_user } from "./app_user";
 import { party_type_code } from "./party_type_code";
 import { person } from "./person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -22,8 +26,23 @@ export class party {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid?: string;
+
+  @ApiProperty({ isArray: true, type: () => address })
+  address: address[];
+
+  @ApiProperty({ isArray: true, type: () => alias })
+  alias: alias[];
+
   @ApiPropertyOptional({ type: () => business })
   business?: business;
+
+  @ApiProperty({ isArray: true, type: () => contact_method })
+  contact_method: contact_method[];
+
+  @ApiPropertyOptional({ type: () => app_user })
+  app_user?: app_user;
 
   @ApiPropertyOptional({ type: () => party_type_code })
   party_type_code?: party_type_code;

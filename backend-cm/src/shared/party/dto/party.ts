@@ -1,4 +1,4 @@
-import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { party } from "../../../../prisma/shared/generated/party";
 import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
@@ -9,6 +9,9 @@ import { IsOptional } from "class-validator";
 import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
+import { Address, AddressInput } from "../../address/dto/address";
+import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { Alias } from "src/shared/alias/dto/alias";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -16,8 +19,13 @@ export class Party implements PartyDto {
   longDescription: string;
   shortDescription: string;
   createdDateTime: Date;
+  updatedDateTime: Date;
+  createdByUserGuid: string;
   person: Person;
   business: Business;
+  addresses: [Address];
+  contactMethods: [ContactMethod];
+  aliases: [Alias];
 }
 
 @InputType()
@@ -32,20 +40,24 @@ export class PartyCreateInput {
   @Field(() => Business, { nullable: true })
   @IsOptional()
   business?: Business;
+
+  @Field(() => [AddressInput], { nullable: true })
+  @IsOptional()
+  addresses?: AddressInput[];
+
+  @Field(() => [ContactMethod], { nullable: true })
+  @IsOptional()
+  contactMethods?: ContactMethod[];
+
+  @Field(() => [Alias], { nullable: true })
+  @IsOptional()
+  aliases?: Alias[];
 }
 
 @InputType()
-export class PartyUpdateInput {
+export class PartyUpdateInput extends PartyCreateInput {
   @Field(() => String)
-  partyTypeCode: string;
-
-  @Field(() => Person, { nullable: true })
-  @IsOptional()
-  person?: Person;
-
-  @Field(() => Business, { nullable: true })
-  @IsOptional()
-  business?: Business;
+  partyIdentifier?: string;
 }
 
 @InputType()
@@ -99,6 +111,16 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     ),
 
     forMember(
+      (dest) => dest.updatedDateTime,
+      mapFrom((src) => src.update_utc_timestamp),
+    ),
+
+    forMember(
+      (dest) => dest.createdByUserGuid,
+      mapFrom((src) => src.created_by_app_user_guid),
+    ),
+
+    forMember(
       (dest) => dest.person,
       mapFrom((src) => mapper.map<person, Person>(src.person, "person", "Person")),
     ),
@@ -106,6 +128,21 @@ export const mapPrismaPartyToParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.business,
       mapFrom((src) => mapper.map<business, Business>(src.business, "business", "Business")),
+    ),
+
+    forMember(
+      (dest) => dest.addresses,
+      mapWithArguments((src) => mapper.mapArray(src.address ?? [], "address", "Address")),
+    ),
+
+    forMember(
+      (dest) => dest.contactMethods,
+      mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
+    ),
+
+    forMember(
+      (dest) => dest.aliases,
+      mapWithArguments((src) => mapper.mapArray(src.alias ?? [], "alias", "Alias")),
     ),
   );
 };

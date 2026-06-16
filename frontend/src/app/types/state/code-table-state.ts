@@ -51,6 +51,14 @@ import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-a
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
+import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
+import { GenderType } from "@/app/types/app/code-tables/gender";
+import { BuildType } from "@/app/types/app/code-tables/build";
+import { ComplexionType } from "@/app/types/app/code-tables/complexion";
+import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
+import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
+import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
+import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 
 export interface CodeTableState {
   [key: string]:
@@ -106,7 +114,15 @@ export interface CodeTableState {
     | Array<EnforcementActionType>
     | Array<TicketOutcomeType>
     | Array<CountryType>
-    | Array<CountrySubdivisionType>;
+    | Array<CountrySubdivisionType>
+    | Array<ApproximateAgeType>
+    | Array<GenderType>
+    | Array<ComplexionType>
+    | Array<BuildType>
+    | Array<HairColourType>
+    | Array<HairLengthType>
+    | Array<EyeColourType>
+    | Array<FacialHairStyleType>;
 
   agency: Array<Agency>;
   attractant: Array<Attractant>;
@@ -160,4 +176,12 @@ export interface CodeTableState {
   "ticket-outcome-type": Array<TicketOutcomeType>;
   "country-type": Array<CountryType>;
   "country-subdivision-type": Array<CountrySubdivisionType>;
+  "approximate-age-type": Array<ApproximateAgeType>;
+  "gender-type": Array<GenderType>;
+  "complexion-type": Array<ComplexionType>;
+  "build-type": Array<BuildType>;
+  "hair-colour-type": Array<HairColourType>;
+  "hair-length-type": Array<HairLengthType>;
+  "eye-colour-type": Array<EyeColourType>;
+  "facial-hair-style-type": Array<FacialHairStyleType>;
 }

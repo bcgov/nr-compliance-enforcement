@@ -17,7 +17,7 @@ interface Props {
 
 const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEditParty, activityType }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const sexCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.SEX));
+  const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
 
   const getPersonDetails = (party: InvestigationParty | InspectionParty) => {
     // Only investigations are currently supported
@@ -39,12 +39,12 @@ const PartiesList: React.FC<Props> = ({ companies, people, onRemoveParty, onEdit
       parts.push(String(age));
     }
 
-    if (investigationParty.person?.sexCode) {
-      const sexDescription = sexCodes?.find(
-        (code: any) => code.sex === investigationParty.person?.sexCode,
+    if (investigationParty.person?.genderCode) {
+      const genderDescription = genderCodes?.find(
+        (code: any) => code.sex === investigationParty.person?.genderCode,
       )?.shortDescription;
-      if (sexDescription) {
-        parts.push(sexDescription);
+      if (genderDescription) {
+        parts.push(genderDescription);
       }
     }
     return parts.join(", ");

@@ -25,6 +25,7 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+
 @Injectable()
 export class InvestigationService {
   private readonly logger = new Logger(InvestigationService.name);
@@ -50,16 +51,31 @@ export class InvestigationService {
           investigation_status_code: true,
           investigation_party: {
             include: {
-              investigation_person: {
+              investigation_contact_method: {
                 where: {
                   active_ind: true,
                 },
+              },
+              investigation_alias: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              investigation_address: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              investigation_person: {
                 include: {
-                  investigation_contact_method: {
+                  investigation_person_facial_hair_style_code_ref: {
                     where: {
                       active_ind: true,
                     },
                   },
+                },
+                where: {
+                  active_ind: true,
                 },
               },
               investigation_business: {
@@ -67,22 +83,7 @@ export class InvestigationService {
                   active_ind: true,
                 },
                 include: {
-                  investigation_contact_method: {
-                    where: {
-                      active_ind: true,
-                    },
-                  },
                   investigation_business_identifier: {
-                    where: {
-                      active_ind: true,
-                    },
-                  },
-                  investigation_alias: {
-                    where: {
-                      active_ind: true,
-                    },
-                  },
-                  investigation_business_address: {
                     where: {
                       active_ind: true,
                     },

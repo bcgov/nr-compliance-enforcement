@@ -2,6 +2,7 @@ import { agency_code } from "./agency_code";
 import { office } from "./office";
 import { app_user_team_xref } from "./app_user_team_xref";
 import { case_file } from "./case_file";
+import { party } from "./party";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class app_user {
@@ -58,4 +59,7 @@ export class app_user {
 
   @ApiProperty({ isArray: true, type: () => case_file })
   case_file: case_file[];
+
+  @ApiProperty({ isArray: true, type: () => party })
+  party: party[];
 }
