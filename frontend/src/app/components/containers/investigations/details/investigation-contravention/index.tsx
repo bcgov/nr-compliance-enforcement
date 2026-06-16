@@ -109,6 +109,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               contravention={contravention ?? undefined}
               partyGuid={partyGuid ?? null}
               parties={investigationData?.parties as InvestigationParty[]}
+              discoveryDate={investigationData?.discoveryDate}
               onDirtyChange={handleChildDirtyChange}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}

@@ -98,7 +98,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       fileType: attachment?.fileType ?? "",
       description: attachment?.description ?? "",
       title: attachment?.title ?? "",
-      date: attachment?.date ? parseISO(attachment.date) : null,
+      date: attachment?.date ? parseISO(attachment.date) : new Date(),
       takenBy: attachment?.takenBy ?? defaultAssignee ?? "",
       location: attachment?.location ?? "",
     },
