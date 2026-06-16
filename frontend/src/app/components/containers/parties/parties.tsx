@@ -37,6 +37,7 @@ const SEARCH_PARTIES = gql`
           lastName
           dateOfBirth
           genderCode
+          approximateAgeCode
         }
         business {
           businessGuid

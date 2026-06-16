@@ -21,6 +21,7 @@ import { Person } from "src/shared/person/dto/person";
 import { country_subdivision_code } from "prisma/shared/generated/country_subdivision_code";
 import { gender_code } from "prisma/shared/generated/gender_code";
 import { business_identifier } from "prisma/shared/generated/business_identifier";
+import { approximate_age_code } from "prisma/shared/generated/approximate_age_code";
 
 const BUSINESS_NUMBER_CODE = "BNUM";
 
@@ -1321,93 +1322,78 @@ export class PartyService {
     };
 
     if (filters?.search) {
-      if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(filters.search)) {
-        where.OR = [{ party_guid: { equals: filters.search } }];
-      } else {
-        const terms = filters.search.trim().split(/\s+/);
-        where.AND = terms.map((term) => ({
-          OR: [
-            { party_type: { equals: term } },
-            { business: { name: { contains: term, mode: "insensitive" } } },
-            {
-              business: {
-                business_identifier: {
-                  some: {
-                    identifier_value: {
-                      contains: term,
-                      mode: "insensitive",
-                    },
-                  },
-                },
-              },
-            },
-            {
-              contact_method: {
+      const terms = filters.search
+        .trim()
+        .split(/[\s,()-]+/) // Get rid of any user typed whitespace or special chars , ( ) -
+        .filter(Boolean); // Toss any thing that is just whitespace
+      where.AND = terms.map((term) => ({
+        OR: [
+          { party_type: { equals: term } },
+          { business: { name: { contains: term, mode: "insensitive" } } },
+          {
+            business: {
+              business_identifier: {
                 some: {
-                  contact_value: {
+                  identifier_value: {
                     contains: term,
                     mode: "insensitive",
                   },
                 },
               },
             },
-            {
-              address: {
-                some: {
-                  address: {
-                    contains: term,
-                    mode: "insensitive",
-                  },
+          },
+          {
+            contact_method: {
+              some: {
+                contact_value: {
+                  contains: term,
+                  mode: "insensitive",
                 },
               },
             },
-            {
-              address: {
-                some: {
-                  city: {
-                    contains: term,
-                    mode: "insensitive",
-                  },
+          },
+          {
+            address: {
+              some: {
+                address: {
+                  contains: term,
+                  mode: "insensitive",
                 },
               },
             },
-            { person: { first_name: { contains: term, mode: "insensitive" } } },
-            { person: { last_name: { contains: term, mode: "insensitive" } } },
-          ],
-        }));
-      }
+          },
+          {
+            address: {
+              some: {
+                city: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          { person: { first_name: { contains: term, mode: "insensitive" } } },
+          { person: { last_name: { contains: term, mode: "insensitive" } } },
+        ],
+      }));
     }
 
+    // Required to maintain tab seperation
     if (filters?.partyTypeCode) {
       where.party_type = {
         in: [filters.partyTypeCode],
       };
     }
-    const sortFieldMap: Record<string, string> = {
-      partyIdentifier: "party_guid",
-      partyType: "party_type",
-    };
 
     let orderBy: any = { party_guid: "desc" }; // Default sort
 
     if (filters?.sortBy && filters?.sortOrder) {
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-      switch (filters?.sortBy) {
-        case "partyName": {
-          if (filters.partyTypeCode === PARTY_TYPES.Company) {
-            orderBy = { business: { name: validSortOrder } };
-          } else {
-            orderBy = [{ person: { last_name: validSortOrder } }, { person: { first_name: validSortOrder } }];
-          }
-          break;
-        }
-        default: {
-          const dbField = sortFieldMap[filters.sortBy];
-          if (dbField) {
-            orderBy = { [dbField]: validSortOrder };
-          }
-        }
+      if (filters.partyTypeCode === PARTY_TYPES.Company) {
+        orderBy = { business: { name: validSortOrder } };
+      } else {
+        orderBy = [{ person: { last_name: validSortOrder } }, { person: { first_name: validSortOrder } }];
       }
     }
 
@@ -1475,6 +1461,7 @@ export class PartyService {
               last_name: true,
               date_of_birth: true,
               gender_code: true,
+              approximate_age_code: true,
             },
           },
         },

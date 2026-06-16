@@ -9,10 +9,11 @@ import { calculateAgeYears } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
-import { Address, BusinessIdentifier, ContactMethod } from "@/generated/graphql";
+import { Address, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { GenderType } from "@/app/types/app/code-tables/gender";
+import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 
 type Props = {
   parties: any[];
@@ -24,22 +25,22 @@ type Props = {
 
 const getPrimaryPhone = (contactMethods: ContactMethod[]): string => {
   if (!contactMethods?.length) {
-    return "-";
+    return "";
   }
   const primary = contactMethods.find((cm) => cm.typeCode === ContactMethods.PHONE && cm.isPrimary);
   if (!primary?.value) {
-    return "-";
+    return "";
   }
   return formatPhoneNumber(primary.value) ?? primary.value;
 };
 
 const getPrimaryAddress = (addresses: Address[], countrySubdivisions: CountrySubdivisionType[]): string => {
   if (!addresses?.length) {
-    return "-";
+    return "";
   }
   const primary = addresses.find((a) => a.isPrimary);
   if (!primary?.address && !primary?.city && !primary?.province) {
-    return "-";
+    return "";
   }
 
   const province =
@@ -51,10 +52,10 @@ const getPrimaryAddress = (addresses: Address[], countrySubdivisions: CountrySub
 
 const getBusinessNumber = (identifiers: BusinessIdentifier[]): string => {
   if (!identifiers?.length) {
-    return "-";
+    return "";
   }
   const businessNumber = identifiers.find((id) => id.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
-  return businessNumber?.identifierValue ?? "-";
+  return businessNumber?.identifierValue ?? "";
 };
 
 const getPartyDisplayName = (party: any): string => {
@@ -68,19 +69,19 @@ const getPartyDisplayName = (party: any): string => {
   return [lastName, firstName].filter(Boolean).join(", ");
 };
 
-const getAgeDisplay = (party: any): number | string => {
+const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
   const dateOfBirth = party.person?.dateOfBirth;
   if (!dateOfBirth) {
-    return "-";
+    return approxAges.find((a) => a.approximateAgeCode === party.person?.approximateAgeCode)?.shortDescription ?? "";
   }
-  return calculateAgeYears(new Date(dateOfBirth)) ?? "-";
+  return calculateAgeYears(new Date(dateOfBirth)) ?? "";
 };
 
 const partyNameColumn: CompColumn<any> = {
   label: "Party name",
   sortKey: "partyName",
   headerClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
-  cellClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left text-center",
+  cellClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
   isSortable: true,
   getValue: (party) => getPartyDisplayName(party),
   renderCell: (party) => (
@@ -97,10 +98,9 @@ const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): Comp
   partyNameColumn,
   {
     label: "Business number",
-    sortKey: "businessNumber",
     headerClassName: "comp-cell-min-width-110",
     cellClassName: "comp-cell-width-110",
-    isSortable: true,
+    isSortable: false,
     getValue: (party) => getBusinessNumber(party.business?.identifiers),
     renderCell: (party) => getBusinessNumber(party.business?.identifiers),
   },
@@ -122,7 +122,11 @@ const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): Comp
   },
 ];
 
-const getPersonColumns = (countrySubdivisions: CountrySubdivisionType[], genders: GenderType[]): CompColumn<any>[] => [
+const getPersonColumns = (
+  countrySubdivisions: CountrySubdivisionType[],
+  genders: GenderType[],
+  approxAges: ApproximateAgeType[],
+): CompColumn<any>[] => [
   partyNameColumn,
   {
     label: "Age",
@@ -130,8 +134,8 @@ const getPersonColumns = (countrySubdivisions: CountrySubdivisionType[], genders
     headerClassName: "comp-cell-min-width-60",
     cellClassName: "comp-cell-width-60",
     isSortable: false,
-    getValue: (party) => getAgeDisplay(party),
-    renderCell: (party) => getAgeDisplay(party),
+    getValue: (party) => getAgeDisplay(party, approxAges),
+    renderCell: (party) => getAgeDisplay(party, approxAges),
   },
   {
     label: "Gender",
@@ -179,12 +183,13 @@ export const PartyList: FC<Props> = ({ parties, partyTypeCode, totalItems = 0, i
 
   const countrySubdivisions = useAppSelector((state) => state.codeTables["country-subdivision-type"]);
   const genders = useAppSelector((state) => state.codeTables["gender-type"]);
+  const approximateAgeCodes = useAppSelector((state) => state.codeTables["approximate-age-type"]);
 
   const columns = useMemo(
     () =>
       partyTypeCode === PartyTypeCodes.BUSINESS
         ? getBusinessColumns(countrySubdivisions)
-        : getPersonColumns(countrySubdivisions, genders),
+        : getPersonColumns(countrySubdivisions, genders, approximateAgeCodes),
     [partyTypeCode],
   );
 

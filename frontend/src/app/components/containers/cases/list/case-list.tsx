@@ -41,7 +41,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       label: "Case ID",
       sortKey: "name",
       headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
       isSortable: true,
       getValue: (caseFile) => caseFile.name ?? caseFile.caseIdentifier,
       renderCell: (caseFile) => (
