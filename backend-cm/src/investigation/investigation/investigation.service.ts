@@ -13,7 +13,6 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { UserService } from "../../common/user.service";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { PaginationUtility } from "src/common/pagination.utility";
-import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
@@ -255,7 +254,29 @@ export class InvestigationService {
         include: {
           investigation_party: {
             include: {
-              investigation: true,
+              investigation: {
+                include: {
+                  contravention: {
+                    include: {
+                      contravention_party_xref: {
+                        include: {
+                          enforcement_action: {
+                            include: {
+                              contravention_party_xref: true,
+                              enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                                true,
+                            },
+                            where: { active_ind: true },
+                          },
+                        },
+                        where: { active_ind: true },
+                      },
+                    },
+                    where: { active_ind: true },
+                  },
+                  investigation_status_code: true,
+                },
+              },
             },
             where: {
               active_ind: true,
@@ -286,6 +307,7 @@ export class InvestigationService {
         },
       });
     }
+
     const prismaInvestigations = prismaParties.map((party) => {
       return party.investigation_party?.investigation;
     });
@@ -297,7 +319,8 @@ export class InvestigationService {
         "Investigation",
       );
     } catch (error) {
-      this.logger.error("Error fetching investigations by Party IDs:", error);
+      const mappingError = error as Error;
+      this.logger.error(`Error mapping investigations by Party IDs: ${mappingError.message}`, mappingError.stack);
       throw error;
     }
   }
@@ -631,7 +654,7 @@ export class InvestigationService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 
