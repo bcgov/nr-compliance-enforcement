@@ -2,7 +2,7 @@
 
 `config.yaml` is the single manifest for a `RunbookParser`. It is shaped like a Kubernetes
 CRD: **`spec:`** is what you write (and is never rewritten, so its comments survive), and
-**`status:`** is observed state the parser writes back on `build`.
+**`status:`** is observed state the parser writes back on `ingest`.
 
 ```
 kind: RunbookParser          # required, must be exactly this
@@ -33,7 +33,8 @@ status: { ... }              # machine-owned; written by the parser (do not hand
   `<name>_<section>` files). Combine domains this way — e.g. a `crunchy-dr-wiki` source and a
   `postgres-triage` source, both `group: crunchy-triage`.
 - **Placeholder:** a source with neither `url` nor `file` (`kind: none`) contributes no
-  extracted snippets — a slot for hand-authored snippets in the same group.
+  extracted snippets — a slot for hand-authored snippets, added with `include` (they seal over
+  the snippets alone, with no back-port target).
 - **url normalization:** GitHub `blob` URLs become `raw.githubusercontent.com`; GitHub
   `/wiki/Page` becomes the raw wiki `.md`. Fetches cache into `working_dir`.
 
@@ -41,25 +42,23 @@ status: { ... }              # machine-owned; written by the parser (do not hand
 
 Each source decomposes losslessly, so recombining *that source's* snippets reproduces *its*
 document byte-for-byte — independently, even when several sources share a group. Two sources
-in a group give two independent round-trips (the basis for backporting a snippet edit to the
-right doc). There is no whole-group reassembly; composing the cleaned blocks into runnable
+in a group give two independent round-trips. There is no whole-group reassembly; composing the cleaned blocks into runnable
 workflows is n8n's job. Drift detection compares a source's reconstruction against its doc
 target:
 
 - If `doc:` is set, the target is `root/doc`. If not, the target is the source itself
   (`src == doc`).
-- `build` records each source's drift state in `status` (`in_sync` / `drifted` /
-  `doc_missing`). `check` re-computes it and exits **2** on drift. `sync` writes the
-  reconstruction back to the target (the reverse direction).
+- `ingest` records each source's drift state in `status` (`in_sync` / `drifted` /
+  `doc_missing`). `check` re-computes it and exits **2** on drift. (Back-porting a cleaned fix
+  is separate: the seal detects it and `diff` shows it — see `BACKPORT.md`.)
 - Comparison is whitespace-lenient (trailing whitespace and the final newline are
-  ignored), so cosmetic edits do not register as drift. `sync` writes byte-faithfully, so
-  a backport diff shows only the real change.
+  ignored), so cosmetic edits do not register as drift.
 
 ## status (written by the parser)
 
 The committed `status` tracks **cleaned** work, not every raw — per group: `sources`
 (parser-written: drift, etc.) plus the agent-maintained **`cleaned`**, **`skipped`**, and
-**`seals`** entries. The parser preserves `cleaned`/`skipped`/`seals` across builds and only
+**`seals`** entries. The parser preserves `cleaned`/`skipped`/`seals` across ingests and only
 rewrites `sources`. (The raw inventory reconstruction needs lives in
 `working_dir/<group>/index.yaml`, not here.)
 
@@ -84,7 +83,7 @@ status:
 `seals` is the **snippet-code drift** baseline: `seal` writes it after cleaning, `check`
 recomputes it. It is distinct from `sources[].drift` above — that compares a *doc* to its
 reconstruction; the seal compares the *cleaned snippets'* code (comments excluded) to when
-they were last reconciled. See `CLEANING.md` and `SYNC.md`.
+they were last reconciled. See `CLEANING.md` and `BACKPORT.md`.
 
 ## Comment safety
 

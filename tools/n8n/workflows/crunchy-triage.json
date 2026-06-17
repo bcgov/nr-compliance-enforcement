@@ -1,0 +1,203 @@
+{
+  "connections": {
+    "Cluster status (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "pgBackRest info (read-only)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Markdown to HTML": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Respond to Webhook (HTML)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Merge + encode": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Render report (render.sh)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Render report (render.sh)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Markdown to HTML",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Cluster status (read-only)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "pgBackRest info (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Merge + encode",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "name": "crunchy-triage",
+  "nodes": [
+    {
+      "id": "note-prod-url",
+      "name": "Production URL",
+      "parameters": {
+        "color": 4,
+        "content": "## Crunchy triage — production URL\n\nClick to run this triage — read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/crunchy-triage?namespace=f208ae-dev**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
+        "height": 260,
+        "width": 420
+      },
+      "position": [
+        180,
+        60
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "webhook",
+      "name": "Webhook",
+      "parameters": {
+        "httpMethod": "GET",
+        "options": {},
+        "path": "crunchy-triage",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        260,
+        360
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "crunchy-triage"
+    },
+    {
+      "id": "step-cluster-status",
+      "name": "Cluster status (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. patronictl list/show-config via a cleaned snippet-*; safe to re-run.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-cluster-status.sh"
+      },
+      "position": [
+        480,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "step-pgbackrest",
+      "name": "pgBackRest info (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. pgbackrest info via a cleaned snippet-*; safe to re-run.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pgbackrest-info.sh"
+      },
+      "position": [
+        700,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "merge-encode",
+      "name": "Merge + encode",
+      "parameters": {
+        "jsCode": "const ns = ($('Webhook').item.json.query || {}).namespace || '';\nconst parse = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst merged = Object.assign({}, parse('Cluster status (read-only)'), parse('pgBackRest info (read-only)'), { namespace: ns });\nreturn [{ json: { ...merged, _b64: Buffer.from(JSON.stringify(merged)).toString('base64') } }];"
+      },
+      "position": [
+        920,
+        360
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "render-report",
+      "name": "Render report (render.sh)",
+      "notes": "READ-ONLY. Renders the merged collection JSON through render.sh into report markdown.",
+      "parameters": {
+        "command": "=echo {{ $json._b64 }} | base64 -d | NAMESPACE={{ $json.namespace }} bash tools/n8n/render.sh tools/n8n/snippets/crunchy-triage/snippet-triage-report.md"
+      },
+      "position": [
+        1140,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "md2html",
+      "name": "Markdown to HTML",
+      "parameters": {
+        "markdown": "={{ $json.stdout }}",
+        "mode": "markdownToHtml",
+        "options": {}
+      },
+      "position": [
+        1360,
+        360
+      ],
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1
+    },
+    {
+      "id": "respond",
+      "name": "Respond to Webhook (HTML)",
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        },
+        "respondWith": "text",
+        "responseBody": "={{ $json.data }}"
+      },
+      "position": [
+        1580,
+        360
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -26,7 +26,7 @@ and `id`; the Sticky Note has no connections.
 ```json
 {
   "parameters": {
-    "content": "## Production URL\n\nClick to run this triage:\n\n**https://YOUR-N8N-HOST/webhook/triage**",
+    "content": "## <TITLE> — production URL\n\n**<BASE_URL>/webhook/<PATH>?<QUERY>**\n\n(filled from assets/sticky-note.md)",
     "height": 220, "width": 360, "color": 4
   },
   "id": "note-prod-url", "name": "Production URL",
@@ -34,8 +34,9 @@ and `id`; the Sticky Note has no connections.
 }
 ```
 
-Place it next to the Webhook. Replace the URL with the real production webhook URL (the n8n
-**Production URL** shown on the Webhook node, `https://<host>/webhook/<path>`).
+Place it next to the Webhook. Fill `content` from `assets/sticky-note.md`: `<BASE_URL>` is
+`spec.n8n.base_url` in `tools/n8n/config.yaml` and `<PATH>` is the Webhook node's path, so the
+URL is `<base_url>/webhook/<path>` (the n8n **Production URL** shown on the Webhook node).
 
 ## 2. Webhook trigger (returns via a Respond node)
 

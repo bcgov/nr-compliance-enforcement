@@ -7,7 +7,7 @@
 #   2. Install dependencies (runs locally / in CI, not in the n8n container):
 #        pip install pyyaml markdown-it-py
 #   3. Run from the repo root, e.g.:
-#        python tools/n8n/skills/runbook-parser/scripts/parser.py build
+#        python tools/n8n/skills/runbook-parser/scripts/parser.py ingest
 #
 # It reads a `RunbookParser` config (default tools/n8n/config.yaml), decomposes each source
 # document into ordered, typed raw snippets under `working_dir/<group>/` (+ an index sidecar),
@@ -15,10 +15,11 @@
 # `spec:` block is read-only and never rewritten, so its comments are preserved).
 #
 # Commands:
-#   build      doc -> raw snippets (+ a verbatim doc copy) + status        (default)
+#   ingest     doc -> raw snippets (+ a verbatim doc copy) + status        (default)
 #   check      reconstruct + recompute seals; report drift (read-only; exit 2 = drift)
 #   seal       record sha(doc + cleaned code, sans comments) + snapshot cleaned (after cleaning)
 #   diff       show how cleaned snippets diverged from their seal, to drive a doc back-port
+#   include    add hand-written cleaned snippet(s) to a source's `cleaned`, then seal (one step)
 #
 # This file is the CLI entry point; the implementation lives in the sibling rb_*.py modules
 # (rb_markdown, rb_model, rb_config, rb_reconstruct, rb_commands, rb_log).
@@ -40,10 +41,11 @@ from rb_config import load_config  # noqa: E402
 from rb_log import RunbookError, die, set_quiet  # noqa: E402
 
 _COMMANDS = {
-    "build": rb_commands.cmd_build,
+    "ingest": rb_commands.cmd_ingest,
     "check": rb_commands.cmd_check,
     "seal": rb_commands.cmd_seal,
     "diff": rb_commands.cmd_diff,
+    "include": rb_commands.cmd_include,
 }
 
 
@@ -63,14 +65,18 @@ def parse_args(argv: Optional[list[str]]) -> argparse.Namespace:
         "--source", action="append", metavar="NAME",
         help="limit to the source with this exact unique name (repeatable)",
     )
+    parser.add_argument(
+        "--snippet", action="append", metavar="FILE",
+        help="cleaned snippet file to associate with --source (for 'include'; repeatable)",
+    )
     parser.add_argument("--dry-run", action="store_true", help="show actions without writing")
     parser.add_argument("-q", "--quiet", action="store_true", help="suppress progress output")
     parser.add_argument(
         "command",
         nargs="?",
-        default="build",
+        default="ingest",
         choices=list(_COMMANDS),
-        help="build (default) | check | seal | diff",
+        help="ingest (default) | check | seal | diff | include",
     )
     return parser.parse_args(argv)
 

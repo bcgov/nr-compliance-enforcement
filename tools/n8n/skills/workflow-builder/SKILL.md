@@ -1,6 +1,6 @@
 ---
 name: workflow-builder
-description: Compose and chain cleaned snippets into n8n operational triage workflows — a webhook trigger, read-only idempotent triage steps in order, and a markdown-to-HTML response served back to the caller. Produces n8n workflow JSON in tools/n8n/workflows/ ready to POST to the n8n API (you post it, not the skill). Use when building or iterating a triage workflow from cleaned snippets.
+description: Compose and chain cleaned snippets into n8n operational triage workflows — a webhook trigger, read-only idempotent triage steps in order, and a markdown-to-HTML response served back to the caller. Produces n8n workflow JSON in tools/n8n/workflows/ ready to POST to the n8n API (you post it, not the skill), plus a local_workflow.sh equivalent a developer can run without n8n. Use when building or iterating a triage workflow from cleaned snippets.
 owner: Compliance and Enforcement
 tags: [n8n, workflow, triage, webhook, automation]
 ---
@@ -31,6 +31,11 @@ Shape of every workflow this skill builds:
 It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it —
 `tools/n8n/push.sh` does that.
 
+Alongside the JSON it emits a **local equivalent** — `tools/n8n/workflows/<name>.local.sh`, the
+same chain as a shell script (collect snippets -> merge -> `render.sh` -> `view.sh`) so a
+developer can run the triage locally and read the HTML report in a browser, no n8n needed. See
+`references/LOCAL_WORKFLOW.md`.
+
 ## Use When
 
 - Building an n8n triage workflow by chaining cleaned `snippet-*` blocks from `snippets/<group>/`.
@@ -56,9 +61,15 @@ It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it
 4. Keep the tail: Format output (build the report markdown, reusing `tools/n8n/render.sh` for
    `.md` display snippets) -> Markdown node (`markdownToHtml`) -> Respond to Webhook with
    `Content-Type: text/html` (the serve-HTML-via-webhook pattern, n8n template 5173).
-5. Update the Sticky Note with the real production webhook URL so users can click it.
+5. Fill the Sticky Note from `assets/sticky-note.md`: substitute `<BASE_URL>` (`config.yaml`
+   `spec.n8n.base_url`), `<PATH>` (the Webhook path = workflow name), `<TITLE>`, and `<QUERY>`,
+   so users can click the production URL.
 6. Write valid workflow JSON (`name`, `nodes`, `connections`, `settings`) to
    `tools/n8n/workflows/<name>.json` per `references/API_SCHEMA.md`. Do not POST it.
+7. Emit the local equivalent: copy `assets/local-workflow.sh` to
+   `tools/n8n/workflows/<name>.local.sh`, set the group/report/page name, and add one collection
+   line per cleaned snippet (same order as the Execute-Command nodes). It reuses `render.sh` and
+   `tools/n8n/view.sh`, and must pass `shellcheck`. See `references/LOCAL_WORKFLOW.md`.
 
 ## Rules
 
@@ -66,13 +77,20 @@ It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it
   to fire repeatedly from a webhook, by anyone with the URL).
 - Never include a mutating step. If a cleaned snippet is not read-only, it should already be
   dropped upstream; never add one here.
-- Always start with a Webhook trigger plus a Sticky Note holding the production URL.
+- Always start with a Webhook trigger plus a Sticky Note holding the production URL, built from
+  `assets/sticky-note.md` with the host from `config.yaml` `spec.n8n.base_url`
+  (`<base_url>/webhook/<workflow-name>`) — never hardcode a host.
 - Always end Format output -> Markdown (markdown->HTML) -> Respond to Webhook with
   `Content-Type: text/html`; the Webhook node `responseMode` must be `responseNode`.
 - Emit only the API-writable fields (`name`, `nodes`, `connections`, `settings`); never POST —
   hand the file to `push.sh`.
 - Give every node a unique `name` and `id`, and wire `connections` by node name.
 - Reuse `tools/n8n/render.sh` for markdown templating of cleaned `.md` display snippets.
+- Emit the `local-workflow.sh` equivalent too, kept in lockstep with the JSON — one collection
+  line per Execute-Command node, in the same order; it is read-only and idempotent like the
+  workflow, and uses `render.sh` + `tools/n8n/view.sh`.
+- Shellcheck every `.sh` this skill produces (the `local-workflow.sh`) before signing off; fall
+  back to `bash -n` only if shellcheck is unavailable.
 
 ## Examples
 
@@ -102,4 +120,12 @@ It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it
   `connections`/`settings`), per the n8n API reference; `push.sh` posts it.
 - `assets/skeleton.json` — a minimal, importable workflow (sticky + webhook + format +
   markdown + respond) to copy and extend.
+- `assets/sticky-note.md` — the standard Sticky Note (Production URL) content; fill `<BASE_URL>`
+  from `config.yaml` `spec.n8n.base_url`.
+- `assets/local-workflow.sh` — the local-workflow skeleton (the shell equivalent) to copy to
+  `tools/n8n/workflows/<name>.local.sh` and fill.
+- `references/LOCAL_WORKFLOW.md` — the local-workflow mapping (n8n node -> shell stage),
+  merging, and the `view.sh` helper.
+- `tools/n8n/view.sh` — Markdown -> HTML -> browser helper for the local workflow (local only;
+  not in the n8n container).
 - `../runbook-parser/references/CLEANING.md` — where the cleaned snippets come from.

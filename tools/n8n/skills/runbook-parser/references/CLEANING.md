@@ -59,13 +59,16 @@ It must also:
 - **Markdown report snippets declare their inputs** — the header comment lists the keys the
   template expects (`${VAR}` from env/args, `.json.path` from named upstream snippets), so a
   workflow knows what to feed it.
+- **Markdown report snippets degrade gracefully** — guard each data section with `{{#if}}` so
+  the report renders only what is present and never shows an orphan heading, empty table, or
+  dangling label; give the body an outer `{{else}}` fallback for the nothing-collected case.
 - **`skipped` reasons are one sentence** — short and plain, per skipped raw.
 
 ## Skip unsafe snippets — and record it
 
 If a raw snippet **cannot** be made read-only and idempotent, do not force it — **skip it** and
 record the decision under the group's `skipped` list in `config.yaml` `status`, so the choice
-is durable across re-`build`s:
+is durable across re-`ingest`s:
 
 ```yaml
 status:
@@ -77,7 +80,7 @@ status:
         - { raw: crunchy-dr-wiki_reset-replica.sh, reason: "patronictl reinit — not idempotent" }
 ```
 
-The parser preserves `cleaned` and `skipped` across rebuilds (it only rewrites `sources`).
+The parser preserves `cleaned` and `skipped` across re-ingests (it only rewrites `sources`).
 Mutating operations (`patronictl reinit`/`restart`, `oc edit`/`annotate`, PITR restore,
 `pg_dump` writes) are the usual skips; their read-only **observation** counterparts are what
 become cleaned blocks.
@@ -95,8 +98,21 @@ snippets, with the snippets' comments and blank lines stripped**. The doc half i
 as-is, so any change to it trips the seal; the snippets are hashed code-only, so editing a
 header comment does not, but changing a command does. `check` recomputes it and reports
 `SNIPPET CODE DRIFT` when a dev later edits a cleaned command (or the doc moves) — the cue to
-backport via `sync` (see `SYNC.md`) and re-`seal`. Re-run `seal` whenever you intentionally
-change a cleaned snippet.
+run `diff` and propose a doc edit from it (see `BACKPORT.md`), then re-`seal`. Re-run `seal`
+whenever you intentionally change a cleaned snippet.
+
+## Hand-authored snippets
+
+A snippet you write by hand (no raw to clean from) joins the system the same way — it just needs
+a source to associate with. Use `include`:
+
+```bash
+python scripts/parser.py include --source <name> --snippet snippet-foo.sh
+```
+
+It records the snippet under that source's `cleaned` and seals in one step. If the snippet has
+no source doc, target a **placeholder source** (a spec source with no `url`/`file`); the seal
+then covers the snippet alone (edits are still drift-detected, with no back-port target).
 
 ## Worked example
 
@@ -142,16 +158,30 @@ A terminal display block is a markdown `snippet-*.md` template rendered by
 
 - `{{ .json.path }}` — filled from JSON on stdin via `jq` (handles arrays/tables).
 - `${VAR}` — filled from the environment (scalars). Bare `$FOO` is left untouched.
+- `{{#if EXPR }} … [{{else}} …] {{/if}}` — a block kept only when `EXPR` is **present**
+  (non-null, non-empty array/object/string). Markers go on their own line and nest; `present`
+  is exposed for combining keys: `{{#if (.a|present) or (.b|present) }}`.
+
+**Reports must degrade gracefully.** A report can render more than any one run provides — you
+never know which upstream nodes ran, or in what combination. So guard **every** data section
+(heading and body together) with `{{#if}}`, and wrap the body in an outer
+`{{#if (anything present) }} … {{else}} _nothing collected_ {{/if}}`. A missing key then drops
+its section instead of leaving an orphan heading or empty table, and an empty payload (`{}` or
+no stdin) yields a clean fallback line — never broken output.
 
 ```markdown
 <!-- snippet-cluster-report: render via tools/n8n/render.sh -->
 # Cluster ${NAMESPACE}
 
+{{#if .members }}
 Leader: {{ .members[] | select(.Role=="Leader") | .Member }}
 
 | Member | State | Lag |
 |--------|-------|-----|
 {{ .members | map("| \(.Member) | \(.State) | \(.["Lag in MB"]) |") | join("\n") }}
+{{else}}
+_No cluster data collected._
+{{/if}}
 ```
 
 Render it:

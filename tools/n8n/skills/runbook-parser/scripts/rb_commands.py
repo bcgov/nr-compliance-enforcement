@@ -1,12 +1,13 @@
-"""The three subcommands and their helpers (the orchestration layer).
+"""The subcommands and their helpers (the orchestration layer).
 
-* :func:`cmd_build` — sources -> raw snippets + ``status``.
-* :func:`cmd_check` — drift detection (read-only; exit 2 on drift).
-* :func:`cmd_sync` — reverse: recombine raw snippets and write the source doc.
+* :func:`cmd_ingest` — sources -> raw snippets (+ doc copy) + ``status``.
+* :func:`cmd_check`  — drift detection: round-trip + seal recheck (read-only; exit 2 on drift).
+* :func:`cmd_seal`   — record the per-source content seal + snapshot the cleaned snippets.
+* :func:`cmd_diff`   — show how cleaned snippets diverged from their seal (read-only back-port aid).
 
 Status write-back replaces only the machine-owned ``status:`` block (from its marker to
 end-of-file), leaving the commented ``spec`` untouched, and preserves agent-set ``cleaned``
-annotations across rebuilds.
+annotations across ingests.
 """
 
 from __future__ import annotations
@@ -73,16 +74,16 @@ def source_metas(cfg: Config, src: Source) -> list[dict]:
 
 
 # --------------------------------------------------------------------------------------
-# build
+# ingest
 # --------------------------------------------------------------------------------------
 
 
-def cmd_build(cfg: Config, args) -> int:
+def cmd_ingest(cfg: Config, args) -> int:
     """Resolve sources, extract raws into ``working_dir``, and rewrite the committed ``status``.
 
     Raws (and their index sidecar) go under ``working_dir/<group>/`` — ephemeral unless
     ``working_dir`` is a committed path. With ``--group``/``--source`` this is a *partial*
-    build: only the selected sources are fetched and written; pruning, the index, and the
+    ingest: only the selected sources are fetched and written; pruning, the index, and the
     ``sources`` status are scoped to them (other sources are left intact).
     """
     selected = select_sources(cfg, args.group or [], args.source or [])
@@ -137,7 +138,7 @@ def cmd_build(cfg: Config, args) -> int:
 def write_group(cfg: Config, group: str, snippets: list[Snippet], dry_run: bool, prune_docnames: Optional[set] = None) -> None:
     """Write a group's raw files + index sidecar under ``working_dir/<group>/`` and prune stale ones.
 
-    ``prune_docnames`` (partial builds) scopes pruning to files whose source was processed
+    ``prune_docnames`` (partial ingests) scopes pruning to files whose source was processed
     this run — files from the ``<docname>_`` prefix of any other source are left alone.
     """
     group_dir = cfg.working_dir / group
@@ -186,7 +187,7 @@ def write_doc_copy(cfg: Config, src: Source, body: str, dry_run: bool) -> None:
 def _write_raw_index(cfg: Config, group: str, snippets: list[Snippet], prune_docnames: Optional[set], dry_run: bool) -> None:
     """Write the raw-index sidecar (``working_dir/<group>/index.yaml``) that reconstruction reads.
 
-    Partial builds merge: index entries for sources not processed this run are kept.
+    Partial ingests merge: index entries for sources not processed this run are kept.
     """
     fresh = [
         {"file": s.file, "section": s.section, "codeblock_tag": s.codeblock_tag, "from": s.source_ref, "line": s.line}
@@ -215,9 +216,9 @@ def _write_raw_index(cfg: Config, group: str, snippets: list[Snippet], prune_doc
 
 def build_status(cfg: Config, source_status, processed_refs=None) -> dict:
     """Assemble the committed ``status``: per group, parser-written ``sources`` plus the
-    agent-maintained ``cleaned``/``skipped`` lists, preserved across builds.
+    agent-maintained ``cleaned``/``skipped`` lists, preserved across ingests.
 
-    With ``processed_refs`` (partial build), ``sources`` entries for sources not processed
+    With ``processed_refs`` (partial ingest), ``sources`` entries for sources not processed
     this run are kept; ``cleaned``/``skipped`` are always preserved whole.
     """
     existing = cfg.status.get("groups") or {}
@@ -270,15 +271,13 @@ def write_status(cfg: Config, status: dict, dry_run: bool) -> None:
 def cmd_seal(cfg: Config, args) -> int:
     """Record each selected source's content seal (sha of doc + cleaned code) in ``status``.
 
-    Run after cleaning a source. The seal is preserved across builds; ``check`` recomputes it
+    Run after cleaning a source. The seal is preserved across ingests; ``check`` recomputes it
     and flags a mismatch as snippet-code drift -- a dev changed a cleaned command (or the doc
     moved), and the change may need backporting to the source doc.
     """
     status = cfg.status if cfg.status.get("groups") else {"groups": {}}
     sealed = 0
     for src in select_sources(cfg, args.group or [], args.source or []):
-        if src.kind() == "none":
-            continue
         digest = compute_seal(cfg, src)
         if digest is None:
             warn(f"  {src.name}: nothing to seal (no cleaned snippets, or doc/snippet missing)")
@@ -296,6 +295,44 @@ def cmd_seal(cfg: Config, args) -> int:
         return 0
     write_status(cfg, status, args.dry_run)
     return 0
+
+
+# --------------------------------------------------------------------------------------
+# include
+# --------------------------------------------------------------------------------------
+
+
+def cmd_include(cfg: Config, args) -> int:
+    """Associate hand-written cleaned snippet(s) with a source, then seal -- in one step.
+
+    The shortcut for a snippet you authored by hand (not produced from a raw): it records the
+    snippet under the source's ``cleaned`` list in ``status`` and seals. For a snippet with no
+    source doc, target a placeholder source (one with no ``url``/``file``) -- the seal then
+    covers the snippet alone.
+    """
+    sources = select_sources(cfg, args.group or [], args.source or [])
+    if len(sources) != 1:
+        raise RunbookError("include needs exactly one --source (the source to associate with)")
+    src = sources[0]
+    files = args.snippet or []
+    if not files:
+        raise RunbookError("include needs at least one --snippet FILE")
+    missing = [f for f in files if not (cfg.destination / src.group / f).is_file()]
+    if missing:
+        where = cfg.destination / src.group
+        raise RunbookError(f"snippet(s) not found under {where}: {', '.join(missing)} (write them first)")
+
+    if not cfg.status.get("groups"):
+        cfg.status = {"groups": {}}
+    cleaned = cfg.status["groups"].setdefault(src.group, {}).setdefault("cleaned", [])
+    have = {c.get("snippet") for c in cleaned}
+    for f in files:
+        if f in have:
+            info(f"  already included: {f}")
+        else:
+            cleaned.append({"snippet": f, "from": src.name})
+            info(f"  included: {f} (from {src.name})")
+    return cmd_seal(cfg, args)
 
 
 # --------------------------------------------------------------------------------------
@@ -385,8 +422,13 @@ def cmd_diff(cfg: Config, args) -> int:
             print(f"  {src.name}: sealed in_sync")
             continue
         diverged = 2
-        print(f"  {src.name}: SEAL BROKEN - cleaned diverged; propose a doc back-port")
-        print(f"    source doc: {doc_copy_path(cfg, src)}")
+        docp = doc_copy_path(cfg, src)
+        has_doc = src.kind() != "none" and docp.is_file()
+        if has_doc:
+            print(f"  {src.name}: SEAL BROKEN - cleaned diverged; propose a doc back-port")
+            print(f"    source doc: {docp}")
+        else:
+            print(f"  {src.name}: SEAL BROKEN - hand-authored snippet changed (no source doc)")
         for c in cleaned_for(cfg, src.group, src.name):
             snip = cfg.destination / src.group / c["snippet"]
             snap = sealed_snapshot_path(cfg, src.group, c["snippet"])
@@ -404,8 +446,11 @@ def cmd_diff(cfg: Config, args) -> int:
             )
             if lines:
                 sys.stdout.writelines(lines)
-        print(
-            "    -> update the source doc to carry the substantive change back; ignore "
-            "cleaned-only params/guards/jq, then re-seal."
-        )
+        if has_doc:
+            print(
+                "    -> update the source doc to carry the substantive change back; ignore "
+                "cleaned-only params/guards/jq, then re-seal."
+            )
+        else:
+            print("    -> review the change above; re-seal (seal/include) once it is intended.")
     return diverged

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 #
-# pull.sh — download every workflow definition from n8n into workflows/ as
-# pretty-printed JSON so they can be version controlled.
+# pull.sh — download every workflow from n8n into workflows/ as pretty-printed JSON for version
+# control. Writes the clean, pushable shape only (name/nodes/connections/settings[/staticData]) —
+# the exact fields push.sh sends — so a pull -> push round-trips. Ids and server-side state
+# (active, timestamps, versionId, ownership) are dropped; push.sh re-matches by name.
 #
-# Expects the n8n pod to be reachable locally, e.g.:
-#   oc port-forward svc/n8n 5678:5678
+# Expects the n8n API reachable — a port-forward (oc port-forward svc/n8n 5678:5678) or set
+# N8N_URL to the n8n route directly.
 #
 # Auth: create an API key in the n8n UI (Settings -> n8n API) and export
 # N8N_API_KEY before running.
@@ -23,9 +25,9 @@ usage() {
   cat <<'EOF'
 Usage: pull.sh [--prune] [dest-dir]
 
-Downloads every n8n workflow to <dest-dir>/<workflow-name>.json (the workflow
-id is appended to the filename only when two workflows share a name). The id
-inside the file is what push.sh keys on, so renaming files is safe.
+Downloads every n8n workflow to <dest-dir>/<workflow-name>.json in the clean,
+pushable shape (name/nodes/connections/settings) that push.sh re-matches by name.
+Ids and server state are dropped. Names should be unique (a duplicate warns and overwrites).
 
 Arguments:
   dest-dir     Destination directory; overrides N8N_WORKFLOWS_DIR
@@ -111,8 +113,7 @@ slugify() {
 
 mkdir -p "$WORKFLOWS_DIR"
 
-declare -A slug_to_id # detect duplicate workflow names
-declare -A written    # basenames written this run, for --prune
+declare -A written # basenames written this run (for --prune + duplicate-name detection)
 count=0
 cursor=""
 
@@ -125,18 +126,16 @@ while :; do
 
   mapfile -t rows < <(jq -c '.data[]' <<<"$page")
   for row in "${rows[@]}"; do
-    id="$(jq -r '.id' <<<"$row")"
     name="$(jq -r '.name' <<<"$row")"
     slug="$(slugify "$name")"
-    if [[ -n "${slug_to_id[$slug]:-}" && "${slug_to_id[$slug]}" != "$id" ]]; then
-      slug="$slug-$id"
-    fi
-    slug_to_id["$slug"]="$id"
-
     file="$WORKFLOWS_DIR/$slug.json"
-    # -S keeps key order stable across pulls; .shared is server-side
-    # ownership/project noise that just churns diffs.
-    jq -S 'del(.shared)' <<<"$row" >"$file"
+    if [[ -n "${written["$slug.json"]:-}" ]]; then
+      echo "  warning: duplicate name '$name' — overwriting $file (names must be unique for push)" >&2
+    fi
+    # Write ONLY the fields push.sh sends (its build_body), so a pull -> push round-trips and
+    # never carries an id or server-side state into git. -S keeps key order stable across pulls.
+    jq -S '{name, nodes, connections, settings: (.settings // {})}
+           + (if .staticData != null then {staticData} else {} end)' <<<"$row" >"$file"
     written["$slug.json"]=1
     count=$((count + 1))
     echo "  pulled: $name -> $file"

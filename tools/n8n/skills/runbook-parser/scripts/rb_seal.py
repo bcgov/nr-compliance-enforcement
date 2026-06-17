@@ -20,12 +20,12 @@ from rb_config import resolve_source
 from rb_log import RunbookError
 from rb_model import Config, Source, write_text_lf
 
-# Suffix for the verbatim doc copy ``build`` parks next to the raws in ``working_dir/<group>/``.
+# Suffix for the verbatim doc copy ``ingest`` parks next to the raws in ``working_dir/<group>/``.
 DOC_COPY_SUFFIX = ".src.md"
 
 
 def doc_copy_path(cfg: Config, src: Source) -> Path:
-    """Where ``build`` parks the verbatim copy of a source's doc (``working_dir/<group>/``)."""
+    """Where ``ingest`` parks the verbatim copy of a source's doc (``working_dir/<group>/``)."""
     return cfg.working_dir / src.group / f"{src.docname()}{DOC_COPY_SUFFIX}"
 
 
@@ -81,18 +81,21 @@ def _read_doc(cfg: Config, src: Source) -> Optional[str]:
 def compute_seal(cfg: Config, src: Source) -> Optional[str]:
     """One SHA over the source's doc (as-is) + its cleaned snippets (code only).
 
-    Returns ``None`` when there is nothing to seal (the source has no cleaned snippets) or an
-    input is missing (doc unreachable, or a referenced cleaned snippet absent on disk).
+    A doc-less source (a placeholder with no ``url``/``file``, holding hand-authored snippets)
+    seals over its cleaned snippets alone. Returns ``None`` when there is nothing to seal (no
+    cleaned snippets) or an input is missing (a doc source's doc is unreachable, or a referenced
+    cleaned snippet is absent on disk).
     """
     cleaned = cleaned_for(cfg, src.group, src.name)
     if not cleaned:
         return None
-    doc = _read_doc(cfg, src)
-    if doc is None:
-        return None
     h = hashlib.sha256()
-    h.update(b"doc\x00")
-    h.update(_lf(doc).encode("utf-8"))
+    if src.kind() != "none":
+        doc = _read_doc(cfg, src)
+        if doc is None:
+            return None
+        h.update(b"doc\x00")
+        h.update(_lf(doc).encode("utf-8"))
     for c in sorted(cleaned, key=lambda x: x.get("snippet", "")):
         snip = cfg.destination / src.group / c["snippet"]
         if not snip.is_file():

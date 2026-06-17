@@ -1,6 +1,6 @@
 ---
 name: runbook-parser
-description: Tangle code out of prose runbooks and wikis into version-controlled snippets, per source and losslessly, and detect doc/code drift. Use it to author or extend a RunbookParser config.yaml, run the parser (build, check, sync), turn raw snippets into safe parameterized building blocks for n8n, or backport a snippet fix to the source doc.
+description: Tangle code out of prose runbooks and wikis into version-controlled snippets, per source and losslessly, and detect doc/code drift. Use it to author or extend a RunbookParser config.yaml, run the parser (ingest, check, seal, diff), turn raw snippets into safe parameterized building blocks for n8n, or backport a snippet fix to the source doc.
 owner: Compliance and Enforcement
 tags: [n8n, runbook, parser, drift, docs-as-code]
 ---
@@ -9,14 +9,14 @@ tags: [n8n, runbook, parser, drift, docs-as-code]
 
 Turns operational runbook documents (wiki pages, markdown like `crunchy-notes.md`)
 into a version-controlled, composable library of building blocks for n8n workflows, and
-keeps the extracted code in sync with its source — in both directions.
+keeps the extracted code aligned with its source, surfacing drift so fixes can be ported back.
 
 Two kinds of snippet:
 
 - **Raw** (`working_dir/<group>/`) — the parser losslessly decomposes each source into
   ordered, typed snippets named `<source-name>_<section>.ext` (prose to `.md`, fenced blocks
   to `.sh`/`.yaml`/`.sql`/…). Mostly useless alone, but recombining them reproduces the doc,
-  which powers drift detection and `sync`.
+  which powers drift detection.
 - **Cleaned** (`snippets/<group>/`) — you (the agent) rewrite chosen raw snippets into
   `snippet-*` building blocks that are individually runnable, parameterized, read-only and
   idempotent.
@@ -33,13 +33,14 @@ helper is `tools/n8n/render.sh`.
 - Pulling a wiki or markdown runbook into committed snippets under `snippets/`.
 - Turning raw snippets into safe, parameterized cleaned `snippet-*` blocks.
 - Checking drift between docs and extracted code (local or CI).
-- Backporting a cleaned fix to the source doc (cleaned, then raw, then `sync`).
+- Backporting a cleaned fix: when the seal breaks, `diff` shows the change and the agent proposes the doc edit.
+- Adding a hand-authored cleaned snippet (no raw to start from) and sealing it in one step — `include`.
 - Running the parser against another team's repo (each repo has its own config).
 
 ## Don't Use When
 
 - Pushing or pulling the n8n workflow JSON itself, use `tools/n8n/pull.sh` / `push.sh`.
-- Hand-editing generated raw snippets, edit the source doc and re-run `build` instead
+- Hand-editing generated raw snippets, edit the source doc and re-run `ingest` instead
   (the parser prunes and overwrites them).
 - Plain markdown authoring with no extraction, drift, or composition need.
 
@@ -50,8 +51,8 @@ Forward (doc to raw snippets to cleaned blocks):
 1. Locate or create `config.yaml`; confirm `root`, `destination`, `working_dir`.
 2. For each source set exactly one of `url:` / `file:`, a `description`, and an optional
    `doc:`; group related sources by a shared `name`.
-3. `python scripts/parser.py build --dry-run` — review the planned files.
-4. `python scripts/parser.py build` — materializes raws (and a verbatim copy of each source
+3. `python scripts/parser.py ingest --dry-run` — review the planned files.
+4. `python scripts/parser.py ingest` — materializes raws (and a verbatim copy of each source
    doc) to `working_dir`, and rewrites `status`.
 5. `python scripts/parser.py check` — gate on exit 2 (drift) before committing.
 6. Clean a source (your judgement, not the parser): pick a source by its unique `name`; its
@@ -67,20 +68,21 @@ Forward (doc to raw snippets to cleaned blocks):
    flag later snippet-code edits for backport.
 8. Commit `snippets/` and `config.yaml`.
 
-Reverse (sync a fix back, to reduce dev burden — `check` flags it as snippet-code drift):
+Reverse (back-port a fix — `check`/`diff` flag it via the seal):
 
-1. A dev improves a `snippet-*`; reflect the substantive change into the matching raw
-   snippet (judgement).
-2. `python scripts/parser.py sync` recombines raw and writes the source doc.
-3. `python scripts/parser.py check` confirms in-sync. See `references/SYNC.md`.
+1. A dev edits a `snippet-*`; `check` reports `SNIPPET CODE DRIFT` (the seal no longer matches).
+2. `python scripts/parser.py diff --source <name>` shows the change against the seal snapshot;
+   read it with the source doc and propose the doc edit carrying the substantive fix back
+   (cleaned -> raw is lossy, so this is judgement, not a mechanical reverse).
+3. Apply it to the source doc/wiki, then re-`ingest` and re-`seal`. See `references/BACKPORT.md`.
 
 ## Rules
 
-- Always run `build` then `check` before committing; never commit with `check` at exit 2.
+- Always run `ingest` then `check` before committing; never commit with `check` at exit 2.
 - Always set exactly one of `url:` / `file:` per source (Why: a source with neither is a
   placeholder that yields no snippets).
 - Never hand-edit raw snippets or the parser-owned `status` fields — they are
-  regenerated (Why: `build` prunes and overwrites them).
+  regenerated (Why: `ingest` prunes and overwrites them).
 - Never promote a mutating or non-idempotent snippet; drop it and record why (Why: cleaned
   blocks must be safe to re-run in any order an n8n workflow composes them).
 - Account for inline code (backtick spans) in the `.md` snippets when cleaning, not just
@@ -95,25 +97,31 @@ Reverse (sync a fix back, to reduce dev burden — `check` flags it as snippet-c
   your editor adds them (the parser writes LF).
 - After cleaning a source, run `seal` to record its baseline; `check` then flags a later edit
   to a cleaned command (not comments) or the source doc as snippet-code drift to backport.
-- Markdown report snippets list their expected input keys in the header; `skipped` reasons
+- A hand-authored snippet (one you wrote, not produced from a raw) is brought in with
+  `include --source <name> --snippet <file>` — it records the snippet under that source's
+  `cleaned` and seals. For a snippet with no source doc, target a placeholder source (no
+  url/file); the seal then covers the snippet alone.
+- Markdown report snippets list their expected input keys in the header, and guard each data
+  section with `{{#if}}` so they degrade gracefully when inputs are absent; `skipped` reasons
   are one sentence.
-- Backport with `sync` so the doc stays canonical; never edit the doc and the snippet
-  separately.
+- Back-port by proposing a doc edit from the `diff` output (cleaned -> raw is lossy; there is no
+  automatic reverse); keep the doc canonical, never edit the doc and the snippet separately, and
+  re-`seal` after.
 - Keep the `working_dir` fetch cache out of commits.
 - The parser needs `pip install pyyaml markdown-it-py` (runs locally or in CI, not in n8n).
 
 ## Examples
 
 - "Pull the crunchy DR commands from the wiki into snippets" then set the source `url:` and
-  run `build`.
+  run `ingest`.
 - "Has our runbook drifted from the docs?" then run `check` and read the unified diff.
 - "Add the postgres triage snippets to the same group" then add a same-`name` source and
-  re-run `build` (auto-merged).
+  re-run `ingest` (auto-merged).
 - "Clean the crunchy-dr-wiki source" then read its `description` + raw `working_dir/…` files, write
   read-only `snippet-*` blocks to `snippets/crunchy-triage/`, skip the destructive ones (into
   the group's `skipped` list), and run `shellcheck`.
-- "I fixed the pod selector in the snippet, update the doc" then reflect it into raw and
-  run `sync`.
+- "I fixed the pod selector in the snippet, update the doc" then `diff` shows the change;
+  propose the doc edit, apply it, and re-`ingest`/`seal`.
 - "Show three chained results to the user" then write a markdown `snippet-*` with
   `{{ .json.path }}` and render it with `render.sh`.
 
@@ -121,15 +129,15 @@ Reverse (sync a fix back, to reduce dev burden — `check` flags it as snippet-c
 
 - Source URL unreachable then the parser falls back to the `working_dir` cache with a
   warning.
-- A `doc:` file that does not exist yet then `check` reports `doc_missing` and `sync`
-  creates it (it is not an error).
+- A `doc:` mirror that does not exist then `check` just notes it (no error); the seal already
+  covers doc drift, so the mirror is optional.
 - Same `name` across sources then snippets merge deterministically in config order.
 - A source with neither `url` nor `file` then it is a placeholder contributing nothing.
 - A null timestamp then the drift check still runs (null never suppresses it).
-- Reverse `sync` into a `url:` source then the local `doc` mirror is written and a diff is
-  printed for manual wiki update (a remote wiki cannot be pushed to).
+- Back-porting into a `url:` source then the agent proposes the doc edit and you paste it into
+  the wiki by hand (a remote wiki cannot be pushed to).
 - A cleaned command edited after sealing then `check` reports `SNIPPET CODE DRIFT` (a
-  comment-only edit does not); backport via `sync`, then re-`seal`.
+  comment-only edit does not); run `diff`, propose the doc edit, then re-`seal`.
 
 ## References
 
@@ -139,7 +147,8 @@ Reverse (sync a fix back, to reduce dev burden — `check` flags it as snippet-c
   a no-network smoke test.
 - `references/CLEANING.md` — the cleaned contract: safety/idempotency/parameterization
   rules, inline-code harvest, linters, and the `render.sh` placeholder syntax.
-- `references/SYNC.md` — the reverse flow (cleaned to raw to doc) and the `sync` handoff.
+- `references/BACKPORT.md` — the back-port flow: `diff` surfaces a dev's cleaned change and the
+  agent proposes the doc edit.
 - `assets/snippet-template.sh` / `assets/report-template.md` — the standard header for
   cleaned bash / markdown report snippets.
 - `references/SKILL_SPEC.md` — the SKILL.md manifest spec this file conforms to.

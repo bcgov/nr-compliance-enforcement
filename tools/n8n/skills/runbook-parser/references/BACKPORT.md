@@ -23,7 +23,7 @@ agent proposes the doc edit  (read the diff + the doc; carry the substantive cha
    v
 apply to the source doc / wiki  (for a url source, paste into the wiki by hand)
    v
-parser.py build   (re-derive raws from the updated source)
+parser.py ingest   (re-derive raws from the updated source)
 parser.py seal    (re-seal: snapshot + hash are reconciled again)
 ```
 
@@ -45,10 +45,10 @@ compare by hand instead. `diff` exits **2** when any source diverged, **0** othe
 
 ## Targets
 
-- **`file:` source** -- the doc is a local file; apply the proposed edit there, then `build`
+- **`file:` source** -- the doc is a local file; apply the proposed edit there, then `ingest`
   re-reads it.
 - **`url:` source** -- a remote wiki cannot be pushed to; paste the proposed edit into the wiki
-  by hand, then the next `build` refetches it. (An optional `doc:` keeps a committed local
+  by hand, then the next `ingest` refetches it. (An optional `doc:` keeps a committed local
   mirror for reference.)
 
 ## Guardrails

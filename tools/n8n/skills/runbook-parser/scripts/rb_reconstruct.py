@@ -2,8 +2,8 @@
 
 Because :func:`~rb_markdown.decompose` is lossless, concatenating a source's raw snippets in
 order reproduces the document. :func:`render_from_disk` does that from the raw files in
-``working_dir/<group>/`` (what ``check``/``sync`` compare against), ordered by the sidecar
-index; :func:`render_from_snippets` does it from in-memory snippets (used during ``build``).
+``working_dir/<group>/`` (what ``check`` compares against), ordered by the sidecar
+index; :func:`render_from_snippets` does it from in-memory snippets (used during ``ingest``).
 """
 
 from __future__ import annotations
@@ -17,15 +17,14 @@ from rb_model import Config, Snippet, Source
 
 
 def _eol(text: str) -> str:
-    """Normalize line endings only — used by ``sync`` so writes stay byte-faithful."""
+    """Normalize line endings (CRLF -> LF); used by :func:`normalize` for tolerant comparisons."""
     return text.replace("\r\n", "\n")
 
 
 def normalize(text: str) -> str:
     """Lenient normalization for drift checks: strip trailing whitespace and final newline.
 
-    Keeps cosmetic edits (trailing spaces, a missing final newline) from registering as
-    drift. ``sync`` deliberately does NOT use this — it writes the faithful reconstruction.
+    Keeps cosmetic edits (trailing spaces, a missing final newline) from registering as drift.
     """
     body = "\n".join(line.rstrip() for line in _eol(text).split("\n"))
     return body.strip("\n") + "\n"

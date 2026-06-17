@@ -5,7 +5,7 @@
 fenced code blocks and headings (handling CommonMark edge cases — tilde fences, info
 strings, ATX/setext headings — that a regex scanner gets wrong), then slices the *original*
 lines so the split stays lossless: recombining the chunks reproduces the document byte for
-byte, which is what powers drift detection and reverse ``sync``.
+byte, which is what powers drift detection.
 
 Only fenced code becomes a code chunk; indented (4-space) code blocks are left as prose, so
 they round-trip verbatim without re-indentation guesswork.

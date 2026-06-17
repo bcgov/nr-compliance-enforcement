@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Production URL\n\nClick to run this triage:\n\n**https://YOUR-N8N-HOST/webhook/triage**\n\n(replace with the Webhook node's Production URL)",
+        "content": "## <TITLE> — production URL\n\nClick to run this triage — read-only and idempotent, safe to fire any time:\n\n**<BASE_URL>/webhook/<PATH>?<QUERY>**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
         "height": 240,
         "width": 380,
         "color": 4

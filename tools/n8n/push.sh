@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 #
-# push.sh — push local workflow JSON files back to n8n.
+# push.sh — push local workflow JSON files to n8n, matched by name.
 #
-# Files that contain an "id" update the existing workflow (PUT); files without
-# one are created (POST) and the generated id is written back into the file.
-# The n8n API ignores "active" on create/update, so the workflow is activated
-# or deactivated afterwards to match the file. Tags are not pushed (the public
-# API only accepts them on a separate endpoint).
+# Workflows are upserted by their "name": if your n8n account (the API key) already has a
+# workflow with that name it is overwritten (PUT); otherwise it is created (POST). Ids are NOT
+# tracked — they are looked up fresh each push and never written back, so the JSON in git stays
+# clean (name/nodes/connections/settings) and each dev keeps their own copy under their account.
+# The n8n API ignores "active" on create/update, so the workflow is activated or deactivated
+# afterwards to match the file. Tags are not pushed (the public API only accepts them separately).
 #
-# Expects the n8n pod to be reachable locally, e.g.:
-#   oc port-forward svc/n8n 5678:5678
+# Expects the n8n API reachable — a port-forward (oc port-forward svc/n8n 5678:5678) or set
+# N8N_URL to the n8n route directly.
 #
 # Auth: create an API key in the n8n UI (Settings -> n8n API) and export
 # N8N_API_KEY before running.
@@ -33,9 +34,9 @@ Pushes workflow JSON files to n8n. Directory arguments expand to the .json
 files inside them. With no arguments, pushes every .json file in the default
 workflows directory.
 
-Files with an "id" field update that workflow; files without one are created
-and the new id is written back into the local file. The "active" flag is
-reconciled via the activate/deactivate endpoints. Tags are not pushed.
+Workflows are matched by "name": a same-named workflow in your n8n account is
+overwritten, otherwise one is created. Ids are not tracked or written back. The
+"active" flag is reconciled via the activate/deactivate endpoints. Tags are not pushed.
 
 Options:
   --dry-run    Validate files and show what would happen without pushing
@@ -149,8 +150,29 @@ sync_active() {
   fi
 }
 
+# find_id_by_name NAME — echo the id of the (first) workflow with exactly this name in the
+# account the API key belongs to, or nothing. Paginates; warns on duplicates.
+find_id_by_name() {
+  local name="$1" cursor="" page ids query
+  while :; do
+    query=(-G --data-urlencode "limit=250")
+    if [[ -n "$cursor" ]]; then query+=(--data-urlencode "cursor=$cursor"); fi
+    page="$(api GET /workflows "${query[@]}")" || return 1
+    ids="$(jq -r --arg n "$name" '.data[]? | select(.name == $n) | .id' <<<"$page")"
+    if [[ -n "$ids" ]]; then
+      if [[ "$(wc -l <<<"$ids")" -gt 1 ]]; then
+        echo "  warning: multiple workflows named '$name'; overwriting the first" >&2
+      fi
+      head -n1 <<<"$ids"
+      return 0
+    fi
+    cursor="$(jq -r '.nextCursor // empty' <<<"$page")"
+    if [[ -z "$cursor" ]]; then return 0; fi
+  done
+}
+
 push_file() {
-  local f="$1" id name body resp tmp
+  local f="$1" name body resp id
   if [[ ! -f "$f" ]]; then
     echo "  failed: $f (no such file)" >&2
     return 1
@@ -160,13 +182,13 @@ push_file() {
     return 1
   fi
 
-  id="$(jq -r '.id // empty' "$f")"
   name="$(jq -r '.name' "$f")"
   body="$(build_body "$f")"
+  id="$(find_id_by_name "$name")" || { echo "  failed: $f (could not query n8n)" >&2; return 1; }
 
   if [[ "$DRY_RUN" == true ]]; then
     if [[ -n "$id" ]]; then
-      echo "  would update: $name ($id)"
+      echo "  would overwrite: $name ($id)"
     else
       echo "  would create: $name"
     fi
@@ -178,16 +200,14 @@ push_file() {
       echo "  failed: $f" >&2
       return 1
     }
-    echo "  updated: $name ($id)"
+    echo "  overwrote: $name ($id)"
   else
     resp="$(api POST "/workflows" -H 'Content-Type: application/json' --data-binary @- <<<"$body")" || {
       echo "  failed: $f" >&2
       return 1
     }
     id="$(jq -r '.id' <<<"$resp")"
-    tmp="$(mktemp)"
-    jq -S --arg id "$id" '.id = $id' "$f" >"$tmp" && mv "$tmp" "$f"
-    echo "  created: $name ($id) — id saved back to $f"
+    echo "  created: $name ($id)"
   fi
 
   sync_active "$f" "$id" "$name" "$resp"

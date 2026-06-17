@@ -17,6 +17,11 @@ spec:
   root: tools/n8n/
   destination: tools/n8n/snippets/
   working_dir: /tmp
+  # n8n deployment the workflow-builder targets. base_url is the production host: each built
+  # workflow's production webhook is <base_url>/webhook/<workflow-name>, embedded in its sticky
+  # note. push.sh can also target it directly (N8N_URL=<base_url>) instead of a port-forward.
+  n8n:
+    base_url: https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca
   sources:
     # Each source has a unique `name` (used to target it, e.g. for cleaning) and a `group`
     # (sources sharing a group combine into one snippet group). The `description` guides the
@@ -85,4 +90,4 @@ status:
       - raw: crunchy-dr-wiki_5-perform-manual-restore-2.sh
         reason: manual restore — destructive writes, not triage
       seals:
-        crunchy-dr-wiki: sha256:d846e79f7e4a1ecd874b9913ab76f9226ea09a817b039ea8b076aa262f9d5114
+        crunchy-dr-wiki: sha256:e2983a1a531b2b0cc99fe5f5d6775a66f1eaf6f18fac425e8e872122326ffa19
