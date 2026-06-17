@@ -8,7 +8,7 @@ export interface PersonDto {
   dateOfBirth?: Date;
   driversLicenseNumber?: string;
   driversLicenseJurisdiction?: string;
-  sexCode?: string;
+  genderCode?: string;
 }
 
 export interface BusinessDto {

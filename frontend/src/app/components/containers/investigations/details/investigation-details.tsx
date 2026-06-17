@@ -33,50 +33,66 @@ export const GET_INVESTIGATION = gql`
         partyIdentifier
         partyReference
         partyTypeCode
+        aliases {
+          aliasGuid
+          name
+        }
+        contactMethods {
+          contactMethodGuid
+          typeCode
+          value
+          isPrimary
+        }
+        addresses {
+          addressGuid
+          addressName
+          address
+          city
+          province
+          postalCode
+          country
+          isPrimary
+        }
         person {
           personGuid
           firstName
-          middleName
-          middleName2
+          middleNames
           lastName
           dateOfBirth
+          approximateAgeCode
           driversLicenseNumber
-          driversLicenseJurisdiction
-          sexCode
-          contactMethods {
-            contactMethodGuid
-            contactMethodTypeCode
-            contactValue
-            isPrimary
+          driversLicenseClass
+          driversLicenseCountryCode
+          driversLicenseCountrySubdivisionCode
+          genderCode
+          heightInCm
+          weightInKg
+          complexionCode
+          buildCode
+          hairColourCode
+          hairLengthCode
+          hairColourOther
+          eyeColourCode
+          eyeColourOther
+          facialHairIndicator
+          facialHairStyleCodes {
+            investigationPersonFacialStyleHairCodeRefGuid
+            facialHairStyleCodeRef
           }
+          additionalHairDescriptors
+          tattooIndicator
+          tattooDescription
+          additionalDescriptors
+          comments
+          boloIndicator
         }
         business {
           businessGuid
           name
-          contactMethods {
-            contactMethodGuid
-            contactMethodTypeCode
-            contactValue
-            isPrimary
-          }
           businessIdentifiers {
             businessIdentifierGuid
-            businessIdentifierCode
+            identifierCode
             identifierValue
-          }
-          aliases {
-            aliasGuid
-            name
-          }
-          addresses {
-            businessAddressGuid
-            addressName
-            address
-            city
-            province
-            postalCode
-            country
-            isPrimary
           }
         }
         partyAssociationRole

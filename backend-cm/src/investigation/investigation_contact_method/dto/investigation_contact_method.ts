@@ -4,19 +4,22 @@ import { Field, InputType } from "@nestjs/graphql";
 
 export class InvestigationContactMethod {
   contactMethodGuid: string;
-  contactMethodTypeCode: string;
-  contactValue?: string;
+  typeCode: string;
+  value?: string;
   isPrimary: boolean;
   isActive: boolean;
 }
 
 @InputType()
 export class CreateInvestigationContactMethodInput {
+  @Field(() => String, { nullable: true })
+  contactMethodGuid?: string;
+
   @Field(() => String)
-  contactMethodTypeCode: string;
+  typeCode: string;
 
   @Field(() => String, { nullable: true })
-  contactValue?: string;
+  value?: string;
 
   @Field(() => Boolean, { nullable: true })
   isPrimary?: boolean;
@@ -28,10 +31,10 @@ export class UpdateInvestigationContactMethodInput {
   contactMethodGuid?: string;
 
   @Field(() => String)
-  contactMethodTypeCode: string;
+  typeCode: string;
 
   @Field(() => String, { nullable: true })
-  contactValue?: string;
+  value?: string;
 
   @Field(() => Boolean, { nullable: true })
   isPrimary?: boolean;
@@ -47,11 +50,11 @@ export const mapPrismaContactMethodToInvestigationContactMethod = (mapper: Mappe
       mapFrom((src) => src.investigation_contact_method_guid),
     ),
     forMember(
-      (dest) => dest.contactMethodTypeCode,
+      (dest) => dest.typeCode,
       mapFrom((src) => src.contact_method_type_code_ref),
     ),
     forMember(
-      (dest) => dest.contactValue,
+      (dest) => dest.value,
       mapFrom((src) => src.contact_value),
     ),
     forMember(

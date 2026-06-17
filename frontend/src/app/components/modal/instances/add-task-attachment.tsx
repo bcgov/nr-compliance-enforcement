@@ -7,7 +7,7 @@ import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
-import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
 import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
@@ -98,7 +98,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
       fileType: attachment?.fileType ?? "",
       description: attachment?.description ?? "",
       title: attachment?.title ?? "",
-      date: attachment?.date ? parseISO(attachment.date) : null,
+      date: attachment?.date ? parseISO(attachment.date) : new Date(),
       takenBy: attachment?.takenBy ?? defaultAssignee ?? "",
       location: attachment?.location ?? "",
     },
@@ -185,7 +185,7 @@ export const AddEditTaskAttachmentModal: FC<AddEditTaskAttachmentModalProps> = (
     if (!files) return;
 
     const toastId = ToggleInformation("Upload in progress, do not close the NatSuite application.", {
-      position: "top-right",
+      position: TOAST_POSITION,
       autoClose: false,
       closeOnClick: false,
       closeButton: false,

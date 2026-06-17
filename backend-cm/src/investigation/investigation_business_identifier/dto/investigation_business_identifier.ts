@@ -4,7 +4,8 @@ import { Field, InputType } from "@nestjs/graphql";
 
 export class InvestigationBusinessIdentifier {
   businessIdentifierGuid: string;
-  businessIdentifierCode: string;
+  businessGuid: string;
+  identifierCode: string;
   identifierValue: string;
   isActive: boolean;
 }
@@ -12,7 +13,7 @@ export class InvestigationBusinessIdentifier {
 @InputType()
 export class CreateInvestigationBusinessIdentifierInput {
   @Field(() => String)
-  businessIdentifierCode: string;
+  identifierCode: string;
 
   @Field(() => String)
   identifierValue: string;
@@ -24,7 +25,7 @@ export class UpdateInvestigationBusinessIdentifierInput {
   businessIdentifierGuid?: string;
 
   @Field(() => String)
-  businessIdentifierCode: string;
+  identifierCode: string;
 
   @Field(() => String)
   identifierValue: string;
@@ -40,7 +41,11 @@ export const mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier = (map
       mapFrom((src) => src.investigation_business_identifier_guid),
     ),
     forMember(
-      (dest) => dest.businessIdentifierCode,
+      (dest) => dest.businessGuid,
+      mapFrom((src) => src.investigation_business_guid),
+    ),
+    forMember(
+      (dest) => dest.identifierCode,
       mapFrom((src) => src.business_identifier_code_ref),
     ),
     forMember(

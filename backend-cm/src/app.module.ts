@@ -38,7 +38,6 @@ import { ScheduleSectorXrefModule } from "./complaint_outcome/schedule_sector_xr
 import { LeadModule } from "./complaint_outcome/lead/lead.module";
 import { CaseLocationCodeModule } from "./complaint_outcome/code-tables/case_location_code/case_location_code.module";
 import { IpmAuthCategoryCodeModule } from "./complaint_outcome/ipm_auth_category_code/ipm_auth_category_code.module";
-import { PersonModule } from "./shared/person/person.module";
 import { ParkModule } from "./shared/park/park.module";
 import { AgencyCodeModule } from "./shared/agency_code/agency_code.module";
 import { AutomapperModule, InjectMapper } from "@automapper/nestjs";
@@ -84,6 +83,14 @@ import { EnforcementActionModule } from "./investigation/enforcement_action/enfo
 import { EnforcementActionCodeModule } from "./investigation/enforcement_action_code/enforcement_action_code.module";
 import { CountryCodeModule } from "./shared/country_code/country_code.module";
 import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/country_subdivision_code.module";
+import { ApproximateAgeCodeModule } from "./shared/approximate_age_code/approximate_age_code.module";
+import { GenderCodeModule } from "./shared/gender/gender_code.module";
+import { ComplexionCodeModule } from "src/shared/complexion_code/complexion_code.module";
+import { BuildCodeModule } from "src/shared/build_code/build_code.module";
+import { HairColourCodeModule } from "src/shared/hair_colour_code/hair_colour_code.module";
+import { HairLengthCodeModule } from "src/shared/hair_length_code/hair_length_code.module";
+import { EyeColourCodeModule } from "src/shared/eye_colour_code/eye_colour_code.module";
+import { FacialHairStyleCodeModule } from "src/shared/facial_hair_style_code/facial_hair_style_code.module";
 
 @Module({
   imports: [
@@ -127,7 +134,6 @@ import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/
     LeadModule,
     CaseLocationCodeModule,
     IpmAuthCategoryCodeModule,
-    PersonModule,
     ParkModule,
     AgencyCodeModule,
     CaseFileModule,
@@ -166,6 +172,14 @@ import { CountrySubdivisionCodeModule } from "./shared/country_subdivision_code/
     EnforcementActionCodeModule,
     CountryCodeModule,
     CountrySubdivisionCodeModule,
+    ApproximateAgeCodeModule,
+    GenderCodeModule,
+    ComplexionCodeModule,
+    BuildCodeModule,
+    HairColourCodeModule,
+    HairLengthCodeModule,
+    EyeColourCodeModule,
+    FacialHairStyleCodeModule,
   ],
   controllers: [AppController],
   providers: [

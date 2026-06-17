@@ -1,0 +1,20 @@
+input CreateInvestigationAddressInput {
+  addressName: String!
+  address: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  isPrimary: Boolean
+}
+
+input UpdateInvestigationAddressInput {
+  addressGuid: String
+  addressName: String!
+  address: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  isPrimary: Boolean
+}

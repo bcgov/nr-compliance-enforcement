@@ -43,7 +43,7 @@ import { mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode } from "../investig
 import { mapPrismaTaskTypeCodeToTaskTypeCode } from "../investigation/task_type_code/dto/task_type_code";
 import { mapPrismaDiaryDateToDiaryDate } from "../investigation/diary_date/dto/diary_date";
 import { mapPrismaAliasToAlias } from "../shared/alias/dto/alias";
-import { mapPrismaBusinessAddressToBusinessAddress } from "../shared/business_address/dto/business_address";
+import { mapPrismaAddressToAddress } from "../shared/address/dto/address";
 import { mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode } from "../shared/business_identifier_code/dto/business_identifier_code";
 import { mapPrismaBusinessIdentifierToIdentifier } from "../shared/business_identifier/dto/business_identifier";
 import { mapPrismaBusinessPersonXrefToBusinessPersonXref } from "../shared/business_person_xref/dto/business_person_xref";
@@ -55,9 +55,19 @@ import { mapPrismaEnforcementActionToEnforcementAction } from "../investigation/
 import { mapPrismaContactMethodToInvestigationContactMethod } from "../investigation/investigation_contact_method/dto/investigation_contact_method";
 import { mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier } from "../investigation/investigation_business_identifier/dto/investigation_business_identifier";
 import { mapPrismaAliasToInvestigationAlias } from "../investigation/investigation_alias/dto/investigation_alias";
-import { mapPrismaBusinessAddressToInvestigationBusinessAddress } from "../investigation/investigation_business_address/dto/investigation_business_address";
 import { mapPrismaCountryCodeToCountryCode } from "src/shared/country_code/dto/country_code";
 import { mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode } from "src/shared/country_subdivision_code/dto/country_subdivision_code";
+import { mapPrismaApproximateAgeCodeToApproximateAgeCode } from "src/shared/approximate_age_code/dto/approximate_age_code";
+import { mapPrismaGenderCodeToGenderCode } from "src/shared/gender/dto/gender_code";
+import { mapPrismaComplexionCodeToComplexionCode } from "src/shared/complexion_code/dto/complexion_code";
+import { mapPrismaBuildCodeToBuildCode } from "src/shared/build_code/dto/build_code";
+import { mapPrismaHairColourCodeToHairColourCode } from "src/shared/hair_colour_code/dto/hair_colour_code";
+import { mapPrismaHairLengthCodeToHairLengthCode } from "src/shared/hair_length_code/dto/hair_length_code";
+import { mapPrismaEyeColourCodeToEyeColourCode } from "src/shared/eye_colour_code/dto/eye_colour_code";
+import { mapPrismaFacialHairStyleCodeToFacialHairStyleCode } from "src/shared/facial_hair_style_code/dto/facial_hair_style_code";
+import { mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import { mapPrismaAddressToInvestigationAddress } from "src/investigation/investigation_address/dto/investigation_address";
+import { mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef } from "../investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -80,7 +90,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessToInvestigationBusiness(mapper);
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaAliasToAlias(mapper);
-  mapPrismaBusinessAddressToBusinessAddress(mapper);
+  mapPrismaAddressToAddress(mapper);
   mapPrismaBusinessIdentifierCodeToBusinessIdentifierCode(mapper);
   mapPrismaBusinessIdentifierToIdentifier(mapper);
   mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
@@ -97,6 +107,15 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode(mapper);
   mapPrismaCountryCodeToCountryCode(mapper);
   mapPrismaCountrySubdivisionCodeToCountrySubdivisionCode(mapper);
+  mapPrismaApproximateAgeCodeToApproximateAgeCode(mapper);
+  mapPrismaGenderCodeToGenderCode(mapper);
+  mapPrismaComplexionCodeToComplexionCode(mapper);
+  mapPrismaBuildCodeToBuildCode(mapper);
+  mapPrismaHairColourCodeToHairColourCode(mapper);
+  mapPrismaHairLengthCodeToHairLengthCode(mapper);
+  mapPrismaEyeColourCodeToEyeColourCode(mapper);
+  mapPrismaFacialHairStyleCodeToFacialHairStyleCode(mapper);
+  mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);
@@ -117,7 +136,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaContactMethodToInvestigationContactMethod(mapper);
   mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier(mapper);
   mapPrismaAliasToInvestigationAlias(mapper);
-  mapPrismaBusinessAddressToInvestigationBusinessAddress(mapper);
+  mapPrismaAddressToInvestigationAddress(mapper);
+  mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

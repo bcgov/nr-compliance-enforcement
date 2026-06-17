@@ -77,6 +77,14 @@ export const AvailableCodeTables = [
   "ticket-outcome-type",
   "country-type",
   "country-subdivision-type",
+  "approximate-age-type",
+  "gender-type",
+  "complexion-type",
+  "build-type",
+  "hair-colour-type",
+  "hair-length-type",
+  "eye-colour-type",
+  "facial-hair-style-type",
 ];
 
 export const AvailableAgencies = ["cos"];

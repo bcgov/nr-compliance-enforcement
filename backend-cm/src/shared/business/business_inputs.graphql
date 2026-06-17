@@ -2,9 +2,7 @@ input BusinessInput {
   name: String!
   aliases: [AliasInput]
   identifiers: [BusinessIdentifierInput]
-  addresses: [BusinessAddressInput]
   contactPeople: [BusinessPersonInput]
-  contactMethods: [ContactMethodInput]
 }
 
 input BusinessUpdateInput {
@@ -12,7 +10,5 @@ input BusinessUpdateInput {
   name: String
   aliases: [AliasUpdateInput]
   identifiers: [BusinessIdentifierUpdateInput]
-  addresses: [BusinessAddressUpdateInput]
   contactPeople: [BusinessPersonUpdateInput]
-  contactMethods: [ContactMethodInput]
 }

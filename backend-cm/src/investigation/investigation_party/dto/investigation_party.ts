@@ -13,6 +13,20 @@ import { investigation_party } from "../../../../prisma/investigation/generated/
 import { Field, InputType } from "@nestjs/graphql";
 import { PartyDto } from "../../../common/party";
 import { EnforcementAction } from "src/investigation/enforcement_action/dto/enforcement_action";
+import {
+  CreateInvestigationContactMethodInput,
+  InvestigationContactMethod,
+  UpdateInvestigationContactMethodInput,
+} from "src/investigation/investigation_contact_method/dto/investigation_contact_method";
+import {
+  CreateInvestigationAliasInput,
+  InvestigationAlias,
+  UpdateInvestigationAliasInput,
+} from "src/investigation/investigation_alias/dto/investigation_alias";
+import {
+  CreateInvestigationAddressInput,
+  InvestigationAddress,
+} from "src/investigation/investigation_address/dto/investigation_address";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -24,6 +38,9 @@ export class InvestigationParty implements PartyDto {
   partyReference?: string;
   partyAssociationRole?: string;
   enforcementActions?: EnforcementAction[];
+  contactMethods?: InvestigationContactMethod[];
+  aliases?: InvestigationAlias[];
+  addresses?: InvestigationAddress[];
 }
 
 @InputType()
@@ -42,6 +59,15 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => String)
   partyAssociationRole: string;
+
+  @Field(() => [CreateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: CreateInvestigationContactMethodInput[];
+
+  @Field(() => [CreateInvestigationAliasInput], { nullable: true })
+  aliases?: CreateInvestigationAliasInput[];
+
+  @Field(() => [CreateInvestigationAddressInput], { nullable: true })
+  addresses?: CreateInvestigationAddressInput[];
 }
 
 @InputType()
@@ -57,6 +83,15 @@ export class UpdateInvestigationPartyInput {
 
   @Field(() => UpdateInvestigationBusinessInput, { nullable: true })
   business?: UpdateInvestigationBusinessInput;
+
+  @Field(() => [UpdateInvestigationContactMethodInput], { nullable: true })
+  contactMethods?: UpdateInvestigationContactMethodInput[];
+
+  @Field(() => [UpdateInvestigationAliasInput], { nullable: true })
+  aliases?: UpdateInvestigationAliasInput[];
+
+  @Field(() => [CreateInvestigationAddressInput], { nullable: true })
+  addresses?: CreateInvestigationAddressInput[];
 }
 
 export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
@@ -118,6 +153,26 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
           "enforcement_action",
           "EnforcementAction",
         ),
+      ),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_contact_method ?? [],
+          "investigation_contact_method",
+          "InvestigationContactMethod",
+        ),
+      ),
+    ),
+    forMember(
+      (dest) => dest.aliases,
+      mapFrom((src) => mapper.mapArray(src.investigation_alias ?? [], "investigation_alias", "InvestigationAlias")),
+    ),
+    forMember(
+      (dest) => dest.addresses,
+      mapFrom((src) =>
+        mapper.mapArray(src.investigation_address ?? [], "investigation_address", "InvestigationAddress"),
       ),
     ),
   );

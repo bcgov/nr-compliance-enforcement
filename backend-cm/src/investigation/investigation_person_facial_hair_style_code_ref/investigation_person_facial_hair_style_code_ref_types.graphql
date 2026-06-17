@@ -1,0 +1,6 @@
+type InvestigationPersonFacialHairStyleCodeRef {
+  investigationPersonFacialStyleHairCodeRefGuid: String
+  investigationPersonGuid: String
+  facialHairStyleCodeRef: String
+  activeIndicator: Boolean
+}

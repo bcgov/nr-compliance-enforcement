@@ -162,6 +162,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
               showErrors={showContinuationReportErrors}
               shouldReset={shouldReset}
               onDirtyChange={onDirtyChange}
+              defaultAssignedUserGuid={investigationData?.primaryInvestigatorGuid}
             />
 
             <div className="comp-details-form-buttons">

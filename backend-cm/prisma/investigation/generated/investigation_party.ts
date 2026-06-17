@@ -1,5 +1,8 @@
 import { contravention_party_xref } from "./contravention_party_xref";
+import { investigation_address } from "./investigation_address";
+import { investigation_alias } from "./investigation_alias";
 import { investigation_business } from "./investigation_business";
+import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation } from "./investigation";
 import { investigation_person } from "./investigation_person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -35,11 +38,23 @@ export class investigation_party {
   @ApiPropertyOptional({ type: String })
   party_association_role_ref?: string;
 
+  @ApiPropertyOptional({ type: String })
+  created_by_app_user_guid_ref?: string;
+
   @ApiProperty({ isArray: true, type: () => contravention_party_xref })
   contravention_party_xref: contravention_party_xref[];
 
+  @ApiProperty({ isArray: true, type: () => investigation_address })
+  investigation_address: investigation_address[];
+
+  @ApiProperty({ isArray: true, type: () => investigation_alias })
+  investigation_alias: investigation_alias[];
+
   @ApiProperty({ isArray: true, type: () => investigation_business })
   investigation_business: investigation_business[];
+
+  @ApiProperty({ isArray: true, type: () => investigation_contact_method })
+  investigation_contact_method: investigation_contact_method[];
 
   @ApiProperty({ type: () => investigation })
   investigation: investigation;

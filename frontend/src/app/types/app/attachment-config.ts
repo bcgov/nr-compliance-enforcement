@@ -1,4 +1,4 @@
-import AttachmentEnum from "@/app/constants/attachment-enum";
+import AttachmentEnum from "@constants/attachment-enum";
 
 export type AttachmentTypeConfig = {
   headerKey: string;
@@ -20,8 +20,23 @@ const ATTACHMENT_TYPE_CONFIG: Record<AttachmentEnum, AttachmentTypeConfig> = {
     subHeaderKey: "x-amz-meta-task-id",
     shouldUpdateComplaintDate: false,
   },
+  [AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT]: {
+    headerKey: "x-amz-meta-investigation-id",
+    subHeaderKey: "x-amz-meta-enforcement-action-id",
+    shouldUpdateComplaintDate: false,
+  },
+  [AttachmentEnum.PARTY_ATTACHMENT]: {
+    headerKey: "x-amz-meta-party-id",
+    shouldUpdateComplaintDate: false,
+  },
 };
 
 export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentTypeConfig => {
   return ATTACHMENT_TYPE_CONFIG[attachmentType];
 };
+
+// Stored in the secure bucket?
+export const isSecureAttachmentType = (attachmentType: AttachmentEnum): boolean =>
+  attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
+  attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT ||
+  attachmentType === AttachmentEnum.PARTY_ATTACHMENT;

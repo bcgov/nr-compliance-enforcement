@@ -9,7 +9,16 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { CaseActivityCreateInput } from "@/generated/graphql";
 import { ComplaintListSearch } from "@/app/components/common/complaint-list-search";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { updateComplaintLastUpdated } from "@store/reducers/complaints";
+import {
+  updateComplaintLastUpdated,
+  updateAllegationComplaintStatus,
+  getComplaintById,
+  selectComplaint,
+} from "@store/reducers/complaints";
+import { getCaseFile } from "@store/reducers/complaint-outcome-thunks";
+import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import useValidateComplaint from "@hooks/validate-complaint";
+import { joinWithAnd } from "@common/methods";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -44,9 +53,11 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
+  const complaint = useAppSelector(selectComplaint);
 
   // Hooks
   const dispatch = useAppDispatch();
+  const validationResults = useValidateComplaint();
 
   // Vars
   const { title, caseId, addedComplaints, onDirtyChange } = modalData;
@@ -71,6 +82,8 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     if (selected) {
       markDirty();
       setSelectedComplaint(selected);
+      dispatch(getComplaintById(selected.value as string, selected.complaintType));
+      dispatch(getCaseFile(selected.value));
     } else {
       setSelectedComplaint(null);
     }
@@ -80,6 +93,14 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     onSuccess: () => {
       if (selectedComplaint?.value) {
         dispatch(updateComplaintLastUpdated(selectedComplaint.value));
+      }
+      // CEEB/NROS/MINES complaints auto-close once added to a case
+      if (
+        selectedComplaint?.complaintType === COMPLAINT_TYPES.ERS &&
+        ["EPO", "NROS", "MINES"].includes(complaint?.ownedBy ?? "") &&
+        selectedComplaint?.value
+      ) {
+        dispatch(updateAllegationComplaintStatus(selectedComplaint.value, "CLOSED"));
       }
       ToggleSuccess("Complaint successfully added");
     },
@@ -96,6 +117,12 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
     }
 
     if (addComplaintErrorMessage) return;
+
+    if (!validationResults.canAddToCase) {
+      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
+      return;
+    }
+
     if (selectedComplaint.value) {
       const createInput: CaseActivityCreateInput = {
         caseFileGuid: caseId,
@@ -162,6 +189,7 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
             variant="primary"
             id="outcome-save-button"
             title="Save Outcome"
+            disabled={loading}
             onClick={handleAddComplaint}
           >
             <span>Save and Close</span>

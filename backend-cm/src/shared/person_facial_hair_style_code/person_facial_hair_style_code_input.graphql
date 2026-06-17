@@ -1,0 +1,6 @@
+input PersonFacialHairStyleCodeInput {
+  personFacialStyleHairCodeGuid: String
+  personGuid: String
+  facialHairStyleCode: String
+  activeIndicator: Boolean
+}

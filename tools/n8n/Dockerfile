@@ -1,5 +1,5 @@
 # Node 22 LTS on UBI9 so globalThis.File is present
-FROM registry.access.redhat.com/ubi9/nodejs-22
+FROM registry.access.redhat.com/ubi9/nodejs-22:9.8-1781010268
 # dockerfile source https://github.com/bcgov/put/blob/main/containers/workflow/Dockerfile
 
 ENV HOME=/opt/app-root/src \
@@ -20,6 +20,7 @@ RUN dnf -y install \
       gcc-c++ \
       make \
       jq \
+      postgresql \
       python3 \
       && dnf clean all
 
@@ -29,7 +30,6 @@ RUN curl -fsSL https://downloads-openshift-console.apps.gold.devops.gov.bc.ca/am
       rm -f /tmp/oc.tar
 
 RUN npm install -g npm && npm install -g n8n
-
 # Bundle the markdown render helper (jq-only) so n8n Execute-Command nodes can pipe a
 # snippet's JSON through it: ... | render.sh template.md
 COPY render.sh /usr/local/bin/render.sh
@@ -44,4 +44,5 @@ RUN mkdir -p /data $HOME/.n8n && \
 WORKDIR /data
 EXPOSE 5678/tcp
 ENTRYPOINT ["tini", "--"]
+
 CMD ["n8n"]
