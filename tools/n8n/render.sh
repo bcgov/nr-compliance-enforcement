@@ -93,14 +93,27 @@ content="$(cat "$TEMPLATE")"
 # string, and a non-empty array/object. `present` is exposed for use inside EXPR (combine keys
 # with or/and), so a report shows only the sections whose data arrived — and nothing broken
 # when none did.
-present_def='def present: (.!=null) and (.!=false) and (.!="") and (if (type=="array" or type=="object") then (length>0) else true end);'
+# Shared jq helpers, exposed to every {{ }} and {{#if}} so templates stay declarative instead of
+# repeating the same jq. Each returns "" when its input is absent, so call them unguarded:
+#   present          truthiness (non-null/false/empty)         — also used by {{#if}}
+#   badges($t)       a row of shields.io capsule images from a list of tag strings
+#   verdict($v)      a validator's blockquote: status + message, its docs link, and objects checked
+#   chain($p)        a prior report's output appended (joins an array with --- rules)
+#   dump($c)         a free-form comments block (array -> lines, string as-is, else JSON)
+HELPERS='
+def present: (.!=null) and (.!=false) and (.!="") and (if (type=="array" or type=="object") then (length>0) else true end);
+def badges($items): if ($items|present) then ($items | map("![" + . + "](https://img.shields.io/badge/-" + (gsub("_";"__")|gsub("-";"--")|gsub(" ";"%20")) + "-555)") | join(" ")) else "" end;
+def verdict($v): if ($v|present) then ("> **" + ($v.status|ascii_upcase) + "** — " + $v.message + (if (($v.docs//"")!="") then "\n> [docs](" + $v.docs + ")" + (if (($v.sources//[])|length)>0 then " — checked " + ($v.sources|join(", ")) else "" end) else "" end)) else "" end;
+def chain($p): if ($p|present) then (if ($p|type=="array") then ($p|join("\n\n---\n\n")) else $p end) else "" end;
+def dump($c): if ($c|present) then (if ($c|type=="array") then ($c|map(tostring)|join("\n")) elif ($c|type=="string") then $c else ($c|tojson) end) else "" end;
+'
 cond=()   # 1/0 per open block: is this branch active? (AND of the whole stack = emit)
 took=()   # 1/0 per open block: was the if-branch condition true? (so {{else}} can invert it)
 emitting() { local c; for c in ${cond[@]+"${cond[@]}"}; do [[ "$c" == 1 ]] || return 1; done; return 0; }
 out=""
 while IFS= read -r line || [[ -n "$line" ]]; do
   if [[ "$line" =~ ^[[:space:]]*\{\{#if[[:space:]]+(.+)\}\}[[:space:]]*$ ]]; then
-    if [[ -n "$JSON" ]] && jq -e "$present_def ( ${BASH_REMATCH[1]} ) | present" >/dev/null 2>&1 <<<"$JSON"; then
+    if [[ -n "$JSON" ]] && jq -e "$HELPERS ( ${BASH_REMATCH[1]} ) | present" >/dev/null 2>&1 <<<"$JSON"; then
       took+=(1); cond+=(1)
     else
       took+=(0); cond+=(0)
@@ -127,18 +140,23 @@ declare -A ph_seen
 scan="$content"
 while [[ "$scan" =~ \{\{[[:space:]]*([^}]+[^}[:space:]])[[:space:]]*\}\} ]]; do
   w="${BASH_REMATCH[0]}"; e="${BASH_REMATCH[1]}"
-  if [[ -z "${ph_seen[$w]+x}" ]]; then ph_seen["$w"]=1; ph_wholes+=("$w"); ph_exprs+=("$e"); fi
   scan="${scan//"$w"/}"
+  # Leave conditional markers literal: Pass 0 already handled real ones (own-line); any that reach
+  # here are prose (e.g. "{{#if}}" written in a comment), not jq — and a leading "#" would comment
+  # out the whole jq program. Skipping them also keeps the documentation text intact.
+  case "$e" in '#'* | '/'* | else) continue ;; esac
+  if [[ -z "${ph_seen[$w]+x}" ]]; then ph_seen["$w"]=1; ph_wholes+=("$w"); ph_exprs+=("$e"); fi
 done
 ph_vals=()
 if [[ -n "$JSON" && ${#ph_exprs[@]} -gt 0 ]]; then
   prog=""
   for e in "${ph_exprs[@]}"; do prog+="(try ($e) catch null),"; done
   prog="[ ${prog%,} ] | .[] | (if . == null then \"\" elif type == \"string\" then . else tojson end) + \"\u0000\""
-  while IFS= read -r -d '' v; do ph_vals+=("$v"); done < <(jq -j "$prog" <<<"$JSON" 2>/dev/null)
+  while IFS= read -r -d '' v; do ph_vals+=("$v"); done < <(jq -j "$HELPERS $prog" <<<"$JSON" 2>/dev/null)
 fi
 for ((i = 0; i < ${#ph_wholes[@]}; i++)); do
-  content="${content//"${ph_wholes[i]}"/${ph_vals[i]-}}"
+  # Quote the replacement: in bash 5.2+ an unquoted & means "the matched text".
+  content="${content//"${ph_wholes[i]}"/"${ph_vals[i]-}"}"
 done
 
 # Pass B — ${VAR} from the environment (braced form only). Collected once; values are not
@@ -152,7 +170,7 @@ while [[ "$scan" =~ \$\{([A-Za-z_][A-Za-z0-9_]*)\} ]]; do
   scan="${scan//"\${$v}"/}"
 done
 for v in "${var_names[@]+"${var_names[@]}"}"; do
-  content="${content//"\${$v}"/${!v-}}"
+  content="${content//"\${$v}"/"${!v-}"}"
 done
 
 printf '%s\n' "$content"

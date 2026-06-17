@@ -55,9 +55,13 @@ developer can run the triage locally and read the HTML report in a browser, no n
 2. Copy `assets/skeleton.json` as the starting point — it already has the Sticky Note (with
    the production URL placeholder), the Webhook (`responseMode: responseNode`), and the
    Format -> Markdown -> Respond tail.
-3. For each cleaned snippet, add an `n8n-nodes-base.executeCommand` node that runs it (passing
-   the upstream JSON via args/env), chained so each feeds the next. Set each node's `notes` to
-   state it is read-only and idempotent (`references/N8N_NODES.md`).
+3. Give every snippet, validator, and report render its OWN `n8n-nodes-base.executeCommand` node
+   that makes exactly one call — one collection `snippet-*` per node, one `validator-*` per node,
+   one `render.sh <report>` per node — so a teammate can copy a node and its single call straight
+   into another workflow. Collection nodes run from the Webhook params; a Code/Merge node combines
+   their JSON; each validator node reads that merged JSON; a Code node keys the verdicts under
+   `.validations`; the report node renders the result. Set each node's `notes` to state it is
+   read-only and idempotent (`references/N8N_NODES.md`).
 4. Keep the tail: Format output (build the report markdown, reusing `tools/n8n/render.sh` for
    `.md` display snippets) -> Markdown node (`markdownToHtml`) -> Respond to Webhook with
    `Content-Type: text/html` (the serve-HTML-via-webhook pattern, n8n template 5173).
@@ -85,6 +89,9 @@ developer can run the triage locally and read the HTML report in a browser, no n
 - Emit only the API-writable fields (`name`, `nodes`, `connections`, `settings`); never POST —
   hand the file to `push.sh`.
 - Give every node a unique `name` and `id`, and wire `connections` by node name.
+- Each snippet, validator, and report render is its own Execute-Command node making exactly one
+  call — never bundle several calls into one node (Why: discrete one-call nodes are copy-pasteable
+  into another workflow, which is the point of the cleaned-snippet library).
 - Reuse `tools/n8n/render.sh` for markdown templating of cleaned `.md` display snippets.
 - Emit the `local-workflow.sh` equivalent too, kept in lockstep with the JSON — one collection
   line per Execute-Command node, in the same order; it is read-only and idempotent like the

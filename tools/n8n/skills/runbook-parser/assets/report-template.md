@@ -12,16 +12,20 @@
        .tags[]           any upstream node    — header capsule badges (array of strings)
        .comments         any upstream node    — free-form dump shown at the bottom (string/array/any)
        .previous         a prior report       — appended below to chain reports (string/array)
-       .validations      from validator-*     — per-section verdicts shown by their data ({check,status,message})
+       .validations      from validator-*     — per-section verdicts ({check,status,message,docs,sources})
 
-     Tags render as shields.io badge images (capsule art) — an external image fetch, so keep tag
-     text non-sensitive. You can also drop static badges in: ![](https://img.shields.io/badge/-text-555)
+     Shared render.sh helpers (each returns "" when its input is absent, so call them unguarded):
+       badges(.tags)             a row of shields.io capsule images
+       verdict(.validations.X)   a validator's blockquote: status + message + docs link + objects checked
+       dump(.comments)           a free-form comments block (array/string/any)
+       chain(.previous)          a prior report's output appended (--- rule between array items)
+     Escape | in free-text table cells (a literal | splits the cell): (.field // "") | gsub("[|]"; "&#124;").
+     Tags fetch external badge images — keep tag text non-sensitive. Drop static badges in too:
+       ![](https://img.shields.io/badge/-text-555)
 -->
 # TITLE — ${VAR}
 
-{{#if .tags }}
-{{ .tags | map("![" + . + "](https://img.shields.io/badge/-" + (gsub("_";"__")|gsub("-";"--")|gsub(" ";"%20")) + "-555)") | join(" ") }}
-{{/if}}
+{{ badges(.tags) }}
 
 {{#if (.json.path | present) or (.other | present) }}
 {{#if .json.path }}
@@ -30,13 +34,11 @@
 {{#if .other }}
 
 ## Section
-{{#if .validations.other }}
-> **{{ .validations.other.status | ascii_upcase }}** — {{ .validations.other.message }}
+{{ verdict(.validations.other) }}
 
-{{/if}}
 | Col |
 |-----|
-{{ .other | map("| \(.field) |") | join("\n") }}
+{{ .other | map("| \((.field // "") | gsub("[|]"; "&#124;")) |") | join("\n") }}
 {{/if}}
 {{else}}
 _No data collected for this report._
@@ -48,12 +50,12 @@ _No data collected for this report._
 #### Notes
 
 ```
-{{ .comments | if type == "array" then map(tostring) | join("\n") elif type == "string" then . else tojson end }}
+{{ dump(.comments) }}
 ```
 {{/if}}
 {{#if .previous }}
 
 ---
 
-{{ .previous | if type == "array" then join("\n\n---\n\n") else . end }}
+{{ chain(.previous) }}
 {{/if}}

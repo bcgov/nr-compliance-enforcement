@@ -62,6 +62,10 @@ It must also:
 - **Markdown report snippets degrade gracefully** — guard each data section with `{{#if}}` so
   the report renders only what is present and never shows an orphan heading, empty table, or
   dangling label; give the body an outer `{{else}}` fallback for the nothing-collected case.
+- **Reuse the shared render.sh helpers** — `badges(.tags)`, `verdict(.validations.X)`,
+  `dump(.comments)`, `chain(.previous)` replace the repeated jq (each returns "" when its input is
+  absent, so no `{{#if}}` is needed around them). Escape `|` in free-text table cells with
+  `gsub("[|]"; "&#124;")` — a literal `|` splits the cell.
 - **`skipped` reasons are one sentence** — short and plain, per skipped raw.
 - **Logic in readable bash, not jq** — use `jq` for simple **extraction** and final assembly
   (`jq -n --arg …`); do decisions, comparisons, and message-building in plain bash `if`/`else`
@@ -131,9 +135,11 @@ A validator MUST:
 - **Be graceful** — tolerate partial or missing data: if the data it checks is absent, emit
   `status: "skip"` instead of failing, so a report with only some sections still validates.
 - **Be read-only and idempotent** — a pure check over the input; no side effects.
-- **Emit a keyed verdict** — `{ check, status, message }`: `check` names the report section the
-  verdict sits next to, `status` is `ok|warn|error|skip`, `message` is the OK summary or issue
-  string.
+- **Emit a keyed verdict** — `{ check, status, message, docs, sources }`: `check` names the
+  report section the verdict sits next to, `status` is `ok|warn|error|skip`, `message` is the OK
+  summary or issue string, `docs` is an official-docs link for the concept (see below), and
+  `sources` lists the workload/object(s) the data came from (e.g. `["pod/db-0"]`, read from the
+  collected JSON) so a reader knows exactly what was inspected.
 
 Implement it **extract-then-branch** (the readable-bash convention above): use `jq` only to pull
 the values you check into shell variables, decide `status`/`message` with plain bash `if`/`else`,
@@ -144,6 +150,17 @@ sealed. At run time the workflow runs them after the collection snippets, feeds 
 JSON, and keys the verdicts under `.validations.<check>`; the report shows each verdict next to
 its section. So when cleaning a source, produce the collection `snippet-*` blocks **and** the
 `validator-*` checks for the data they emit — fetching and validation stay separate.
+
+**Doc links (the shim).** A validator never hardcodes a URL. It sources its group's shim — a
+sibling `snippets/<group>/<group>.sh`, a static `aspect|version -> url` table — and resolves its
+link with `doc_url <aspect> <version>` (version `latest` picks the newest on file). The shim is
+generated from the registry, so URLs stay out of the snippet and travel with the snippets (no
+yq/config at run time). To add or change a link: register the topic in `config.yaml`
+`status.docs.topics[]` (aspect, version, group, url), prune dead URLs with `scripts/doc_links.py`
+(it follows redirects; only 404/410 are removed), then regenerate with `scripts/doc-link.sh` and
+commit the refreshed `snippets/<group>/<group>.sh`. A missing topic (e.g. pruned) makes `doc_url`
+warn and the report simply omits the link. Validators also source `utils.sh` for standard
+messaging; both libs are optional at run time (the verdict still emits without them).
 
 ## Worked example
 

@@ -1,5 +1,16 @@
 {
   "connections": {
+    "Chain previous": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Render triage report",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "Cluster status (read-only)": {
       "main": [
         [
@@ -27,18 +38,139 @@
         [
           {
             "index": 0,
-            "node": "Render report (render.sh)",
+            "node": "Validate cluster",
             "type": "main"
           }
         ]
       ]
     },
-    "Render report (render.sh)": {
+    "PG WAL (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "PG cache (read-only)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "PG activity (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "PG WAL (read-only)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "PG cache (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Merge + encode",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "PG connections (read-only)": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "PG activity (read-only)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Render PG report": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Chain previous",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Render triage report": {
       "main": [
         [
           {
             "index": 0,
             "node": "Markdown to HTML",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate WAL": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate cache",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate cache": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Verdicts",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate cluster": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate pgBackRest",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate connections": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate WAL",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate pgBackRest": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate connections",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Verdicts": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Render PG report",
             "type": "main"
           }
         ]
@@ -60,7 +192,7 @@
         [
           {
             "index": 0,
-            "node": "Merge + encode",
+            "node": "PG connections (read-only)",
             "type": "main"
           }
         ]
@@ -74,7 +206,7 @@
       "name": "Production URL",
       "parameters": {
         "color": 4,
-        "content": "## Crunchy triage — production URL\n\nClick to run this triage — read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/crunchy-triage?namespace=f208ae-dev**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
+        "content": "## Crunchy triage \u2014 production URL\n\nClick to run this triage \u2014 read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/crunchy-triage?namespace=f208ae-dev**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
         "height": 260,
         "width": 420
       },
@@ -131,27 +263,193 @@
       "typeVersion": 1
     },
     {
-      "id": "merge-encode",
-      "name": "Merge + encode",
+      "id": "step-pg-connections",
+      "name": "PG connections (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. pg_stat_activity counts via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "jsCode": "const ns = ($('Webhook').item.json.query || {}).namespace || '';\nconst parse = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst merged = Object.assign({}, parse('Cluster status (read-only)'), parse('pgBackRest info (read-only)'), { namespace: ns });\nreturn [{ json: { ...merged, _b64: Buffer.from(JSON.stringify(merged)).toString('base64') } }];"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-connections.sh"
       },
       "position": [
         920,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "step-pg-activity",
+      "name": "PG activity (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. long-running queries via a cleaned snippet-*; safe to re-run.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-activity.sh"
+      },
+      "position": [
+        1140,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "step-pg-wal",
+      "name": "PG WAL (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. WAL + archiver state via a cleaned snippet-*; safe to re-run.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-wal.sh"
+      },
+      "position": [
+        1360,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "step-pg-cache",
+      "name": "PG cache (read-only)",
+      "notes": "READ-ONLY + IDEMPOTENT. buffer-cache hit ratio via a cleaned snippet-*; safe to re-run.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-cache.sh"
+      },
+      "position": [
+        1580,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "merge-encode",
+      "name": "Merge + encode",
+      "parameters": {
+        "jsCode": "const ns = ($('Webhook').item.json.query || {}).namespace || '';\nconst parse = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst merged = Object.assign({}, parse('Cluster status (read-only)'), parse('pgBackRest info (read-only)'), parse('PG connections (read-only)'), parse('PG activity (read-only)'), parse('PG WAL (read-only)'), parse('PG cache (read-only)'), { namespace: ns });\nreturn [{ json: { ...merged, _b64: Buffer.from(JSON.stringify(merged)).toString('base64') } }];"
+      },
+      "position": [
+        1800,
         360
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
     },
     {
-      "id": "render-report",
-      "name": "Render report (render.sh)",
-      "notes": "READ-ONLY. Renders the merged collection JSON through render.sh into report markdown.",
+      "id": "val-cluster",
+      "name": "Validate cluster",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "parameters": {
+        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-cluster-status.sh"
+      },
+      "position": [
+        2020,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-pgbackrest",
+      "name": "Validate pgBackRest",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "parameters": {
+        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pgbackrest.sh"
+      },
+      "position": [
+        2240,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-connections",
+      "name": "Validate connections",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "parameters": {
+        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-connections.sh"
+      },
+      "position": [
+        2460,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-wal",
+      "name": "Validate WAL",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "parameters": {
+        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-wal.sh"
+      },
+      "position": [
+        2680,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-cache",
+      "name": "Validate cache",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "parameters": {
+        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-cache.sh"
+      },
+      "position": [
+        2900,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "verdicts",
+      "name": "Verdicts",
+      "parameters": {
+        "jsCode": "const merged = JSON.parse(Buffer.from($('Merge + encode').item.json._b64, 'base64').toString());\nconst parseV = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst names = ['Validate cluster', 'Validate pgBackRest', 'Validate connections', 'Validate WAL', 'Validate cache'];\nconst validations = {};\nfor (const n of names) { const v = parseV(n); if (v && v.check) validations[v.check] = v; }\nconst final = { ...merged, validations };\nreturn [{ json: { ...final, _b64: Buffer.from(JSON.stringify(final)).toString('base64') } }];"
+      },
+      "position": [
+        3120,
+        360
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "render-pg",
+      "name": "Render PG report",
+      "notes": "READ-ONLY. Renders the Postgres-health report markdown from the final JSON via render.sh.",
+      "parameters": {
+        "command": "=echo {{ $json._b64 }} | base64 -d | NAMESPACE={{ $json.namespace }} bash tools/n8n/render.sh tools/n8n/snippets/crunchy-triage/snippet-pg-report.md"
+      },
+      "position": [
+        3340,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "chain-prev",
+      "name": "Chain previous",
+      "parameters": {
+        "jsCode": "const final = JSON.parse(Buffer.from($('Verdicts').item.json._b64, 'base64').toString());\nconst pgMd = $('Render PG report').item.json.stdout || '';\nconst chained = { ...final, previous: pgMd };\nreturn [{ json: { ...chained, _b64: Buffer.from(JSON.stringify(chained)).toString('base64') } }];"
+      },
+      "position": [
+        3560,
+        360
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "render-main",
+      "name": "Render triage report",
+      "notes": "READ-ONLY. Renders the triage report (with the PG report chained in as .previous).",
       "parameters": {
         "command": "=echo {{ $json._b64 }} | base64 -d | NAMESPACE={{ $json.namespace }} bash tools/n8n/render.sh tools/n8n/snippets/crunchy-triage/snippet-triage-report.md"
       },
       "position": [
-        1140,
+        3780,
         360
       ],
       "type": "n8n-nodes-base.executeCommand",
@@ -166,7 +464,7 @@
         "options": {}
       },
       "position": [
-        1360,
+        4000,
         360
       ],
       "type": "n8n-nodes-base.markdown",
@@ -190,7 +488,7 @@
         "responseBody": "={{ $json.data }}"
       },
       "position": [
-        1580,
+        4220,
         360
       ],
       "type": "n8n-nodes-base.respondToWebhook",

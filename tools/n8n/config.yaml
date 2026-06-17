@@ -110,5 +110,27 @@ status:
       - raw: crunchy-dr-wiki_5-perform-manual-restore-2.sh
         reason: manual restore — destructive writes, not triage
       seals:
-        crunchy-dr-wiki: sha256:8b5b5edeeceafab0630c7afd182018d132dbe3addf8446649d437943306e5f4d
-        postgres-triage: sha256:89f22e5c87dc4ac3c12471c0a9708c2f53c068d201ce43eb88d134e0cddc7607
+        crunchy-dr-wiki: sha256:60f799df2dbf3eaff33b9acbd53ff6fa71635309dccd6dfc826c9358a6964b02
+        postgres-triage: sha256:ac7f804b9dea06cce85cb59e2e6b727fa804ec45f8287741f9054ae976b095f6
+  docs:
+    topics:
+    - aspect: cluster-ha
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/high-availability.html
+    - aspect: pgbackrest
+      version: latest
+      group: crunchy-triage
+      url: https://pgbackrest.org/user-guide.html
+    - aspect: wal-archiving
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/continuous-archiving.html
+    - aspect: connections
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/runtime-config-connection.html
+    - aspect: cache
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/runtime-config-resource.html

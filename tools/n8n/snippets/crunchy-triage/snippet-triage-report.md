@@ -10,15 +10,14 @@
        .tags[]         any upstream node             — extra header capsule badges (array of strings)
        .comments       any upstream node             — free-form dump shown at the bottom
        .previous       a prior report's output       — appended below to chain reports (string/array)
-       .validations    from validator-* snippets     — per-section verdicts shown by their data ({check,status,message})
+       .validations    from validator-* snippets     — per-section verdicts ({check,status,message,docs,sources})
+     badges/verdict/dump/chain are shared render.sh helpers (they return "" when absent).
      Tags render as shields.io badge images (an external fetch — keep tag text non-sensitive).
 -->
 # Crunchy triage — ${NAMESPACE}
 
 ![Postgres 17](https://img.shields.io/badge/-postgres%2017-informational)
-{{#if .tags }}
-{{ .tags | map("![" + . + "](https://img.shields.io/badge/-" + (gsub("_";"__")|gsub("-";"--")|gsub(" ";"%20")) + "-555)") | join(" ") }}
-{{/if}}
+{{ badges(.tags) }}
 
 {{#if (.primary_pod | present) or (.members | present) or (.pgbackrest | present) }}
 {{#if .primary_pod }}
@@ -27,10 +26,8 @@
 {{#if .members }}
 
 ## Cluster members
-{{#if .validations.cluster }}
-> **{{ .validations.cluster.status | ascii_upcase }}** — {{ .validations.cluster.message }}
+{{ verdict(.validations.cluster) }}
 
-{{/if}}
 | Member | Role | State | Lag (MB) | TL |
 |--------|------|-------|----------|----|
 {{ .members | map("| \(.Member) | \(.Role) | \(.State) | \(.["Lag in MB"] // "-") | \(.TL // "-") |") | join("\n") }}
@@ -38,10 +35,8 @@
 {{#if .pgbackrest }}
 
 ## pgBackRest
-{{#if .validations.pgbackrest }}
-> **{{ .validations.pgbackrest.status | ascii_upcase }}** — {{ .validations.pgbackrest.message }}
+{{ verdict(.validations.pgbackrest) }}
 
-{{/if}}
 {{ .pgbackrest | map("- **\(.name)** — \(.status.message)") | join("\n") }}
 {{/if}}
 {{else}}
@@ -54,12 +49,12 @@ _No triage data collected for `${NAMESPACE}`._
 #### Notes
 
 ```
-{{ .comments | if type == "array" then map(tostring) | join("\n") elif type == "string" then . else tojson end }}
+{{ dump(.comments) }}
 ```
 {{/if}}
 {{#if .previous }}
 
 ---
 
-{{ .previous | if type == "array" then join("\n\n---\n\n") else . end }}
+{{ chain(.previous) }}
 {{/if}}

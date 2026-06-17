@@ -106,9 +106,15 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
   `cleaned` and seals. For a snippet with no source doc, target a placeholder source (no
   url/file); the seal then covers the snippet alone.
 - A `validator-<kebab>.sh` checks collection output, not the cluster: it reads the merged JSON on
-  stdin, tolerates missing data (`status: "skip"`), and emits `{check, status, message}`; the
-  report shows it by its section. Extract with `jq`, decide with plain bash (per the rule above).
-  Keep validation separate from fetching; start from `assets/validator-template.sh`.
+  stdin, tolerates missing data (`status: "skip"`), and emits `{check, status, message, docs,
+  sources}`; the report shows it by its section. Extract with `jq`, decide with plain bash (per
+  the rule above). Keep validation separate from fetching; start from `assets/validator-template.sh`.
+- Validators link official docs via the shim, never a hardcoded URL: resolve with
+  `doc_url <aspect> <version>` (from the group's sibling shim) and list the object(s) checked in
+  `sources`. To change a link, edit `config.yaml` `status.docs.topics[]`, run `scripts/doc_links.py`
+  to prune dead URLs, then `scripts/doc-link.sh` to regenerate and commit
+  `snippets/<group>/<group>.sh` (Why: URLs stay maintainable and travel with the snippets,
+  resolving with no yq/config at run time).
 - Markdown report snippets list their expected input keys in the header, and guard each data
   section with `{{#if}}` so they degrade gracefully when inputs are absent; `skipped` reasons
   are one sentence.
@@ -160,5 +166,12 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
 - `assets/snippet-template.sh` / `assets/report-template.md` — the standard header for
   cleaned bash / markdown report snippets.
 - `assets/validator-template.sh` — the standard validator: a read-only check over collected JSON
-  that emits an ok/warn/error/skip verdict.
+  that emits an ok/warn/error/skip verdict with a docs link and the objects it checked.
+- `scripts/doc_links.py` — validate + prune the doc-link registry (`status.docs.topics`),
+  following redirects; removes only URLs that are gone (404/410).
+- `scripts/doc-link.sh` + `assets/doc-urls.template.sh` — generate each group's static doc-link
+  shim `snippets/<group>/<group>.sh` (the `aspect|version -> url` table) from the registry; a
+  group's validators source it (a sibling), so URLs resolve with no yq/config at run time.
+- `tools/n8n/utils.sh` — standard shell messaging (info/warn/err/die/have) sourced by validators
+  and the n8n helpers.
 - `references/SKILL_SPEC.md` — the SKILL.md manifest spec this file conforms to.

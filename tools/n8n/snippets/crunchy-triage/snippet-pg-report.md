@@ -7,24 +7,21 @@
        .activity[]   from snippet-pg-activity        — long-running / active queries
        .wal          from snippet-pg-wal             — { current_lsn, wal_bytes, archiver }
        .cache        from snippet-pg-cache           — { hit_ratio_pct, shared_buffers, work_mem, ... }
-       .validations  from validator-* snippets       — per-section verdicts shown by their data
+       .validations  from validator-* snippets       — per-section verdicts (status, message, docs link, pods checked)
        .tags[] / .comments / .previous               — header badges / dump / chained reports
+     badges/verdict/dump/chain are shared render.sh helpers (they return "" when absent).
      Tags render as shields.io badge images (an external fetch — keep tag text non-sensitive).
 -->
 # Postgres health — ${NAMESPACE}
 
-{{#if .tags }}
-{{ .tags | map("![" + . + "](https://img.shields.io/badge/-" + (gsub("_";"__")|gsub("-";"--")|gsub(" ";"%20")) + "-555)") | join(" ") }}
-{{/if}}
+{{ badges(.tags) }}
 
 {{#if (.connections | present) or (.activity | present) or (.wal | present) or (.cache | present) }}
 {{#if .connections }}
 
 ## Connections
-{{#if .validations.connections }}
-> **{{ .validations.connections.status | ascii_upcase }}** — {{ .validations.connections.message }}
+{{ verdict(.validations.connections) }}
 
-{{/if}}
 - **In use:** {{ .connections.total }} / {{ .connections.max_connections }} — active {{ .connections.active }}, idle {{ .connections.idle }}, idle-in-txn {{ .connections.idle_in_transaction }}
 {{/if}}
 {{#if .activity }}
@@ -32,25 +29,21 @@
 ## Long-running / active queries
 | PID | User | State | Age (s) | Query |
 |-----|------|-------|---------|-------|
-{{ .activity | map("| \(.pid) | \(.user) | \(.state) | \(.seconds) | \(.query) |") | join("\n") }}
+{{ .activity | map("| \(.pid) | \((.user // "") | gsub("[|]"; "&#124;")) | \(.state) | \(.seconds) | \((.query // "") | gsub("[|]"; "&#124;")) |") | join("\n") }}
 {{/if}}
 {{#if .wal }}
 
 ## WAL
-{{#if .validations.wal }}
-> **{{ .validations.wal.status | ascii_upcase }}** — {{ .validations.wal.message }}
+{{ verdict(.validations.wal) }}
 
-{{/if}}
 - **Current LSN:** `{{ .wal.current_lsn }}` ({{ .wal.wal_bytes }} bytes)
 - **Archiver:** archived {{ .wal.archiver.archived }}, failed {{ .wal.archiver.failed }}
 {{/if}}
 {{#if .cache }}
 
 ## Cache & memory
-{{#if .validations.cache }}
-> **{{ .validations.cache.status | ascii_upcase }}** — {{ .validations.cache.message }}
+{{ verdict(.validations.cache) }}
 
-{{/if}}
 - **Cache hit ratio:** {{ .cache.hit_ratio_pct }}%
 - shared_buffers `{{ .cache.shared_buffers }}`, work_mem `{{ .cache.work_mem }}`, effective_cache_size `{{ .cache.effective_cache_size }}`
 {{/if}}
@@ -64,12 +57,12 @@ _No Postgres data collected for `${NAMESPACE}`._
 #### Notes
 
 ```
-{{ .comments | if type == "array" then map(tostring) | join("\n") elif type == "string" then . else tojson end }}
+{{ dump(.comments) }}
 ```
 {{/if}}
 {{#if .previous }}
 
 ---
 
-{{ .previous | if type == "array" then join("\n\n---\n\n") else . end }}
+{{ chain(.previous) }}
 {{/if}}
