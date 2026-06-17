@@ -19,7 +19,8 @@
        verdict(.validations.X)   a validator's blockquote: status + message + docs link + objects checked
        dump(.comments)           a free-form comments block (array/string/any)
        chain(.previous)          a prior report's output appended (--- rule between array items)
-     Escape | in free-text table cells (a literal | splits the cell): (.field // "") | gsub("[|]"; "&#124;").
+     Wrap every table cell in cell(...) — it collapses control/whitespace (incl. invisible Unicode
+     separators that would split the row) and escapes |, so a query/value can't break the table.
      Tags fetch external badge images — keep tag text non-sensitive. Drop static badges in too:
        ![](https://img.shields.io/badge/-text-555)
 -->

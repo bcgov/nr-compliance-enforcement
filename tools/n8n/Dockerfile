@@ -41,6 +41,12 @@ RUN mkdir -p /data $HOME/.n8n && \
       chgrp -R 0 /data $HOME && \
       chmod -R g+rwX /data $HOME
 
+# Bundle the triage tree so the n8n Execute-Command nodes — which call `bash tools/n8n/...`
+# relative to the workdir (/data) — find the snippets, validators, each group's doc-link shim,
+# and the render/utils/view helpers baked into the image.
+COPY render.sh utils.sh view.sh /data/tools/n8n/
+COPY snippets /data/tools/n8n/snippets/
+
 WORKDIR /data
 EXPOSE 5678/tcp
 ENTRYPOINT ["tini", "--"]

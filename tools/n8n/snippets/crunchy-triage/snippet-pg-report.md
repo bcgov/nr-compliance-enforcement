@@ -29,7 +29,7 @@
 ## Long-running / active queries
 | PID | User | State | Age (s) | Query |
 |-----|------|-------|---------|-------|
-{{ .activity | map("| \(.pid) | \((.user // "") | gsub("[|]"; "&#124;")) | \(.state) | \(.seconds) | \((.query // "") | gsub("[|]"; "&#124;")) |") | join("\n") }}
+{{ .activity | map("| \(cell(.pid)) | \(cell(.user)) | \(cell(.state)) | \(cell(.seconds)) | \(cell(.query)) |") | join("\n") }}
 {{/if}}
 {{#if .wal }}
 

@@ -30,7 +30,7 @@
 
 | Member | Role | State | Lag (MB) | TL |
 |--------|------|-------|----------|----|
-{{ .members | map("| \(.Member) | \(.Role) | \(.State) | \(.["Lag in MB"] // "-") | \(.TL // "-") |") | join("\n") }}
+{{ .members | map("| \(cell(.Member)) | \(cell(.Role)) | \(cell(.State)) | \(cell(.["Lag in MB"] // "-")) | \(cell(.TL // "-")) |") | join("\n") }}
 {{/if}}
 {{#if .pgbackrest }}
 

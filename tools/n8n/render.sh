@@ -100,12 +100,15 @@ content="$(cat "$TEMPLATE")"
 #   verdict($v)      a validator's blockquote: status + message, its docs link, and objects checked
 #   chain($p)        a prior report's output appended (joins an array with --- rules)
 #   dump($c)         a free-form comments block (array -> lines, string as-is, else JSON)
+#   cell($s)         sanitize one value for a markdown table cell: collapse any control/space run
+#                    (incl. Unicode separators that would split the row) to a space; escape "|"
 HELPERS='
 def present: (.!=null) and (.!=false) and (.!="") and (if (type=="array" or type=="object") then (length>0) else true end);
 def badges($items): if ($items|present) then ($items | map("![" + . + "](https://img.shields.io/badge/-" + (gsub("_";"__")|gsub("-";"--")|gsub(" ";"%20")) + "-555)") | join(" ")) else "" end;
 def verdict($v): if ($v|present) then ("> **" + ($v.status|ascii_upcase) + "** — " + $v.message + (if (($v.docs//"")!="") then "\n> [docs](" + $v.docs + ")" + (if (($v.sources//[])|length)>0 then " — checked " + ($v.sources|join(", ")) else "" end) else "" end)) else "" end;
 def chain($p): if ($p|present) then (if ($p|type=="array") then ($p|join("\n\n---\n\n")) else $p end) else "" end;
 def dump($c): if ($c|present) then (if ($c|type=="array") then ($c|map(tostring)|join("\n")) elif ($c|type=="string") then $c else ($c|tojson) end) else "" end;
+def cell($s): ($s // "" | tostring | gsub("[[:cntrl:][:space:]]+"; " ") | gsub("[|]"; "&#124;"));
 '
 cond=()   # 1/0 per open block: is this branch active? (AND of the whole stack = emit)
 took=()   # 1/0 per open block: was the if-branch condition true? (so {{else}} can invert it)
