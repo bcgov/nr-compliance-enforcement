@@ -8,7 +8,7 @@ Write workflows so they can be POSTed to the n8n public API
 
 ```json
 {
-  "name": "crunchy-triage",
+  "name": "<name>",
   "nodes": [ /* node objects */ ],
   "connections": { /* wiring, by node name */ },
   "settings": { "executionOrder": "v1" }
@@ -59,8 +59,8 @@ The Sticky Note is not wired (it has no connections).
 
 ```bash
 # from tools/n8n/, with the port-forward up and N8N_API_KEY set
-./push.sh --dry-run workflows/crunchy-triage.json   # validate
-./push.sh workflows/crunchy-triage.json             # create/update + activate
+./push.sh --dry-run workflows/<name>.json   # validate
+./push.sh workflows/<name>.json             # create/update + activate
 ```
 
 `push.sh` keys on the `id` inside a file to update vs create; a file with no `id` is created

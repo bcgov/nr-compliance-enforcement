@@ -14,7 +14,7 @@ in a browser.
 
 Every step is **read-only and idempotent** — the cleaned-snippet contract already guarantees
 this, and this skill restates it on each node as a second line of defence. No mutating steps
-(PITR, `patronictl reinit`, restores, edits) ever go into a triage workflow.
+(writes, restarts, restores, schema/config edits) ever go into a triage workflow.
 
 Shape of every workflow this skill builds:
 
@@ -94,11 +94,10 @@ developer can run the triage locally and read the HTML report in a browser, no n
 
 ## Examples
 
-- "Build a crunchy triage workflow" then chain the cleaned crunchy collection blocks
-  (cluster status, patroni/pgbackrest info, db metrics), end with markdown->HTML->respond,
-  and write `tools/n8n/workflows/crunchy-triage.json`.
-- "Add the pgbackrest check to the triage workflow" then insert one Execute-Command node and
-  rewire `connections`.
+- "Build a triage workflow from these cleaned blocks" then chain the collection snippets in
+  order, end with markdown->HTML->respond, and write `tools/n8n/workflows/<name>.json`.
+- "Add another check to the workflow" then insert one Execute-Command node and rewire
+  `connections`.
 - "Serve the report as a web page" then confirm the Webhook is `responseNode` and the final
   Respond-to-Webhook sets `Content-Type: text/html`.
 

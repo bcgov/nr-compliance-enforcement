@@ -57,9 +57,9 @@ send the response (so we can return HTML). `GET` so the URL is clickable in a br
 ```json
 {
   "parameters": {
-    "command": "NAMESPACE={{ $json.namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-cluster-status.sh"
+    "command": "=PARAM={{ $('Webhook').item.json.query.param }} bash tools/n8n/snippets/<group>/<snippet>.sh"
   },
-  "id": "step-cluster-status", "name": "Cluster status (read-only)",
+  "id": "step-collect-1", "name": "Collect (read-only)",
   "type": "n8n-nodes-base.executeCommand", "typeVersion": 1, "position": [480, 300],
   "notes": "READ-ONLY + IDEMPOTENT. Runs a cleaned snippet-*; safe to re-run any time."
 }

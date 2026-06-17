@@ -1,31 +1,45 @@
 # Local workflow — the n8n workflow as a shell script
 
 Every workflow this skill builds also gets a **local equivalent**: a shell script a developer
-runs on their machine to fire the same triage without n8n. Same stages, same read-only /
-idempotent contract; it writes an HTML report to `/tmp` and opens it in a browser.
+runs on their machine to fire the same run without n8n. Same stages, same read-only / idempotent
+contract; it writes an HTML report to `/tmp` and opens it in a browser.
 
 Start from `assets/local-workflow.sh`, copy it to `tools/n8n/workflows/<name>.local.sh` next to
-`<name>.json`, and fill the `<--` markers (group, report template, page name, the snippet lines).
+`<name>.json`, and fill the `<--` markers (group, report, page name, the collection + validator
+lists).
 
 ## n8n node -> shell stage
 
-| n8n node                          | `local-workflow.sh` stage                                |
-| --------------------------------- | -------------------------------------------------------- |
-| Webhook (params)                  | CLI args / env (`NAMESPACE`, ...) at the top             |
-| Execute-Command (one per snippet) | `bash $SNIPPETS/snippet-*.sh` into a `parts` array       |
-| Code: Format (markdown)           | `jq -s 'add'` merge -> `render.sh <report>.md`           |
-| Markdown -> HTML                  | `view.sh` (writes `/tmp/n8n-report/<name>.html`)         |
-| Respond to Webhook (text/html)    | the file:// URL `view.sh` prints — open it in a browser  |
+| n8n node                            | `local-workflow.sh` stage                              |
+| ----------------------------------- | ------------------------------------------------------ |
+| Webhook (params)                    | the env the snippets read, set on the command line     |
+| Execute-Command (one per collect)   | `bash $SNIPPETS/<snippet>.sh` into a `parts` array     |
+| Execute-Command (one per validator) | `bash $SNIPPETS/<validator>.sh` on the merged JSON     |
+| Code: Format (markdown)             | `jq -s 'add'` merge -> `render.sh <report>.md`         |
+| Markdown -> HTML                    | `view.sh` (writes `/tmp/n8n-report/<name>.html`)       |
+| Respond to Webhook (text/html)      | the file:// URL `view.sh` prints — open it in a browser|
 
-The two stay in lockstep: every Execute-Command node is one `parts+=("$(... snippet)")` line, in
-the same order, and the Format -> Markdown -> Respond tail is the single render-then-view pipe.
+The two stay in lockstep: every Execute-Command node is one list entry, in the same order, and
+the Format -> Markdown -> Respond tail is the single render-then-view pipe.
 
 ## Collecting + merging
 
-Each cleaned snippet prints one JSON object. The script collects them with `|| true` (a failing
-step is just absent, never fatal) and merges with `jq -s 'add // {}'` into one object for the
-report. Because the report template guards every section with `{{#if}}`, a partial or empty
-merge still renders cleanly — exactly like the n8n version fed a partial chain.
+Each collection snippet prints one JSON object. The script collects them with `|| true` (a
+failing step is just absent, never fatal) and merges with `jq -s 'add // {}'` into one object.
+Because the report guards every section with `{{#if}}`, a partial or empty merge still renders
+cleanly — like the n8n version fed a partial chain.
+
+## Validating
+
+Each validator reads the merged JSON on stdin and emits `{ check, status, message }`. The script
+keys the verdicts by `.check` into `.validations`, so the report shows each verdict next to its
+section. Leave the validator list empty if the workflow has none.
+
+## Chaining reports
+
+A report renders whatever data is present and can append a prior report's output via `.previous`.
+To show more than one report on a page, render the first, then render the next with the first's
+output passed as `.previous` — they accumulate top-to-bottom, all from the one merged payload.
 
 ## view.sh — Markdown -> HTML -> open
 
@@ -42,7 +56,7 @@ github-markdown-css from a CDN, so no local Markdown tooling is needed.
 ## Running it
 
 ```bash
-NAMESPACE=f208ae-dev tools/n8n/workflows/crunchy-triage.local.sh   # prints a file:// URL — click to open
+<ENV>=<value> tools/n8n/workflows/<name>.local.sh   # prints a file:// URL — click to open
 ```
 
 Read-only and idempotent: safe to re-run any time, like firing the webhook. Shellcheck the

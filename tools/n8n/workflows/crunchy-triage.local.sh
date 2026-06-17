@@ -30,8 +30,10 @@ collect=(
   snippet-cluster-status snippet-pgbackrest-info
   snippet-pg-connections snippet-pg-activity snippet-pg-wal snippet-pg-cache
 )
+echo "collecting from namespace '$NAMESPACE'..." >&2
 parts=()
 for s in "${collect[@]}"; do
+  echo "  - $s" >&2
   parts+=("$(NAMESPACE="$NAMESPACE" bash "$SNIPPETS/$s.sh" 2>/dev/null || true)")
 done
 merged="$(printf '%s\n' "${parts[@]}" | jq -s 'add // {}')"
@@ -42,8 +44,10 @@ validators=(
   validator-cluster-status validator-pgbackrest
   validator-pg-connections validator-pg-cache validator-pg-wal
 )
+echo "validating..." >&2
 verdicts=()
 for v in "${validators[@]}"; do
+  echo "  - $v" >&2
   verdicts+=("$(printf '%s' "$merged" | bash "$SNIPPETS/$v.sh" 2>/dev/null || true)")
 done
 validations="$(printf '%s\n' "${verdicts[@]}" | jq -s 'map(select(type == "object" and has("check"))) | map({(.check): .}) | add // {}')"
@@ -51,6 +55,7 @@ final="$(printf '%s' "$merged" | jq --argjson v "$validations" '. + {validations
 
 # --- Report (chained): render the PG report, then render the main report with it as .previous,
 #     and open the result. The page shows the triage report with the PG report appended below.
+echo "rendering report..." >&2
 pg_md="$(printf '%s' "$final" | NAMESPACE="$NAMESPACE" bash "$N8N/render.sh" "$PG_REPORT")"
 printf '%s' "$final" | jq --arg prev "$pg_md" '. + {previous: $prev}' \
   | NAMESPACE="$NAMESPACE" bash "$N8N/render.sh" "$REPORT" \

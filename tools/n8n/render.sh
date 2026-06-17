@@ -119,24 +119,40 @@ while IFS= read -r line || [[ -n "$line" ]]; do
 done <<<"$content"
 content="${out%$'\n'}"
 
-# Pass A — {{ .json.path }} via jq. Each distinct placeholder is evaluated once and
-# all of its occurrences replaced.
-while [[ "$content" =~ \{\{[[:space:]]*([^}]+[^}[:space:]])[[:space:]]*\}\} ]]; do
-  whole="${BASH_REMATCH[0]}"
-  expr="${BASH_REMATCH[1]}"
-  if [[ -n "$JSON" ]]; then
-    val="$(jq -r "$expr" <<<"$JSON" 2>/dev/null || true)"
-  else
-    val=""
-  fi
-  content="${content//"$whole"/$val}"
+# Pass A — {{ .json.path }} via jq. Collect every distinct placeholder from the template, evaluate
+# them all in ONE jq pass (fast on any payload size), then substitute. Substituted values are NOT
+# re-scanned, so data that happens to contain "{{ }}" can never trigger a loop or be re-evaluated.
+ph_wholes=(); ph_exprs=()
+declare -A ph_seen
+scan="$content"
+while [[ "$scan" =~ \{\{[[:space:]]*([^}]+[^}[:space:]])[[:space:]]*\}\} ]]; do
+  w="${BASH_REMATCH[0]}"; e="${BASH_REMATCH[1]}"
+  if [[ -z "${ph_seen[$w]+x}" ]]; then ph_seen["$w"]=1; ph_wholes+=("$w"); ph_exprs+=("$e"); fi
+  scan="${scan//"$w"/}"
+done
+ph_vals=()
+if [[ -n "$JSON" && ${#ph_exprs[@]} -gt 0 ]]; then
+  prog=""
+  for e in "${ph_exprs[@]}"; do prog+="(try ($e) catch null),"; done
+  prog="[ ${prog%,} ] | .[] | (if . == null then \"\" elif type == \"string\" then . else tojson end) + \"\u0000\""
+  while IFS= read -r -d '' v; do ph_vals+=("$v"); done < <(jq -j "$prog" <<<"$JSON" 2>/dev/null)
+fi
+for ((i = 0; i < ${#ph_wholes[@]}; i++)); do
+  content="${content//"${ph_wholes[i]}"/${ph_vals[i]-}}"
 done
 
-# Pass B — ${VAR} from the environment (braced form only).
-while [[ "$content" =~ \$\{([A-Za-z_][A-Za-z0-9_]*)\} ]]; do
-  var="${BASH_REMATCH[1]}"
-  val="${!var-}"
-  content="${content//"\${$var}"/$val}"
+# Pass B — ${VAR} from the environment (braced form only). Collected once; values are not
+# re-scanned, so data that happens to contain "${...}" is left as-is.
+var_names=()
+declare -A var_seen
+scan="$content"
+while [[ "$scan" =~ \$\{([A-Za-z_][A-Za-z0-9_]*)\} ]]; do
+  v="${BASH_REMATCH[1]}"
+  if [[ -z "${var_seen[$v]+x}" ]]; then var_seen["$v"]=1; var_names+=("$v"); fi
+  scan="${scan//"\${$v}"/}"
+done
+for v in "${var_names[@]+"${var_names[@]}"}"; do
+  content="${content//"\${$v}"/${!v-}}"
 done
 
 printf '%s\n' "$content"
