@@ -3,7 +3,7 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { party } from "../../../prisma/shared/generated/party";
-import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
+import { ImageUpdate, Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { Alias } from "src/shared/alias/dto/alias";
@@ -1114,6 +1114,12 @@ export class PartyService {
       .forEach((fhs) => addEvent("REMOVED", "facial hair style", fhs.facialHairStyleCode, null));
   }
 
+  private _diffImageChanges(input: ImageUpdate[], addEvent: AddEventFn): void {
+    input.forEach((image) => {
+      addEvent(image.verb, "Image", image.fileName, image.fileName);
+    });
+  }
+
   private _diffPartyChanges(oldParty: Party, newParty: PartyUpdateInput, addEvent: AddEventFn): void {
     this._diffAliases(oldParty.aliases ?? [], newParty.aliases ?? [], addEvent);
     this._compareContactMethods(
@@ -1229,6 +1235,9 @@ export class PartyService {
 
     // Detect Party level changes
     this._diffPartyChanges(oldParty, input, addEvent);
+
+    // Detect Image changes -- nothing to compare as they are all sent via the frontend
+    this._diffImageChanges(input.images, addEvent);
 
     if (input.partyTypeCode === PARTY_TYPES.Person) {
       // Detect person level changes
