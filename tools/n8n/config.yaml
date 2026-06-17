@@ -74,6 +74,26 @@ status:
         from: crunchy-dr-wiki
       - snippet: snippet-triage-report.md
         from: crunchy-dr-wiki
+      - snippet: snippet-pg-connections.sh
+        from: postgres-triage
+      - snippet: snippet-pg-activity.sh
+        from: postgres-triage
+      - snippet: snippet-pg-wal.sh
+        from: postgres-triage
+      - snippet: snippet-pg-cache.sh
+        from: postgres-triage
+      - snippet: validator-cluster-status.sh
+        from: crunchy-dr-wiki
+      - snippet: validator-pgbackrest.sh
+        from: crunchy-dr-wiki
+      - snippet: snippet-pg-report.md
+        from: postgres-triage
+      - snippet: validator-pg-connections.sh
+        from: postgres-triage
+      - snippet: validator-pg-cache.sh
+        from: postgres-triage
+      - snippet: validator-pg-wal.sh
+        from: postgres-triage
       skipped:
       - raw: crunchy-dr-wiki_3-reset-replica.sh
         reason: patronictl restart — replica recovery action, not triage collection
@@ -90,4 +110,5 @@ status:
       - raw: crunchy-dr-wiki_5-perform-manual-restore-2.sh
         reason: manual restore — destructive writes, not triage
       seals:
-        crunchy-dr-wiki: sha256:e2983a1a531b2b0cc99fe5f5d6775a66f1eaf6f18fac425e8e872122326ffa19
+        crunchy-dr-wiki: sha256:8b5b5edeeceafab0630c7afd182018d132dbe3addf8446649d437943306e5f4d
+        postgres-triage: sha256:89f22e5c87dc4ac3c12471c0a9708c2f53c068d201ce43eb88d134e0cddc7607

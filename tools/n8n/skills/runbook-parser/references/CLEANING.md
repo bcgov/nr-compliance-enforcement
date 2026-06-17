@@ -63,6 +63,10 @@ It must also:
   the report renders only what is present and never shows an orphan heading, empty table, or
   dangling label; give the body an outer `{{else}}` fallback for the nothing-collected case.
 - **`skipped` reasons are one sentence** — short and plain, per skipped raw.
+- **Logic in readable bash, not jq** — use `jq` for simple **extraction** and final assembly
+  (`jq -n --arg …`); do decisions, comparisons, and message-building in plain bash `if`/`else`
+  (or SQL for queries). Avoid packing logic into one big jq program — it is hard to read and
+  debug. Keep render.sh `{{ }}` expressions to simple field access/formatting, too.
 
 ## Skip unsafe snippets — and record it
 
@@ -113,6 +117,33 @@ python scripts/parser.py include --source <name> --snippet snippet-foo.sh
 It records the snippet under that source's `cleaned` and seals in one step. If the snippet has
 no source doc, target a **placeholder source** (a spec source with no `url`/`file`); the seal
 then covers the snippet alone (edits are still drift-detected, with no back-port target).
+
+## Validators
+
+A **validator** is a separate kind of cleaned snippet that checks the *output* of collection
+snippets and reports a verdict, keeping validation logic out of the fetching snippets. Name them
+`validator-<kebab>.sh` and start from `assets/validator-template.sh`.
+
+A validator MUST:
+
+- **Read collected JSON on stdin** — the merged collection output, not the cluster/db. A
+  validator never fetches; it only inspects what the collection snippets produced.
+- **Be graceful** — tolerate partial or missing data: if the data it checks is absent, emit
+  `status: "skip"` instead of failing, so a report with only some sections still validates.
+- **Be read-only and idempotent** — a pure check over the input; no side effects.
+- **Emit a keyed verdict** — `{ check, status, message }`: `check` names the report section the
+  verdict sits next to, `status` is `ok|warn|error|skip`, `message` is the OK summary or issue
+  string.
+
+Implement it **extract-then-branch** (the readable-bash convention above): use `jq` only to pull
+the values you check into shell variables, decide `status`/`message` with plain bash `if`/`else`,
+and emit with a final `jq -n --arg …`. `assets/validator-template.sh` shows the shape.
+
+Validators are cleaned snippets like any other — recorded in `cleaned` (via `include`) and
+sealed. At run time the workflow runs them after the collection snippets, feeds them the merged
+JSON, and keys the verdicts under `.validations.<check>`; the report shows each verdict next to
+its section. So when cleaning a source, produce the collection `snippet-*` blocks **and** the
+`validator-*` checks for the data they emit — fetching and validation stay separate.
 
 ## Worked example
 

@@ -9,6 +9,8 @@
        .pgbackrest[]   from snippet-pgbackrest-info  — pgBackRest stanzas (name/status.message)
        .tags[]         any upstream node             — extra header capsule badges (array of strings)
        .comments       any upstream node             — free-form dump shown at the bottom
+       .previous       a prior report's output       — appended below to chain reports (string/array)
+       .validations    from validator-* snippets     — per-section verdicts shown by their data ({check,status,message})
      Tags render as shields.io badge images (an external fetch — keep tag text non-sensitive).
 -->
 # Crunchy triage — ${NAMESPACE}
@@ -25,6 +27,10 @@
 {{#if .members }}
 
 ## Cluster members
+{{#if .validations.cluster }}
+> **{{ .validations.cluster.status | ascii_upcase }}** — {{ .validations.cluster.message }}
+
+{{/if}}
 | Member | Role | State | Lag (MB) | TL |
 |--------|------|-------|----------|----|
 {{ .members | map("| \(.Member) | \(.Role) | \(.State) | \(.["Lag in MB"] // "-") | \(.TL // "-") |") | join("\n") }}
@@ -32,6 +38,10 @@
 {{#if .pgbackrest }}
 
 ## pgBackRest
+{{#if .validations.pgbackrest }}
+> **{{ .validations.pgbackrest.status | ascii_upcase }}** — {{ .validations.pgbackrest.message }}
+
+{{/if}}
 {{ .pgbackrest | map("- **\(.name)** — \(.status.message)") | join("\n") }}
 {{/if}}
 {{else}}
@@ -46,4 +56,10 @@ _No triage data collected for `${NAMESPACE}`._
 ```
 {{ .comments | if type == "array" then map(tostring) | join("\n") elif type == "string" then . else tojson end }}
 ```
+{{/if}}
+{{#if .previous }}
+
+---
+
+{{ .previous | if type == "array" then join("\n\n---\n\n") else . end }}
 {{/if}}

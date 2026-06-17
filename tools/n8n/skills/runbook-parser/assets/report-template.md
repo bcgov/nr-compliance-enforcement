@@ -11,6 +11,8 @@
        .other[]          from snippet-Y       — describe it
        .tags[]           any upstream node    — header capsule badges (array of strings)
        .comments         any upstream node    — free-form dump shown at the bottom (string/array/any)
+       .previous         a prior report       — appended below to chain reports (string/array)
+       .validations      from validator-*     — per-section verdicts shown by their data ({check,status,message})
 
      Tags render as shields.io badge images (capsule art) — an external image fetch, so keep tag
      text non-sensitive. You can also drop static badges in: ![](https://img.shields.io/badge/-text-555)
@@ -28,6 +30,10 @@
 {{#if .other }}
 
 ## Section
+{{#if .validations.other }}
+> **{{ .validations.other.status | ascii_upcase }}** — {{ .validations.other.message }}
+
+{{/if}}
 | Col |
 |-----|
 {{ .other | map("| \(.field) |") | join("\n") }}
@@ -44,4 +50,10 @@ _No data collected for this report._
 ```
 {{ .comments | if type == "array" then map(tostring) | join("\n") elif type == "string" then . else tojson end }}
 ```
+{{/if}}
+{{#if .previous }}
+
+---
+
+{{ .previous | if type == "array" then join("\n\n---\n\n") else . end }}
 {{/if}}

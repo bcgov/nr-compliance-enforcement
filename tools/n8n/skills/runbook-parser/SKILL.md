@@ -62,7 +62,8 @@ Forward (doc to raw snippets to cleaned blocks):
    parameterized, read-only and idempotent (harvest inline code from the `.md` too); run the
    linter (`shellcheck` for sh); skip a raw snippet that cannot be made safe and idempotent
    (add it to the group's `skipped` list with a reason in `status`); list what you produce
-   under the group's `cleaned`.
+   under the group's `cleaned`. Also produce `validator-*` checks over the collected data
+   (validation separate from fetching; see `references/CLEANING.md`).
 7. `python scripts/parser.py seal --source <name>` records the content seal (the source doc
    plus your cleaned snippets, comments excluded) into `status` — the baseline `check` uses to
    flag later snippet-code edits for backport.
@@ -89,6 +90,9 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
   fenced blocks.
 - Prefer processable output; use JSON via `jq` for verbose or structured data, plain
   stdout otherwise — use judgement.
+- Keep logic in readable bash, not big jq strings: use `jq` to extract values and assemble the
+  final JSON (`jq -n`), and branch / build messages in plain bash `if`/`else` (or SQL for
+  queries). Easier to read and debug.
 - Run the language-appropriate linter on every cleaned snippet you produce.
 - Start cleaned snippets from `assets/snippet-template.sh` / `assets/report-template.md` (the
   standard header); name them `snippet<sep>…` where `<sep>` matches the rest of the filename's
@@ -101,6 +105,10 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
   `include --source <name> --snippet <file>` — it records the snippet under that source's
   `cleaned` and seals. For a snippet with no source doc, target a placeholder source (no
   url/file); the seal then covers the snippet alone.
+- A `validator-<kebab>.sh` checks collection output, not the cluster: it reads the merged JSON on
+  stdin, tolerates missing data (`status: "skip"`), and emits `{check, status, message}`; the
+  report shows it by its section. Extract with `jq`, decide with plain bash (per the rule above).
+  Keep validation separate from fetching; start from `assets/validator-template.sh`.
 - Markdown report snippets list their expected input keys in the header, and guard each data
   section with `{{#if}}` so they degrade gracefully when inputs are absent; `skipped` reasons
   are one sentence.
@@ -151,4 +159,6 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
   agent proposes the doc edit.
 - `assets/snippet-template.sh` / `assets/report-template.md` — the standard header for
   cleaned bash / markdown report snippets.
+- `assets/validator-template.sh` — the standard validator: a read-only check over collected JSON
+  that emits an ok/warn/error/skip verdict.
 - `references/SKILL_SPEC.md` — the SKILL.md manifest spec this file conforms to.
