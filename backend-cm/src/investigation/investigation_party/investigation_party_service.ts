@@ -39,6 +39,7 @@ import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
 } from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
+import { investigation_attachment_reference } from "prisma/investigation/generated/investigation_attachment_reference";
 
 @Injectable()
 export class InvestigationPartyService {
@@ -132,6 +133,18 @@ export class InvestigationPartyService {
                     investigation_alias: {
                       create: input.aliases.map((a) => ({
                         name: a.name,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
+              ...(input.attachmentReferences?.length
+                ? {
+                    investigation_attachment_reference: {
+                      create: input.attachmentReferences.map((ar) => ({
+                        s3_version_ref: ar.version,
+                        active_ind: true,
                         create_user_id: this.user.getIdirUsername(),
                         create_utc_timestamp: new Date(),
                       })),

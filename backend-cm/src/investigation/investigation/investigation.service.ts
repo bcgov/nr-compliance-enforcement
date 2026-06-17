@@ -25,6 +25,7 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { investigation_attachment_reference } from "prisma/investigation/generated/investigation_attachment_reference";
 
 @Injectable()
 export class InvestigationService {
@@ -57,6 +58,11 @@ export class InvestigationService {
                 },
               },
               investigation_alias: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              investigation_attachment_reference: {
                 where: {
                   active_ind: true,
                 },
