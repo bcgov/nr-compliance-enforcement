@@ -62,6 +62,14 @@ export class CaseActivityService {
       throw new Error(`Failed to create case activity. Error: ${activityError}`);
     }
   }
+  async countByActivityType(caseFileGuid: string, activityType: string): Promise<number> {
+    return this.prisma.case_activity.count({
+      where: {
+        case_file_guid: caseFileGuid,
+        activity_type: activityType,
+      },
+    });
+  }
 
   async remove(input: CaseActivityRemoveInput): Promise<CaseActivity | null> {
     const utc_expiry_timestamp = new Date();

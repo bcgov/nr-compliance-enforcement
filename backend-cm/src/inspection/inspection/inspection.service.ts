@@ -23,7 +23,7 @@ import { GeoJsonProperties } from "geojson";
 import { InspectionSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "../../investigation/investigation/dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
-import { generateNextInspectionIdentifier } from "src/common/sequence.utility";
+import { generateInspectionIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 @Injectable()
 export class InspectionService {
@@ -373,8 +373,12 @@ export class InspectionService {
       throw new Error(`Case file with guid ${input.caseIdentifier} not found`);
     }
 
+    const existingInspectionCount = await this.caseActivityService.countByActivityType(
+      input.caseIdentifier,
+      "INSPECTION",
+    );
     // Create the inspection
-    const generatedName = await generateNextInspectionIdentifier(this.prisma);
+    const generatedName = generateInspectionIdentifier(caseFile.name, existingInspectionCount);
 
     let inspection;
     await withRlsTransaction(this.prisma, async (db) => {
