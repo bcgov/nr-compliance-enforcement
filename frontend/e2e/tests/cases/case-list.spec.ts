@@ -136,12 +136,12 @@ test.describe("Case List Search", () => {
     await searchInput.click();
     await searchInput.clear();
     // Use pressSequentially to properly trigger onChange events for React controlled input
-    await searchInput.pressSequentially("CASE1");
+    await searchInput.pressSequentially("CASE26-000001");
     await searchInput.press("Enter");
     await waitForSpinner(page);
 
-    // Verify at least one result contains CASE1 (results may be sorted by date, not ID)
-    const matchingRow = page.locator("#case-list tbody tr", { hasText: "CASE1" });
+    // Verify at least one result contains CASE26-000001 (results may be sorted by date, not ID)
+    const matchingRow = page.locator("#case-list tbody tr", { hasText: "CASE26-000001" });
     await expect(matchingRow.first()).toBeVisible({ timeout: 10000 });
   });
 
@@ -150,14 +150,14 @@ test.describe("Case List Search", () => {
     await searchInput.click();
     await searchInput.clear();
     // Use pressSequentially to properly trigger onChange events for React controlled input
-    await searchInput.pressSequentially("CASE1");
+    await searchInput.pressSequentially("CASE26-000001");
 
     const searchButton = page.locator("#search-button");
     await searchButton.click();
     await waitForSpinner(page);
 
-    // Verify at least one result contains CASE1 (results may be sorted by date, not ID)
-    const matchingRow = page.locator("#case-list tbody tr", { hasText: "CASE1" });
+    // Verify at least one result contains CASE26-000001 (results may be sorted by date, not ID)
+    const matchingRow = page.locator("#case-list tbody tr", { hasText: "CASE26-000001" });
     await expect(matchingRow.first()).toBeVisible({ timeout: 10000 });
   });
 

@@ -414,11 +414,10 @@ export const getTokenProfile = (): AppThunk => async (dispatch) => {
       let comsEnrolledInd = response.coms_enrolled_ind;
       let parkAreaGuid = response.park_area_guid;
 
-      if (response.office_guid !== null) {
-        const {
-          office_guid: { cos_geo_org_unit: unit },
-        } = response;
-
+      // office_guid may be null, office is optional
+      const officeDetails = response.office_guid;
+      if (officeDetails && typeof officeDetails === "object" && officeDetails.cos_geo_org_unit) {
+        const unit = officeDetails.cos_geo_org_unit;
         office = unit.office_location_code;
         region = unit.region_code;
         regionDescription = unit.region_name;
