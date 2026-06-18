@@ -1,3 +1,4 @@
-input CreateInvestigationAliasInput {
+input CreateAttachmentReferenceInput {
+  objectId: String!
   version: String!
 }

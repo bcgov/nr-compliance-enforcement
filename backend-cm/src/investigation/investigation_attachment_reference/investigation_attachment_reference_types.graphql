@@ -1,4 +1,5 @@
 type InvestigationAttachmentReference {
+  objectId: String!
   version: String!
   activeInd: Boolean!
 }

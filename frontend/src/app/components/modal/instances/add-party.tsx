@@ -1,6 +1,6 @@
 import { FC, memo, useMemo, useState } from "react";
 import { Modal, Spinner, Button, Form } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
 import { PartyListSearch } from "@/app/components/common/party-list-search";
 import {
@@ -45,6 +45,13 @@ import z from "zod";
 import { formatDateOfBirth } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
+import { getAttachments, getLatestObjectVersion, ObjectVersion } from "@/app/store/reducers/attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+
+interface AttachmentVersionLink {
+  objectId: string;
+  versionId: string;
+}
 
 type ActivityType = "investigation" | "inspection";
 
@@ -152,6 +159,8 @@ type AddEditPartyModalProps = {
 };
 
 export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, modalMode, close, submit }) => {
+  const dispatch = useAppDispatch();
+
   // Selectors
   const loading = useAppSelector(isLoading);
   const modalData = useAppSelector(selectModalData);
@@ -395,9 +404,36 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
     const party = fullPartyData?.party ?? selectedParty;
 
+    // Get all the attachments associated with the party
+    const attachments = await dispatch(
+      getAttachments(party.partyIdentifier, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
+    );
+
+    const versionLinks: AttachmentVersionLink[] = [];
+
+    for (const attachment of attachments) {
+      if (attachment.id === undefined) {
+        continue;
+      }
+
+      // Get the S3 version of each object and link them together.
+      const version = await dispatch(getLatestObjectVersion(attachment.id));
+      if (version !== undefined) {
+        versionLinks.push({ objectId: attachment.id, versionId: version.s3VersionId });
+      }
+    }
+
+    console.dir(versionLinks, { depth: null });
+
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,
+      attachmentReferences: versionLinks
+        ?.filter((av: AttachmentVersionLink): av is AttachmentVersionLink => av != null)
+        .map((av: AttachmentVersionLink) => ({
+          objectId: av.objectId,
+          version: av.versionId,
+        })),
       aliases: party.aliases
         ?.filter((a: Alias): a is Alias => a != null)
         .map((a: Alias) => ({

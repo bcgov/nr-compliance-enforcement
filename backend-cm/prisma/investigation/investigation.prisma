@@ -765,6 +765,7 @@ model investigation_person_facial_hair_style_code_ref_h {
 model investigation_attachment_reference {
   investigation_attachment_reference_guid String              @id(map: "investigation_attachment_reference_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   investigation_party_guid                String              @db.Uuid
+  object_guid_ref                         String              @db.Uuid
   s3_version_ref                          String              @db.VarChar(512)
   active_ind                              Boolean             @default(true)
   create_user_id                          String              @db.VarChar(32)

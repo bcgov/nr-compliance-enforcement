@@ -9,6 +9,9 @@ export class investigation_attachment_reference {
   investigation_party_guid: string;
 
   @ApiProperty({ type: String })
+  object_guid_ref: string;
+
+  @ApiProperty({ type: String })
   s3_version_ref: string;
 
   @ApiProperty({ type: Boolean })

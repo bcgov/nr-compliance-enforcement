@@ -2,6 +2,7 @@ CREATE TABLE
   investigation_attachment_reference (
     investigation_attachment_reference_guid uuid DEFAULT uuid_generate_v4 () NOT NULL,
     investigation_party_guid uuid NOT NULL,
+    object_guid_ref uuid NOT NULL,
     s3_version_ref character varying(512) NOT NULL,
     active_ind boolean NOT NULL DEFAULT true,
     create_user_id character varying(32) NOT NULL,
@@ -19,6 +20,8 @@ COMMENT ON TABLE investigation_attachment_reference IS 'Contains S3Version refer
 COMMENT ON COLUMN investigation_attachment_reference.investigation_attachment_reference_guid IS 'The system-generated unique identifier for the attachment reference record.';
 
 COMMENT ON COLUMN investigation_attachment_reference.investigation_party_guid IS 'The unique identifier of the party (person or business) associated with the attachment reference.';
+
+COMMENT ON COLUMN investigation_attachment_reference.object_guid_ref IS 'The unique identifier of the attachment from COMS.';
 
 COMMENT ON COLUMN investigation_attachment_reference.s3_version_ref IS 'The S3 version of the attachment at the time the party was attached to the investigation.';
 

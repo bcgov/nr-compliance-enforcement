@@ -301,6 +301,8 @@ export const fetchObjectsMetadata = async (
     results.push(...response.data);
   }
 
+  console.log(results);
+
   // Parse and index metadata by objectId. Map deduplicates, if multiple versions exist we keep the last one.
   // NOTE: There might be an issue with how this COMS API behaves as its returning more results then makes sense
   // to me, we may need to revisit in the future if there are performance issues.

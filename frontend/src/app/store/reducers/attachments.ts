@@ -51,7 +51,7 @@ interface BuildHeaderParams {
   size?: number;
 }
 
-interface ObjectVersion {
+export interface ObjectVersion {
   id: string;
   s3VersionId: string;
   objectId: string;
@@ -144,12 +144,10 @@ export const getAttachments =
               attachmentId: attachment?.id,
             });
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
-
             const thumbId = thumbArrayResponse[0]?.id;
-
+            attachmentList.push(...thumbArrayResponse);
             if (thumbId) {
               const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${thumbId}?download=url`);
-
               const thumbResponse = await get<string>(dispatch, thumbParameters);
               attachment.imageIconString = thumbResponse;
               attachment.imageIconId = thumbId;
@@ -391,15 +389,22 @@ export const saveAttachments =
     }
   };
 
+export const getLatestObjectVersion =
+  (objectId: string): AppThunk<Promise<ObjectVersion | undefined>> =>
+  async (dispatch) => {
+    // Fetch versions to get the latest versionId as this is required to update metadata
+    const versionParameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}/version`);
+    const versions = await get<ObjectVersion[]>(dispatch, versionParameters);
+    return versions.find((v) => v.isLatest && !v.deleteMarker);
+  };
+
 // Deletes and replaces the attachment metadata on a file.  Note that all custom meta-data is affected
 export const updateAttachmentMetadata =
   (objectId: string, extendedMeta: Record<string, string>, silent: boolean = false): AppThunk<Promise<void>> =>
   async (dispatch) => {
     try {
       // Fetch versions to get the latest versionId as this is required to update metadata
-      const versionParameters = generateApiParameters(`${config.COMS_URL}/object/${objectId}/version`);
-      const versions = await get<ObjectVersion[]>(dispatch, versionParameters);
-      const latestVersion = versions.find((v) => v.isLatest && !v.deleteMarker);
+      const latestVersion = await dispatch(getLatestObjectVersion(objectId));
 
       if (!latestVersion) {
         ToggleError("Could not find latest version of attachment");
