@@ -30,36 +30,48 @@
     },
     {
       "parameters": {
-        "command": "echo '{\"replace_me\": \"add one Execute-Command node per cleaned snippet-*, chained, read-only\"}'"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query||{}).namespace }} <snippet>.sh"
       },
       "id": "step-1",
       "name": "Collect (read-only, idempotent)",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
-      "position": [500, 320],
-      "notes": "READ-ONLY + IDEMPOTENT. Runs a cleaned snippet-*; safe to re-run."
+      "position": [480, 320],
+      "notes": "READ-ONLY + IDEMPOTENT. One Execute-Command node per cleaned snippet-*; safe to re-run."
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json);\nconst md = `# Triage report\\n\\n\\`\\`\\`json\\n${JSON.stringify(rows, null, 2)}\\n\\`\\`\\``;\nreturn [{ json: { markdown: md } }];"
+        "command": "=export MERGE_ONE={{ $('Collect (read-only, idempotent)').item.json.stdout.base64Encode() }}\nmerge.sh --b64"
       },
-      "id": "format",
-      "name": "Format output (markdown)",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [740, 320]
+      "id": "merge-snippets",
+      "name": "Merge snippets",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [720, 320],
+      "notes": "Flat-merge the collection snippets — one `export MERGE_<KEY>=...` line per collect node. The join point (no Code node)."
+    },
+    {
+      "parameters": {
+        "command": "=export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}\nexport NAMESPACE={{ ($('Webhook').item.json.query||{}).namespace }}\nreport.sh <group> <report>.md"
+      },
+      "id": "report",
+      "name": "Report",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [960, 320],
+      "notes": "report.sh assembles merged + {validations} and renders the report markdown. With validators, add a 'Merge validations' node (merge.sh -k --b64) and `export VALS={{ $('Merge validations')...base64Encode() }}` here."
     },
     {
       "parameters": {
         "mode": "markdownToHtml",
-        "markdown": "={{ $json.markdown }}",
+        "markdown": "={{ $json.stdout }}",
         "options": {}
       },
       "id": "md2html",
       "name": "Markdown to HTML",
       "type": "n8n-nodes-base.markdown",
       "typeVersion": 1,
-      "position": [980, 320]
+      "position": [1200, 320]
     },
     {
       "parameters": {
@@ -77,7 +89,7 @@
       "name": "Respond to Webhook (HTML)",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1220, 320]
+      "position": [1440, 320]
     }
   ],
   "connections": {
@@ -85,9 +97,12 @@
       "main": [[{ "node": "Collect (read-only, idempotent)", "type": "main", "index": 0 }]]
     },
     "Collect (read-only, idempotent)": {
-      "main": [[{ "node": "Format output (markdown)", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Merge snippets", "type": "main", "index": 0 }]]
     },
-    "Format output (markdown)": {
+    "Merge snippets": {
+      "main": [[{ "node": "Report", "type": "main", "index": 0 }]]
+    },
+    "Report": {
       "main": [[{ "node": "Markdown to HTML", "type": "main", "index": 0 }]]
     },
     "Markdown to HTML": {

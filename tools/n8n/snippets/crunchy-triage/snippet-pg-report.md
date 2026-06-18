@@ -27,9 +27,13 @@
 {{#if .activity }}
 
 ## Long-running / active queries
-| PID | User | State | Age (s) | Query |
-|-----|------|-------|---------|-------|
-{{ .activity | map("| \(cell(.pid)) | \(cell(.user)) | \(cell(.state)) | \(cell(.seconds)) | \(cell(.query)) |") | join("\n") }}
+
+<table>
+<thead><tr><th>PID</th><th>User</th><th>State</th><th>Age (s)</th><th>Query</th></tr></thead>
+<tbody>
+{{ .activity | map("<tr><td>\(cell(.pid))</td><td>\(cell(.user))</td><td>\(cell(.state))</td><td>\(cell(.seconds))</td><td>\(cell(.query))</td></tr>") | join("\n") }}
+</tbody>
+</table>
 {{/if}}
 {{#if .wal }}
 

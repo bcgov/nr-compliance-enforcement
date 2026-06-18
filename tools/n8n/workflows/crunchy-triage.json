@@ -1,16 +1,5 @@
 {
   "connections": {
-    "Chain previous": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Render triage report",
-            "type": "main"
-          }
-        ]
-      ]
-    },
     "Cluster status (read-only)": {
       "main": [
         [
@@ -33,12 +22,23 @@
         ]
       ]
     },
-    "Merge + encode": {
+    "Merge snippets": {
       "main": [
         [
           {
             "index": 0,
             "node": "Validate cluster",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Merge validations": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Report",
             "type": "main"
           }
         ]
@@ -71,7 +71,7 @@
         [
           {
             "index": 0,
-            "node": "Merge + encode",
+            "node": "Merge snippets",
             "type": "main"
           }
         ]
@@ -88,18 +88,7 @@
         ]
       ]
     },
-    "Render PG report": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Chain previous",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Render triage report": {
+    "Report": {
       "main": [
         [
           {
@@ -126,7 +115,7 @@
         [
           {
             "index": 0,
-            "node": "Verdicts",
+            "node": "Merge validations",
             "type": "main"
           }
         ]
@@ -165,17 +154,6 @@
         ]
       ]
     },
-    "Verdicts": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Render PG report",
-            "type": "main"
-          }
-        ]
-      ]
-    },
     "Webhook": {
       "main": [
         [
@@ -206,9 +184,9 @@
       "name": "Production URL",
       "parameters": {
         "color": 4,
-        "content": "## Crunchy triage \u2014 production URL\n\nClick to run this triage \u2014 read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/crunchy-triage?namespace=f208ae-dev**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
+        "content": "## Crunchy triage — production URL\n\nClick to run this triage — read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/crunchy-triage?namespace=f208ae-dev**\n\nBuilt from cleaned snippets by the workflow-builder skill.",
         "height": 260,
-        "width": 420
+        "width": 460
       },
       "position": [
         180,
@@ -235,11 +213,11 @@
       "webhookId": "crunchy-triage"
     },
     {
-      "id": "step-cluster-status",
+      "id": "snip-cluster",
       "name": "Cluster status (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. patronictl list/show-config via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-cluster-status.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-cluster-status.sh"
       },
       "position": [
         480,
@@ -249,11 +227,11 @@
       "typeVersion": 1
     },
     {
-      "id": "step-pgbackrest",
+      "id": "snip-pgbackrest",
       "name": "pgBackRest info (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. pgbackrest info via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pgbackrest-info.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pgbackrest-info.sh"
       },
       "position": [
         700,
@@ -263,11 +241,11 @@
       "typeVersion": 1
     },
     {
-      "id": "step-pg-connections",
+      "id": "snip-connections",
       "name": "PG connections (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. pg_stat_activity counts via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-connections.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-connections.sh"
       },
       "position": [
         920,
@@ -277,11 +255,11 @@
       "typeVersion": 1
     },
     {
-      "id": "step-pg-activity",
+      "id": "snip-activity",
       "name": "PG activity (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. long-running queries via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-activity.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-activity.sh"
       },
       "position": [
         1140,
@@ -291,11 +269,11 @@
       "typeVersion": 1
     },
     {
-      "id": "step-pg-wal",
+      "id": "snip-wal",
       "name": "PG WAL (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. WAL + archiver state via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-wal.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-wal.sh"
       },
       "position": [
         1360,
@@ -305,11 +283,11 @@
       "typeVersion": 1
     },
     {
-      "id": "step-pg-cache",
+      "id": "snip-cache",
       "name": "PG cache (read-only)",
       "notes": "READ-ONLY + IDEMPOTENT. buffer-cache hit ratio via a cleaned snippet-*; safe to re-run.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} bash tools/n8n/snippets/crunchy-triage/snippet-pg-cache.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-cache.sh"
       },
       "position": [
         1580,
@@ -319,24 +297,33 @@
       "typeVersion": 1
     },
     {
-      "id": "merge-encode",
-      "name": "Merge + encode",
+      "id": "merge-snippets",
+      "name": "Merge snippets",
+      "notes": "Flat-merge the collection snippets into one JSON (fields stay top-level). The join point.",
       "parameters": {
-        "jsCode": "const ns = ($('Webhook').item.json.query || {}).namespace || '';\nconst parse = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst merged = Object.assign({}, parse('Cluster status (read-only)'), parse('pgBackRest info (read-only)'), parse('PG connections (read-only)'), parse('PG activity (read-only)'), parse('PG WAL (read-only)'), parse('PG cache (read-only)'), { namespace: ns });\nreturn [{ json: { ...merged, _b64: Buffer.from(JSON.stringify(merged)).toString('base64') } }];"
+        "command": [
+          "=export MERGE_CLUSTER={{ $('Cluster status (read-only)').item.json.stdout.base64Encode() }}",
+          "export MERGE_PGBACKREST={{ $('pgBackRest info (read-only)').item.json.stdout.base64Encode() }}",
+          "export MERGE_CONNECTIONS={{ $('PG connections (read-only)').item.json.stdout.base64Encode() }}",
+          "export MERGE_ACTIVITY={{ $('PG activity (read-only)').item.json.stdout.base64Encode() }}",
+          "export MERGE_WAL={{ $('PG WAL (read-only)').item.json.stdout.base64Encode() }}",
+          "export MERGE_CACHE={{ $('PG cache (read-only)').item.json.stdout.base64Encode() }}",
+          "merge.sh --b64"
+        ]
       },
       "position": [
         1800,
         360
       ],
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
     },
     {
       "id": "val-cluster",
       "name": "Validate cluster",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
       "parameters": {
-        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-cluster-status.sh"
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-cluster-status.sh"
       },
       "position": [
         2020,
@@ -348,9 +335,9 @@
     {
       "id": "val-pgbackrest",
       "name": "Validate pgBackRest",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
       "parameters": {
-        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pgbackrest.sh"
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pgbackrest.sh"
       },
       "position": [
         2240,
@@ -362,9 +349,9 @@
     {
       "id": "val-connections",
       "name": "Validate connections",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
       "parameters": {
-        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-connections.sh"
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-connections.sh"
       },
       "position": [
         2460,
@@ -376,9 +363,9 @@
     {
       "id": "val-wal",
       "name": "Validate WAL",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
       "parameters": {
-        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-wal.sh"
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-wal.sh"
       },
       "position": [
         2680,
@@ -390,9 +377,9 @@
     {
       "id": "val-cache",
       "name": "Validate cache",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits a {check,status,message,docs,sources} verdict.",
+      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
       "parameters": {
-        "command": "=echo {{ $('Merge + encode').item.json._b64 }} | base64 -d | bash tools/n8n/snippets/crunchy-triage/validator-pg-cache.sh"
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-cache.sh"
       },
       "position": [
         2900,
@@ -402,54 +389,40 @@
       "typeVersion": 1
     },
     {
-      "id": "verdicts",
-      "name": "Verdicts",
+      "id": "merge-validations",
+      "name": "Merge validations",
+      "notes": "Key each verdict by its check name into the .validations object. The join point.",
       "parameters": {
-        "jsCode": "const merged = JSON.parse(Buffer.from($('Merge + encode').item.json._b64, 'base64').toString());\nconst parseV = (n) => { try { return JSON.parse($(n).item.json.stdout || '{}'); } catch (e) { return {}; } };\nconst names = ['Validate cluster', 'Validate pgBackRest', 'Validate connections', 'Validate WAL', 'Validate cache'];\nconst validations = {};\nfor (const n of names) { const v = parseV(n); if (v && v.check) validations[v.check] = v; }\nconst final = { ...merged, validations };\nreturn [{ json: { ...final, _b64: Buffer.from(JSON.stringify(final)).toString('base64') } }];"
+        "command": [
+          "=export MERGE_CLUSTER={{ $('Validate cluster').item.json.stdout.base64Encode() }}",
+          "export MERGE_PGBACKREST={{ $('Validate pgBackRest').item.json.stdout.base64Encode() }}",
+          "export MERGE_CONNECTIONS={{ $('Validate connections').item.json.stdout.base64Encode() }}",
+          "export MERGE_WAL={{ $('Validate WAL').item.json.stdout.base64Encode() }}",
+          "export MERGE_CACHE={{ $('Validate cache').item.json.stdout.base64Encode() }}",
+          "merge.sh -k --b64"
+        ]
       },
       "position": [
         3120,
-        360
-      ],
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2
-    },
-    {
-      "id": "render-pg",
-      "name": "Render PG report",
-      "notes": "READ-ONLY. Renders the Postgres-health report markdown from the final JSON via render.sh.",
-      "parameters": {
-        "command": "=echo {{ $json._b64 }} | base64 -d | NAMESPACE={{ $json.namespace }} bash tools/n8n/render.sh tools/n8n/snippets/crunchy-triage/snippet-pg-report.md"
-      },
-      "position": [
-        3340,
         360
       ],
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1
     },
     {
-      "id": "chain-prev",
-      "name": "Chain previous",
+      "id": "report",
+      "name": "Report",
+      "notes": "READ-ONLY. report.sh assembles merged + {validations} and renders the chained report markdown.",
       "parameters": {
-        "jsCode": "const final = JSON.parse(Buffer.from($('Verdicts').item.json._b64, 'base64').toString());\nconst pgMd = $('Render PG report').item.json.stdout || '';\nconst chained = { ...final, previous: pgMd };\nreturn [{ json: { ...chained, _b64: Buffer.from(JSON.stringify(chained)).toString('base64') } }];"
+        "command": [
+          "=export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}",
+          "export VALS={{ $('Merge validations').item.json.stdout.base64Encode() }}",
+          "export NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }}",
+          "report.sh crunchy-triage snippet-triage-report.md snippet-pg-report.md"
+        ]
       },
       "position": [
-        3560,
-        360
-      ],
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2
-    },
-    {
-      "id": "render-main",
-      "name": "Render triage report",
-      "notes": "READ-ONLY. Renders the triage report (with the PG report chained in as .previous).",
-      "parameters": {
-        "command": "=echo {{ $json._b64 }} | base64 -d | NAMESPACE={{ $json.namespace }} bash tools/n8n/render.sh tools/n8n/snippets/crunchy-triage/snippet-triage-report.md"
-      },
-      "position": [
-        3780,
+        3340,
         360
       ],
       "type": "n8n-nodes-base.executeCommand",
@@ -464,7 +437,7 @@
         "options": {}
       },
       "position": [
-        4000,
+        3560,
         360
       ],
       "type": "n8n-nodes-base.markdown",
@@ -488,7 +461,7 @@
         "responseBody": "={{ $json.data }}"
       },
       "position": [
-        4220,
+        3780,
         360
       ],
       "type": "n8n-nodes-base.respondToWebhook",

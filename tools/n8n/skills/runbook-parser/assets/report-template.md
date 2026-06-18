@@ -19,8 +19,12 @@
        verdict(.validations.X)   a validator's blockquote: status + message + docs link + objects checked
        dump(.comments)           a free-form comments block (array/string/any)
        chain(.previous)          a prior report's output appended (--- rule between array items)
-     Wrap every table cell in cell(...) — it collapses control/whitespace (incl. invisible Unicode
-     separators that would split the row) and escapes |, so a query/value can't break the table.
+     Tables: render as an HTML <table>, NOT a markdown | … | table. A markdown table can drop rows
+     in some renderers (marked.js, especially inside chained .previous content); a raw HTML <table>
+     is passed through untouched and always renders every row. Wrap EVERY cell value in cell(...) —
+     it collapses control/whitespace (incl. invisible Unicode separators) and escapes & < > | so a
+     query/value can never break the cell. Keep a blank line before <table> and NO blank line inside
+     it (so it stays one HTML block). See the ## Section example below.
      Tags fetch external badge images — keep tag text non-sensitive. Drop static badges in too:
        ![](https://img.shields.io/badge/-text-555)
 -->
@@ -37,9 +41,12 @@
 ## Section
 {{ verdict(.validations.other) }}
 
-| Col |
-|-----|
-{{ .other | map("| \((.field // "") | gsub("[|]"; "&#124;")) |") | join("\n") }}
+<table>
+<thead><tr><th>Col A</th><th>Col B</th></tr></thead>
+<tbody>
+{{ .other | map("<tr><td>\(cell(.fieldA))</td><td>\(cell(.fieldB))</td></tr>") | join("\n") }}
+</tbody>
+</table>
 {{/if}}
 {{else}}
 _No data collected for this report._

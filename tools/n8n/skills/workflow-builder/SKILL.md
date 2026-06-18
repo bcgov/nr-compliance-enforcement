@@ -23,9 +23,11 @@ Shape of every workflow this skill builds:
                                           │
         ┌─────────────────────────────────┘
         ▼
-  cleaned snippet → cleaned snippet → …    (Execute-Command, chained, read-only)
+  snippet · snippet · …  →  Merge snippets (merge.sh)      (Execute-Command, one per snippet, read-only)
         ▼
-  Format output (markdown) → Markdown (markdown→HTML) → Respond to Webhook (Content-Type: text/html)
+  validator · validator · …  →  Merge validations (merge.sh -k)
+        ▼
+  Report (report.sh) → Markdown (markdown→HTML) → Respond to Webhook (Content-Type: text/html)
 ```
 
 It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it —
@@ -54,26 +56,29 @@ developer can run the triage locally and read the HTML report in a browser, no n
    exist yet, run the `runbook-parser` cleaning step first.
 2. Copy `assets/skeleton.json` as the starting point — it already has the Sticky Note (with
    the production URL placeholder), the Webhook (`responseMode: responseNode`), and the
-   Format -> Markdown -> Respond tail.
-3. Give every snippet, validator, and report render its OWN `n8n-nodes-base.executeCommand` node
-   that makes exactly one call — one collection `snippet-*` per node, one `validator-*` per node,
-   one `render.sh <report>` per node — so a teammate can copy a node and its single call straight
-   into another workflow. Collection nodes run from the Webhook params; a Code/Merge node combines
-   their JSON; each validator node reads that merged JSON; a Code node keys the verdicts under
-   `.validations`; the report node renders the result. Set each node's `notes` to state it is
-   read-only and idempotent (`references/N8N_NODES.md`).
-4. Keep the tail: Format output (build the report markdown, reusing `tools/n8n/render.sh` for
-   `.md` display snippets) -> Markdown node (`markdownToHtml`) -> Respond to Webhook with
-   `Content-Type: text/html` (the serve-HTML-via-webhook pattern, n8n template 5173).
-5. Fill the Sticky Note from `assets/sticky-note.md`: substitute `<BASE_URL>` (`config.yaml`
-   `spec.n8n.base_url`), `<PATH>` (the Webhook path = workflow name), `<TITLE>`, and `<QUERY>`,
-   so users can click the production URL.
-6. Write valid workflow JSON (`name`, `nodes`, `connections`, `settings`) to
+   Report -> Markdown -> Respond tail.
+3. Give every snippet and validator its OWN `n8n-nodes-base.executeCommand` node, one call each: a
+   collection node runs `NAMESPACE={{ ($('Webhook').item.json.query||{}).namespace }} snippet-*.sh`;
+   a validator node pipes the merged JSON in with
+   `echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-*.sh`.
+   Set each node's `notes` to read-only + idempotent (`references/N8N_NODES.md`).
+4. Join with `tools/n8n/merge.sh`, never a Code node. A "Merge snippets" node lists one
+   `export MERGE_<KEY>={{ $('<collection node>').item.json.stdout.base64Encode() }}` per collection
+   node, then `merge.sh --b64` (flat — snippet fields stay top-level). A "Merge
+   validations" node does the same over the validator nodes (key = the check name), then
+   `merge.sh -k --b64` (keyed -> the `.validations` object).
+5. Render with one "Report" node: `export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}`,
+   `export VALS={{ $('Merge validations').item.json.stdout.base64Encode() }}`, `export NAMESPACE={{ … }}`,
+   then `report.sh <group> <report.md> …` — report.sh assembles `merged + {validations}`
+   and renders the chained report. End the tail with a Markdown node (`markdownToHtml`) -> Respond to
+   Webhook (`Content-Type: text/html`) — the serve-HTML pattern, n8n template 5173.
+6. Fill the Sticky Note from `assets/sticky-note.md`: substitute `<BASE_URL>` (`config.yaml`
+   `spec.n8n.base_url`), `<PATH>` (the Webhook path = workflow name), `<TITLE>`, and `<QUERY>`.
+7. Write valid workflow JSON (`name`, `nodes`, `connections`, `settings`) to
    `tools/n8n/workflows/<name>.json` per `references/API_SCHEMA.md`. Do not POST it.
-7. Emit the local equivalent: copy `assets/local-workflow.sh` to
-   `tools/n8n/workflows/<name>.local.sh`, set the group/report/page name, and add one collection
-   line per cleaned snippet (same order as the Execute-Command nodes). It reuses `render.sh` and
-   `tools/n8n/view.sh`, and must pass `shellcheck`. See `references/LOCAL_WORKFLOW.md`.
+8. Emit the local equivalent: copy `assets/local-workflow.sh` to `tools/n8n/workflows/<name>.local.sh`
+   and fill it — it runs the same `merge.sh` / `report.sh`, so local and n8n stay in lockstep, and it
+   must pass `shellcheck`. See `references/LOCAL_WORKFLOW.md`.
 
 ## Rules
 
@@ -84,18 +89,29 @@ developer can run the triage locally and read the HTML report in a browser, no n
 - Always start with a Webhook trigger plus a Sticky Note holding the production URL, built from
   `assets/sticky-note.md` with the host from `config.yaml` `spec.n8n.base_url`
   (`<base_url>/webhook/<workflow-name>`) — never hardcode a host.
-- Always end Format output -> Markdown (markdown->HTML) -> Respond to Webhook with
-  `Content-Type: text/html`; the Webhook node `responseMode` must be `responseNode`.
+- Always end with a Report node (`report.sh`) -> Markdown (`markdownToHtml`) -> Respond to Webhook
+  with `Content-Type: text/html`; the Webhook node `responseMode` must be `responseNode`.
 - Emit only the API-writable fields (`name`, `nodes`, `connections`, `settings`); never POST —
   hand the file to `push.sh`.
 - Give every node a unique `name` and `id`, and wire `connections` by node name.
-- Each snippet, validator, and report render is its own Execute-Command node making exactly one
-  call — never bundle several calls into one node (Why: discrete one-call nodes are copy-pasteable
-  into another workflow, which is the point of the cleaned-snippet library).
-- Reuse `tools/n8n/render.sh` for markdown templating of cleaned `.md` display snippets.
-- Emit the `local-workflow.sh` equivalent too, kept in lockstep with the JSON — one collection
-  line per Execute-Command node, in the same order; it is read-only and idempotent like the
-  workflow, and uses `render.sh` + `tools/n8n/view.sh`.
+- Each snippet and validator is its own one-call Execute-Command node, and the report is one
+  `report.sh` node — copy-pasteable, reorderable within their group. Join with `tools/n8n/merge.sh`,
+  NEVER a Code node: a "Merge snippets" node (`merge.sh --b64`, flat) and a "Merge validations" node
+  (`merge.sh -k --b64`, keyed by check) (Why: transparent + no jsCode reaching into nodes by name).
+- Keep each node command short — a snippet/validator call is well under ~200 chars and stays a plain
+  JSON string. The exception is a merge/report node whose `export …` block is multi-line and long;
+  store THAT command as a JSON array of lines (one element per line) so git diffs stay readable.
+  `push.sh` joins the array with `\n` (the string n8n wants); `pull.sh` splits a > 200-char multi-line
+  command back to an array — both accept either form. Pass node stdout base64-encoded
+  (`{{ $('node').item.json.stdout.base64Encode() }}` + `merge.sh --b64`) so JSON survives the shell.
+- n8n node commands call the baked scripts by bare name (`merge.sh`, `report.sh crunchy-triage …`,
+  `snippet-*.sh`). The image bakes the triage tree under `/opt/triage` (NOT `/data`, a runtime PVC
+  mount that shadows it) and `chmod +x`'s the scripts; the `n8n-entrypoint.sh` wrapper adds
+  `/opt/triage` + every baked `snippets/<group>` dir to `PATH` at startup, so any group the team adds
+  just works — no per-group Dockerfile edit. (`local-workflow.sh` calls the same scripts as
+  `bash "$N8N/…"` from its own location — dev machines have nothing on `PATH`.)
+- Emit the `local-workflow.sh` equivalent too — it runs the SAME `merge.sh` / `report.sh`, so local
+  and n8n stay in lockstep; it must pass `shellcheck`.
 - Shellcheck every `.sh` this skill produces (the `local-workflow.sh`) before signing off; fall
   back to `bash -n` only if shellcheck is unavailable.
 

@@ -134,8 +134,18 @@ while :; do
     fi
     # Write ONLY the fields push.sh sends (its build_body), so a pull -> push round-trips and
     # never carries an id or server-side state into git. -S keeps key order stable across pulls.
+    # A long, multi-line command (> 200 chars AND containing a newline — the merge/report nodes) is
+    # stored as an ARRAY of lines so it diffs cleanly in git; push.sh rejoins it with "\n". Short or
+    # single-line commands stay plain strings.
     jq -S '{name, nodes, connections, settings: (.settings // {})}
-           + (if .staticData != null then {staticData} else {} end)' <<<"$row" >"$file"
+           + (if .staticData != null then {staticData} else {} end)
+           | .nodes |= map(
+               if ((.parameters.command | type) == "string")
+                  and ((.parameters.command | length) > 200)
+                  and (.parameters.command | contains("\n"))
+               then .parameters.command |= split("\n")
+               else . end
+             )' <<<"$row" >"$file"
     written["$slug.json"]=1
     count=$((count + 1))
     echo "  pulled: $name -> $file"

@@ -3,60 +3,62 @@
 # crunchy-triage.local.sh — run the crunchy-triage workflow on a developer's machine: the shell
 # equivalent of tools/n8n/workflows/crunchy-triage.json. Same stages, read-only + idempotent.
 #
-#   Webhook params       -> NAMESPACE (env)
-#   Collect              -> run each read-only snippet-*, merge their JSON
-#   Validate             -> run each validator-* on the merged JSON, key verdicts by .check
-#   Report (chained)     -> render the PG report, then the main report with it as .previous
-#   Markdown -> HTML     -> view.sh (HTML in /tmp, prints a file:// URL)
+#   Webhook params   -> NAMESPACE (env)
+#   Collect          -> run each read-only snippet-*; MERGE_* -> merge.sh      (flat -> merged JSON)
+#   Validate         -> run each validator-* on merged;  MERGE_* -> merge.sh -k (keyed -> validations)
+#   Report (chained) -> report.sh: assemble merged + { validations }, render the reports chained
+#   Markdown -> HTML -> view.sh (HTML in /tmp, prints a file:// URL)
+#
+# Every cross-node merge goes through tools/n8n/merge.sh, exactly as the n8n workflow does — no
+# bespoke jq plumbing here — so local and n8n stay in lockstep. Each MERGE_<KEY>=<output> line is
+# one n8n node's stdout; merge.sh combines them. flat = collection (fields stay top-level); keyed
+# = validations (each verdict under its check name).
 #
 #   NAMESPACE=f208ae-dev tools/n8n/workflows/crunchy-triage.local.sh    # prints a file:// URL to open
 set -euo pipefail
 
-# Resolve the repo root from this script's location (it lives in tools/n8n/workflows/).
 ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 N8N="$ROOT/tools/n8n"
 SNIPPETS="$N8N/snippets/crunchy-triage"
-REPORT="$SNIPPETS/snippet-triage-report.md"
-PG_REPORT="$SNIPPETS/snippet-pg-report.md"
 NAME="crunchy-triage"
 
-# --- Inputs (the webhook params) -------------------------------------------------------
 : "${NAMESPACE:?set NAMESPACE (the triage target, e.g. f208ae-dev)}"
 
-# --- Collect: one read-only snippet per step; each prints a JSON object. `|| true` keeps a
-#     failing step from aborting the run — its data is just absent, and the conditional report
-#     renders whatever did arrive.
-collect=(
-  snippet-cluster-status snippet-pgbackrest-info
-  snippet-pg-connections snippet-pg-activity snippet-pg-wal snippet-pg-cache
-)
+# Run snippet/validator $1 (validators take the merged JSON on stdin) and echo its output; `|| true`
+# keeps a failing step from aborting the run — its data is just absent.
+snip() {
+  echo "  - $1" >&2
+  NAMESPACE="$NAMESPACE" bash "$SNIPPETS/$1.sh" 2>/dev/null || true
+}
+
+# --- Collect: each snippet prints a JSON object; hand them to merge.sh as MERGE_* and flat-merge,
+#     so .members / .connections / .wal / … stay top-level. The MERGE_ names are just unique labels.
 echo "collecting from namespace '$NAMESPACE'..." >&2
-parts=()
-for s in "${collect[@]}"; do
-  echo "  - $s" >&2
-  parts+=("$(NAMESPACE="$NAMESPACE" bash "$SNIPPETS/$s.sh" 2>/dev/null || true)")
-done
-merged="$(printf '%s\n' "${parts[@]}" | jq -s 'add // {}')"
+export MERGE_CLUSTER="$(snip snippet-cluster-status)"
+export MERGE_PGBACKREST="$(snip snippet-pgbackrest-info)"
+export MERGE_CONNECTIONS="$(snip snippet-pg-connections)"
+export MERGE_ACTIVITY="$(snip snippet-pg-activity)"
+export MERGE_WAL="$(snip snippet-pg-wal)"
+export MERGE_CACHE="$(snip snippet-pg-cache)"
+merged="$(bash "$N8N/merge.sh")"
+unset ${!MERGE_@}
 
-# --- Validate: each validator reads the merged JSON and emits { check, status, message }.
-#     Key the verdicts by .check into .validations (graceful: drop any empty/invalid output).
-validators=(
-  validator-cluster-status validator-pgbackrest
-  validator-pg-connections validator-pg-cache validator-pg-wal
-)
+# --- Validate: each validator reads the merged JSON and emits { check, status, ... }. Pass them as
+#     MERGE_<CHECK> to merge.sh -k, which keys each under its check name -> the .validations object.
 echo "validating..." >&2
-verdicts=()
-for v in "${validators[@]}"; do
-  echo "  - $v" >&2
-  verdicts+=("$(printf '%s' "$merged" | bash "$SNIPPETS/$v.sh" 2>/dev/null || true)")
-done
-validations="$(printf '%s\n' "${verdicts[@]}" | jq -s 'map(select(type == "object" and has("check"))) | map({(.check): .}) | add // {}')"
-final="$(printf '%s' "$merged" | jq --argjson v "$validations" '. + {validations: $v}')"
+export MERGE_CLUSTER="$(printf '%s' "$merged" | snip validator-cluster-status)"
+export MERGE_PGBACKREST="$(printf '%s' "$merged" | snip validator-pgbackrest)"
+export MERGE_CONNECTIONS="$(printf '%s' "$merged" | snip validator-pg-connections)"
+export MERGE_WAL="$(printf '%s' "$merged" | snip validator-pg-wal)"
+export MERGE_CACHE="$(printf '%s' "$merged" | snip validator-pg-cache)"
+validations="$(bash "$N8N/merge.sh" -k)"
+unset ${!MERGE_@}
 
-# --- Report (chained): render the PG report, then render the main report with it as .previous,
-#     and open the result. The page shows the triage report with the PG report appended below.
+# --- Report (chained): report.sh assembles the final payload (merged + { validations }) and
+#     renders the reports, chaining each as the next's .previous (first arg = top of the page).
+#     DATA/VALS go in base64, exactly as the n8n report node passes them (shell-safe transport).
 echo "rendering report..." >&2
-pg_md="$(printf '%s' "$final" | NAMESPACE="$NAMESPACE" bash "$N8N/render.sh" "$PG_REPORT")"
-printf '%s' "$final" | jq --arg prev "$pg_md" '. + {previous: $prev}' \
-  | NAMESPACE="$NAMESPACE" bash "$N8N/render.sh" "$REPORT" \
+export DATA="$(printf '%s' "$merged" | base64 | tr -d '\n')"
+export VALS="$(printf '%s' "$validations" | base64 | tr -d '\n')"
+NAMESPACE="$NAMESPACE" bash "$N8N/report.sh" crunchy-triage snippet-triage-report.md snippet-pg-report.md \
   | bash "$N8N/view.sh" "$NAME"

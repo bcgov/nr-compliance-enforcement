@@ -108,7 +108,7 @@ def badges($items): if ($items|present) then ($items | map("![" + . + "](https:/
 def verdict($v): if ($v|present) then ("> **" + ($v.status|ascii_upcase) + "** — " + $v.message + (if (($v.docs//"")!="") then "\n> [docs](" + $v.docs + ")" + (if (($v.sources//[])|length)>0 then " — checked " + ($v.sources|join(", ")) else "" end) else "" end)) else "" end;
 def chain($p): if ($p|present) then (if ($p|type=="array") then ($p|join("\n\n---\n\n")) else $p end) else "" end;
 def dump($c): if ($c|present) then (if ($c|type=="array") then ($c|map(tostring)|join("\n")) elif ($c|type=="string") then $c else ($c|tojson) end) else "" end;
-def cell($s): ($s // "" | tostring | gsub("[[:cntrl:][:space:]]+"; " ") | gsub("[|]"; "&#124;"));
+def cell($s): ($s // "" | tostring | gsub("[[:cntrl:][:space:]]+"; " ") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;") | gsub("[|]"; "&#124;"));
 '
 cond=()   # 1/0 per open block: is this branch active? (AND of the whole stack = emit)
 took=()   # 1/0 per open block: was the if-branch condition true? (so {{else}} can invert it)

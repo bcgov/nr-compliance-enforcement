@@ -111,7 +111,7 @@ status:
         reason: manual restore — destructive writes, not triage
       seals:
         crunchy-dr-wiki: sha256:178f5e8e62075860b5738eaca44197c19a2afa0f69f7fb23ebeff37484e08587
-        postgres-triage: sha256:cf2df1573a864930c0096812da2a4ecfb704d1755ad67278adcfe47ba2689a33
+        postgres-triage: sha256:8f06b9efdb811ec4d9dea2f5f0d36d05b02d7e42fad0bba5d9aa5c2be9277a3e
   docs:
     topics:
     - aspect: cluster-ha

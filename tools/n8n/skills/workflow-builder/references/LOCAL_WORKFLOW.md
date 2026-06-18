@@ -1,45 +1,42 @@
 # Local workflow — the n8n workflow as a shell script
 
-Every workflow this skill builds also gets a **local equivalent**: a shell script a developer
-runs on their machine to fire the same run without n8n. Same stages, same read-only / idempotent
-contract; it writes an HTML report to `/tmp` and opens it in a browser.
+Every workflow this skill builds also gets a **local equivalent**: a shell script a developer runs
+on their machine to fire the same run without n8n. It runs the SAME `tools/n8n/merge.sh` and
+`report.sh` as the n8n nodes, so the two stay in lockstep; it writes an HTML report to `/tmp` and
+prints a file:// URL.
 
-Start from `assets/local-workflow.sh`, copy it to `tools/n8n/workflows/<name>.local.sh` next to
-`<name>.json`, and fill the `<--` markers (group, report, page name, the collection + validator
-lists).
+Start from `assets/local-workflow.sh`, copy it to `tools/n8n/workflows/<name>.local.sh`, and fill
+the `<--` markers (group, page name, the collection snippets, the validators, the report(s)).
 
 ## n8n node -> shell stage
 
-| n8n node                            | `local-workflow.sh` stage                              |
-| ----------------------------------- | ------------------------------------------------------ |
-| Webhook (params)                    | the env the snippets read, set on the command line     |
-| Execute-Command (one per collect)   | `bash $SNIPPETS/<snippet>.sh` into a `parts` array     |
-| Execute-Command (one per validator) | `bash $SNIPPETS/<validator>.sh` on the merged JSON     |
-| Code: Format (markdown)             | `jq -s 'add'` merge -> `render.sh <report>.md`         |
-| Markdown -> HTML                    | `view.sh` (writes `/tmp/n8n-report/<name>.html`)       |
-| Respond to Webhook (text/html)      | the file:// URL `view.sh` prints — open it in a browser|
+| n8n node                            | `local-workflow.sh` stage                                 |
+| ----------------------------------- | --------------------------------------------------------- |
+| Webhook (params)                    | the env the snippets read (inherited by every child)      |
+| Execute-Command (one per collect)   | `export MERGE_<KEY>="$(snip <snippet>)"`                  |
+| Merge snippets                      | `merge.sh` — flat merge, fields stay top-level            |
+| Execute-Command (one per validator) | `export MERGE_<CHECK>="$(snip <validator>)"` (on merged)  |
+| Merge validations                   | `merge.sh -k` — keyed by check -> the `.validations` obj  |
+| Report                              | `report.sh` — assemble `merged + {validations}`, render   |
+| Markdown -> Respond                 | `view.sh` — HTML in `/tmp`, prints a file:// URL          |
 
-The two stay in lockstep: every Execute-Command node is one list entry, in the same order, and
-the Format -> Markdown -> Respond tail is the single render-then-view pipe.
+The two stay in lockstep: every collection/validator node is one `MERGE_*` line, and the join +
+report stages call the same `merge.sh` / `report.sh` the n8n nodes do.
 
-## Collecting + merging
+## Merging (merge.sh)
 
-Each collection snippet prints one JSON object. The script collects them with `|| true` (a
-failing step is just absent, never fatal) and merges with `jq -s 'add // {}'` into one object.
-Because the report guards every section with `{{#if}}`, a partial or empty merge still renders
-cleanly — like the n8n version fed a partial chain.
+Each collection snippet prints one JSON object; the script exports them as `MERGE_*` and runs
+`merge.sh` (flat = `jq -s add`), so fields stay top-level (`.members`, `.connections`, …). `|| true`
+keeps a failing step from aborting — its data is just absent, and the `{{#if}}`-guarded report
+renders whatever arrived. Validator verdicts are exported as `MERGE_<CHECK>` and merged with
+`merge.sh -k` (keyed by check) into the `.validations` object. `unset ${!MERGE_@}` between stages so
+the two merges don't bleed into each other.
 
-## Validating
+## Report (report.sh)
 
-Each validator reads the merged JSON on stdin and emits `{ check, status, message }`. The script
-keys the verdicts by `.check` into `.validations`, so the report shows each verdict next to its
-section. Leave the validator list empty if the workflow has none.
-
-## Chaining reports
-
-A report renders whatever data is present and can append a prior report's output via `.previous`.
-To show more than one report on a page, render the first, then render the next with the first's
-output passed as `.previous` — they accumulate top-to-bottom, all from the one merged payload.
+`report.sh <group> <report.md>…` takes the merged data and validations (base64 in `DATA` / `VALS`,
+matching how the n8n report node passes them), assembles `merged + {validations}`, and renders each
+report — chaining each as the next's `.previous`, so the first report arg ends up on top of the page.
 
 ## view.sh — Markdown -> HTML -> open
 
@@ -47,7 +44,7 @@ output passed as `.previous` — they accumulate top-to-bottom, all from the one
 the n8n container — n8n has its own Markdown node):
 
 ```bash
-render.sh report.md < data.json | view.sh <name>   # writes /tmp/n8n-report/<name>.html, prints a file:// URL
+report.sh <group> <report.md> | view.sh <name>   # writes /tmp/n8n-report/<name>.html, prints a file:// URL
 ```
 
 It embeds the rendered Markdown in a small HTML page that styles + renders it with marked.js +

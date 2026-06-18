@@ -125,11 +125,18 @@ api() {
   printf '%s' "$body"
 }
 
-# The create/update endpoints reject unknown properties, so send only the
-# writable fields.
+# The create/update endpoints reject unknown properties, so send only the writable fields. A node
+# command may be stored as an ARRAY of lines (see pull.sh — keeps long merge/report commands
+# diff-friendly in git); join it back into the single "\n" string n8n expects. Plain-string
+# commands pass through untouched, so both forms work.
 build_body() {
   jq -c '{name, nodes, connections, settings: (.settings // {})}
-         + (if .staticData != null then {staticData} else {} end)' "$1"
+         + (if .staticData != null then {staticData} else {} end)
+         | .nodes |= map(
+             if (.parameters.command | type) == "array"
+             then .parameters.command |= join("\n")
+             else . end
+           )' "$1"
 }
 
 # PUT/POST ignore "active", so reconcile via the dedicated endpoints. jq's

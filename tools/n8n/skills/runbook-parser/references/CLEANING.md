@@ -64,8 +64,13 @@ It must also:
   dangling label; give the body an outer `{{else}}` fallback for the nothing-collected case.
 - **Reuse the shared render.sh helpers** — `badges(.tags)`, `verdict(.validations.X)`,
   `dump(.comments)`, `chain(.previous)` replace the repeated jq (each returns "" when its input is
-  absent, so no `{{#if}}` is needed around them). Escape `|` in free-text table cells with
-  `gsub("[|]"; "&#124;")` — a literal `|` splits the cell.
+  absent, so no `{{#if}}` is needed around them).
+- **Render tables as HTML, not markdown** — a markdown `| … |` table can drop rows in some
+  renderers (marked.js, especially inside chained `.previous` content); a raw HTML `<table>` is
+  passed through untouched and always renders every row. Build the body with
+  `map("<tr><td>\(cell(.x))</td>…</tr>") | join("\n")`, wrap every cell in `cell(...)` (collapses
+  control/whitespace + escapes `& < > |`), and keep a blank line before `<table>` with none inside
+  it. `assets/report-template.md` shows the pattern.
 - **`skipped` reasons are one sentence** — short and plain, per skipped raw.
 - **Logic in readable bash, not jq** — use `jq` for simple **extraction** and final assembly
   (`jq -n --arg …`); do decisions, comparisons, and message-building in plain bash `if`/`else`

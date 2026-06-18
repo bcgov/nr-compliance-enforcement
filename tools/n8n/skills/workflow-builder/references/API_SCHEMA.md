@@ -38,6 +38,9 @@ read-only metadata.
 - `name` must be unique (connections reference it).
 - `id` must be unique within the workflow.
 - `position` is `[x, y]` for editor layout; lay the chain left-to-right.
+- `parameters.command` is a plain string, or — for a long multi-line command (the merge/report
+  nodes, > 200 chars) — a JSON **array of lines** that `push.sh` joins with `\n` and `pull.sh`
+  splits back, so it diffs cleanly in git. Short/single-line commands stay strings. See `N8N_NODES.md`.
 
 ## Connections
 
@@ -47,8 +50,9 @@ targets (`main[outputIndex][...] -> { node, type, index }`):
 ```json
 "connections": {
   "Webhook": { "main": [[{ "node": "Cluster status (read-only)", "type": "main", "index": 0 }]] },
-  "Cluster status (read-only)": { "main": [[{ "node": "Format output (markdown)", "type": "main", "index": 0 }]] },
-  "Format output (markdown)": { "main": [[{ "node": "Markdown to HTML", "type": "main", "index": 0 }]] },
+  "Cluster status (read-only)": { "main": [[{ "node": "Merge snippets", "type": "main", "index": 0 }]] },
+  "Merge snippets": { "main": [[{ "node": "Report", "type": "main", "index": 0 }]] },
+  "Report": { "main": [[{ "node": "Markdown to HTML", "type": "main", "index": 0 }]] },
   "Markdown to HTML": { "main": [[{ "node": "Respond to Webhook (HTML)", "type": "main", "index": 0 }]] }
 }
 ```
@@ -63,6 +67,6 @@ The Sticky Note is not wired (it has no connections).
 ./push.sh workflows/<name>.json             # create/update + activate
 ```
 
-`push.sh` keys on the `id` inside a file to update vs create; a file with no `id` is created
-and the new id is written back. Keep the JSON pretty-printed (one workflow per file) so it
-diffs cleanly under version control, matching what `pull.sh` writes.
+`push.sh` matches by `name` (a same-named workflow is overwritten, otherwise created); ids are
+never tracked or written back. Keep the JSON pretty-printed (one workflow per file) so it diffs
+cleanly under version control, matching what `pull.sh` writes.
