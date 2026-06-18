@@ -28,9 +28,12 @@
 ## Cluster members
 {{ verdict(.validations.cluster) }}
 
-| Member | Role | State | Lag (MB) | TL |
-|--------|------|-------|----------|----|
-{{ .members | map("| \(cell(.Member)) | \(cell(.Role)) | \(cell(.State)) | \(cell(.["Lag in MB"] // "-")) | \(cell(.TL // "-")) |") | join("\n") }}
+<table>
+<thead><tr><th>Member</th><th>Role</th><th>State</th><th>Lag (MB)</th><th>TL</th></tr></thead>
+<tbody>
+{{ .members | map("<tr><td>\(cell(.Member))</td><td>\(cell(.Role))</td><td>\(cell(.State))</td><td>\(cell(.["Lag in MB"] // "-"))</td><td>\(cell(.TL // "-"))</td></tr>") | join("\n") }}
+</tbody>
+</table>
 {{/if}}
 {{#if .pgbackrest }}
 

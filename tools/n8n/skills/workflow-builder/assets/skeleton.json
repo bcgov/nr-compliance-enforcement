@@ -11,17 +11,6 @@
         ]
       ]
     },
-    "Markdown to HTML": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Respond to Webhook (HTML)",
-            "type": "main"
-          }
-        ]
-      ]
-    },
     "Merge snippets": {
       "main": [
         [
@@ -38,7 +27,7 @@
         [
           {
             "index": 0,
-            "node": "Markdown to HTML",
+            "node": "Respond to Webhook (HTML)",
             "type": "main"
           }
         ]
@@ -134,21 +123,6 @@
       "typeVersion": 1
     },
     {
-      "id": "md2html",
-      "name": "Markdown to HTML",
-      "parameters": {
-        "markdown": "={{ $json.stdout }}",
-        "mode": "markdownToHtml",
-        "options": {}
-      },
-      "position": [
-        1200,
-        320
-      ],
-      "type": "n8n-nodes-base.markdown",
-      "typeVersion": 1
-    },
-    {
       "id": "respond",
       "name": "Respond to Webhook (HTML)",
       "parameters": {
@@ -163,7 +137,7 @@
           }
         },
         "respondWith": "text",
-        "responseBody": "={{ $json.data }}"
+        "responseBody": "=<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>triage</title><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.css'><script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script><style>body{margin:0;background:#fff}.markdown-body{box-sizing:border-box;max-width:880px;margin:0 auto;padding:32px}</style></head><body><article class='markdown-body' id='out'>Rendering report...</article><script>var b64='{{ $('Report').item.json.stdout.base64Encode() }}';var md=new TextDecoder().decode(Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0)}));document.getElementById('out').innerHTML=marked.parse(md);</script></body></html>"
       },
       "position": [
         1440,

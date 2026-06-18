@@ -27,7 +27,7 @@ Shape of every workflow this skill builds:
         ▼
   validator · validator · …  →  Merge validations (merge.sh -k)
         ▼
-  Report (report.sh) → Markdown (markdown→HTML) → Respond to Webhook (Content-Type: text/html)
+  Report (report.sh) → Respond to Webhook — serves a marked.js page (Content-Type: text/html)
 ```
 
 It writes the JSON to `tools/n8n/workflows/<name>.json`. It does **not** POST it —
@@ -67,7 +67,7 @@ installed skill's current scripts.
    exist yet, run the `runbook-parser` cleaning step first.
 2. Copy `assets/skeleton.json` as the starting point — it already has the Sticky Note (with
    the production URL placeholder), the Webhook (`responseMode: responseNode`), and the
-   Report -> Markdown -> Respond tail.
+   Report -> Respond tail.
 3. Give every snippet and validator its OWN `n8n-nodes-base.executeCommand` node, one call each: a
    collection node runs `NAMESPACE={{ ($('Webhook').item.json.query||{}).namespace }} snippet-*.sh`;
    a validator node pipes the merged JSON in with
@@ -81,8 +81,9 @@ installed skill's current scripts.
 5. Render with one "Report" node: `export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}`,
    `export VALS={{ $('Merge validations').item.json.stdout.base64Encode() }}`, `export NAMESPACE={{ … }}`,
    then `report.sh <group> <report.md> …` — report.sh assembles `merged + {validations}`
-   and renders the chained report. End the tail with a Markdown node (`markdownToHtml`) -> Respond to
-   Webhook (`Content-Type: text/html`) — the serve-HTML pattern, n8n template 5173.
+   and renders the chained report. End with a single Respond node that serves the report markdown as a
+   marked.js + github-markdown-css page (`Content-Type: text/html`) — no Markdown node, identical to
+   `view.sh` (see `references/N8N_NODES.md`).
 6. Fill the Sticky Note from `assets/sticky-note.md`: substitute `<BASE_URL>` (`config.yaml`
    `spec.n8n.base_url`), `<PATH>` (the Webhook path = workflow name), `<TITLE>`, and `<QUERY>`.
 7. Write valid workflow JSON (`name`, `nodes`, `connections`, `settings`) to
@@ -101,8 +102,8 @@ installed skill's current scripts.
 - Always start with a Webhook trigger plus a Sticky Note holding the production URL, built from
   `assets/sticky-note.md` with the host from `config.yaml` `spec.n8n.base_url`
   (`<base_url>/webhook/<workflow-name>`) — never hardcode a host.
-- Always end with a Report node (`report.sh`) -> Markdown (`markdownToHtml`) -> Respond to Webhook
-  with `Content-Type: text/html`; the Webhook node `responseMode` must be `responseNode`.
+- Always end with a Report node (`report.sh`) -> Respond to Webhook that serves the report markdown as
+  a marked.js page with `Content-Type: text/html`; the Webhook node `responseMode` must be `responseNode`.
 - Emit only the API-writable fields (`name`, `nodes`, `connections`, `settings`); never POST —
   hand the file to `push.sh`.
 - Give every node a unique `name` and `id`, and wire `connections` by node name.
@@ -144,20 +145,20 @@ installed skill's current scripts.
 
 - A snippet emits non-JSON then normalize it in a Code node before chaining.
 - No cleaned snippets exist then run the `runbook-parser` cleaning step first.
-- The page renders blank then check the Markdown node outputs to the field the Respond node
-  reads (`data`), and that `responseMode` is `responseNode`.
+- The page renders blank then check the Respond node's page got the Report stdout (the base64
+  expression resolves) and that `responseMode` is `responseNode`.
 - Long-running steps then keep the webhook responsive by chaining quick read-only checks; do
   not block on anything that mutates or waits.
 
 ## References
 
 - `references/N8N_NODES.md` — the node JSON for each type (webhook, sticky note,
-  execute-command, markdown, respond-to-webhook), the merge/report nodes, connections, and the
-  serve-HTML pattern.
+  execute-command, respond-to-webhook), the merge/report nodes, connections, and the
+  serve-HTML (marked.js) pattern.
 - `references/API_SCHEMA.md` — the n8n workflow JSON schema to POST (`name`/`nodes`/
   `connections`/`settings`), per the n8n API reference; `push.sh` posts it.
 - `assets/skeleton.json` — a minimal, importable workflow (sticky + webhook + collect + merge +
-  report + markdown + respond) to copy and extend.
+  report + respond) to copy and extend.
 - `assets/sticky-note.md` — the standard Sticky Note (Production URL) content; fill `<BASE_URL>`
   from `config.yaml` `spec.n8n.base_url`.
 - `assets/local-workflow.sh` — the local-workflow skeleton (the shell equivalent) to copy to
@@ -167,6 +168,6 @@ installed skill's current scripts.
   `snippets/` (the local workflow runs it on startup; `--check` for CI; committed here as `tools/n8n/*.sh`).
 - `references/LOCAL_WORKFLOW.md` — the local-workflow mapping (n8n node -> shell stage),
   merging, and the `view.sh` helper.
-- `scripts/view.sh` — Markdown -> HTML -> browser helper for the local workflow (local only; the
-  n8n container uses its own Markdown node).
+- `scripts/view.sh` — builds the marked.js + github-markdown-css page for the local workflow; the
+  n8n Respond node serves the same page (keep them in sync).
 - `../runbook-parser/references/CLEANING.md` — where the cleaned snippets come from.

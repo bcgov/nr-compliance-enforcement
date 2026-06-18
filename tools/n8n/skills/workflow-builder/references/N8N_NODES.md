@@ -2,7 +2,7 @@
 
 Every triage workflow is the same shape: a **Webhook** trigger (+ a **Sticky Note** with the
 production URL), a chain of **Execute-Command** nodes running cleaned snippets (read-only,
-idempotent), then **merge.sh + report.sh -> Markdown -> Respond to Webhook** to serve an HTML page.
+idempotent), then **merge.sh + report.sh -> Respond to Webhook** (a marked.js page) to serve an HTML page.
 
 A node is a JSON object:
 
@@ -118,27 +118,22 @@ n8n still receives one string. Short single-line commands (snippets, validators)
 }
 ```
 
-`report.sh` echoes the report markdown for the Markdown node.
+`report.sh` echoes the report markdown; the Respond node serves it (next). There is **no
+server-side Markdown node** — n8n's Markdown renderer is weaker (it dropped a GFM table), so the
+browser renders instead.
 
-## 5. Markdown -> HTML
+## 5. Respond to Webhook — serve the report as a web page
 
-```json
-{
-  "parameters": { "mode": "markdownToHtml", "markdown": "={{ $json.markdown }}", "options": {} },
-  "id": "md2html", "name": "Markdown to HTML",
-  "type": "n8n-nodes-base.markdown", "typeVersion": 1, "position": [920, 300]
-}
-```
-
-Outputs the HTML into `data` by default (the field the Respond node reads).
-
-## 6. Respond to Webhook — serve HTML (template 5173 pattern)
+The Respond returns an HTML page that renders the report markdown client-side with **marked.js +
+github-markdown-css** — the SAME page `tools/n8n/view.sh` builds locally, so n8n and local look
+identical. The report markdown is embedded base64 from the Report node, then decoded and
+`marked.parse()`d into a `markdown-body`:
 
 ```json
 {
   "parameters": {
     "respondWith": "text",
-    "responseBody": "={{ $json.data }}",
+    "responseBody": "=<!doctype html><html lang='en'><head><meta charset='utf-8'><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.css'><script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script><style>.markdown-body{max-width:880px;margin:0 auto;padding:32px}</style></head><body><article class='markdown-body' id='out'></article><script>var b64='{{ $('Report').item.json.stdout.base64Encode() }}';document.getElementById('out').innerHTML=marked.parse(new TextDecoder().decode(Uint8Array.from(atob(b64),c=>c.charCodeAt(0))));</script></body></html>",
     "options": {
       "responseHeaders": { "entries": [ { "name": "Content-Type", "value": "text/html" } ] }
     }
@@ -148,9 +143,11 @@ Outputs the HTML into `data` by default (the field the Respond node reads).
 }
 ```
 
-This is the serve-a-web-page-from-a-webhook pattern from n8n template **5173**
-(`https://n8n.io/workflows/5173-serve-custom-websites-html-webpages-with-webhooks/`): the
-webhook responds with `Content-Type: text/html`, so opening the URL renders the report.
+Keep this page in sync with `view.sh` (same CDN libs + CSS) — single-quote the HTML attributes so the
+JSON needs no escaping. It's the serve-a-web-page-from-a-webhook pattern (n8n template **5173**): the
+webhook responds `Content-Type: text/html`, so opening the URL renders the report. Report tables stay
+**HTML** (not GFM) — marked.js drops trailing GFM rows inside chained `.previous` content but passes
+raw `<table>` through untouched.
 
 ## Validate
 
