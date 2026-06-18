@@ -72,7 +72,7 @@ test.describe("Investigation List Pagination", () => {
   test("it paginates through results", async ({ page }) => {
     // Get initial first row content
     const rows = page.locator("#investigation-list tbody tr");
-    await expect(rows.first()).toBeVisible();
+    await expect(rows.locator("a.comp-cell-link").first()).toBeVisible({ timeout: 30000 });
 
     // With more than one page of seeded investigations the paginator must be present.
     const paginator = page.locator(".pagination, .comp-paginator");
