@@ -38,6 +38,17 @@ same chain as a shell script (collect snippets -> merge -> `render.sh` -> `view.
 developer can run the triage locally and read the HTML report in a browser, no n8n needed. See
 `references/LOCAL_WORKFLOW.md`.
 
+The chain's lib scripts — `merge.sh`, `report.sh`, `render.sh`, `view.sh`, `utils.sh`,
+`n8n-entrypoint.sh` — live in this skill under `scripts/` (it owns them; both the n8n image and the
+local workflow call them). They self-locate via `$0` and resolve `utils.sh` / `render.sh` /
+`snippets/<group>` relative to that location, so they must run from the **triage tree root, alongside
+`snippets/`**. `scripts/sync.sh <tree-root>` does exactly that — copies the canonical scripts to the
+root (idempotent; `--check` verifies without writing). **When building an n8n image, run it so the
+scripts sit beside the Dockerfile** — as committed here in `tools/n8n/`, which the Dockerfile bakes
+into `/opt/triage` and `n8n-entrypoint.sh` puts on `PATH`. `scripts/` is canonical (the skill is
+installed separately); the local workflow runs `sync.sh` on startup, so a dev always runs the
+installed skill's current scripts.
+
 ## Use When
 
 - Building an n8n triage workflow by chaining cleaned `snippet-*` blocks from `snippets/<group>/`.
@@ -61,7 +72,7 @@ developer can run the triage locally and read the HTML report in a browser, no n
    collection node runs `NAMESPACE={{ ($('Webhook').item.json.query||{}).namespace }} snippet-*.sh`;
    a validator node pipes the merged JSON in with
    `echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-*.sh`.
-   Set each node's `notes` to read-only + idempotent (`references/N8N_NODES.md`).
+   Set each node's `notes` to a brief, specific line on what it does (`references/N8N_NODES.md`).
 4. Join with `tools/n8n/merge.sh`, never a Code node. A "Merge snippets" node lists one
    `export MERGE_<KEY>={{ $('<collection node>').item.json.stdout.base64Encode() }}` per collection
    node, then `merge.sh --b64` (flat — snippet fields stay top-level). A "Merge
@@ -82,8 +93,9 @@ developer can run the triage locally and read the HTML report in a browser, no n
 
 ## Rules
 
-- Every node is read-only and idempotent, and its `notes` says so (Why: triage must be safe
-  to fire repeatedly from a webhook, by anyone with the URL).
+- Every node is read-only and idempotent — the cleaned-snippet contract makes triage safe to fire
+  repeatedly from a webhook. Keep `notes` brief and specific to what the node does; don't restate
+  read-only/idempotent or repeat boilerplate (a reviewer sees that in the snippet itself).
 - Never include a mutating step. If a cleaned snippet is not read-only, it should already be
   dropped upstream; never add one here.
 - Always start with a Webhook trigger plus a Sticky Note holding the production URL, built from
@@ -110,6 +122,10 @@ developer can run the triage locally and read the HTML report in a browser, no n
   `/opt/triage` + every baked `snippets/<group>` dir to `PATH` at startup, so any group the team adds
   just works — no per-group Dockerfile edit. (`local-workflow.sh` calls the same scripts as
   `bash "$N8N/…"` from its own location — dev machines have nothing on `PATH`.)
+- The lib scripts live in `scripts/` (canonical) and must be deployed to the triage tree root
+  alongside `snippets/` to run. `scripts/sync.sh <tree-root>` deploys/verifies them (the local
+  workflow runs it on startup; `--check` guards CI). For an n8n image build, run it so the scripts
+  sit beside the Dockerfile (committed here as `tools/n8n/*.sh`).
 - Emit the `local-workflow.sh` equivalent too — it runs the SAME `merge.sh` / `report.sh`, so local
   and n8n stay in lockstep; it must pass `shellcheck`.
 - Shellcheck every `.sh` this skill produces (the `local-workflow.sh`) before signing off; fall
@@ -136,18 +152,21 @@ developer can run the triage locally and read the HTML report in a browser, no n
 ## References
 
 - `references/N8N_NODES.md` — the node JSON for each type (webhook, sticky note,
-  execute-command, code/format, markdown, respond-to-webhook), connections, and the
+  execute-command, markdown, respond-to-webhook), the merge/report nodes, connections, and the
   serve-HTML pattern.
 - `references/API_SCHEMA.md` — the n8n workflow JSON schema to POST (`name`/`nodes`/
   `connections`/`settings`), per the n8n API reference; `push.sh` posts it.
-- `assets/skeleton.json` — a minimal, importable workflow (sticky + webhook + format +
-  markdown + respond) to copy and extend.
+- `assets/skeleton.json` — a minimal, importable workflow (sticky + webhook + collect + merge +
+  report + markdown + respond) to copy and extend.
 - `assets/sticky-note.md` — the standard Sticky Note (Production URL) content; fill `<BASE_URL>`
   from `config.yaml` `spec.n8n.base_url`.
 - `assets/local-workflow.sh` — the local-workflow skeleton (the shell equivalent) to copy to
   `tools/n8n/workflows/<name>.local.sh` and fill.
+- `scripts/` — the chain's lib scripts (`merge.sh`, `report.sh`, `render.sh`, `view.sh`, `utils.sh`,
+  `n8n-entrypoint.sh`) plus `sync.sh`, which deploys/verifies them into a triage tree root alongside
+  `snippets/` (the local workflow runs it on startup; `--check` for CI; committed here as `tools/n8n/*.sh`).
 - `references/LOCAL_WORKFLOW.md` — the local-workflow mapping (n8n node -> shell stage),
   merging, and the `view.sh` helper.
-- `tools/n8n/view.sh` — Markdown -> HTML -> browser helper for the local workflow (local only;
-  not in the n8n container).
+- `scripts/view.sh` — Markdown -> HTML -> browser helper for the local workflow (local only; the
+  n8n container uses its own Markdown node).
 - `../runbook-parser/references/CLEANING.md` — where the cleaned snippets come from.

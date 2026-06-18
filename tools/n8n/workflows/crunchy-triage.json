@@ -1,11 +1,11 @@
 {
   "connections": {
-    "Cluster status (read-only)": {
+    "Cluster status": {
       "main": [
         [
           {
             "index": 0,
-            "node": "pgBackRest info (read-only)",
+            "node": "pgBackRest info",
             "type": "main"
           }
         ]
@@ -44,29 +44,29 @@
         ]
       ]
     },
-    "PG WAL (read-only)": {
+    "PG WAL": {
       "main": [
         [
           {
             "index": 0,
-            "node": "PG cache (read-only)",
+            "node": "PG cache",
             "type": "main"
           }
         ]
       ]
     },
-    "PG activity (read-only)": {
+    "PG activity": {
       "main": [
         [
           {
             "index": 0,
-            "node": "PG WAL (read-only)",
+            "node": "PG WAL",
             "type": "main"
           }
         ]
       ]
     },
-    "PG cache (read-only)": {
+    "PG cache": {
       "main": [
         [
           {
@@ -77,12 +77,12 @@
         ]
       ]
     },
-    "PG connections (read-only)": {
+    "PG connections": {
       "main": [
         [
           {
             "index": 0,
-            "node": "PG activity (read-only)",
+            "node": "PG activity",
             "type": "main"
           }
         ]
@@ -159,18 +159,18 @@
         [
           {
             "index": 0,
-            "node": "Cluster status (read-only)",
+            "node": "Cluster status",
             "type": "main"
           }
         ]
       ]
     },
-    "pgBackRest info (read-only)": {
+    "pgBackRest info": {
       "main": [
         [
           {
             "index": 0,
-            "node": "PG connections (read-only)",
+            "node": "PG connections",
             "type": "main"
           }
         ]
@@ -214,8 +214,8 @@
     },
     {
       "id": "snip-cluster",
-      "name": "Cluster status (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. patronictl list/show-config via a cleaned snippet-*; safe to re-run.",
+      "name": "Cluster status",
+      "notes": "Patroni cluster members + config (patronictl).",
       "parameters": {
         "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-cluster-status.sh"
       },
@@ -228,8 +228,8 @@
     },
     {
       "id": "snip-pgbackrest",
-      "name": "pgBackRest info (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. pgbackrest info via a cleaned snippet-*; safe to re-run.",
+      "name": "pgBackRest info",
+      "notes": "pgBackRest backup + archive status.",
       "parameters": {
         "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pgbackrest-info.sh"
       },
@@ -242,10 +242,10 @@
     },
     {
       "id": "snip-connections",
-      "name": "PG connections (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. pg_stat_activity counts via a cleaned snippet-*; safe to re-run.",
+      "name": "PG connections",
+      "notes": "Connection counts vs max_connections.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-connections.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SELECTOR=postgres-operator.crunchydata.com/role=master snippet-pg-connections.sh"
       },
       "position": [
         920,
@@ -256,10 +256,10 @@
     },
     {
       "id": "snip-activity",
-      "name": "PG activity (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. long-running queries via a cleaned snippet-*; safe to re-run.",
+      "name": "PG activity",
+      "notes": "Long-running / non-idle queries.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-activity.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SELECTOR=postgres-operator.crunchydata.com/role=master snippet-pg-activity.sh"
       },
       "position": [
         1140,
@@ -270,10 +270,10 @@
     },
     {
       "id": "snip-wal",
-      "name": "PG WAL (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. WAL + archiver state via a cleaned snippet-*; safe to re-run.",
+      "name": "PG WAL",
+      "notes": "WAL position + archiver counters.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-wal.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SELECTOR=postgres-operator.crunchydata.com/role=master snippet-pg-wal.sh"
       },
       "position": [
         1360,
@@ -284,10 +284,10 @@
     },
     {
       "id": "snip-cache",
-      "name": "PG cache (read-only)",
-      "notes": "READ-ONLY + IDEMPOTENT. buffer-cache hit ratio via a cleaned snippet-*; safe to re-run.",
+      "name": "PG cache",
+      "notes": "Buffer-cache hit ratio + memory settings.",
       "parameters": {
-        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} snippet-pg-cache.sh"
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SELECTOR=postgres-operator.crunchydata.com/role=master snippet-pg-cache.sh"
       },
       "position": [
         1580,
@@ -299,15 +299,15 @@
     {
       "id": "merge-snippets",
       "name": "Merge snippets",
-      "notes": "Flat-merge the collection snippets into one JSON (fields stay top-level). The join point.",
+      "notes": "Flat-merge the snippet outputs into one JSON.",
       "parameters": {
         "command": [
-          "=export MERGE_CLUSTER={{ $('Cluster status (read-only)').item.json.stdout.base64Encode() }}",
-          "export MERGE_PGBACKREST={{ $('pgBackRest info (read-only)').item.json.stdout.base64Encode() }}",
-          "export MERGE_CONNECTIONS={{ $('PG connections (read-only)').item.json.stdout.base64Encode() }}",
-          "export MERGE_ACTIVITY={{ $('PG activity (read-only)').item.json.stdout.base64Encode() }}",
-          "export MERGE_WAL={{ $('PG WAL (read-only)').item.json.stdout.base64Encode() }}",
-          "export MERGE_CACHE={{ $('PG cache (read-only)').item.json.stdout.base64Encode() }}",
+          "=export MERGE_CLUSTER={{ $('Cluster status').item.json.stdout.base64Encode() }}",
+          "export MERGE_PGBACKREST={{ $('pgBackRest info').item.json.stdout.base64Encode() }}",
+          "export MERGE_CONNECTIONS={{ $('PG connections').item.json.stdout.base64Encode() }}",
+          "export MERGE_ACTIVITY={{ $('PG activity').item.json.stdout.base64Encode() }}",
+          "export MERGE_WAL={{ $('PG WAL').item.json.stdout.base64Encode() }}",
+          "export MERGE_CACHE={{ $('PG cache').item.json.stdout.base64Encode() }}",
           "merge.sh --b64"
         ]
       },
@@ -321,7 +321,7 @@
     {
       "id": "val-cluster",
       "name": "Validate cluster",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
+      "notes": "Cluster health verdict (leader, replicas).",
       "parameters": {
         "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-cluster-status.sh"
       },
@@ -335,7 +335,7 @@
     {
       "id": "val-pgbackrest",
       "name": "Validate pgBackRest",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
+      "notes": "Backup freshness verdict.",
       "parameters": {
         "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pgbackrest.sh"
       },
@@ -349,7 +349,7 @@
     {
       "id": "val-connections",
       "name": "Validate connections",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
+      "notes": "Connection-headroom verdict.",
       "parameters": {
         "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-connections.sh"
       },
@@ -363,7 +363,7 @@
     {
       "id": "val-wal",
       "name": "Validate WAL",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
+      "notes": "WAL-archiving verdict.",
       "parameters": {
         "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-wal.sh"
       },
@@ -377,7 +377,7 @@
     {
       "id": "val-cache",
       "name": "Validate cache",
-      "notes": "READ-ONLY. Validates the merged collection JSON; emits {check,status,message,docs,sources}.",
+      "notes": "Cache hit-ratio verdict.",
       "parameters": {
         "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-pg-cache.sh"
       },
@@ -391,7 +391,7 @@
     {
       "id": "merge-validations",
       "name": "Merge validations",
-      "notes": "Key each verdict by its check name into the .validations object. The join point.",
+      "notes": "Key each verdict under its check into .validations.",
       "parameters": {
         "command": [
           "=export MERGE_CLUSTER={{ $('Validate cluster').item.json.stdout.base64Encode() }}",
@@ -412,7 +412,7 @@
     {
       "id": "report",
       "name": "Report",
-      "notes": "READ-ONLY. report.sh assembles merged + {validations} and renders the chained report markdown.",
+      "notes": "Assemble merged + validations and render the chained report.",
       "parameters": {
         "command": [
           "=export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}",

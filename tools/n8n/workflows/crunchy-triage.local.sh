@@ -24,6 +24,20 @@ NAME="crunchy-triage"
 
 : "${NAMESPACE:?set NAMESPACE (the triage target, e.g. f208ae-dev)}"
 
+# This cluster is Crunchy: the general pg-* snippets take a pod SELECTOR (they assume no operator) —
+# point them at the Patroni primary. The crunchy-specific snippets ignore it.
+export SELECTOR="postgres-operator.crunchydata.com/role=master"
+
+# The lib scripts (merge.sh/report.sh/render.sh/view.sh/utils.sh) are owned by the workflow-builder
+# skill; sync the copies deployed here from the (installed) skill so a stale or missing one can't
+# silently change the result. Set WORKFLOW_BUILDER_SKILL to the installed skill (default: co-located).
+SKILL="${WORKFLOW_BUILDER_SKILL:-$N8N/skills/workflow-builder}"
+if [ -x "$SKILL/scripts/sync.sh" ]; then
+  bash "$SKILL/scripts/sync.sh" "$N8N"
+else
+  echo "warning: workflow-builder skill not found at $SKILL — using the deployed lib scripts as-is" >&2
+fi
+
 # Run snippet/validator $1 (validators take the merged JSON on stdin) and echo its output; `|| true`
 # keeps a failing step from aborting the run — its data is just absent.
 snip() {

@@ -49,8 +49,8 @@ targets (`main[outputIndex][...] -> { node, type, index }`):
 
 ```json
 "connections": {
-  "Webhook": { "main": [[{ "node": "Cluster status (read-only)", "type": "main", "index": 0 }]] },
-  "Cluster status (read-only)": { "main": [[{ "node": "Merge snippets", "type": "main", "index": 0 }]] },
+  "Webhook": { "main": [[{ "node": "Cluster status", "type": "main", "index": 0 }]] },
+  "Cluster status": { "main": [[{ "node": "Merge snippets", "type": "main", "index": 0 }]] },
   "Merge snippets": { "main": [[{ "node": "Report", "type": "main", "index": 0 }]] },
   "Report": { "main": [[{ "node": "Markdown to HTML", "type": "main", "index": 0 }]] },
   "Markdown to HTML": { "main": [[{ "node": "Respond to Webhook (HTML)", "type": "main", "index": 0 }]] }

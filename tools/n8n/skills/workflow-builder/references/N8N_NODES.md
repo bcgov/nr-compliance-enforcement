@@ -14,7 +14,7 @@ A node is a JSON object:
   "type": "n8n-nodes-base.<kind>",
   "typeVersion": 1,
   "position": [x, y],
-  "notes": "READ-ONLY + IDEMPOTENT. ..."
+  "notes": "<brief: what this node does>"
 }
 ```
 
@@ -52,24 +52,24 @@ URL is `<base_url>/webhook/<path>` (the n8n **Production URL** shown on the Webh
 `responseMode: responseNode` is required — it makes a downstream **Respond to Webhook** node
 send the response (so we can return HTML). `GET` so the URL is clickable in a browser.
 
-## 3. Execute-Command — one per cleaned snippet (read-only, idempotent)
+## 3. Execute-Command — one per cleaned snippet
 
 ```json
 {
   "parameters": {
     "command": "=PARAM={{ $('Webhook').item.json.query.param }} <snippet>.sh"
   },
-  "id": "step-collect-1", "name": "Collect (read-only)",
+  "id": "step-collect-1", "name": "Collect",
   "type": "n8n-nodes-base.executeCommand", "typeVersion": 1, "position": [480, 300],
-  "notes": "READ-ONLY + IDEMPOTENT. Runs a cleaned snippet-*; safe to re-run any time."
+  "notes": "What this collection snippet fetches."
 }
 ```
 
 - One node per cleaned snippet (a collection node), run from the webhook params — they do NOT feed
   each other; `merge.sh` (§4) combines their outputs. A validator node pipes the merged JSON in:
   `echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-*.sh`.
-- **Always set `notes` to state read-only + idempotent** — belt-and-suspenders on top of the
-  cleaned-snippet contract.
+- **Set `notes` to a brief, specific line** on what the node does — not read-only/idempotent
+  boilerplate or repeated common patterns (the contract is evident from the snippet itself).
 - The snippet emits JSON on stdout; n8n parses it for the next node. If a snippet emits plain
   text, add a Code node to wrap it as JSON.
 
@@ -90,8 +90,8 @@ n8n still receives one string. Short single-line commands (snippets, validators)
 {
   "parameters": {
     "command": [
-      "=export MERGE_CLUSTER={{ $('Cluster status (read-only)').item.json.stdout.base64Encode() }}",
-      "export MERGE_WAL={{ $('PG WAL (read-only)').item.json.stdout.base64Encode() }}",
+      "=export MERGE_CLUSTER={{ $('Cluster status').item.json.stdout.base64Encode() }}",
+      "export MERGE_WAL={{ $('PG WAL').item.json.stdout.base64Encode() }}",
       "merge.sh --b64"
     ]
   },

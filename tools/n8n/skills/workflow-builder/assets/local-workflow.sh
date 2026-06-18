@@ -29,6 +29,16 @@ NAME="<name>"                                  # <-- page name (/tmp/n8n-report/
 # Inputs: the snippets read whatever env they need (it is inherited by every child process).
 # Optionally require one up front, e.g.:   : "${NAMESPACE:?set NAMESPACE}"
 
+# The lib scripts (merge.sh/report.sh/render.sh/view.sh/utils.sh) are owned by the workflow-builder
+# skill; sync the copies deployed here from the (installed) skill so a stale or missing one can't
+# silently change the result. Set WORKFLOW_BUILDER_SKILL to the installed skill (default: co-located).
+SKILL="${WORKFLOW_BUILDER_SKILL:-$N8N/skills/workflow-builder}"
+if [ -x "$SKILL/scripts/sync.sh" ]; then
+  bash "$SKILL/scripts/sync.sh" "$N8N"
+else
+  echo "warning: workflow-builder skill not found at $SKILL — using the deployed lib scripts as-is" >&2
+fi
+
 # Run snippet/validator $1 (validators take the merged JSON on stdin); `|| true` so a failing step
 # is simply absent — its data drops out and the conditional report renders whatever arrived.
 snip() {

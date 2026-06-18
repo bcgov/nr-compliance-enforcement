@@ -86,6 +86,12 @@ Reverse (back-port a fix — `check`/`diff` flag it via the seal):
   regenerated (Why: `ingest` prunes and overwrites them).
 - Never promote a mutating or non-idempotent snippet; drop it and record why (Why: cleaned
   blocks must be safe to re-run in any order an n8n workflow composes them).
+- Clean a snippet to ONLY the product(s) its source's `description` names; never assume another
+  product's labels/CRDs/pods (e.g. a general Postgres snippet must not hardcode a Crunchy operator
+  label). Parameterize the target instead — e.g. `POD` / `SELECTOR` for pod selection — so the caller
+  supplies it; the workflow that knows the product passes the value. Depend on a second product only
+  when that source's `description` documents it (Why: otherwise snippets bleed across products — a
+  "postgres" snippet silently needs Crunchy).
 - Account for inline code (backtick spans) in the `.md` snippets when cleaning, not just
   fenced blocks.
 - Prefer processable output; use JSON via `jq` for verbose or structured data, plain
