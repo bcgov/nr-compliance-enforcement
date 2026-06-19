@@ -48,7 +48,7 @@ export const InspectionList: FC<Props> = ({
       label: "Inspection ID",
       sortKey: "name",
       headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
       isSortable: true,
       getValue: (inspection) => inspection.name ?? inspection.inspectionGuid ?? "",
       renderCell: (inspection) => (
