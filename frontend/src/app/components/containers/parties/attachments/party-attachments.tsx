@@ -112,7 +112,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     }
     case AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT: {
       identifier = activityId ?? "";
-      subidentifier = partyId;
+      subidentifier = partyId || undefined;
       break;
     }
   }
