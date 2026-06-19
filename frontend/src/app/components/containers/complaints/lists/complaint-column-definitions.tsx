@@ -220,7 +220,7 @@ export const complaintNumberColumn = <T extends { id: string; type?: string }>(
   label: "Complaint #",
   sortKey: "complaint_identifier",
   headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-  cellClassName: "comp-cell-width-110 sticky-col sticky-col--left text-center",
+  cellClassName: "comp-cell-width-110 sticky-col sticky-col--left",
   isSortable: true,
   getValue: (complaint) => complaint.id,
   renderCell: (complaint) => (
