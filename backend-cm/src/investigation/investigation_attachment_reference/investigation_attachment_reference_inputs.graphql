@@ -9,5 +9,5 @@ input CreateAttachmentReferenceInput {
 
 input DeactivateInvestigationAttachmentReferenceInput {
   investigationPartyGuid: String!
-  objectGuidRef: String!
+  objectId: String!
 }

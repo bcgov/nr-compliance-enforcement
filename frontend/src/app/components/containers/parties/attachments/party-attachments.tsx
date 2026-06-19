@@ -103,7 +103,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   // Set the identifiers based on the type
   let identifier: string = "";
-  let subidentifier: string = "";
+  let subidentifier: string | undefined;
 
   switch (attachmentType) {
     case AttachmentEnum.PARTY_ATTACHMENT: {
@@ -125,7 +125,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       await Promise.all(
         referencesToDeactivate.map((reference) =>
           deactivateReferenceMutation.mutateAsync({
-            input: { investigationPartyGuid: partyId, objectGuidRef: reference.id },
+            input: { investigationPartyGuid: partyId, objectId: reference.id },
           }),
         ),
       );

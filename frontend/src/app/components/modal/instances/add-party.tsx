@@ -675,25 +675,26 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                 )}
               />
 
+              {partyTypeValue && (
+                <PartyAttachments
+                  partyId={editParty?.partyIdentifier ?? ""}
+                  activityId={activityGuid}
+                  attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
+                  attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  triggerSave={triggerSaveAttachments}
+                  triggerCancel={triggerCancelAttachments}
+                  onSaved={() => {
+                    ToggleSuccess("Party updated successfully");
+                    submit();
+                  }}
+                />
+              )}
+
               {partyTypeValue === PartyTypeCodes.PERSON && (
-                <>
-                  <PartyAttachments
-                    partyId={editParty?.partyIdentifier ?? ""}
-                    activityId={activityGuid}
-                    attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
-                    attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
-                    triggerSave={triggerSaveAttachments}
-                    triggerCancel={triggerCancelAttachments}
-                    onSaved={() => {
-                      ToggleSuccess("Party updated successfully");
-                      submit();
-                    }}
-                  />
-                  <PersonForm
-                    form={partyForm}
-                    isDisabled={false}
-                  />
-                </>
+                <PersonForm
+                  form={partyForm}
+                  isDisabled={false}
+                />
               )}
 
               {partyTypeValue === PartyTypeCodes.BUSINESS && (

@@ -85,7 +85,6 @@ export const Attachments: FC<Props> = ({
 
       // Fetch attachment information from COMS based on identifiers
       if (identifier) {
-        
         const liveAttachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
         attachments.push(...liveAttachments);
       }
@@ -139,7 +138,11 @@ export const Attachments: FC<Props> = ({
   const confirmFileUpdate = async (newFiles: FileList) => {
     let exisingFileNames: string[] = [];
 
-    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
+    if (
+      attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
+      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ||
+      attachmentType === AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT
+    ) {
       exisingFileNames = slides.map((attachment) => {
         return getDisplayFilename(attachment.name);
       });
