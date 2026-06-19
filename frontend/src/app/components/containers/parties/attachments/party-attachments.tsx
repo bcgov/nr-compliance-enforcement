@@ -26,7 +26,7 @@ interface PartyAttachmentsProps {
   activityId?: string;
   attachmentType: number;
   triggerSave: boolean;
-  triggerCancel: boolean;
+  triggerCancel?: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
   attachmentReferences?: InvestigationAttachmentReference[];

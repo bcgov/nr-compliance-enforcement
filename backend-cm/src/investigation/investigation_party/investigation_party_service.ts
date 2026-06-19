@@ -65,6 +65,19 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
+  private ensurePartyNotAlreadyOnInvestigation(
+    investigation: Investigation,
+    input: CreateInvestigationPartyInput,
+  ): void {
+    const partyAlreadyExists = investigation.parties.some(
+      (p) => p.isActive && p.partyReference && p.partyReference === input.partyReference,
+    );
+
+    if (partyAlreadyExists) {
+      throw new Error("Record already exists on Investigation.");
+    }
+  }
+
   async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<InvestigationParty[]> {
     const createdPartyGuids: string[] = [];
 
@@ -83,13 +96,7 @@ export class InvestigationPartyService {
     await withRlsTransaction(this.prisma, async (db) => {
       for (const input of inputs) {
         try {
-          const partyAlreadyExists = investigation.parties.some(
-            (p) => p.isActive && p.partyReference && p.partyReference === input.partyReference,
-          );
-
-          if (partyAlreadyExists) {
-            throw new Error("Record already exists on Investigation.");
-          }
+          this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
 
           const investigationParty = await db.investigation_party.create({
             data: {

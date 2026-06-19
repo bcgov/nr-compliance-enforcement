@@ -164,7 +164,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
-  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
 
@@ -405,6 +404,23 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     partyForm.handleSubmit();
   };
 
+  const resolveThumbnailPin = async (
+    dispatch: ReturnType<typeof useAppDispatch>,
+    imageIconId: string | undefined,
+  ): Promise<{ thumbObjectId: string | undefined; thumbVersion: string | undefined }> => {
+    // Pin the thumbnail alongside it, when the image has one
+    if (imageIconId === undefined) {
+      return { thumbObjectId: undefined, thumbVersion: undefined };
+    }
+
+    const thumb = await dispatch(getLatestObjectVersion(imageIconId));
+    if (thumb === undefined) {
+      return { thumbObjectId: undefined, thumbVersion: undefined };
+    }
+
+    return { thumbObjectId: imageIconId, thumbVersion: thumb.s3VersionId };
+  };
+
   const handleAddParty = async () => {
     if (!selectedParty) {
       setPartyErrorMessage("Please select a party to add.");
@@ -439,15 +455,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       }
 
       // Pin the thumbnail alongside it, when the image has one
-      let thumbObjectId: string | undefined;
-      let thumbVersion: string | undefined;
-      if (attachment.imageIconId !== undefined) {
-        const thumb = await dispatch(getLatestObjectVersion(attachment.imageIconId));
-        if (thumb !== undefined) {
-          thumbObjectId = attachment.imageIconId;
-          thumbVersion = thumb.s3VersionId;
-        }
-      }
+      const { thumbObjectId, thumbVersion } = await resolveThumbnailPin(dispatch, attachment.imageIconId);
 
       versionLinks.push({
         objectId: attachment.id,
@@ -695,7 +703,6 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
                   triggerSave={triggerSaveAttachments}
-                  triggerCancel={triggerCancelAttachments}
                   onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
                   onSaved={() => {
                     ToggleSuccess(modalMode === "add" ? "Party added successfully" : "Party updated successfully");

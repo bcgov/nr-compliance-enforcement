@@ -636,7 +636,7 @@ export class InvestigationService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 
