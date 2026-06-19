@@ -190,6 +190,7 @@ export const getSnapshotAttachments =
           bucketId: "",
           createdBy: "",
           updatedBy: "",
+          isSnapshot: true,
         };
 
         // Pinned thumbnail preview, when the snapshot captured one

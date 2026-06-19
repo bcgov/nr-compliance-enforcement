@@ -6,3 +6,8 @@ input CreateAttachmentReferenceInput {
   thumbObjectId: String
   thumbVersion: String
 }
+
+input DeactivateInvestigationAttachmentReferenceInput {
+  investigationPartyGuid: String!
+  objectGuidRef: String!
+}

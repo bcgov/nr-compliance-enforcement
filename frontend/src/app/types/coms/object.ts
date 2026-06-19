@@ -26,4 +26,5 @@ export interface COMSObject {
   size?: number;
   folder?: string;
   s3VersionId?: string;
+  isSnapshot?: boolean;
 }

@@ -3,12 +3,23 @@ import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
-import { DismissToast, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
 import { useAppDispatch } from "@hooks/hooks";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { InvestigationAttachmentReference } from "@/generated/graphql";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+
+const DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION = gql`
+  mutation DeactivateInvestigationAttachmentReference($input: DeactivateInvestigationAttachmentReferenceInput!) {
+    deactivateInvestigationAttachmentReference(input: $input) {
+      objectId
+      activeInd
+    }
+  }
+`;
 
 interface PartyAttachmentsProps {
   partyId: string;
@@ -33,12 +44,20 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 }) => {
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [referencesToDeactivate, setReferencesToDeactivate] = useState<COMSObject[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
   const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
 
   const dispatch = useAppDispatch();
   const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const deactivateReferenceMutation = useGraphQLMutation(DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION, {
+    onError: (error: any) => {
+      console.error("Error deactivating attachment reference:", error);
+      ToggleError("Failed to remove attachment");
+    },
+  });
 
   const handleSlideCountChange = useCallback((count: number) => {
     setAttachmentCount((prev) => (prev === count ? prev : count));
@@ -51,6 +70,13 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
     markDirty();
+
+    // Snapshotted globals must never hit COMS — stage them to deactivate the reference row instead
+    if (fileToDelete.isSnapshot) {
+      setReferencesToDeactivate((prev) => (prev ? [...prev, fileToDelete] : [fileToDelete]));
+      return;
+    }
+
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
@@ -94,6 +120,18 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   const saveButtonClick = async () => {
     markClean();
     let toastId: Id | undefined;
+
+    if (referencesToDeactivate?.length) {
+      await Promise.all(
+        referencesToDeactivate.map((reference) =>
+          deactivateReferenceMutation.mutateAsync({
+            input: { investigationPartyGuid: partyId, objectGuidRef: reference.id },
+          }),
+        ),
+      );
+      setReferencesToDeactivate(null);
+    }
+
     if (attachmentsToDelete?.length) {
       await handlePersistAttachments({
         dispatch,

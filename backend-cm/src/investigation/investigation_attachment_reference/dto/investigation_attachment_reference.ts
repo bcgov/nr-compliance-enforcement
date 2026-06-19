@@ -33,6 +33,15 @@ export class CreateInvestigationAttachmentReferenceInput {
   createdAt: string;
 }
 
+@InputType()
+export class DeactivateInvestigationAttachmentReferenceInput {
+  @Field(() => String)
+  objectId: string;
+
+  @Field(() => String)
+  investigationPartyGuid: string;
+}
+
 export const mapPrismaInvestigationAttachmentReferenceToInvestigationAttachmentReference = (mapper: Mapper) => {
   createMap<investigation_attachment_reference, InvestigationAttachmentReference>(
     mapper,
