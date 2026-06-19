@@ -1,7 +1,12 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
-import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import {
+  getDisplayFilename,
+  handleAddAttachments,
+  handleDeleteAttachments,
+  handlePersistAttachments,
+} from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 import AttachmentEnum from "@constants/attachment-enum";
 import { DismissToast, ToggleInformation } from "@/app/common/toast";
@@ -15,6 +20,7 @@ interface PartyAttachmentsProps {
   triggerCancel: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
+  onPendingImagesChange?: (images: { fileName: string; verb: string }[]) => void;
 }
 
 export const PartyAttachments: FC<PartyAttachmentsProps> = ({
@@ -23,9 +29,11 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   triggerCancel,
   onDirtyChange,
   onSaved,
+  onPendingImagesChange,
 }) => {
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [attachmentsToEdit, setAttachmentsToEdit] = useState<File[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
   const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
   const [attachmentRefreshKey, setAttachmentRefreshKey] = useState<number>(0);
@@ -42,10 +50,32 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     handleAddAttachments(setAttachmentsToAdd, selectedFiles);
   };
 
+  const onHandleReplaceAttachments = (replacedFiles: File[]) => {
+    markDirty();
+    handleAddAttachments(setAttachmentsToEdit, replacedFiles);
+  };
+
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
     markDirty();
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
+
+  // used to communicate back to the parent for party history
+  useEffect(() => {
+    const editedFileNames = new Set((attachmentsToEdit ?? []).map((file) => file.name));
+    const added = (attachmentsToAdd ?? [])
+      .filter((file) => !editedFileNames.has(file.name))
+      .map((file) => ({ fileName: getDisplayFilename(file.name), verb: "ADDED" }));
+    const edited = (attachmentsToEdit ?? []).map((file) => ({
+      fileName: getDisplayFilename(file.name),
+      verb: "EDITED",
+    }));
+    const removed = (attachmentsToDelete ?? []).map((obj) => ({
+      fileName: getDisplayFilename(obj.name),
+      verb: "REMOVED",
+    }));
+    onPendingImagesChange?.([...added, ...edited, ...removed]);
+  }, [attachmentsToAdd, attachmentsToDelete, attachmentsToEdit, onPendingImagesChange]);
 
   useEffect(() => {
     const noPendingAdditions = !attachmentsToAdd || attachmentsToAdd.length === 0;
@@ -100,6 +130,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         toastId,
       });
       setAttachmentsToAdd(null);
+      setAttachmentsToEdit(null);
     }
     if (toastId) DismissToast(toastId);
     setAttachmentRefreshKey((k) => k + 1);
@@ -110,6 +141,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     markClean();
     setAttachmentsToAdd([]);
     setAttachmentsToDelete([]);
+    setAttachmentsToEdit([]);
     setIsPendingUpload(true);
     setAttachmentRefreshKey((k) => k + 1);
   };
@@ -136,6 +168,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
             setCancelPendingUpload={setIsPendingUpload}
             onFilesSelected={onHandleAddAttachments}
             onFileDeleted={onHandleDeleteAttachment}
+            onFilesReplaced={onHandleReplaceAttachments}
             onSlideCountChange={handleSlideCountChange}
             refreshKey={attachmentRefreshKey}
             showPreview={attachmentCount > 0}

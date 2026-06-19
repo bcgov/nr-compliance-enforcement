@@ -22,7 +22,7 @@ import { GeoJsonProperties } from "geojson";
 import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
-import { generateNextInvestigationIdentifier } from "src/common/sequence.utility";
+import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 
@@ -343,7 +343,8 @@ export class InvestigationService {
       throw new Error(`Case file with guid ${caseIdentifier} not found`);
     }
 
-    const generatedName = await generateNextInvestigationIdentifier(this.prisma);
+    const existingInvestigationCount = await this.caseActivityService.countByActivityType(caseIdentifier, "INVSTGTN");
+    const generatedName = generateInvestigationIdentifier(caseFile.name, existingInvestigationCount);
 
     // Create the investigation
     let investigation;

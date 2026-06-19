@@ -28,6 +28,11 @@ export class Party implements PartyDto {
   aliases: [Alias];
 }
 
+export class ImageUpdate {
+  fileName: string;
+  verb: string;
+}
+
 @InputType()
 export class PartyCreateInput {
   @Field(() => String)
@@ -58,6 +63,9 @@ export class PartyCreateInput {
 export class PartyUpdateInput extends PartyCreateInput {
   @Field(() => String)
   partyIdentifier?: string;
+
+  @Field(() => ImageUpdate)
+  images?: ImageUpdate[];
 }
 
 @InputType()
