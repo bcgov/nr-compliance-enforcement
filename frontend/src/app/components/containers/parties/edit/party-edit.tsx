@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import {
   BusinessIdentifier,
   BusinessPerson,
   ContactMethod,
+  ImageUpdateInput,
   PartyCreateInput,
   PartyUpdateInput,
   PersonFacialHairStyleCode,
@@ -310,6 +311,7 @@ const PartyEdit: FC = () => {
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
   const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
+  const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
 
   const form = useForm({
     defaultValues,
@@ -328,6 +330,7 @@ const PartyEdit: FC = () => {
           addresses: buildAddresses(value.addresses, true),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
           aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
+          images: pendingImagesRef.current,
           business:
             value.partyType === "CMP"
               ? buildBusinessCreateUpdate(value, buildContactPeopleForUpdate(value.contacts))
@@ -399,6 +402,10 @@ const PartyEdit: FC = () => {
     allowNavigation();
     navigate(`/parties`);
   };
+
+  const handlePendingImagesChange = useCallback((images: ImageUpdateInput[]) => {
+    pendingImagesRef.current = images;
+  }, []);
 
   const confirmCancelChanges = useCallback(() => {
     setTriggerCancelAttachments(true);
@@ -481,6 +488,7 @@ const PartyEdit: FC = () => {
           partyId={partyIdentifier}
           triggerSave={triggerSaveAttachments}
           triggerCancel={triggerCancelAttachments}
+          onPendingImagesChange={handlePendingImagesChange}
           onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
           onSaved={() => {
             if (!isEditMode) {
