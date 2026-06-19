@@ -1190,6 +1190,11 @@ export type IPMAuthCategoryCodeType = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type ImageUpdateInput = {
+  fileName: Scalars['String']['input'];
+  verb: Scalars['String']['input'];
+};
+
 export type InactionJustificationType = {
   __typename?: 'InactionJustificationType';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -2141,6 +2146,7 @@ export type PartyUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonUpdateInput>;

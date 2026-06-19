@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { PartyTabs } from "./party-tabs";
@@ -15,6 +15,7 @@ import {
   Person,
   ContactMethod,
   Address,
+  Contravention,
 } from "@/generated/graphql";
 import { Badge, Button } from "react-bootstrap";
 import { PartyCarousel } from "@/app/components/containers/parties/attachments/party-carousel";
@@ -43,6 +44,8 @@ import { getUserAgency } from "@/app/service/user-service";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
+import { selectOfficers } from "@/app/store/reducers/officer";
+import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -59,6 +62,9 @@ type PartyActivity = {
   leadAgency?: string | null;
   role?: string | null;
   sameAgency?: boolean;
+  status: string;
+  primaryInvestigatorName?: string;
+  contraventions?: Contravention[] | null;
 };
 
 export const GET_PARTY = gql`
@@ -169,6 +175,23 @@ const GET_INVESTIGATIONS_BY_PARTY = gql`
       locationAddress
       locationDescription
       name
+      investigationStatus {
+        shortDescription
+      }
+      primaryInvestigatorGuid
+      contraventions {
+        contraventionIdentifier
+        legislationIdentifierRef
+        investigationParty {
+          partyReference
+          enforcementActions {
+            enforcementActionIdentifier
+            enforcementActionCode {
+              enforcementActionCode
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -285,7 +308,7 @@ const PersonIdentifyingInfo: FC<{
   </>
 );
 
-const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({ partyRelations }) => (
+const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[]; id: string }> = ({ partyRelations, id }) => (
   <>
     <br />
     <h4>Associated cases and activities</h4>
@@ -310,34 +333,53 @@ const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({
             {partyRelation.activities
               ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
               .map((activity) => (
-                <p key={activity.id}>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                  {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
-                  &nbsp;&nbsp;
-                  {activity.sameAgency ? (
-                    <Link
-                      to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
+                <div key={activity.id}>
+                  <p>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
+                    &nbsp;&nbsp;
+                    {activity.sameAgency ? (
+                      <Link
+                        to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
+                      >
+                        {activity.name}
+                      </Link>
+                    ) : (
+                      <span>{activity.name}</span>
+                    )}
+                    <Badge
+                      style={{ marginLeft: "0.3em" }}
+                      bg="species-badge comp-species-badge"
                     >
-                      {activity.name}
-                    </Link>
-                  ) : (
-                    <span>{activity.name}</span>
-                  )}
-                  <span style={{ marginLeft: "0.4em" }}></span>
-                  <span>|</span>
-                  <i
-                    style={{ marginLeft: "0.3em" }}
-                    className="bi bi-building"
-                  ></i>
-                  <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
-                  <span style={{ marginLeft: "0.1em" }}>|</span>
-                  <Badge
-                    style={{ marginLeft: "0.3em" }}
-                    bg="species-badge comp-species-badge"
-                  >
-                    {activity.role}
-                  </Badge>
-                </p>
+                      {activity.status}
+                    </Badge>
+                    <span style={{ marginLeft: "0.4em" }}></span>
+                    <span>|</span>
+                    <span style={{ marginLeft: "0.4em" }}>{activity.primaryInvestigatorName} </span>
+                    <span style={{ marginLeft: "0.4em" }}></span>
+                    <span>|</span>
+                    <i
+                      style={{ marginLeft: "0.3em" }}
+                      className="bi bi-building"
+                    ></i>
+                    <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
+                    <span style={{ marginLeft: "0.1em" }}>|</span>
+                    <Badge
+                      style={{ marginLeft: "0.3em" }}
+                      bg="species-badge comp-species-badge"
+                    >
+                      {activity.role}
+                    </Badge>
+                  </p>
+                  {activity.status !== "Open" &&
+                    activity.contraventions?.map((contravention) => (
+                      <LegislationRow
+                        key={contravention.contraventionIdentifier}
+                        contravention={contravention}
+                        partyGuid={id}
+                      />
+                    ))}
+                </div>
               ))}
           </div>
         ))}
@@ -412,6 +454,35 @@ const AddressesList: FC<{
   </>
 );
 
+type LegislationRowProps = {
+  contravention: Contravention;
+  partyGuid: string;
+};
+
+const LegislationRow = ({ contravention, partyGuid }: LegislationRowProps) => {
+  const legislation = useLegislation(contravention?.legislationIdentifierRef, false);
+  const legislationData = legislation?.data?.legislation;
+  const displayText = legislationData?.alternateText ?? legislationData?.legislationText;
+  const enforcementActions = useAppSelector((state) => state.codeTables["enforcement-action-type"]);
+
+  const matchingParty = contravention.investigationParty?.find((party) => party?.partyReference === partyGuid);
+
+  return (
+    <>
+      <p style={{ marginLeft: "2em" }}>{displayText}</p>
+      {matchingParty?.enforcementActions?.map((e) => (
+        <p key={e?.enforcementActionIdentifier}>
+          <span style={{ marginLeft: "5em" }}>
+            {enforcementActions.find(
+              (ea) => ea.enforcementActionCode === e?.enforcementActionCode.enforcementActionCode,
+            )?.shortDescription ?? ""}
+          </span>
+        </p>
+      ))}
+    </>
+  );
+};
+
 export const PartyView: FC = () => {
   const { id = "", tabKey } = useParams<PartyParams>();
   const navigate = useNavigate();
@@ -479,6 +550,16 @@ export const PartyView: FC = () => {
     return partyRoleText;
   };
 
+  const officers = useAppSelector(selectOfficers);
+
+  const getOfficerName = useCallback(
+    (officerGuid: string): string => {
+      const officer = officers?.find((o) => o.app_user_guid === officerGuid);
+      return officer ? `${officer.last_name}, ${officer.first_name}` : "-";
+    },
+    [officers],
+  );
+
   const GetPartyRelations = (
     partyId: string,
     partyType: string,
@@ -544,6 +625,9 @@ export const PartyView: FC = () => {
               CASE_ACTIVITY_TYPES.INVESTIGATION,
             ),
             sameAgency: currenInvestigation?.leadAgency === userAgency,
+            status: currenInvestigation?.investigationStatus?.shortDescription ?? "",
+            primaryInvestigatorName: getOfficerName(currenInvestigation?.primaryInvestigatorGuid ?? ""),
+            contraventions: (currenInvestigation?.contraventions as Contravention[]) ?? null,
           });
         }
 
@@ -563,6 +647,7 @@ export const PartyView: FC = () => {
               CASE_ACTIVITY_TYPES.INSPECTION,
             ),
             sameAgency: currenInspection?.leadAgency === userAgency,
+            status: currenInspection?.inspectionStatus?.shortDescription ?? "",
           });
         }
       }
@@ -744,7 +829,10 @@ export const PartyView: FC = () => {
               </div>
               <br />
               {partyRelations && partyRelations.length > 0 && (
-                <AssociatedCasesAndActivities partyRelations={partyRelations} />
+                <AssociatedCasesAndActivities
+                  partyRelations={partyRelations}
+                  id={id}
+                />
               )}
               <br />
               <h4>Contact information</h4>

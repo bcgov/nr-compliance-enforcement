@@ -70,13 +70,13 @@ test.describe("Investigation List Pagination", () => {
   });
 
   test("it paginates through results", async ({ page }) => {
-    const paginator = page.locator(".pagination, .comp-paginator");
-    const isVisible = await paginator.isVisible();
-
-    expect(isVisible, "No pagination visible. Ensure enough test data exists for pagination.").toBe(true);
-
     // Get initial first row content
     const rows = page.locator("#investigation-list tbody tr");
+    await expect(rows.locator("a.comp-cell-link").first()).toBeVisible({ timeout: 30000 });
+
+    // With more than one page of seeded investigations the paginator must be present.
+    const paginator = page.locator(".pagination, .comp-paginator");
+    await expect(paginator, "No paginator located, ensure enough test data exists for pagination.").toBeVisible();
 
     // Click next page button
     const nextButton = paginator
