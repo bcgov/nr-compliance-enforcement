@@ -1,4 +1,4 @@
-import { FC, memo, useMemo, useState } from "react";
+import { FC, memo, useEffect, useMemo, useState } from "react";
 import { Modal, Spinner, Button, Form } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData, isLoading } from "@store/reducers/app";
@@ -171,7 +171,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const editParty: InvestigationParty | undefined = modalData.party;
 
   // Dirty Tracking
-  const { markDirty } = useFormDirtyState(onDirtyChange);
+  const { markDirty, handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   // State
   const [mode, setMode] = useState<"search" | "create">("search");
@@ -344,6 +344,11 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       }
     },
   });
+
+  const isFormDirty = useStore(partyForm.store, (state: any) => state.isDirty);
+  useEffect(() => {
+    handleChildDirtyChange(1, isFormDirty);
+  }, [isFormDirty]);
 
   const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
@@ -576,7 +581,10 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                 id="mode-create"
                 label="Create new party"
                 checked={mode === "create"}
-                onChange={() => setMode("create")}
+                onChange={() => {
+                  markDirty();
+                  setMode("create");
+                }}
               />
             </div>
           )}
@@ -683,6 +691,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
                   triggerSave={triggerSaveAttachments}
                   triggerCancel={triggerCancelAttachments}
+                  onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
                   onSaved={() => {
                     ToggleSuccess("Party updated successfully");
                     submit();
