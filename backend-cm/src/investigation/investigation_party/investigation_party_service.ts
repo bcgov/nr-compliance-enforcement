@@ -65,7 +65,9 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
-  async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<Investigation> {
+  async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<InvestigationParty[]> {
+    const createdPartyGuids: string[] = [];
+
     for (const input of inputs) {
       if (!input.person && !input.business) {
         throw new Error("Each party input must include either a person or a business.");
@@ -158,6 +160,8 @@ export class InvestigationPartyService {
             },
           });
 
+          createdPartyGuids.push(investigationParty.investigation_party_guid);
+
           if (input.business) {
             await this.createBusiness(db, investigationParty.investigation_party_guid, input.business);
           }
@@ -174,7 +178,8 @@ export class InvestigationPartyService {
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
+    return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
   }
 
   private _buildPersonFieldData(input: CreateInvestigationPersonInput | UpdateInvestigationPersonInput) {

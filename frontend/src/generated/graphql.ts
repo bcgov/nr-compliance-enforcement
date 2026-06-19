@@ -750,6 +750,11 @@ export type CreateWildlifeInput = {
   wildlife: WildlifeInput;
 };
 
+export type DeactivateInvestigationAttachmentReferenceInput = {
+  investigationPartyGuid: Scalars['String']['input'];
+  objectId: Scalars['String']['input'];
+};
+
 export type Decision = {
   __typename?: 'Decision';
   actionTaken?: Maybe<Scalars['String']['output']>;
@@ -1511,7 +1516,7 @@ export type LegislationType = {
 export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
-  addPartyToInvestigation: Investigation;
+  addPartyToInvestigation: Array<InvestigationParty>;
   createAppUser?: Maybe<AppUser>;
   createAppUserTeamXref?: Maybe<AppUserTeamXref>;
   createAssessment: ComplaintOutcome;
@@ -1537,6 +1542,7 @@ export type Mutation = {
   createReview: ComplaintOutcome;
   createTask: Task;
   createWildlife: ComplaintOutcome;
+  deactivateInvestigationAttachmentReference: InvestigationAttachmentReference;
   deleteActivityNote: Scalars['Boolean']['output'];
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
@@ -1724,6 +1730,11 @@ export type MutationcreateTaskArgs = {
 
 export type MutationcreateWildlifeArgs = {
   input: CreateWildlifeInput;
+};
+
+
+export type MutationdeactivateInvestigationAttachmentReferenceArgs = {
+  input: DeactivateInvestigationAttachmentReferenceInput;
 };
 
 

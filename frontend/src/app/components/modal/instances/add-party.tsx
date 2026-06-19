@@ -57,23 +57,7 @@ const createAddPartyMutation = (activityType: ActivityType) => {
     return gql`
       mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
         addPartyToInvestigation(investigationGuid: $investigationGuid, input: $input) {
-          investigationGuid
-          description
-          investigationStatus {
-            investigationStatusCode
-            shortDescription
-            longDescription
-          }
-          parties {
-            person {
-              firstName
-              lastName
-            }
-            business {
-              name
-            }
-          }
-          leadAgency
+          partyIdentifier
         }
       }
     `;
@@ -181,7 +165,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
   const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
-  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(true);
+  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
+  const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
 
   // Hooks
   const { data: fullPartyData } = useGraphQLQuery(GET_PARTY, {
@@ -352,9 +337,22 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
   const ADD_PARTY_MUTATION = createAddPartyMutation(activityType);
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_MUTATION, {
-    onSuccess: () => {
-      ToggleSuccess("Party added successfully");
-      submit();
+    onSuccess: (data: any) => {
+      const createdParty = data?.addPartyToInvestigation?.[0];
+      if (createdParty?.partyIdentifier) {
+        setPartyIdentifier(createdParty.partyIdentifier);
+      }
+
+      if (pendingAttachmentsSaveAfterCreate) {
+        setPendingAttachmentsSaveAfterCreate(false);
+        setTriggerSaveAttachments(true);
+        setTimeout(() => {
+          setTriggerSaveAttachments(false);
+        }, 0);
+      } else {
+        ToggleSuccess("Party added successfully");
+        submit();
+      }
     },
     onError: (error: any) => {
       console.error("Error adding party:", error);
@@ -400,6 +398,11 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const handlePartyRoleChange = (partyRole: string) => {
     setPartyRoleErrorMessage("");
     setSelectedPartyRole(partyRole);
+  };
+
+  const saveButtonClick = () => {
+    setPendingAttachmentsSaveAfterCreate(true);
+    partyForm.handleSubmit();
   };
 
   const handleAddParty = async () => {
@@ -524,6 +527,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       activityType === "investigation"
         ? (addPartyInput as CreateInvestigationPartyInput)
         : (addPartyInput as CreateInspectionPartyInput);
+
+    setPendingAttachmentsSaveAfterCreate(false);
 
     // Backend expects the named ids
     if (activityType === "investigation") {
@@ -685,7 +690,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
               {partyTypeValue && (
                 <PartyAttachments
-                  partyId={editParty?.partyIdentifier ?? ""}
+                  partyId={partyIdentifier}
                   activityId={activityGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
@@ -693,7 +698,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   triggerCancel={triggerCancelAttachments}
                   onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
                   onSaved={() => {
-                    ToggleSuccess("Party updated successfully");
+                    ToggleSuccess(modalMode === "add" ? "Party added successfully" : "Party updated successfully");
                     submit();
                   }}
                 />
@@ -756,7 +761,13 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             variant="primary"
             id="add-party-save-button"
             title="Save"
-            onClick={modalMode === "add" && mode === "search" ? handleAddParty : () => partyForm.handleSubmit()}
+            onClick={() => {
+              if (modalMode === "add" && mode === "search") {
+                handleAddParty();
+              } else {
+                saveButtonClick();
+              }
+            }}
           >
             <span>Save and Close</span>
           </Button>
