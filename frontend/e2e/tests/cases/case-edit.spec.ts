@@ -5,7 +5,7 @@ import { waitForSpinner } from "../../utils/helpers";
 /**
  * Tests for Case Edit functionality
  * Verifies form display, validation, and case updates
- * Uses CASE1 which has linked activities ensuring history exists
+ * Uses the first available case (all seed cases have linked activities)
  */
 test.describe("Case Edit Form", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
@@ -17,15 +17,15 @@ test.describe("Case Edit Form", () => {
     const rows = page.locator("#case-list tbody tr");
     expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
 
-    // Use CASE1 - wait for it to be visible before clicking
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" }).first();
+    // Use the first available case - wait for it to be visible before clicking
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link").first();
     await expect(caseLink).toBeVisible({ timeout: 10000 });
     await caseLink.click();
     await waitForSpinner(page);
 
-    // Wait for case data to load - header should show CASE1, not "Unknown"
+    // Wait for case data to load - header should show the case id (e.g. CASE26-000001), not "Unknown"
     const caseHeader = page.locator("h1.comp-box-complaint-id");
-    await expect(caseHeader).toContainText("CASE1", { timeout: 15000 });
+    await expect(caseHeader).toContainText("CASE26-", { timeout: 15000 });
 
     // Click Edit button
     const editButton = page.locator("#details-screen-edit-button");

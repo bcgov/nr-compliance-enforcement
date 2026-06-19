@@ -22,7 +22,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION1',
+    'INSP26-000001',
     ST_GeomFromText ('POINT(-123.1207 49.2827)'),
     '100MHHS'
   ),
@@ -34,7 +34,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION2',
+    'INSP26-000002',
     ST_GeomFromText ('POINT(-123.3656 48.4284)'),
     'BURNLK'
   ),
@@ -46,7 +46,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION3',
+    'INSP26-000003',
     ST_GeomFromText ('POINT(-122.9574 49.1666)'),
     '70MLHS'
   ),
@@ -58,7 +58,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION4',
+    'INSP26-000004',
     ST_GeomFromText ('POINT(-123.0848 49.3043)'),
     '108MLRNH'
   ),
@@ -70,7 +70,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION5',
+    'INSP26-000005',
     NULL,
     '140MHHS'
   ),
@@ -82,7 +82,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION6',
+    'INSP26-000006',
     NULL,
     'ABTFRD'
   ),
@@ -94,7 +94,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION7',
+    'INSP26-000007',
     NULL,
     '150MHHS'
   ),
@@ -106,7 +106,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION8',
+    'INSP26-000008',
     NULL,
     '40MLFLTZ'
   ),
@@ -118,7 +118,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION9',
+    'INSP26-000009',
     NULL,
     'ANHMLK'
   ),
@@ -130,7 +130,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION10',
+    'INSP26-000010',
     NULL,
     '16MIL'
   ),
@@ -142,7 +142,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION11',
+    'INSP26-000011',
     NULL,
     '100MHHS'
   ),
@@ -154,7 +154,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION12',
+    'INSP26-000012',
     NULL,
     'BURNLK'
   ),
@@ -166,7 +166,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION13',
+    'INSP26-000013',
     NULL,
     '70MLHS'
   ),
@@ -178,7 +178,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION14',
+    'INSP26-000014',
     NULL,
     '108MLRNH'
   ),
@@ -190,7 +190,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION15',
+    'INSP26-000015',
     NULL,
     '140MHHS'
   ),
@@ -202,7 +202,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION16',
+    'INSP26-000016',
     NULL,
     'ABTFRD'
   ),
@@ -214,7 +214,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION17',
+    'INSP26-000017',
     NULL,
     '150MHHS'
   ),
@@ -226,7 +226,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION18',
+    'INSP26-000018',
     NULL,
     '40MLFLTZ'
   ),
@@ -238,7 +238,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION19',
+    'INSP26-000019',
     NULL,
     'ANHMLK'
   ),
@@ -250,7 +250,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION20',
+    'INSP26-000020',
     NULL,
     '16MIL'
   ),
@@ -262,7 +262,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION21',
+    'INSP26-000021',
     NULL,
     '100MHHS'
   ),
@@ -274,7 +274,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION22',
+    'INSP26-000022',
     NULL,
     'BURNLK'
   ),
@@ -286,7 +286,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION23',
+    'INSP26-000023',
     NULL,
     '70MLHS'
   ),
@@ -298,7 +298,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION24',
+    'INSP26-000024',
     NULL,
     '108MLRNH'
   ),
@@ -310,7 +310,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION25',
+    'INSP26-000025',
     NULL,
     '140MHHS'
   ),
@@ -322,7 +322,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION26',
+    'INSP26-000026',
     NULL,
     'ABTFRD'
   ),
@@ -334,7 +334,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION27',
+    'INSP26-000027',
     NULL,
     '150MHHS'
   ),
@@ -346,7 +346,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION28',
+    'INSP26-000028',
     NULL,
     '40MLFLTZ'
   ),
@@ -358,7 +358,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION29',
+    'INSP26-000029',
     NULL,
     'ANHMLK'
   ),
@@ -370,7 +370,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION30',
+    'INSP26-000030',
     NULL,
     '16MIL'
   ),
@@ -382,7 +382,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION31',
+    'INSP26-000031',
     NULL,
     '100MHHS'
   ),
@@ -394,7 +394,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION32',
+    'INSP26-000032',
     NULL,
     'BURNLK'
   ),
@@ -406,7 +406,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION33',
+    'INSP26-000033',
     NULL,
     '70MLHS'
   ),
@@ -418,7 +418,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION34',
+    'INSP26-000034',
     NULL,
     '108MLRNH'
   ),
@@ -430,7 +430,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION35',
+    'INSP26-000035',
     NULL,
     '140MHHS'
   ),
@@ -442,7 +442,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION36',
+    'INSP26-000036',
     NULL,
     'ABTFRD'
   ),
@@ -454,7 +454,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION37',
+    'INSP26-000037',
     NULL,
     '150MHHS'
   ),
@@ -466,7 +466,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION38',
+    'INSP26-000038',
     NULL,
     '40MLFLTZ'
   ),
@@ -478,7 +478,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION39',
+    'INSP26-000039',
     NULL,
     'ANHMLK'
   ),
@@ -490,7 +490,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION40',
+    'INSP26-000040',
     NULL,
     '16MIL'
   ),
@@ -502,7 +502,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION41',
+    'INSP26-000041',
     NULL,
     '100MHHS'
   ),
@@ -514,7 +514,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION42',
+    'INSP26-000042',
     NULL,
     'BURNLK'
   ),
@@ -526,7 +526,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION43',
+    'INSP26-000043',
     NULL,
     '70MLHS'
   ),
@@ -538,7 +538,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION44',
+    'INSP26-000044',
     NULL,
     '108MLRNH'
   ),
@@ -550,7 +550,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION45',
+    'INSP26-000045',
     NULL,
     '140MHHS'
   ),
@@ -562,7 +562,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION46',
+    'INSP26-000046',
     NULL,
     'ABTFRD'
   ),
@@ -574,7 +574,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION47',
+    'INSP26-000047',
     NULL,
     '150MHHS'
   ),
@@ -586,7 +586,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION48',
+    'INSP26-000048',
     NULL,
     '40MLFLTZ'
   ),
@@ -598,7 +598,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION49',
+    'INSP26-000049',
     NULL,
     'ANHMLK'
   ),
@@ -610,7 +610,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION50',
+    'INSP26-000050',
     NULL,
     '16MIL'
   ),
@@ -622,7 +622,7 @@ VALUES
     now (),
     'system',
     now (),
-    'INSPECTION51',
+    'INSP26-000051',
     NULL,
     '100MHHS'
   )
