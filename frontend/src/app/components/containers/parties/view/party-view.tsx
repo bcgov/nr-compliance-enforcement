@@ -183,6 +183,7 @@ const GET_INVESTIGATIONS_BY_PARTY = gql`
         contraventionIdentifier
         legislationIdentifierRef
         investigationParty {
+          partyReference
           enforcementActions {
             enforcementActionIdentifier
             enforcementActionCode {
@@ -307,7 +308,7 @@ const PersonIdentifyingInfo: FC<{
   </>
 );
 
-const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({ partyRelations }) => (
+const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[]; id: string }> = ({ partyRelations, id }) => (
   <>
     <br />
     <h4>Associated cases and activities</h4>
@@ -375,6 +376,7 @@ const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[] }> = ({
                       <LegislationRow
                         key={contravention.contraventionIdentifier}
                         contravention={contravention}
+                        partyGuid={id}
                       />
                     ))}
                 </div>
@@ -454,20 +456,21 @@ const AddressesList: FC<{
 
 type LegislationRowProps = {
   contravention: Contravention;
+  partyGuid: string;
 };
 
-const LegislationRow = ({ contravention }: LegislationRowProps) => {
+const LegislationRow = ({ contravention, partyGuid }: LegislationRowProps) => {
   const legislation = useLegislation(contravention?.legislationIdentifierRef, false);
   const legislationData = legislation?.data?.legislation;
   const displayText = legislationData?.alternateText ?? legislationData?.legislationText;
   const enforcementActions = useAppSelector((state) => state.codeTables["enforcement-action-type"]);
 
-  console.log(contravention);
+  const matchingParty = contravention.investigationParty?.find((party) => party?.partyReference === partyGuid);
 
   return (
     <>
       <p style={{ marginLeft: "2em" }}>{displayText}</p>
-      {contravention.investigationParty![0]?.enforcementActions?.map((e) => (
+      {matchingParty?.enforcementActions?.map((e) => (
         <p key={e?.enforcementActionIdentifier}>
           <span style={{ marginLeft: "5em" }}>
             {enforcementActions.find(
@@ -826,7 +829,10 @@ export const PartyView: FC = () => {
               </div>
               <br />
               {partyRelations && partyRelations.length > 0 && (
-                <AssociatedCasesAndActivities partyRelations={partyRelations} />
+                <AssociatedCasesAndActivities
+                  partyRelations={partyRelations}
+                  id={id}
+                />
               )}
               <br />
               <h4>Contact information</h4>

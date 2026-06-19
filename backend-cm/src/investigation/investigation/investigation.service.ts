@@ -250,6 +250,11 @@ export class InvestigationService {
                 include: {
                   contravention_party_xref: {
                     include: {
+                      investigation_party: {
+                        select: {
+                          party_guid_ref: true,
+                        },
+                      },
                       enforcement_action: {
                         include: {
                           contravention_party_xref: true,
