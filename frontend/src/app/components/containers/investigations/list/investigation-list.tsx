@@ -48,7 +48,7 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       label: "Investigation ID",
       sortKey: "name",
       headerClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
-      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left text-center",
+      cellClassName: "comp-cell-width-110 comp-cell-min-width-110 sticky-col sticky-col--left",
       isSortable: true,
       getValue: (investigation) => investigation.name ?? investigation.investigationGuid ?? "",
       renderCell: (investigation) => (

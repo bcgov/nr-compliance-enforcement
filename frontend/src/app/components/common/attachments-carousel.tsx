@@ -24,6 +24,7 @@ type Props = {
   cancelPendingUpload?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
+  onFilesReplaced?: (attachments: File[]) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
   disabled?: boolean | null;
@@ -40,6 +41,7 @@ export const Attachments: FC<Props> = ({
   allowDelete,
   cancelPendingUpload,
   onFilesSelected,
+  onFilesReplaced,
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
@@ -156,7 +158,7 @@ export const Attachments: FC<Props> = ({
     const newFileNamesArray = Array.from(newFiles).map((file) => file.name);
     const conflitingFileNames = newFileNamesArray.filter((item) => exisingFileNamesSet.has(item));
     if (conflitingFileNames.length === 0) {
-      await stageFiles(newFiles);
+      await stageFiles(newFiles, conflitingFileNames);
     } else {
       document.body.click();
       dispatch(
@@ -167,7 +169,7 @@ export const Attachments: FC<Props> = ({
             title: "File already exists",
             fileNames: conflitingFileNames,
             onUpdate: async () => {
-              await stageFiles(newFiles);
+              await stageFiles(newFiles, conflitingFileNames);
             },
           },
         }),
@@ -180,23 +182,27 @@ export const Attachments: FC<Props> = ({
     await confirmFileUpdate(newFiles);
   };
 
-  const stageFiles = async (newFiles: FileList) => {
+  const stageFiles = async (newFiles: FileList, conflictingFileNames: string[]) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
     for (let selectedFile of selectedFilesArray) {
       newSlides.push(await createSlideFromFile(selectedFile));
     }
-    removeInvalidFiles(selectedFilesArray);
+    removeInvalidFiles(selectedFilesArray, conflictingFileNames);
 
     setSlides([...newSlides, ...slides]);
   };
 
   // don't upload files that are invalid
-  const removeInvalidFiles = (files: File[]) => {
+  const removeInvalidFiles = (files: File[], conflictingFileNames: string[]) => {
+    const validFiles = files.filter((file) => file.size <= maxFileSize * 1_000_000);
     if (onFilesSelected) {
       // remove any of the selected files that fail validation so that they aren't uploaded
-      const validFiles = files.filter((file) => file.size <= maxFileSize * 1_000_000);
       onFilesSelected(validFiles);
+    }
+    if (onFilesReplaced && conflictingFileNames.length > 0) {
+      const conflictSet = new Set(conflictingFileNames);
+      onFilesReplaced(validFiles.filter((file) => conflictSet.has(file.name)));
     }
   };
 
