@@ -13,6 +13,7 @@ import {
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import AttachmentEnum from "@constants/attachment-enum";
 import { AttachmentTypeConfig, getAttachmentConfig, isSecureAttachmentType } from "@/app/types/app/attachment-config";
+import { InvestigationAttachmentReference } from "@/generated/graphql";
 
 interface SaveAttachmentParams {
   dispatch: any;
@@ -145,7 +146,6 @@ export const getAttachments =
             });
             const thumbArrayResponse = await get<Array<COMSObject>>(dispatch, parameters, thumbHeader);
             const thumbId = thumbArrayResponse[0]?.id;
-            attachmentList.push(...thumbArrayResponse);
             if (thumbId) {
               const thumbParameters = generateApiParameters(`${config.COMS_URL}/object/${thumbId}?download=url`);
               const thumbResponse = await get<string>(dispatch, thumbParameters);
@@ -164,6 +164,52 @@ export const getAttachments =
       ToggleError(`Error retrieving attachments`);
       return [];
     }
+  };
+
+// Creates an array of COMS objects based on pinned object identifiers and versions
+export const getSnapshotAttachments =
+  (references: InvestigationAttachmentReference[]): AppThunk<Promise<COMSObject[]>> =>
+  async (dispatch) => {
+    const attachments: COMSObject[] = [];
+
+    try {
+      for (const reference of references) {
+        // Hidden (soft-deleted) references aren't shown in the investigation
+        if (!reference.activeInd) {
+          continue;
+        }
+
+        const attachment: COMSObject = {
+          id: reference.objectId,
+          name: reference.fileName,
+          createdAt: reference.createdAt,
+          s3VersionId: reference.version,
+          path: "",
+          public: false,
+          active: true,
+          bucketId: "",
+          createdBy: "",
+          updatedBy: "",
+        };
+
+        // Pinned thumbnail preview, when the snapshot captured one
+        if (reference.thumbObjectId && reference.thumbVersion) {
+          const thumbParameters = generateApiParameters(
+            `${config.COMS_URL}/object/${reference.thumbObjectId}?download=url&s3VersionId=${reference.thumbVersion}`,
+          );
+          attachment.imageIconId = reference.thumbObjectId ?? "";
+          attachment.imageIconString = await get<string>(dispatch, thumbParameters);
+        }
+
+        attachments.push(attachment);
+      }
+    } catch (error) {
+      console.error(error);
+      ToggleError(`Error retrieving attachments`);
+      return [];
+    }
+
+    return attachments;
   };
 
 // decodeURIComponent throws an error on malformed names, fall back to the raw name
@@ -264,7 +310,9 @@ const saveSingleAttachment = async ({
 
   if (
     isImage(attachment.name) &&
-    (!isSecureAttachmentType(attachmentType) || attachmentType === AttachmentEnum.PARTY_ATTACHMENT)
+    (!isSecureAttachmentType(attachmentType) ||
+      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ||
+      attachmentType === AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT)
   ) {
     const historicalThumbHeader = buildAttachmentHeader({
       attachmentConfig,
@@ -276,8 +324,7 @@ const saveSingleAttachment = async ({
       attachmentName: attachment.name,
     });
 
-    const bucketId =
-      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
+    const bucketId = isSecureAttachmentType(attachmentType) ? config.SECURE_COMS_BUCKET : config.COMS_BUCKET;
     const params = generateApiParameters(`${config.COMS_URL}/object?bucketId=${bucketId}`);
     let historicalThumbs = await get<Array<COMSObject>>(dispatch, params, historicalThumbHeader, isSynchronous);
 

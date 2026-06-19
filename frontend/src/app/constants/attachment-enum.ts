@@ -4,6 +4,7 @@ export enum AttachmentEnum {
   TASK_ATTACHMENT = 3,
   ENFORCEMENT_ACTION_ATTACHMENT = 4,
   PARTY_ATTACHMENT = 5,
+  INVESTIGATION_PARTY_ATTACHMENT = 6,
 }
 
 export default AttachmentEnum;

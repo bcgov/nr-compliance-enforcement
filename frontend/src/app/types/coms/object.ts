@@ -25,4 +25,5 @@ export interface COMSObject {
   sequenceNumber?: string | null;
   size?: number;
   folder?: string;
+  s3VersionId?: string;
 }

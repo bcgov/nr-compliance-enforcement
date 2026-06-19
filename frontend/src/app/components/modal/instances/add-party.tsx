@@ -17,6 +17,7 @@ import {
   Party,
   InvestigationPersonFacialHairStyleCodeRef,
   PersonFacialHairStyleCode,
+  InvestigationAttachmentReference,
 } from "@/generated/graphql";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -45,13 +46,9 @@ import z from "zod";
 import { formatDateOfBirth } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
-import { getAttachments, getLatestObjectVersion, ObjectVersion } from "@/app/store/reducers/attachments";
+import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
-
-interface AttachmentVersionLink {
-  objectId: string;
-  versionId: string;
-}
+import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -182,6 +179,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
+  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(true);
 
   // Hooks
   const { data: fullPartyData } = useGraphQLQuery(GET_PARTY, {
@@ -359,8 +359,16 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
   const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY_MUTATION, {
     onSuccess: () => {
-      ToggleSuccess("Party updated successfully");
-      submit();
+      if (pendingAttachmentsSaveAfterCreate) {
+        setPendingAttachmentsSaveAfterCreate(false);
+        setTriggerSaveAttachments(true);
+        setTimeout(() => {
+          setTriggerSaveAttachments(false);
+        }, 0);
+      } else {
+        ToggleSuccess("Party updated successfully");
+        submit();
+      }
     },
     onError: (error: any) => {
       console.error("Error updating party:", error);
@@ -409,30 +417,53 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       getAttachments(party.partyIdentifier, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
     );
 
-    const versionLinks: AttachmentVersionLink[] = [];
+    const versionLinks: InvestigationAttachmentReference[] = [];
 
     for (const attachment of attachments) {
       if (attachment.id === undefined) {
         continue;
       }
 
-      // Get the S3 version of each object and link them together.
+      // Pin the image version
       const version = await dispatch(getLatestObjectVersion(attachment.id));
-      if (version !== undefined) {
-        versionLinks.push({ objectId: attachment.id, versionId: version.s3VersionId });
+      if (version === undefined) {
+        continue;
       }
-    }
 
-    console.dir(versionLinks, { depth: null });
+      // Pin the thumbnail alongside it, when the image has one
+      let thumbObjectId: string | undefined;
+      let thumbVersion: string | undefined;
+      if (attachment.imageIconId !== undefined) {
+        const thumb = await dispatch(getLatestObjectVersion(attachment.imageIconId));
+        if (thumb !== undefined) {
+          thumbObjectId = attachment.imageIconId;
+          thumbVersion = thumb.s3VersionId;
+        }
+      }
+
+      versionLinks.push({
+        objectId: attachment.id,
+        version: version.s3VersionId,
+        fileName: attachment.name,
+        createdAt: attachment.createdAt,
+        thumbObjectId,
+        thumbVersion,
+        activeInd: true,
+      });
+    }
 
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,
       attachmentReferences: versionLinks
-        ?.filter((av: AttachmentVersionLink): av is AttachmentVersionLink => av != null)
-        .map((av: AttachmentVersionLink) => ({
+        ?.filter((av: InvestigationAttachmentReference): av is InvestigationAttachmentReference => av != null)
+        .map((av: InvestigationAttachmentReference) => ({
           objectId: av.objectId,
-          version: av.versionId,
+          version: av.version,
+          fileName: av.fileName,
+          createdAt: av.createdAt,
+          thumbObjectId: av.thumbObjectId,
+          thumbVersion: av.thumbVersion,
         })),
       aliases: party.aliases
         ?.filter((a: Alias): a is Alias => a != null)
@@ -630,7 +661,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   <CompSelect
                     id="party-type-select"
                     classNamePrefix="comp-select"
-                    className="comp-details-input"
+                    className="comp-details-input mb-3"
                     options={partyTypeCodes}
                     value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
                     onChange={(option) => field.handleChange(option?.value || "")}
@@ -645,10 +676,24 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
               />
 
               {partyTypeValue === PartyTypeCodes.PERSON && (
-                <PersonForm
-                  form={partyForm}
-                  isDisabled={false}
-                />
+                <>
+                  <PartyAttachments
+                    partyId={editParty?.partyIdentifier ?? ""}
+                    activityId={activityGuid}
+                    attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
+                    attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                    triggerSave={triggerSaveAttachments}
+                    triggerCancel={triggerCancelAttachments}
+                    onSaved={() => {
+                      ToggleSuccess("Party updated successfully");
+                      submit();
+                    }}
+                  />
+                  <PersonForm
+                    form={partyForm}
+                    isDisabled={false}
+                  />
+                </>
               )}
 
               {partyTypeValue === PartyTypeCodes.BUSINESS && (

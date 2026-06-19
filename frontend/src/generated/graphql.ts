@@ -507,6 +507,15 @@ export type CreateAssessmentInput = {
   outcomeAgencyCode: Scalars['String']['input'];
 };
 
+export type CreateAttachmentReferenceInput = {
+  createdAt: Scalars['DateTime']['input'];
+  fileName: Scalars['String']['input'];
+  objectId: Scalars['String']['input'];
+  thumbObjectId?: InputMaybe<Scalars['String']['input']>;
+  thumbVersion?: InputMaybe<Scalars['String']['input']>;
+  version: Scalars['String']['input'];
+};
+
 export type CreateAuthorizationOutcomeInput = {
   complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
@@ -605,6 +614,7 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   typeCode: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
@@ -631,6 +641,7 @@ export type CreateInvestigationInput = {
 export type CreateInvestigationPartyInput = {
   addresses?: InputMaybe<Array<InputMaybe<CreateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<CreateInvestigationAliasInput>>>;
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
   business?: InputMaybe<CreateInvestigationBusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
   partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
@@ -1305,6 +1316,17 @@ export type InvestigationAlias = {
   name: Scalars['String']['output'];
 };
 
+export type InvestigationAttachmentReference = {
+  __typename?: 'InvestigationAttachmentReference';
+  activeInd: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  fileName: Scalars['String']['output'];
+  objectId: Scalars['String']['output'];
+  thumbObjectId?: Maybe<Scalars['String']['output']>;
+  thumbVersion?: Maybe<Scalars['String']['output']>;
+  version: Scalars['String']['output'];
+};
+
 export type InvestigationBusiness = {
   __typename?: 'InvestigationBusiness';
   addresses?: Maybe<Array<Maybe<InvestigationAddress>>>;
@@ -1350,6 +1372,7 @@ export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   addresses?: Maybe<Array<Maybe<InvestigationAddress>>>;
   aliases?: Maybe<Array<Maybe<InvestigationAlias>>>;
+  attachmentReferences?: Maybe<Array<Maybe<InvestigationAttachmentReference>>>;
   business?: Maybe<InvestigationBusiness>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;

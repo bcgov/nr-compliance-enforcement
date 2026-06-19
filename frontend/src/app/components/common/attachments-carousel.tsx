@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getAttachments } from "@store/reducers/attachments";
+import { getAttachments, getSnapshotAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
@@ -12,6 +12,7 @@ import { getThumbnailDataURL, isImage, removeIdentifierFromFilename } from "@com
 import AttachmentEnum from "@constants/attachment-enum";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { CANCEL_CONFIRM_FILE_UPDATE } from "@/app/types/modal/modal-types";
+import { InvestigationAttachmentReference } from "@/generated/graphql";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -27,6 +28,7 @@ type Props = {
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
   disabled?: boolean | null;
   refreshKey?: number;
+  attachmentReferences?: InvestigationAttachmentReference[];
 };
 
 export const Attachments: FC<Props> = ({
@@ -43,6 +45,7 @@ export const Attachments: FC<Props> = ({
   setCancelPendingUpload,
   disabled,
   refreshKey,
+  attachmentReferences,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -78,7 +81,20 @@ export const Attachments: FC<Props> = ({
     let isMounted = true;
 
     const loadAttachments = async () => {
-      const attachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
+      const attachments: COMSObject[] = [];
+
+      // Fetch attachment information from COMS based on identifiers
+      if (identifier) {
+        
+        const liveAttachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
+        attachments.push(...liveAttachments);
+      }
+
+      // Also include any pinned versions that were passed into the component
+      if (attachmentReferences) {
+        const snapshotAttachments = await dispatch(getSnapshotAttachments(attachmentReferences));
+        attachments.push(...snapshotAttachments);
+      }
 
       if (isMounted) {
         setCarouselData(attachments);

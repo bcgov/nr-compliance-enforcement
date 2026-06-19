@@ -21,7 +21,8 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
   const dispatch = useAppDispatch();
 
   const handleAttachmentClick = async (objectid: string, filename: string) => {
-    const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url`);
+    const versionQuery = attachment.s3VersionId ? `&s3VersionId=${attachment.s3VersionId}` : "";
+    const parameters = generateApiParameters(`${config.COMS_URL}/object/${objectid}?download=url${versionQuery}`);
     const response = await get<string>(dispatch, parameters);
 
     const a = document.createElement("a");

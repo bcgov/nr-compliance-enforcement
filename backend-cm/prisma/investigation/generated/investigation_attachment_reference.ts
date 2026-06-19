@@ -14,6 +14,18 @@ export class investigation_attachment_reference {
   @ApiProperty({ type: String })
   s3_version_ref: string;
 
+  @ApiProperty({ type: String })
+  filename_text: string;
+
+  @ApiProperty({ type: Date })
+  coms_created_date: Date;
+
+  @ApiPropertyOptional({ type: String })
+  thumb_object_guid_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  thumb_s3_version_ref?: string;
+
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
 

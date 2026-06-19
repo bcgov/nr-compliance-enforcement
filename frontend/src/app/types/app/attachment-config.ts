@@ -29,6 +29,11 @@ const ATTACHMENT_TYPE_CONFIG: Record<AttachmentEnum, AttachmentTypeConfig> = {
     headerKey: "x-amz-meta-party-id",
     shouldUpdateComplaintDate: false,
   },
+  [AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT]: {
+    headerKey: "x-amz-meta-investigation-id",
+    subHeaderKey: "x-amz-meta-investigation-party-id",
+    shouldUpdateComplaintDate: false,
+  },
 };
 
 export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentTypeConfig => {
@@ -39,4 +44,5 @@ export const getAttachmentConfig = (attachmentType: AttachmentEnum): AttachmentT
 export const isSecureAttachmentType = (attachmentType: AttachmentEnum): boolean =>
   attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
   attachmentType === AttachmentEnum.ENFORCEMENT_ACTION_ATTACHMENT ||
-  attachmentType === AttachmentEnum.PARTY_ATTACHMENT;
+  attachmentType === AttachmentEnum.PARTY_ATTACHMENT ||
+  attachmentType === AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT;

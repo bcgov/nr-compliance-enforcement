@@ -3,26 +3,33 @@ import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
 import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
-import AttachmentEnum from "@constants/attachment-enum";
 import { DismissToast, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
 import { useAppDispatch } from "@hooks/hooks";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { InvestigationAttachmentReference } from "@/generated/graphql";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 interface PartyAttachmentsProps {
   partyId: string;
+  activityId?: string;
+  attachmentType: number;
   triggerSave: boolean;
   triggerCancel: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
+  attachmentReferences?: InvestigationAttachmentReference[];
 }
 
 export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   partyId,
+  activityId,
+  attachmentType,
   triggerSave,
   triggerCancel,
   onDirtyChange,
   onSaved,
+  attachmentReferences,
 }) => {
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
@@ -68,6 +75,22 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     }
   }, [triggerCancel]);
 
+  // Set the identifiers based on the type
+  let identifier: string = "";
+  let subidentifier: string = "";
+
+  switch (attachmentType) {
+    case AttachmentEnum.PARTY_ATTACHMENT: {
+      identifier = partyId;
+      break;
+    }
+    case AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT: {
+      identifier = activityId ?? "";
+      subidentifier = partyId;
+      break;
+    }
+  }
+
   const saveButtonClick = async () => {
     markClean();
     let toastId: Id | undefined;
@@ -80,7 +103,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         subIdentifier: undefined,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+        attachmentType: attachmentType,
         isSynchronous: false,
       });
     }
@@ -95,8 +118,9 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       await uploadAttachmentsWithProgress({
         dispatch,
         files: attachmentsToAdd,
-        identifier: partyId,
-        attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+        identifier: identifier,
+        subIdentifier: subidentifier,
+        attachmentType: attachmentType,
         toastId,
       });
       setAttachmentsToAdd(null);
@@ -120,16 +144,12 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       id="party-attachments"
     >
       <div className="comp-details-form-row">
-        <label
-          className="align-self-lg-center"
-          htmlFor="party-attachments"
-        >
-          Party Attachments
-        </label>
+        <label htmlFor="party-attachments">Party Attachments</label>
         <div className="comp-details-edit-input">
           <Attachments
-            attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
-            identifier={partyId}
+            attachmentType={attachmentType}
+            identifier={identifier}
+            subIdentifier={subidentifier}
             allowUpload={true}
             allowDelete={true}
             cancelPendingUpload={isPendingUpload}
@@ -139,6 +159,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
             onSlideCountChange={handleSlideCountChange}
             refreshKey={attachmentRefreshKey}
             showPreview={attachmentCount > 0}
+            attachmentReferences={attachmentReferences}
           />
         </div>
       </div>

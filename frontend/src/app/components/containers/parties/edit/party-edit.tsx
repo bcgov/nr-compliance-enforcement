@@ -42,6 +42,7 @@ import {
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyAttachments } from "../attachments/party-attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -479,6 +480,7 @@ const PartyEdit: FC = () => {
 
         <PartyAttachments
           partyId={partyIdentifier}
+          attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
           triggerSave={triggerSaveAttachments}
           triggerCancel={triggerCancelAttachments}
           onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}

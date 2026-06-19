@@ -4,6 +4,10 @@ CREATE TABLE
     investigation_party_guid uuid NOT NULL,
     object_guid_ref uuid NOT NULL,
     s3_version_ref character varying(512) NOT NULL,
+    filename_text character varying(512) NOT NULL,
+    coms_created_date timestamp without time zone NOT NULL,
+    thumb_object_guid_ref uuid,
+    thumb_s3_version_ref character varying(512),
     active_ind boolean NOT NULL DEFAULT true,
     create_user_id character varying(32) NOT NULL,
     create_utc_timestamp timestamp without time zone NOT NULL DEFAULT now (),
@@ -15,7 +19,7 @@ CREATE TABLE
       REFERENCES investigation_party (investigation_party_guid)
   );
 
-COMMENT ON TABLE investigation_attachment_reference IS 'Contains S3Version references to COMS objects related to a shared.party (person or business) record.';
+COMMENT ON TABLE investigation_attachment_reference IS 'Contains metadata of COMS objects related to a shared.party (person or business) record.  The metadata is captured when the party is attached to the investigation so that the attachment versions are pinned and protected against party level changes';
 
 COMMENT ON COLUMN investigation_attachment_reference.investigation_attachment_reference_guid IS 'The system-generated unique identifier for the attachment reference record.';
 
@@ -23,7 +27,15 @@ COMMENT ON COLUMN investigation_attachment_reference.investigation_party_guid IS
 
 COMMENT ON COLUMN investigation_attachment_reference.object_guid_ref IS 'The unique identifier of the attachment from COMS.';
 
+COMMENT ON COLUMN investigation_attachment_reference.filename_text IS 'The filename of the attachment from COMS.';
+
+COMMENT ON COLUMN investigation_attachment_reference.coms_created_date IS 'The date the attachment was uploaded from COMS.  Used for sorting.';
+
 COMMENT ON COLUMN investigation_attachment_reference.s3_version_ref IS 'The S3 version of the attachment at the time the party was attached to the investigation.';
+
+COMMENT ON COLUMN investigation_attachment_reference.thumb_object_guid_ref IS 'The unique identifier of the attachment thumbnail from COMS, if the attachment is an image.';
+
+COMMENT ON COLUMN investigation_attachment_reference.thumb_s3_version_ref IS 'The S3 version of the attachment thumbnail at the time the party was attached to the investigation, if the attachment is an image.';
 
 COMMENT ON COLUMN investigation_attachment_reference.active_ind IS 'A boolean indicator to determine if the attachment reference is active.';
 

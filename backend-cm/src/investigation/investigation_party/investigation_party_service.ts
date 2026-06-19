@@ -144,6 +144,10 @@ export class InvestigationPartyService {
                       create: input.attachmentReferences.map((ar) => ({
                         object_guid_ref: ar.objectId,
                         s3_version_ref: ar.version,
+                        filename_text: ar.fileName,
+                        coms_created_date: ar.createdAt,
+                        thumb_object_guid_ref: ar.thumbObjectId,
+                        thumb_s3_version_ref: ar.thumbVersion,
                         active_ind: true,
                         create_user_id: this.user.getIdirUsername(),
                         create_utc_timestamp: new Date(),
