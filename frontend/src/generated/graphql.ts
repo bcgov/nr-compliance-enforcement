@@ -605,6 +605,7 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   typeCode: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
@@ -1172,6 +1173,11 @@ export type IPMAuthCategoryCodeType = {
   ipmAuthCategoryCode: Scalars['String']['output'];
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
+};
+
+export type ImageUpdateInput = {
+  fileName: Scalars['String']['input'];
+  verb: Scalars['String']['input'];
 };
 
 export type InactionJustificationType = {
@@ -2107,6 +2113,7 @@ export type PartyUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonUpdateInput>;
