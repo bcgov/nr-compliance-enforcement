@@ -45,7 +45,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Pure Health Path", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local person party to investigation", async ({ page }) => {
@@ -134,7 +134,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party updated successfully" })).toBeVisible();
+    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("cleanup - remove all test parties from investigation", async ({ page }) => {
