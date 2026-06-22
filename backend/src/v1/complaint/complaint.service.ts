@@ -73,6 +73,7 @@ import { CompMthdRecvCdAgcyCdXrefService } from "../comp_mthd_recv_cd_agcy_cd_xr
 import { AppUserService } from "../app_user/app_user.service";
 import {
   caseFileQueryFields,
+  complaintOutcomeAuthorizationFields,
   get,
   getCosGeoOrgUnits,
   searchCosGeoOrgUnitsByNames,
@@ -434,12 +435,7 @@ export class ComplaintService {
       .leftJoin("complaint.reported_by_code", "reported_by")
       .addSelect(["reported_by.reported_by_code", "reported_by.short_description", "reported_by.long_description"])
 
-      .leftJoin("complaint.complaint_update", "complaint_update")
-      .addSelect(["complaint_update.upd_detail_text", "complaint_update.complaint_identifier"])
-
-      .leftJoin("complaint.action_taken", "action_taken")
-      .addSelect(["action_taken.action_details_txt", "action_taken.complaint_identifier"])
-      .leftJoinAndSelect("complaint.linked_complaint_xref", "linked_complaint")
+      // Don't join to complaint_update, action_taken, or linked_complaint_xref here as they are not used in the search results
       .leftJoinAndSelect("complaint.app_user_complaint_xref", "delegate", "delegate.active_ind = true")
       .leftJoinAndSelect("delegate.app_user_complaint_xref_code", "delegate_code")
       .leftJoinAndSelect("complaint.comp_mthd_recv_cd_agcy_cd_xref", "method_xref")
@@ -600,6 +596,10 @@ export class ComplaintService {
     let caseSearchData = [];
     let orgGeoCodes: string[] = [];
     let appUserGuids: string[] = [];
+
+    builder
+      .leftJoin("complaint.complaint_update", "complaint_update")
+      .leftJoin("complaint.action_taken", "action_taken");
 
     // Search for organizations via GraphQL
     if (token) {
@@ -1438,6 +1438,9 @@ export class ComplaintService {
         builder = await this._applySearch(builder, filterComplaintType, query, token);
       }
 
+      // Clone before sort/pagination before the ORDER BY is applied, which is more expensive
+      const countBuilder = builder.clone();
+
       //-- apply sort if provided
       if (sortBy && orderBy) {
         // Special handling for area_name sort since it's source is the GraphQL API
@@ -1459,7 +1462,10 @@ export class ComplaintService {
       }
 
       //-- search and count
-      const [complaints, total] = await builder.skip(skip).take(pageSize).getManyAndCount();
+      const [complaints, total] = await Promise.all([
+        builder.skip(skip).take(pageSize).getMany(),
+        countBuilder.getCount(),
+      ]);
       results.totalCount = total;
 
       switch (complaintType) {
@@ -1474,7 +1480,7 @@ export class ComplaintService {
             const ids = items.map((item) => item.id);
             const { data, errors } = await get(token, {
               query: `{getComplaintOutcomesByComplaintId (complaintIds: [${ids.map((id) => '"' + id + '"').join(", ")}])
-            ${caseFileQueryFields}
+            ${complaintOutcomeAuthorizationFields}
           }`,
             });
             if (errors) {
@@ -1548,8 +1554,7 @@ export class ComplaintService {
             "Complaint",
             "SectorComplaintDto",
           );
-          await this.setSectorComplaintIssueType(items);
-          await this.setOrganization(items, token);
+          await Promise.all([this.setSectorComplaintIssueType(items), this.setOrganization(items, token)]);
           results.complaints = items;
           break;
         }

@@ -697,25 +697,22 @@ export class ComplaintOutcomeService {
   }
 
   async findManyByLeadId(complaintId: string[]) {
-    const outcomeRecords = await this.prisma.complaint_outcome.findMany({
-      where: {
-        complaint_identifier: {
-          in: complaintId,
-        },
-      },
+    // The complaint list only reads the authorization, so load just that instead of the full outcome tree
+    const records = await this.prisma.complaint_outcome.findMany({
+      where: { complaint_identifier: { in: complaintId } },
       select: {
         complaint_outcome_guid: true,
+        complaint_identifier: true,
+        authorization_permit: { select: { authorization_permit_guid: true, authorization_permit_id: true } },
+        site: { select: { site_guid: true, site_id: true } },
       },
     });
 
-    const complaintOutcomeGuids = outcomeRecords.map((record) => record.complaint_outcome_guid);
-
-    if (complaintOutcomeGuids.length === 0) {
-      return [];
-    }
-
-    const results = await this.find(complaintOutcomeGuids);
-    return results;
+    return records.map((record) => ({
+      complaintId: record.complaint_identifier,
+      complaintOutcomeGuid: record.complaint_outcome_guid,
+      authorization: this._getAuthorizationOutcome(record as any),
+    }));
   }
 
   async findManyBySearchString(complaintType: string, searchString: string) {
