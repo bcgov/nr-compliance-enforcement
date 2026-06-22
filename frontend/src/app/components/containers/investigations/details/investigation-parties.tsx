@@ -120,7 +120,6 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
   };
 
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
-  console.log(parties);
 
   return (
     <>

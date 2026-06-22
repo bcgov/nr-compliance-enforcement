@@ -9,12 +9,13 @@ import {
   InvestigationPerson,
 } from "@/generated/graphql";
 import React from "react";
-import { Card, Dropdown } from "react-bootstrap";
+import { Badge, Card, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
+import { isYoungPerson } from "@/app/common/methods";
 
 // Can we genercize this in the future?
 interface Props {
@@ -32,8 +33,13 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
 
   const isInvestigation = activityType === CaseActivities.INVESTIGATION;
-  const currentActivityTypeCode =
-    activityType === CaseActivities.INSPECTION ? "INSPECTION" : isInvestigation ? "INVSTGTN" : "";
+
+  let currentActivityTypeCode = "";
+  if (activityType === CaseActivities.INSPECTION) {
+    currentActivityTypeCode = "INSPECTION";
+  } else if (isInvestigation) {
+    currentActivityTypeCode = "INVSTGTN";
+  }
 
   const getPartyName = (party: InvestigationParty | InspectionParty): string => {
     if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
@@ -116,9 +122,10 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     if (!invParty.person) return [];
     const missing: string[] = [];
     if (!invParty.person.dateOfBirth && !invParty.person.approximateAgeCode) missing.push("age");
-    if (!invParty.person.genderCode) missing.push("gender");
+
     if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
       missing.push("phone number");
+    if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
     return missing;
   };
 
@@ -126,7 +133,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     if (!invParty.business) return [];
     const missing: string[] = [];
     if (!getAliases(invParty.aliases)) missing.push("alias");
-    if (getPhone(invParty.contactMethods) === "-") missing.push("primary phone");
     if (!getBusinessNumbers(invParty.business)) missing.push("business number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
     return missing;
@@ -135,7 +141,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   const formatMissingFields = (fields: string[]): string => {
     if (fields.length === 1) return fields[0];
     if (fields.length === 2) return `${fields[0]} and ${fields[1]}`;
-    return `${fields.slice(0, -1).join(", ")}, and ${fields[fields.length - 1]}`;
+    return `${fields.slice(0, -1).join(", ")}, and ${fields.at(fields.length - 1)}`;
   };
 
   const renderActionsDropdown = (party: InvestigationParty | InspectionParty) => {
@@ -183,7 +189,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     );
   };
 
-  const renderDetailRow = (label1: string, value1: string, label2: string, value2: string) => {
+  const renderDetailRow = (label1: string, value1: React.ReactNode, label2: string, value2: React.ReactNode) => {
     if (!value1 && !value2) return null;
     return (
       <div className="row mb-2">
@@ -205,12 +211,22 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
       const address = getPartyAddress(invParty.addresses);
       const age = getAge(invParty.person);
       const missingFields = getPersonMissingFields(invParty);
+      const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
+      const dob = invParty.person.dateOfBirth ? new Date(String(invParty.person.dateOfBirth)) : null;
+      const personIsYoung = isYoungPerson(dob, invParty.person.approximateAgeCode);
+      const ageDisplay = personIsYoung ? (
+        <>
+          {age} <Badge bg="species-badge comp-species-badge">Young person</Badge>
+        </>
+      ) : (
+        age
+      );
 
       return (
         <Card.Body className="py-3 px-4">
-          {renderDetailRow("Gender", gender, "Age", age)}
+          {renderDetailRow("Gender", gender, "Age", ageDisplay)}
           {renderDetailRow("Phone number", phone, "Address", address)}
-          {missingFields.length > 0 && (
+          {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
               This profile is incomplete. Add {formatMissingFields(missingFields)} before logging an enforcement action.
@@ -226,11 +242,12 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
       const businessNumbers = getBusinessNumbers(invParty.business);
       const address = getPartyAddress(invParty.addresses);
       const missingFields = getBusinessMissingFields(invParty);
+      const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Alias", aliases, "Business number", businessNumbers)}
           {renderDetailRow("Primary phone", phone, "Primary address", address)}
-          {missingFields.length > 0 && (
+          {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
               This profile is incomplete. Add {formatMissingFields(missingFields)} before logging an enforcement action.
