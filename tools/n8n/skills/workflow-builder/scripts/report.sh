@@ -16,9 +16,17 @@ GROUP="${1:?usage: report.sh <group> <report.md>...}"
 shift
 SNIPPETS="$HERE/snippets/$GROUP"
 
-# base64 env value -> compact JSON, or "{}" if absent/garbage.
-dec() { printf '%s' "${1:-}" | base64 -d 2>/dev/null | jq -c . 2>/dev/null || printf '{}'; }
-final="$(jq -nc --argjson d "$(dec "${DATA:-}")" --argjson v "$(dec "${VALS:-}")" '$d + {validations: $v}')"
+# base64 env value -> one compact JSON value on stdout ("{}" if absent/garbage).
+dec() {
+  local o
+  o="$(printf '%s' "${1:-}" | base64 -d 2>/dev/null | jq -c . 2>/dev/null)"
+  [ -n "$o" ] || o='{}'
+  printf '%s\n' "$o"
+}
+# Stream both decoded values into one jq -s (DATA then VALS) and combine — piped via stdin, never on
+# the command line, so a large merged payload (chatty log/triage output) can't overflow the arg-length
+# limit (notably small on Git Bash/Windows).
+final="$({ dec "${DATA:-}"; dec "${VALS:-}"; } | jq -sc '(.[0] // {}) + {validations: (.[1] // {})}')"
 
 prev=""
 args=("$@")

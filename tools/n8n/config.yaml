@@ -49,6 +49,12 @@ spec:
       doc: null
       url: null
       file: null
+    - name: nr-ce-app-triage
+      group: app-triage
+      description: A group of snippets that each fetch the last 50 lines / 1 hour of logs from app-related deployments in openshift. Target using app.kubernetes.io/short-name=backend (and backendcm, frontend). 2 snippets per service. One is any logs and the other is filtered on various error patterns.
+      doc: null
+      url: null
+      file: null
 status:
   groups:
     crunchy-triage:
@@ -112,6 +118,25 @@ status:
       seals:
         crunchy-dr-wiki: sha256:178f5e8e62075860b5738eaca44197c19a2afa0f69f7fb23ebeff37484e08587
         postgres-triage: sha256:8f06b9efdb811ec4d9dea2f5f0d36d05b02d7e42fad0bba5d9aa5c2be9277a3e
+    app-triage:
+      sources:
+      - name: nr-ce-app-triage
+        ref: nr-ce-app-triage
+        kind: none
+        drift: n/a
+      cleaned:
+      - snippet: snippet-app-logs.sh
+        from: nr-ce-app-triage
+      - snippet: snippet-app-errors.sh
+        from: nr-ce-app-triage
+      - snippet: validator-app-availability.sh
+        from: nr-ce-app-triage
+      - snippet: validator-app-errors.sh
+        from: nr-ce-app-triage
+      - snippet: snippet-app-report.md
+        from: nr-ce-app-triage
+      seals:
+        nr-ce-app-triage: sha256:e29f487bcbf8e1f99f420e2e558b2348aebcaa49514d987292bca5d8aaf33226
   docs:
     topics:
     - aspect: cluster-ha
@@ -134,3 +159,11 @@ status:
       version: '17'
       group: crunchy-triage
       url: https://www.postgresql.org/docs/17/runtime-config-resource.html
+    - aspect: workloads
+      version: latest
+      group: app-triage
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+    - aspect: logging
+      version: latest
+      group: app-triage
+      url: https://kubernetes.io/docs/concepts/cluster-administration/logging/
