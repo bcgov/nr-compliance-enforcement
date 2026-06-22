@@ -31,7 +31,7 @@ test.describe("Investigation Party Form", () => {
 
     // Default mode is "Search existing party" — type in the search box
     const searchInput = modal.locator(".rbt-input-text");
-    await searchInput.pressSequentially("Pure", { delay: 100 });
+    await searchInput.pressSequentially("Pure", { delay: 500 });
 
     // Wait for search results and select the first one
     const menuItem = page.locator(".rbt-menu .dropdown-item").first();
