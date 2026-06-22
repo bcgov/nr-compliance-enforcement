@@ -605,6 +605,7 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   typeCode: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;

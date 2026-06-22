@@ -34,7 +34,10 @@
   margin-bottom: 0px;
 }
 
-/* Add extra line on the bottom element */
-.party-accordion .list-group-item:last-child {
-  border-bottom: 1px solid #dee2e6 !important;
+.party-card {
+  border-style: dashed !important;
+}
+
+.party-card--linked {
+  border-style: solid !important;
 }

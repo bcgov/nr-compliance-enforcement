@@ -119,37 +119,16 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     );
   };
 
-  const parties = investigationData?.parties ?? [];
-
-  const { peopleParties, businessParties } = parties.reduce(
-    (acc, party) => {
-      if (party?.person) acc.peopleParties.push(party);
-      if (party?.business) acc.businessParties.push(party);
-      return acc;
-    },
-    { peopleParties: [] as typeof parties, businessParties: [] as typeof parties },
-  );
+  const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
+  console.log(parties);
 
   return (
     <>
-      <div className="row">
-        <div className="col-12">
-          <h2>Parties</h2>
+      <div className="row align-items-center mb-3">
+        <div className="col">
+          <h2 className="mb-0">Parties</h2>
         </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
-          <PartiesList
-            companies={businessParties as InvestigationParty[]}
-            people={peopleParties as InvestigationParty[]}
-            onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
-            onEditParty={isReadOnly ? undefined : handleEditParty}
-            activityType={CaseActivities.INVESTIGATION}
-          />
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-12">
+        <div className="col-auto">
           <Button
             id="add-party-button"
             variant="primary"
@@ -160,6 +139,16 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             <i className="bi bi-plus-circle me-1" /> {/**/}
             Add party
           </Button>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-12">
+          <PartiesList
+            parties={parties}
+            onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
+            onEditParty={isReadOnly ? undefined : handleEditParty}
+            activityType={CaseActivities.INVESTIGATION}
+          />
         </div>
       </div>
     </>
