@@ -1,6 +1,7 @@
 import { contravention_party_xref } from "./contravention_party_xref";
 import { investigation_address } from "./investigation_address";
 import { investigation_alias } from "./investigation_alias";
+import { investigation_attachment_reference } from "./investigation_attachment_reference";
 import { investigation_business } from "./investigation_business";
 import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation } from "./investigation";
@@ -49,6 +50,9 @@ export class investigation_party {
 
   @ApiProperty({ isArray: true, type: () => investigation_alias })
   investigation_alias: investigation_alias[];
+
+  @ApiProperty({ isArray: true, type: () => investigation_attachment_reference })
+  investigation_attachment_reference: investigation_attachment_reference[];
 
   @ApiProperty({ isArray: true, type: () => investigation_business })
   investigation_business: investigation_business[];
