@@ -13,7 +13,6 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { UserService } from "../../common/user.service";
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { PaginationUtility } from "src/common/pagination.utility";
-import { PageInfo } from "src/shared/case_file/dto/case_file";
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { Point } from "src/common/custom_scalars";
 import { EventPublisherService } from "src/event_publisher/event_publisher.service";
@@ -25,6 +24,7 @@ import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { Prisma } from ".prisma/investigation";
 
 @Injectable()
 export class InvestigationService {
@@ -57,6 +57,11 @@ export class InvestigationService {
                 },
               },
               investigation_alias: {
+                where: {
+                  active_ind: true,
+                },
+              },
+              investigation_attachment_reference: {
                 where: {
                   active_ind: true,
                 },
@@ -241,51 +246,64 @@ export class InvestigationService {
 
     let prismaParties = null;
 
+    const include = Prisma.validator<Prisma.investigation_personInclude>()({
+      investigation_party: {
+        include: {
+          investigation: {
+            include: {
+              contravention: {
+                include: {
+                  contravention_party_xref: {
+                    include: {
+                      investigation_party: {
+                        select: {
+                          party_guid_ref: true,
+                        },
+                      },
+                      enforcement_action: {
+                        include: {
+                          contravention_party_xref: true,
+                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                            true,
+                        },
+                        where: { active_ind: true },
+                      },
+                    },
+                    where: { active_ind: true },
+                  },
+                },
+                where: { active_ind: true },
+              },
+              investigation_status_code: true,
+            },
+          },
+        },
+        where: {
+          active_ind: true,
+        },
+      },
+    });
+
     if (partyType == "Person") {
       prismaParties = await this.prisma.investigation_person.findMany({
         where: {
           person_guid_ref: partyId,
           active_ind: true,
-          investigation_party: {
-            is: {
-              active_ind: true,
-            },
-          },
+          investigation_party: { is: { active_ind: true } },
         },
-        include: {
-          investigation_party: {
-            include: {
-              investigation: true,
-            },
-            where: {
-              active_ind: true,
-            },
-          },
-        },
+        include,
       });
     } else if (partyType == "Business") {
       prismaParties = await this.prisma.investigation_business.findMany({
         where: {
           business_guid_ref: partyId,
           active_ind: true,
-          investigation_party: {
-            is: {
-              active_ind: true,
-            },
-          },
+          investigation_party: { is: { active_ind: true } },
         },
-        include: {
-          investigation_party: {
-            include: {
-              investigation: true,
-            },
-            where: {
-              active_ind: true,
-            },
-          },
-        },
+        include,
       });
     }
+
     const prismaInvestigations = prismaParties.map((party) => {
       return party.investigation_party?.investigation;
     });
@@ -297,7 +315,8 @@ export class InvestigationService {
         "Investigation",
       );
     } catch (error) {
-      this.logger.error("Error fetching investigations by Party IDs:", error);
+      const mappingError = error as Error;
+      this.logger.error(`Error mapping investigations by Party IDs: ${mappingError.message}`, mappingError.stack);
       throw error;
     }
   }
@@ -632,7 +651,7 @@ export class InvestigationService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 

@@ -7,6 +7,7 @@ input CreateInvestigationPartyInput {
   addresses: [CreateInvestigationAddressInput]
   contactMethods: [CreateInvestigationContactMethodInput]
   aliases: [CreateInvestigationAliasInput]
+  attachmentReferences: [CreateAttachmentReferenceInput]
 }
 
 input UpdateInvestigationPartyInput {

@@ -2,7 +2,7 @@ import { FC, useEffect, useState, useRef } from "react";
 import { CarouselProvider, Slider } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import { getAttachments } from "@store/reducers/attachments";
+import { getAttachments, getSnapshotAttachments } from "@store/reducers/attachments";
 import { AttachmentSlide } from "./attachment-slide";
 import { AttachmentUpload } from "./attachment-upload";
 import { COMSObject } from "@apptypes/coms/object";
@@ -12,6 +12,7 @@ import { getThumbnailDataURL, isImage, removeIdentifierFromFilename } from "@com
 import AttachmentEnum from "@constants/attachment-enum";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { CANCEL_CONFIRM_FILE_UPDATE } from "@/app/types/modal/modal-types";
+import { InvestigationAttachmentReference } from "@/generated/graphql";
 
 type Props = {
   attachmentType: AttachmentEnum;
@@ -23,10 +24,12 @@ type Props = {
   cancelPendingUpload?: boolean;
   onFilesSelected?: (attachments: File[]) => void;
   onFileDeleted?: (attachments: COMSObject) => void;
+  onFilesReplaced?: (attachments: File[]) => void;
   onSlideCountChange?: (count: number) => void;
   setCancelPendingUpload?: (isCancelUpload: boolean) => void | null;
   disabled?: boolean | null;
   refreshKey?: number;
+  attachmentReferences?: InvestigationAttachmentReference[];
 };
 
 export const Attachments: FC<Props> = ({
@@ -38,11 +41,13 @@ export const Attachments: FC<Props> = ({
   allowDelete,
   cancelPendingUpload,
   onFilesSelected,
+  onFilesReplaced,
   onFileDeleted,
   onSlideCountChange,
   setCancelPendingUpload,
   disabled,
   refreshKey,
+  attachmentReferences,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -78,7 +83,19 @@ export const Attachments: FC<Props> = ({
     let isMounted = true;
 
     const loadAttachments = async () => {
-      const attachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
+      const attachments: COMSObject[] = [];
+
+      // Fetch attachment information from COMS based on identifiers
+      if (identifier) {
+        const liveAttachments = await dispatch(getAttachments(identifier, subIdentifier, attachmentType));
+        attachments.push(...liveAttachments);
+      }
+
+      // Also include any pinned versions that were passed into the component
+      if (attachmentReferences) {
+        const snapshotAttachments = await dispatch(getSnapshotAttachments(attachmentReferences));
+        attachments.push(...snapshotAttachments);
+      }
 
       if (isMounted) {
         setCarouselData(attachments);
@@ -123,7 +140,11 @@ export const Attachments: FC<Props> = ({
   const confirmFileUpdate = async (newFiles: FileList) => {
     let exisingFileNames: string[] = [];
 
-    if (attachmentType === AttachmentEnum.TASK_ATTACHMENT || attachmentType === AttachmentEnum.PARTY_ATTACHMENT) {
+    if (
+      attachmentType === AttachmentEnum.TASK_ATTACHMENT ||
+      attachmentType === AttachmentEnum.PARTY_ATTACHMENT ||
+      attachmentType === AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT
+    ) {
       exisingFileNames = slides.map((attachment) => {
         return getDisplayFilename(attachment.name);
       });
@@ -137,7 +158,7 @@ export const Attachments: FC<Props> = ({
     const newFileNamesArray = Array.from(newFiles).map((file) => file.name);
     const conflitingFileNames = newFileNamesArray.filter((item) => exisingFileNamesSet.has(item));
     if (conflitingFileNames.length === 0) {
-      await stageFiles(newFiles);
+      await stageFiles(newFiles, conflitingFileNames);
     } else {
       document.body.click();
       dispatch(
@@ -148,7 +169,7 @@ export const Attachments: FC<Props> = ({
             title: "File already exists",
             fileNames: conflitingFileNames,
             onUpdate: async () => {
-              await stageFiles(newFiles);
+              await stageFiles(newFiles, conflitingFileNames);
             },
           },
         }),
@@ -161,23 +182,27 @@ export const Attachments: FC<Props> = ({
     await confirmFileUpdate(newFiles);
   };
 
-  const stageFiles = async (newFiles: FileList) => {
+  const stageFiles = async (newFiles: FileList, conflictingFileNames: string[]) => {
     const selectedFilesArray = Array.from(newFiles);
     let newSlides: COMSObject[] = [];
     for (let selectedFile of selectedFilesArray) {
       newSlides.push(await createSlideFromFile(selectedFile));
     }
-    removeInvalidFiles(selectedFilesArray);
+    removeInvalidFiles(selectedFilesArray, conflictingFileNames);
 
     setSlides([...newSlides, ...slides]);
   };
 
   // don't upload files that are invalid
-  const removeInvalidFiles = (files: File[]) => {
+  const removeInvalidFiles = (files: File[], conflictingFileNames: string[]) => {
+    const validFiles = files.filter((file) => file.size <= maxFileSize * 1_000_000);
     if (onFilesSelected) {
       // remove any of the selected files that fail validation so that they aren't uploaded
-      const validFiles = files.filter((file) => file.size <= maxFileSize * 1_000_000);
       onFilesSelected(validFiles);
+    }
+    if (onFilesReplaced && conflictingFileNames.length > 0) {
+      const conflictSet = new Set(conflictingFileNames);
+      onFilesReplaced(validFiles.filter((file) => conflictSet.has(file.name)));
     }
   };
 

@@ -65,7 +65,22 @@ export class InvestigationPartyService {
     return [...nonPrimary, ...primary];
   }
 
-  async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<Investigation> {
+  private ensurePartyNotAlreadyOnInvestigation(
+    investigation: Investigation,
+    input: CreateInvestigationPartyInput,
+  ): void {
+    const partyAlreadyExists = investigation.parties.some(
+      (p) => p.isActive && p.partyReference && p.partyReference === input.partyReference,
+    );
+
+    if (partyAlreadyExists) {
+      throw new Error("Record already exists on Investigation.");
+    }
+  }
+
+  async create(investigationGuid: string, inputs: CreateInvestigationPartyInput[]): Promise<InvestigationParty[]> {
+    const createdPartyGuids: string[] = [];
+
     for (const input of inputs) {
       if (!input.person && !input.business) {
         throw new Error("Each party input must include either a person or a business.");
@@ -81,13 +96,7 @@ export class InvestigationPartyService {
     await withRlsTransaction(this.prisma, async (db) => {
       for (const input of inputs) {
         try {
-          const partyAlreadyExists = investigation.parties.some(
-            (p) => p.isActive && p.partyReference && p.partyReference === input.partyReference,
-          );
-
-          if (partyAlreadyExists) {
-            throw new Error("Record already exists on Investigation.");
-          }
+          this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
 
           const investigationParty = await db.investigation_party.create({
             data: {
@@ -138,8 +147,27 @@ export class InvestigationPartyService {
                     },
                   }
                 : {}),
+              ...(input.attachmentReferences?.length
+                ? {
+                    investigation_attachment_reference: {
+                      create: input.attachmentReferences.map((ar) => ({
+                        object_guid_ref: ar.objectId,
+                        s3_version_ref: ar.version,
+                        filename_text: ar.fileName,
+                        coms_created_date: ar.createdAt,
+                        thumb_object_guid_ref: ar.thumbObjectId,
+                        thumb_s3_version_ref: ar.thumbVersion,
+                        active_ind: true,
+                        create_user_id: this.user.getIdirUsername(),
+                        create_utc_timestamp: new Date(),
+                      })),
+                    },
+                  }
+                : {}),
             },
           });
+
+          createdPartyGuids.push(investigationParty.investigation_party_guid);
 
           if (input.business) {
             await this.createBusiness(db, investigationParty.investigation_party_guid, input.business);
@@ -157,7 +185,8 @@ export class InvestigationPartyService {
 
     await this.investigationService.updateInvestigationTimestamp(investigationGuid);
 
-    return await this.investigationService.findOne(investigationGuid);
+    const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
+    return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
   }
 
   private _buildPersonFieldData(input: CreateInvestigationPersonInput | UpdateInvestigationPersonInput) {
