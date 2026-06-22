@@ -76,7 +76,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
   });
 
   test("it edits a person party", async ({ page }) => {
