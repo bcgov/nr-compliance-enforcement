@@ -1,8 +1,6 @@
 -- indexes for the collaborator plus case activity list/search
 
--- Matches the RLS collaborator subquery in policy_cos_ers_complaints, which compares
--- UPPER(REPLACE(auth_user_guid::text, '-', '')) to the jwt idir claim. The functional index lets that
--- probe use an index instead of sequentially scanning shared.app_user.
+-- Matches the RLS collaborator subquery in policy_cos_ers_complaints
 CREATE INDEX IF NOT EXISTS idx_app_user_auth_user_guid_normalized
   ON shared.app_user (UPPER(REPLACE(auth_user_guid::text, '-', '')));
 
