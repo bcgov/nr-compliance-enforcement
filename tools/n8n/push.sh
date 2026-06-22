@@ -146,7 +146,7 @@ api() {
     "$N8N_URL/api/v1$path")"
   status="${response##*$'\n'}"
   body="${response%$'\n'*}"
-  if [[ ! "$status" =~ ^[0-9]+$ ]] || [ "$status" -ge 400 ]; then
+  if [[ ! "$status" =~ ^[0-9]+$ ]] || [[ "$status" -ge 400 ]]; then
     echo "Error: $method $path -> HTTP $status" >&2
     jq -r '.message // .' <<<"$body" >&2 2>/dev/null || printf '%s\n' "$body" >&2
     return 1

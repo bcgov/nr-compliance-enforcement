@@ -34,9 +34,9 @@ done
 parts=()
 for var in ${!MERGE_@}; do
   raw="${!var}"
-  [ "$b64" -eq 1 ] && raw="$(printf '%s' "$raw" | base64 -d 2>/dev/null || true)"
+  [[ "$b64" -eq 1 ]] && raw="$(printf '%s' "$raw" | base64 -d 2>/dev/null || true)"
   obj="$(printf '%s' "$raw" | jq -c . 2>/dev/null)" || continue # skip empty / non-JSON
-  if [ "$keyed" -eq 1 ]; then
+  if [[ "$keyed" -eq 1 ]]; then
     key="$(printf '%s' "${var#MERGE_}" | tr '[:upper:]' '[:lower:]')"
     parts+=("$(jq -nc --arg k "$key" --argjson v "$obj" '{($k): $v}')")
   else

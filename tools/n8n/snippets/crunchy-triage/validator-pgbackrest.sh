@@ -26,11 +26,11 @@ notok="$(jq -r '[(.pgbackrest // [])[] | select((.status.message // "") != "ok")
 nobackup="$(jq -r '[(.pgbackrest // [])[] | select((.backup // []) | length == 0) | .name] | join(", ")' <<<"$data" 2>/dev/null || echo "")"
 
 # Decide the verdict.
-if [ "$count" -eq 0 ]; then
+if [[ "$count" -eq 0 ]]; then
   status="skip";  message="no pgBackRest data"
-elif [ -n "$notok" ]; then
+elif [[ -n "$notok" ]]; then
   status="error"; message="$notok stanza not ok"
-elif [ -n "$nobackup" ]; then
+elif [[ -n "$nobackup" ]]; then
   status="warn";  message="$nobackup has no backups yet"
 else
   status="ok";    message="$count stanza(s) ok with backups"

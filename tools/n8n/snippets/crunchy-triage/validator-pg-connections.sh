@@ -26,13 +26,13 @@ max="$(jq -r '.connections.max_connections // 0' <<<"$data" 2>/dev/null || echo 
 total="$(jq -r '.connections.total // 0' <<<"$data" 2>/dev/null || echo 0)"
 
 # Decide the verdict.
-if [ "$has" != "true" ] || [ "$max" -le 0 ]; then
+if [[ "$has" != "true" ]] || [[ "$max" -le 0 ]]; then
   status="skip";  message="no connection data"
 else
   pct=$(( total * 100 / max ))
-  if [ "$pct" -ge 90 ]; then
+  if [[ "$pct" -ge 90 ]]; then
     status="error"; message="$total/$max connections in use (${pct}%) — near the limit"
-  elif [ "$pct" -ge 75 ]; then
+  elif [[ "$pct" -ge 75 ]]; then
     status="warn";  message="$total/$max connections in use (${pct}%)"
   else
     status="ok";    message="$total/$max connections in use (${pct}%)"

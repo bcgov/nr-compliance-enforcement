@@ -28,25 +28,25 @@ _doc_ver_num() { case "$1" in '' | *[!0-9]*) printf 999999 ;; *) printf '%s' "$1
 # doc_url <aspect> [version]  ->  prints the URL on stdout, or warns + returns 1.
 doc_url() {
   local aspect="${1:-}" version="${2:-latest}" key best="" bestn=-1 k n
-  [ -n "$aspect" ] || {
+  [[ -n "$aspect" ]] || {
     _doc_url_miss "" "$version"
     return 1
   }
   key="$aspect|$version"
-  if [ -n "${__DOC_URLS[$key]:-}" ]; then
+  if [[ -n "${__DOC_URLS[$key]:-}" ]]; then
     printf '%s\n' "${__DOC_URLS[$key]}"
     return 0
   fi
-  if [ "$version" = latest ]; then
+  if [[ "$version" = latest ]]; then
     for k in "${!__DOC_URLS[@]}"; do
-      [ "${k%%|*}" = "$aspect" ] || continue
+      [[ "${k%%|*}" = "$aspect" ]] || continue
       n="$(_doc_ver_num "${k#*|}")"
-      if [ "$n" -gt "$bestn" ]; then
+      if [[ "$n" -gt "$bestn" ]]; then
         bestn="$n"
         best="${__DOC_URLS[$k]}"
       fi
     done
-    [ -n "$best" ] && {
+    [[ -n "$best" ]] && {
       printf '%s\n' "$best"
       return 0
     }

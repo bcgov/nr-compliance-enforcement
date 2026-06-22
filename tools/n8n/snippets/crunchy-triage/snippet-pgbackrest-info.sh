@@ -11,7 +11,7 @@ NS="${1:-${NAMESPACE:?set NAMESPACE or pass it as arg 1}}"
 
 repo="$(oc get pods -n "$NS" -l postgres-operator.crunchydata.com/data=pgbackrest \
   -o name 2>/dev/null | head -n1)"
-if [ -z "$repo" ]; then
+if [[ -z "$repo" ]]; then
   jq -n --arg ns "$NS" '{namespace: $ns, error: "no pgbackrest repo pod found"}'
   exit 1
 fi

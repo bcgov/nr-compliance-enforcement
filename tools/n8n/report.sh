@@ -20,7 +20,7 @@ SNIPPETS="$HERE/snippets/$GROUP"
 dec() {
   local o
   o="$(printf '%s' "${1:-}" | base64 -d 2>/dev/null | jq -c . 2>/dev/null)"
-  [ -n "$o" ] || o='{}'
+  [[ -n "$o" ]] || o='{}'
   printf '%s\n' "$o"
 }
 # Stream both decoded values into one jq -s (DATA then VALS) and combine — piped via stdin, never on
@@ -33,7 +33,7 @@ args=("$@")
 # Render in reverse so the first report arg is the outermost (top of the page); each earlier
 # report wraps the rest in via its {{#if .previous}} block.
 for ((i = ${#args[@]} - 1; i >= 0; i--)); do
-  if [ -n "$prev" ]; then
+  if [[ -n "$prev" ]]; then
     payload="$(printf '%s' "$final" | jq -c --arg p "$prev" '. + {previous: $p}')"
   else
     payload="$final"

@@ -14,7 +14,7 @@
 set -euo pipefail
 
 for d in /opt/triage/snippets/*/; do
-  [ -d "$d" ] || continue # no groups baked yet -> the glob stays literal; skip it
+  [[ -d "$d" ]] || continue # no groups baked yet -> the glob stays literal; skip it
   case ":$PATH:" in
     *":${d%/}:"*) ;;          # already on PATH
     *) PATH="${d%/}:$PATH" ;; # prepend this group's snippets dir

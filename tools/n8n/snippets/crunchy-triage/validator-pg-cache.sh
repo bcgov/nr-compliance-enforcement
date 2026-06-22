@@ -25,9 +25,9 @@ ratio="$(jq -r '.cache.hit_ratio_pct // empty' <<<"$data" 2>/dev/null || echo ""
 ratio_int="$(jq -r '(.cache.hit_ratio_pct // 100) | floor' <<<"$data" 2>/dev/null || echo 100)"
 
 # Decide the verdict.
-if [ -z "$ratio" ]; then
+if [[ -z "$ratio" ]]; then
   status="skip";  message="no cache data"
-elif [ "$ratio_int" -lt 90 ]; then
+elif [[ "$ratio_int" -lt 90 ]]; then
   status="warn";  message="cache hit ratio ${ratio}% is low (< 90%)"
 else
   status="ok";    message="cache hit ratio ${ratio}%"

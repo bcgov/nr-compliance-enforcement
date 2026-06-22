@@ -32,7 +32,7 @@ export SELECTOR="postgres-operator.crunchydata.com/role=master"
 # skill; sync the copies deployed here from the (installed) skill so a stale or missing one can't
 # silently change the result. Set WORKFLOW_BUILDER_SKILL to the installed skill (default: co-located).
 SKILL="${WORKFLOW_BUILDER_SKILL:-$N8N/skills/workflow-builder}"
-if [ -x "$SKILL/scripts/sync.sh" ]; then
+if [[ -x "$SKILL/scripts/sync.sh" ]]; then
   bash "$SKILL/scripts/sync.sh" "$N8N"
 else
   echo "warning: workflow-builder skill not found at $SKILL — using the deployed lib scripts as-is" >&2

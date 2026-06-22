@@ -25,9 +25,9 @@ has="$(jq -r '(. // {}) | has("wal")' <<<"$data" 2>/dev/null || echo false)"
 failed="$(jq -r '.wal.archiver.failed // 0' <<<"$data" 2>/dev/null || echo 0)"
 
 # Decide the verdict.
-if [ "$has" != "true" ]; then
+if [[ "$has" != "true" ]]; then
   status="skip";  message="no WAL data"
-elif [ "$failed" -gt 0 ]; then
+elif [[ "$failed" -gt 0 ]]; then
   status="error"; message="$failed WAL archive failure(s)"
 else
   status="ok";    message="WAL archiving healthy"

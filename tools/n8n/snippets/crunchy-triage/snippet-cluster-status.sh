@@ -11,7 +11,7 @@ NS="${1:-${NAMESPACE:?set NAMESPACE or pass it as arg 1}}"
 
 primary="$(oc get pods -n "$NS" -l postgres-operator.crunchydata.com/role=master \
   -o name 2>/dev/null | head -n1)"
-if [ -z "$primary" ]; then
+if [[ -z "$primary" ]]; then
   jq -n --arg ns "$NS" '{namespace: $ns, error: "no primary (master) pod found"}'
   exit 1
 fi

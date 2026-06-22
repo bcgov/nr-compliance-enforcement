@@ -25,11 +25,11 @@ hot="$(jq -r --argjson hi "$HIGH" '[to_entries[] | select(.key | endswith("_erro
 withany="$(jq -r '[to_entries[] | select(.key | endswith("_errors")) | .value | select((.match_count // 0) > 0) | "\(.service) (\(.match_count))"] | join(", ")' <<<"$data" 2>/dev/null || echo "")"
 
 # Decide the verdict.
-if [ "$svc_count" -eq 0 ]; then
+if [[ "$svc_count" -eq 0 ]]; then
   status="skip";  message="no error data to validate"
-elif [ -n "$hot" ]; then
+elif [[ -n "$hot" ]]; then
   status="error"; message="high error volume: $hot"
-elif [ "$total" -gt 0 ]; then
+elif [[ "$total" -gt 0 ]]; then
   status="warn";  message="error-pattern lines seen: $withany"
 else
   status="ok";    message="no error-pattern lines in the collected logs"

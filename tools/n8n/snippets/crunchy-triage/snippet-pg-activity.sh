@@ -6,7 +6,7 @@
 #          POD or SELECTOR (env, one required) — the pod name, or a label selector to find it.
 #          PGUSER / PGDATABASE (env, default postgres) — psql role + database.
 # Read-only: one SELECT over pg_stat_activity (non-idle, oldest first); safe to re-run any time.
-# Output:    stdout JSON { namespace, activity: [ { pid, user, state, seconds, wait_event, query } ] }.
+# Output:    stdout JSON { namespace, activity: [[ { pid, user, state, seconds, wait_event, query } ]] }.
 set -euo pipefail
 
 NS="${1:-${NAMESPACE:?set NAMESPACE or pass it as arg 1}}"
@@ -16,14 +16,14 @@ PGDATABASE="${PGDATABASE:-postgres}"
 # Target pod: an explicit POD, or the first pod matching SELECTOR (a label selector). No specific
 # Postgres operator/distribution is assumed — the caller says which pod is the instance.
 pod="${POD:-}"
-if [ -z "$pod" ]; then
-  if [ -z "${SELECTOR:-}" ]; then
+if [[ -z "$pod" ]]; then
+  if [[ -z "${SELECTOR:-}" ]]; then
     jq -n --arg ns "$NS" '{namespace: $ns, error: "set POD (a pod name) or SELECTOR (a label selector) to target the postgres pod"}'
     exit 1
   fi
   pod="$(oc get pods -n "$NS" -l "$SELECTOR" -o name 2>/dev/null | head -n1)"
 fi
-if [ -z "$pod" ]; then
+if [[ -z "$pod" ]]; then
   jq -n --arg ns "$NS" '{namespace: $ns, error: "no postgres pod matched the given POD/SELECTOR"}'
   exit 1
 fi

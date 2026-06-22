@@ -28,7 +28,7 @@ NAME="app-triage"
 # skill and must already be deployed beside this tree. This script does NOT self-sync — the agent
 # refreshes them with scripts/sync.sh --config <config.yaml> before a run. Fail fast if one is gone.
 for lib in merge.sh report.sh view.sh; do
-  [ -x "$N8N/$lib" ] || { echo "error: $N8N/$lib missing — run: workflow-builder/scripts/sync.sh --config $N8N/config.yaml" >&2; exit 1; }
+  [[ -x "$N8N/$lib" ]] || { echo "error: $N8N/$lib missing — run: workflow-builder/scripts/sync.sh --config $N8N/config.yaml" >&2; exit 1; }
 done
 
 # Collect snippet $1 for service $2 (passed as SHORTNAME); echo its JSON. `|| true` so a failing

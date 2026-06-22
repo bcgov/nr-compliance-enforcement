@@ -26,11 +26,11 @@ down="$(jq -r '[to_entries[] | select(.key | endswith("_logs")) | .value | selec
 quiet="$(jq -r '[to_entries[] | select(.key | endswith("_logs")) | .value | select((.pod_count // 0) > 0 and (.line_count // 0) == 0) | .service] | join(", ")' <<<"$data" 2>/dev/null || echo "")"
 
 # Decide the verdict.
-if [ "$svc_count" -eq 0 ]; then
+if [[ "$svc_count" -eq 0 ]]; then
   status="skip";  message="no log data to validate"
-elif [ -n "$down" ]; then
+elif [[ -n "$down" ]]; then
   status="error"; message="no running pods for: $down"
-elif [ -n "$quiet" ]; then
+elif [[ -n "$quiet" ]]; then
   status="warn";  message="pods up but no recent logs for: $quiet"
 else
   status="ok";    message="$svc_count service(s) up and logging"

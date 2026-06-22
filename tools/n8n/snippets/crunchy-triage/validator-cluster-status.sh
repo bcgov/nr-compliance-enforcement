@@ -26,11 +26,11 @@ leaders="$(jq -r '[(.members // [])[] | select(.Role == "Leader")] | length' <<<
 unhealthy="$(jq -r '[(.members // [])[] | select(.State != "running" and .State != "streaming") | .Member] | join(", ")' <<<"$data" 2>/dev/null || echo "")"
 
 # Decide the verdict.
-if [ "$members" -eq 0 ]; then
+if [[ "$members" -eq 0 ]]; then
   status="skip";  message="no cluster member data"
-elif [ "$leaders" -eq 0 ]; then
+elif [[ "$leaders" -eq 0 ]]; then
   status="error"; message="no leader elected"
-elif [ -n "$unhealthy" ]; then
+elif [[ -n "$unhealthy" ]]; then
   status="warn";  message="$unhealthy not running/streaming"
 else
   status="ok";    message="leader present; $members member(s) healthy"

@@ -154,7 +154,7 @@ ph_vals=()
 if [[ -n "$JSON" && ${#ph_exprs[@]} -gt 0 ]]; then
   prog=""
   for e in "${ph_exprs[@]}"; do prog+="(try ($e) catch null),"; done
-  prog="[ ${prog%,} ] | .[] | (if . == null then \"\" elif type == \"string\" then . else tojson end) + \"\u0000\""
+  prog="[[ ${prog%,} ]] | .[] | (if . == null then \"\" elif type == \"string\" then . else tojson end) + \"\u0000\""
   while IFS= read -r -d '' v; do ph_vals+=("$v"); done < <(jq -j "$HELPERS $prog" <<<"$JSON" 2>/dev/null)
 fi
 for ((i = 0; i < ${#ph_wholes[@]}; i++)); do
