@@ -18,7 +18,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE1',
+    'CASE26-000001',
     'Test case 1.'
   ),
   (
@@ -28,7 +28,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE2',
+    'CASE26-000002',
     'Test case 2.'
   ),
   (
@@ -38,7 +38,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE3',
+    'CASE26-000003',
     'Test case 3.'
   ),
   (
@@ -48,7 +48,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE4',
+    'CASE26-000004',
     'Test case 4.'
   ),
   (
@@ -58,7 +58,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE5',
+    'CASE26-000005',
     'Test case 5.'
   ),
   (
@@ -68,7 +68,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE6',
+    'CASE26-000006',
     'Test case 6.'
   ),
   (
@@ -78,7 +78,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE7',
+    'CASE26-000007',
     'Test case 7.'
   ),
   (
@@ -88,7 +88,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE8',
+    'CASE26-000008',
     'Test case 8.'
   ),
   (
@@ -98,7 +98,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE9',
+    'CASE26-000009',
     'Test case 9.'
   ),
   (
@@ -108,7 +108,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE10',
+    'CASE26-000010',
     'Test case 10.'
   ),
   (
@@ -118,7 +118,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE11',
+    'CASE26-000011',
     'Test case 11.'
   ),
   (
@@ -128,7 +128,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE12',
+    'CASE26-000012',
     'Test case 12.'
   ),
   (
@@ -138,7 +138,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE13',
+    'CASE26-000013',
     'Test case 13.'
   ),
   (
@@ -148,7 +148,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE14',
+    'CASE26-000014',
     'Test case 14.'
   ),
   (
@@ -158,7 +158,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE15',
+    'CASE26-000015',
     'Test case 15.'
   ),
   (
@@ -168,7 +168,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE16',
+    'CASE26-000016',
     'Test case 16.'
   ),
   (
@@ -178,7 +178,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE17',
+    'CASE26-000017',
     'Test case 17.'
   ),
   (
@@ -188,7 +188,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE18',
+    'CASE26-000018',
     'Test case 18.'
   ),
   (
@@ -198,7 +198,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE19',
+    'CASE26-000019',
     'Test case 19.'
   ),
   (
@@ -208,7 +208,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE20',
+    'CASE26-000020',
     'Test case 20.'
   ),
   (
@@ -218,7 +218,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE21',
+    'CASE26-000021',
     'Test case 21.'
   ),
   (
@@ -228,7 +228,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE22',
+    'CASE26-000022',
     'Test case 22.'
   ),
   (
@@ -238,7 +238,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE23',
+    'CASE26-000023',
     'Test case 23.'
   ),
   (
@@ -248,7 +248,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE24',
+    'CASE26-000024',
     'Test case 24.'
   ),
   (
@@ -258,7 +258,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE25',
+    'CASE26-000025',
     'Test case 25.'
   ),
   (
@@ -268,7 +268,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE26',
+    'CASE26-000026',
     'Test case 26.'
   ),
   (
@@ -278,7 +278,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE27',
+    'CASE26-000027',
     'Test case 27.'
   ),
   (
@@ -288,7 +288,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE28',
+    'CASE26-000028',
     'Test case 28.'
   ),
   (
@@ -298,7 +298,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE29',
+    'CASE26-000029',
     'Test case 29.'
   ),
   (
@@ -308,7 +308,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE30',
+    'CASE26-000030',
     'Test case 30.'
   ),
   (
@@ -318,7 +318,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE31',
+    'CASE26-000031',
     'Test case 31.'
   ),
   (
@@ -328,7 +328,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE32',
+    'CASE26-000032',
     'Test case 32.'
   ),
   (
@@ -338,7 +338,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE33',
+    'CASE26-000033',
     'Test case 33.'
   ),
   (
@@ -348,7 +348,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE34',
+    'CASE26-000034',
     'Test case 34.'
   ),
   (
@@ -358,7 +358,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE35',
+    'CASE26-000035',
     'Test case 35.'
   ),
   (
@@ -368,7 +368,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE36',
+    'CASE26-000036',
     'Test case 36.'
   ),
   (
@@ -378,7 +378,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE37',
+    'CASE26-000037',
     'Test case 37.'
   ),
   (
@@ -388,7 +388,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE38',
+    'CASE26-000038',
     'Test case 38.'
   ),
   (
@@ -398,7 +398,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE39',
+    'CASE26-000039',
     'Test case 39.'
   ),
   (
@@ -408,7 +408,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE40',
+    'CASE26-000040',
     'Test case 40.'
   ),
   (
@@ -418,7 +418,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE41',
+    'CASE26-000041',
     'Test case 41.'
   ),
   (
@@ -428,7 +428,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE42',
+    'CASE26-000042',
     'Test case 42.'
   ),
   (
@@ -438,7 +438,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE43',
+    'CASE26-000043',
     'Test case 43.'
   ),
   (
@@ -448,7 +448,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE44',
+    'CASE26-000044',
     'Test case 44.'
   ),
   (
@@ -458,7 +458,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE45',
+    'CASE26-000045',
     'Test case 45.'
   ),
   (
@@ -468,7 +468,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE46',
+    'CASE26-000046',
     'Test case 46.'
   ),
   (
@@ -478,7 +478,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE47',
+    'CASE26-000047',
     'Test case 47.'
   ),
   (
@@ -488,7 +488,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE48',
+    'CASE26-000048',
     'Test case 48.'
   ),
   (
@@ -498,7 +498,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE49',
+    'CASE26-000049',
     'Test case 49.'
   ),
   (
@@ -508,7 +508,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE50',
+    'CASE26-000050',
     'Test case 50.'
   ),
   (
@@ -518,7 +518,7 @@ VALUES
     now (),
     'system',
     now (),
-    'CASE51',
+    'CASE26-000051',
     'Test case 51.'
   )
 ON CONFLICT DO NOTHING;
@@ -2154,4 +2154,19 @@ SELECT
 WHERE NOT EXISTS (
   SELECT 1 FROM shared.case_activity
   WHERE activity_identifier_ref = 'c2000000-0000-4000-a000-000000000033'
+);
+
+-- Advance the case sequence past the seeded cases so cases created through the application continue
+-- after the seed data (e.g. CASE26-000052) instead of restarting at 00001 and colliding with a
+-- seeded CASE<yy>-<n>. The application derives investigation/inspection numbers from the case, so
+-- this also keeps their runtime numbering past the seed. GREATEST(...) keeps the sequence monotonic:
+-- it never moves backward on a repeatable re-run or after the application has already advanced it.
+SELECT setval(
+  'shared.case_sequence',
+  GREATEST(
+    (SELECT last_value FROM shared.case_sequence),
+    (SELECT COALESCE(MAX(substring(name FROM '([0-9]+)$')::integer), 0)
+       FROM shared.case_file
+      WHERE name LIKE 'CASE%')
+  )
 );

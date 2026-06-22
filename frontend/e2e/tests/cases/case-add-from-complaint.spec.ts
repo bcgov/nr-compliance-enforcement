@@ -29,21 +29,21 @@ test.describe("Create/Add Case Modal - Search", () => {
   });
 
   test("finds a case when searching by case identifier", async ({ page }) => {
-    await page.getByPlaceholder("Search for a case").fill("CASE7");
+    await page.getByPlaceholder("Search for a case").fill("CASE26-000007");
 
     const dropdown = page.locator(".rbt-menu");
     await expect(dropdown).toBeVisible();
-    await expect(dropdown).toContainText("CASE7");
+    await expect(dropdown).toContainText("CASE26-000007");
   });
 
   test("captures the selected case in the search input", async ({ page }) => {
-    await page.getByPlaceholder("Search for a case").fill("CASE7");
+    await page.getByPlaceholder("Search for a case").fill("CASE26-000007");
 
     const dropdown = page.locator(".rbt-menu");
     await expect(dropdown).toBeVisible();
 
-    await dropdown.locator(".dropdown-item").filter({ hasText: "CASE7" }).first().click();
+    await dropdown.locator(".dropdown-item").filter({ hasText: "CASE26-000007" }).first().click();
 
-    await expect(page.getByPlaceholder("Search for a case")).toHaveValue(/CASE7/);
+    await expect(page.getByPlaceholder("Search for a case")).toHaveValue(/CASE26-000007/);
   });
 });

@@ -49,6 +49,12 @@ input PartyUpdateInput {
   addresses: [AddressUpdateInput]
   contactMethods: [ContactMethodInput]
   aliases: [AliasUpdateInput]
+  images: [ImageUpdateInput]
+}
+
+input ImageUpdateInput {
+  fileName: String!
+  verb: String!
 }
 
 input PartyFilters {

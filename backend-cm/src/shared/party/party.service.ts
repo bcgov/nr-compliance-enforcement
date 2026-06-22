@@ -3,7 +3,7 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { party } from "../../../prisma/shared/generated/party";
-import { Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
+import { ImageUpdate, Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { Alias } from "src/shared/alias/dto/alias";
@@ -1114,6 +1114,12 @@ export class PartyService {
       .forEach((fhs) => addEvent("REMOVED", "facial hair style", fhs.facialHairStyleCode, null));
   }
 
+  private _diffImageChanges(input: ImageUpdate[], addEvent: AddEventFn): void {
+    input.forEach((image) => {
+      addEvent(image.verb, "Image", image.fileName, image.fileName);
+    });
+  }
+
   private _diffPartyChanges(oldParty: Party, newParty: PartyUpdateInput, addEvent: AddEventFn): void {
     this._diffAliases(oldParty.aliases ?? [], newParty.aliases ?? [], addEvent);
     this._compareContactMethods(
@@ -1230,6 +1236,9 @@ export class PartyService {
     // Detect Party level changes
     this._diffPartyChanges(oldParty, input, addEvent);
 
+    // Detect Image changes -- nothing to compare as they are all sent via the frontend
+    this._diffImageChanges(input.images, addEvent);
+
     if (input.partyTypeCode === PARTY_TYPES.Person) {
       // Detect person level changes
       this._diffPersonChanges(oldParty.person, input.person, addEvent);
@@ -1318,59 +1327,78 @@ export class PartyService {
     };
 
     if (filters?.search) {
-      if (/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(filters.search)) {
-        where.OR = [{ party_guid: { equals: filters.search } }];
-      } else {
-        const terms = filters.search.trim().split(/\s+/);
-        where.AND = terms.map((term) => ({
-          OR: [
-            { party_type: { equals: term } },
-            { business: { name: { contains: term, mode: "insensitive" } } },
-            { person: { first_name: { contains: term, mode: "insensitive" } } },
-            { person: { last_name: { contains: term, mode: "insensitive" } } },
-          ],
-        }));
-      }
+      const terms = filters.search
+        .trim()
+        .split(/[\s,()-]+/) // Get rid of any user typed whitespace or special chars , ( ) -
+        .filter(Boolean); // Toss any thing that is just whitespace
+      where.AND = terms.map((term) => ({
+        OR: [
+          { party_type: { equals: term } },
+          { business: { name: { contains: term, mode: "insensitive" } } },
+          {
+            business: {
+              business_identifier: {
+                some: {
+                  identifier_value: {
+                    contains: term,
+                    mode: "insensitive",
+                  },
+                },
+              },
+            },
+          },
+          {
+            contact_method: {
+              some: {
+                contact_value: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            address: {
+              some: {
+                address: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          {
+            address: {
+              some: {
+                city: {
+                  contains: term,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+          { person: { first_name: { contains: term, mode: "insensitive" } } },
+          { person: { last_name: { contains: term, mode: "insensitive" } } },
+        ],
+      }));
     }
 
+    // Required to maintain tab seperation
     if (filters?.partyTypeCode) {
       where.party_type = {
         in: [filters.partyTypeCode],
       };
     }
-    const sortFieldMap: Record<string, string> = {
-      partyIdentifier: "party_guid",
-      partyType: "party_type",
-    };
 
     let orderBy: any = { party_guid: "desc" }; // Default sort
 
     if (filters?.sortBy && filters?.sortOrder) {
       const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
 
-      switch (filters?.sortBy) {
-        case "firstName": {
-          orderBy = { person: { first_name: validSortOrder } };
-          break;
-        }
-        case "lastName": {
-          orderBy = { person: { last_name: validSortOrder } };
-          break;
-        }
-        case "name": {
-          orderBy = { business: { name: validSortOrder } };
-          break;
-        }
-        case "dateOfBirth": {
-          orderBy = { person: { date_of_birth: validSortOrder } };
-          break;
-        }
-        default: {
-          const dbField = sortFieldMap[filters.sortBy];
-          if (dbField) {
-            orderBy = { [dbField]: validSortOrder };
-          }
-        }
+      if (filters.partyTypeCode === PARTY_TYPES.Company) {
+        orderBy = { business: { name: validSortOrder } };
+      } else {
+        orderBy = [{ person: { last_name: validSortOrder } }, { person: { first_name: validSortOrder } }];
       }
     }
 
@@ -1391,6 +1419,15 @@ export class PartyService {
               short_description: true,
               long_description: true,
             },
+          },
+          address: {
+            select: {
+              address: true,
+              city: true,
+              country_subdivision_code: true,
+              is_primary: true,
+            },
+            where: { active_ind: true },
           },
           contact_method: {
             where: { active_ind: true },
@@ -1417,13 +1454,7 @@ export class PartyService {
                 select: {
                   business_identifier_guid: true,
                   identifier_value: true,
-                  business_identifier_code_business_identifier_business_identifier_codeTobusiness_identifier_code: {
-                    select: {
-                      business_identifier_code: true,
-                      short_description: true,
-                      long_description: true,
-                    },
-                  },
+                  business_identifier_code: true,
                 },
               },
             },
@@ -1434,6 +1465,8 @@ export class PartyService {
               first_name: true,
               last_name: true,
               date_of_birth: true,
+              gender_code: true,
+              approximate_age_code: true,
             },
           },
         },

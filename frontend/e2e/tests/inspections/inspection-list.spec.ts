@@ -58,9 +58,7 @@ test.describe("Inspection List Pagination", () => {
 
   test("it paginates through results", async ({ page }) => {
     const paginator = page.locator(".pagination, .comp-paginator");
-    const isVisible = await paginator.isVisible();
-
-    expect(isVisible, "No pagination visible. Ensure enough test data exists for pagination.").toBe(true);
+    await expect(paginator, "No pagination visible. Ensure enough test data exists for pagination.").toBeVisible();
 
     const rows = page.locator("#inspection-list tbody tr");
 

@@ -139,12 +139,11 @@ test.describe("Case Activities - Activity Cards", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test("it displays investigation cards with correct info", async ({ page }) => {
-    // Navigate to a case that has investigations (CASE1 from test data)
+    // Navigate to a case that has investigations (all seed cases have one)
     await page.goto("/cases");
     await waitForSpinner(page);
 
-    // Look for CASE1 which has investigations
-    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+    const caseLink = page.locator("#case-list tbody tr a.comp-cell-link");
     await expect(caseLink.first()).toBeVisible({ timeout: 30000 });
 
     await caseLink.first().click();
@@ -245,13 +244,13 @@ test.describe("Case Activities - Three Column Layout", () => {
   });
 });
 
-// Use CASE1 as a test case for linked activities, ensuring case history exists for subsequent tests
-async function navigateToCASE1(page: any): Promise<boolean> {
+// Navigate to a case with linked activities, ensuring case history exists for subsequent tests
+async function navigateToCaseWithActivities(page: any): Promise<boolean> {
   await page.goto("/cases");
   await waitForSpinner(page);
 
-  // Find CASE1 specifically
-  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE1" });
+  // Find CASE26-000001 specifically (falls back to the first case below if not visible)
+  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE26-000001" });
 
   if ((await caseLink.count()) === 0) {
     // Fall back to first case
@@ -272,7 +271,7 @@ test.describe("Case Activities - Add Complaint Modal", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test("it opens add complaint modal", async ({ page }) => {
-    const success = await navigateToCASE1(page);
+    const success = await navigateToCaseWithActivities(page);
     expect(success, "Could not navigate to case.").toBe(true);
 
     const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });
@@ -283,7 +282,7 @@ test.describe("Case Activities - Add Complaint Modal", () => {
   });
 
   test("it can close add complaint modal", async ({ page }) => {
-    const success = await navigateToCASE1(page);
+    const success = await navigateToCaseWithActivities(page);
     expect(success, "Could not navigate to case.").toBe(true);
 
     const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });
@@ -299,7 +298,7 @@ test.describe("Case Activities - Add Complaint Modal", () => {
   });
 
   test("it adds a complaint activity to the case", async ({ page }) => {
-    const success = await navigateToCASE1(page);
+    const success = await navigateToCaseWithActivities(page);
     expect(success, "Could not navigate to case.").toBe(true);
 
     const addComplaintBtn = page.locator("button", { hasText: /Add complaint|Link complaint/i });

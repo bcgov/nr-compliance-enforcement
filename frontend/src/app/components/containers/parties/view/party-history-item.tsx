@@ -121,8 +121,13 @@ const useEventDescription = (event: Event): string => {
       }
       return `removed ${field}: ${formatValue(oldValue)}`;
     }
-    case "EDITED":
-      return `updated ${field} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
+    case "EDITED": {
+      if (oldValue === newValue) {
+        return `updated ${field} "${formatValue(oldValue)}"`;
+      } else {
+        return `updated ${field} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
+      }
+    }
     default:
       return `performed ${verb.toLowerCase()} on ${field}`;
   }
