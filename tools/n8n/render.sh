@@ -153,8 +153,14 @@ done
 ph_vals=()
 if [[ -n "$JSON" && ${#ph_exprs[@]} -gt 0 ]]; then
   prog=""
-  for e in "${ph_exprs[@]}"; do prog+="(try ($e) catch null),"; done
-  prog="[[ ${prog%,} ]] | .[] | (if . == null then \"\" elif type == \"string\" then . else tojson end) + \"\u0000\""
+  # ONE slot per placeholder, each collapsed to EXACTLY one string — so an expression that errors on
+  # bad data (try/catch -> null -> ""), yields nothing, or yields several values degrades only its own
+  # slot and can't shift the 1:1 placeholder<->value alignment, corrupting every section after it.
+  # (A bare `[ e1, … ]` lets a multi/zero-value expr misalign the tail; the old `[[ … ]]` collapsed
+  # all slots into one nested array — the bug that dumped raw JSON into the report.)
+  collapse='map(if . == null then "" elif type == "string" then . else tojson end) | join("")'
+  for e in "${ph_exprs[@]}"; do prog+="([ try ($e) catch null ] | $collapse),"; done
+  prog="[ ${prog%,} ] | .[] +\"\u0000\""
   while IFS= read -r -d '' v; do ph_vals+=("$v"); done < <(jq -j "$HELPERS $prog" <<<"$JSON" 2>/dev/null)
 fi
 for ((i = 0; i < ${#ph_wholes[@]}; i++)); do
