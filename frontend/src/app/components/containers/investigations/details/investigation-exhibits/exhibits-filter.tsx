@@ -3,6 +3,7 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { Task } from "@/generated/graphql";
+import { PROPERTY_TYPE_OPTIONS } from "@/app/types/app/investigation/exhibits";
 
 type Props = {
   tasks?: Task[];
@@ -22,6 +23,13 @@ export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
   const handleTaskFilterChange = (option: Option | null) => {
     setValues({ taskFilter: option?.value ?? null });
   };
+
+  const handlePropertyTypeFilterChange = (option: Option | null) => {
+    setValues({ propertyTypeFilter: option?.value ?? null });
+  };
+
+  const selectedPropertyType =
+    PROPERTY_TYPE_OPTIONS.find((option) => option.value === searchValues.propertyTypeFilter) || null;
 
   const selectedTask = taskOptions.find((option) => option.value === searchValues.taskFilter) || null;
 
@@ -44,6 +52,30 @@ export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
             isClearable={true}
             showInactive={false}
           />
+        </div>
+
+        <div
+          id="exhibits-property-type-filter-id"
+          className="mt-3"
+        >
+          <label htmlFor="exhibits-property-type-select-id">Property type</label>
+          <div className="filter-select-padding">
+            <CompSelect
+              id="exhibits-property-type-select-id"
+              classNamePrefix="comp-select"
+              onChange={handlePropertyTypeFilterChange}
+              classNames={{
+                menu: () => "top-layer-select",
+              }}
+              options={PROPERTY_TYPE_OPTIONS}
+              placeholder="Select property type"
+              enableValidation={false}
+              value={selectedPropertyType}
+              isClearable={true}
+              showInactive={false}
+              menuPlacement="top"
+            />
+          </div>
         </div>
       </div>
     </div>

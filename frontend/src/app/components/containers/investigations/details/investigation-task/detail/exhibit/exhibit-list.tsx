@@ -7,15 +7,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
 import { formatDateTimeStr } from "@/app/common/methods";
-
-// Maps the stored property_type code to its display label. Mirrors the S/F constants in the exhibit modal
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  S: "Seized",
-  F: "Found",
-};
-
-export const getPropertyTypeLabel = (propertyType?: string | null): string =>
-  propertyType ? (PROPERTY_TYPE_LABELS[propertyType] ?? propertyType) : "-";
+import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type TaskExhibitListProps = {
   exhibits: Exhibit[];

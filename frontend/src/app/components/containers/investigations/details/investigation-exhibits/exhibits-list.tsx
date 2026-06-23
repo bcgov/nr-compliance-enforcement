@@ -8,7 +8,7 @@ import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { SORT_TYPES } from "@constants/sort-direction";
-import { getPropertyTypeLabel } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/exhibit-list";
+import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type Props = {
   exhibits: Exhibit[];

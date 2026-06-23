@@ -44,6 +44,7 @@ export class ExhibitFilters {
   investigationGuid: string;
   search?: string;
   taskFilter?: string;
+  propertyTypeFilter?: string;
   sortBy?: string;
   sortOrder?: string;
 }

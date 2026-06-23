@@ -65,23 +65,28 @@ export class ExhibitService {
   };
 
   private _buildExhibitWhereClause(filters: ExhibitFilters): any {
-    const where: any = {
-      active_ind: true,
-      investigation_guid: filters.investigationGuid,
-    };
+    const conditions: any[] = [{ active_ind: true }, { investigation_guid: filters.investigationGuid }];
 
     if (filters.taskFilter) {
-      where.task_guid = filters.taskFilter;
+      conditions.push({ task_guid: filters.taskFilter });
+    }
+
+    if (filters.propertyTypeFilter) {
+      conditions.push({ property_type: filters.propertyTypeFilter });
     }
 
     if (filters.search) {
-      where.OR = [
-        { description: { contains: filters.search, mode: "insensitive" } },
-        { exhibit_number: Number.isNaN(Number(filters.search)) ? undefined : Number(filters.search) },
-      ].filter(Boolean);
+      const searchConditions: any[] = [{ description_text: { contains: filters.search, mode: "insensitive" } }];
+
+      const searchAsNumber = Number(filters.search);
+      if (!Number.isNaN(searchAsNumber)) {
+        searchConditions.push({ exhibit_number: searchAsNumber });
+      }
+
+      conditions.push({ OR: searchConditions });
     }
 
-    return where;
+    return { AND: conditions };
   }
 
   private _buildExhibitOrderByClause(filters?: ExhibitFilters): any {

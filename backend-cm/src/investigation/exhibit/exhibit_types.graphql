@@ -37,6 +37,7 @@ input ExhibitFilters {
   investigationGuid: String!
   search: String
   taskFilter: String
+  propertyTypeFilter: String
   sortBy: String
   sortOrder: String
 }

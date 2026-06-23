@@ -19,16 +19,7 @@ import {
   DELETE_EXHIBIT,
   UPDATE_EXHIBIT,
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
-
-// Property type options for exhibits.
-// Values map to investigation.exhibit.property_type (S = Seized, F = Found).
-const PROPERTY_TYPE_SEIZED = "S";
-const PROPERTY_TYPE_FOUND = "F";
-
-const PROPERTY_TYPE_OPTIONS = [
-  { value: PROPERTY_TYPE_SEIZED, label: "Seized" },
-  { value: PROPERTY_TYPE_FOUND, label: "Found" },
-];
+import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -36,7 +27,7 @@ type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown }
 const requiredWhenSeized =
   (message: string) =>
   ({ value, fieldApi }: { value: string; fieldApi: ExhibitValidatorApi }) =>
-    fieldApi.form.getFieldValue("propertyType") === PROPERTY_TYPE_SEIZED && !value?.trim() ? message : undefined;
+    fieldApi.form.getFieldValue("propertyType") === PropertyTypeEnum.SEIZED && !value?.trim() ? message : undefined;
 
 // Derive the "HH:mm" time string the picker expects from a stored Date. Returns null when no date is set.
 const formatTimeForPicker = (date: Date | null): string | null => {
@@ -194,7 +185,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   // Handlers
   const handleCreate = async (value: FormValues) => {
-    const isSeized = value.propertyType === PROPERTY_TYPE_SEIZED;
+    const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
     const input: CreateUpdateExhibitInput = {
       taskGuid: taskIdentifier,
       investigationGuid: investigationIdentifier,
@@ -205,7 +196,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      dateCollected: value.dateCollected as Date,
+      dateCollected: value.dateCollected,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
@@ -216,7 +207,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   };
 
   const handleUpdate = async (value: FormValues) => {
-    const isSeized = value.propertyType === PROPERTY_TYPE_SEIZED;
+    const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
     const input: CreateUpdateExhibitInput = {
       exhibitGuid: exhibit!.exhibitGuid,
       taskGuid: taskIdentifier,
@@ -228,7 +219,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      dateCollected: value.dateCollected as Date,
+      dateCollected: value.dateCollected,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
@@ -283,7 +274,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
             {/* Seized from — only shown and required when property type is Seized */}
             <form.Subscribe selector={(state) => state.values.propertyType}>
               {(propertyType) =>
-                propertyType === PROPERTY_TYPE_SEIZED ? (
+                propertyType === PropertyTypeEnum.SEIZED ? (
                   <>
                     <p className="fw-bold mt-3 mb-1">Seized from</p>
                     <div className="bg-bc-brand-background-light-gray text-dark p-3 mb-3">
