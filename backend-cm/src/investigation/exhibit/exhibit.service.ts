@@ -6,7 +6,6 @@ import { exhibit } from "../../../prisma/investigation/generated/exhibit";
 import { CreateUpdateExhibitInput, Exhibit, ExhibitFilters, ExhibitResult } from "./dto/exhibit";
 import { UserService } from "../../common/user.service";
 import { PaginationUtility } from "../../common/pagination.utility";
-import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
 
@@ -43,6 +42,8 @@ export class ExhibitService {
         active_ind: true,
         create_utc_timestamp: true,
         update_utc_timestamp: true,
+        investigation: { select: { name: true } },
+        task: { select: { task_number: true } },
       },
       where: {
         active_ind: true,
@@ -55,10 +56,12 @@ export class ExhibitService {
 
   private readonly SORT_FIELD_MAP: Record<string, string> = {
     exhibitNumber: "exhibit_number",
-    description: "description",
-    dateCollected: "date_collected",
-    officerCollected: "collected_user_guid_ref",
-    taskNumber: "task_guid",
+    propertyType: "property_type",
+    description: "description_text",
+    quantity: "quantity_amount",
+    dateCollected: "collected_utc_timestamp",
+    location: "location_of_intake_text",
+    propertyTag: "property_tag_number",
   };
 
   private _buildExhibitWhereClause(filters: ExhibitFilters): any {
@@ -109,6 +112,10 @@ export class ExhibitService {
         destinationTypeName: "Exhibit",
         mapper: this.mapper,
         whereClause: where,
+        includeClause: {
+          investigation: true,
+          task: true,
+        },
         orderByClause: orderBy,
       },
     );

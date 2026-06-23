@@ -2,7 +2,7 @@ type Exhibit {
   exhibitGuid: String!
   taskGuid: String!
   investigationGuid: String!
-  exhibitNumber: Int!
+  exhibitNumber: String!
   propertyType: String!
   description: String!
   quantity: Int

@@ -6,7 +6,7 @@ export class Exhibit {
   exhibitGuid: string;
   taskGuid: string;
   investigationGuid: string;
-  exhibitNumber: number;
+  exhibitNumber: string;
   propertyType: string;
   description: string;
   quantity: number;
@@ -53,6 +53,17 @@ export class ExhibitResult implements PaginatedResult<Exhibit> {
   pageInfo: PaginationMetadata;
 }
 
+// Composes the user-facing exhibit number: investigation name - task number - zero-padded sequence (e.g. INV26-001234-5-001).
+// Extracted to keep the mapper's forMember simple and the control flow out of the parent's complexity score.
+const composeExhibitDisplayNumber = (
+  investigationName?: string | null,
+  taskNumber?: number | null,
+  exhibitNumber?: number | null,
+): string => {
+  const sequence = exhibitNumber == null ? "" : String(exhibitNumber).padStart(3, "0");
+  return [investigationName ?? "", taskNumber ?? "", sequence].join("-");
+};
+
 export const mapPrismaExhibitToExhibit = (mapper: Mapper) => {
   createMap<exhibit, Exhibit>(
     mapper,
@@ -72,7 +83,7 @@ export const mapPrismaExhibitToExhibit = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.exhibitNumber,
-      mapFrom((src) => src.exhibit_number),
+      mapFrom((src) => composeExhibitDisplayNumber(src.investigation?.name, src.task?.task_number, src.exhibit_number)),
     ),
     forMember(
       (dest) => dest.propertyType,

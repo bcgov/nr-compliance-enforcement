@@ -21,10 +21,17 @@ export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
         taskGuid
         investigationGuid
         exhibitNumber
+        propertyType
         description
+        quantity
+        seizedFromFirstName
+        seizedFromLastName
+        seizedFromAddress
+        seizedFromPhoneNumber
         dateCollected
         collectedAppUserGuidRef
-        createdDate
+        locationOfIntake
+        propertyTagNumber
       }
       pageInfo {
         currentPage
