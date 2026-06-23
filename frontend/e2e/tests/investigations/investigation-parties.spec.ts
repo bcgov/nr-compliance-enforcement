@@ -118,7 +118,7 @@ test.describe("Investigation Party Form", () => {
     const personItem = page.locator(".party-card").first();
     await expect(personItem).toBeVisible();
 
-    const kebabMenu = personItem.locator(".comp-action-dropdown dropstart");
+    const kebabMenu = personItem.locator(".comp-kebab-toggle");
     await kebabMenu.click();
 
     const editButton = page.locator(".dropdown-item", { hasText: "Edit" });
