@@ -594,7 +594,7 @@ const bulkDataLoad = async () => {
   // Adjust these as required.
   const processAfterInsert = true // Will move complaints from staging to the live table after each iteration
   const numRecords = 10000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
-  const yearPrefix = 35; /
+  const yearPrefix = 35; 
   const startingRecord = 100000;
   const iterations = 25; 
 
