@@ -8,31 +8,50 @@ import {
   handlePersistAttachments,
 } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
-import AttachmentEnum from "@constants/attachment-enum";
-import { DismissToast, ToggleInformation } from "@/app/common/toast";
+import { DismissToast, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { Id } from "react-toastify";
 import { useAppDispatch } from "@hooks/hooks";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { InvestigationAttachmentReference } from "@/generated/graphql";
+import AttachmentEnum from "@/app/constants/attachment-enum";
+import { gql } from "graphql-request";
+import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+
+const DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION = gql`
+  mutation DeactivateInvestigationAttachmentReference($input: DeactivateInvestigationAttachmentReferenceInput!) {
+    deactivateInvestigationAttachmentReference(input: $input) {
+      objectId
+      activeInd
+    }
+  }
+`;
 
 interface PartyAttachmentsProps {
   partyId: string;
+  activityId?: string;
+  attachmentType: number;
   triggerSave: boolean;
-  triggerCancel: boolean;
+  triggerCancel?: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
+  attachmentReferences?: InvestigationAttachmentReference[];
   onPendingImagesChange?: (images: { fileName: string; verb: string }[]) => void;
 }
 
 export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   partyId,
+  activityId,
+  attachmentType,
   triggerSave,
   triggerCancel,
   onDirtyChange,
   onSaved,
+  attachmentReferences,
   onPendingImagesChange,
 }) => {
   const [attachmentsToAdd, setAttachmentsToAdd] = useState<File[] | null>(null);
   const [attachmentsToDelete, setAttachmentsToDelete] = useState<COMSObject[] | null>(null);
+  const [referencesToDeactivate, setReferencesToDeactivate] = useState<COMSObject[] | null>(null);
   const [attachmentsToEdit, setAttachmentsToEdit] = useState<File[] | null>(null);
   const [attachmentCount, setAttachmentCount] = useState<number>(0);
   const [isPendingUpload, setIsPendingUpload] = useState<boolean>(false);
@@ -40,6 +59,13 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   const dispatch = useAppDispatch();
   const { markDirty, markClean } = useFormDirtyState(onDirtyChange);
+
+  const deactivateReferenceMutation = useGraphQLMutation(DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION, {
+    onError: (error: any) => {
+      console.error("Error deactivating attachment reference:", error);
+      ToggleError("Failed to remove attachment");
+    },
+  });
 
   const handleSlideCountChange = useCallback((count: number) => {
     setAttachmentCount((prev) => (prev === count ? prev : count));
@@ -57,6 +83,13 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   const onHandleDeleteAttachment = (fileToDelete: COMSObject) => {
     markDirty();
+
+    // Snapshotted globals must never hit COMS — stage them to deactivate the reference row instead
+    if (fileToDelete.isSnapshot) {
+      setReferencesToDeactivate((prev) => (prev ? [...prev, fileToDelete] : [fileToDelete]));
+      return;
+    }
+
     handleDeleteAttachments(attachmentsToAdd, setAttachmentsToAdd, setAttachmentsToDelete, fileToDelete);
   };
 
@@ -98,9 +131,37 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     }
   }, [triggerCancel]);
 
+  // Set the identifiers based on the type
+  let identifier: string = "";
+  let subidentifier: string | undefined;
+
+  switch (attachmentType) {
+    case AttachmentEnum.PARTY_ATTACHMENT: {
+      identifier = partyId;
+      break;
+    }
+    case AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT: {
+      identifier = activityId ?? "";
+      subidentifier = partyId || undefined;
+      break;
+    }
+  }
+
   const saveButtonClick = async () => {
     markClean();
     let toastId: Id | undefined;
+
+    if (referencesToDeactivate?.length) {
+      await Promise.all(
+        referencesToDeactivate.map((reference) =>
+          deactivateReferenceMutation.mutateAsync({
+            input: { investigationPartyGuid: partyId, objectId: reference.id },
+          }),
+        ),
+      );
+      setReferencesToDeactivate(null);
+    }
+
     if (attachmentsToDelete?.length) {
       await handlePersistAttachments({
         dispatch,
@@ -110,7 +171,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         subIdentifier: undefined,
         setAttachmentsToAdd,
         setAttachmentsToDelete,
-        attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+        attachmentType: attachmentType,
         isSynchronous: false,
       });
     }
@@ -125,8 +186,9 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       await uploadAttachmentsWithProgress({
         dispatch,
         files: attachmentsToAdd,
-        identifier: partyId,
-        attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+        identifier: identifier,
+        subIdentifier: subidentifier,
+        attachmentType: attachmentType,
         toastId,
       });
       setAttachmentsToAdd(null);
@@ -152,16 +214,12 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       id="party-attachments"
     >
       <div className="comp-details-form-row">
-        <label
-          className="align-self-lg-center"
-          htmlFor="party-attachments"
-        >
-          Party Attachments
-        </label>
+        <label htmlFor="party-attachments">Party Attachments</label>
         <div className="comp-details-edit-input">
           <Attachments
-            attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
-            identifier={partyId}
+            attachmentType={attachmentType}
+            identifier={identifier}
+            subIdentifier={subidentifier}
             allowUpload={true}
             allowDelete={true}
             cancelPendingUpload={isPendingUpload}
@@ -172,6 +230,7 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
             onSlideCountChange={handleSlideCountChange}
             refreshKey={attachmentRefreshKey}
             showPreview={attachmentCount > 0}
+            attachmentReferences={attachmentReferences}
           />
         </div>
       </div>

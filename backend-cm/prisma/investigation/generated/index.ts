@@ -40,6 +40,7 @@ import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_co
 import { investigation_address as _investigation_address } from "./investigation_address";
 import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
 import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
+import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -84,6 +85,7 @@ export namespace PrismaModel {
   export class investigation_address extends _investigation_address {}
   export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
   export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
+  export class investigation_attachment_reference extends _investigation_attachment_reference {}
 
   export const extraModels = [
     activity_note,
@@ -128,5 +130,6 @@ export namespace PrismaModel {
     investigation_address,
     investigation_person_facial_hair_style_code_ref,
     investigation_person_facial_hair_style_code_ref_h,
+    investigation_attachment_reference,
   ];
 }

@@ -27,6 +27,10 @@ import {
   CreateInvestigationAddressInput,
   InvestigationAddress,
 } from "src/investigation/investigation_address/dto/investigation_address";
+import {
+  CreateInvestigationAttachmentReferenceInput,
+  InvestigationAttachmentReference,
+} from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
 
 export class InvestigationParty implements PartyDto {
   partyIdentifier: string;
@@ -41,6 +45,7 @@ export class InvestigationParty implements PartyDto {
   contactMethods?: InvestigationContactMethod[];
   aliases?: InvestigationAlias[];
   addresses?: InvestigationAddress[];
+  attachmentReferences?: InvestigationAttachmentReference[];
 }
 
 @InputType()
@@ -68,6 +73,9 @@ export class CreateInvestigationPartyInput {
 
   @Field(() => [CreateInvestigationAddressInput], { nullable: true })
   addresses?: CreateInvestigationAddressInput[];
+
+  @Field(() => [CreateInvestigationAttachmentReferenceInput], { nullable: true })
+  attachmentReferences?: CreateInvestigationAttachmentReferenceInput[];
 }
 
 @InputType()
@@ -173,6 +181,16 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
       (dest) => dest.addresses,
       mapFrom((src) =>
         mapper.mapArray(src.investigation_address ?? [], "investigation_address", "InvestigationAddress"),
+      ),
+    ),
+    forMember(
+      (dest) => dest.attachmentReferences,
+      mapFrom((src) =>
+        mapper.mapArray(
+          src.investigation_attachment_reference ?? [],
+          "investigation_attachment_reference",
+          "InvestigationAttachmentReference",
+        ),
       ),
     ),
   );

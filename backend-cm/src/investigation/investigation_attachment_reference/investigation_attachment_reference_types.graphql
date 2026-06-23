@@ -1,0 +1,9 @@
+type InvestigationAttachmentReference {
+  objectId: String!
+  version: String!
+  fileName: String!
+  createdAt: DateTime!
+  thumbObjectId: String
+  thumbVersion: String
+  activeInd: Boolean!
+}
