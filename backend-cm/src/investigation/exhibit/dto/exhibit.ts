@@ -7,9 +7,17 @@ export class Exhibit {
   taskGuid: string;
   investigationGuid: string;
   exhibitNumber: number;
+  propertyType: string;
   description: string;
+  quantity: number;
+  seizedFromFirstName: string;
+  seizedFromLastName: string;
+  seizedFromAddress: string;
+  seizedFromPhoneNumber: string;
   dateCollected: Date;
   collectedAppUserGuidRef: string;
+  locationOfIntake: string;
+  propertyTagNumber: string;
   activeIndicator: boolean;
   createdDate: Date;
   updatedDate: Date;
@@ -20,9 +28,16 @@ export class CreateUpdateExhibitInput {
   taskGuid?: string;
   investigationGuid?: string;
   description?: string;
+  propertyType: string;
+  quantity?: number;
+  seizedFromFirstName: string;
+  seizedFromLastName?: string;
+  seizedFromAddress?: string;
+  seizedFromPhoneNumber?: string;
   dateCollected?: Date;
   collectedAppUserGuidRef?: string;
-  appUserIdentifier?: string;
+  locationOfIntake?: string;
+  propertyTagNumber?: string;
 }
 
 export class ExhibitFilters {
@@ -60,16 +75,48 @@ export const mapPrismaExhibitToExhibit = (mapper: Mapper) => {
       mapFrom((src) => src.exhibit_number),
     ),
     forMember(
+      (dest) => dest.propertyType,
+      mapFrom((src) => src.property_type),
+    ),
+    forMember(
       (dest) => dest.description,
-      mapFrom((src) => src.description),
+      mapFrom((src) => src.description_text),
+    ),
+    forMember(
+      (dest) => dest.quantity,
+      mapFrom((src) => src.quantity_amount),
+    ),
+    forMember(
+      (dest) => dest.seizedFromFirstName,
+      mapFrom((src) => src.seized_from_first_name),
+    ),
+    forMember(
+      (dest) => dest.seizedFromLastName,
+      mapFrom((src) => src.seized_from_last_name),
+    ),
+    forMember(
+      (dest) => dest.seizedFromAddress,
+      mapFrom((src) => src.seized_from_address),
+    ),
+    forMember(
+      (dest) => dest.seizedFromPhoneNumber,
+      mapFrom((src) => src.seized_from_phone_number),
     ),
     forMember(
       (dest) => dest.dateCollected,
-      mapFrom((src) => src.date_collected),
+      mapFrom((src) => src.collected_utc_timestamp),
     ),
     forMember(
       (dest) => dest.collectedAppUserGuidRef,
-      mapFrom((src) => src.collected_user_guid_ref),
+      mapFrom((src) => src.collected_by_app_user_guid_ref),
+    ),
+    forMember(
+      (dest) => dest.locationOfIntake,
+      mapFrom((src) => src.location_of_intake_text),
+    ),
+    forMember(
+      (dest) => dest.propertyTagNumber,
+      mapFrom((src) => src.property_tag_number),
     ),
     forMember(
       (dest) => dest.activeIndicator,

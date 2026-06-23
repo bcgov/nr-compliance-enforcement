@@ -16,13 +16,37 @@ export class exhibit {
   exhibit_number: number;
 
   @ApiProperty({ type: String })
-  description: string;
-
-  @ApiProperty({ type: Date })
-  date_collected: Date;
+  property_type: string;
 
   @ApiProperty({ type: String })
-  collected_user_guid_ref: string;
+  description_text: string;
+
+  @ApiPropertyOptional({ type: Number })
+  quantity_amount?: number;
+
+  @ApiPropertyOptional({ type: String })
+  seized_from_first_name?: string;
+
+  @ApiPropertyOptional({ type: String })
+  seized_from_last_name?: string;
+
+  @ApiPropertyOptional({ type: String })
+  seized_from_address?: string;
+
+  @ApiPropertyOptional({ type: String })
+  seized_from_phone_number?: string;
+
+  @ApiProperty({ type: Date })
+  collected_utc_timestamp: Date;
+
+  @ApiProperty({ type: String })
+  collected_by_app_user_guid_ref: string;
+
+  @ApiPropertyOptional({ type: String })
+  location_of_intake_text?: string;
+
+  @ApiProperty({ type: String })
+  property_tag_number: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;

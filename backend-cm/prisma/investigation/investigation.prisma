@@ -182,22 +182,30 @@ model enforcement_action_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model exhibit {
-  exhibit_guid            String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  task_guid               String        @db.Uuid
-  investigation_guid      String        @db.Uuid
-  exhibit_number          Int
-  description             String
-  date_collected          DateTime      @default(dbgenerated("CURRENT_DATE")) @db.Date
-  collected_user_guid_ref String        @db.Uuid
-  active_ind              Boolean       @default(true)
-  create_user_id          String        @db.VarChar(32)
-  create_utc_timestamp    DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id          String?       @db.VarChar(32)
-  update_utc_timestamp    DateTime?     @db.Timestamp(6)
-  investigation           investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__investigation")
-  task                    task          @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__task")
+  exhibit_guid                   String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  task_guid                      String        @db.Uuid
+  investigation_guid             String        @db.Uuid
+  exhibit_number                 Int
+  property_type                  String        @db.Char(1)
+  description_text               String
+  quantity_amount                Int?
+  seized_from_first_name         String?       @db.VarChar(128)
+  seized_from_last_name          String?       @db.VarChar(128)
+  seized_from_address            String?       @db.VarChar(256)
+  seized_from_phone_number       String?       @db.VarChar(16)
+  collected_utc_timestamp        DateTime      @default(now()) @db.Timestamp(6)
+  collected_by_app_user_guid_ref String        @db.Uuid
+  location_of_intake_text        String?
+  property_tag_number            String        @db.VarChar(64)
+  active_ind                     Boolean       @default(true)
+  create_user_id                 String        @db.VarChar(32)
+  create_utc_timestamp           DateTime      @default(now()) @db.Timestamp(6)
+  update_user_id                 String?       @db.VarChar(32)
+  update_utc_timestamp           DateTime?     @db.Timestamp(6)
+  investigation                  investigation @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__investigation")
+  task                           task          @relation(fields: [task_guid], references: [task_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibit__task")
 
-  @@unique([investigation_guid, exhibit_number], map: "uq_exhibit_number_per_investigation")
+  @@unique([task_guid, exhibit_number], map: "uq_exhibit_number_per_task")
   @@schema("investigation")
 }
 
@@ -790,6 +798,20 @@ model investigation_attachment_reference_h {
   operation_user_id                         String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at                     DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation             Json?
+
+  @@ignore
+  @@schema("investigation")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exhibit_h {
+  h_exhibit_guid                String   @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
 
   @@ignore
   @@schema("investigation")

@@ -3,9 +3,17 @@ type Exhibit {
   taskGuid: String!
   investigationGuid: String!
   exhibitNumber: Int!
+  propertyType: String!
   description: String!
+  quantity: Int
+  seizedFromFirstName: String
+  seizedFromLastName: String
+  seizedFromAddress: String
+  seizedFromPhoneNumber: String
   dateCollected: DateTime!
   collectedAppUserGuidRef: String!
+  locationOfIntake: String
+  propertyTagNumber: String!
   activeIndicator: Boolean!
   createdDate: DateTime!
   updatedDate: DateTime
@@ -37,8 +45,16 @@ input CreateUpdateExhibitInput {
   exhibitGuid: String
   taskGuid: String
   investigationGuid: String
+  propertyType: String
   description: String
+  quantity: Int
+  seizedFromFirstName: String
+  seizedFromLastName: String
+  seizedFromAddress: String
+  seizedFromPhoneNumber: String
   dateCollected: DateTime
   collectedAppUserGuidRef: String
   appUserIdentifier: String
+  locationOfIntake: String
+  propertyTagNumber: String
 }
