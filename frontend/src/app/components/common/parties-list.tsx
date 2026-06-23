@@ -150,7 +150,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
           variant="outline-primary"
           bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
         >
-          <i className="bi bi-three-dots-vertical ms-1 me-1"></i>{" "}Actions
+          <i className="bi bi-three-dots-vertical ms-1 me-1"></i> Actions
         </Dropdown.Toggle>
         <Dropdown.Menu
           renderOnMount
@@ -168,12 +168,12 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         >
           {onEditParty && (
             <Dropdown.Item onClick={() => onEditParty(party)}>
-              <i className="bi bi-pencil me-2"></i>{" "}Edit
+              <i className="bi bi-pencil me-2"></i> Edit
             </Dropdown.Item>
           )}
           {onRemoveParty && (
             <Dropdown.Item onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}>
-              <i className="bi bi-trash me-2"></i>{" "}Remove
+              <i className="bi bi-trash me-2"></i> Remove
             </Dropdown.Item>
           )}
         </Dropdown.Menu>
@@ -267,8 +267,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
             <Link to={link}>{getPartyName(party)}</Link>
             {globalParty && (
               <span className="text-success small d-flex align-items-center gap-1">
-                <i className="bi bi-check-circle-fill" />
-                Published
+                <i className="bi bi-check-circle-fill"></i> Published
               </span>
             )}
           </div>
@@ -337,7 +336,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         {(people?.length ?? 0) > 0 && (
           <div className="mb-3">
             <h6 className="text-muted mb-2">
-              <i className="bi bi-people me-1"></i>{" "}People ({people!.length})
+              <i className="bi bi-people me-1"></i> People ({people!.length})
             </h6>
             {people!.map((party) => (
               <Card
@@ -354,7 +353,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         {(companies?.length ?? 0) > 0 && (
           <div className="mb-3">
             <h6 className="text-muted mb-2">
-              <i className="bi bi-building me-1"></i>{" "}Companies ({companies!.length})
+              <i className="bi bi-building me-1"></i> Companies ({companies!.length})
             </h6>
             {companies!.map((party) => (
               <Card
