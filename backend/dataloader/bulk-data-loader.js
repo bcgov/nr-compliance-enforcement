@@ -594,20 +594,20 @@ const bulkDataLoad = async () => {
   // Adjust these as required.
   const processAfterInsert = true // Will move complaints from staging to the live table after each iteration
   const numRecords = 10000; // Records created per iteration, no more than 10k at a time or the insert will blow up.
-  const yearPrefix = 35; // bumped past existing years 10-34 so the next 250k don't collide
+  const yearPrefix = 35; /
   const startingRecord = 100000;
-  const iterations = 25; // 25 x 10k = 250k base complaints. Raise for a heavier dataset (<= 100 keeps under 1M).
+  const iterations = 25; 
 
   // Ratios for related data, adjust as required.
   const relatedDataConfig = {
     userPoolSize: 250,
-    ceebClosedFraction: 0.5, // portion of CEEB complaints flipped to CLOSED (rest stay OPEN)
+    ceebClosedFraction: 0.5, // portion of CEEB complaints closed
     collaboratorFraction: 0.3,
     maxUpdatesPerComplaint: 8,
     maxActionsPerComplaint: 5,
     referralFraction: 0.2,
     linkFraction: 0.05,
-    outcomeFraction: 0.5, // portion of complaints given a complaint_outcome (+ child rows)
+    outcomeFraction: 0.5, // portion of complaints given a complaint_outcome
   };
 
   // Validate parameters
