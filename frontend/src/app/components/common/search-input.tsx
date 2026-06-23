@@ -4,6 +4,7 @@ import { selectActiveTab } from "@store/reducers/app";
 import { CloseButton, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { getUserAgency } from "@service/user-service";
+import { TooltipContent } from "@components/common/tooltip-context";
 
 type Props = {
   viewType: "map" | "list";
@@ -114,17 +115,6 @@ const SearchInput: FC<Props> = ({
         </ul>
       </div>
     </Tooltip>
-  );
-
-  const TooltipContent = ({ title, items }: { title: string; items: string[] }) => (
-    <div className="complaint-search-fields-tooltip">
-      <div className="complaint-search-fields-tooltip-title">{title}</div>
-      <ul className="complaint-search-fields-tooltip-list">
-        {items.map((item, idx) => (
-          <li key={idx}>{item}</li>
-        ))}
-      </ul>
-    </div>
   );
 
   const renderCaseTooltip = (props: any) => (
