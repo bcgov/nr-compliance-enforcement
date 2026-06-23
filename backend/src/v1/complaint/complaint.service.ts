@@ -2951,7 +2951,11 @@ export class ComplaintService {
 
     try {
       if (complaintType) {
-        builder = this._generateQueryBuilder(complaintType);
+        // linked complaints are needed for the export
+        builder = this._generateQueryBuilder(complaintType).leftJoinAndSelect(
+          "complaint.linked_complaint_xref",
+          "linked_complaint",
+        );
       } else {
         builder = this.complaintsRepository
           .createQueryBuilder("complaint")
