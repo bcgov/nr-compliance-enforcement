@@ -4,7 +4,7 @@ import { selectActiveTab } from "@store/reducers/app";
 import { CloseButton, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { getUserAgency } from "@service/user-service";
-import { TooltipContent } from "@components/common/tooltip-context";
+import { TooltipContent } from "@components/common/tooltip-content";
 
 type Props = {
   viewType: "map" | "list";
