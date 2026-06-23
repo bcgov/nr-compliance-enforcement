@@ -32,11 +32,10 @@ export class PgSessionModule implements OnModuleInit {
 
     // Set all JWT claims in one round-trip
     const setRLSClaims = (user: any): { sql: string; parameters: any[] } => {
-      const rolesString = user.client_roles
-        ? Array.isArray(user.client_roles)
-          ? user.client_roles.join(",")
-          : user.client_roles
-        : "";
+      let rolesString = "";
+      if (user.client_roles) {
+        rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
+      }
       const agency = user.client_roles ? agencyFromRoles(user.client_roles) : "";
       return {
         sql:
