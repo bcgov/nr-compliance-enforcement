@@ -115,10 +115,10 @@ test.describe("Investigation Party Form", () => {
 
   test("it edits a person party", async ({ page }) => {
     // Find a person party in the list and open the kebab menu
-    const personItem = page.locator(".party-accordion .list-group-item").first();
+    const personItem = page.locator(".party-card").first();
     await expect(personItem).toBeVisible();
 
-    const kebabMenu = personItem.locator(".dropdown-toggle-no-caret");
+    const kebabMenu = personItem.locator(".comp-action-dropdown dropstart");
     await kebabMenu.click();
 
     const editButton = page.locator(".dropdown-item", { hasText: "Edit" });

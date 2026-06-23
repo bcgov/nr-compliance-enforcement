@@ -15,7 +15,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { isYoungPerson } from "@/app/common/methods";
+import { isYoungPerson, joinWithAnd } from "@/app/common/methods";
 
 // Can we genercize this in the future?
 interface Props {
@@ -138,12 +138,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     return missing;
   };
 
-  const formatMissingFields = (fields: string[]): string => {
-    if (fields.length === 1) return fields[0];
-    if (fields.length === 2) return `${fields[0]} and ${fields[1]}`;
-    return `${fields.slice(0, -1).join(", ")}, and ${fields.at(-1)}`;
-  };
-
   const renderActionsDropdown = (party: InvestigationParty | InspectionParty) => {
     if (!onRemoveParty && !onEditParty) return null;
     return (
@@ -156,7 +150,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
           variant="outline-primary"
           bsPrefix="btn btn-outline-primary btn-sm comp-kebab-toggle"
         >
-          <i className="bi bi-three-dots-vertical ms-1 me-1"></i> Actions
+          <i className="bi bi-three-dots-vertical ms-1 me-1"></i>{" "}Actions
         </Dropdown.Toggle>
         <Dropdown.Menu
           renderOnMount
@@ -174,14 +168,12 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         >
           {onEditParty && (
             <Dropdown.Item onClick={() => onEditParty(party)}>
-              <i className="bi bi-pencil me-2"></i>
-              Edit
+              <i className="bi bi-pencil me-2"></i>{" "}Edit
             </Dropdown.Item>
           )}
           {onRemoveParty && (
             <Dropdown.Item onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}>
-              <i className="bi bi-trash me-2"></i>
-              Remove
+              <i className="bi bi-trash me-2"></i>{" "}Remove
             </Dropdown.Item>
           )}
         </Dropdown.Menu>
@@ -229,7 +221,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
-              This profile is incomplete. Add {formatMissingFields(missingFields)} before logging an enforcement action.
+              This profile is incomplete. Add {joinWithAnd(missingFields)} before logging an enforcement action.
             </div>
           )}
         </Card.Body>
@@ -250,7 +242,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
-              This profile is incomplete. Add {formatMissingFields(missingFields)} before logging an enforcement action.
+              This profile is incomplete. Add {joinWithAnd(missingFields)} before logging an enforcement action.
             </div>
           )}
         </Card.Body>
@@ -340,41 +332,43 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   }
 
   return (
-    <div className="party-list mb-3">
-      {(people?.length ?? 0) > 0 && (
-        <div className="mb-3">
-          <h6 className="text-muted mb-2">
-            <i className="bi bi-people me-1"></i> People ({people!.length})
-          </h6>
-          {people!.map((party) => (
-            <Card
-              key={party.person?.personGuid}
-              className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
-            >
-              {renderPartyHeader(party)}
-              {renderCardBody(party)}
-            </Card>
-          ))}
-        </div>
-      )}
+    <section className="comp-details-section">
+      <div className="party-list mb-3">
+        {(people?.length ?? 0) > 0 && (
+          <div className="mb-3">
+            <h6 className="text-muted mb-2">
+              <i className="bi bi-people me-1"></i>{" "}People ({people!.length})
+            </h6>
+            {people!.map((party) => (
+              <Card
+                key={party.person?.personGuid}
+                className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
+              >
+                {renderPartyHeader(party)}
+                {renderCardBody(party)}
+              </Card>
+            ))}
+          </div>
+        )}
 
-      {(companies?.length ?? 0) > 0 && (
-        <div className="mb-3">
-          <h6 className="text-muted mb-2">
-            <i className="bi bi-building me-1"></i> Companies ({companies!.length})
-          </h6>
-          {companies!.map((party) => (
-            <Card
-              key={party.business?.businessGuid}
-              className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
-            >
-              {renderPartyHeader(party)}
-              {renderCardBody(party)}
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+        {(companies?.length ?? 0) > 0 && (
+          <div className="mb-3">
+            <h6 className="text-muted mb-2">
+              <i className="bi bi-building me-1"></i>{" "}Companies ({companies!.length})
+            </h6>
+            {companies!.map((party) => (
+              <Card
+                key={party.business?.businessGuid}
+                className={`mb-2 party-card${isGlobalParty(party) ? " party-card--linked" : ""}`}
+              >
+                {renderPartyHeader(party)}
+                {renderCardBody(party)}
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
