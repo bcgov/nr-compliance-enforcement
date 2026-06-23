@@ -61,6 +61,11 @@ export class InvestigationService {
                   active_ind: true,
                 },
               },
+              investigation_attachment_reference: {
+                where: {
+                  active_ind: true,
+                },
+              },
               investigation_address: {
                 where: {
                   active_ind: true,

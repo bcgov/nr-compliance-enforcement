@@ -381,24 +381,25 @@ model investigation_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_party {
-  investigation_party_guid     String                         @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid_ref               String?                        @db.Uuid
-  party_type_code_ref          String                         @db.VarChar(16)
-  investigation_guid           String                         @db.Uuid
-  active_ind                   Boolean                        @default(true)
-  create_user_id               String                         @db.VarChar(32)
-  create_utc_timestamp         DateTime                       @db.Timestamp(6)
-  update_user_id               String?                        @db.VarChar(32)
-  update_utc_timestamp         DateTime?                      @db.Timestamp(6)
-  party_association_role_ref   String?                        @db.VarChar(16)
-  created_by_app_user_guid_ref String?                        @db.Uuid
-  contravention_party_xref     contravention_party_xref[]
-  investigation_address        investigation_address[]
-  investigation_alias          investigation_alias[]
-  investigation_business       investigation_business[]
-  investigation_contact_method investigation_contact_method[]
-  investigation                investigation                  @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
-  investigation_person         investigation_person[]
+  investigation_party_guid           String                               @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid_ref                     String?                              @db.Uuid
+  party_type_code_ref                String                               @db.VarChar(16)
+  investigation_guid                 String                               @db.Uuid
+  active_ind                         Boolean                              @default(true)
+  create_user_id                     String                               @db.VarChar(32)
+  create_utc_timestamp               DateTime                             @db.Timestamp(6)
+  update_user_id                     String?                              @db.VarChar(32)
+  update_utc_timestamp               DateTime?                            @db.Timestamp(6)
+  party_association_role_ref         String?                              @db.VarChar(16)
+  created_by_app_user_guid_ref       String?                              @db.Uuid
+  contravention_party_xref           contravention_party_xref[]
+  investigation_address              investigation_address[]
+  investigation_alias                investigation_alias[]
+  investigation_attachment_reference investigation_attachment_reference[]
+  investigation_business             investigation_business[]
+  investigation_contact_method       investigation_contact_method[]
+  investigation                      investigation                        @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_guid")
+  investigation_person               investigation_person[]
 
   @@schema("investigation")
 }
@@ -757,5 +758,39 @@ model investigation_person_facial_hair_style_code_ref_h {
   operation_executed_at                                  DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation                          Json?
 
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_attachment_reference {
+  investigation_attachment_reference_guid String              @id(map: "investigation_attachment_reference_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  investigation_party_guid                String              @db.Uuid
+  object_guid_ref                         String              @db.Uuid
+  s3_version_ref                          String              @db.VarChar(512)
+  filename_text                           String              @db.VarChar(512)
+  coms_created_date                       DateTime            @db.Timestamp(6)
+  thumb_object_guid_ref                   String?             @db.Uuid
+  thumb_s3_version_ref                    String?             @db.VarChar(512)
+  active_ind                              Boolean             @default(true)
+  create_user_id                          String              @db.VarChar(32)
+  create_utc_timestamp                    DateTime            @default(now()) @db.Timestamp(6)
+  update_user_id                          String?             @db.VarChar(32)
+  update_utc_timestamp                    DateTime?           @db.Timestamp(6)
+  investigation_party                     investigation_party @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_attachment_reference_investigation_party_fk")
+
+  @@schema("investigation")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_attachment_reference_h {
+  h_investigation_attachment_reference_guid String   @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                             String   @db.Uuid
+  operation_type                            String   @db.Char(1)
+  operation_user_id                         String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at                     DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation             Json?
+
+  @@ignore
   @@schema("investigation")
 }
