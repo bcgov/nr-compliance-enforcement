@@ -88,6 +88,17 @@ export const cosGeoOrgUnitQueryFields: string = `
 }
 `;
 
+export const complaintOutcomeAuthorizationFields: string = `
+{
+  complaintId
+  complaintOutcomeGuid
+  authorization {
+    id
+    type
+    value
+  }
+}`;
+
 export const caseFileQueryFields: string = `
 {
   complaintOutcomeGuid
