@@ -297,7 +297,9 @@ const SearchInput: FC<Props> = ({
       <OverlayTrigger
         placement="bottom"
         delay={{ show: 250, hide: 400 }}
-        overlay={activeTab === COMPLAINT_TYPES.SECTOR ? sectorRenderer() : tooltipRenderer()}
+        overlay={
+          activeTab === COMPLAINT_TYPES.SECTOR && tooltipContext === "complaint" ? sectorRenderer() : tooltipRenderer()
+        }
       >
         <button
           id="search-button"
