@@ -91,6 +91,8 @@ export class ExhibitService {
       const searchConditions: any[] = [
         {
           description_text: { contains: filters.search, mode: "insensitive" },
+        },
+        {
           exhibit_display_number: { contains: filters.search, mode: "insensitive" },
         },
       ];
@@ -129,10 +131,6 @@ export class ExhibitService {
         destinationTypeName: "Exhibit",
         mapper: this.mapper,
         whereClause: where,
-        includeClause: {
-          investigation: true,
-          task: true,
-        },
         orderByClause: orderBy,
       },
     );
