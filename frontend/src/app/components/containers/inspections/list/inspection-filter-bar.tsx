@@ -83,6 +83,7 @@ export const InspectionFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggle
           searchQuery={searchValues.search}
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}
+          tooltipContext="inspection"
         />
         <MapListToggle
           onToggle={handleViewTypeToggle}
