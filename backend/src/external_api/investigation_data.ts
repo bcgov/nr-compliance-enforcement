@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from "src/common/methods";
+import { formatDate, formatPhonenumber, formatTime } from "src/common/methods";
 import { get } from "src/external_api/shared_data";
 import { Attachment } from "src/types/models/general/attachment";
 
@@ -124,6 +124,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       .sort((a, b) => a.exhibitNumber - b.exhibitNumber)
       .map((exhibit) => ({
         ...exhibit,
+        seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
         propertyType: _resolvePropertyTypeLabel(exhibit.propertyType),
         isSeized: exhibit.propertyType === "S",
         dateCollected: formatDate(exhibit.dateCollected),

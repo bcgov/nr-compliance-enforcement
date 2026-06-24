@@ -20,6 +20,7 @@ import {
   UPDATE_EXHIBIT,
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -349,15 +350,14 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                         required
                         validators={{ onChange: requiredWhenSeized("Phone number is required") }}
                         render={(field) => (
-                          <CompInput
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={field.state.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
                             id="exhibit-seized-phone-number"
-                            divid="exhibit-seized-phone-number-value"
-                            type="input"
-                            inputClass="comp-form-control"
-                            error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
-                            onChange={(evt: any) => field.handleChange(evt.target.value)}
-                            value={field.state.value}
-                            placeholder="Enter phone number"
+                            errMsg={field.state.meta.errors?.[0]?.message || ""}
                           />
                         )}
                       />

@@ -13,6 +13,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
+import { formatPhoneNumber } from "react-phone-number-input";
 
 export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
   query SearchExhibitsByInvestigation($page: Int, $pageSize: Int, $filters: ExhibitFilters!) {
@@ -186,7 +187,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
           exhibit.seizedFromFirstName ?? "",
           exhibit.seizedFromLastName ?? "",
           exhibit.seizedFromAddress ?? "",
-          exhibit.seizedFromPhoneNumber ?? "",
+          formatPhoneNumber(exhibit.seizedFromPhoneNumber ?? ""),
           getTaskLabel(exhibit.taskGuid ?? ""),
         ]
           .map((v) => escapeCsvCell(v ?? ""))
