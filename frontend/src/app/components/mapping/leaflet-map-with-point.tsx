@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
-import { MapContainer, Marker, useMap, LayersControl, WMSTileLayer, Popup, Pane } from "react-leaflet";
+import { MapContainer, Marker, useMap, LayersControl, WMSTileLayer, Popup, Pane, LayerGroup } from "react-leaflet";
 import { BasemapLayer } from "react-esri-leaflet";
 import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import "leaflet/dist/leaflet.css";
@@ -17,6 +17,7 @@ import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Card } from "react-bootstrap";
 import { MapElement, MapObjectType } from "@/app/types/maps/map-element";
 import { nanoid } from "nanoid";
+import { WMU_LABEL_SLD } from "./wmu-label-sld";
 
 type Props = {
   coordinates?: { lat: number; lng: number };
@@ -140,7 +141,19 @@ const LeafletMapWithPoint: FC<Props> = ({
     return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
   }, []);
   const wmuLayerParams = useMemo(() => {
-    return { format: "image/png", layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW", transparent: true };
+    return {
+      format: "image/png",
+      layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW",
+      transparent: true,
+    };
+  }, []);
+  const wmuLabelParams = useMemo(() => {
+    return {
+      format: "image/png",
+      layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW",
+      transparent: true,
+      SLD_BODY: WMU_LABEL_SLD,
+    };
   }, []);
 
   const getEquipmentStatus = (locationItem: MapElement): string => {
@@ -259,16 +272,23 @@ const LeafletMapWithPoint: FC<Props> = ({
             </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Wildlife Management Units">
-            <Pane
-              name="wmu"
-              style={{ zIndex: 499 }}
-            >
-              <WMSTileLayer
-                url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
-                params={wmuLayerParams}
-                zIndex={1000}
-              />
-            </Pane>
+            <LayerGroup>
+              <Pane
+                name="wmu"
+                style={{ zIndex: 499 }}
+              >
+                <WMSTileLayer
+                  url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
+                  params={wmuLayerParams}
+                  zIndex={1000}
+                />
+                <WMSTileLayer
+                  url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
+                  params={wmuLabelParams}
+                  zIndex={1001}
+                />
+              </Pane>
+            </LayerGroup>
           </LayersControl.Overlay>
         </LayersControl>
         <MarkerClusterGroup key={nanoid()}>
