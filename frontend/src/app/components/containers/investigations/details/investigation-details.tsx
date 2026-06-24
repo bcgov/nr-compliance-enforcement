@@ -33,6 +33,15 @@ export const GET_INVESTIGATION = gql`
         partyIdentifier
         partyReference
         partyTypeCode
+        attachmentReferences {
+          objectId
+          version
+          fileName
+          createdAt
+          thumbObjectId
+          thumbVersion
+          activeInd
+        }
         aliases {
           aliasGuid
           name

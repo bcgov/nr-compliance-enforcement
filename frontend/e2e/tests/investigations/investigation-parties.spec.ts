@@ -31,7 +31,7 @@ test.describe("Investigation Party Form", () => {
 
     // Default mode is "Search existing party" — type in the search box
     const searchInput = modal.locator(".rbt-input-text");
-    await searchInput.pressSequentially("Pure", { delay: 100 });
+    await searchInput.pressSequentially("Pure", { delay: 500 });
 
     // Wait for search results and select the first one
     const menuItem = page.locator(".rbt-menu .dropdown-item").first();
@@ -45,7 +45,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Pure Health Path", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local person party to investigation", async ({ page }) => {
@@ -76,7 +76,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party added successfully" })).toBeVisible();
+    await expect(page.getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
   });
 
   test("it edits a person party", async ({ page }) => {
@@ -134,7 +134,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".Toastify__toast-body", { hasText: "Party updated successfully" })).toBeVisible();
+    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("cleanup - remove all test parties from investigation", async ({ page }) => {

@@ -1,0 +1,13 @@
+input CreateAttachmentReferenceInput {
+  objectId: String!
+  version: String!
+  fileName: String!
+  createdAt: DateTime!
+  thumbObjectId: String
+  thumbVersion: String
+}
+
+input DeactivateInvestigationAttachmentReferenceInput {
+  investigationPartyGuid: String!
+  objectId: String!
+}

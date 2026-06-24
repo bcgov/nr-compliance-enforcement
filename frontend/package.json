@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "2.0.318",
+  "version": "2.0.326",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -56,7 +56,7 @@
     "esri-leaflet": "^3.0.16",
     "esri-leaflet-vector": "^3.1.2",
     "faker": "^5.5.3",
-    "form-data": "4.0.5",
+    "form-data": "4.0.6",
     "fs": "^0.0.1-security",
     "graphql": "^16.11.0",
     "graphql-request": "^7.2.0",

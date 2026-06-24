@@ -507,6 +507,15 @@ export type CreateAssessmentInput = {
   outcomeAgencyCode: Scalars['String']['input'];
 };
 
+export type CreateAttachmentReferenceInput = {
+  createdAt: Scalars['DateTime']['input'];
+  fileName: Scalars['String']['input'];
+  objectId: Scalars['String']['input'];
+  thumbObjectId?: InputMaybe<Scalars['String']['input']>;
+  thumbVersion?: InputMaybe<Scalars['String']['input']>;
+  version: Scalars['String']['input'];
+};
+
 export type CreateAuthorizationOutcomeInput = {
   complaintId: Scalars['String']['input'];
   createUserId: Scalars['String']['input'];
@@ -605,6 +614,7 @@ export type CreateInvestigationBusinessInput = {
 };
 
 export type CreateInvestigationContactMethodInput = {
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   typeCode: Scalars['String']['input'];
   value?: InputMaybe<Scalars['String']['input']>;
@@ -631,6 +641,7 @@ export type CreateInvestigationInput = {
 export type CreateInvestigationPartyInput = {
   addresses?: InputMaybe<Array<InputMaybe<CreateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<CreateInvestigationAliasInput>>>;
+  attachmentReferences?: InputMaybe<Array<InputMaybe<CreateAttachmentReferenceInput>>>;
   business?: InputMaybe<CreateInvestigationBusinessInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
   partyAssociationRole?: InputMaybe<Scalars['String']['input']>;
@@ -737,6 +748,11 @@ export type CreateWildlifeInput = {
   createUserId: Scalars['String']['input'];
   outcomeAgencyCode: Scalars['String']['input'];
   wildlife: WildlifeInput;
+};
+
+export type DeactivateInvestigationAttachmentReferenceInput = {
+  investigationPartyGuid: Scalars['String']['input'];
+  objectId: Scalars['String']['input'];
 };
 
 export type Decision = {
@@ -1174,6 +1190,11 @@ export type IPMAuthCategoryCodeType = {
   shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
+export type ImageUpdateInput = {
+  fileName: Scalars['String']['input'];
+  verb: Scalars['String']['input'];
+};
+
 export type InactionJustificationType = {
   __typename?: 'InactionJustificationType';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
@@ -1305,6 +1326,17 @@ export type InvestigationAlias = {
   name: Scalars['String']['output'];
 };
 
+export type InvestigationAttachmentReference = {
+  __typename?: 'InvestigationAttachmentReference';
+  activeInd: Scalars['Boolean']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  fileName: Scalars['String']['output'];
+  objectId: Scalars['String']['output'];
+  thumbObjectId?: Maybe<Scalars['String']['output']>;
+  thumbVersion?: Maybe<Scalars['String']['output']>;
+  version: Scalars['String']['output'];
+};
+
 export type InvestigationBusiness = {
   __typename?: 'InvestigationBusiness';
   addresses?: Maybe<Array<Maybe<InvestigationAddress>>>;
@@ -1350,6 +1382,7 @@ export type InvestigationParty = {
   __typename?: 'InvestigationParty';
   addresses?: Maybe<Array<Maybe<InvestigationAddress>>>;
   aliases?: Maybe<Array<Maybe<InvestigationAlias>>>;
+  attachmentReferences?: Maybe<Array<Maybe<InvestigationAttachmentReference>>>;
   business?: Maybe<InvestigationBusiness>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   enforcementActions?: Maybe<Array<Maybe<EnforcementAction>>>;
@@ -1488,7 +1521,7 @@ export type LegislationType = {
 export type Mutation = {
   __typename?: 'Mutation';
   addPartyToInspection: Inspection;
-  addPartyToInvestigation: Investigation;
+  addPartyToInvestigation: Array<InvestigationParty>;
   createAppUser?: Maybe<AppUser>;
   createAppUserTeamXref?: Maybe<AppUserTeamXref>;
   createAssessment: ComplaintOutcome;
@@ -1514,6 +1547,7 @@ export type Mutation = {
   createReview: ComplaintOutcome;
   createTask: Task;
   createWildlife: ComplaintOutcome;
+  deactivateInvestigationAttachmentReference: InvestigationAttachmentReference;
   deleteActivityNote: Scalars['Boolean']['output'];
   deleteAppUserTeamXref?: Maybe<Scalars['Boolean']['output']>;
   deleteAuthorizationOutcome: ComplaintOutcome;
@@ -1701,6 +1735,11 @@ export type MutationcreateTaskArgs = {
 
 export type MutationcreateWildlifeArgs = {
   input: CreateWildlifeInput;
+};
+
+
+export type MutationdeactivateInvestigationAttachmentReferenceArgs = {
+  input: DeactivateInvestigationAttachmentReferenceInput;
 };
 
 
@@ -2107,6 +2146,7 @@ export type PartyUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   business?: InputMaybe<BusinessUpdateInput>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  images?: InputMaybe<Array<InputMaybe<ImageUpdateInput>>>;
   longDescription?: InputMaybe<Scalars['String']['input']>;
   partyTypeCode: Scalars['String']['input'];
   person?: InputMaybe<PersonUpdateInput>;
