@@ -1,0 +1,169 @@
+---
+# RunbookParser config — the central manifest for the runbook-parser skill.
+#
+# Shaped like a Kubernetes CRD: `spec:` is human-authored (you edit this, comments are
+# preserved), `status:` is machine-owned (the parser appends/rewrites it on `build` and
+# never touches `spec`). Observed values — snippet inventory, drift state, and cleaning
+# outcomes — live under `status:`.
+#
+# Tool:  tools/n8n/skills/runbook-parser/scripts/parser.py
+# Docs:  tools/n8n/skills/runbook-parser/SKILL.md  and  references/CONFIG.md
+kind: RunbookParser
+metadata:
+  name: n8n-parser
+  labels:
+    owner: Compliance and Enforcement
+spec:
+  root: tools/n8n/
+  destination: tools/n8n/snippets/
+  working_dir: /tmp
+  # n8n deployment the workflow-builder targets. base_url is the production host: each built
+  # workflow's production webhook is <base_url>/webhook/<workflow-name>, embedded in its sticky
+  # note. push.sh can also target it directly (N8N_URL=<base_url>) instead of a port-forward.
+  n8n:
+    base_url: https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca
+  sources:
+    # Each source has a unique `name` (used to target it, e.g. for cleaning) and a `group`
+    # (sources sharing a group combine into one snippet group). The `description` guides the
+    # cleaning step — it tells the agent what cleaned snippets to produce, and what to skip.
+    - name: wps-crunchy-cluster-dr
+      group: crunchy-triage
+      description: A set of snippets used to fetch and collect triage information from a crunchy db cluster in a given openshift namespace. Postgres 17.
+      # If `doc` is set, the recombined snippets (code + documentation) are diffed against
+      # it to detect drift: src -> snippets -> doc; when src is one document, src == doc.
+      doc: null
+      # Pull from a wiki/doc/runbook URL ...
+      url: https://github.com/bcgov/wps/blob/main/docs/database/CLUSTER_DB.MD
+      # ... or from a file in the local codebase (set exactly one of url/file).
+      file: null
+    - name: crunchy-dr-wiki
+      group: crunchy-triage
+      description: A set of snippets used to fetch and collect triage information from a crunchy db cluster in a given openshift namespace. Postgres 17.
+      doc: crunchy-disaster-recovery.md
+      url: https://github.com/bcgov/nr-compliance-enforcement/wiki/Disaster-Recovery
+      file: null
+    - name: postgres-triage
+      group: crunchy-triage
+      description: A set of bash snippets that use psql to query key information about a postgres instance. Namely current vs max connections, memory usage, WAL details, long running queries, slow queries. Postgres version 17.
+      # Placeholder source: no url/file yet — contributes hand-authored snippets later.
+      doc: null
+      url: null
+      file: null
+    - name: nr-ce-app-triage
+      group: app-triage
+      description: A group of snippets that each fetch the last 50 lines / 1 hour of logs from app-related deployments in openshift. Target using app.kubernetes.io/short-name=backend (and backendcm, frontend). 2 snippets per service. One is any logs and the other is filtered on various error patterns.
+      doc: null
+      url: null
+      file: null
+status:
+  groups:
+    crunchy-triage:
+      sources:
+      - name: wps-crunchy-cluster-dr
+        ref: https://github.com/bcgov/wps/blob/main/docs/database/CLUSTER_DB.MD
+        kind: url
+        doc: null
+        drift: n/a
+      - name: crunchy-dr-wiki
+        ref: https://github.com/bcgov/nr-compliance-enforcement/wiki/Disaster-Recovery
+        kind: url
+        doc: crunchy-disaster-recovery.md
+        drift: doc_missing
+      - name: postgres-triage
+        ref: postgres-triage
+        kind: none
+        drift: n/a
+      cleaned:
+      - snippet: snippet-cluster-status.sh
+        from: crunchy-dr-wiki
+      - snippet: snippet-pgbackrest-info.sh
+        from: crunchy-dr-wiki
+      - snippet: snippet-triage-report.md
+        from: crunchy-dr-wiki
+      - snippet: snippet-pg-connections.sh
+        from: postgres-triage
+      - snippet: snippet-pg-activity.sh
+        from: postgres-triage
+      - snippet: snippet-pg-wal.sh
+        from: postgres-triage
+      - snippet: snippet-pg-cache.sh
+        from: postgres-triage
+      - snippet: validator-cluster-status.sh
+        from: crunchy-dr-wiki
+      - snippet: validator-pgbackrest.sh
+        from: crunchy-dr-wiki
+      - snippet: snippet-pg-report.md
+        from: postgres-triage
+      - snippet: validator-pg-connections.sh
+        from: postgres-triage
+      - snippet: validator-pg-cache.sh
+        from: postgres-triage
+      - snippet: validator-pg-wal.sh
+        from: postgres-triage
+      skipped:
+      - raw: crunchy-dr-wiki_3-reset-replica.sh
+        reason: patronictl restart — replica recovery action, not triage collection
+      - raw: crunchy-dr-wiki_3-reset-replica-2.sh
+        reason: patronictl reinit — destroys and rebuilds a replica, mutating
+      - raw: crunchy-dr-wiki_4-perform-pitr.sh
+        reason: PITR recovery procedure — mutating CRD edits, not triage
+      - raw: crunchy-dr-wiki_4-perform-pitr-2.sh
+        reason: PITR recovery procedure — oc annotate to trigger restore, mutating
+      - raw: crunchy-dr-wiki_4-perform-pitr-3.sh
+        reason: PITR recovery procedure — mutating, not triage
+      - raw: crunchy-dr-wiki_5-perform-manual-restore.sh
+        reason: manual restore — destructive pg_dump/psql writes, not triage
+      - raw: crunchy-dr-wiki_5-perform-manual-restore-2.sh
+        reason: manual restore — destructive writes, not triage
+      seals:
+        crunchy-dr-wiki: sha256:178f5e8e62075860b5738eaca44197c19a2afa0f69f7fb23ebeff37484e08587
+        postgres-triage: sha256:8f06b9efdb811ec4d9dea2f5f0d36d05b02d7e42fad0bba5d9aa5c2be9277a3e
+    app-triage:
+      sources:
+      - name: nr-ce-app-triage
+        ref: nr-ce-app-triage
+        kind: none
+        drift: n/a
+      cleaned:
+      - snippet: snippet-app-logs.sh
+        from: nr-ce-app-triage
+      - snippet: snippet-app-errors.sh
+        from: nr-ce-app-triage
+      - snippet: validator-app-availability.sh
+        from: nr-ce-app-triage
+      - snippet: validator-app-errors.sh
+        from: nr-ce-app-triage
+      - snippet: snippet-app-report.md
+        from: nr-ce-app-triage
+      seals:
+        nr-ce-app-triage: sha256:e29f487bcbf8e1f99f420e2e558b2348aebcaa49514d987292bca5d8aaf33226
+  docs:
+    topics:
+    - aspect: cluster-ha
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/high-availability.html
+    - aspect: pgbackrest
+      version: latest
+      group: crunchy-triage
+      url: https://pgbackrest.org/user-guide.html
+    - aspect: wal-archiving
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/continuous-archiving.html
+    - aspect: connections
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/runtime-config-connection.html
+    - aspect: cache
+      version: '17'
+      group: crunchy-triage
+      url: https://www.postgresql.org/docs/17/runtime-config-resource.html
+    - aspect: workloads
+      version: latest
+      group: app-triage
+      url: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+    - aspect: logging
+      version: latest
+      group: app-triage
+      url: https://kubernetes.io/docs/concepts/cluster-administration/logging/
