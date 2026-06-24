@@ -121,7 +121,7 @@ test.describe("Investigation Party Form", () => {
     const kebabMenu = personItem.locator(".comp-kebab-toggle");
     await kebabMenu.click();
 
-    const editButton = page.locator(".dropdown-item", { hasText: "Edit" });
+    const editButton = personItem.locator(".dropdown-item", { hasText: "Edit" });
     await editButton.click();
 
     const modal = page.locator(".modal").first();
