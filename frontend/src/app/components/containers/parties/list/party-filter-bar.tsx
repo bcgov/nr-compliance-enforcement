@@ -20,6 +20,7 @@ export const PartyFilterBar: FC = () => {
           searchQuery={searchValues.search}
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}
+          tooltipContext={searchValues.partyTypeCode === "CMP" ? "business" : "person"}
         />
       </div>
     </div>
