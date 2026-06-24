@@ -32,8 +32,9 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
       cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
       isSortable: true,
-      getValue: (exhibit) => exhibit.exhibitNumber ?? 0,
-      renderCell: (exhibit) => (exhibit.exhibitNumber == null ? "-" : String(exhibit.exhibitNumber).padStart(4, "0")),
+      getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? 0,
+      renderCell: (exhibit) =>
+        exhibit.exhibitDisplayNumber == null ? "-" : String(exhibit.exhibitDisplayNumber).padStart(4, "0"),
     },
     {
       label: "Property type",
@@ -105,7 +106,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
             size="sm"
             onClick={() => onEdit(exhibit)}
             title="Edit exhibit"
-            aria-label={`Edit exhibit ${exhibit.exhibitNumber}`}
+            aria-label={`Edit exhibit ${exhibit.exhibitDisplayNumber}`}
           >
             <i className="bi bi-pencil ms-1 me-1" />
           </Button>

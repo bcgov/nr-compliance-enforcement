@@ -16,6 +16,9 @@ export class exhibit {
   exhibit_number: number;
 
   @ApiProperty({ type: String })
+  exhibit_display_number: string;
+
+  @ApiProperty({ type: String })
   property_type: string;
 
   @ApiProperty({ type: String })

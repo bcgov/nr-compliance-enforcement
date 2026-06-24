@@ -23,6 +23,7 @@ export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
         taskGuid
         investigationGuid
         exhibitNumber
+        exhibitDisplayNumber
         propertyType
         description
         quantity
@@ -174,7 +175,8 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
       }
 
       const rows = all.map((exhibit) => {
-        const exhibitNumberStr = exhibit.exhibitNumber == null ? "" : String(exhibit.exhibitNumber).padStart(4, "0");
+        const exhibitNumberStr =
+          exhibit.exhibitDisplayNumber == null ? "" : String(exhibit.exhibitDisplayNumber).padStart(4, "0");
         return [
           exhibitNumberStr,
           getPropertyTypeLabel(exhibit.propertyType),

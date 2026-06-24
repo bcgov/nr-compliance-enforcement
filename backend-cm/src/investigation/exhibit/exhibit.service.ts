@@ -21,6 +21,17 @@ export class ExhibitService {
 
   private readonly logger = new Logger(ExhibitService.name);
 
+  // Composes the user-facing exhibit number: investigation name - task number - zero-padded sequence (e.g. INV26-001234-5-001).
+  // Extracted to keep the mapper's forMember simple and the control flow out of the parent's complexity score.
+  _composeExhibitDisplayNumber = (
+    investigationName?: string | null,
+    taskNumber?: number | null,
+    exhibitNumber?: number | null,
+  ): string => {
+    const sequence = exhibitNumber == null ? "" : String(exhibitNumber).padStart(3, "0");
+    return [investigationName ?? "", taskNumber ?? "", sequence].join("-");
+  };
+
   async findMany(taskGuid?: string) {
     const prismaExhibits = await this.prisma.exhibit.findMany({
       select: {
@@ -28,6 +39,7 @@ export class ExhibitService {
         task_guid: true,
         investigation_guid: true,
         exhibit_number: true,
+        exhibit_display_number: true,
         property_type: true,
         description_text: true,
         quantity_amount: true,
@@ -55,7 +67,7 @@ export class ExhibitService {
   }
 
   private readonly SORT_FIELD_MAP: Record<string, string> = {
-    exhibitNumber: "exhibit_number",
+    exhibitNumber: "exhibit_display_number",
     propertyType: "property_type",
     description: "description_text",
     quantity: "quantity_amount",
@@ -76,12 +88,12 @@ export class ExhibitService {
     }
 
     if (filters.search) {
-      const searchConditions: any[] = [{ description_text: { contains: filters.search, mode: "insensitive" } }];
-
-      const searchAsNumber = Number(filters.search);
-      if (!Number.isNaN(searchAsNumber)) {
-        searchConditions.push({ exhibit_number: searchAsNumber });
-      }
+      const searchConditions: any[] = [
+        {
+          description_text: { contains: filters.search, mode: "insensitive" },
+          exhibit_display_number: { contains: filters.search, mode: "insensitive" },
+        },
+      ];
 
       conditions.push({ OR: searchConditions });
     }
@@ -90,7 +102,7 @@ export class ExhibitService {
   }
 
   private _buildExhibitOrderByClause(filters?: ExhibitFilters): any {
-    let orderBy: any = { exhibit_number: "asc" };
+    let orderBy: any = { exhibit_display_number: "asc" };
 
     if (filters?.sortBy && filters?.sortOrder) {
       const dbField = this.SORT_FIELD_MAP[filters.sortBy];
@@ -138,6 +150,7 @@ export class ExhibitService {
         task_guid: true,
         investigation_guid: true,
         exhibit_number: true,
+        exhibit_display_number: true,
         property_type: true,
         description_text: true,
         quantity_amount: true,
@@ -164,9 +177,23 @@ export class ExhibitService {
   async create(exhibitInput: CreateUpdateExhibitInput): Promise<Exhibit> {
     try {
       const exhibit = await withRlsTransaction(this.prisma, async (db) => {
+        const taskForExhibit = await db.task.findUnique({
+          where: {
+            task_guid: exhibitInput.taskGuid,
+          },
+          select: {
+            task_number: true,
+            investigation: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
         const highestExhibit = await db.exhibit.findFirst({
           where: {
-            investigation_guid: exhibitInput.investigationGuid,
+            task_guid: exhibitInput.taskGuid,
           },
           orderBy: {
             exhibit_number: "desc",
@@ -178,11 +205,18 @@ export class ExhibitService {
 
         const nextExhibitNumber = highestExhibit ? highestExhibit.exhibit_number + 1 : 1;
 
+        const exhibitDisplayNumber = this._composeExhibitDisplayNumber(
+          taskForExhibit?.investigation?.name,
+          taskForExhibit?.task_number,
+          nextExhibitNumber,
+        );
+
         return await db.exhibit.create({
           data: {
             task_guid: exhibitInput.taskGuid,
             investigation_guid: exhibitInput.investigationGuid,
             exhibit_number: nextExhibitNumber,
+            exhibit_display_number: exhibitDisplayNumber,
             property_type: exhibitInput.propertyType,
             description_text: exhibitInput.description,
             quantity_amount: exhibitInput.quantity,

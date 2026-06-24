@@ -541,7 +541,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
               <span>
                 <strong>Delete exhibit</strong>
                 <p className="mb-3">
-                  Are you sure you want to delete exhibit #{exhibit?.exhibitNumber}? This action cannot be undone.
+                  Are you sure you want to delete exhibit #{exhibit?.exhibitDisplayNumber}? This action cannot be
+                  undone.
                 </p>
               </span>
             </div>

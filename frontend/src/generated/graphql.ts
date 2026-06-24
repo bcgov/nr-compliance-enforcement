@@ -1085,8 +1085,9 @@ export type Exhibit = {
   createdDate: Scalars['DateTime']['output'];
   dateCollected: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
+  exhibitDisplayNumber: Scalars['String']['output'];
   exhibitGuid: Scalars['String']['output'];
-  exhibitNumber: Scalars['Int']['output'];
+  exhibitNumber: Scalars['String']['output'];
   investigationGuid: Scalars['String']['output'];
   locationOfIntake?: Maybe<Scalars['String']['output']>;
   propertyTagNumber: Scalars['String']['output'];
@@ -1102,6 +1103,7 @@ export type Exhibit = {
 
 export type ExhibitFilters = {
   investigationGuid: Scalars['String']['input'];
+  propertyTypeFilter?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;

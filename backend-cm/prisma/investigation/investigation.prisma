@@ -186,6 +186,7 @@ model exhibit {
   task_guid                      String        @db.Uuid
   investigation_guid             String        @db.Uuid
   exhibit_number                 Int
+  exhibit_display_number         String        @db.VarChar(64)
   property_type                  String        @db.Char(1)
   description_text               String
   quantity_amount                Int?

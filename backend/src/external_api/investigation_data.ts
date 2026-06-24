@@ -28,6 +28,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     }
     getExhibitsByTask(taskId: "${taskId}") {
       exhibitNumber
+      exhibitDisplayNumber
       propertyType
       description
       quantity
@@ -121,7 +122,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       type: _resolveTaskType(task.taskTypeCode),
     },
     exhibits: getExhibitsByTask
-      .sort((a, b) => a.exhibitNumber - b.exhibitNumber)
+      .sort((a, b) => a.exhibitDisplayNumber - b.exhibitDisplayNumber)
       .map((exhibit) => ({
         ...exhibit,
         seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
