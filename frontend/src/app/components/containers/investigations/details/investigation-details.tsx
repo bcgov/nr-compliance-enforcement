@@ -64,6 +64,7 @@ export const GET_INVESTIGATION = gql`
         }
         person {
           personGuid
+          personReference
           firstName
           middleNames
           lastName
