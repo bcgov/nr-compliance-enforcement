@@ -140,3 +140,6 @@ terraform.rc
 
 # Scratch folder
 .scratch
+
+# Python
+**/__pycache/**
