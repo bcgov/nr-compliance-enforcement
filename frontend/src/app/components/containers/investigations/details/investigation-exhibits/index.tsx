@@ -158,7 +158,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
             investigationGuid,
             search: searchValues.search || undefined,
             taskFilter: searchValues.taskFilter || undefined,
-            propertyType: searchValues.propertyTypeFilter || undefined,
+            propertyTypeFilter: searchValues.propertyTypeFilter || undefined,
             sortBy: searchValues.sortBy,
             sortOrder: searchValues.sortOrder,
           },
@@ -175,10 +175,8 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
       }
 
       const rows = all.map((exhibit) => {
-        const exhibitNumberStr =
-          exhibit.exhibitDisplayNumber == null ? "" : String(exhibit.exhibitDisplayNumber).padStart(4, "0");
         return [
-          exhibitNumberStr,
+          exhibit.exhibitDisplayNumber ?? "-",
           getPropertyTypeLabel(exhibit.propertyType),
           exhibit.description ?? "",
           exhibit.quantity == null ? "" : String(exhibit.quantity),

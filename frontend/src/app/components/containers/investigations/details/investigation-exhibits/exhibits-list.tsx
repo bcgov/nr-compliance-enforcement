@@ -63,9 +63,8 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
       sortKey: "exhibitNumber",
       isSortable: true,
-      getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? 0,
-      renderCell: (exhibit) =>
-        exhibit.exhibitDisplayNumber == null ? "-" : String(exhibit.exhibitDisplayNumber).padStart(4, "0"),
+      getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? "",
+      renderCell: (exhibit) => exhibit.exhibitDisplayNumber ?? "-",
     },
     {
       label: "Property type",

@@ -32,9 +32,8 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
       cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
       isSortable: true,
-      getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? 0,
-      renderCell: (exhibit) =>
-        exhibit.exhibitDisplayNumber == null ? "-" : String(exhibit.exhibitDisplayNumber).padStart(4, "0"),
+      getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? "",
+      renderCell: (exhibit) => exhibit.exhibitDisplayNumber ?? "-",
     },
     {
       label: "Property type",

@@ -122,7 +122,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       type: _resolveTaskType(task.taskTypeCode),
     },
     exhibits: getExhibitsByTask
-      .sort((a, b) => a.exhibitDisplayNumber - b.exhibitDisplayNumber)
+      .sort((a, b) => a.exhibitDisplayNumber.localeCompare(b.exhibitDisplayNumber))
       .map((exhibit) => ({
         ...exhibit,
         seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
