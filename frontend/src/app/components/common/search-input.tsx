@@ -4,15 +4,23 @@ import { selectActiveTab } from "@store/reducers/app";
 import { CloseButton, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import COMPLAINT_TYPES from "@/app/types/app/complaint-types";
 import { getUserAgency } from "@service/user-service";
+import { TooltipContent } from "@components/common/tooltip-content";
 
 type Props = {
   viewType: "map" | "list";
   searchQuery: string | undefined;
   applySearchQuery: Function;
   handleSearch: (input: string) => void;
+  tooltipContext?: "case" | "person" | "business" | "complaint" | "inspection" | "investigation";
 };
 
-const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handleSearch }) => {
+const SearchInput: FC<Props> = ({
+  viewType,
+  searchQuery,
+  applySearchQuery,
+  handleSearch,
+  tooltipContext = "complaint",
+}) => {
   const activeTab = useAppSelector(selectActiveTab);
   const userAgency = getUserAgency();
   const isCEEB = activeTab === COMPLAINT_TYPES.ERS && userAgency === "EPO";
@@ -109,6 +117,71 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
     </Tooltip>
   );
 
+  const renderCaseTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Case searchable fields:"
+        items={["Case ID"]}
+      />
+    </Tooltip>
+  );
+
+  const renderPersonTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Person searchable fields:"
+        items={["Party name", "Phone", "Email", "Address", "City"]}
+      />
+    </Tooltip>
+  );
+
+  const renderBusinessTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Business searchable fields:"
+        items={["Party name", "Business identifier", "Phone", "Email", "Address", "City"]}
+      />
+    </Tooltip>
+  );
+
+  const renderInspectionTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Inspection searchable fields:"
+        items={["Inspection ID"]}
+      />
+    </Tooltip>
+  );
+
+  const renderInvestigationTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Investigation searchable fields:"
+        items={["Investigation ID"]}
+      />
+    </Tooltip>
+  );
+
   const renderSectorTooltip = (props: any) => (
     <Tooltip
       id="search-button-tooltip"
@@ -169,6 +242,27 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
       </div>
     </Tooltip>
   );
+  const tooltipRenderer = () => {
+    switch (tooltipContext) {
+      case "case":
+        return renderCaseTooltip({});
+      case "person":
+        return renderPersonTooltip({});
+      case "business":
+        return renderBusinessTooltip({});
+      case "inspection":
+        return renderInspectionTooltip({});
+      case "investigation":
+        return renderInvestigationTooltip({});
+      case "complaint":
+      default:
+        return renderTooltip({});
+    }
+  };
+
+  const sectorRenderer = () => {
+    return tooltipContext === "complaint" ? renderSectorTooltip({}) : <></>;
+  };
 
   return (
     <InputGroup className="search-input-group">
@@ -193,7 +287,9 @@ const SearchInput: FC<Props> = ({ viewType, searchQuery, applySearchQuery, handl
       <OverlayTrigger
         placement="bottom"
         delay={{ show: 250, hide: 400 }}
-        overlay={activeTab === COMPLAINT_TYPES.SECTOR ? renderSectorTooltip : renderTooltip}
+        overlay={
+          activeTab === COMPLAINT_TYPES.SECTOR && tooltipContext === "complaint" ? sectorRenderer() : tooltipRenderer()
+        }
       >
         <button
           id="search-button"

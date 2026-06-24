@@ -85,6 +85,7 @@ export const CaseFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDe
           searchQuery={searchValues.search}
           applySearchQuery={handleSearchChange}
           handleSearch={handleSearch}
+          tooltipContext="case"
         />
         <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
           <MapListToggle
