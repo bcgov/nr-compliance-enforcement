@@ -1,0 +1,370 @@
+{
+  "connections": {
+    "Backend errors": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "BackendCM logs",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Backend logs": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Backend errors",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "BackendCM errors": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Frontend logs",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "BackendCM logs": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "BackendCM errors",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Frontend errors": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Merge snippets",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Frontend logs": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Frontend errors",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Merge snippets": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate availability",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Merge validations": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Report",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Report": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Respond to Webhook (HTML)",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate availability": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Validate errors",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Validate errors": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Merge validations",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Backend logs",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "name": "app-triage",
+  "nodes": [
+    {
+      "id": "note-prod-url",
+      "name": "Production URL",
+      "parameters": {
+        "color": 4,
+        "content": "## App triage — production URL\n\nClick to run this triage — read-only and idempotent, safe to fire any time:\n\n**https://n8n-f208ae-tools.apps.emerald.devops.gov.bc.ca/webhook/app-triage?namespace=f208ae-dev**\n\nFetches recent logs + error-pattern matches for backend, backendcm, frontend. Built from cleaned snippets by the workflow-builder skill.",
+        "height": 260,
+        "width": 460
+      },
+      "position": [
+        180,
+        60
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1
+    },
+    {
+      "id": "webhook",
+      "name": "Webhook",
+      "parameters": {
+        "httpMethod": "GET",
+        "options": {},
+        "path": "app-triage",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        260,
+        360
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "app-triage"
+    },
+    {
+      "id": "snip-backend-logs",
+      "name": "Backend logs",
+      "notes": "Recent backend logs (app.kubernetes.io/short-name=backend).",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=backend snippet-app-logs.sh"
+      },
+      "position": [
+        480,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "snip-backend-errors",
+      "name": "Backend errors",
+      "notes": "Backend logs filtered to error patterns.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=backend snippet-app-errors.sh"
+      },
+      "position": [
+        700,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "snip-backendcm-logs",
+      "name": "BackendCM logs",
+      "notes": "Recent backendcm logs (app.kubernetes.io/short-name=backendcm).",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=backendcm snippet-app-logs.sh"
+      },
+      "position": [
+        920,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "snip-backendcm-errors",
+      "name": "BackendCM errors",
+      "notes": "BackendCM logs filtered to error patterns.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=backendcm snippet-app-errors.sh"
+      },
+      "position": [
+        1140,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "snip-frontend-logs",
+      "name": "Frontend logs",
+      "notes": "Recent frontend logs (app.kubernetes.io/short-name=frontend).",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=frontend snippet-app-logs.sh"
+      },
+      "position": [
+        1360,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "snip-frontend-errors",
+      "name": "Frontend errors",
+      "notes": "Frontend logs filtered to error patterns.",
+      "parameters": {
+        "command": "=NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }} SHORTNAME=frontend snippet-app-errors.sh"
+      },
+      "position": [
+        1580,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "merge-snippets",
+      "name": "Merge snippets",
+      "notes": "Flat-merge the per-service log + error outputs into one JSON (each is its own top-level key).",
+      "parameters": {
+        "command": [
+          "=export MERGE_BACKEND_LOGS={{ $('Backend logs').item.json.stdout.base64Encode() }}",
+          "export MERGE_BACKEND_ERRORS={{ $('Backend errors').item.json.stdout.base64Encode() }}",
+          "export MERGE_BACKENDCM_LOGS={{ $('BackendCM logs').item.json.stdout.base64Encode() }}",
+          "export MERGE_BACKENDCM_ERRORS={{ $('BackendCM errors').item.json.stdout.base64Encode() }}",
+          "export MERGE_FRONTEND_LOGS={{ $('Frontend logs').item.json.stdout.base64Encode() }}",
+          "export MERGE_FRONTEND_ERRORS={{ $('Frontend errors').item.json.stdout.base64Encode() }}",
+          "merge.sh --b64"
+        ]
+      },
+      "position": [
+        1800,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-availability",
+      "name": "Validate availability",
+      "notes": "Per-service up-and-logging verdict (pods present, logs flowing).",
+      "parameters": {
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-app-availability.sh"
+      },
+      "position": [
+        2020,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "val-errors",
+      "name": "Validate errors",
+      "notes": "Error-pattern volume verdict across services.",
+      "parameters": {
+        "command": "=echo {{ $('Merge snippets').item.json.stdout.base64Encode() }} | base64 -d | validator-app-errors.sh"
+      },
+      "position": [
+        2240,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "merge-validations",
+      "name": "Merge validations",
+      "notes": "Key each verdict under its check into .validations.",
+      "parameters": {
+        "command": [
+          "=export MERGE_AVAILABILITY={{ $('Validate availability').item.json.stdout.base64Encode() }}",
+          "export MERGE_ERRORS={{ $('Validate errors').item.json.stdout.base64Encode() }}",
+          "merge.sh -k --b64"
+        ]
+      },
+      "position": [
+        2460,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "report",
+      "name": "Report",
+      "notes": "Assemble merged + validations and render the app-triage report.",
+      "parameters": {
+        "command": [
+          "=export DATA={{ $('Merge snippets').item.json.stdout.base64Encode() }}",
+          "export VALS={{ $('Merge validations').item.json.stdout.base64Encode() }}",
+          "export NAMESPACE={{ ($('Webhook').item.json.query || {}).namespace }}",
+          "report.sh app-triage snippet-app-report.md"
+        ]
+      },
+      "position": [
+        2680,
+        360
+      ],
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1
+    },
+    {
+      "id": "respond",
+      "name": "Respond to Webhook (HTML)",
+      "parameters": {
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        },
+        "respondWith": "text",
+        "responseBody": "=<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>triage</title><link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown-light.css'><script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script><style>body{margin:0;background:#fff}.markdown-body{box-sizing:border-box;max-width:880px;margin:0 auto;padding:32px}</style></head><body><article class='markdown-body' id='out'>Rendering report...</article><script>var b64='{{ $('Report').item.json.stdout.base64Encode() }}';var md=new TextDecoder().decode(Uint8Array.from(atob(b64),function(c){return c.charCodeAt(0)}));document.getElementById('out').innerHTML=marked.parse(md);</script></body></html>"
+      },
+      "position": [
+        2900,
+        360
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
