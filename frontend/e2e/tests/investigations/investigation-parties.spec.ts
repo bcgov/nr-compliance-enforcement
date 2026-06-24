@@ -45,7 +45,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.getByText("Pure Health Path", { exact: true })).toBeVisible();
+    await expect(page.locator(".party-list").getByText("Pure Health Path", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local person party to investigation", async ({ page }) => {
@@ -76,7 +76,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
+    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -110,7 +110,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
+    await expect(page.locator(".party-list").getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
   });
 
   test("it edits a person party", async ({ page }) => {
@@ -134,7 +134,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.getByText("Doe, Jane", { exact: true })).toBeVisible();
+    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
   test("cleanup - remove all test parties from investigation", async ({ page }) => {
