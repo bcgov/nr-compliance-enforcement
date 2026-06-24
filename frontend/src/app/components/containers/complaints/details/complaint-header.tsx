@@ -9,6 +9,7 @@ import {
   selectComplaintHeader,
   selectComplaintViewMode,
   selectRelatedData,
+  updateAllegationComplaintStatus,
 } from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
 
@@ -190,8 +191,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
-  const startInvestigation = () => {
+  const startInvestigation = async () => {
     if (validationResults.canStartInvestigation) {
+      await dispatch(updateAllegationComplaintStatus(id, "CLOSED"));
       navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
     } else {
       validationResults.scrollToErrors();
@@ -260,7 +262,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     } else {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
-      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
+      ToggleError(
+        `Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`,
+      );
     }
   };
 

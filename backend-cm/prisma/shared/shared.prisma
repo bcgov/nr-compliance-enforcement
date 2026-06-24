@@ -991,18 +991,6 @@ model address {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model business_address_h {
-  h_business_address_guid       String   @id(map: "pk_h_business_address") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  target_row_id                 String   @db.Uuid
-  operation_type                String   @db.Char(1)
-  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
-  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
-  data_after_executed_operation Json?
-
-  @@schema("shared")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model build_code {
   build_code                           String    @id(map: "build_pk") @db.VarChar(16)
   short_description                    String    @db.VarChar(64)

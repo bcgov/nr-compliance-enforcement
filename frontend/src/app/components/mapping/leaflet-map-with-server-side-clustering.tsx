@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, Marker, useMapEvents, WMSTileLayer, LayersControl, Pane } from "react-leaflet";
+import { MapContainer, Marker, useMapEvents, WMSTileLayer, LayersControl, Pane, LayerGroup } from "react-leaflet";
 import { BasemapLayer } from "react-esri-leaflet";
 import VectorTileLayer from "react-esri-leaflet/plugins/VectorTileLayer";
 import "leaflet/dist/leaflet.css";
@@ -14,6 +14,7 @@ import { MapGestureHandler } from "./map-gesture-handler";
 import { Alert, Spinner } from "react-bootstrap";
 import { isLoading } from "@store/reducers/app";
 import Spiderfy from "./spiderfy";
+import { WMU_LABEL_SLD } from "./wmu-label-sld";
 
 // Workaround for issue with Leaflet removeLayer being called twice due to strict mode
 // causing an exception with the VectorTileLayer plugin
@@ -168,7 +169,19 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
     return { format: "image/png", layers: "pub:WHSE_ADMIN_BOUNDARIES.ADM_INDIAN_RESERVES_BANDS_SP", transparent: true };
   }, []);
   const wmuLayerParams = useMemo(() => {
-    return { format: "image/png", layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW", transparent: true };
+    return {
+      format: "image/png",
+      layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW",
+      transparent: true,
+    };
+  }, []);
+  const wmuLabelParams = useMemo(() => {
+    return {
+      format: "image/png",
+      layers: "pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW",
+      transparent: true,
+      SLD_BODY: WMU_LABEL_SLD,
+    };
   }, []);
 
   return (
@@ -229,16 +242,23 @@ const LeafletMapWithServerSideClustering: React.FC<MapProps> = ({
             </Pane>
           </LayersControl.Overlay>
           <LayersControl.Overlay name="Wildlife Management Units">
-            <Pane
-              name="wmu"
-              style={{ zIndex: 499 }}
-            >
-              <WMSTileLayer
-                url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
-                params={wmuLayerParams}
-                zIndex={1000}
-              />
-            </Pane>
+            <LayerGroup>
+              <Pane
+                name="wmu"
+                style={{ zIndex: 499 }}
+              >
+                <WMSTileLayer
+                  url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
+                  params={wmuLayerParams}
+                  zIndex={1000}
+                />
+                <WMSTileLayer
+                  url="https://openmaps.gov.bc.ca/geo/pub/WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW/ows"
+                  params={wmuLabelParams}
+                  zIndex={1001}
+                />
+              </Pane>
+            </LayerGroup>
           </LayersControl.Overlay>
         </LayersControl>
         <Spiderfy

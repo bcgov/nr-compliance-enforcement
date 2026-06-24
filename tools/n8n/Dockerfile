@@ -37,7 +37,20 @@ RUN mkdir -p /data $HOME/.n8n && \
       chgrp -R 0 /data $HOME && \
       chmod -R g+rwX /data $HOME
 
+# Bundle the triage tree under /opt/triage (an image layer — NOT /data or /backup, which are PVC
+# mounts at runtime that would shadow it). The n8n-entrypoint.sh wrapper (wired into ENTRYPOINT
+# below) adds /opt/triage and EVERY baked group's snippets dir to PATH at startup, so node commands
+# call snippets / validators / merge.sh / report.sh by bare name — for any group the team adds, with
+# no per-group edit here. Each script self-locates via $0, so utils.sh / render.sh / the doc-link
+# shim still resolve. The *.sh here are the deployed copy of the workflow-builder skill's scripts/
+# (canonical: tools/n8n/skills/workflow-builder/scripts/); refresh them with that skill's sync.sh.
+COPY render.sh utils.sh view.sh merge.sh report.sh n8n-entrypoint.sh /opt/triage/
+COPY snippets /opt/triage/snippets/
+RUN chmod +x /opt/triage/*.sh /opt/triage/snippets/*/*.sh
+ENV PATH="/opt/triage:${PATH}"
+
 WORKDIR /data
 EXPOSE 5678/tcp
-ENTRYPOINT ["tini", "--"]
+ENTRYPOINT ["tini", "--", "/opt/triage/n8n-entrypoint.sh"]
+
 CMD ["n8n"]
