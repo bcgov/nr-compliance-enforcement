@@ -115,7 +115,7 @@ test.describe("Investigation Party Form", () => {
 
   test("it edits a person party", async ({ page }) => {
     // Find a person party in the list and open the kebab menu
-    const personItem = page.locator(".party-card").first();
+    const personItem = page.locator(".party-card", { has: page.locator(".bi-person") }).first();
     await expect(personItem).toBeVisible();
 
     const kebabMenu = personItem.locator(".comp-kebab-toggle");

@@ -17,6 +17,8 @@ import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { isYoungPerson, joinWithAnd } from "@/app/common/methods";
 
+const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
+
 // Can we genercize this in the future?
 interface Props {
   companies?: (InvestigationParty | InspectionParty)[];
@@ -132,7 +134,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   const getBusinessMissingFields = (invParty: InvestigationParty): string[] => {
     if (!invParty.business) return [];
     const missing: string[] = [];
-    if (!getAliases(invParty.aliases)) missing.push("alias");
     if (!getBusinessNumbers(invParty.business)) missing.push("business number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
     return missing;
@@ -182,7 +183,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   };
 
   const renderDetailRow = (label1: string, value1: React.ReactNode, label2: string, value2: React.ReactNode) => {
-    if (!value1 && !value2) return null;
     return (
       <div className="row mb-2">
         <div className="col-2 text-muted">{label1}</div>
@@ -229,9 +229,9 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     }
 
     if (invParty.business) {
-      const aliases = getAliases(invParty.aliases);
+      const aliases = getAliases(invParty.aliases) || "-";
       const phone = getPhone(invParty.contactMethods);
-      const businessNumbers = getBusinessNumbers(invParty.business);
+      const businessNumbers = getBusinessNumbers(invParty.business) || "-";
       const address = getPartyAddress(invParty.addresses);
       const missingFields = getBusinessMissingFields(invParty);
       const isPartyOfInterest = invParty.partyAssociationRole === "PTYOFINTRST";
@@ -289,13 +289,9 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     );
 
     const sortedRoles = Object.keys(grouped).sort((a, b) => {
-      const orderA =
-        partyRoles.find((r) => r.partyAssociationRole === a && r.caseActivityTypeCode === currentActivityTypeCode)
-          ?.displayOrder ?? 999;
-      const orderB =
-        partyRoles.find((r) => r.partyAssociationRole === b && r.caseActivityTypeCode === currentActivityTypeCode)
-          ?.displayOrder ?? 999;
-      return orderA - orderB;
+      const orderA = PARTY_ROLE_DISPLAY_ORDER.indexOf(a);
+      const orderB = PARTY_ROLE_DISPLAY_ORDER.indexOf(b);
+      return (orderA === -1 ? 999 : orderA) - (orderB === -1 ? 999 : orderB);
     });
 
     return (
