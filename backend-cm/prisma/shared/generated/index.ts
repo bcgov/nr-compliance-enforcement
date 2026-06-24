@@ -55,7 +55,6 @@ import { country_subdivision_code as _country_subdivision_code } from "./country
 import { approximate_age_code as _approximate_age_code } from "./approximate_age_code";
 import { gender_code as _gender_code } from "./gender_code";
 import { address as _address } from "./address";
-import { business_address_h as _business_address_h } from "./business_address_h";
 import { build_code as _build_code } from "./build_code";
 import { complexion_code as _complexion_code } from "./complexion_code";
 import { hair_colour_code as _hair_colour_code } from "./hair_colour_code";
@@ -123,7 +122,6 @@ export namespace PrismaModel {
   export class approximate_age_code extends _approximate_age_code {}
   export class gender_code extends _gender_code {}
   export class address extends _address {}
-  export class business_address_h extends _business_address_h {}
   export class build_code extends _build_code {}
   export class complexion_code extends _complexion_code {}
   export class hair_colour_code extends _hair_colour_code {}
@@ -191,7 +189,6 @@ export namespace PrismaModel {
     approximate_age_code,
     gender_code,
     address,
-    business_address_h,
     build_code,
     complexion_code,
     hair_colour_code,
