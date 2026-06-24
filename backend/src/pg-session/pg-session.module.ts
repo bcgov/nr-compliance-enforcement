@@ -30,6 +30,23 @@ export class PgSessionModule implements OnModuleInit {
     const originalCreateQueryRunner = this.dataSource.createQueryRunner.bind(this.dataSource);
     const dataSource = this.dataSource; // Capture DataSource reference for use in bound functions
 
+    // Set all JWT claims in one round-trip
+    const setRLSClaims = (user: any): { sql: string; parameters: any[] } => {
+      let rolesString = "";
+      if (user.client_roles) {
+        rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
+      }
+      const agency = user.client_roles ? agencyFromRoles(user.client_roles) : "";
+      return {
+        sql:
+          "SELECT set_config('jwt.claims.idir_user_guid', $1, true), " +
+          "set_config('jwt.claims.client_roles', $2, true), " +
+          "set_config('jwt.claims.agency_code', $3, true), " +
+          "set_config('jwt.claims.exp', $4, true)",
+        parameters: [user.idir_user_guid ?? "", rolesString, agency, String(user.exp ?? 0)],
+      };
+    };
+
     // Helper function to wrap a query in a transaction with JWT claims
     const wrapQueryInTransaction = async <T = any>(
       query: string,
@@ -64,20 +81,9 @@ export class PgSessionModule implements OnModuleInit {
         await runner.startTransaction();
 
         try {
-          // Set JWT claims in the transaction session
-          const user = request.user;
-          if (user.idir_user_guid) {
-            await runner.query(`SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`);
-          }
-          if (user.client_roles) {
-            const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-            await runner.query(`SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`);
-
-            const agency = agencyFromRoles(user.client_roles);
-            await runner.query(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
-          }
-          // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-          await runner.query(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
+          // Set all JWT claims for the transaction session in a single round-trip
+          const { sql, parameters: claimParams } = setRLSClaims(request.user);
+          await runner.query(sql, claimParams);
 
           // Execute the original query with the transaction
           const result = await originalQueryFn(query, parameters, runner);
@@ -172,25 +178,9 @@ export class PgSessionModule implements OnModuleInit {
           }
 
           try {
-            // Set JWT claims in the transaction session
-            const user = request.user;
-            if (user.idir_user_guid) {
-              await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.idir_user_guid = '${user.idir_user_guid.replaceAll("'", "''")}'`,
-              );
-            }
-            if (user.client_roles) {
-              const rolesString = Array.isArray(user.client_roles) ? user.client_roles.join(",") : user.client_roles;
-              await originalQueryRunnerQuery(
-                `SET LOCAL jwt.claims.client_roles = '${rolesString.replaceAll("'", "''")}'`,
-              );
-
-              const agency = agencyFromRoles(user.client_roles);
-              await originalQueryRunnerQuery(`SET LOCAL jwt.claims.agency_code = '${agency.replaceAll("'", "''")}'`);
-            }
-
-            // Default to 0 if exp is not set so that exp is less than the current time as if it were expired
-            await originalQueryRunnerQuery(`SET LOCAL jwt.claims.exp = '${user.exp ?? 0}'`);
+            // Set all JWT claims for the transaction session in a single round-trip
+            const { sql, parameters: claimParams } = setRLSClaims(request.user);
+            await originalQueryRunnerQuery(sql, claimParams);
 
             // Execute the original query
             const result = await originalQueryRunnerQuery(query, parameters, useStructuredResult);
