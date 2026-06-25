@@ -6,7 +6,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDateTimeStr } from "@/app/common/methods";
+import { formatDateTimeStr, truncateString } from "@/app/common/methods";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type TaskExhibitListProps = {
@@ -49,7 +49,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: true,
       getValue: (exhibit) => (exhibit.description ?? "").toLowerCase(),
-      renderCell: (exhibit) => exhibit.description ?? "-",
+      renderCell: (exhibit) => truncateString(exhibit.description, 100) ?? "-",
     },
     {
       label: "Quantity",
@@ -81,7 +81,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       cellClassName: "comp-cell-width-200 comp-cell-min-width-200 align-middle",
       isSortable: true,
       getValue: (exhibit) => (exhibit.locationOfIntake ?? "").toLowerCase(),
-      renderCell: (exhibit) => exhibit.locationOfIntake ?? "-",
+      renderCell: (exhibit) => truncateString(exhibit.locationOfIntake ?? "", 100) ?? "-",
     },
     {
       label: "Property tag number",

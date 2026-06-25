@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTimeStr } from "@common/methods";
+import { formatDateTimeStr, truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -82,7 +82,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       sortKey: "description",
       isSortable: true,
       getValue: (exhibit) => (exhibit.description ?? "").toLowerCase(),
-      renderCell: (exhibit) => exhibit.description ?? "-",
+      renderCell: (exhibit) => truncateString(exhibit.description, 100) ?? "-",
     },
     {
       label: "Quantity",
@@ -116,7 +116,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       sortKey: "location",
       isSortable: true,
       getValue: (exhibit) => (exhibit.locationOfIntake ?? "").toLowerCase(),
-      renderCell: (exhibit) => exhibit.locationOfIntake ?? "-",
+      renderCell: (exhibit) => truncateString(exhibit.locationOfIntake ?? "", 100) ?? "-",
     },
     {
       label: "Property tag number",
