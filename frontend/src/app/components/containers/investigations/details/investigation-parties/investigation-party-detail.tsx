@@ -3,10 +3,14 @@ import { Badge, Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { InvestigationContactMethod, InvestigationParty } from "@/generated/graphql";
+import { InvestigationAddress, InvestigationContactMethod, InvestigationParty } from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr, isYoungPerson } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
+import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
+import { CountryType } from "@/app/types/app/code-tables/country";
+import { GenderType } from "@/app/types/app/code-tables/gender";
+import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -57,6 +61,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
+  const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
+  const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
 
   const person = party.person;
   const isPublished = !!party.partyReference;
@@ -66,7 +72,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
 
   // Identifying Information data
   const gender = person?.genderCode
-    ? (genderCodes?.find((code: any) => code.genderCode === person.genderCode)?.shortDescription ?? person.genderCode)
+    ? (genderCodes?.find((code: GenderType) => code.genderCode === person.genderCode)?.shortDescription ??
+      person.genderCode)
     : undefined;
 
   const aliases = (party.aliases ?? [])
@@ -82,7 +89,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
   // Approximate age only when we have no DOB but do have a code.
   const approximateAge =
     !dob && person?.approximateAgeCode
-      ? (approximateAgeCodes?.find((code: any) => code.approximateAgeCode === person.approximateAgeCode)
+      ? (approximateAgeCodes?.find((code: ApproximateAgeType) => code.approximateAgeCode === person.approximateAgeCode)
           ?.shortDescription ?? person.approximateAgeCode)
       : undefined;
 
@@ -105,6 +112,11 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
   const emails = contactMethods
     .filter((cm) => cm.typeCode === ContactMethods.EMAIL && cm.value)
     .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
+
+  // Address data
+  const addresses = ((party.addresses ?? []).filter(Boolean) as InvestigationAddress[]).sort(
+    (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
+  );
 
   return (
     <div className="comp-details-view">
@@ -207,7 +219,61 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
           {renderContactRows(emails, "Email address", "Alternate email address", (value) => value)}
         </DetailSection>
 
-        <DetailSection title="Address(es)" />
+        {addresses.length > 0 ? (
+          <section className="comp-details-section">
+            <h2 className="mb-3">Address(es)</h2>
+            {addresses.map((addr) => {
+              const provinceLabel = addr.province
+                ? (countrySubdivisions?.find(
+                    (code: CountrySubdivisionType) => code.countrySubdivisionCode === addr.province,
+                  )?.shortDescription ?? addr.province)
+                : undefined;
+              const countryLabel = addr.country
+                ? (countries?.find((code: CountryType) => code.countryCode === addr.country)?.shortDescription ??
+                  addr.country)
+                : undefined;
+              return (
+                <Card
+                  key={addr.addressGuid}
+                  className="mb-3"
+                  border="default"
+                >
+                  <Card.Body>
+                    <h3 className="h6 mb-3">
+                      {addr.addressName}
+                      {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+                    </h3>
+                    <dl>
+                      <DetailField
+                        label="Address"
+                        value={addr.address}
+                      />
+                      <DetailField
+                        label="City"
+                        value={addr.city}
+                      />
+                      <DetailField
+                        label="Province/state"
+                        value={provinceLabel}
+                      />
+                      <DetailField
+                        label="Postal code"
+                        value={addr.postalCode}
+                      />
+                      <DetailField
+                        label="Country"
+                        value={countryLabel}
+                      />
+                    </dl>
+                  </Card.Body>
+                </Card>
+              );
+            })}
+          </section>
+        ) : (
+          <DetailSection title="Address(es)" />
+        )}
+
         <DetailSection title="Descriptors" />
         <DetailSection title="Attachments" />
         <DetailSection title="Compliance and enforcement history" />
