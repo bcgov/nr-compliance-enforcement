@@ -11,6 +11,13 @@ import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subd
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { GenderType } from "@/app/types/app/code-tables/gender";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
+import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
+import { ComplexionType } from "@/app/types/app/code-tables/complexion";
+import { BuildType } from "@/app/types/app/code-tables/build";
+import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
+import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
+import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
+import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -57,6 +64,10 @@ const renderContactRows = (
     </div>
   ));
 
+/** Boolean indicator → "Yes"/"No"; undefined when unset. */
+const yesNo = (indicator: boolean | null | undefined): string | undefined =>
+  indicator === null || indicator === undefined ? undefined : indicator ? "Yes" : "No";
+
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, onEdit }) => {
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
@@ -64,6 +75,12 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, 
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
+  const complexionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLEXION));
+  const buildCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.BUILD));
+  const hairColourCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.HAIR_COLOUR));
+  const hairLengthCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.HAIR_LENGTH));
+  const eyeColourCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.EYE_COLOUR));
+  const facialHairStyleCodeTable = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.FACIAL_HAIR_STYLE));
 
   const person = party.person;
   const isPublished = !!party.partyReference;
@@ -119,166 +136,284 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, 
     (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
   );
 
-  return (
-    <div className="comp-details-view">
-      <div className="comp-details-content">
-        <Button
-          variant="outline-primary"
-          size="sm"
-          className="mb-3"
-          onClick={onBack}
-        >
-          <i className="bi bi-arrow-left"></i>
-          <span>Parties</span>
-        </Button>
+  // Descriptor data
 
-        {/* Title + edit row */}
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div className="d-flex align-items-center gap-2">
-            <h2 className="mb-0">{displayName}</h2>
-            {person?.boloIndicator && (
-              <span className="text-danger small d-flex align-items-center gap-1">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </span>
-            )}
-            {isPublished && (
-              <span className="text-success small d-flex align-items-center gap-1">
-                <i className="bi bi-check-circle-fill"></i> Published
-              </span>
-            )}
-            {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
-          </div>
-          {onEdit && (
+  const imperialHeight = cmToFeetInches(person?.heightInCm ?? 0);
+
+  const heightDisplay = person?.heightInCm
+    ? `${person.heightInCm} cm (${imperialHeight.feet} feet ${imperialHeight.inches} inches)`
+    : undefined;
+  const weightDisplay = person?.weightInKg ? `${person.weightInKg} kg (${kgToLb(person.weightInKg)} lbs)` : undefined;
+
+  const complexion = person?.complexionCode
+    ? (complexionCodes?.find((code: ComplexionType) => code.complexionCode === person.complexionCode)
+        ?.shortDescription ?? person.complexionCode)
+    : undefined;
+
+  const build = person?.buildCode
+    ? (buildCodes?.find((code: BuildType) => code.buildCode === person.buildCode)?.shortDescription ?? person.buildCode)
+    : undefined;
+
+  let hairColour = person?.hairColourCode
+    ? (hairColourCodes?.find((code: HairColourType) => code.hairColourCode === person.hairColourCode)
+        ?.shortDescription ?? person.hairColourCode)
+    : undefined;
+
+  if (person?.hairColourCode === "OTH" && person.hairColourOther) {
+    hairColour = `Other (${person.hairColourOther})`;
+  }
+
+  const hairLength = person?.hairLengthCode
+    ? (hairLengthCodes?.find((code: HairLengthType) => code.hairLengthCode === person.hairLengthCode)
+        ?.shortDescription ?? person.hairLengthCode)
+    : undefined;
+
+  let eyeColour = person?.eyeColourCode
+    ? (eyeColourCodes?.find((code: EyeColourType) => code.eyeColourCode === person.eyeColourCode)?.shortDescription ??
+      person.eyeColourCode)
+    : undefined;
+
+  if (person?.eyeColourCode === "OTH" && person.eyeColourOther) {
+    eyeColour = `Other (${person.eyeColourOther})`;
+  }
+
+  const facialHair = yesNo(person?.facialHairIndicator);
+
+  const facialHairStyle = (person?.facialHairStyleCodes ?? [])
+    .filter(Boolean)
+    .map(
+      (s) =>
+        facialHairStyleCodeTable?.find(
+          (code: FacialHairStyleType) => code.facialHairStyleCode === s!.facialHairStyleCodeRef,
+        )?.shortDescription ?? s!.facialHairStyleCodeRef,
+    )
+    .join(", ");
+
+  const hasTattoos = yesNo(person?.tattooIndicator);
+
+  return (
+    <div className="comp-complaint-details">
+      <section className="comp-details-body comp-container">
+        <div className="comp-details-view">
+          <div className="comp-details-content">
             <Button
               variant="outline-primary"
               size="sm"
-              id="party-detail-edit-button"
-              onClick={onEdit}
+              className="mb-3"
+              onClick={onBack}
             >
-              <i className="bi bi-pencil"></i>
-              <span>Edit party</span>
+              <i className="bi bi-arrow-left"></i>
+              <span>Parties</span>
             </Button>
-          )}
-        </div>
 
-        {/* Investigation role — own section at top*/}
-        <section className="comp-details-section">
-          <Card className="mb-3 border-0">
-            <Card.Body>
-              <dl>
-                <div>
-                  <dt>Investigation role</dt>
-                  <dd>{roleText}</dd>
-                </div>
-              </dl>
-            </Card.Body>
-          </Card>
-        </section>
-
-        <DetailSection title="Identifying information">
-          <DetailField
-            label="First name"
-            value={person?.firstName}
-          />
-          <DetailField
-            label="Middle name(s)"
-            value={person?.middleNames}
-          />
-          <DetailField
-            label="Last name"
-            value={person?.lastName}
-          />
-          <DetailField
-            label="Alias(es)"
-            value={aliases}
-          />
-          <DetailField
-            label="Gender"
-            value={gender}
-          />
-          <DetailField
-            label="Date of birth"
-            value={formatDateStr(person?.dateOfBirth, "")}
-          />
-          <DetailField
-            label="Age"
-            value={ageDisplay}
-          />
-          <DetailField
-            label="Approximate age"
-            value={approximateAge}
-          />
-        </DetailSection>
-
-        <DetailSection title="Contact information">
-          {renderContactRows(
-            phones,
-            "Phone number",
-            "Alternate phone number",
-            (value) => formatPhoneNumber(value) ?? value,
-          )}
-          {renderContactRows(emails, "Email address", "Alternate email address", (value) => value)}
-        </DetailSection>
-
-        {addresses.length > 0 ? (
-          <section className="comp-details-section">
-            <h2 className="mb-3">Address(es)</h2>
-            {addresses.map((addr) => {
-              const provinceLabel = addr.province
-                ? (countrySubdivisions?.find(
-                    (code: CountrySubdivisionType) => code.countrySubdivisionCode === addr.province,
-                  )?.shortDescription ?? addr.province)
-                : undefined;
-              const countryLabel = addr.country
-                ? (countries?.find((code: CountryType) => code.countryCode === addr.country)?.shortDescription ??
-                  addr.country)
-                : undefined;
-              return (
-                <Card
-                  key={addr.addressGuid}
-                  className="mb-3"
-                  border="default"
+            {/* Title + edit row */}
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <div className="d-flex align-items-center gap-2">
+                <h2 className="mb-0">{displayName}</h2>
+                {person?.boloIndicator && (
+                  <span className="text-danger small d-flex align-items-center gap-1">
+                    <i className="bi bi-exclamation-circle"></i> Safety concern
+                  </span>
+                )}
+                {isPublished && (
+                  <span className="text-success small d-flex align-items-center gap-1">
+                    <i className="bi bi-check-circle-fill"></i> Published
+                  </span>
+                )}
+                {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
+              </div>
+              {onEdit && (
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  id="party-detail-edit-button"
+                  onClick={onEdit}
                 >
-                  <Card.Body>
-                    <h3 className="h6 mb-3">
-                      {addr.addressName}
-                      {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                    </h3>
-                    <dl>
-                      <DetailField
-                        label="Address"
-                        value={addr.address}
-                      />
-                      <DetailField
-                        label="City"
-                        value={addr.city}
-                      />
-                      <DetailField
-                        label="Province/state"
-                        value={provinceLabel}
-                      />
-                      <DetailField
-                        label="Postal code"
-                        value={addr.postalCode}
-                      />
-                      <DetailField
-                        label="Country"
-                        value={countryLabel}
-                      />
-                    </dl>
-                  </Card.Body>
-                </Card>
-              );
-            })}
-          </section>
-        ) : (
-          <DetailSection title="Address(es)" />
-        )}
+                  <i className="bi bi-pencil"></i>
+                  <span>Edit party</span>
+                </Button>
+              )}
+            </div>
 
-        <DetailSection title="Descriptors" />
-        <DetailSection title="Attachments" />
-        <DetailSection title="Compliance and enforcement history" />
-      </div>
+            {/* Investigation role — own section at top*/}
+            <section className="comp-details-section">
+              <Card className="mb-3 border-0">
+                <Card.Body>
+                  <dl>
+                    <div>
+                      <dt>Investigation role</dt>
+                      <dd>{roleText}</dd>
+                    </div>
+                  </dl>
+                </Card.Body>
+              </Card>
+            </section>
+
+            <DetailSection title="Identifying information">
+              <DetailField
+                label="First name"
+                value={person?.firstName}
+              />
+              <DetailField
+                label="Middle name(s)"
+                value={person?.middleNames}
+              />
+              <DetailField
+                label="Last name"
+                value={person?.lastName}
+              />
+              <DetailField
+                label="Alias(es)"
+                value={aliases}
+              />
+              <DetailField
+                label="Gender"
+                value={gender}
+              />
+              <DetailField
+                label="Date of birth"
+                value={formatDateStr(person?.dateOfBirth, "")}
+              />
+              <DetailField
+                label="Age"
+                value={ageDisplay}
+              />
+              <DetailField
+                label="Approximate age"
+                value={approximateAge}
+              />
+            </DetailSection>
+
+            <DetailSection title="Contact information">
+              {renderContactRows(
+                phones,
+                "Phone number",
+                "Alternate phone number",
+                (value) => formatPhoneNumber(value) ?? value,
+              )}
+              {renderContactRows(emails, "Email address", "Alternate email address", (value) => value)}
+            </DetailSection>
+
+            {addresses.length > 0 ? (
+              <section className="comp-details-section">
+                <h2 className="mb-3">Address(es)</h2>
+                {addresses.map((addr) => {
+                  const provinceLabel = addr.province
+                    ? (countrySubdivisions?.find(
+                        (code: CountrySubdivisionType) => code.countrySubdivisionCode === addr.province,
+                      )?.shortDescription ?? addr.province)
+                    : undefined;
+                  const countryLabel = addr.country
+                    ? (countries?.find((code: CountryType) => code.countryCode === addr.country)?.shortDescription ??
+                      addr.country)
+                    : undefined;
+                  return (
+                    <Card
+                      key={addr.addressGuid}
+                      className="mb-3"
+                      border="default"
+                    >
+                      <Card.Body>
+                        <h3 className="h6 mb-3">
+                          {addr.addressName}
+                          {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+                        </h3>
+                        <dl>
+                          <DetailField
+                            label="Address"
+                            value={addr.address}
+                          />
+                          <DetailField
+                            label="City"
+                            value={addr.city}
+                          />
+                          <DetailField
+                            label="Province/state"
+                            value={provinceLabel}
+                          />
+                          <DetailField
+                            label="Postal code"
+                            value={addr.postalCode}
+                          />
+                          <DetailField
+                            label="Country"
+                            value={countryLabel}
+                          />
+                        </dl>
+                      </Card.Body>
+                    </Card>
+                  );
+                })}
+              </section>
+            ) : (
+              <DetailSection title="Address(es)" />
+            )}
+
+            <DetailSection title="Descriptors">
+              <DetailField
+                label="Height"
+                value={heightDisplay}
+              />
+              <DetailField
+                label="Weight"
+                value={weightDisplay}
+              />
+              <DetailField
+                label="Complexion"
+                value={complexion}
+              />
+              <DetailField
+                label="Build"
+                value={build}
+              />
+              <DetailField
+                label="Hair colour"
+                value={hairColour}
+              />
+              <DetailField
+                label="Hair length"
+                value={hairLength}
+              />
+              <DetailField
+                label="Additional hair descriptors"
+                value={person?.additionalHairDescriptors}
+              />
+              <DetailField
+                label="Eye colour"
+                value={eyeColour}
+              />
+              <DetailField
+                label="Facial hair"
+                value={facialHair}
+              />
+              <DetailField
+                label="Facial hair style"
+                value={facialHairStyle}
+              />
+              <DetailField
+                label="Has tattoos"
+                value={hasTattoos}
+              />
+              <DetailField
+                label="Tattoos descriptors"
+                value={person?.tattooDescription}
+              />
+              <DetailField
+                label="Additional descriptors"
+                value={person?.additionalDescriptors}
+              />
+              <DetailField
+                label="Comments"
+                value={person?.comments}
+              />
+            </DetailSection>
+
+            <DetailSection title="Additional information" />
+            <DetailSection title="Attachments" />
+            <DetailSection title="Compliance and enforcement history" />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
