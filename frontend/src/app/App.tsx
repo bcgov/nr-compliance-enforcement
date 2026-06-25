@@ -230,6 +230,24 @@ const App: FC = () => {
             )}
             {investigationsFeatureOn && (
               <Route
+                path="/investigation/:investigationGuid/party/add"
+                element={pilotGate(<InvestigationDetails partyMode="add" />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier/edit"
+                element={pilotGate(<InvestigationDetails partyMode="edit" />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier"
+                element={pilotGate(<InvestigationDetails partyMode="view" />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
                 path="/investigation/:investigationGuid/:tabKey"
                 element={pilotGate(<InvestigationDetails />)}
               />

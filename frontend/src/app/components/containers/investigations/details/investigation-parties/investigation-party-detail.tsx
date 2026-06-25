@@ -8,6 +8,7 @@ import { InvestigationParty } from "@/generated/graphql";
 interface PartyDetailProps {
   party: InvestigationParty;
   onBack: () => void;
+  onEdit?: () => void;
 }
 
 const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
@@ -23,7 +24,7 @@ const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ titl
     </Card>
   </section>
 );
-export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }) => {
+export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, onEdit }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
   const person = party.person;
@@ -65,17 +66,17 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
               </span>
             )}
           </div>
-          <Button
-            variant="outline-primary"
-            size="sm"
-            id="party-detail-edit-button"
-            onClick={() => {
-              /* TODO: Switch to edit mode */
-            }}
-          >
-            <i className="bi bi-pencil"></i>
-            <span>Edit party</span>
-          </Button>
+          {onEdit && (
+            <Button
+              variant="outline-primary"
+              size="sm"
+              id="party-detail-edit-button"
+              onClick={onEdit}
+            >
+              <i className="bi bi-pencil"></i>
+              <span>Edit party</span>
+            </Button>
+          )}
         </div>
 
         {/* Investigation role — own section at top*/}

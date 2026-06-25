@@ -1,21 +1,21 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
-import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { useInvestigationReadOnly } from "../hooks/use-investigation-read-only";
-import InvestigationPartyDetail from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-detail";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
   investigationData?: Investigation;
+  // onDirtyChange is no longer used now that add/edit are full pages; kept for prop compatibility.
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
@@ -42,9 +42,9 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
 export const InvestigationParties: FC<InvestigationPartiesProps> = ({
   investigationGuid,
   investigationData,
-  onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
   const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
@@ -57,26 +57,8 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     },
   });
 
-  const [selectedPartyIdentifier, setSelectedPartyIdentifier] = useState<string | null>(null);
-  const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
-
   const handleAddParty = () => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: ADD_PARTY,
-        data: {
-          title: "Add party to investigation",
-          modalMode: "add",
-          description: "",
-          activityGuid: investigationGuid,
-          activityType: "investigation",
-          onDirtyChange: handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
+    navigate(`/investigation/${investigationGuid}/party/add`);
   };
 
   const handleRemoveParty = useCallback(
@@ -102,37 +84,10 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
   );
 
   const handleEditParty = (party: InvestigationParty | InspectionParty) => {
-    document.body.click();
-    dispatch(
-      openModal({
-        modalSize: "lg",
-        modalType: ADD_PARTY,
-        data: {
-          title: "Edit party in investigation",
-          modalMode: "edit",
-          description: "",
-          activityGuid: investigationGuid,
-          activityType: "investigation",
-          party: party,
-          onDirtyChange: handleChildDirtyChange,
-        },
-        hideCallback,
-      }),
-    );
+    navigate(`/investigation/${investigationGuid}/party/${(party as InvestigationParty).partyIdentifier}/edit`);
   };
 
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
-
-  const selectedParty = parties.find((p) => p.partyIdentifier === selectedPartyIdentifier);
-
-  if (selectedParty) {
-    return (
-      <InvestigationPartyDetail
-        party={selectedParty}
-        onBack={() => setSelectedPartyIdentifier(null)}
-      />
-    );
-  }
 
   return (
     <>
@@ -159,7 +114,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
             onEditParty={isReadOnly ? undefined : handleEditParty}
-            onViewParty={setSelectedPartyIdentifier}
+            onViewParty={(partyIdentifier) => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`)}
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>

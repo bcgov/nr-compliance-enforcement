@@ -5,6 +5,8 @@ import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile, Investigation, Task } from "@/generated/graphql";
 import InvestigationParties from "@/app/components/containers/investigations/details/investigation-parties";
+import InvestigationPartyEdit from "@/app/components/containers/investigations/details/investigation-party/create/investigation-party-edit";
+import InvestigationPartyView from "@/app/components/containers/investigations/details/investigation-party/view/investigation-party-view";
 import { InvestigationContraventions } from "@/app/components/containers/investigations/details/investigation-contravention";
 import { InvestigationContinuation } from "@/app/components/containers/investigations/details/investigation-continuation";
 import { InvestigationAdministration } from "@/app/components/containers/investigations/details/investigation-administration";
@@ -179,9 +181,14 @@ export type InvestigationParams = {
   tabKey: string;
 };
 
-export const InvestigationDetails: FC = () => {
+interface InvestigationDetailsProps {
+  // When set, the Parties tab is active and the party add/edit/view renders in the body at its own route.
+  partyMode?: "add" | "edit" | "view";
+}
+
+export const InvestigationDetails: FC<InvestigationDetailsProps> = ({ partyMode }) => {
   const { investigationGuid = "", tabKey } = useParams<InvestigationParams>();
-  const currentTab = tabKey || "summary";
+  const currentTab = partyMode ? "parties" : tabKey || "summary";
   const { data, isLoading, refetch } = useGraphQLQuery<{
     getInvestigation: Investigation;
     caseFilesByActivityIds: CaseFile[];
@@ -269,6 +276,21 @@ export const InvestigationDetails: FC = () => {
     }
   };
 
+  const renderBody = () => {
+    if (partyMode === "view") {
+      return (
+        <InvestigationPartyView
+          investigationGuid={investigationGuid}
+          investigationData={investigationData}
+        />
+      );
+    }
+    if (partyMode === "add" || partyMode === "edit") {
+      return <InvestigationPartyEdit investigationGuid={investigationGuid} />;
+    }
+    return renderTabContent();
+  };
+
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -295,7 +317,7 @@ export const InvestigationDetails: FC = () => {
         onStatusUpdated={refetch}
       />
 
-      <div className={detailsBodyClass}>{renderTabContent()}</div>
+      <div className={detailsBodyClass}>{renderBody()}</div>
     </div>
   );
 };

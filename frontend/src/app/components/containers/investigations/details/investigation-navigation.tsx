@@ -25,8 +25,14 @@ export const InvestigationTabs: FC = () => {
   // Determine active tab based on current URL
   useEffect(() => {
     const paths = location.pathname.split("/");
-    const tabKey = paths.at(-1) ?? "";
 
+    // Party add/edit/view sub-routes live under the Parties tab.
+    if (paths.includes("party")) {
+      setActiveTab("parties");
+      return;
+    }
+
+    const tabKey = paths.at(-1) ?? "";
     setActiveTab(tabKey === investigationGuid ? "summary" : tabKey);
   }, [location.pathname, investigationGuid]);
 
