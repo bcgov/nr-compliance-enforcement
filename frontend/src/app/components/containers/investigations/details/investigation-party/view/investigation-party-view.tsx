@@ -15,7 +15,7 @@ const InvestigationPartyView: FC = () => {
   }>();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
-  // Shares the cache entry populated by the investigation details view; hydrates on a cold deep-link.
+  // Should be a warm cache from the investigation details view
   const { data, isLoading } = useGraphQLQuery<{ getInvestigation: Investigation }>(GET_INVESTIGATION, {
     queryKey: ["getInvestigation", investigationGuid],
     variables: { investigationGuid },
