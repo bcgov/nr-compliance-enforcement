@@ -9,8 +9,7 @@ import {
   InvestigationPerson,
 } from "@/generated/graphql";
 import React from "react";
-import { Badge, Card, Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Badge, Button, Card, Dropdown } from "react-bootstrap";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
@@ -26,10 +25,19 @@ interface Props {
   parties?: (InvestigationParty | InspectionParty)[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
   onEditParty?: (party: InvestigationParty | InspectionParty) => void;
+  onViewParty?: (partyIdentifier: string) => void;
   activityType: string;
 }
 
-const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemoveParty, onEditParty, activityType }) => {
+const PartiesList: React.FC<Props> = ({
+  companies,
+  people,
+  parties,
+  onRemoveParty,
+  onEditParty,
+  onViewParty,
+  activityType,
+}) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -56,11 +64,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     if (party.person) return `${party.person.firstName} ${party.person.lastName}`;
     if (party.business) return party.business.name ?? "";
     return "-";
-  };
-
-  const getPartyLink = (party: InvestigationParty | InspectionParty): string => {
-    const guid = party.person?.partyGuid ?? party.business?.partyGuid;
-    return guid ? `/party/${guid}` : "#";
   };
 
   const getAge = (person: InvestigationPerson): string => {
@@ -255,7 +258,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   const renderPartyHeader = (party: InvestigationParty | InspectionParty) => {
     const isPerson = !!party.person;
     const icon = isPerson ? "bi-person" : "bi-building";
-    const link = getPartyLink(party);
 
     const globalParty = isGlobalParty(party);
 
@@ -264,7 +266,13 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
         <div className="w-100 border-bottom d-flex justify-content-between pb-3">
           <div className="d-flex align-items-center gap-2">
             <i className={`bi ${icon} text-muted`} />
-            <Link to={link}>{getPartyName(party)}</Link>
+            <Button
+              variant="link"
+              className="p-0"
+              onClick={() => onViewParty?.(party.partyIdentifier)}
+            >
+              {getPartyName(party)}
+            </Button>
             {globalParty && (
               <span className="text-success small d-flex align-items-center gap-1">
                 <i className="bi bi-check-circle-fill"></i> Published

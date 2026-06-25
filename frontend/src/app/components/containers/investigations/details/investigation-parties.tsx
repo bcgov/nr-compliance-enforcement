@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useState } from "react";
 import { Button } from "react-bootstrap";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -11,6 +11,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { useInvestigationReadOnly } from "../hooks/use-investigation-read-only";
+import InvestigationPartyDetail from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-detail";
 
 interface InvestigationPartiesProps {
   investigationGuid: string;
@@ -56,6 +57,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
     },
   });
 
+  const [selectedPartyIdentifier, setSelectedPartyIdentifier] = useState<string | null>(null);
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
   const handleAddParty = () => {
@@ -121,6 +123,17 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
 
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
+  const selectedParty = parties.find((p) => p.partyIdentifier === selectedPartyIdentifier);
+
+  if (selectedParty) {
+    return (
+      <InvestigationPartyDetail
+        party={selectedParty}
+        onBack={() => setSelectedPartyIdentifier(null)}
+      />
+    );
+  }
+
   return (
     <>
       <div className="row align-items-center mb-3">
@@ -146,6 +159,7 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
             onEditParty={isReadOnly ? undefined : handleEditParty}
+            onViewParty={setSelectedPartyIdentifier}
             activityType={CaseActivities.INVESTIGATION}
           />
         </div>
