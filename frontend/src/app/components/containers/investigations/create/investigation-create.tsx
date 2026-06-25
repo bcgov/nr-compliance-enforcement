@@ -16,7 +16,12 @@ import { InvestigationCreateHeader } from "@/app/components/containers/investiga
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
-import { getComplaintById, updateComplaintLastUpdated, selectComplaint } from "@/app/store/reducers/complaints";
+import {
+  getComplaintById,
+  updateComplaintLastUpdated,
+  selectComplaint,
+  updateAllegationComplaintStatus,
+} from "@/app/store/reducers/complaints";
 import { resolveLocationGeometry } from "@/app/common/geocoder";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
@@ -105,6 +110,7 @@ const InvestigationCreate: FC = () => {
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       if (complaintId) {
+        dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
         dispatch(updateComplaintLastUpdated(complaintId));
       }
       allowNavigation();
