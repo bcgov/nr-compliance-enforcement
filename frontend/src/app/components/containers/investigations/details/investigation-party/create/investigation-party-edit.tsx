@@ -1,15 +1,14 @@
 import { FC, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "react-bootstrap";
 import { ToggleInformation } from "@/app/common/toast";
+import { InvestigationPartyEditHeader } from "./investigation-party-edit-header";
 
-interface InvestigationPartyEditProps {
-  investigationGuid: string;
-}
-
-const InvestigationPartyEdit: FC<InvestigationPartyEditProps> = ({ investigationGuid }) => {
+const InvestigationPartyEdit: FC = () => {
   const navigate = useNavigate();
-  const { partyIdentifier } = useParams<{ partyIdentifier: string }>();
+  const { investigationGuid = "", partyIdentifier } = useParams<{
+    investigationGuid: string;
+    partyIdentifier: string;
+  }>();
 
   const isEditMode = !!partyIdentifier;
 
@@ -25,34 +24,22 @@ const InvestigationPartyEdit: FC<InvestigationPartyEditProps> = ({ investigation
   }, []);
 
   return (
-    <>
-      <div className="row align-items-center mb-3">
-        <div className="col">
-          <h2 className="mb-0">{title}</h2>
+    <div className="comp-investigation-edit-headerdetails">
+      <InvestigationPartyEditHeader
+        isEditMode={isEditMode}
+        title={title}
+        cancelButtonClick={cancelButtonClick}
+        saveButtonClick={saveButtonClick}
+        investigationGuid={investigationGuid}
+      />
+
+      <section className="comp-details-body comp-details-form comp-container">
+        <div className="comp-details-section-header">
+          <h2>Party details</h2>
         </div>
-        <div className="col-auto d-flex gap-2">
-          <Button
-            id="party-cancel-button"
-            variant="outline-primary"
-            onClick={cancelButtonClick}
-          >
-            Cancel
-          </Button>
-          <Button
-            id="party-save-button"
-            variant="primary"
-            onClick={saveButtonClick}
-          >
-            Save changes
-          </Button>
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-12">
-          <div className="p-4 text-muted">{isEditMode ? "Edit party form" : "New party form"}</div>
-        </div>
-      </div>
-    </>
+        <div className="p-4 text-muted">{isEditMode ? "Edit party form" : "New party form"}</div>
+      </section>
+    </div>
   );
 };
 
