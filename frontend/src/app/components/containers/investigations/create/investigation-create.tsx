@@ -110,7 +110,10 @@ const InvestigationCreate: FC = () => {
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       if (complaintId) {
-        dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+        const userAgency = getUserAgency();
+        if (["EPO", "MINES", "NROS"].includes(userAgency)) {
+          dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+        }
         dispatch(updateComplaintLastUpdated(complaintId));
       }
       allowNavigation();
