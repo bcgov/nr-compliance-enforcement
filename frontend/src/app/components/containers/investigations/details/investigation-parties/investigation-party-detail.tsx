@@ -3,8 +3,10 @@ import { Badge, Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { InvestigationParty } from "@/generated/graphql";
+import { InvestigationContactMethod, InvestigationParty } from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr, isYoungPerson } from "@/app/common/methods";
+import { ContactMethods } from "@/app/constants/contact-methods";
+import { formatPhoneNumber } from "react-phone-number-input";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -33,7 +35,25 @@ const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ label, va
     </div>
   ) : null;
 
+/** Renders contact-method rows with positional labels: "<primaryLabel>", then "<alternateLabel> 1", 2, … */
+const renderContactRows = (
+  methods: InvestigationContactMethod[],
+  primaryLabel: string,
+  alternateLabel: string,
+  formatValue: (value: string) => string,
+) =>
+  methods.map((cm, index) => (
+    <div key={cm.contactMethodGuid}>
+      <dt>
+        {index === 0 ? primaryLabel : `${alternateLabel} ${index}`}
+        {cm.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+      </dt>
+      <dd>{formatValue(cm.value ?? "")}</dd>
+    </div>
+  ));
+
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }) => {
+  // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -44,6 +64,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
   // TODO: placeholder name from role when first/last name absent.
   const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : "-";
 
+  // Identifying Information data
   const gender = person?.genderCode
     ? (genderCodes?.find((code: any) => code.genderCode === person.genderCode)?.shortDescription ?? person.genderCode)
     : undefined;
@@ -72,6 +93,18 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
     partyRoles.find(
       (r) => r.partyAssociationRole === party.partyAssociationRole && r.caseActivityTypeCode === "INVSTGTN",
     )?.shortDescription ?? party.partyAssociationRole;
+
+  // Contact information data
+  const contactMethods = (party.contactMethods ?? []).filter(Boolean) as InvestigationContactMethod[];
+
+  // Primary first; sort is stable so remaining order is preserved.
+  const phones = contactMethods
+    .filter((cm) => cm.typeCode === ContactMethods.PHONE && cm.value)
+    .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
+
+  const emails = contactMethods
+    .filter((cm) => cm.typeCode === ContactMethods.EMAIL && cm.value)
+    .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
 
   return (
     <div className="comp-details-view">
@@ -164,7 +197,16 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
           />
         </DetailSection>
 
-        <DetailSection title="Contact information" />
+        <DetailSection title="Contact information">
+          {renderContactRows(
+            phones,
+            "Phone number",
+            "Alternate phone number",
+            (value) => formatPhoneNumber(value) ?? value,
+          )}
+          {renderContactRows(emails, "Email address", "Alternate email address", (value) => value)}
+        </DetailSection>
+
         <DetailSection title="Address(es)" />
         <DetailSection title="Descriptors" />
         <DetailSection title="Attachments" />
