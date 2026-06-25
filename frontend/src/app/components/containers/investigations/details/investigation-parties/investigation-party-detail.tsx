@@ -1,9 +1,10 @@
 import { FC } from "react";
-import { Button, Card } from "react-bootstrap";
+import { Badge, Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { InvestigationParty } from "@/generated/graphql";
+import { calculateAgeYears, formatDateStr, isYoungPerson } from "@/app/common/methods";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -23,14 +24,49 @@ const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ titl
     </Card>
   </section>
 );
+
+const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) =>
+  value ? (
+    <div>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </div>
+  ) : null;
+
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
+  const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
+  const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
 
   const person = party.person;
   const isPublished = !!party.partyReference;
 
   // TODO: placeholder name from role when first/last name absent.
   const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : "-";
+
+  const gender = person?.genderCode
+    ? (genderCodes?.find((code: any) => code.genderCode === person.genderCode)?.shortDescription ?? person.genderCode)
+    : undefined;
+
+  const aliases = (party.aliases ?? [])
+    .filter(Boolean)
+    .map((a) => a!.name)
+    .join(", ");
+
+  const dob = person?.dateOfBirth ? new Date(String(person.dateOfBirth)) : null;
+
+  // Age only when we have a DOB.
+  const ageDisplay = dob === null ? undefined : `${calculateAgeYears(dob)} years old`;
+
+  // Approximate age only when we have no DOB but do have a code.
+  const approximateAge =
+    !dob && person?.approximateAgeCode
+      ? (approximateAgeCodes?.find((code: any) => code.approximateAgeCode === person.approximateAgeCode)
+          ?.shortDescription ?? person.approximateAgeCode)
+      : undefined;
+
+  // Young person badge (shown in header): DOB under 19, or approximate age 18 and under.
+  const personIsYoung = isYoungPerson(dob, person?.approximateAgeCode);
 
   const roleText =
     partyRoles.find(
@@ -64,6 +100,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
                 <i className="bi bi-check-circle-fill"></i> Published
               </span>
             )}
+            {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
           </div>
           <Button
             variant="outline-primary"
@@ -92,7 +129,41 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack }
           </Card>
         </section>
 
-        <DetailSection title="Identifying information" />
+        <DetailSection title="Identifying information">
+          <DetailField
+            label="First name"
+            value={person?.firstName}
+          />
+          <DetailField
+            label="Middle name(s)"
+            value={person?.middleNames}
+          />
+          <DetailField
+            label="Last name"
+            value={person?.lastName}
+          />
+          <DetailField
+            label="Alias(es)"
+            value={aliases}
+          />
+          <DetailField
+            label="Gender"
+            value={gender}
+          />
+          <DetailField
+            label="Date of birth"
+            value={formatDateStr(person?.dateOfBirth, "")}
+          />
+          <DetailField
+            label="Age"
+            value={ageDisplay}
+          />
+          <DetailField
+            label="Approximate age"
+            value={approximateAge}
+          />
+        </DetailSection>
+
         <DetailSection title="Contact information" />
         <DetailSection title="Address(es)" />
         <DetailSection title="Descriptors" />
