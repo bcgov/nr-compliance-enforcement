@@ -78,8 +78,10 @@ const renderContactRows = (
   ));
 
 /** Boolean indicator → "Yes"/"No"; undefined when unset. */
-const yesNo = (indicator: boolean | null | undefined): string | undefined =>
-  indicator === null || indicator === undefined ? undefined : indicator ? "Yes" : "No";
+const yesNo = (indicator: boolean | null | undefined): string | undefined => {
+  if (indicator === null || indicator === undefined) return undefined;
+  return indicator ? "Yes" : "No";
+};
 
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   party,
