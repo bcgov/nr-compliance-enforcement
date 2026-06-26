@@ -1,5 +1,5 @@
 import { FC, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { PartyHeader } from "./party-header";
 import { PartyTabs } from "./party-tabs";
 import { PartyHistoryTab } from "./party-history-tab";
@@ -46,6 +46,7 @@ import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import PartyComplianceHistory from "@/app/components/containers/parties/view/party-compliance-history";
 
 type PartyRelation = {
   caseId?: string | null;
@@ -308,85 +309,6 @@ const PersonIdentifyingInfo: FC<{
   </>
 );
 
-const AssociatedCasesAndActivities: FC<{ partyRelations: PartyRelation[]; id: string }> = ({ partyRelations, id }) => (
-  <>
-    <br />
-    <h4>Associated cases and activities</h4>
-    <div className="party-details-item">
-      {partyRelations
-        .toSorted((left, right) => (left.caseName ?? "").localeCompare(right.caseName ?? ""))
-        .map((partyRelation) => (
-          <div key={partyRelation.caseId}>
-            <p>
-              <b>
-                Case:&nbsp;&nbsp;
-                {partyRelation.sameAgency ? (
-                  <Link to={`/case/${partyRelation.caseId}`}>{partyRelation.caseName}</Link>
-                ) : (
-                  <span>{partyRelation.caseName}</span>
-                )}
-              </b>
-              <span style={{ marginLeft: "0.8em" }}></span>
-              <i className="bi-building bi"></i>
-              <span style={{ marginLeft: "0.2em" }}>{partyRelation.leadAgency} </span>
-            </p>
-            {partyRelation.activities
-              ?.toSorted((left, right) => (left.name ?? "").localeCompare(right.name ?? ""))
-              .map((activity) => (
-                <div key={activity.id}>
-                  <p>
-                    &nbsp;&nbsp;&nbsp;&nbsp;
-                    {`${activity.activityType === CaseActivities.INVESTIGATION ? "Investigation" : "Inspection"}`}:
-                    &nbsp;&nbsp;
-                    {activity.sameAgency ? (
-                      <Link
-                        to={`/${activity.activityType === CaseActivities.INVESTIGATION ? "investigation" : "inspection"}/${activity.id}`}
-                      >
-                        {activity.name}
-                      </Link>
-                    ) : (
-                      <span>{activity.name}</span>
-                    )}
-                    <Badge
-                      style={{ marginLeft: "0.3em" }}
-                      bg="species-badge comp-species-badge"
-                    >
-                      {activity.status}
-                    </Badge>
-                    <span style={{ marginLeft: "0.4em" }}></span>
-                    <span>|</span>
-                    <span style={{ marginLeft: "0.4em" }}>{activity.primaryInvestigatorName} </span>
-                    <span style={{ marginLeft: "0.4em" }}></span>
-                    <span>|</span>
-                    <i
-                      style={{ marginLeft: "0.3em" }}
-                      className="bi bi-building"
-                    ></i>
-                    <span style={{ marginLeft: "0.1em" }}>{activity.leadAgency} </span>
-                    <span style={{ marginLeft: "0.1em" }}>|</span>
-                    <Badge
-                      style={{ marginLeft: "0.3em" }}
-                      bg="species-badge comp-species-badge"
-                    >
-                      {activity.role}
-                    </Badge>
-                  </p>
-                  {activity.status !== "Open" &&
-                    activity.contraventions?.map((contravention) => (
-                      <LegislationRow
-                        key={contravention.contraventionIdentifier}
-                        contravention={contravention}
-                        partyGuid={id}
-                      />
-                    ))}
-                </div>
-              ))}
-          </div>
-        ))}
-    </div>
-  </>
-);
-
 const ContactMethodsList: FC<{ contactMethods: ReadonlyArray<ContactMethod> }> = ({ contactMethods }) => (
   <>
     {contactMethods.map((contactMethod) => {
@@ -453,35 +375,6 @@ const AddressesList: FC<{
     ))}
   </>
 );
-
-type LegislationRowProps = {
-  contravention: Contravention;
-  partyGuid: string;
-};
-
-const LegislationRow = ({ contravention, partyGuid }: LegislationRowProps) => {
-  const legislation = useLegislation(contravention?.legislationIdentifierRef, false);
-  const legislationData = legislation?.data?.legislation;
-  const displayText = legislationData?.alternateText ?? legislationData?.legislationText;
-  const enforcementActions = useAppSelector((state) => state.codeTables["enforcement-action-type"]);
-
-  const matchingParty = contravention.investigationParty?.find((party) => party?.partyReference === partyGuid);
-
-  return (
-    <>
-      <p style={{ marginLeft: "2em" }}>{displayText}</p>
-      {matchingParty?.enforcementActions?.map((e) => (
-        <p key={e?.enforcementActionIdentifier}>
-          <span style={{ marginLeft: "5em" }}>
-            {enforcementActions.find(
-              (ea) => ea.enforcementActionCode === e?.enforcementActionCode.enforcementActionCode,
-            )?.shortDescription ?? ""}
-          </span>
-        </p>
-      ))}
-    </>
-  );
-};
 
 export const PartyView: FC = () => {
   const { id = "", tabKey } = useParams<PartyParams>();
@@ -601,9 +494,7 @@ export const PartyView: FC = () => {
       partyRelation.caseId = uniqueCaseId;
       partyRelation.caseName = currentCase?.name;
       partyRelation.activities = [];
-      partyRelation.leadAgency = leadAgencyOptions.find(
-        (option: Option) => option.value === currentCase?.leadAgency?.agencyCode,
-      )?.label;
+      partyRelation.leadAgency = currentCase?.leadAgency?.agencyCode;
       partyRelation.sameAgency = currentCase?.leadAgency?.agencyCode === userAgency;
 
       for (let caseActivity of currentCase?.activities ?? []) {
@@ -616,8 +507,7 @@ export const PartyView: FC = () => {
             id: currenInvestigation.investigationGuid,
             name: currenInvestigation.name,
             activityType: CaseActivities.INVESTIGATION,
-            leadAgency: leadAgencyOptions.find((option: Option) => option.value === currenInvestigation?.leadAgency)
-              ?.label,
+            leadAgency: currenInvestigation?.leadAgency,
             role: getPartyRoleText(
               rolesInInvestigations.find(
                 (investigation) => investigation.investigationGuid === currenInvestigation.investigationGuid,
@@ -829,7 +719,7 @@ export const PartyView: FC = () => {
               </div>
               <br />
               {partyRelations && partyRelations.length > 0 && (
-                <AssociatedCasesAndActivities
+                <PartyComplianceHistory
                   partyRelations={partyRelations}
                   id={id}
                 />
