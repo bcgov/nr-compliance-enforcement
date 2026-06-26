@@ -205,9 +205,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           editParty.person?.facialHairStyleCodes
             ?.filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
             .map((fhs) => ({
-              personFacialStyleHairCodeGuid: fhs?.investigationPersonFacialStyleHairCodeRefGuid,
-              personGuid: fhs?.investigationPersonGuid,
-              facialHairStyleCode: fhs?.facialHairStyleCodeRef,
+              personFacialStyleHairCodeGuid: fhs?.personFacialStyleHairCodeGuid,
+              personGuid: fhs?.personGuid,
+              facialHairStyleCode: fhs?.facialHairStyleCode,
             })) ?? [],
         additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
         tattooIndicator: editParty.person?.tattooIndicator || null,
@@ -281,9 +281,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {
@@ -309,9 +309,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {
@@ -510,9 +510,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           personReference: party.person?.personGuid || "",
           facialHairStyleCodes:
             party.person?.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-              investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-              investigationPersonGuid: fhs.personGuid,
-              facialHairStyleCodeRef: fhs.facialHairStyleCode,
+              personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+              personGuid: fhs.personGuid,
+              facialHairStyleCode: fhs.facialHairStyleCode,
             })) || [],
         },
       }),

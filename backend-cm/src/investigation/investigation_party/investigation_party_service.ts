@@ -230,7 +230,7 @@ export class InvestigationPartyService {
           ? {
               investigation_person_facial_hair_style_code_ref: {
                 create: input.facialHairStyleCodes.map((fhs) => ({
-                  facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
+                  facial_hair_style_code_ref: fhs.facialHairStyleCode,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
                 })),
@@ -706,12 +706,12 @@ export class InvestigationPartyService {
     incomingFacialHairStyles: InvestigationPersonFacialHairStyleCodeRefInput[],
     existingFacialHairStyles: InvestigationPersonFacialHairStyleCodeRef[],
   ): any {
-    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.investigationPersonFacialStyleHairCodeRefGuid);
-    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.investigationPersonFacialStyleHairCodeRefGuid);
+    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
+    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
     const fhsToDelete = existingFacialHairStyles.filter(
       (fhs) =>
-        !new Set(incomingFacialHairStyles.map((fhs) => fhs.investigationPersonFacialStyleHairCodeRefGuid)).has(
-          fhs.investigationPersonFacialStyleHairCodeRefGuid,
+        !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
+          fhs.personFacialStyleHairCodeGuid,
         ),
     );
 
@@ -719,8 +719,8 @@ export class InvestigationPartyService {
 
     if (fhsToCreate.length) {
       operations.create = fhsToCreate.map((fhs) => ({
-        facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
-        investigation_person_guid: fhs.investigationPersonGuid,
+        facial_hair_style_code_ref: fhs.facialHairStyleCode,
+        investigation_person_guid: fhs.personGuid,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
@@ -731,11 +731,11 @@ export class InvestigationPartyService {
       operations.update = [
         ...fhsToUpdate.map((fhs) => ({
           where: {
-            investigation_person_facial_hair_style_code_ref_guid: fhs.investigationPersonFacialStyleHairCodeRefGuid,
+            investigation_person_facial_hair_style_code_ref_guid: fhs.personFacialStyleHairCodeGuid,
           },
           data: {
-            facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
-            investigation_person_guid: fhs.investigationPersonGuid,
+            facial_hair_style_code_ref: fhs.facialHairStyleCode,
+            investigation_person_guid: fhs.personGuid,
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
@@ -743,7 +743,7 @@ export class InvestigationPartyService {
         })),
         ...fhsToDelete.map((fhs) => ({
           where: {
-            investigation_person_facial_hair_style_code_ref_guid: fhs.investigationPersonFacialStyleHairCodeRefGuid,
+            investigation_person_facial_hair_style_code_ref_guid: fhs.personFacialStyleHairCodeGuid,
           },
           data: {
             active_ind: false,

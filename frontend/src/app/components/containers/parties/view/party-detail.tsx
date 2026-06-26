@@ -23,7 +23,6 @@ import { DetailSection } from "@/app/components/containers/investigations/detail
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
-  facialHairStyleCodeRefs: string[]; // TODO: Reconcile
 }
 
 const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) =>
@@ -62,7 +61,7 @@ const yesNo = (indicator: boolean | null | undefined): string | undefined => {
   return indicator ? "Yes" : "No";
 };
 
-export const PartyDetail: FC<PartyDetailProps> = ({ party, facialHairStyleCodeRefs }) => {
+export const PartyDetail: FC<PartyDetailProps> = ({ party }) => {
   // Code tables
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -160,11 +159,12 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, facialHairStyleCodeRe
 
   const facialHair = yesNo(person?.facialHairIndicator);
 
-  const facialHairStyle = facialHairStyleCodeRefs
-    .map(
+  const facialHairStyle = person?.facialHairStyleCodes
+    ?.map(
       (ref) =>
-        facialHairStyleCodeTable?.find((code: FacialHairStyleType) => code.facialHairStyleCode === ref)
-          ?.shortDescription ?? ref,
+        facialHairStyleCodeTable?.find(
+          (code: FacialHairStyleType) => code.facialHairStyleCode === ref?.facialHairStyleCode,
+        )?.shortDescription ?? ref,
     )
     .join(", ");
 

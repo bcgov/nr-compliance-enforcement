@@ -1431,16 +1431,16 @@ export type InvestigationPerson = {
 export type InvestigationPersonFacialHairStyleCodeRef = {
   __typename?: 'InvestigationPersonFacialHairStyleCodeRef';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  facialHairStyleCodeRef?: Maybe<Scalars['String']['output']>;
-  investigationPersonFacialStyleHairCodeRefGuid?: Maybe<Scalars['String']['output']>;
-  investigationPersonGuid?: Maybe<Scalars['String']['output']>;
+  facialHairStyleCode?: Maybe<Scalars['String']['output']>;
+  personFacialStyleHairCodeGuid?: Maybe<Scalars['String']['output']>;
+  personGuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationPersonFacialHairStyleCodeRefInput = {
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
-  facialHairStyleCodeRef?: InputMaybe<Scalars['String']['input']>;
-  investigationPersonFacialStyleHairCodeRefGuid?: InputMaybe<Scalars['String']['input']>;
-  investigationPersonGuid?: InputMaybe<Scalars['String']['input']>;
+  facialHairStyleCode?: InputMaybe<Scalars['String']['input']>;
+  personFacialStyleHairCodeGuid?: InputMaybe<Scalars['String']['input']>;
+  personGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type InvestigationResult = {

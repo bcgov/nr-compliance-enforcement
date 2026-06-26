@@ -128,9 +128,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           editParty.person?.facialHairStyleCodes
             ?.filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
             .map((fhs) => ({
-              personFacialStyleHairCodeGuid: fhs?.investigationPersonFacialStyleHairCodeRefGuid,
-              personGuid: fhs?.investigationPersonGuid,
-              facialHairStyleCode: fhs?.facialHairStyleCodeRef,
+              personFacialStyleHairCodeGuid: fhs?.personFacialStyleHairCodeGuid,
+              personGuid: fhs?.personGuid,
+              facialHairStyleCode: fhs?.facialHairStyleCode,
             })) ?? [],
         additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
         tattooIndicator: editParty.person?.tattooIndicator || null,
@@ -199,9 +199,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {
@@ -226,9 +226,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {

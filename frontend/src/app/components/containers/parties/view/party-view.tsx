@@ -161,14 +161,6 @@ export const PartyView: FC = () => {
   const personDob = partyData?.person?.dateOfBirth ? new Date(partyData.person.dateOfBirth) : null;
   const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
 
-  // Business identifiers — global field name; widened to the shared BusinessIdentifier contract.
-  const businessIdentifiers = (partyData?.business?.businessIdentifiers ?? []).filter(Boolean) as BusinessIdentifier[];
-
-  // Facial hair style code refs — global element key; reduced to raw code strings for the shared component.
-  const facialHairStyleCodeRefs = (partyData?.person?.facialHairStyleCodes ?? [])
-    .filter(Boolean)
-    .map((s) => s!.facialHairStyleCode);
-
   if (isLoading) {
     return (
       <div className="comp-complaint-details">
@@ -227,10 +219,7 @@ export const PartyView: FC = () => {
             <section className="comp-details-body comp-container party-details-section">
               <hr className="comp-details-body-spacer"></hr>
 
-              <PartyDetail
-                party={partyData}
-                facialHairStyleCodeRefs={facialHairStyleCodeRefs as string[]}
-              />
+              <PartyDetail party={partyData} />
 
               <DetailSection title="Attachments">
                 <PartyAttachments

@@ -54,16 +54,10 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : (business?.name ?? "-");
 
   // Identifying Information data
-  const businessIdentifiers = (business?.businessIdentifiers ?? []).filter(Boolean);
-
   const dob = person?.dateOfBirth ? new Date(String(person.dateOfBirth)) : null;
 
   // Young person badge (shown in header): DOB under 19, or approximate age 18 and under.
   const personIsYoung = isYoungPerson(dob, person?.approximateAgeCode);
-
-  const facialHairStyleCodeRefs = (person?.facialHairStyleCodes ?? [])
-    .filter(Boolean)
-    .map((s) => s!.facialHairStyleCodeRef);
 
   const roleText =
     partyRoles.find(
@@ -130,11 +124,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               </Card>
             </section>
 
-            <PartyDetail
-              party={party}
-              businessIdentifiers={businessIdentifiers as BusinessIdentifier[]}
-              facialHairStyleCodeRefs={facialHairStyleCodeRefs as string[]}
-            />
+            <PartyDetail party={party} />
 
             <DetailSection title="Attachments">
               <PartyAttachments
