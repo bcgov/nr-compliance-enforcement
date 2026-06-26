@@ -1,24 +1,21 @@
-import { FC } from "react";
-import { Button } from "react-bootstrap";
+import { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { useInvestigationSearch } from "../../../hooks/use-investigation-search";
+import { useInvestigationSearch } from "../../hooks/use-investigation-search";
 
-interface InvestigationPartyEditHeaderProps {
-  isEditMode: boolean;
+interface InvestigationPartyHeaderProps {
   title: string;
-  cancelButtonClick: () => void;
-  saveButtonClick: () => void;
   investigationGuid: string;
   investigationLabel?: string;
+  badges?: ReactNode;
+  actions?: ReactNode;
 }
 
-export const InvestigationPartyEditHeader: FC<InvestigationPartyEditHeaderProps> = ({
-  isEditMode,
+export const InvestigationPartyHeader: FC<InvestigationPartyHeaderProps> = ({
   title,
-  cancelButtonClick,
-  saveButtonClick,
   investigationGuid,
   investigationLabel,
+  badges,
+  actions,
 }) => {
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -48,33 +45,17 @@ export const InvestigationPartyEditHeader: FC<InvestigationPartyEditHeaderProps>
         </div>
 
         <div className="comp-details-title-container">
-          <div className="comp-details-title-info">
-            <h1 className="comp-box-complaint-id">
+          <div className="comp-details-title-info d-flex align-items-center gap-2">
+            <h1 className="comp-box-complaint-id mb-0 pb-1">
               <span>{title}</span>
             </h1>
+            {badges}
           </div>
-          <div className="comp-header-actions">
-            <Button
-              id="party-cancel-button"
-              title={isEditMode ? "Cancel edit party" : "Cancel new party"}
-              variant="outline-light"
-              onClick={cancelButtonClick}
-            >
-              Cancel
-            </Button>
-            <Button
-              id="party-save-button"
-              title="Save party"
-              variant="outline-light"
-              onClick={saveButtonClick}
-            >
-              Save changes
-            </Button>
-          </div>
+          <div className="comp-header-actions">{actions}</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default InvestigationPartyEditHeader;
+export default InvestigationPartyHeader;

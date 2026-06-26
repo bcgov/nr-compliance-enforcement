@@ -23,6 +23,7 @@ import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
+import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
@@ -30,6 +31,7 @@ import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers
 interface PartyDetailProps {
   party: InvestigationParty;
   investigationGuid: string;
+  investigationLabel?: string;
   onBack: () => void;
   onEdit?: () => void;
 }
@@ -77,7 +79,13 @@ const renderContactRows = (
 const yesNo = (indicator: boolean | null | undefined): string | undefined =>
   indicator === null || indicator === undefined ? undefined : indicator ? "Yes" : "No";
 
-export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investigationGuid, onBack, onEdit }) => {
+export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
+  party,
+  investigationGuid,
+  investigationLabel,
+  onBack,
+  onEdit,
+}) => {
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
@@ -205,48 +213,50 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investig
 
   return (
     <div className="comp-complaint-details">
-      <section className="comp-details-body comp-container">
-        <div className="comp-details-view">
-          <div className="comp-details-content">
+      <InvestigationPartyHeader
+        title={displayName}
+        investigationGuid={investigationGuid}
+        investigationLabel={investigationLabel}
+        badges={
+          <>
+            {person?.boloIndicator && (
+              <Badge bg="species-badge comp-species-badge danger">
+                <i className="bi bi-exclamation-circle"></i> Safety concern
+              </Badge>
+            )}
+            {isPublished && (
+              <Badge bg="species-badge comp-species-badge success">
+                <i className="bi bi-check-circle-fill"></i> Published
+              </Badge>
+            )}
+            {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
+          </>
+        }
+        actions={
+          <>
             <Button
-              variant="outline-primary"
-              size="sm"
-              className="mb-3"
+              variant="outline-light"
               onClick={onBack}
             >
               <i className="bi bi-arrow-left"></i>
               <span>Parties</span>
             </Button>
-
-            {/* Title + edit row */}
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <div className="d-flex align-items-center gap-2">
-                <h2 className="mb-0">{displayName}</h2>
-                {person?.boloIndicator && (
-                  <span className="text-danger small d-flex align-items-center gap-1">
-                    <i className="bi bi-exclamation-circle"></i> Safety concern
-                  </span>
-                )}
-                {isPublished && (
-                  <span className="text-success small d-flex align-items-center gap-1">
-                    <i className="bi bi-check-circle-fill"></i> Published
-                  </span>
-                )}
-                {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
-              </div>
-              {onEdit && (
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  id="party-detail-edit-button"
-                  onClick={onEdit}
-                >
-                  <i className="bi bi-pencil"></i>
-                  <span>Edit party</span>
-                </Button>
-              )}
-            </div>
-
+            {onEdit && (
+              <Button
+                variant="outline-light"
+                id="party-detail-edit-button"
+                onClick={onEdit}
+              >
+                <i className="bi bi-pencil"></i>
+                <span>Edit party</span>
+              </Button>
+            )}
+          </>
+        }
+      />
+      <section className="comp-details-body comp-container">
+        <div className="comp-details-view">
+          <div className="comp-details-content">
             {/* Investigation role — own section at top*/}
             <section className="comp-details-section">
               <Card className="mb-3 border-0">

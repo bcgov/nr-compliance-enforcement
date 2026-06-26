@@ -42,7 +42,8 @@ import { formatDateOfBirth } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
-import { InvestigationPartyEditHeader } from "./investigation-party-edit-header";
+import { Button } from "react-bootstrap";
+import { InvestigationPartyHeader } from "../investigation-party-header";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -334,13 +335,30 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   return (
     <div className="comp-investigation-edit-headerdetails">
-      <InvestigationPartyEditHeader
-        isEditMode={isEditMode}
+      <InvestigationPartyHeader
         title={title}
-        cancelButtonClick={cancelButtonClick}
-        saveButtonClick={saveButtonClick}
         investigationGuid={investigationGuid}
         investigationLabel={investigationLabel}
+        actions={
+          <>
+            <Button
+              id="party-cancel-button"
+              title={isEditMode ? "Cancel edit party" : "Cancel new party"}
+              variant="outline-light"
+              onClick={cancelButtonClick}
+            >
+              Cancel
+            </Button>
+            <Button
+              id="party-save-button"
+              title="Save party"
+              variant="outline-light"
+              onClick={saveButtonClick}
+            >
+              Save changes
+            </Button>
+          </>
+        }
       />
 
       <section className="comp-details-body comp-details-form comp-container">
@@ -424,6 +442,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               activityId={investigationGuid}
               attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
               attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+              allowUpload
+              allowDelete
               triggerSave={triggerSaveAttachments}
               onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
               onSaved={() => {
