@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState, useCallback } from "react";
+import { Alert, Button } from "react-bootstrap";
 import AttachmentUpload from "@/app/components/common/attachment-upload";
 import { fileListToCOMSObjects, getDisplayFilename, handlePersistAttachments } from "@/app/common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@/app/common/attachment-upload-helper";
@@ -37,6 +38,8 @@ export const EnforcementActionAttachmentSection = forwardRef<
 
   const [filesToAdd, setFilesToAdd] = useState<File[]>([]);
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set());
+  // existing (already-saved) attachment awaiting delete confirmation
+  const [pendingRemove, setPendingRemove] = useState<(EnforcementActionAttachment & { id: string }) | null>(null);
 
   const isSectionDirty = filesToAdd.length > 0 || removedIds.size > 0;
   useEffect(() => {
@@ -135,18 +138,54 @@ export const EnforcementActionAttachmentSection = forwardRef<
               key={a.id}
               className="d-flex align-items-center gap-2 py-1"
             >
+              <span>{getDisplayFilename(a.name)}</span>
               <button
                 type="button"
                 className="btn btn-link p-0 border-0 text-body"
-                onClick={() => handleRemoveExisting(a.id)}
+                onClick={() => setPendingRemove(a)}
                 aria-label={`Remove ${getDisplayFilename(a.name)}`}
               >
                 <i className="bi bi-trash" />
               </button>
-              <span>{getDisplayFilename(a.name)}</span>
             </div>
           ))}
         </div>
+      )}
+
+      {/* Delete confirmation for an already-saved attachment */}
+      {pendingRemove && (
+        <Alert
+          variant="danger"
+          className="comp-complaint-details-alert mt-3"
+        >
+          <div className="d-flex align-items-start gap-2">
+            <i className="bi bi-info-circle mt-2" />
+            <span>
+              <strong> Delete attachment</strong>
+              <p className="mb-3">
+                Are you sure you want to delete "{getDisplayFilename(pendingRemove.name)}"? This action cannot be undone.
+              </p>
+            </span>
+          </div>
+          <div className="d-flex justify-content-end gap-2">
+            <Button
+              variant="outline-primary"
+              onClick={() => setPendingRemove(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => {
+                handleRemoveExisting(pendingRemove.id);
+                setPendingRemove(null);
+              }}
+            >
+              <i className="bi bi-trash me-1" />
+              <span>Confirm delete</span>
+            </Button>
+          </div>
+        </Alert>
       )}
 
       {/* New file dropzone */}
