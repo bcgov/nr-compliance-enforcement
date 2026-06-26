@@ -63,6 +63,7 @@ const InvestigationPartyView: FC = () => {
   return (
     <InvestigationPartyDetail
       party={party}
+      investigationGuid={investigationGuid}
       onBack={backToParties}
       onEdit={
         isReadOnly ? undefined : () => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}/edit`)

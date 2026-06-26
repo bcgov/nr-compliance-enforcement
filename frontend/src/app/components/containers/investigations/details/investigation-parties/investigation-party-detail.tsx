@@ -3,7 +3,12 @@ import { Badge, Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { InvestigationAddress, InvestigationContactMethod, InvestigationParty } from "@/generated/graphql";
+import {
+  InvestigationAddress,
+  InvestigationAttachmentReference,
+  InvestigationContactMethod,
+  InvestigationParty,
+} from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr, isYoungPerson } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
@@ -18,9 +23,12 @@ import { HairColourType } from "@/app/types/app/code-tables/hair-colour";
 import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
+import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
+import AttachmentEnum from "@/app/constants/attachment-enum";
 
 interface PartyDetailProps {
   party: InvestigationParty;
+  investigationGuid: string;
   onBack: () => void;
   onEdit?: () => void;
 }
@@ -68,7 +76,7 @@ const renderContactRows = (
 const yesNo = (indicator: boolean | null | undefined): string | undefined =>
   indicator === null || indicator === undefined ? undefined : indicator ? "Yes" : "No";
 
-export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, onEdit }) => {
+export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investigationGuid, onBack, onEdit }) => {
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
@@ -402,14 +410,26 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, onBack, 
                 label="Additional descriptors"
                 value={person?.additionalDescriptors}
               />
+            </DetailSection>
+
+            <DetailSection title="Additional information">
               <DetailField
                 label="Comments"
                 value={person?.comments}
               />
             </DetailSection>
 
-            <DetailSection title="Additional information" />
-            <DetailSection title="Attachments" />
+            <DetailSection title="Attachments">
+              <PartyAttachments
+                partyId={party?.partyIdentifier}
+                activityId={investigationGuid}
+                attachmentReferences={party?.attachmentReferences as InvestigationAttachmentReference[]}
+                attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                allowUpload={false}
+                allowDelete={false}
+              />
+            </DetailSection>
+
             <DetailSection title="Compliance and enforcement history" />
           </div>
         </div>
