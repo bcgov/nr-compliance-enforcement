@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
-import InvestigationPartyDetail from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-detail";
+import InvestigationPartyDetail from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-view";
 import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
 
 const InvestigationPartyView: FC = () => {

@@ -1,28 +1,13 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { formatDate, formatTime } from "@common/methods";
-import { Party } from "@/generated/graphql";
-import { ActionMenu } from "@/app/components/common/action-menu";
-import { selectOfficers } from "@/app/store/reducers/officer";
-import { useAppSelector } from "@/app/hooks/hooks";
 
 interface PartyHeaderProps {
-  partyData?: Party;
+  title: string;
+  badges?: ReactNode;
+  actions?: ReactNode;
 }
 
-export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
-  const officers = useAppSelector(selectOfficers);
-  const partyId = partyData?.partyIdentifier || "Unknown";
-  const partyType = partyData?.longDescription || "Unknown";
-  const dateLogged = partyData?.createdDateTime ? new Date(partyData.createdDateTime).toString() : undefined;
-  const lastUpdated = partyData?.updatedDateTime ? new Date(partyData.updatedDateTime).toString() : undefined;
-  const getCreatedByDisplayName = (createdBy: string, officers: any) => {
-    const officer = officers?.find((item: { app_user_guid: string }) => item.app_user_guid === createdBy);
-    return officer
-      ? `by ${officer?.last_name}, ${officer?.first_name} (${officer?.agency_code?.shortDescription})`
-      : "";
-  };
-
+export const PartyHeader: FC<PartyHeaderProps> = ({ title, badges, actions }) => {
   return (
     <div className="comp-details-header">
       <div className="comp-container">
@@ -31,45 +16,21 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ partyData }) => {
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/parties">Parties of Interest</Link>
-              </li>
-              <li
-                className="breadcrumb-item"
-                aria-current="page"
-              >
-                {partyId}
+                <Link to="/parties">Published parties</Link>
               </li>
             </ol>
           </nav>
         </div>
         {/* <!-- breadcrumb end --> */}
 
-        {/* <!-- party info start --> */}
         <div className="comp-details-title-container">
-          <div className="comp-details-title-info">
-            <h1 className="comp-box-complaint-id">
-              <span>Party of Interest</span>&nbsp;&nbsp;#{partyId}
+          <div className="comp-details-title-info d-flex align-items-center gap-2">
+            <h1 className="comp-box-complaint-id mb-0 pb-1">
+              <span>{title}</span>
             </h1>
+            {badges}
           </div>
-          <ActionMenu />
-        </div>
-
-        {/* Party Type Details */}
-        <div
-          className="mt-1 max-width-48ch"
-          id="comp-nature-of-complaint"
-        >
-          <span>{partyType}</span>
-        </div>
-        <div
-          className="mt-1 max-width-48ch"
-          id="comp-nature-of-complaint"
-        >
-          <span>{`Created on: ${formatDate(dateLogged)} ${formatTime(dateLogged)}`}</span>
-          {getCreatedByDisplayName(partyData?.createdByUserGuid ?? "", officers)}
-        </div>
-        <div className="mt-1 max-width-48ch">
-          <span>{`Last updated ${formatDate(lastUpdated)} ${formatTime(lastUpdated)}`}</span>
+          <div className="comp-header-actions">{actions}</div>
         </div>
       </div>
     </div>
