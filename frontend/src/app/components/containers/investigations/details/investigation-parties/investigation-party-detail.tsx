@@ -224,16 +224,16 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
         badges={
           <>
             {person?.boloIndicator && (
-              <Badge bg="species-badge comp-species-badge danger">
+              <div className="badge comp-status-badge-pending-review">
                 <i className="bi bi-exclamation-circle"></i> Safety concern
-              </Badge>
+              </div>
             )}
             {isPublished && (
-              <Badge bg="species-badge comp-species-badge success">
+              <div className="badge comp-status-badge-open">
                 <i className="bi bi-check-circle-fill"></i> Published
-              </Badge>
+              </div>
             )}
-            {personIsYoung && <Badge bg="species-badge comp-species-badge">Young person</Badge>}
+            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
           </>
         }
         actions={
