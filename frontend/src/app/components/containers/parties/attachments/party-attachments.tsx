@@ -30,7 +30,9 @@ interface PartyAttachmentsProps {
   partyId: string;
   activityId?: string;
   attachmentType: number;
-  triggerSave: boolean;
+  allowUpload: boolean;
+  allowDelete: boolean;
+  triggerSave?: boolean;
   triggerCancel?: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
@@ -42,6 +44,8 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   partyId,
   activityId,
   attachmentType,
+  allowUpload,
+  allowDelete,
   triggerSave,
   triggerCancel,
   onDirtyChange,
@@ -220,8 +224,8 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
             attachmentType={attachmentType}
             identifier={identifier}
             subIdentifier={subidentifier}
-            allowUpload={true}
-            allowDelete={true}
+            allowUpload={allowUpload}
+            allowDelete={allowDelete}
             cancelPendingUpload={isPendingUpload}
             setCancelPendingUpload={setIsPendingUpload}
             onFilesSelected={onHandleAddAttachments}
