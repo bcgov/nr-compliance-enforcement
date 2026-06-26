@@ -25,6 +25,7 @@ import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -91,12 +92,15 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investig
   const facialHairStyleCodeTable = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.FACIAL_HAIR_STYLE));
 
   const person = party.person;
+  const business = party.business;
   const isPublished = !!party.partyReference;
 
   // TODO: placeholder name from role when first/last name absent.
-  const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : "-";
+  const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : (business?.name ?? "-");
 
   // Identifying Information data
+  const businessIdentifiers = (business?.businessIdentifiers ?? []).filter(Boolean);
+
   const gender = person?.genderCode
     ? (genderCodes?.find((code: GenderType) => code.genderCode === person.genderCode)?.shortDescription ??
       person.genderCode)
@@ -257,40 +261,62 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investig
               </Card>
             </section>
 
-            <DetailSection title="Identifying information">
-              <DetailField
-                label="First name"
-                value={person?.firstName}
-              />
-              <DetailField
-                label="Middle name(s)"
-                value={person?.middleNames}
-              />
-              <DetailField
-                label="Last name"
-                value={person?.lastName}
-              />
-              <DetailField
-                label="Alias(es)"
-                value={aliases}
-              />
-              <DetailField
-                label="Gender"
-                value={gender}
-              />
-              <DetailField
-                label="Date of birth"
-                value={formatDateStr(person?.dateOfBirth, "")}
-              />
-              <DetailField
-                label="Age"
-                value={ageDisplay}
-              />
-              <DetailField
-                label="Approximate age"
-                value={approximateAge}
-              />
-            </DetailSection>
+            {person && (
+              <DetailSection title="Identifying information">
+                <DetailField
+                  label="First name"
+                  value={person.firstName}
+                />
+                <DetailField
+                  label="Middle name(s)"
+                  value={person.middleNames}
+                />
+                <DetailField
+                  label="Last name"
+                  value={person.lastName}
+                />
+                <DetailField
+                  label="Alias(es)"
+                  value={aliases}
+                />
+                <DetailField
+                  label="Gender"
+                  value={gender}
+                />
+                <DetailField
+                  label="Date of birth"
+                  value={formatDateStr(person.dateOfBirth, "")}
+                />
+                <DetailField
+                  label="Age"
+                  value={ageDisplay}
+                />
+                <DetailField
+                  label="Approximate age"
+                  value={approximateAge}
+                />
+              </DetailSection>
+            )}
+
+            {business && (
+              <DetailSection title="Identifying information">
+                <DetailField
+                  label="Legal name"
+                  value={business.name}
+                />
+                {businessIdentifiers.map((id) => (
+                  <DetailField
+                    key={id!.businessIdentifierGuid}
+                    label={BUSINESS_IDENTIFIER_LABELS[id!.identifierCode] ?? id!.identifierCode}
+                    value={id!.identifierValue}
+                  />
+                ))}
+                <DetailField
+                  label="Alias(es)"
+                  value={aliases}
+                />
+              </DetailSection>
+            )}
 
             <DetailSection title="Contact information">
               {renderContactRows(
@@ -357,60 +383,62 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({ party, investig
               <DetailSection title="Address(es)" />
             )}
 
-            <DetailSection title="Descriptors">
-              <DetailField
-                label="Height"
-                value={heightDisplay}
-              />
-              <DetailField
-                label="Weight"
-                value={weightDisplay}
-              />
-              <DetailField
-                label="Complexion"
-                value={complexion}
-              />
-              <DetailField
-                label="Build"
-                value={build}
-              />
-              <DetailField
-                label="Hair colour"
-                value={hairColour}
-              />
-              <DetailField
-                label="Hair length"
-                value={hairLength}
-              />
-              <DetailField
-                label="Additional hair descriptors"
-                value={person?.additionalHairDescriptors}
-              />
-              <DetailField
-                label="Eye colour"
-                value={eyeColour}
-              />
-              <DetailField
-                label="Facial hair"
-                value={facialHair}
-              />
-              <DetailField
-                label="Facial hair style"
-                value={facialHairStyle}
-              />
-              <DetailField
-                label="Has tattoos"
-                value={hasTattoos}
-              />
-              <DetailField
-                label="Tattoos descriptors"
-                value={person?.tattooDescription}
-              />
-              <DetailField
-                label="Additional descriptors"
-                value={person?.additionalDescriptors}
-              />
-            </DetailSection>
+            {person && (
+              <DetailSection title="Descriptors">
+                <DetailField
+                  label="Height"
+                  value={heightDisplay}
+                />
+                <DetailField
+                  label="Weight"
+                  value={weightDisplay}
+                />
+                <DetailField
+                  label="Complexion"
+                  value={complexion}
+                />
+                <DetailField
+                  label="Build"
+                  value={build}
+                />
+                <DetailField
+                  label="Hair colour"
+                  value={hairColour}
+                />
+                <DetailField
+                  label="Hair length"
+                  value={hairLength}
+                />
+                <DetailField
+                  label="Additional hair descriptors"
+                  value={person?.additionalHairDescriptors}
+                />
+                <DetailField
+                  label="Eye colour"
+                  value={eyeColour}
+                />
+                <DetailField
+                  label="Facial hair"
+                  value={facialHair}
+                />
+                <DetailField
+                  label="Facial hair style"
+                  value={facialHairStyle}
+                />
+                <DetailField
+                  label="Has tattoos"
+                  value={hasTattoos}
+                />
+                <DetailField
+                  label="Tattoos descriptors"
+                  value={person?.tattooDescription}
+                />
+                <DetailField
+                  label="Additional descriptors"
+                  value={person?.additionalDescriptors}
+                />
+              </DetailSection>
+            )}
 
             <DetailSection title="Additional information">
               <DetailField
