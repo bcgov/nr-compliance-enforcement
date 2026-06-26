@@ -27,6 +27,8 @@ import { InvestigationPartyHeader } from "../investigation-party/investigation-p
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
+import PartyComplianceHistory from "@/app/components/containers/parties/view/compliance-history/party-compliance-history";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -102,6 +104,8 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   const person = party.person;
   const business = party.business;
   const isPublished = !!party.partyReference;
+
+  const isPerson = party.partyTypeCode === PartyTypeCodes.PERSON;
 
   // TODO: placeholder name from role when first/last name absent.
   const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : (business?.name ?? "-");
@@ -468,7 +472,13 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               />
             </DetailSection>
 
-            <DetailSection title="Compliance and enforcement history" />
+            <DetailSection title="Compliance and enforcement history">
+              <PartyComplianceHistory
+                partyReference={party?.partyReference ?? ""}
+                partyTypeGuid={isPerson ? person?.personReference || "" : business?.businessReference || ""}
+                partyType={party.partyTypeCode ?? ""}
+              />
+            </DetailSection>
           </div>
         </div>
       </section>

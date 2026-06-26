@@ -262,6 +262,7 @@ export class InvestigationService {
                       },
                       enforcement_action: {
                         include: {
+                          ticket: true,
                           contravention_party_xref: true,
                           enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
                             true,
