@@ -488,6 +488,8 @@ const PartyEdit: FC = () => {
         <PartyAttachments
           partyId={partyIdentifier}
           attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
+          allowUpload
+          allowDelete
           triggerSave={triggerSaveAttachments}
           triggerCancel={triggerCancelAttachments}
           onPendingImagesChange={handlePendingImagesChange}

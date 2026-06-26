@@ -702,6 +702,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   activityId={activityGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  allowUpload
+                  allowDelete
                   triggerSave={triggerSaveAttachments}
                   onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
                   onSaved={() => {
