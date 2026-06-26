@@ -43,14 +43,14 @@ export class PartyService {
 
   private _validateBusinessInput(business: {
     name?: string;
-    identifiers?: BusinessIdentifier[];
+    businessIdentifiers?: BusinessIdentifier[];
     addresses?: Address[];
   }): void {
     if (!business.name?.trim()) {
       throw new Error("Name is required.");
     }
 
-    const businessNumberValue = this._getBusinessNumberValue(business.identifiers);
+    const businessNumberValue = this._getBusinessNumberValue(business.businessIdentifiers);
 
     if (!businessNumberValue?.trim()) {
       throw new Error("Business number is required.");
@@ -415,10 +415,10 @@ export class PartyService {
           name: input.business?.name,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
-          ...(input.business?.identifiers?.length
+          ...(input.business?.businessIdentifiers?.length
             ? {
                 business_identifier: {
-                  create: input.business.identifiers.map((i) => ({
+                  create: input.business.businessIdentifiers.map((i) => ({
                     business_identifier_code: i.identifierCode,
                     identifier_value: this._normalizeIdentifierValue(i.identifierValue),
                     create_user_id: this.user.getIdirUsername(),
@@ -479,8 +479,8 @@ export class PartyService {
     );
 
     const businessIdentifierOperations = this._buildBusinessIdentifierOperations(
-      input.business?.identifiers ?? [],
-      existingPartyDto.business?.identifiers ?? [],
+      input.business?.businessIdentifiers ?? [],
+      existingPartyDto.business?.businessIdentifiers ?? [],
     );
 
     const addressOperations = this._buildAddressOperations(input.addresses ?? [], existingPartyDto.addresses ?? []);
@@ -1208,7 +1208,11 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._diffBusinessIdentifiers(oldBusiness.identifiers ?? [], newBusiness.identifiers ?? [], addEvent);
+    this._diffBusinessIdentifiers(
+      oldBusiness.businessIdentifiers ?? [],
+      newBusiness.businessIdentifiers ?? [],
+      addEvent,
+    );
     this._diffContactPeople(oldBusiness.contactPeople ?? [], newBusiness.contactPeople ?? [], addEvent);
   }
 

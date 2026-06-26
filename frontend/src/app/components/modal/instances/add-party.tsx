@@ -520,7 +520,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         business: {
           name: party.business.name,
           businessReference: party.business.businessGuid,
-          businessIdentifiers: party.business?.identifiers
+          businessIdentifiers: party.business?.businessIdentifiers
             ?.filter((bi: BusinessIdentifier): bi is BusinessIdentifier => bi != null)
             .map((bi: BusinessIdentifier) => ({
               identifierCode: bi.identifierCode,

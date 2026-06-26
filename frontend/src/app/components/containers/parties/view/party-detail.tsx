@@ -3,7 +3,7 @@ import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { Address, BusinessIdentifier, ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
+import { Address, ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
@@ -23,7 +23,6 @@ import { DetailSection } from "@/app/components/containers/investigations/detail
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
-  businessIdentifiers: BusinessIdentifier[]; // TODO: Reconcile
   facialHairStyleCodeRefs: string[]; // TODO: Reconcile
 }
 
@@ -63,7 +62,7 @@ const yesNo = (indicator: boolean | null | undefined): string | undefined => {
   return indicator ? "Yes" : "No";
 };
 
-export const PartyDetail: FC<PartyDetailProps> = ({ party, businessIdentifiers, facialHairStyleCodeRefs }) => {
+export const PartyDetail: FC<PartyDetailProps> = ({ party, facialHairStyleCodeRefs }) => {
   // Code tables
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -216,11 +215,11 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, businessIdentifiers, 
             label="Legal name"
             value={business.name}
           />
-          {businessIdentifiers.map((id, index) => (
+          {business.businessIdentifiers?.map((id, index) => (
             <DetailField
-              key={id.businessIdentifierGuid ?? `business-identifier-${index}`}
-              label={BUSINESS_IDENTIFIER_LABELS[id.identifierCode ?? ""] ?? id.identifierCode}
-              value={id.identifierValue}
+              key={id?.businessIdentifierGuid ?? `business-identifier-${index}`}
+              label={BUSINESS_IDENTIFIER_LABELS[id?.identifierCode ?? ""] ?? id?.identifierCode}
+              value={id?.identifierValue}
             />
           ))}
           <DetailField

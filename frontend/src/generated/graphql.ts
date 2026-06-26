@@ -201,16 +201,16 @@ export type Business = {
   __typename?: 'Business';
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
+  businessIdentifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
-  identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
 };
 
 export type BusinessIdentifier = {
   __typename?: 'BusinessIdentifier';
   businessIdentifierGuid?: Maybe<Scalars['String']['output']>;
-  identifierCode?: Maybe<Scalars['String']['output']>;
-  identifierValue?: Maybe<Scalars['String']['output']>;
+  identifierCode: Scalars['String']['output'];
+  identifierValue: Scalars['String']['output'];
 };
 
 export type BusinessIdentifierCode = {
@@ -237,8 +237,8 @@ export type BusinessIdentifierUpdateInput = {
 
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
+  businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   name: Scalars['String']['input'];
 };
 
@@ -267,8 +267,8 @@ export type BusinessPersonUpdateInput = {
 export type BusinessUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
+  businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 

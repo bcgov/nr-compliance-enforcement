@@ -250,10 +250,10 @@ const PartyEdit: FC = () => {
         comments: person?.comments || null,
         boloIndicator: person?.boloIndicator || null,
         businessName: partyData.party.business?.name || "",
-        businessNumber: partyData.party.business?.identifiers?.find(
+        businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
         ),
-        worksafeBCNumber: partyData.party.business?.identifiers?.find(
+        worksafeBCNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
         aliases: partyData.party.aliases.map((a: Alias) => ({
