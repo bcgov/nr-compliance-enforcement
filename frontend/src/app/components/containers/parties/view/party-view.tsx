@@ -83,7 +83,7 @@ export const GET_PARTY = gql`
       business {
         name
         businessGuid
-        identifiers {
+        businessIdentifiers {
           businessIdentifierGuid
           identifierValue
           identifierCode
@@ -162,7 +162,7 @@ export const PartyView: FC = () => {
   const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
 
   // Business identifiers — global field name; widened to the shared BusinessIdentifier contract.
-  const businessIdentifiers = (partyData?.business?.identifiers ?? []).filter(Boolean) as BusinessIdentifier[];
+  const businessIdentifiers = (partyData?.business?.businessIdentifiers ?? []).filter(Boolean) as BusinessIdentifier[];
 
   // Facial hair style code refs — global element key; reduced to raw code strings for the shared component.
   const facialHairStyleCodeRefs = (partyData?.person?.facialHairStyleCodes ?? [])
@@ -229,7 +229,6 @@ export const PartyView: FC = () => {
 
               <PartyDetail
                 party={partyData}
-                businessIdentifiers={businessIdentifiers}
                 facialHairStyleCodeRefs={facialHairStyleCodeRefs as string[]}
               />
 

@@ -167,6 +167,7 @@ export const buildIdentifiers = (businessNumber: any, worksafeBCNumber: any) => 
     });
   }
 
+  console.log(identifiers);
   return identifiers.length ? identifiers : undefined;
 };
 
@@ -239,7 +240,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
     name: value.businessName,
-    identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+    businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
 };
