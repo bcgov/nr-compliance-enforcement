@@ -62,7 +62,7 @@ const InvestigationPartyEdit: FC = () => {
       key={partyIdentifier ?? "new"}
       investigationGuid={investigationGuid}
       editParty={editParty}
-      parties={parties}
+      investigationLabel={data?.getInvestigation?.name ?? undefined}
     />
   );
 };

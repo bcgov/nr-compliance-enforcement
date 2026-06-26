@@ -9,6 +9,7 @@ interface InvestigationPartyEditHeaderProps {
   cancelButtonClick: () => void;
   saveButtonClick: () => void;
   investigationGuid: string;
+  investigationLabel?: string;
 }
 
 export const InvestigationPartyEditHeader: FC<InvestigationPartyEditHeaderProps> = ({
@@ -17,6 +18,7 @@ export const InvestigationPartyEditHeader: FC<InvestigationPartyEditHeaderProps>
   cancelButtonClick,
   saveButtonClick,
   investigationGuid,
+  investigationLabel,
 }) => {
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -28,6 +30,9 @@ export const InvestigationPartyEditHeader: FC<InvestigationPartyEditHeaderProps>
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={investigationSearchURL}>Investigations</Link>
+              </li>
+              <li className="breadcrumb-item comp-nav-item-name-inverted">
+                <Link to={`/investigation/${investigationGuid}`}>{investigationLabel ?? "Investigation"}</Link>
               </li>
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/investigation/${investigationGuid}/parties`}>Parties</Link>

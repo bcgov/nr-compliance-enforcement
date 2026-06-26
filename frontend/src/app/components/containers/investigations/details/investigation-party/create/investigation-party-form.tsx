@@ -75,11 +75,15 @@ interface InvestigationPartyFormProps {
   investigationGuid: string;
   // Present in edit mode; undefined when adding a new party.
   editParty?: InvestigationParty;
-  // All investigation parties, used to compute the role-based ordinal title in edit mode.
-  parties: InvestigationParty[];
+  // Investigation shown in the breadcrumb
+  investigationLabel?: string;
 }
 
-export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({ investigationGuid, editParty, parties }) => {
+export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
+  investigationGuid,
+  editParty,
+  investigationLabel,
+}) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isEditMode = !!editParty;
@@ -291,22 +295,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({ invest
     .toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
     .map((option: any) => ({ value: option.value, label: option.label }));
 
-  // "New Party" while adding, on edit the saved name or role-based numbering
   const title = useMemo(() => {
     if (!isEditMode || !editParty) return "New Party";
     if (editParty.business?.name) return editParty.business.name;
-    const first = editParty.person?.firstName?.trim() ?? "";
-    const last = editParty.person?.lastName?.trim() ?? "";
-    if (first || last) return [first, last].filter(Boolean).join(" ");
-    const sameRole = parties.filter((p) => p.partyAssociationRole === editParty.partyAssociationRole);
-    const ordinal = sameRole.findIndex((p) => p.partyIdentifier === editParty.partyIdentifier) + 1;
-    const roleLabel =
-      partyRoles?.find((r: any) => r.value === editParty.partyAssociationRole && r.caseActivityTypeCode === "INVSTGTN")
-        ?.label ??
-      editParty.partyAssociationRole ??
-      "";
-    return `${roleLabel} ${ordinal}`;
-  }, [isEditMode, editParty, parties, partyRoles]);
+    const name = [editParty.person?.firstName, editParty.person?.lastName].filter(Boolean).join(" ").trim();
+    return name || "Edit party";
+  }, [isEditMode, editParty]);
 
   const saveButtonClick = () => {
     setPendingAttachmentsSaveAfterCreate(true);
@@ -346,6 +340,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({ invest
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
         investigationGuid={investigationGuid}
+        investigationLabel={investigationLabel}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
