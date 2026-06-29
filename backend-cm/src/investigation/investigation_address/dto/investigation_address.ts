@@ -10,6 +10,7 @@ export class InvestigationAddress {
   province?: string;
   postalCode?: string;
   country?: string;
+  displayInInvestigation?: boolean;
   isPrimary?: boolean;
 }
 
@@ -72,6 +73,10 @@ export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
     forMember(
       (dest) => dest.country,
       mapFrom((src) => src.country_code_ref ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.displayInInvestigation,
+      mapFrom((src) => src.display_in_investigation_ind ?? undefined),
     ),
     forMember(
       (dest) => dest.isPrimary,

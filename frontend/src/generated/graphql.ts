@@ -1315,6 +1315,7 @@ export type InvestigationAddress = {
   addressName?: Maybe<Scalars['String']['output']>;
   city?: Maybe<Scalars['String']['output']>;
   country?: Maybe<Scalars['String']['output']>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;
   province?: Maybe<Scalars['String']['output']>;

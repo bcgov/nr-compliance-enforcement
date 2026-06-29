@@ -7,6 +7,7 @@ import {
   Address,
   BusinessIdentifier,
   ContactMethod,
+  InvestigationAddress,
   InvestigationAttachmentReference,
   InvestigationParty,
   Party,
@@ -158,9 +159,9 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
     .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
 
   // Address data
-  const addresses = ((party.addresses ?? []).filter(Boolean) as Address[]).sort(
-    (a, b) => Number(b.isPrimary) - Number(a.isPrimary),
-  );
+  const addresses = ((party.addresses ?? []).filter(Boolean) as Address[])
+    .filter((addr) => (isInvestigationParty(party) ? (addr as InvestigationAddress).displayInInvestigation : true)) // only consider this flag if it's an investigation party
+    .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
 
   // Descriptor data
 

@@ -62,6 +62,7 @@ export const GET_INVESTIGATION = gql`
           province
           postalCode
           country
+          displayInInvestigation
           isPrimary
         }
         person {

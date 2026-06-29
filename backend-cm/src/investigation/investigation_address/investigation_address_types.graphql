@@ -6,5 +6,6 @@ type InvestigationAddress {
   province: String
   postalCode: String
   country: String
+  displayInInvestigation: Boolean
   isPrimary: Boolean
 }
