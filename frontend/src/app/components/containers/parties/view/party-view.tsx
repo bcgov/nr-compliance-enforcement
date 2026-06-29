@@ -8,7 +8,7 @@ import { gql } from "graphql-request";
 import { Party } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { PartyTypes } from "@/app/constants/party-types";
-import PartyDetail from "@/app/components/containers/parties/view/party-detail";
+import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 
