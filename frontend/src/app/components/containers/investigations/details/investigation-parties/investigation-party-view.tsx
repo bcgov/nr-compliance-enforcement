@@ -110,18 +110,11 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               </Card>
             </section>
 
-            <PartyDetail party={party} />
-
-            <DetailSection title="Attachments">
-              <PartyAttachments
-                partyId={party?.partyIdentifier}
-                activityId={investigationGuid}
-                attachmentReferences={party?.attachmentReferences as InvestigationAttachmentReference[]}
-                attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
-                allowUpload={false}
-                allowDelete={false}
-              />
-            </DetailSection>
+            <PartyDetail
+              party={party}
+              attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+              investigationGuid={investigationGuid}
+            />
 
             <DetailSection title="Compliance and enforcement history">
               <PartyComplianceHistory

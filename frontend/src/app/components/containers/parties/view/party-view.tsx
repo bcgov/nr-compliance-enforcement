@@ -218,16 +218,10 @@ export const PartyView: FC = () => {
             <section className="comp-details-body comp-container party-details-section">
               <hr className="comp-details-body-spacer"></hr>
 
-              <PartyDetail party={partyData} />
-
-              <DetailSection title="Attachments">
-                <PartyAttachments
-                  partyId={id}
-                  attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
-                  allowUpload={false}
-                  allowDelete={false}
-                />
-              </DetailSection>
+              <PartyDetail
+                party={partyData}
+                attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
+              />
 
               <DetailSection title="Compliance and enforcement history">
                 <PartyComplianceHistory

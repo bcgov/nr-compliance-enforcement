@@ -30,6 +30,7 @@ export const GET_INVESTIGATION = gql`
         longDescription
       }
       parties {
+        __typename
         partyIdentifier
         partyReference
         partyTypeCode

@@ -3,7 +3,14 @@ import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { Address, BusinessIdentifier, ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
+import {
+  Address,
+  BusinessIdentifier,
+  ContactMethod,
+  InvestigationAttachmentReference,
+  InvestigationParty,
+  Party,
+} from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
@@ -19,9 +26,12 @@ import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
+import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
+  attachmentType: number;
+  investigationGuid?: string;
 }
 
 export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
@@ -53,20 +63,15 @@ const renderContactRows = (
   alternateLabel: string,
   formatValue: (value: string) => string,
 ) =>
-  methods.map(
-    (
-      cm,
-      index, //TODO: Fix nullability below
-    ) => (
-      <div key={cm.contactMethodGuid}>
-        <dt>
-          {index === 0 ? primaryLabel : `${alternateLabel} ${index}`}
-          {cm.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-        </dt>
-        <dd>{formatValue(cm.value)}</dd>
-      </div>
-    ),
-  );
+  methods.map((cm, index) => (
+    <div key={cm.contactMethodGuid}>
+      <dt>
+        {index === 0 ? primaryLabel : `${alternateLabel} ${index}`}
+        {cm.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+      </dt>
+      <dd>{formatValue(cm.value)}</dd>
+    </div>
+  ));
 
 /** Boolean indicator → "Yes"/"No"; undefined when unset. */
 const yesNo = (indicator: boolean | null | undefined): string | undefined => {
@@ -74,7 +79,7 @@ const yesNo = (indicator: boolean | null | undefined): string | undefined => {
   return indicator ? "Yes" : "No";
 };
 
-export const PartyDetail: FC<PartyDetailProps> = ({ party }) => {
+export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, investigationGuid }) => {
   // Code tables
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
@@ -86,6 +91,10 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party }) => {
   const hairLengthCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.HAIR_LENGTH));
   const eyeColourCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.EYE_COLOUR));
   const facialHairStyleCodeTable = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.FACIAL_HAIR_STYLE));
+
+  // Determine party type
+  const isInvestigationParty = (p: Party | InvestigationParty): p is InvestigationParty =>
+    p.__typename === "InvestigationParty";
 
   const person = party.person;
   const business = party.business;
@@ -370,6 +379,19 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party }) => {
         <DetailField
           label="Comments"
           value={person?.comments}
+        />
+      </DetailSection>
+
+      <DetailSection title="Attachments">
+        <PartyAttachments
+          partyId={party?.partyIdentifier ?? ""}
+          activityId={investigationGuid ?? ""}
+          {...(isInvestigationParty(party) && party.attachmentReferences
+            ? { attachmentReferences: party.attachmentReferences as InvestigationAttachmentReference[] }
+            : {})}
+          attachmentType={attachmentType}
+          allowUpload={false}
+          allowDelete={false}
         />
       </DetailSection>
     </>
