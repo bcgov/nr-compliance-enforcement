@@ -27,6 +27,8 @@ import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
+import PartyComplianceHistory from "@/app/components/containers/parties/view/compliance-history/party-compliance-history";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
@@ -95,6 +97,17 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
   // Determine party type
   const isInvestigationParty = (p: Party | InvestigationParty): p is InvestigationParty =>
     p.__typename === "InvestigationParty";
+
+  const isPerson = party.partyTypeCode === PartyTypeCodes.PERSON;
+
+  const partyReference = isInvestigationParty(party) ? (party.partyReference ?? "") : (party.partyIdentifier ?? "");
+
+  let partyTypeGuid = "";
+  if (isInvestigationParty(party)) {
+    partyTypeGuid = isPerson ? (party.person?.personReference ?? "") : (party.business?.businessReference ?? "");
+  } else {
+    partyTypeGuid = isPerson ? (party.person?.personGuid ?? "") : (party.business?.businessGuid ?? "");
+  }
 
   const person = party.person;
   const business = party.business;
@@ -392,6 +405,14 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
           attachmentType={attachmentType}
           allowUpload={false}
           allowDelete={false}
+        />
+      </DetailSection>
+
+      <DetailSection title="Compliance and enforcement history">
+        <PartyComplianceHistory
+          partyReference={partyReference}
+          partyTypeGuid={partyTypeGuid}
+          partyType={party.partyTypeCode ?? ""}
         />
       </DetailSection>
     </>

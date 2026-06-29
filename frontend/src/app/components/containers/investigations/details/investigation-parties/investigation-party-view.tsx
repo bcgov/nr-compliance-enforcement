@@ -3,14 +3,12 @@ import { Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { InvestigationAttachmentReference, InvestigationParty } from "@/generated/graphql";
+import { InvestigationParty } from "@/generated/graphql";
 import { isYoungPerson } from "@/app/common/methods";
 import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
-import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
-import PartyComplianceHistory from "@/app/components/containers/parties/view/compliance-history/party-compliance-history";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import PartyDetail, { DetailSection } from "@/app/components/containers/parties/view/party-detail";
+import PartyDetail from "@/app/components/containers/parties/view/party-detail";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -33,8 +31,6 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   const person = party.person;
   const business = party.business;
   const isPublished = !!party.partyReference;
-
-  const isPerson = party.partyTypeCode === PartyTypeCodes.PERSON;
 
   // TODO: placeholder name from role when first/last name absent.
   const displayName = person ? `${person.lastName ?? ""}, ${person.firstName ?? ""}` : (business?.name ?? "-");
@@ -115,14 +111,6 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
               attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
               investigationGuid={investigationGuid}
             />
-
-            <DetailSection title="Compliance and enforcement history">
-              <PartyComplianceHistory
-                partyReference={party?.partyReference ?? ""}
-                partyTypeGuid={isPerson ? person?.personReference || "" : business?.businessReference || ""}
-                partyType={party.partyTypeCode ?? ""}
-              />
-            </DetailSection>
           </div>
         </div>
       </section>

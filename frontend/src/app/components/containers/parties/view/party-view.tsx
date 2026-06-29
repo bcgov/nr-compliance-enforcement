@@ -8,9 +8,7 @@ import { gql } from "graphql-request";
 import { Party } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
 import { PartyTypes } from "@/app/constants/party-types";
-import { PartyComplianceHistory } from "@/app/components/containers/parties/view/compliance-history/party-compliance-history";
-import PartyDetail, { DetailSection } from "@/app/components/containers/parties/view/party-detail";
-import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
+import PartyDetail from "@/app/components/containers/parties/view/party-detail";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 
@@ -222,14 +220,6 @@ export const PartyView: FC = () => {
                 party={partyData}
                 attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
               />
-
-              <DetailSection title="Compliance and enforcement history">
-                <PartyComplianceHistory
-                  partyReference={id}
-                  partyTypeGuid={partyId ?? ""}
-                  partyType={partyType ?? ""}
-                />
-              </DetailSection>
             </section>
           )}
         </div>

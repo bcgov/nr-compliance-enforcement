@@ -285,7 +285,7 @@ export class InvestigationService {
       },
     });
 
-    if (partyType == "Person") {
+    if (partyType == "PRS") {
       prismaParties = await this.prisma.investigation_person.findMany({
         where: {
           person_guid_ref: partyId,
@@ -294,7 +294,7 @@ export class InvestigationService {
         },
         include,
       });
-    } else if (partyType == "Business") {
+    } else if (partyType == "CMP") {
       prismaParties = await this.prisma.investigation_business.findMany({
         where: {
           business_guid_ref: partyId,
