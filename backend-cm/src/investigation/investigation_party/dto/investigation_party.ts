@@ -41,6 +41,7 @@ export class InvestigationParty implements PartyDto {
   investigationGuid: string;
   partyReference?: string;
   partyAssociationRole?: string;
+  placeholderName?: string;
   enforcementActions?: EnforcementAction[];
   contactMethods?: InvestigationContactMethod[];
   aliases?: InvestigationAlias[];
@@ -152,6 +153,13 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.partyAssociationRole,
       mapFrom((src) => src.party_association_role_ref),
+    ),
+    forMember(
+      (dest) => dest.placeholderName,
+      mapFrom((src) => {
+        const parts = [src.placeholder_name, src.placeholder_number].filter(Boolean);
+        return parts.length > 0 ? parts.join(" ") : null;
+      }),
     ),
     forMember(
       (dest) => dest.enforcementActions,

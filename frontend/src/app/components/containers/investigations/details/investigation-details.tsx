@@ -34,6 +34,7 @@ export const GET_INVESTIGATION = gql`
         partyIdentifier
         partyReference
         partyTypeCode
+        placeholderName
         attachmentReferences {
           objectId
           version

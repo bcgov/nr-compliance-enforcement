@@ -7,7 +7,6 @@ import { InvestigationParty } from "@/generated/graphql";
 import { isYoungPerson } from "@/app/common/methods";
 import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
 import AttachmentEnum from "@/app/constants/attachment-enum";
-import { PartyTypeCodes } from "@/app/constants/party-types";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail";
 
 interface PartyDetailProps {

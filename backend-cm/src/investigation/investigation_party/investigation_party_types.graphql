@@ -6,6 +6,7 @@ type InvestigationParty {
   person: InvestigationPerson
   business: InvestigationBusiness
   partyAssociationRole: String
+  placeholderName: String
   enforcementActions: [EnforcementAction]
   addresses: [InvestigationAddress]
   contactMethods: [InvestigationContactMethod]

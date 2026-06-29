@@ -1392,6 +1392,7 @@ export type InvestigationParty = {
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
   person?: Maybe<InvestigationPerson>;
+  placeholderName?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationPerson = {

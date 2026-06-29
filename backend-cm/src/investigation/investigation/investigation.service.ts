@@ -219,6 +219,7 @@ export class InvestigationService {
           },
         },
       });
+
       const guids = found.map((inv) => inv.investigation_guid);
       const geometryByGuid = await this.fetchLocationGeometryPoints(guids, db);
       for (const inv of found) {

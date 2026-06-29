@@ -52,6 +52,7 @@ const PartiesList: React.FC<Props> = ({
   }
 
   const getPartyName = (party: InvestigationParty | InspectionParty): string => {
+    if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
     if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
     if (party.business) return party.business.name ?? "";
     return "-";
