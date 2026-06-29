@@ -134,6 +134,17 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
           ?.shortDescription ?? person.approximateAgeCode)
       : undefined;
 
+  const licenceProvince = person?.driversLicenseCountrySubdivisionCode
+    ? (countrySubdivisions?.find(
+        (code: CountrySubdivisionType) => code.countrySubdivisionCode === person?.driversLicenseCountrySubdivisionCode,
+      )?.shortDescription ?? person?.driversLicenseCountrySubdivisionCode)
+    : undefined;
+
+  const licenceCountry = person?.driversLicenseCountryCode
+    ? (countries?.find((code: CountryType) => code.countryCode === person?.driversLicenseCountryCode)
+        ?.shortDescription ?? person?.driversLicenseCountryCode)
+    : undefined;
+
   // Contact information data
   const contactMethods = (party.contactMethods ?? []).filter(Boolean) as ContactMethod[];
 
@@ -240,6 +251,22 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
           <DetailField
             label="Approximate age"
             value={approximateAge}
+          />
+          <DetailField
+            label="Driver's licence number"
+            value={person.driversLicenseNumber}
+          />
+          <DetailField
+            label="Driver's licence class"
+            value={person.driversLicenseClass}
+          />
+          <DetailField
+            label="Driver's licence country"
+            value={licenceCountry}
+          />
+          <DetailField
+            label="Driver's licence province"
+            value={licenceProvince}
           />
         </DetailSection>
       )}

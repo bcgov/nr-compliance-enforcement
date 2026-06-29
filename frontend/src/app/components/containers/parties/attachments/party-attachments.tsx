@@ -214,12 +214,12 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   return (
     <section
-      className="comp-details-section mb-3"
+      className="comp-details-section"
       id="party-attachments"
     >
       <div className="comp-details-form-row">
-        <label htmlFor="party-attachments">Party Attachments</label>
-        <div className="comp-details-edit-input">
+        {attachmentCount > 0 && <label htmlFor="party-attachments">Party Attachments</label>}
+        <div>
           <Attachments
             attachmentType={attachmentType}
             identifier={identifier}
