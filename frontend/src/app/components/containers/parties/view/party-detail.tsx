@@ -3,7 +3,7 @@ import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { Address, ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
+import { Address, BusinessIdentifier, ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
 import { calculateAgeYears, formatDateStr } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
@@ -19,11 +19,24 @@ import { HairLengthType } from "@/app/types/app/code-tables/hair-length";
 import { EyeColourType } from "@/app/types/app/code-tables/eye-colour";
 import { FacialHairStyleType } from "@/app/types/app/code-tables/facial-hair-style";
 import { BUSINESS_IDENTIFIER_LABELS } from "@/app/constants/business-identifiers";
-import { DetailSection } from "@/app/components/containers/investigations/details/investigation-parties/investigation-party-view";
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
 }
+
+export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
+  <section className="comp-details-section">
+    <h2 className="mb-3">{title}</h2>
+    <Card
+      className="mb-3"
+      border="default"
+    >
+      <Card.Body>
+        <dl>{children}</dl>
+      </Card.Body>
+    </Card>
+  </section>
+);
 
 const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) =>
   value ? (
@@ -45,12 +58,12 @@ const renderContactRows = (
       cm,
       index, //TODO: Fix nullability below
     ) => (
-      <div key={cm.contactMethodGuid ?? `contact-${index}`}>
+      <div key={cm.contactMethodGuid}>
         <dt>
           {index === 0 ? primaryLabel : `${alternateLabel} ${index}`}
           {cm.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
         </dt>
-        <dd>{formatValue(cm.value ?? "")}</dd>
+        <dd>{formatValue(cm.value)}</dd>
       </div>
     ),
   );
@@ -215,13 +228,15 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party }) => {
             label="Legal name"
             value={business.name}
           />
-          {business.businessIdentifiers?.map((id, index) => (
-            <DetailField
-              key={id?.businessIdentifierGuid ?? `business-identifier-${index}`}
-              label={BUSINESS_IDENTIFIER_LABELS[id?.identifierCode ?? ""] ?? id?.identifierCode}
-              value={id?.identifierValue}
-            />
-          ))}
+          {business.businessIdentifiers
+            ?.filter((id): id is BusinessIdentifier => id != null)
+            .map((id) => (
+              <DetailField
+                key={id.businessIdentifierGuid}
+                label={BUSINESS_IDENTIFIER_LABELS[id.identifierCode] ?? id.identifierCode}
+                value={id.identifierValue}
+              />
+            ))}
           <DetailField
             label="Alias(es)"
             value={aliases}

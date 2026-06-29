@@ -3,14 +3,14 @@ import { Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { BusinessIdentifier, InvestigationAttachmentReference, InvestigationParty } from "@/generated/graphql";
+import { InvestigationAttachmentReference, InvestigationParty } from "@/generated/graphql";
 import { isYoungPerson } from "@/app/common/methods";
 import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import PartyComplianceHistory from "@/app/components/containers/parties/view/compliance-history/party-compliance-history";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import PartyDetail from "@/app/components/containers/parties/view/party-detail";
+import PartyDetail, { DetailSection } from "@/app/components/containers/parties/view/party-detail";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -19,20 +19,6 @@ interface PartyDetailProps {
   onBack: () => void;
   onEdit?: () => void;
 }
-
-export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
-  <section className="comp-details-section">
-    <h2 className="mb-3">{title}</h2>
-    <Card
-      className="mb-3"
-      border="default"
-    >
-      <Card.Body>
-        <dl>{children}</dl>
-      </Card.Body>
-    </Card>
-  </section>
-);
 
 export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   party,

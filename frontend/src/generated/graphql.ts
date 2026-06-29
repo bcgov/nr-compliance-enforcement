@@ -424,11 +424,11 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
-  contactMethodGuid?: Maybe<Scalars['String']['output']>;
-  isPrimary?: Maybe<Scalars['Boolean']['output']>;
-  typeCode?: Maybe<Scalars['String']['output']>;
-  typeDescription?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['String']['output']>;
+  contactMethodGuid: Scalars['String']['output'];
+  isPrimary: Scalars['Boolean']['output'];
+  typeCode: Scalars['String']['output'];
+  typeDescription: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type ContactMethodInput = {
@@ -615,9 +615,9 @@ export type CreateInvestigationBusinessInput = {
 
 export type CreateInvestigationContactMethodInput = {
   contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
-  value?: InputMaybe<Scalars['String']['input']>;
+  value: Scalars['String']['input'];
 };
 
 export type CreateInvestigationInput = {
@@ -1361,7 +1361,7 @@ export type InvestigationContactMethod = {
   contactMethodGuid: Scalars['String']['output'];
   isPrimary: Scalars['Boolean']['output'];
   typeCode: Scalars['String']['output'];
-  value?: Maybe<Scalars['String']['output']>;
+  value: Scalars['String']['output'];
 };
 
 export type InvestigationFilters = {
@@ -3052,10 +3052,10 @@ export type UpdateInvestigationBusinessInput = {
 };
 
 export type UpdateInvestigationContactMethodInput = {
-  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  contactMethodGuid: Scalars['String']['input'];
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
-  value?: InputMaybe<Scalars['String']['input']>;
+  value: Scalars['String']['input'];
 };
 
 export type UpdateInvestigationInput = {
