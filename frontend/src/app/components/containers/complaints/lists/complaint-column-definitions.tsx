@@ -149,15 +149,41 @@ export const violationTypeColumn = <T extends { violation?: string; isInProgress
   ),
 });
 
-// Case column (ERS only) — case number if linked to a case, COORS number if set, otherwise "-"
+// Case column (ERS only) — linked case(s) as link(s), COORS number as plain text
 export const caseColumn = <T extends { id: string; referenceNumber?: string }>(
-  getValue: (complaint: T) => string | undefined,
+  getCaseData: (complaint: T) => {
+    cases: Array<{ name: string; caseIdentifier: string }> | undefined;
+    coorsNumber: string | undefined;
+  },
 ): CompColumn<T> => ({
   label: "Case",
   isSortable: false,
   cellClassName: "comp-cell-width-130",
-  getValue: (complaint) => getValue(complaint) ?? "",
-  renderCell: (complaint) => getValue(complaint) || "-",
+  getValue: (complaint) => {
+    const { cases, coorsNumber } = getCaseData(complaint);
+    return cases?.map((c) => c.name).join(", ") || coorsNumber || "";
+  },
+  renderCell: (complaint) => {
+    const { cases, coorsNumber } = getCaseData(complaint);
+    if (cases && cases.length > 0) {
+      return (
+        <>
+          {cases.map((c, i) => (
+            <span key={c.caseIdentifier}>
+              {i > 0 && ", "}
+              <Link
+                to={`/case/${c.caseIdentifier}`}
+                className="comp-cell-link"
+              >
+                {c.name}
+              </Link>
+            </span>
+          ))}
+        </>
+      );
+    }
+    return coorsNumber || "-";
+  },
 });
 
 // GIR Specific Columns

@@ -22,9 +22,13 @@ import { CaseFile } from "@/generated/graphql";
 const GET_CASE_FILES_BY_COMPLAINT_IDS = gql`
   query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
     caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
+      caseIdentifier
       name
       activities {
         activityIdentifier
+        activityType {
+          caseActivityTypeCode
+        }
       }
     }
   }
@@ -50,7 +54,6 @@ import {
   typeOfIssueColumn,
   violationTypeColumn,
 } from "./complaint-column-definitions";
-
 
 type Props = {
   complaints: any[];
@@ -100,12 +103,18 @@ export const ComplaintTableList: FC<Props> = ({
     },
   );
 
-  const complaintIdToCaseNameMap = useMemo(() => {
-    const map = new Map<string, string>();
+  const complaintIdToCaseMap = useMemo(() => {
+    const map = new Map<string, Array<{ name: string; caseIdentifier: string }>>();
     for (const caseFile of caseFilesData?.caseFilesByActivityIds ?? []) {
+      if (!caseFile.name || !caseFile.caseIdentifier) continue;
       for (const activity of caseFile.activities ?? []) {
-        if (activity?.activityIdentifier && caseFile.name) {
-          map.set(activity.activityIdentifier, caseFile.name);
+        if (
+          activity?.activityIdentifier &&
+          activity.activityType?.caseActivityTypeCode === "COMP"
+        ) {
+          const existing = map.get(activity.activityIdentifier) ?? [];
+          existing.push({ name: caseFile.name, caseIdentifier: caseFile.caseIdentifier });
+          map.set(activity.activityIdentifier, existing);
         }
       }
     }
@@ -186,7 +195,10 @@ export const ComplaintTableList: FC<Props> = ({
           locationAddressColumn(!isLocationColumnEnabled),
           statusColumn(userAgency, getStatusDescription),
           officerAssignedColumn((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
-          caseColumn((complaint) => complaintIdToCaseNameMap.get(complaint.id) ?? complaint.referenceNumber),
+          caseColumn((complaint) => ({
+            cases: complaintIdToCaseMap.get(complaint.id),
+            coorsNumber: complaint.referenceNumber,
+          })),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];
