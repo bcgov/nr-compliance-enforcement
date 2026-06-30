@@ -6,7 +6,7 @@ import {
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Business, ContactMethod, InvestigationBusiness } from "@/generated/graphql";
 import { FC } from "react";
-import { Card } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
 import { formatPhoneNumber } from "react-phone-number-input";
 
 interface BusinessContactPersonInformationProps {
@@ -38,16 +38,25 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                 <Card.Body>
                   <h3 className="h6 mb-3">{c?.title}</h3>
                   <dl>
-                    <DetailField
-                      label="First name"
-                      value={c?.person?.firstName}
-                    />
-                    <DetailField
-                      label="Last name"
-                      value={c?.person?.lastName}
-                    />
+                    <DetailField label="First name">{c?.person?.firstName}</DetailField>
+                    <DetailField label="Last name">{c?.person?.lastName}</DetailField>
                     {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
                     {renderContactRows(emails, "email address", (value) => value)}
+                    {c?.associatedAddresses && c?.associatedAddresses.length > 0 && (
+                      <DetailField label="Offices associated with">
+                        {c?.associatedAddresses?.map((a) => {
+                          return (
+                            <Badge
+                              bg="species-badge comp-species-badge"
+                              className="me-2"
+                              key={a?.address.addressGuid}
+                            >
+                              {a?.address.addressName}
+                            </Badge>
+                          );
+                        })}
+                      </DetailField>
+                    )}
                   </dl>
                 </Card.Body>
               </Card>

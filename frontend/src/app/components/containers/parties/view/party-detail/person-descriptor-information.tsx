@@ -86,58 +86,19 @@ export const PersonDescriptorInformation: FC<PersonDescriptorInformationProps> =
 
   return (
     <DetailSection title="Descriptors">
-      <DetailField
-        label="Height"
-        value={heightDisplay}
-      />
-      <DetailField
-        label="Weight"
-        value={weightDisplay}
-      />
-      <DetailField
-        label="Complexion"
-        value={complexion}
-      />
-      <DetailField
-        label="Build"
-        value={build}
-      />
-      <DetailField
-        label="Hair colour"
-        value={hairColour}
-      />
-      <DetailField
-        label="Hair length"
-        value={hairLength}
-      />
-      <DetailField
-        label="Additional hair descriptors"
-        value={person?.additionalHairDescriptors}
-      />
-      <DetailField
-        label="Eye colour"
-        value={eyeColour}
-      />
-      <DetailField
-        label="Facial hair"
-        value={facialHair}
-      />
-      <DetailField
-        label="Facial hair style"
-        value={facialHairStyle}
-      />
-      <DetailField
-        label="Has tattoos"
-        value={hasTattoos}
-      />
-      <DetailField
-        label="Tattoos descriptors"
-        value={person?.tattooDescription}
-      />
-      <DetailField
-        label="Additional descriptors"
-        value={person?.additionalDescriptors}
-      />
+      <DetailField label="Height">{heightDisplay}</DetailField>
+      <DetailField label="Weight">{weightDisplay}</DetailField>
+      <DetailField label="Complexion">{complexion}</DetailField>
+      <DetailField label="Build">{build}</DetailField>
+      <DetailField label="Hair colour">{hairColour}</DetailField>
+      <DetailField label="Hair length">{hairLength}</DetailField>
+      <DetailField label="Additional hair descriptors">{person?.additionalHairDescriptors}</DetailField>
+      <DetailField label="Eye colour">{eyeColour}</DetailField>
+      <DetailField label="Facial hair">{facialHair}</DetailField>
+      <DetailField label="Facial hair style">{facialHairStyle}</DetailField>
+      <DetailField label="Has tattoos">{hasTattoos}</DetailField>
+      <DetailField label="Tattoos descriptors">{person?.tattooDescription}</DetailField>
+      <DetailField label="Additional descriptors">{person?.additionalDescriptors}</DetailField>
     </DetailSection>
   );
 };

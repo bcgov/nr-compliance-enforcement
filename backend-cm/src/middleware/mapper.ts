@@ -69,6 +69,7 @@ import { mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode } from "s
 import { mapPrismaAddressToInvestigationAddress } from "src/investigation/investigation_address/dto/investigation_address";
 import { mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef } from "../investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 import { mapPrismaInvestigationAttachmentReferenceToInvestigationAttachmentReference } from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
+import { mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -117,6 +118,7 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaEyeColourCodeToEyeColourCode(mapper);
   mapPrismaFacialHairStyleCodeToFacialHairStyleCode(mapper);
   mapPrismaPersonFacialHairStyleCodeToPersonFacialHairStyleCode(mapper);
+  mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref(mapper);
 
   // Investigation Mappings
   mapPrismaInvestigationToInvestigation(mapper);

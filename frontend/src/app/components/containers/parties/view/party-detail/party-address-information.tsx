@@ -66,26 +66,11 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
                     {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
                   </h3>
                   <dl>
-                    <DetailField
-                      label="Address"
-                      value={addr.address}
-                    />
-                    <DetailField
-                      label="City"
-                      value={addr.city}
-                    />
-                    <DetailField
-                      label="Province/state"
-                      value={provinceLabel}
-                    />
-                    <DetailField
-                      label="Postal code"
-                      value={addr.postalCode}
-                    />
-                    <DetailField
-                      label="Country"
-                      value={countryLabel}
-                    />
+                    <DetailField label="Address">{addr.address}</DetailField>
+                    <DetailField label="City">{addr.city}</DetailField>
+                    <DetailField label="Province/state">{provinceLabel}</DetailField>
+                    <DetailField label="Postal code">{addr.postalCode}</DetailField>
+                    <DetailField label="Country">{countryLabel}</DetailField>
                     {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
                     {renderContactRows(emails, "email address", (value) => value)}
                   </dl>

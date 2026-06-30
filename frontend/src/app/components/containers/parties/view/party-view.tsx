@@ -108,6 +108,12 @@ export const GET_PARTY = gql`
             value
             isPrimary
           }
+          associatedAddresses {
+            address {
+              addressGuid
+              addressName
+            }
+          }
         }
       }
     }

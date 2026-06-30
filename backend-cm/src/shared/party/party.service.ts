@@ -170,6 +170,16 @@ export class PartyService {
             },
             business_person_xref: {
               include: {
+                business_person_address_xref: {
+                  include: {
+                    address: {
+                      select: {
+                        address_guid: true,
+                        address_name: true,
+                      },
+                    },
+                  },
+                },
                 business: {
                   select: {
                     business_guid: true,
@@ -247,7 +257,9 @@ export class PartyService {
     try {
       return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
-      this.logger.error("Error mapping party of interest", error);
+      const mappingError = error as Error;
+      this.logger.error(`Error mapping party: ${mappingError.message}`, mappingError.stack);
+      throw error;
     }
   }
 

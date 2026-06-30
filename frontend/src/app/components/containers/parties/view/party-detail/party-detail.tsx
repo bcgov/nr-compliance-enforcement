@@ -50,10 +50,7 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
       {/* Comments only on people */}
       {party.person && (
         <DetailSection title="Additional information">
-          <DetailField
-            label="Comments"
-            value={party.person?.comments}
-          />
+          <DetailField label="Comments">{party.person?.comments}</DetailField>
         </DetailSection>
       )}
 

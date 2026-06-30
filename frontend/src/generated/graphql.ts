@@ -245,11 +245,20 @@ export type BusinessInput = {
 
 export type BusinessPerson = {
   __typename?: 'BusinessPerson';
+  associatedAddresses?: Maybe<Array<Maybe<BusinessPersonAddress>>>;
   business?: Maybe<Business>;
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   person?: Maybe<Person>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+export type BusinessPersonAddress = {
+  __typename?: 'BusinessPersonAddress';
+  activeInd: Scalars['Boolean']['output'];
+  address: Address;
+  businessPerson: BusinessPerson;
+  businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
 export type BusinessPersonInput = {
@@ -1362,11 +1371,20 @@ export type InvestigationBusinessIdentifier = {
 
 export type InvestigationBusinessPerson = {
   __typename?: 'InvestigationBusinessPerson';
+  associatedAddresses?: Maybe<Array<Maybe<InvestigationBusinessPersonAddress>>>;
   business?: Maybe<InvestigationBusiness>;
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   person?: Maybe<InvestigationPerson>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvestigationBusinessPersonAddress = {
+  __typename?: 'InvestigationBusinessPersonAddress';
+  activeInd: Scalars['Boolean']['output'];
+  address: Address;
+  businessPerson: BusinessPerson;
+  businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
 export type InvestigationContactMethod = {

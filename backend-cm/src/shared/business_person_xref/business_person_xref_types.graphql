@@ -4,4 +4,5 @@ type BusinessPerson {
   person: Person
   business: Business
   contactMethods: [ContactMethod]
+  associatedAddresses: [BusinessPersonAddress]
 }

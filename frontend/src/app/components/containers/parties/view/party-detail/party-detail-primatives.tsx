@@ -1,6 +1,6 @@
 import { ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
 import { FC } from "react";
-import { Badge, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 
 export const isInvestigationParty = (p: Party | InvestigationParty): p is InvestigationParty =>
   p.__typename === "InvestigationParty";
@@ -19,11 +19,11 @@ export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = 
   </section>
 );
 
-export const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ label, value }) =>
-  value ? (
+export const DetailField: FC<{ label: string; children?: React.ReactNode }> = ({ label, children }) =>
+  children ? (
     <div>
       <dt>{label}</dt>
-      <dd>{value}</dd>
+      <dd>{children}</dd>
     </div>
   ) : null;
 
@@ -33,8 +33,9 @@ export const renderContactRows = (methods: ContactMethod[], noun: string, format
     <DetailField
       key={cm.contactMethodGuid}
       label={_contactLabel(index, noun)}
-      value={formatValue(cm.value ?? "")}
-    />
+    >
+      {formatValue(cm.value ?? "")}
+    </DetailField>
   ));
 
 const _contactLabel = (index: number, noun: string): string => {

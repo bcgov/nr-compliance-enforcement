@@ -64,76 +64,35 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
     <>
       {person && (
         <DetailSection title="Identifying information">
-          <DetailField
-            label="First name"
-            value={person.firstName}
-          />
-          <DetailField
-            label="Middle name(s)"
-            value={person.middleNames}
-          />
-          <DetailField
-            label="Last name"
-            value={person.lastName}
-          />
-          <DetailField
-            label="Alias(es)"
-            value={aliases}
-          />
-          <DetailField
-            label="Gender"
-            value={gender}
-          />
-          <DetailField
-            label="Date of birth"
-            value={formatDateStr(person.dateOfBirth, "")}
-          />
-          <DetailField
-            label="Age"
-            value={ageDisplay}
-          />
-          <DetailField
-            label="Approximate age"
-            value={approximateAge}
-          />
-          <DetailField
-            label="Driver's licence number"
-            value={person.driversLicenseNumber}
-          />
-          <DetailField
-            label="Driver's licence class"
-            value={person.driversLicenseClass}
-          />
-          <DetailField
-            label="Driver's licence country"
-            value={licenceCountry}
-          />
-          <DetailField
-            label="Driver's licence province"
-            value={licenceProvince}
-          />
+          <DetailField label="First name">{person.firstName}</DetailField>
+          <DetailField label="Middle name(s)">{person.middleNames}</DetailField>
+          <DetailField label="Last name">{person.lastName}</DetailField>
+          <DetailField label="Alias(es)">{aliases}</DetailField>
+          <DetailField label="Gender">{gender}</DetailField>
+          <DetailField label="Date of birth">{formatDateStr(person.dateOfBirth, "")}</DetailField>
+          <DetailField label="Age">{ageDisplay}</DetailField>
+          <DetailField label="Approximate age">{approximateAge}</DetailField>
+          <DetailField label="Driver's licence number">{person.driversLicenseNumber}</DetailField>
+          <DetailField label="Driver's licence class">{person.driversLicenseClass}</DetailField>
+          <DetailField label="Driver's licence country">{licenceCountry}</DetailField>
+          <DetailField label="Driver's licence province">{licenceProvince}</DetailField>
         </DetailSection>
       )}
 
       {business && (
         <DetailSection title="Identifying information">
-          <DetailField
-            label="Legal name"
-            value={business.name}
-          />
+          <DetailField label="Legal name">{business.name}</DetailField>
           {business.businessIdentifiers
             ?.filter((id): id is BusinessIdentifier => id != null)
             .map((id) => (
               <DetailField
                 key={id.businessIdentifierGuid}
                 label={BUSINESS_IDENTIFIER_LABELS[id.identifierCode] ?? id.identifierCode}
-                value={id.identifierValue}
-              />
+              >
+                {id.identifierValue}
+              </DetailField>
             ))}
-          <DetailField
-            label="Alias(es)"
-            value={aliases}
-          />
+          <DetailField label="Alias(es)">{aliases}</DetailField>
         </DetailSection>
       )}
     </>
