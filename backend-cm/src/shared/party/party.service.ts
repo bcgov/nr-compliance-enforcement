@@ -10,7 +10,7 @@ import { Alias } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
-import { Address } from "src/shared/address/dto/address";
+import { Address, AddressInput } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
 import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { AppUserService } from "src/shared/app_user/app_user.service";
@@ -112,6 +112,14 @@ export class PartyService {
         },
         address: {
           select: {
+            contact_method: {
+              select: {
+                contact_method_guid: true,
+                contact_method_type: true,
+                contact_value: true,
+                is_primary: true,
+              },
+            },
             address_guid: true,
             party_guid: true,
             address_name: true,
@@ -602,13 +610,13 @@ export class PartyService {
     return operations;
   }
 
-  private _sortAddressesPrimaryLast(addresses: Address[]): Address[] {
+  private _sortAddressesPrimaryLast(addresses: AddressInput[]): AddressInput[] {
     const nonPrimary = addresses.filter((a) => !a.isPrimary);
     const primary = addresses.filter((a) => a.isPrimary);
     return [...nonPrimary, ...primary];
   }
 
-  private _buildAddressOperations(incomingAddresses: Address[], existingAddresses: Address[]): any {
+  private _buildAddressOperations(incomingAddresses: AddressInput[], existingAddresses: Address[]): any {
     const addressesToCreate = incomingAddresses.filter((a) => !a.addressGuid);
     const addressesToUpdate = this._sortAddressesPrimaryLast(incomingAddresses.filter((a) => a.addressGuid));
     const addressesToDelete = existingAddresses.filter(
@@ -988,7 +996,7 @@ export class PartyService {
       });
   }
 
-  private _diffAddresses(existingAddresses: Address[], incomingAddresses: Address[], addEvent: AddEventFn): void {
+  private _diffAddresses(existingAddresses: Address[], incomingAddresses: AddressInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAddresses) {
       if (incoming.addressGuid) {
         const existing = existingAddresses.find((a) => a.addressGuid === incoming.addressGuid);

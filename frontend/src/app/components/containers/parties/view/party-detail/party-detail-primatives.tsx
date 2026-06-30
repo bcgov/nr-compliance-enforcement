@@ -1,6 +1,6 @@
-import { InvestigationParty, Party } from "@/generated/graphql";
+import { ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
 import { FC } from "react";
-import { Card } from "react-bootstrap";
+import { Badge, Card } from "react-bootstrap";
 
 export const isInvestigationParty = (p: Party | InvestigationParty): p is InvestigationParty =>
   p.__typename === "InvestigationParty";
@@ -26,3 +26,19 @@ export const DetailField: FC<{ label: string; value?: React.ReactNode }> = ({ la
       <dd>{value}</dd>
     </div>
   ) : null;
+
+/** Renders contact-method rows with positional labels: "<primaryLabel>", then "<alternateLabel> 1", 2, … */
+export const renderContactRows = (methods: ContactMethod[], noun: string, formatValue: (value: string) => string) =>
+  methods.map((cm, index) => (
+    <DetailField
+      key={cm.contactMethodGuid}
+      label={_contactLabel(index, noun)}
+      value={formatValue(cm.value ?? "")}
+    />
+  ));
+
+const _contactLabel = (index: number, noun: string): string => {
+  if (index === 0) return `Primary ${noun}`;
+  if (index === 1) return `Alternate ${noun}`;
+  return `Alternate ${noun} ${index}`;
+};

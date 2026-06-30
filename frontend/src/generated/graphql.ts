@@ -55,6 +55,7 @@ export type Address = {
   addressGuid?: Maybe<Scalars['String']['output']>;
   addressName?: Maybe<Scalars['String']['output']>;
   city?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   country?: Maybe<Scalars['String']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;

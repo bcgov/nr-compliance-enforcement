@@ -1,6 +1,7 @@
 import {
   DetailField,
   DetailSection,
+  renderContactRows,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Business, ContactMethod, InvestigationBusiness } from "@/generated/graphql";
@@ -17,22 +18,6 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
 
   const sortPrimaryFirst = (methods: ContactMethod[]): ContactMethod[] =>
     [...methods].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
-
-  const contactLabel = (index: number, noun: string): string => {
-    if (index === 0) return `Primary ${noun}`;
-    if (index === 1) return `Alternate ${noun}`;
-    return `Alternate ${noun} ${index}`;
-  };
-
-  const renderContactRows = (methods: ContactMethod[], noun: string, formatValue: (value: string) => string) =>
-    methods.map((cm, index) => (
-      <dl key={cm.contactMethodGuid}>
-        <DetailField
-          label={contactLabel(index, noun)}
-          value={formatValue(cm.value ?? "")}
-        />
-      </dl>
-    ));
 
   return (
     <>
@@ -57,15 +42,13 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                       label="First name"
                       value={c?.person?.firstName}
                     />
-                  </dl>
-                  <dl>
                     <DetailField
                       label="Last name"
                       value={c?.person?.lastName}
                     />
+                    {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
+                    {renderContactRows(emails, "email address", (value) => value)}
                   </dl>
-                  {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
-                  {renderContactRows(emails, "email address", (value) => value)}
                 </Card.Body>
               </Card>
             );

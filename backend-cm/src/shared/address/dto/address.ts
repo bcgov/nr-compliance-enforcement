@@ -1,6 +1,7 @@
-import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { Field, InputType } from "@nestjs/graphql";
 import { address } from "prisma/shared/generated/address";
+import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
 
 export class Address {
   addressGuid: string;
@@ -12,6 +13,7 @@ export class Address {
   postalCode?: string;
   country?: string;
   isPrimary?: boolean;
+  contactMethods: [ContactMethod];
 }
 
 @InputType()
@@ -84,6 +86,10 @@ export const mapPrismaAddressToAddress = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isPrimary,
       mapFrom((src) => src.is_primary ?? false),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapWithArguments((src) => mapper.mapArray(src.contact_method ?? [], "contact_method", "ContactMethod")),
     ),
   );
 };

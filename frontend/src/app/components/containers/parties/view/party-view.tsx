@@ -7,7 +7,6 @@ import { useGraphQLQuery } from "@graphql/hooks";
 import { gql } from "graphql-request";
 import { Party } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
-import { PartyTypes } from "@/app/constants/party-types";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
@@ -24,6 +23,12 @@ export const GET_PARTY = gql`
       updatedDateTime
       createdByUserGuid
       addresses {
+        contactMethods {
+          contactMethodGuid
+          typeCode
+          value
+          isPrimary
+        }
         addressGuid
         addressName
         address

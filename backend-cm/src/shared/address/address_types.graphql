@@ -7,4 +7,5 @@ type Address {
   postalCode: String
   country: String
   isPrimary: Boolean
+  contactMethods: [ContactMethod]
 }

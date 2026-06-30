@@ -32,8 +32,6 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
     partyTypeGuid = isPerson ? (party.person?.personGuid ?? "") : (party.business?.businessGuid ?? "");
   }
 
-  console.log(party.business);
-
   return (
     <>
       <PartyIdentifyingInformation party={party} />
@@ -41,10 +39,9 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
       {/* Contact Methods only on people */}
       {party.person && <PartyContactMethodInformation party={party} />}
 
-      {/* Address only on people */}
-      {party.person && <PartyAddressInformation party={party} />}
+      <PartyAddressInformation party={party} />
 
-      {/* Contacts only on business */}
+      {/* Contact People only on business */}
       {party.business && <BusinessContactPersonInformation business={party.business} />}
 
       {/* Descriptors only on people */}
