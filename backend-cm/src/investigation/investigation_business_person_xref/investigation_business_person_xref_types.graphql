@@ -1,6 +1,7 @@
 type InvestigationBusinessPerson {
   businessPersonXrefGuid: String
   title: String
+  displayInInvestigation: Boolean
   person: InvestigationPerson
   business: InvestigationBusiness
   contactMethods: [InvestigationContactMethod]

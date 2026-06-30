@@ -26,8 +26,9 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
 
   const isPerson = party.partyTypeCode === PartyTypeCodes.PERSON;
 
+  // If it's an investigation, check the display in Investigation flag
   const addresses = ((party.addresses ?? []).filter(Boolean) as Address[])
-    .filter((addr) => (isInvestigationParty(party) ? (addr as InvestigationAddress).displayInInvestigation : true)) // only consider this flag if it's an investigation party
+    .filter((addr) => (isInvestigationParty(party) ? (addr as InvestigationAddress).displayInInvestigation : true))
     .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
 
   return (

@@ -1,10 +1,11 @@
 import {
   DetailField,
   DetailSection,
+  isInvestigationBusiness,
   renderContactRows,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { Business, ContactMethod, InvestigationBusiness } from "@/generated/graphql";
+import { Business, ContactMethod, InvestigationBusiness, InvestigationBusinessPerson } from "@/generated/graphql";
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { formatPhoneNumber } from "react-phone-number-input";
@@ -14,7 +15,10 @@ interface BusinessContactPersonInformationProps {
 }
 
 export const BusinessContactPersonInformation: FC<BusinessContactPersonInformationProps> = ({ business }) => {
-  const contactPeople = business.contactPeople;
+  // If it's an investigation, check the display in Investigation flag
+  const contactPeople = business.contactPeople?.filter((c) =>
+    isInvestigationBusiness(business) ? (c as InvestigationBusinessPerson).displayInInvestigation : true,
+  );
 
   const sortPrimaryFirst = (methods: ContactMethod[]): ContactMethod[] =>
     [...methods].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));

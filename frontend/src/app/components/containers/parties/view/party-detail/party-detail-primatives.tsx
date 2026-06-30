@@ -1,9 +1,12 @@
-import { ContactMethod, InvestigationParty, Party } from "@/generated/graphql";
+import { Business, ContactMethod, InvestigationBusiness, InvestigationParty, Party } from "@/generated/graphql";
 import { FC } from "react";
 import { Card } from "react-bootstrap";
 
 export const isInvestigationParty = (p: Party | InvestigationParty): p is InvestigationParty =>
   p.__typename === "InvestigationParty";
+
+export const isInvestigationBusiness = (b: Business | InvestigationBusiness): b is InvestigationBusiness =>
+  b.__typename === "InvestigationBusiness";
 
 export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
   <section className="comp-details-section">

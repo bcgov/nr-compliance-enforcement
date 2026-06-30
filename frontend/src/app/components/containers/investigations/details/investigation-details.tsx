@@ -55,6 +55,12 @@ export const GET_INVESTIGATION = gql`
           isPrimary
         }
         addresses {
+          contactMethods {
+            contactMethodGuid
+            typeCode
+            value
+            isPrimary
+          }
           addressGuid
           addressName
           address
@@ -100,10 +106,12 @@ export const GET_INVESTIGATION = gql`
           boloIndicator
         }
         business {
+          __typename
           businessGuid
           name
           contactPeople {
             title
+            displayInInvestigation
             associatedAddresses {
               address {
                 addressGuid

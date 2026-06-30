@@ -26,6 +26,7 @@ import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 import { contact_method } from "prisma/shared/generated/contact_method";
+import { investigation_contact_method } from "prisma/investigation/generated/investigation_contact_method";
 
 @Injectable()
 export class InvestigationService {
@@ -68,6 +69,9 @@ export class InvestigationService {
                 },
               },
               investigation_address: {
+                include: {
+                  investigation_contact_method: true,
+                },
                 where: {
                   active_ind: true,
                 },

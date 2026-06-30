@@ -1325,6 +1325,7 @@ export type InvestigationAddress = {
   addressGuid?: Maybe<Scalars['String']['output']>;
   addressName?: Maybe<Scalars['String']['output']>;
   city?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   country?: Maybe<Scalars['String']['output']>;
   displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
@@ -1375,6 +1376,7 @@ export type InvestigationBusinessPerson = {
   business?: Maybe<InvestigationBusiness>;
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
   person?: Maybe<InvestigationPerson>;
   title?: Maybe<Scalars['String']['output']>;
 };

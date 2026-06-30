@@ -8,4 +8,5 @@ type InvestigationAddress {
   country: String
   displayInInvestigation: Boolean
   isPrimary: Boolean
+  contactMethods: [InvestigationContactMethod]
 }

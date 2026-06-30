@@ -1,6 +1,7 @@
-import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { Field, InputType } from "@nestjs/graphql";
 import { investigation_address } from "prisma/investigation/generated/investigation_address";
+import { InvestigationContactMethod } from "src/investigation/investigation_contact_method/dto/investigation_contact_method";
 
 export class InvestigationAddress {
   addressGuid: string;
@@ -12,6 +13,7 @@ export class InvestigationAddress {
   country?: string;
   displayInInvestigation?: boolean;
   isPrimary?: boolean;
+  contactMethods: [InvestigationContactMethod];
 }
 
 @InputType()
@@ -81,6 +83,16 @@ export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isPrimary,
       mapFrom((src) => src.is_primary ?? false),
+    ),
+    forMember(
+      (dest) => dest.contactMethods,
+      mapWithArguments((src) =>
+        mapper.mapArray(
+          src.investigation_contact_method ?? [],
+          "investigation_contact_method",
+          "InvestigationContactMethod",
+        ),
+      ),
     ),
   );
 };
