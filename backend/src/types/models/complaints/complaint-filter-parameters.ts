@@ -22,4 +22,5 @@ export interface ComplaintFilterParameters {
   outcomeActionedBy?: string;
   equipmentStatus?: string;
   equipmentTypes?: string[];
+  linkedToCase?: string;
 }

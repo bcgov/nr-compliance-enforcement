@@ -34,6 +34,12 @@ import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
+import { selectCanAccessCases } from "@/app/access/module-access";
+
+const LINKED_TO_CASE_OPTIONS = [
+  { value: "YES", label: "Yes" },
+  { value: "NO", label: "No" },
+];
 
 type Props = {
   type: string;
@@ -65,6 +71,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       outcomeAnimalEndDate,
       equipmentStatus,
       equipmentTypes,
+      linkedToCase,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -92,6 +99,8 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const equipmentStatusTypes = useAppSelector(selectEquipmentStatusDropdown);
   const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
   const outcomeActionedByDropdown = useAppSelector(selectOutcomeActionedByOptions);
+
+  const casesActive = useAppSelector(selectCanAccessCases);
 
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
@@ -472,6 +481,30 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 errMsg={""}
                 values={equipmentTypes}
                 isDisabled={equipmentStatus === null}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {casesActive && type !== COMPLAINT_TYPES.SECTOR && (
+          <div id="comp-filter-linked-to-case-id">
+            <label htmlFor="linked-to-case-select-id">Case</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="linked-to-case-select-id"
+                showInactive={false}
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("linkedToCase", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={LINKED_TO_CASE_OPTIONS}
+                placeholder="Select"
+                enableValidation={false}
+                value={linkedToCase}
                 isClearable={true}
               />
             </div>

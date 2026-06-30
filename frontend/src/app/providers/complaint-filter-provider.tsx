@@ -37,6 +37,7 @@ let initialState: ComplaintFilters = {
   outcomeAnimalEndDate: undefined,
   equipmentStatus: null,
   equipmentTypes: [],
+  linkedToCase: null,
 };
 
 const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
@@ -69,6 +70,7 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeActionedByFilter,
     equipmentStatusFilter,
     equipmentTypesFilter,
+    linkedToCaseFilter,
   } = complaintFilters;
 
   // Parse the start and end date filters into Date objects if they exist.
@@ -116,6 +118,7 @@ const convertFilterNames = (complaintFilters: Partial<ComplaintFilters>) => {
     outcomeActionedBy: outcomeActionedByFilter,
     equipmentStatus: equipmentStatusFilter,
     equipmentTypes: equipmentTypesFilter,
+    linkedToCase: linkedToCaseFilter,
   };
 
   // Only return filters that have a value set

@@ -121,38 +121,43 @@ export const authorizationColumn = <T extends { authorization?: string }>(isHidd
   renderCell: (complaint) => complaint.authorization ?? "-",
 });
 
-// Violation type column
-export const violationTypeColumn = <T extends { violation?: string }>(
+// Violation type column (includes "In Progress" indicator when applicable)
+export const violationTypeColumn = <T extends { violation?: string; isInProgress?: boolean }>(
   getViolationDescription: (input: string) => string,
 ): CompColumn<T> => ({
   label: "Violation type",
   sortKey: "violation_code",
   isSortable: true,
   getValue: (complaint) => getViolationDescription(complaint.violation ?? ""),
-  renderCell: (complaint) => getViolationDescription(complaint.violation ?? ""),
+  renderCell: (complaint) => (
+    <>
+      {getViolationDescription(complaint.violation ?? "")}
+      {complaint.isInProgress && (
+        <div
+          id="comp-details-status-text-id"
+          className="comp-box-violation-in-progress mt-1"
+        >
+          <FontAwesomeIcon
+            id="violation-in-progress-icon"
+            className="comp-cell-violation-in-progress-icon"
+            icon={faExclamationCircle}
+          />
+          In Progress
+        </div>
+      )}
+    </>
+  ),
 });
 
-// Violation in progress column
-export const violationInProgressColumn = <T extends { isInProgress?: boolean }>(isHidden: boolean): CompColumn<T> => ({
-  label: "Violation in progress",
-  sortKey: "in_progress_ind",
-  isSortable: true,
-  isHidden,
-  getValue: (complaint) => (complaint.isInProgress ? "In Progress" : ""),
-  renderCell: (complaint) =>
-    complaint.isInProgress ? (
-      <div
-        id="comp-details-status-text-id"
-        className="comp-box-violation-in-progress"
-      >
-        <FontAwesomeIcon
-          id="violation-in-progress-icon"
-          className="comp-cell-violation-in-progress-icon"
-          icon={faExclamationCircle}
-        />
-        In Progress
-      </div>
-    ) : null,
+// Case column (ERS only) — case number if linked to a case, COORS number if set, otherwise "-"
+export const caseColumn = <T extends { id: string; referenceNumber?: string }>(
+  getValue: (complaint: T) => string | undefined,
+): CompColumn<T> => ({
+  label: "Case",
+  isSortable: false,
+  cellClassName: "comp-cell-width-130",
+  getValue: (complaint) => getValue(complaint) ?? "",
+  renderCell: (complaint) => getValue(complaint) || "-",
 });
 
 // GIR Specific Columns

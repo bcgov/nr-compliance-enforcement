@@ -26,6 +26,7 @@ export interface ComplaintRequestPayload {
   outcomeAnimalEndDateFilter?: Date;
   equipmentStatusFilter?: Option;
   equipmentTypesFilter?: Option[];
+  linkedToCaseFilter?: Option;
   page?: number;
   pageSize?: number;
   showReferrals?: boolean;

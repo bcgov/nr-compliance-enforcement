@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { truncateString } from "@common/methods";
@@ -14,10 +14,26 @@ import { getUserAgency } from "@/app/service/user-service";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { gql } from "graphql-request";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { selectCanAccessCases } from "@/app/access/module-access";
+import { CaseFile } from "@/generated/graphql";
+
+const GET_CASE_FILES_BY_COMPLAINT_IDS = gql`
+  query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
+      name
+      activities {
+        activityIdentifier
+      }
+    }
+  }
+`;
 import {
   actionsColumn,
   agencyColumn,
   authorizationColumn,
+  caseColumn,
   communityColumn,
   complaintNumberColumn,
   complaintTypeColumn,
@@ -32,9 +48,9 @@ import {
   speciesColumn,
   statusColumn,
   typeOfIssueColumn,
-  violationInProgressColumn,
   violationTypeColumn,
 } from "./complaint-column-definitions";
+
 
 type Props = {
   complaints: any[];
@@ -71,6 +87,30 @@ export const ComplaintTableList: FC<Props> = ({
   const isLocationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.LOCATION_COLUMN));
   const isAuthorizationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.AUTHORIZATION_COLUMN));
   const isCeebRole = UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR]);
+  const casesActive = useAppSelector(selectCanAccessCases);
+
+  const complaintIds = useMemo(() => complaints.map((c) => c.id), [complaints]);
+
+  const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
+    GET_CASE_FILES_BY_COMPLAINT_IDS,
+    {
+      queryKey: ["caseFilesByActivityIds", ...complaintIds],
+      variables: { activityIdentifiers: complaintIds },
+      enabled: complaintType === COMPLAINT_TYPES.ERS && casesActive && complaintIds.length > 0,
+    },
+  );
+
+  const complaintIdToCaseNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const caseFile of caseFilesData?.caseFilesByActivityIds ?? []) {
+      for (const activity of caseFile.activities ?? []) {
+        if (activity?.activityIdentifier && caseFile.name) {
+          map.set(activity.activityIdentifier, caseFile.name);
+        }
+      }
+    }
+    return map;
+  }, [caseFilesData]);
 
   const userAgency = getUserAgency();
 
@@ -141,12 +181,12 @@ export const ComplaintTableList: FC<Props> = ({
           dateLoggedColumn(),
           authorizationColumn(!isAuthorizationColumnEnabled),
           violationTypeColumn(getViolationDescription),
-          violationInProgressColumn(isCeebRole),
           communityColumn(),
           parkColumn(!isParkColumnEnabled),
           locationAddressColumn(!isLocationColumnEnabled),
           statusColumn(userAgency, getStatusDescription),
           officerAssignedColumn((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
+          caseColumn((complaint) => complaintIdToCaseNameMap.get(complaint.id) ?? complaint.referenceNumber),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];
