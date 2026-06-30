@@ -12,6 +12,7 @@ import { PartyIdentifyingInformation } from "@/app/components/containers/parties
 import { PartyContactInformation } from "@/app/components/containers/parties/view/party-detail/party-contact-information";
 import { PartyAddressInformation } from "@/app/components/containers/parties/view/party-detail/party-address-information";
 import { PersonDescriptorInformation } from "@/app/components/containers/parties/view/party-detail/person-descriptor-information";
+import { BusinessContactInformation } from "@/app/components/containers/parties/view/party-detail/business-contact-information";
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
@@ -22,8 +23,6 @@ interface PartyDetailProps {
 export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, investigationGuid }) => {
   const isPerson = party.partyTypeCode === PartyTypeCodes.PERSON;
 
-  const person = party.person;
-
   const partyReference = isInvestigationParty(party) ? (party.partyReference ?? "") : (party.partyIdentifier ?? "");
 
   let partyTypeGuid = "";
@@ -33,22 +32,32 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
     partyTypeGuid = isPerson ? (party.person?.personGuid ?? "") : (party.business?.businessGuid ?? "");
   }
 
+  console.log(party.business);
+
   return (
     <>
       <PartyIdentifyingInformation party={party} />
 
       <PartyContactInformation party={party} />
 
-      <PartyAddressInformation party={party} />
+      {/* Address only on people */}
+      {party.person && <PartyAddressInformation party={party} />}
 
-      {person && <PersonDescriptorInformation person={person} />}
+      {/* Contacts only on business */}
+      {party.business && <BusinessContactInformation business={party.business} />}
 
-      <DetailSection title="Additional information">
-        <DetailField
-          label="Comments"
-          value={person?.comments}
-        />
-      </DetailSection>
+      {/* Descriptors only on people */}
+      {party.person && <PersonDescriptorInformation person={party.person} />}
+
+      {/* Comments only on people */}
+      {party.person && (
+        <DetailSection title="Additional information">
+          <DetailField
+            label="Comments"
+            value={party.person?.comments}
+          />
+        </DetailSection>
+      )}
 
       <DetailSection title="Attachments">
         <PartyAttachments

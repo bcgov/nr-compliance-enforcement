@@ -1,4 +1,6 @@
+import { address } from "./address";
 import { party } from "./party";
+import { person } from "./person";
 import { contact_method_type_code } from "./contact_method_type_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
@@ -6,8 +8,8 @@ export class contact_method {
   @ApiProperty({ type: String })
   contact_method_guid: string;
 
-  @ApiProperty({ type: String })
-  party_guid: string;
+  @ApiPropertyOptional({ type: String })
+  party_guid?: string;
 
   @ApiProperty({ type: String })
   contact_method_type: string;
@@ -33,8 +35,20 @@ export class contact_method {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiProperty({ type: () => party })
-  party: party;
+  @ApiPropertyOptional({ type: String })
+  address_guid?: string;
+
+  @ApiPropertyOptional({ type: String })
+  person_guid?: string;
+
+  @ApiPropertyOptional({ type: () => address })
+  address?: address;
+
+  @ApiPropertyOptional({ type: () => party })
+  party?: party;
+
+  @ApiPropertyOptional({ type: () => person })
+  person?: person;
 
   @ApiProperty({ type: () => contact_method_type_code })
   contact_method_type_code: contact_method_type_code;

@@ -1346,6 +1346,7 @@ export type InvestigationBusiness = {
   businessIdentifiers?: Maybe<Array<Maybe<InvestigationBusinessIdentifier>>>;
   businessReference?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
+  contactPeople?: Maybe<Array<Maybe<InvestigationBusinessPerson>>>;
   name: Scalars['String']['output'];
   partyGuid: Scalars['String']['output'];
 };
@@ -1355,6 +1356,14 @@ export type InvestigationBusinessIdentifier = {
   businessIdentifierGuid?: Maybe<Scalars['String']['output']>;
   identifierCode: Scalars['String']['output'];
   identifierValue: Scalars['String']['output'];
+};
+
+export type InvestigationBusinessPerson = {
+  __typename?: 'InvestigationBusinessPerson';
+  business?: Maybe<InvestigationBusiness>;
+  businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
+  person?: Maybe<InvestigationPerson>;
 };
 
 export type InvestigationContactMethod = {
