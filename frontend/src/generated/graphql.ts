@@ -248,6 +248,7 @@ export type BusinessPerson = {
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   person?: Maybe<Person>;
+  title?: Maybe<Scalars['String']['output']>;
 };
 
 export type BusinessPersonInput = {
@@ -1364,6 +1365,7 @@ export type InvestigationBusinessPerson = {
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   person?: Maybe<InvestigationPerson>;
+  title?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationContactMethod = {

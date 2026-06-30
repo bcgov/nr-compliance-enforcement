@@ -5,11 +5,11 @@ import { FC } from "react";
 import { Badge } from "react-bootstrap";
 import { formatPhoneNumber } from "react-phone-number-input";
 
-interface PartyContactInformationProps {
+interface PartyContactMethodInformationProps {
   party: Party | InvestigationParty;
 }
 
-export const PartyContactInformation: FC<PartyContactInformationProps> = ({ party }) => {
+export const PartyContactMethodInformation: FC<PartyContactMethodInformationProps> = ({ party }) => {
   // Contact information data
   const contactMethods = (party.contactMethods ?? []).filter(Boolean) as ContactMethod[];
 

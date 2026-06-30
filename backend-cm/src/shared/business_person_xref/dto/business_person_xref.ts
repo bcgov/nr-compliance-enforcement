@@ -6,6 +6,7 @@ import { Person } from "src/shared/person/dto/person";
 
 export class BusinessPersonXref {
   businessPersonXrefGuid: string;
+  title: string;
   business: Business;
   person: Person;
   contactMethods?: [ContactMethod]; // These are at the party level for people so need to be passed in parallel
@@ -19,6 +20,10 @@ export const mapPrismaBusinessPersonXrefToBusinessPersonXref = (mapper: Mapper) 
     forMember(
       (dest) => dest.businessPersonXrefGuid,
       mapFrom((src) => src.business_person_xref_guid),
+    ),
+    forMember(
+      (dest) => dest.title,
+      mapFrom((src) => src.title_role),
     ),
     forMember(
       (dest) => dest.business,

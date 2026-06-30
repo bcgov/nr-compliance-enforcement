@@ -8,11 +8,11 @@ import { FC } from "react";
 import { Card } from "react-bootstrap";
 import { formatPhoneNumber } from "react-phone-number-input";
 
-interface BusinessContactInformationProps {
+interface BusinessContactPersonInformationProps {
   business: Business | InvestigationBusiness;
 }
 
-export const BusinessContactInformation: FC<BusinessContactInformationProps> = ({ business }) => {
+export const BusinessContactPersonInformation: FC<BusinessContactPersonInformationProps> = ({ business }) => {
   const contactPeople = business.contactPeople;
 
   const sortPrimaryFirst = (methods: ContactMethod[]): ContactMethod[] =>
@@ -51,7 +51,7 @@ export const BusinessContactInformation: FC<BusinessContactInformationProps> = (
                 border="default"
               >
                 <Card.Body>
-                  <h3 className="h6 mb-3">{"TITLE PLACEHOLDER"}</h3>
+                  <h3 className="h6 mb-3">{c?.title}</h3>
                   <dl>
                     <DetailField
                       label="First name"

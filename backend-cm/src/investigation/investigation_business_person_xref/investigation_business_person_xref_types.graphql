@@ -1,5 +1,6 @@
 type InvestigationBusinessPerson {
   businessPersonXrefGuid: String
+  title: String
   person: InvestigationPerson
   business: InvestigationBusiness
   contactMethods: [InvestigationContactMethod]

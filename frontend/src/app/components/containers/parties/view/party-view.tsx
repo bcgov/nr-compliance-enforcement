@@ -87,6 +87,7 @@ export const GET_PARTY = gql`
         }
         contactPeople {
           businessPersonXrefGuid
+          title
           business {
             businessGuid
           }
@@ -125,16 +126,6 @@ export const PartyView: FC = () => {
   });
 
   const partyData = data?.party;
-
-  let partyType;
-  let partyId;
-  if (partyData?.person) {
-    partyType = PartyTypes.PERSON;
-    partyId = partyData?.person?.personGuid;
-  } else if (partyData?.business) {
-    partyType = PartyTypes.BUSINESS;
-    partyId = partyData?.business?.businessGuid;
-  }
 
   const editButtonClick = () => {
     navigate(`/party/${id}/edit`);

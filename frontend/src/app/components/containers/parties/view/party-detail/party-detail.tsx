@@ -9,10 +9,10 @@ import {
   isInvestigationParty,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 import { PartyIdentifyingInformation } from "@/app/components/containers/parties/view/party-detail/party-identifying-information";
-import { PartyContactInformation } from "@/app/components/containers/parties/view/party-detail/party-contact-information";
 import { PartyAddressInformation } from "@/app/components/containers/parties/view/party-detail/party-address-information";
 import { PersonDescriptorInformation } from "@/app/components/containers/parties/view/party-detail/person-descriptor-information";
-import { BusinessContactInformation } from "@/app/components/containers/parties/view/party-detail/business-contact-information";
+import { BusinessContactPersonInformation } from "@/app/components/containers/parties/view/party-detail/business-contact-person-information";
+import { PartyContactMethodInformation } from "@/app/components/containers/parties/view/party-detail/party-contact-method-information";
 
 interface PartyDetailProps {
   party: Party | InvestigationParty;
@@ -38,13 +38,14 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
     <>
       <PartyIdentifyingInformation party={party} />
 
-      <PartyContactInformation party={party} />
+      {/* Contact Methods only on people */}
+      {party.person && <PartyContactMethodInformation party={party} />}
 
       {/* Address only on people */}
       {party.person && <PartyAddressInformation party={party} />}
 
       {/* Contacts only on business */}
-      {party.business && <BusinessContactInformation business={party.business} />}
+      {party.business && <BusinessContactPersonInformation business={party.business} />}
 
       {/* Descriptors only on people */}
       {party.person && <PersonDescriptorInformation person={party.person} />}
