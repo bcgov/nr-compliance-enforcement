@@ -1,4 +1,4 @@
-import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { investigation_business } from "../../../../prisma/investigation/generated/investigation_business";
 import { Field, InputType } from "@nestjs/graphql";
 import { BusinessDto } from "../../../common/party";
@@ -7,6 +7,7 @@ import {
   InvestigationBusinessIdentifier,
   UpdateInvestigationBusinessIdentifierInput,
 } from "../../investigation_business_identifier/dto/investigation_business_identifier";
+import { InvestigationBusinessPersonXref } from "src/investigation/investigation_business_person_xref/dto/investigation_business_person_xref";
 
 export class InvestigationBusiness implements BusinessDto {
   businessGuid: string;
@@ -15,6 +16,7 @@ export class InvestigationBusiness implements BusinessDto {
   partyGuid: string;
   businessReference?: string;
   businessIdentifiers?: InvestigationBusinessIdentifier[];
+  contactPeople?: InvestigationBusinessPersonXref[];
 }
 
 @InputType()
@@ -70,6 +72,16 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
           src.investigation_business_identifier ?? [],
           "investigation_business_identifier",
           "InvestigationBusinessIdentifier",
+        ),
+      ),
+    ),
+    forMember(
+      (dest) => dest.contactPeople,
+      mapWithArguments((src) =>
+        mapper.mapArray(
+          src.investigation_business_person_xref ?? [],
+          "investigation_business_person_xref",
+          "InvestigationBusinessPersonXref",
         ),
       ),
     ),

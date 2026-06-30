@@ -80,7 +80,7 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
           })}
         </section>
       ) : (
-        <DetailSection title="Address(es)" />
+        <DetailSection title={isPerson ? "Address(es)" : "Contact information"} />
       )}
     </>
   );

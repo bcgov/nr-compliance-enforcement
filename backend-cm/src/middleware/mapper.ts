@@ -70,6 +70,8 @@ import { mapPrismaAddressToInvestigationAddress } from "src/investigation/invest
 import { mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef } from "../investigation/investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
 import { mapPrismaInvestigationAttachmentReferenceToInvestigationAttachmentReference } from "src/investigation/investigation_attachment_reference/dto/investigation_attachment_reference";
 import { mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
+import { mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPersonXref } from "src/investigation/investigation_business_person_xref/dto/investigation_business_person_xref";
+import { mapPrismaInvestigationBusinessPersonAddressXrefToInvestigationBusinessPersonAddressXref } from "src/investigation/investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 
 export const initializeMappings = (mapper: Mapper) => {
   // Shared Mappings
@@ -142,6 +144,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaAddressToInvestigationAddress(mapper);
   mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPersonFacialHairStyleCodeRef(mapper);
   mapPrismaInvestigationAttachmentReferenceToInvestigationAttachmentReference(mapper);
+  mapPrismaInvestigationBusinessPersonXrefToInvestigationBusinessPersonXref(mapper);
+  mapPrismaInvestigationBusinessPersonAddressXrefToInvestigationBusinessPersonAddressXref(mapper);
 
   // Inspection Mappings
   mapPrismaInspectionToInspection(mapper);

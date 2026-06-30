@@ -25,6 +25,7 @@ import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
+import { contact_method } from "prisma/shared/generated/contact_method";
 
 @Injectable()
 export class InvestigationService {
@@ -88,6 +89,27 @@ export class InvestigationService {
                   active_ind: true,
                 },
                 include: {
+                  investigation_business_person_xref: {
+                    include: {
+                      investigation_business_person_address_xref: {
+                        include: {
+                          investigation_address: true,
+                        },
+                      },
+                      investigation_person: {
+                        include: {
+                          investigation_party: {
+                            include: {
+                              investigation_contact_method: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                    where: {
+                      active_ind: true,
+                    },
+                  },
                   investigation_business_identifier: {
                     where: {
                       active_ind: true,

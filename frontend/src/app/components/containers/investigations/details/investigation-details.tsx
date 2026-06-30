@@ -102,6 +102,24 @@ export const GET_INVESTIGATION = gql`
         business {
           businessGuid
           name
+          contactPeople {
+            title
+            associatedAddresses {
+              address {
+                addressGuid
+                addressName
+              }
+            }
+            contactMethods {
+              contactMethodGuid
+              typeCode
+              value
+            }
+            person {
+              firstName
+              lastName
+            }
+          }
           businessIdentifiers {
             businessIdentifierGuid
             identifierCode
