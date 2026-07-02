@@ -1444,7 +1444,7 @@ export class ComplaintService {
       // -- filter by whether complaint is linked to a case file or has a COORS number
       if (filters.linkedToCase) {
         const caseComplaintIds = await this._getComplaintIdsLinkedToCase(token);
-        console.log(caseComplaintIds);
+
         if (filters.linkedToCase === "YES") {
           if (caseComplaintIds.length > 0) {
             builder.andWhere(

@@ -352,29 +352,30 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {(UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) || UserService.hasRole(Roles.MINES)) && type !== COMPLAINT_TYPES.SECTOR && (
-          <div id="comp-filter-action-taken-id">
-            <label htmlFor="action-taken-select-id">Action taken</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="action-taken-select-id"
-                showInactive={true}
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("actionTaken", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={decisionTypeDropdown}
-                placeholder="Select"
-                enableValidation={false}
-                value={actionTaken}
-                isClearable={true}
-              />
+        {(UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) || UserService.hasRole(Roles.MINES)) &&
+          type !== COMPLAINT_TYPES.SECTOR && (
+            <div id="comp-filter-action-taken-id">
+              <label htmlFor="action-taken-select-id">Action taken</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="action-taken-select-id"
+                  showInactive={true}
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("actionTaken", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={decisionTypeDropdown}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={actionTaken}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {showHWCRFilters && activeFilters.showOutcomeAnimalFilter && (
           <div id="comp-filter-outcome-id">
@@ -487,7 +488,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {casesActive && type !== COMPLAINT_TYPES.SECTOR && (
+        {type !== COMPLAINT_TYPES.SECTOR && (
           <div id="comp-filter-linked-to-case-id">
             <label htmlFor="linked-to-case-select-id">Case</label>
             <div className="filter-select-padding">

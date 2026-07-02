@@ -89,7 +89,6 @@ export const ComplaintTableList: FC<Props> = ({
   const isParkColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.PARK_COLUMN));
   const isLocationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.LOCATION_COLUMN));
   const isAuthorizationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.AUTHORIZATION_COLUMN));
-  const isCeebRole = UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR]);
   const casesActive = useAppSelector(selectCanAccessCases);
 
   const complaintIds = useMemo(() => complaints.map((c) => c.id), [complaints]);
@@ -99,7 +98,7 @@ export const ComplaintTableList: FC<Props> = ({
     {
       queryKey: ["caseFilesByActivityIds", ...complaintIds],
       variables: { activityIdentifiers: complaintIds },
-      enabled: complaintType === COMPLAINT_TYPES.ERS && casesActive && complaintIds.length > 0,
+      enabled: complaintType === COMPLAINT_TYPES.ERS && complaintIds.length > 0,
     },
   );
 
@@ -108,10 +107,7 @@ export const ComplaintTableList: FC<Props> = ({
     for (const caseFile of caseFilesData?.caseFilesByActivityIds ?? []) {
       if (!caseFile.name || !caseFile.caseIdentifier) continue;
       for (const activity of caseFile.activities ?? []) {
-        if (
-          activity?.activityIdentifier &&
-          activity.activityType?.caseActivityTypeCode === "COMP"
-        ) {
+        if (activity?.activityIdentifier && activity.activityType?.caseActivityTypeCode === "COMP") {
           const existing = map.get(activity.activityIdentifier) ?? [];
           existing.push({ name: caseFile.name, caseIdentifier: caseFile.caseIdentifier });
           map.set(activity.activityIdentifier, existing);
@@ -198,7 +194,7 @@ export const ComplaintTableList: FC<Props> = ({
           caseColumn((complaint) => ({
             cases: complaintIdToCaseMap.get(complaint.id),
             coorsNumber: complaint.referenceNumber,
-          })),
+          }), casesActive),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];

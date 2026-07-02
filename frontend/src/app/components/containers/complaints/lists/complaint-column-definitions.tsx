@@ -149,12 +149,13 @@ export const violationTypeColumn = <T extends { violation?: string; isInProgress
   ),
 });
 
-// Case column (ERS only) — linked case(s) as link(s), COORS number as plain text
+// Case column (ERS only) — linked case(s) as link(s) when casesActive, COORS number as plain text
 export const caseColumn = <T extends { id: string; referenceNumber?: string }>(
   getCaseData: (complaint: T) => {
     cases: Array<{ name: string; caseIdentifier: string }> | undefined;
     coorsNumber: string | undefined;
   },
+  casesActive: boolean,
 ): CompColumn<T> => ({
   label: "Case",
   isSortable: false,
@@ -171,18 +172,22 @@ export const caseColumn = <T extends { id: string; referenceNumber?: string }>(
           {cases.map((c, i) => (
             <span key={c.caseIdentifier}>
               {i > 0 && ", "}
-              <Link
-                to={`/case/${c.caseIdentifier}`}
-                className="comp-cell-link"
-              >
-                {c.name}
-              </Link>
+              {casesActive ? (
+                <Link
+                  to={`/case/${c.caseIdentifier}`}
+                  className="comp-cell-link"
+                >
+                  {c.name}
+                </Link>
+              ) : (
+                c.name
+              )}
             </span>
           ))}
         </>
       );
     }
-    return coorsNumber || "-";
+    return coorsNumber || "";
   },
 });
 

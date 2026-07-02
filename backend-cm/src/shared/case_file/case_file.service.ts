@@ -121,7 +121,6 @@ export class CaseFileService {
 
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
-
     return await this.findMany(uniqueCaseFileGuids);
   }
 
