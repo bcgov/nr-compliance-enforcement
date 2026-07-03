@@ -189,9 +189,10 @@ export const formatDateTime = (input: string | undefined): string => {
 export const formatPhoneNumber = (rawPhone: string): string => {
   if (!rawPhone) return "";
   const cleaned = rawPhone.replace(/[^\d+]/g, "");
-  const match = cleaned.match(/^(\+?\d{1,3})(\d{3})(\d{3})(\d{4,})$/);
-  if (match) {
-    const [, country, area, prefix, line] = match;
+  const regex = /^(\+?\d{1,3})(\d{3})(\d{3})(\d{4,})$/;
+  const execResult = regex.exec(cleaned);
+  if (execResult) {
+    const [, country, area, prefix, line] = execResult;
     return `${country} (${area}) ${prefix}-${line}`;
   }
   return rawPhone;
