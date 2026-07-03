@@ -7,6 +7,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useMemo } from "react";
+import { formatPhoneNumber } from "@/app/common/methods";
 import { Button } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
@@ -28,6 +29,25 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
   const parties = investigationData?.parties as InvestigationParty[];
+
+  const isPartyProfileComplete = (party: InvestigationParty): boolean => {
+    const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
+    if (party.person) {
+      const rawDob = party.person?.dateOfBirth;
+      const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value;
+      return !!primaryAddress && !!rawPhone && !!rawDob;
+    } else {
+      return !!primaryAddress;
+    }
+  };
+
+  const isPublishedParty = (party: InvestigationParty): boolean => {
+    const invParty = party as InvestigationParty;
+    if (invParty.person) {
+      return !!invParty.person.personReference;
+    }
+    return !!invParty.partyReference;
+  };
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
@@ -229,10 +249,25 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       .filter((party) => party.partyAssociationRole === "PTYOFINTRST")
       .map((party) => {
         const existing = groupedByPartyGuid.get(party.partyIdentifier ?? null);
+        const primaryAddress = party.addresses?.find((addr) => addr?.isPrimary);
+        const rawPhone = party.contactMethods?.find((m) => m?.typeCode === "PHONE")?.value ?? "";
+        const phone = formatPhoneNumber(rawPhone);
+        const rawDob = party.person?.dateOfBirth ?? "";
+        const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
         return {
           partyName: getPartyLabel(party),
           partyGuid: party.partyIdentifier ?? null,
           contraventions: existing?.contraventions ?? [],
+          phone,
+          dob,
+          primaryAddress: primaryAddress
+            ? {
+                address: primaryAddress?.address,
+                city: primaryAddress?.city,
+                province: primaryAddress?.province,
+                postalCode: primaryAddress?.postalCode,
+              }
+            : undefined,
         };
       });
     // Unknown group always last
@@ -277,38 +312,68 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
       {knownGroups.length > 0 && (
         <div className="row mb-4">
-          <h3>Known parties</h3>
+          <h3>Known / Partially-known parties of interest</h3>
         </div>
       )}
-      {knownGroups.map(({ partyName, contraventions: groupedContraventions, partyGuid }) => (
-        <div
-          key={partyName}
-          className="mb-4"
-        >
-          <h5 className="mb-3 fw-bold">
-            {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
-          </h5>
-          <div className="comp-data-container">
-            <ContraventionTable
-              contraventions={groupedContraventions}
-              investigationGuid={investigationGuid}
-              partyGuid={partyGuid}
-              isReadOnly={isReadOnly}
-              enforcementActionsWithAttachments={enforcementActionsWithAttachments}
-              onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
-              onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
-              onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
-              onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
-                onEditEnforcementAction(eaId, contraventionId, pGuid)
-              }
-            />
-          </div>
-        </div>
-      ))}
+      {knownGroups.map(
+        ({ partyName, contraventions: groupedContraventions, partyGuid, phone, dob, primaryAddress }) => {
+          const partyObj = parties.find((p) => p.partyIdentifier === partyGuid);
+          const profileComplete = partyObj ? isPartyProfileComplete(partyObj) : false;
+          const publishedParty = partyObj ? isPublishedParty(partyObj) : false;
+          return (
+            <div
+              key={partyName}
+              className="mb-4"
+            >
+              <h5 className="mb-0 fw-bold">
+                <i className={profileComplete ? "bi bi-check-circle pe-2" : "bi bi-plus-circle pe-2"}></i>
+                {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
+                {!profileComplete && (
+                  <span className="brown-font small ps-2">
+                    <i className="bi bi-slash-circle-fill pe-1"></i>Incomplete
+                  </span>
+                )}
+                {publishedParty && (
+                  <span className="text-success small ps-2">
+                    <i className="bi bi-check-circle-fill pe-1"></i>Published
+                  </span>
+                )}
+              </h5>
+              <span className="text-muted smaller-font">
+                {[
+                  dob,
+                  primaryAddress
+                    ? `${primaryAddress?.address} ${primaryAddress?.city} ${primaryAddress?.province} ${primaryAddress?.postalCode}`
+                    : null,
+                  phone,
+                ]
+                  .filter(Boolean)
+                  .join(" | ")}
+              </span>
+              <div className="comp-data-container mt-1">
+                <ContraventionTable
+                  contraventions={groupedContraventions}
+                  investigationGuid={investigationGuid}
+                  partyGuid={partyGuid}
+                  isReadOnly={isReadOnly}
+                  enforcementActionsWithAttachments={enforcementActionsWithAttachments}
+                  onView={(id, pGuid) => openViewContraventionModal(id, pGuid)}
+                  onAddEnforcementAction={(id) => onAddEnforcementAction(id, partyGuid)}
+                  onEdit={(id, partyGuid) => openContraventionModal(id, partyGuid)}
+                  onEditEnforcementAction={(eaId, contraventionId, pGuid) =>
+                    onEditEnforcementAction(eaId, contraventionId, pGuid)
+                  }
+                  isProfileComplete={profileComplete}
+                />
+              </div>
+            </div>
+          );
+        },
+      )}
 
       {(parties.length > 0 || unknownGroups.length > 0) && (
         <div className="mb-4">
-          <h3 className="mb-3">Unknown parties</h3>
+          <h3 className="mb-3">Unknown parties of interest</h3>
           {unknownGroups.length > 0 && (
             <div className="comp-data-container">
               <ContraventionTable

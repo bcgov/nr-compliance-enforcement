@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Button, Dropdown } from "react-bootstrap";
+import { Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention, EnforcementAction } from "@/generated/graphql";
@@ -20,6 +20,7 @@ interface ContraventionTableProps {
   onEdit: (contraventionId: string, partyGuid: string | null) => void;
   onAddEnforcementAction: (contraventionId: string, partyId: string) => void;
   onEditEnforcementAction: (enforcementActionId: string, contraventionId: string, partyGuid: string) => void;
+  isProfileComplete?: boolean;
 }
 
 // Thin wrapper so each row can call the legislation hook independently
@@ -47,6 +48,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
   onEdit,
   onAddEnforcementAction,
   onEditEnforcementAction,
+  isProfileComplete,
 }) => {
   const areaCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.AREA_CODES));
   const enforcementActionCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.ENFORCEMENT_ACTION_TYPE));
@@ -107,17 +109,38 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
         const enforcementActions = (party?.enforcementActions ?? []) as EnforcementAction[];
 
         if (enforcementActions.length === 0) {
+          const addButton = (
+            <Button
+              id={`add-enforcement-action-${c.contraventionIdentifier}`}
+              variant="outline-primary"
+              size="sm"
+              onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
+              disabled={isReadOnly || !isProfileComplete}
+            >
+              <i className="bi bi-plus-circle" /> Add enforcement action
+            </Button>
+          );
           return (
             <div className="d-flex justify-content-center">
-              <Button
-                id={`add-enforcement-action-${c.contraventionIdentifier}`}
-                variant="outline-primary"
-                size="sm"
-                onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
-                disabled={isReadOnly}
-              >
-                <i className="bi bi-plus-circle" /> Add enforcement action
-              </Button>
+              {isProfileComplete ? (
+                addButton
+              ) : (
+                <OverlayTrigger
+                  placement="left"
+                  overlay={
+                    <Tooltip id="profile-incomplete-tooltip">
+                      Enforcement actions can only be taken against parties with sufficient information
+                    </Tooltip>
+                  }
+                >
+                  <span
+                    className="d-inline-block"
+                    style={{ cursor: "not-allowed" }}
+                  >
+                    {addButton}
+                  </span>
+                </OverlayTrigger>
+              )}
             </div>
           );
         }
