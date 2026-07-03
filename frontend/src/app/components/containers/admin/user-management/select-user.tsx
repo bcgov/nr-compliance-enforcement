@@ -328,6 +328,11 @@ export const SelectUser: FC<SelectUserProps> = ({
     setOfficer({ value: "", label: "" });
   };
 
+  const handleEditUser = (u: AppUser) => {
+    setOfficer({ value: u.app_user_guid, label: `${u.last_name}, ${u.first_name}` });
+    handleEdit();
+  };
+
   const handleDownloadCsv = useCallback(() => {
     const agencyDetailLabel = AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? "Agency detail";
     const includeZoneRegion = activeAgencyTab === AgencyType.COS;
@@ -391,7 +396,7 @@ export const SelectUser: FC<SelectUserProps> = ({
             <Button
               variant="primary"
               onClick={handleEdit}
-              disabled={officer?.value === ""}
+              disabled={!officer?.value}
             >
               Edit
             </Button>
@@ -437,6 +442,7 @@ export const SelectUser: FC<SelectUserProps> = ({
             teams={teams}
             agencyDetailLabel={AGENCY_DETAIL_COLUMN_LABEL[activeAgencyTab] ?? EMPTY}
             onSort={handleSort}
+            onEditUser={handleEditUser}
           />
         </section>
       )}
