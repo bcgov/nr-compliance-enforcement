@@ -9,7 +9,6 @@ import {
   selectComplaintHeader,
   selectComplaintViewMode,
   selectRelatedData,
-  updateAllegationComplaintStatus,
 } from "@store/reducers/complaints";
 import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
 
@@ -191,9 +190,8 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     }
   };
 
-  const startInvestigation = async () => {
+  const startInvestigation = () => {
     if (validationResults.canStartInvestigation) {
-      await dispatch(updateAllegationComplaintStatus(id, "CLOSED"));
       navigate(`/investigation/create?complaintId=${id}&complaintType=${complaintType}`);
     } else {
       validationResults.scrollToErrors();
