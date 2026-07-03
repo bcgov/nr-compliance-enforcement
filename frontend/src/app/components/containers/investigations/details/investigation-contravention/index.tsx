@@ -8,7 +8,7 @@ import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useMemo } from "react";
 import { formatPhoneNumber } from "@/app/common/methods";
-import { Button } from "react-bootstrap";
+import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
@@ -286,6 +286,20 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
   const { knownGroups, unknownGroups } = allGroups;
 
+  const sortedKnownGroups = [...knownGroups].sort((a, b) => {
+    const aObj = parties.find((p) => p.partyIdentifier === a.partyGuid);
+    const bObj = parties.find((p) => p.partyIdentifier === b.partyGuid);
+    const aPublished = aObj ? isPublishedParty(aObj) : false;
+    const bPublished = bObj ? isPublishedParty(bObj) : false;
+    if (aPublished && !bPublished) return -1;
+    if (!aPublished && bPublished) return 1;
+    const aComplete = aObj ? isPartyProfileComplete(aObj) : false;
+    const bComplete = bObj ? isPartyProfileComplete(bObj) : false;
+    if (aComplete && !bComplete) return -1;
+    if (!aComplete && bComplete) return 1;
+    return a.partyName.localeCompare(b.partyName);
+  });
+
   return (
     <div className="comp-details-view">
       <div className="row">
@@ -315,23 +329,41 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           <h3>Known / Partially-known parties of interest</h3>
         </div>
       )}
-      {knownGroups.map(
+      {sortedKnownGroups.map(
         ({ partyName, contraventions: groupedContraventions, partyGuid, phone, dob, primaryAddress }) => {
           const partyObj = parties.find((p) => p.partyIdentifier === partyGuid);
           const profileComplete = partyObj ? isPartyProfileComplete(partyObj) : false;
           const publishedParty = partyObj ? isPublishedParty(partyObj) : false;
+          const details = [
+            dob,
+            primaryAddress
+              ? `${primaryAddress?.address} ${primaryAddress?.city} ${primaryAddress?.province} ${primaryAddress?.postalCode}`
+              : null,
+            phone,
+          ]
+            .filter(Boolean)
+            .join(" | ");
           return (
             <div
               key={partyName}
               className="mb-4"
             >
-              <h5 className="mb-0 fw-bold">
+              <h5 className={`mb-0 fw-bold ${details ? "" : "mb-2"}`}>
                 <i className={profileComplete ? "bi bi-check-circle pe-2" : "bi bi-plus-circle pe-2"}></i>
                 {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
                 {!profileComplete && (
-                  <span className="brown-font small ps-2">
-                    <i className="bi bi-slash-circle-fill pe-1"></i>Incomplete
-                  </span>
+                  <OverlayTrigger
+                    placement="right"
+                    overlay={
+                      <Tooltip id="profile-incomplete-tooltip">
+                        Enforcement actions can only be taken against parties with sufficient information
+                      </Tooltip>
+                    }
+                  >
+                    <span className="brown-font small ps-2">
+                      <i className="bi bi-slash-circle-fill pe-1"></i>Incomplete
+                    </span>
+                  </OverlayTrigger>
                 )}
                 {publishedParty && (
                   <span className="text-success small ps-2">
@@ -339,18 +371,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                   </span>
                 )}
               </h5>
-              <span className="text-muted smaller-font">
-                {[
-                  dob,
-                  primaryAddress
-                    ? `${primaryAddress?.address} ${primaryAddress?.city} ${primaryAddress?.province} ${primaryAddress?.postalCode}`
-                    : null,
-                  phone,
-                ]
-                  .filter(Boolean)
-                  .join(" | ")}
-              </span>
-              <div className="comp-data-container mt-1">
+              <span className="text-muted smaller-font">{details}</span>
+              <div className="comp-data-container">
                 <ContraventionTable
                   contraventions={groupedContraventions}
                   investigationGuid={investigationGuid}
@@ -372,8 +394,8 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       )}
 
       {(parties.length > 0 || unknownGroups.length > 0) && (
-        <div className="mb-4">
-          <h3 className="mb-3">Unknown parties of interest</h3>
+        <div className="mb-4 mt-5">
+          <h3 className="mb-5 mt-5">Unknown parties of interest</h3>
           {unknownGroups.length > 0 && (
             <div className="comp-data-container">
               <ContraventionTable
