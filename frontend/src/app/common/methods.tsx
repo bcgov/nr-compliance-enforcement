@@ -24,8 +24,9 @@ type Coordinate = number[] | string[] | undefined;
 
 type OptionalDateTimeInput = string | Date | null | undefined;
 
-const SLIDE_HEIGHT = 130;
-const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
+const THUMB_WIDTH = 578; // 2x the 289x200 carousel slide, for high DPI displays
+const THUMB_HEIGHT = 400;
+const THUMB_QUALITY = 0.9; // 90% saves space with near lossless compression
 
 export const loadGifFrameList = async (gifUrl: string): Promise<HTMLCanvasElement[]> => {
   const response = await fetch(gifUrl);
@@ -476,43 +477,29 @@ export const pad = (num: string, size: number): string => {
   return num;
 };
 
-export const getThumbnailFile = async (file: File): Promise<File> => {
-  try {
-    const tool = await fromImage(file);
-    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio
-      ? tool
-          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toFile(file.name + "-thumb.jpg")
-      : tool
-          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toFile(file.name + "-thumb.jpg"));
-  } catch (error) {
-    return Promise.reject(error);
-  }
+// handle scale and cropping for both landscape or portrait images
+// crop from center of iamge outwards
+const makeThumbnail = async (file: File) => {
+  const tool = await fromImage(file);
+  // get scale from max based on landscape v portrait
+  const scaleRatio = Math.max(THUMB_WIDTH / tool.width, THUMB_HEIGHT / tool.height);
+  tool.scale(Math.round(tool.width * scaleRatio), Math.round(tool.height * scaleRatio));
+  return tool
+    .crop(
+      Math.round((tool.width - THUMB_WIDTH) / 2),
+      Math.round((tool.height - THUMB_HEIGHT) / 2),
+      THUMB_WIDTH,
+      THUMB_HEIGHT,
+    )
+    .quality(THUMB_QUALITY);
 };
 
-export const getThumbnailDataURL = async (file: File): Promise<string> => {
-  try {
-    const tool = await fromImage(file);
-    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio
-      ? tool
-          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toDataURL()
-      : tool
-          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toDataURL());
-  } catch {
-    return "";
-  }
-};
+// saved thumbnail
+export const getThumbnailFile = async (file: File): Promise<File> =>
+  (await makeThumbnail(file)).toFile(file.name + "-thumb.jpg");
+
+// client side thumbnail, not uploaded yet
+export const getThumbnailDataURL = async (file: File): Promise<string> => (await makeThumbnail(file)).toDataURL();
 
 export function isPositiveNum(number: string) {
   return !isNaN(Number(number)) && Number(number) >= 0;

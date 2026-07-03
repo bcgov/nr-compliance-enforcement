@@ -11,11 +11,20 @@
 
 .party-details-summary-vcard-container {
   margin-left: 5em;
+  // fixed frame so the carousel doesn't shrink-wrap to each image's intrinsic width
+  width: 320px;
+  flex-shrink: 0;
 }
 
 .party-details-summary-vcard {
   font-size: 12em;
   display: flex;
+}
+
+.party-carousel-frame {
+  // backwards compat with old thumbs
+  // same aspect as the generated thumbnails, so cover-fit never crops new thumbs
+  aspect-ratio: 578 / 400;
 }
 
 .party-details-summary-info {
