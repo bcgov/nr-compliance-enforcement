@@ -349,7 +349,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               className="mb-4"
             >
               <h5 className={`mb-0 fw-bold ${details ? "" : "mb-2"}`}>
-                <i className={profileComplete ? "bi bi-check-circle pe-2" : "bi bi-plus-circle pe-2"}></i>
+                <i className={profileComplete ? "bi bi-check-circle pe-2" : "bi bi-plus-circle-dotted pe-2"}></i>
                 {partyName} {groupedContraventions.length > 0 ? `(${groupedContraventions.length})` : ""}
                 {!profileComplete && (
                   <OverlayTrigger
