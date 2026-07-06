@@ -3,6 +3,7 @@ import { Button, CloseButton, InputGroup } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { Task } from "@/generated/graphql";
+import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type Props = {
   tasks?: Task[];
@@ -71,6 +72,10 @@ export const ExhibitsFilterBar: FC<Props> = ({
     return task ? `Task ${task.taskNumber}` : "Task";
   };
 
+  const getPropertyTypeFilterLabel = (): string => {
+    return getPropertyTypeLabel(searchValues.propertyTypeFilter);
+  };
+
   const renderFilterButton = (variant: "desktop" | "mobile", onClick: MouseEventHandler, id?: string) => (
     <Button
       variant="outline-primary"
@@ -126,6 +131,15 @@ export const ExhibitsFilterBar: FC<Props> = ({
             id="task-filter-pill"
             label={getTaskFilterLabel()}
             name="taskFilter"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("propertyTypeFilter") && (
+          <FilterButton
+            id="property-type-filter-pill"
+            label={getPropertyTypeFilterLabel()}
+            name="propertyTypeFilter"
             clear={removeFilter}
           />
         )}

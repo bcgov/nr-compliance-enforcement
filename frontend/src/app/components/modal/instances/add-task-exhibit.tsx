@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectModalData } from "@/app/store/reducers/app";
 import { FC, useEffect, useMemo, useState } from "react";
-import { Alert, Button, Modal } from "react-bootstrap";
+import { Alert, Button, Col, Modal, Row } from "react-bootstrap";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
 import { CompInput } from "@components/common/comp-input";
@@ -19,6 +19,49 @@ import {
   DELETE_EXHIBIT,
   UPDATE_EXHIBIT,
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
+import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+
+type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
+
+// Seized-from fields are only required when the property type is Seized.
+const requiredWhenSeized =
+  (message: string) =>
+  ({ value, fieldApi }: { value: string; fieldApi: ExhibitValidatorApi }) =>
+    fieldApi.form.getFieldValue("propertyType") === PropertyTypeEnum.SEIZED && !value?.trim() ? message : undefined;
+
+// Seized-from phone must be a complete 10-digit number when the property type is Seized.
+const phoneRequiredWhenSeized =
+  (message: string) =>
+  ({ value, fieldApi }: { value: string; fieldApi: ExhibitValidatorApi }) => {
+    if (fieldApi.form.getFieldValue("propertyType") !== PropertyTypeEnum.SEIZED) {
+      return undefined;
+    }
+    const digits = (value ?? "").replace(/\D/g, "");
+    const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+    return national.length === 10 ? undefined : message;
+  };
+
+// Derive the "HH:mm" time string the picker expects from a stored Date. Returns null when no date is set.
+const formatTimeForPicker = (date: Date | null): string | null => {
+  if (!date) return null;
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
+// Combine a date with an "HH:mm" time string back into a single Date. Falls back to midnight when no time is set.
+const combineDateAndTime = (date: Date | null, time: string | null): Date | null => {
+  if (!date) return null;
+  const combined = new Date(date);
+  if (time) {
+    const [hours, minutes] = time.split(":").map(Number);
+    combined.setHours(hours, minutes, 0, 0);
+  } else {
+    combined.setHours(0, 0, 0, 0);
+  }
+  return combined;
+};
 
 type AddEditTaskExhibitModalProps = {
   close: () => void;
@@ -115,9 +158,17 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   // Form Definition
   const form = useForm({
     defaultValues: {
+      propertyType: exhibit?.propertyType ?? "",
+      seizedFromFirstName: exhibit?.seizedFromFirstName ?? "",
+      seizedFromLastName: exhibit?.seizedFromLastName ?? "",
+      seizedFromAddress: exhibit?.seizedFromAddress ?? "",
+      seizedFromPhoneNumber: exhibit?.seizedFromPhoneNumber ?? "",
       description: exhibit?.description ?? "",
+      quantity: exhibit?.quantity ?? null,
       dateCollected: exhibit?.dateCollected ? new Date(exhibit.dateCollected) : new Date(),
       collectedAppUserGuidRef: collectedByInitialValue,
+      locationOfIntake: exhibit?.locationOfIntake ?? "",
+      propertyTagNumber: exhibit?.propertyTagNumber ?? "",
     },
     onSubmitInvalid: () => {
       ToggleError("Errors in form");
@@ -147,12 +198,21 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   // Handlers
   const handleCreate = async (value: FormValues) => {
+    const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
     const input: CreateUpdateExhibitInput = {
       taskGuid: taskIdentifier,
       investigationGuid: investigationIdentifier,
+      propertyType: value.propertyType,
       description: value.description,
-      dateCollected: value.dateCollected as Date,
+      quantity: value.quantity ?? null,
+      seizedFromFirstName: isSeized ? value.seizedFromFirstName : null,
+      seizedFromLastName: isSeized ? value.seizedFromLastName : null,
+      seizedFromAddress: isSeized ? value.seizedFromAddress : null,
+      seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
+      dateCollected: value.dateCollected,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
+      locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
+      propertyTagNumber: value.propertyTagNumber,
       appUserIdentifier: "",
     };
     await createMutation.mutateAsync({ input });
@@ -160,13 +220,22 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   };
 
   const handleUpdate = async (value: FormValues) => {
+    const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
     const input: CreateUpdateExhibitInput = {
       exhibitGuid: exhibit!.exhibitGuid,
       taskGuid: taskIdentifier,
       investigationGuid: investigationIdentifier,
+      propertyType: value.propertyType,
       description: value.description,
-      dateCollected: value.dateCollected as Date,
+      quantity: value.quantity ?? null,
+      seizedFromFirstName: isSeized ? value.seizedFromFirstName : null,
+      seizedFromLastName: isSeized ? value.seizedFromLastName : null,
+      seizedFromAddress: isSeized ? value.seizedFromAddress : null,
+      seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
+      dateCollected: value.dateCollected,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
+      locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
+      propertyTagNumber: value.propertyTagNumber,
     };
     await updateMutation.mutateAsync({ input });
     submit();
@@ -192,13 +261,130 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       <Modal.Body>
         <form onSubmit={form.handleSubmit}>
           <fieldset>
+            {/* Property type */}
+            <FormField
+              form={form}
+              name="propertyType"
+              label="Property type"
+              required
+              validators={{ onChange: z.string().min(1, "Property type is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="exhibit-property-type-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input"
+                  options={PROPERTY_TYPE_OPTIONS}
+                  value={PROPERTY_TYPE_OPTIONS.find((opt) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select property type"
+                  isClearable={false}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
+            {/* Seized from — only shown and required when property type is Seized */}
+            <form.Subscribe selector={(state) => state.values.propertyType}>
+              {(propertyType) =>
+                propertyType === PropertyTypeEnum.SEIZED ? (
+                  <>
+                    <p className="fw-bold mt-3 mb-1">Seized from</p>
+                    <div className="bg-bc-brand-background-light-gray text-dark p-3 mb-3">
+                      {/* First name */}
+                      <FormField
+                        form={form}
+                        name="seizedFromFirstName"
+                        label="First name"
+                        required
+                        validators={{ onChange: requiredWhenSeized("First name is required") }}
+                        render={(field) => (
+                          <CompInput
+                            id="exhibit-seized-first-name"
+                            divid="exhibit-seized-first-name-value"
+                            type="input"
+                            inputClass="comp-form-control"
+                            error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                            onChange={(evt: any) => field.handleChange(evt.target.value)}
+                            value={field.state.value}
+                            placeholder="Enter first name"
+                          />
+                        )}
+                      />
+
+                      {/* Last name */}
+                      <FormField
+                        form={form}
+                        name="seizedFromLastName"
+                        label="Last name"
+                        required
+                        validators={{ onChange: requiredWhenSeized("Last name is required") }}
+                        render={(field) => (
+                          <CompInput
+                            id="exhibit-seized-last-name"
+                            divid="exhibit-seized-last-name-value"
+                            type="input"
+                            inputClass="comp-form-control"
+                            error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                            onChange={(evt: any) => field.handleChange(evt.target.value)}
+                            value={field.state.value}
+                            placeholder="Enter last name"
+                          />
+                        )}
+                      />
+
+                      {/* Address */}
+                      <FormField
+                        form={form}
+                        name="seizedFromAddress"
+                        label="Address"
+                        required
+                        validators={{ onChange: requiredWhenSeized("Address is required") }}
+                        render={(field) => (
+                          <CompInput
+                            id="exhibit-seized-address"
+                            divid="exhibit-seized-address-value"
+                            type="input"
+                            inputClass="comp-form-control"
+                            error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                            onChange={(evt: any) => field.handleChange(evt.target.value)}
+                            value={field.state.value}
+                            placeholder="Enter address"
+                          />
+                        )}
+                      />
+
+                      {/* Phone number */}
+                      <FormField
+                        form={form}
+                        name="seizedFromPhoneNumber"
+                        label="Phone number"
+                        required
+                        validators={{ onChange: phoneRequiredWhenSeized("Enter a valid 10-digit phone number") }}
+                        render={(field) => (
+                          <ValidationPhoneInput
+                            className="comp-details-input"
+                            value={field.state.value ?? ""}
+                            onChange={(value: string) => field.handleChange(value || "")}
+                            maxLength={14}
+                            international={false}
+                            id="exhibit-seized-phone-number"
+                            errMsg={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                          />
+                        )}
+                      />
+                    </div>
+                  </>
+                ) : null
+              }
+            </form.Subscribe>
             {/* Description */}
             <FormField
               form={form}
               name="description"
-              label="Description"
+              label="Item description"
               required
-              validators={{ onChange: z.string().min(1, "Description is required") }}
+              validators={{ onChange: z.string().min(1, "Item description is required") }}
               render={(field) => (
                 <CompInput
                   id="exhibit-description"
@@ -213,30 +399,118 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
               )}
             />
 
-            {/* Date Collected */}
+            {/* Quantity / Date-time of intake / Property tag number */}
+            <Row className="my-3">
+              <Col
+                xs={12}
+                md={3}
+              >
+                {/* Quantity */}
+                <FormField
+                  form={form}
+                  name="quantity"
+                  label="Quantity"
+                  render={(field) => (
+                    <CompInput
+                      id="exhibit-quantity"
+                      divid="exhibit-quantity-value"
+                      type="input"
+                      inputClass="comp-form-control"
+                      onChange={(evt: any) => {
+                        const raw = evt.target.value;
+                        if (raw === "") {
+                          field.handleChange(null);
+                          return;
+                        }
+                        const parsed = Number(raw);
+                        field.handleChange(Number.isInteger(parsed) ? parsed : field.state.value);
+                      }}
+                      value={field.state.value ?? ""}
+                      placeholder="Enter quantity"
+                    />
+                  )}
+                />
+              </Col>
+
+              <Col
+                xs={12}
+                md={5}
+              >
+                {/* Date/time of intake */}
+                <FormField
+                  form={form}
+                  name="dateCollected"
+                  label="Date/time of intake"
+                  required
+                  validators={{
+                    onChange: z
+                      .date()
+                      .nullable()
+                      .refine((val) => val !== null, { message: "Date/time of intake is required" })
+                      .refine((val) => val === null || val <= new Date(), {
+                        message: "Date/time of intake cannot be in the future",
+                      }),
+                  }}
+                  render={(field) => (
+                    <ValidationDatePicker
+                      id="exhibit-date-collected"
+                      classNamePrefix="comp-details-input"
+                      className="comp-form-control comp-details-input"
+                      selectedDate={field.state.value}
+                      selectedTime={formatTimeForPicker(field.state.value)}
+                      maxDate={new Date()}
+                      showTimePicker={true}
+                      nullableTime={true}
+                      onChange={(date: Date | null, time: string | null) =>
+                        field.handleChange(combineDateAndTime(date, time))
+                      }
+                      errMsg={field.state.meta.errors?.[0]?.message || ""}
+                    />
+                  )}
+                />
+              </Col>
+
+              <Col
+                xs={12}
+                md={4}
+              >
+                {/* Property tag number */}
+                <FormField
+                  form={form}
+                  name="propertyTagNumber"
+                  label="Property tag number"
+                  required
+                  validators={{ onChange: z.string().min(1, "Property tag number is required") }}
+                  render={(field) => (
+                    <CompInput
+                      id="exhibit-property-tag-number"
+                      divid="exhibit-property-tag-number-value"
+                      type="input"
+                      inputClass="comp-form-control"
+                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                      onChange={(evt: any) => field.handleChange(evt.target.value)}
+                      value={field.state.value}
+                      placeholder="Enter property tag number"
+                    />
+                  )}
+                />
+              </Col>
+            </Row>
+
+            {/* Location of intake */}
             <FormField
               form={form}
-              name="dateCollected"
-              label="Date collected"
-              required
-              validators={{
-                onChange: z
-                  .date()
-                  .nullable()
-                  .refine((val) => val !== null, { message: "Date collected is required" })
-                  .refine((val) => val === null || val <= new Date(), {
-                    message: "Date collected cannot be in the future",
-                  }),
-              }}
+              name="locationOfIntake"
+              label="Location of intake"
               render={(field) => (
-                <ValidationDatePicker
-                  id="exhibit-date-collected"
-                  classNamePrefix="comp-details-input"
-                  className="comp-form-control comp-details-input"
-                  selectedDate={field.state.value}
-                  maxDate={new Date()}
-                  onChange={(date: Date | undefined) => field.handleChange(date ?? null)}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                <CompInput
+                  id="exhibit-location-of-intake"
+                  divid="exhibit-location-of-intake-value"
+                  type="input"
+                  inputClass="comp-form-control"
+                  onChange={(evt: any) => field.handleChange(evt.target.value)}
+                  value={field.state.value}
+                  placeholder="Enter location of intake"
                 />
               )}
             />
@@ -245,7 +519,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
             <FormField
               form={form}
               name="collectedAppUserGuidRef"
-              label="Officer collected"
+              label="Officer"
               required
               validators={{ onChange: z.string().min(1, "Officer collected is required") }}
               render={(field) => (
@@ -279,7 +553,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
               <span>
                 <strong>Delete exhibit</strong>
                 <p className="mb-3">
-                  Are you sure you want to delete exhibit #{exhibit?.exhibitNumber}? This action cannot be undone.
+                  Are you sure you want to delete exhibit #{exhibit?.exhibitDisplayNumber}? This action cannot be
+                  undone.
                 </p>
               </span>
             </div>

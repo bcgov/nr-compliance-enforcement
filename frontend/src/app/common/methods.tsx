@@ -588,6 +588,19 @@ export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: Optio
   return new Date(`${dateStr}T${timeStr}Z`);
 };
 
+// Formats a stored UTC datetime into a local "YYYY-MM-DD HH:mm" string. The date and time are both
+// derived from the same local Date so they never disagree across a timezone midnight boundary.
+export const formatDateTimeStr = (value?: string | null): string => {
+  const local = parseUTCDateTimeToLocal(value, value);
+  if (!local) return "-";
+  const year = local.getFullYear();
+  const month = String(local.getMonth() + 1).padStart(2, "0");
+  const day = String(local.getDate()).padStart(2, "0");
+  const hours = String(local.getHours()).padStart(2, "0");
+  const minutes = String(local.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
+
 /**
  * Formats a GraphQL DateTime (or date-like value) as yyyy-MM-dd using parseUTCDateTimeToLocal
  *

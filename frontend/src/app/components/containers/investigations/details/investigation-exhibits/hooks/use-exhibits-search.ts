@@ -5,6 +5,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 export interface ExhibitsSearchParams {
   search: string;
   taskFilter: string | null;
+  propertyTypeFilter: string | null;
   sortBy: string;
   sortOrder: string;
   page: number;
@@ -14,6 +15,7 @@ export interface ExhibitsSearchParams {
 const DEFAULT_SEARCH_VALUES: ExhibitsSearchParams = {
   search: "",
   taskFilter: null,
+  propertyTypeFilter: null,
   sortBy: "exhibitNumber",
   sortOrder: SORT_TYPES.ASC,
   page: 1,
@@ -46,6 +48,7 @@ export const useExhibitsSearch = () => {
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       taskFilter: searchParams.get("taskFilter"),
+      propertyTypeFilter: searchParams.get("propertyTypeFilter"),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: Number.parseInt(searchParams.get("page") || "1", 10),

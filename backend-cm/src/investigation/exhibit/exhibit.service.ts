@@ -6,7 +6,6 @@ import { exhibit } from "../../../prisma/investigation/generated/exhibit";
 import { CreateUpdateExhibitInput, Exhibit, ExhibitFilters, ExhibitResult } from "./dto/exhibit";
 import { UserService } from "../../common/user.service";
 import { PaginationUtility } from "../../common/pagination.utility";
-import { PageInfo } from "../../shared/case_file/dto/case_file";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
 
@@ -22,6 +21,17 @@ export class ExhibitService {
 
   private readonly logger = new Logger(ExhibitService.name);
 
+  // Composes the user-facing exhibit number: investigation name - task number - zero-padded sequence (e.g. INV26-001234-5-001).
+  // Extracted to keep the mapper's forMember simple and the control flow out of the parent's complexity score.
+  _composeExhibitDisplayNumber = (
+    investigationName?: string | null,
+    taskNumber?: number | null,
+    exhibitNumber?: number | null,
+  ): string => {
+    const sequence = exhibitNumber == null ? "" : String(exhibitNumber).padStart(3, "0");
+    return [investigationName ?? "", taskNumber ?? "", sequence].join("-");
+  };
+
   async findMany(taskGuid?: string) {
     const prismaExhibits = await this.prisma.exhibit.findMany({
       select: {
@@ -29,12 +39,23 @@ export class ExhibitService {
         task_guid: true,
         investigation_guid: true,
         exhibit_number: true,
-        description: true,
-        date_collected: true,
-        collected_user_guid_ref: true,
+        exhibit_display_number: true,
+        property_type: true,
+        description_text: true,
+        quantity_amount: true,
+        seized_from_first_name: true,
+        seized_from_last_name: true,
+        seized_from_address: true,
+        seized_from_phone_number: true,
+        collected_utc_timestamp: true,
+        collected_by_app_user_guid_ref: true,
+        location_of_intake_text: true,
+        property_tag_number: true,
         active_ind: true,
         create_utc_timestamp: true,
         update_utc_timestamp: true,
+        investigation: { select: { name: true } },
+        task: { select: { task_number: true } },
       },
       where: {
         active_ind: true,
@@ -46,35 +67,44 @@ export class ExhibitService {
   }
 
   private readonly SORT_FIELD_MAP: Record<string, string> = {
-    exhibitNumber: "exhibit_number",
-    description: "description",
-    dateCollected: "date_collected",
-    officerCollected: "collected_user_guid_ref",
-    taskNumber: "task_guid",
+    exhibitNumber: "exhibit_display_number",
+    propertyType: "property_type",
+    description: "description_text",
+    quantity: "quantity_amount",
+    dateCollected: "collected_utc_timestamp",
+    location: "location_of_intake_text",
+    propertyTag: "property_tag_number",
   };
 
   private _buildExhibitWhereClause(filters: ExhibitFilters): any {
-    const where: any = {
-      active_ind: true,
-      investigation_guid: filters.investigationGuid,
-    };
+    const conditions: any[] = [{ active_ind: true }, { investigation_guid: filters.investigationGuid }];
 
     if (filters.taskFilter) {
-      where.task_guid = filters.taskFilter;
+      conditions.push({ task_guid: filters.taskFilter });
+    }
+
+    if (filters.propertyTypeFilter) {
+      conditions.push({ property_type: filters.propertyTypeFilter });
     }
 
     if (filters.search) {
-      where.OR = [
-        { description: { contains: filters.search, mode: "insensitive" } },
-        { exhibit_number: Number.isNaN(Number(filters.search)) ? undefined : Number(filters.search) },
-      ].filter(Boolean);
+      const searchConditions: any[] = [
+        {
+          description_text: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          exhibit_display_number: { contains: filters.search, mode: "insensitive" },
+        },
+      ];
+
+      conditions.push({ OR: searchConditions });
     }
 
-    return where;
+    return { AND: conditions };
   }
 
   private _buildExhibitOrderByClause(filters?: ExhibitFilters): any {
-    let orderBy: any = { exhibit_number: "asc" };
+    let orderBy: any = { exhibit_display_number: "asc" };
 
     if (filters?.sortBy && filters?.sortOrder) {
       const dbField = this.SORT_FIELD_MAP[filters.sortBy];
@@ -107,7 +137,7 @@ export class ExhibitService {
 
     return {
       items: result.items,
-      pageInfo: result.pageInfo as PageInfo,
+      pageInfo: result.pageInfo,
     };
   }
 
@@ -118,9 +148,18 @@ export class ExhibitService {
         task_guid: true,
         investigation_guid: true,
         exhibit_number: true,
-        description: true,
-        date_collected: true,
-        collected_user_guid_ref: true,
+        exhibit_display_number: true,
+        property_type: true,
+        description_text: true,
+        quantity_amount: true,
+        seized_from_first_name: true,
+        seized_from_last_name: true,
+        seized_from_address: true,
+        seized_from_phone_number: true,
+        collected_utc_timestamp: true,
+        collected_by_app_user_guid_ref: true,
+        location_of_intake_text: true,
+        property_tag_number: true,
         active_ind: true,
         create_utc_timestamp: true,
         update_utc_timestamp: true,
@@ -136,9 +175,23 @@ export class ExhibitService {
   async create(exhibitInput: CreateUpdateExhibitInput): Promise<Exhibit> {
     try {
       const exhibit = await withRlsTransaction(this.prisma, async (db) => {
+        const taskForExhibit = await db.task.findUnique({
+          where: {
+            task_guid: exhibitInput.taskGuid,
+          },
+          select: {
+            task_number: true,
+            investigation: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        });
+
         const highestExhibit = await db.exhibit.findFirst({
           where: {
-            investigation_guid: exhibitInput.investigationGuid,
+            task_guid: exhibitInput.taskGuid,
           },
           orderBy: {
             exhibit_number: "desc",
@@ -150,14 +203,29 @@ export class ExhibitService {
 
         const nextExhibitNumber = highestExhibit ? highestExhibit.exhibit_number + 1 : 1;
 
+        const exhibitDisplayNumber = this._composeExhibitDisplayNumber(
+          taskForExhibit?.investigation?.name,
+          taskForExhibit?.task_number,
+          nextExhibitNumber,
+        );
+
         return await db.exhibit.create({
           data: {
             task_guid: exhibitInput.taskGuid,
             investigation_guid: exhibitInput.investigationGuid,
             exhibit_number: nextExhibitNumber,
-            description: exhibitInput.description,
-            date_collected: exhibitInput.dateCollected ?? new Date(),
-            collected_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
+            exhibit_display_number: exhibitDisplayNumber,
+            property_type: exhibitInput.propertyType,
+            description_text: exhibitInput.description,
+            quantity_amount: exhibitInput.quantity,
+            seized_from_first_name: exhibitInput.seizedFromFirstName,
+            seized_from_last_name: exhibitInput.seizedFromLastName,
+            seized_from_address: exhibitInput.seizedFromAddress,
+            seized_from_phone_number: exhibitInput.seizedFromPhoneNumber,
+            collected_utc_timestamp: exhibitInput.dateCollected ?? new Date(),
+            collected_by_app_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
+            location_of_intake_text: exhibitInput.locationOfIntake,
+            property_tag_number: exhibitInput.propertyTagNumber,
             active_ind: true,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
@@ -212,9 +280,17 @@ export class ExhibitService {
             exhibit_guid: exhibitInput.exhibitGuid,
           },
           data: {
-            description: exhibitInput.description,
-            date_collected: exhibitInput.dateCollected,
-            collected_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
+            property_type: exhibitInput.propertyType,
+            description_text: exhibitInput.description,
+            quantity_amount: exhibitInput.quantity,
+            seized_from_first_name: exhibitInput.seizedFromFirstName,
+            seized_from_last_name: exhibitInput.seizedFromLastName,
+            seized_from_address: exhibitInput.seizedFromAddress,
+            seized_from_phone_number: exhibitInput.seizedFromPhoneNumber,
+            collected_utc_timestamp: exhibitInput.dateCollected ?? new Date(),
+            collected_by_app_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
+            location_of_intake_text: exhibitInput.locationOfIntake,
+            property_tag_number: exhibitInput.propertyTagNumber,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
           },
