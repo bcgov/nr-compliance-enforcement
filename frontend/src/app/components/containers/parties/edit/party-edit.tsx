@@ -44,8 +44,12 @@ import {
   mapContactMethodsFromPartyData,
   seedContactMethods,
   validateBusinessForm,
+  validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  handleBusinessPartyMutationError,
+  scrollToFirstFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 
@@ -462,15 +466,25 @@ const PartyEdit: FC = () => {
         return;
       }
     }
+    // an added person must have at least one entered field
+    if (!isEditMode && currentValues.partyType === PartyTypeCodes.PERSON) {
+      const validationError = validatePersonForm(currentValues);
+      if (validationError) {
+        ToggleError(validationError);
+        return;
+      }
+    }
     if (isEditMode) {
       setTriggerSaveAttachments(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setTriggerSaveAttachments(false);
-        form.handleSubmit();
+        await form.handleSubmit();
+        if (!form.state.canSubmit) scrollToFirstFieldError();
       }, 0);
     } else {
       setPendingAttachmentsSaveAfterCreate(true);
-      form.handleSubmit();
+      await form.handleSubmit();
+      if (!form.state.canSubmit) scrollToFirstFieldError();
     }
   }, [form, isEditMode, partyData, currentFormValues]);
 

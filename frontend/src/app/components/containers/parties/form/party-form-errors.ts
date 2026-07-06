@@ -28,12 +28,7 @@ export const getFieldErrorMessage = (field: FieldWithErrors): string => {
     if (typeof error === "string") {
       return error;
     }
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error &&
-      typeof error.message === "string"
-    ) {
+    if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
       return error.message;
     }
   }
@@ -85,4 +80,19 @@ export const handleBusinessPartyMutationError = (
 
   ToggleError(message);
   return false;
+};
+
+// scrolls the first visible error message and sets focus to that control
+export const scrollToFirstFieldError = () => {
+  setTimeout(() => {
+    const errorEl = Array.from(document.querySelectorAll<HTMLElement>(".error-message")).find(
+      (el) => el.offsetParent !== null && !!el.textContent?.trim(),
+    );
+    if (!errorEl) return;
+    errorEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    errorEl
+      .closest(".comp-details-form-row")
+      ?.querySelector<HTMLElement>("input, select, textarea")
+      ?.focus({ preventScroll: true });
+  }, 0);
 };

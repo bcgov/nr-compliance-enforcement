@@ -25,7 +25,7 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
           // only validate if there are multiple, a single empty item is allowed
           onChange: ({ value, fieldApi }: any) => {
             const rows = fieldApi.form.getFieldValue("aliases") ?? [];
-            return rows.length > 1 && !value?.trim() ? "Alias is required" : undefined;
+            return rows.length > 1 && !value?.trim() ? "Enter or remove this alias" : undefined;
           },
         }}
         render={(field) => (

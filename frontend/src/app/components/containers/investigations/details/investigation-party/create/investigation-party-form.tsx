@@ -5,7 +5,7 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleSuccess } from "@/app/common/toast";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -34,8 +34,12 @@ import {
   mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
   seedContactMethods,
+  validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  handleBusinessPartyMutationError,
+  scrollToFirstFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
@@ -221,6 +225,15 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
         updatePartyMutation.mutate({ investigationGuid, input });
       } else {
+        // an added person must have at least one entered field
+        if (value.partyType === PartyTypeCodes.PERSON) {
+          const validationError = validatePersonForm(value);
+          if (validationError) {
+            ToggleError(validationError);
+            return;
+          }
+        }
+
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
@@ -311,8 +324,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return name || editParty.placeholderName || "Edit party";
   }, [isEditMode, editParty]);
 
-  const saveButtonClick = () => {
-    form.handleSubmit();
+  const saveButtonClick = async () => {
+    await form.handleSubmit();
+    if (!form.state.canSubmit) scrollToFirstFieldError();
   };
 
   const confirmCancel = () => {
