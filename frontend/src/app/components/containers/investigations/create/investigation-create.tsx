@@ -154,7 +154,7 @@ const InvestigationCreate: FC = () => {
         discoveryTime: inv.discoveryTime || null,
         community: inv.community || "",
       };
-    } else if (!isEditMode && complaintData) {
+    } else if (!isEditMode && complaintId && complaintData) {
       const offcicerAssigned = complaintData.delegates.find((d) => d.type === "ASSIGNEE");
       return {
         investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
@@ -188,7 +188,7 @@ const InvestigationCreate: FC = () => {
       discoveryTime: null,
       community: "",
     };
-  }, [investigationData, isEditMode, statusOptions, complaintData]);
+  }, [investigationData, isEditMode, statusOptions, complaintData, complaintId]);
 
   const form = useForm({
     defaultValues,
