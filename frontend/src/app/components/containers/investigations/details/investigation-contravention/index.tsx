@@ -7,7 +7,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
 import { Contravention, EnforcementAction, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useMemo } from "react";
-import { formatPhoneNumber } from "@/app/common/methods";
+import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";

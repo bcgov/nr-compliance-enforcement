@@ -186,18 +186,6 @@ export const formatDateTime = (input: string | undefined): string => {
   return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
-export const formatPhoneNumber = (rawPhone: string): string => {
-  if (!rawPhone) return "";
-  const cleaned = rawPhone.replace(/[^\d+]/g, "");
-  const regex = /^(\+?\d{1,3})(\d{3})(\d{3})(\d{4,})$/;
-  const execResult = regex.exec(cleaned);
-  if (execResult) {
-    const [, country, area, prefix, line] = execResult;
-    return `${country} (${area}) ${prefix}-${line}`;
-  }
-  return rawPhone;
-};
-
 // Protect values with quotes, commas and new lines for CSV export
 export const escapeCsvCell = (value: string): string => {
   const raw = String(value ?? "");
