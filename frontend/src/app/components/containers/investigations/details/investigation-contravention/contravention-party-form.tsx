@@ -58,7 +58,7 @@ export const ContraventionPartyForm = ({
   const partyTypeOptions: CardOption[] = [
     {
       value: "known",
-      label: "Known party",
+      label: "Known / Partially-known party",
       description: hasParties ? "Identified individual or entity" : "No parties of interest added to investigation",
       icon: "bi bi-person",
       disabled: !hasParties,

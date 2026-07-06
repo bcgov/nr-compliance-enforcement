@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from "src/common/methods";
+import { formatDate, formatPhonenumber, formatTime } from "src/common/methods";
 import { get } from "src/external_api/shared_data";
 import { Attachment } from "src/types/models/general/attachment";
 
@@ -28,9 +28,18 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     }
     getExhibitsByTask(taskId: "${taskId}") {
       exhibitNumber
+      exhibitDisplayNumber
+      propertyType
       description
+      quantity
+      seizedFromFirstName
+      seizedFromLastName
+      seizedFromAddress
+      seizedFromPhoneNumber
       dateCollected
       collectedAppUserGuidRef
+      locationOfIntake
+      propertyTagNumber
     }
     getActivityNotesByTask(taskGuid: "${taskId}") {
       contentText
@@ -85,6 +94,12 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
   const typeMap = new Map(taskTypeCodes.map((tt) => [tt.taskTypeCode, { longDescription: tt.longDescription }]));
   const _resolveTaskType = (typeCode: string) => typeMap.get(typeCode) ?? { longDescription: "" };
 
+  // Property types
+  const _resolvePropertyTypeLabel = (code: string): string => {
+    const labels: Record<string, string> = { S: "Seized", F: "Found" };
+    return labels[code] ?? code ?? "";
+  };
+
   // Attachment file name formatting
   const _getDisplayFilename = (storedName: string): string => {
     let decoded: string;
@@ -107,10 +122,14 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       type: _resolveTaskType(task.taskTypeCode),
     },
     exhibits: getExhibitsByTask
-      .sort((a, b) => a.exhibitNumber - b.exhibitNumber)
+      .sort((a, b) => a.exhibitDisplayNumber.localeCompare(b.exhibitDisplayNumber))
       .map((exhibit) => ({
         ...exhibit,
+        seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
+        propertyType: _resolvePropertyTypeLabel(exhibit.propertyType),
+        isSeized: exhibit.propertyType === "S",
         dateCollected: formatDate(exhibit.dateCollected),
+        intakeTime: exhibit.dateCollected ? formatTime(exhibit.dateCollected, tz) : "",
         collectedBy: _resolveUser(exhibit.collectedAppUserGuidRef),
       })),
     activityNotes: getActivityNotesByTask.map((note) => ({
