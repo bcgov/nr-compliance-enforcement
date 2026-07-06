@@ -6,7 +6,7 @@ input CreateInvestigationContactMethodInput {
 }
 
 input UpdateInvestigationContactMethodInput {
-  contactMethodGuid: String!
+  contactMethodGuid: String
   typeCode: String!
   value: String!
   isPrimary: Boolean!

@@ -3,6 +3,7 @@ import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
 import { Alias } from "@/generated/graphql";
 import { Button } from "react-bootstrap";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
 type PartyAliasFieldsProps = {
   form: any;
@@ -20,6 +21,13 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
         form={form}
         name={`aliases[${index}].name` as any}
         label={index === 0 ? "Alias(es)" : ""}
+        validators={{
+          // only validate if there are multiple, a single empty item is allowed
+          onChange: ({ value, fieldApi }: any) => {
+            const rows = fieldApi.form.getFieldValue("aliases") ?? [];
+            return rows.length > 1 && !value?.trim() ? "Alias is required" : undefined;
+          },
+        }}
         render={(field) => (
           <div className="party-alias-container">
             <div className="party-multiple-value-container">
@@ -29,7 +37,7 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
                 type="input"
                 inputClass="comp-form-control comp-details-input"
                 value={field.state.value}
-                error={field.state.meta.errors?.[0]?.message || ""}
+                error={getFieldErrorMessage(field)}
                 maxLength={512}
                 onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
                 placeholder="Enter alias"

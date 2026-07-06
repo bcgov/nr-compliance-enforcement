@@ -356,15 +356,18 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     return "Business number is required.";
   }
 
+  // only validate if there are multiple, a single empty item is allowed
   const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
-  const missingNameIndex = addresses.findIndex((address) => !isDefaultAddress(address) && !address.addressName?.trim());
+  const missingNameIndex = addresses.findIndex(
+    (address) => (addresses.length > 1 || !isDefaultAddress(address)) && !address.addressName?.trim(),
+  );
   if (missingNameIndex >= 0) {
     return "Address name is required.";
   }
 
   const contacts = (value.contacts as ContactPersonFormValue[] | undefined) ?? [];
   for (const contact of contacts) {
-    if (isDefaultContact(contact)) continue;
+    if (contacts.length === 1 && isDefaultContact(contact)) continue;
     if (!contact.person?.firstName?.trim()) return "Contact first name is required.";
     if (!contact.person?.lastName?.trim()) return "Contact last name is required.";
   }

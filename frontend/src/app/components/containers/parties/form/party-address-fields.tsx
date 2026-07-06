@@ -50,10 +50,14 @@ export const AddressFields: FC<AddressFieldsProps> = ({
 
   const isCanada = (selectedCountry || "").trim() === CANADA_COUNTRY_CODE;
 
-  // if the country is Canada and the province is not set set to BC
+  // if the country is Canada and the province is not set set to BC or if another country clear the province
   useEffect(() => {
     if (isCanada && !selectedProvince) {
       form.setFieldValue(`addresses[${addressIndex}].province`, DEFAULT_CANADA_PROVINCE);
+    }
+    if (!isCanada && selectedProvince) {
+      form.setFieldValue(`addresses[${addressIndex}].province`, "");
+      form.validateField(`addresses[${addressIndex}].addressName`, "change");
     }
   }, [addressIndex, form, isCanada, selectedProvince]);
 
@@ -94,10 +98,19 @@ export const AddressFields: FC<AddressFieldsProps> = ({
         label="Nickname"
         required
         validators={{
-          // ignore if no values and it's the first row
+          // re-run when any of these change
+          onChangeListenTo: [
+            `addresses[${addressIndex}].address`,
+            `addresses[${addressIndex}].city`,
+            `addresses[${addressIndex}].postalCode`,
+            `addresses[${addressIndex}].province`,
+            `addresses[${addressIndex}].country`,
+          ],
+          // only the single default address may stay empty
           onChange: ({ value, fieldApi }: any) => {
+            const addresses = fieldApi.form.getFieldValue("addresses") ?? [];
             const address = fieldApi.form.getFieldValue(`addresses[${addressIndex}]`) ?? {};
-            if (isDefaultAddress({ ...address, addressName: value })) return undefined;
+            if (addresses.length === 1 && isDefaultAddress({ ...address, addressName: value })) return undefined;
             return value?.trim() ? undefined : "Address nickname is required";
           },
         }}

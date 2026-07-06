@@ -3129,7 +3129,7 @@ export type UpdateInvestigationBusinessInput = {
 };
 
 export type UpdateInvestigationContactMethodInput = {
-  contactMethodGuid: Scalars['String']['input'];
+  contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
   isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
   value: Scalars['String']['input'];
@@ -3185,7 +3185,7 @@ export type UpdateInvestigationPersonInput = {
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
-  personGuid: Scalars['String']['input'];
+  personGuid?: InputMaybe<Scalars['String']['input']>;
   personReference?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;

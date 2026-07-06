@@ -62,6 +62,12 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
 
+  const conditionalValidators = [
+    `contacts[${contactIndex}].title`,
+    `contacts[${contactIndex}].officeAddressGuids`,
+    ...(contact.contactMethods ?? []).map((_, cmIndex) => `contacts[${contactIndex}].contactMethods[${cmIndex}].value`),
+  ];
+
   return (
     <>
       {contactIndex > 0 && <hr className="comp-details-section-divider mt-4 mb-4" />}
@@ -98,10 +104,16 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label="First name"
         required
         validators={{
-          // empty contact rows are not persisted
+          onChangeListenTo: [`contacts[${contactIndex}].person.lastName`, ...conditionalValidators],
+          // only validate if there are multiple, a single empty item is allowed
           onChange: ({ value, fieldApi }: any) => {
+            const contacts = fieldApi.form.getFieldValue("contacts") ?? [];
             const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
-            if (isDefaultContact({ ...contact, person: { ...contact.person, firstName: value } })) return undefined;
+            if (
+              contacts.length === 1 &&
+              isDefaultContact({ ...contact, person: { ...contact.person, firstName: value } })
+            )
+              return undefined;
             return value?.trim() ? undefined : "First name is required";
           },
         }}
@@ -126,10 +138,16 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label="Last name"
         required
         validators={{
-          // empty contact rows are not persisted
+          onChangeListenTo: [`contacts[${contactIndex}].person.firstName`, ...conditionalValidators],
+          // only validate if there are multiple, a single empty item is allowed
           onChange: ({ value, fieldApi }: any) => {
+            const contacts = fieldApi.form.getFieldValue("contacts") ?? [];
             const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
-            if (isDefaultContact({ ...contact, person: { ...contact.person, lastName: value } })) return undefined;
+            if (
+              contacts.length === 1 &&
+              isDefaultContact({ ...contact, person: { ...contact.person, lastName: value } })
+            )
+              return undefined;
             return value?.trim() ? undefined : "Last name is required";
           },
         }}
@@ -215,7 +233,13 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value`}
           label={displayIndex === 0 ? "Phone number" : ""}
           validators={{
-            onChange: ({ value }: { value: string | undefined }) => validatePhoneNumberValue(value),
+            // only validate if there are multiple, a single empty phone number is allowed
+            onChange: ({ value, fieldApi }: any) => {
+              const methods = fieldApi.form.getFieldValue(`contacts[${contactIndex}].contactMethods`) ?? [];
+              const rows = methods.filter((cm: any) => cm?.typeCode === ContactMethods.PHONE);
+              if (rows.length > 1 && !value?.trim()) return "Phone number is required";
+              return validatePhoneNumberValue(value);
+            },
           }}
           render={(field) => (
             <>
@@ -288,7 +312,13 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value` as any}
           label={displayIndex === 0 ? "Email" : ""}
           validators={{
-            onChange: ({ value }: { value: string | undefined }) => validateEmailValue(value),
+            // only validate if there are multiple, a single empty item is allowed
+            onChange: ({ value, fieldApi }: any) => {
+              const methods = fieldApi.form.getFieldValue(`contacts[${contactIndex}].contactMethods`) ?? [];
+              const rows = methods.filter((cm: any) => cm?.typeCode === ContactMethods.EMAIL);
+              if (rows.length > 1 && !value?.trim()) return "Email is required";
+              return validateEmailValue(value);
+            },
           }}
           render={(field) => (
             <>

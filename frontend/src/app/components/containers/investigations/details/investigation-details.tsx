@@ -254,7 +254,6 @@ export const InvestigationDetails: FC = () => {
         <InvestigationParties
           investigationData={investigationData}
           investigationGuid={investigationGuid}
-          onDirtyChange={handleChildDirtyChange}
         />
       );
     }

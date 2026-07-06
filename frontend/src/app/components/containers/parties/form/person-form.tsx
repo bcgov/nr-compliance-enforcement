@@ -366,6 +366,12 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                 form.setFieldValue("driversLicenseClass", null);
                 form.setFieldValue("driversLicenseCountryCode", null);
                 form.setFieldValue("driversLicenseCountrySubdivisionCode", null);
+                // clear if license number is cleared
+                form.setFieldMeta("driversLicenseCountryCode", (meta: any) => ({
+                  ...meta,
+                  errorMap: {},
+                  errorSourceMap: {},
+                }));
               }
             }}
             placeholder="Enter driver's licence number"

@@ -88,7 +88,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
-  const [setPendingAttachmentsSaveAfterCreate] = useState(false);
 
   const defaultValues = useMemo(() => {
     if (isEditMode && editParty) {
@@ -260,7 +259,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
   const flushAttachmentsThenNavigate = () => {
-    setPendingAttachmentsSaveAfterCreate(false);
     setTriggerSaveAttachments(true);
     setTimeout(() => setTriggerSaveAttachments(false), 0);
   };
@@ -314,7 +312,6 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   }, [isEditMode, editParty]);
 
   const saveButtonClick = () => {
-    setPendingAttachmentsSaveAfterCreate(true);
     form.handleSubmit();
   };
 

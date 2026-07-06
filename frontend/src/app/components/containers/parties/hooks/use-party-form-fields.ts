@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
-import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
+import { BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import {
   AddressFormValue,
@@ -37,36 +37,40 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     }, 0);
   }, []);
 
+  // validation is conditional based on number of items, so we must re-validate the whole list after adding or removing
+  const revalidateList = useCallback(
+    (listName: string) => {
+      form.validateArrayFieldsStartingFrom(listName, 0, "change");
+    },
+    [form],
+  );
+
   // Phone numbers
   const phoneNumbers = useStore(form.store, (state: any) => state.values.phoneNumbers);
 
   const handleAddPhoneNumber = useCallback(() => {
     const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
-    const newPhoneNumbers = [
-      ...currentPhoneNumbers,
-      {
-        contactMethodGuid: "",
-        value: "",
-        isPrimary: currentPhoneNumbers.length === 0,
-      },
-    ];
-    form.setFieldValue("phoneNumbers", newPhoneNumbers);
+    form.pushFieldValue("phoneNumbers", {
+      contactMethodGuid: "",
+      value: "",
+      isPrimary: currentPhoneNumbers.length === 0,
+    });
+    revalidateList("phoneNumbers");
     focusFieldById(`phone-number-${currentPhoneNumbers.length}`);
-  }, [form]);
+  }, [form, focusFieldById, revalidateList]);
 
   const handleRemovePhoneNumber = useCallback(
     (indexToRemove: number) => {
       const currentPhoneNumbers = form.getFieldValue("phoneNumbers") || [];
       const removingPrimary = currentPhoneNumbers[indexToRemove]?.isPrimary;
-      const newPhoneNumbers = currentPhoneNumbers.filter((_: any, index: number) => index !== indexToRemove);
 
-      if (removingPrimary && newPhoneNumbers.length > 0) {
-        newPhoneNumbers[0].isPrimary = true;
+      form.removeFieldValue("phoneNumbers", indexToRemove);
+      if (removingPrimary && (form.getFieldValue("phoneNumbers") || []).length > 0) {
+        form.setFieldValue("phoneNumbers[0].isPrimary", true);
       }
-
-      form.setFieldValue("phoneNumbers", newPhoneNumbers);
+      revalidateList("phoneNumbers");
     },
-    [form],
+    [form, revalidateList],
   );
 
   const handleSetPrimaryPhoneNumber = useCallback(
@@ -86,33 +90,28 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleAddEmail = useCallback(() => {
     const currentEmails = form.getFieldValue("emailAddresses") || [];
-    const newEmails = [
-      ...currentEmails,
-      {
-        contactMethodGuid: "",
-        value: "",
-        isPrimary: currentEmails.length === 0, // First one is primary
-      },
-    ];
-    form.setFieldValue("emailAddresses", newEmails);
+    form.pushFieldValue("emailAddresses", {
+      contactMethodGuid: "",
+      value: "",
+      isPrimary: currentEmails.length === 0, // First one is primary
+    });
+    revalidateList("emailAddresses");
     focusFieldById(`email-${currentEmails.length}`);
-  }, [form]);
+  }, [form, focusFieldById, revalidateList]);
 
   const handleRemoveEmail = useCallback(
     (indexToRemove: number) => {
       const currentEmails = form.getFieldValue("emailAddresses") || [];
       const removingPrimary = currentEmails[indexToRemove]?.isPrimary;
-      const newEmails = currentEmails.filter((_: any, index: number) => index !== indexToRemove);
 
-      // If we removed the primary phone and there are still phone numbers left,
-      // make the first one primary
-      if (removingPrimary && newEmails.length > 0) {
-        newEmails[0].isPrimary = true;
+      form.removeFieldValue("emailAddresses", indexToRemove);
+      // if the removed email was primary, make the first remaining one primary
+      if (removingPrimary && (form.getFieldValue("emailAddresses") || []).length > 0) {
+        form.setFieldValue("emailAddresses[0].isPrimary", true);
       }
-
-      form.setFieldValue("emailAddresses", newEmails);
+      revalidateList("emailAddresses");
     },
-    [form],
+    [form, revalidateList],
   );
 
   const handleSetPrimaryEmail = useCallback(
@@ -132,30 +131,26 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleAddAddress = useCallback(() => {
     const currentAddresses = form.getFieldValue("addresses") || [];
-    const newAddresses = [
-      ...currentAddresses,
-      {
-        ...createEmptyAddress(),
-        isPrimary: currentAddresses.length === 0,
-      },
-    ];
-    form.setFieldValue("addresses", newAddresses);
+    form.pushFieldValue("addresses", {
+      ...createEmptyAddress(),
+      isPrimary: currentAddresses.length === 0,
+    });
+    revalidateList("addresses");
     focusFieldById(`business-address-name-${currentAddresses.length}`);
-  }, [form, focusFieldById]);
+  }, [form, focusFieldById, revalidateList]);
 
   const handleRemoveAddress = useCallback(
     (indexToRemove: number) => {
       const currentAddresses = form.getFieldValue("addresses") || [];
       const removingPrimary = currentAddresses[indexToRemove]?.isPrimary;
-      const newAddresses = currentAddresses.filter((_: AddressFormValue, index: number) => index !== indexToRemove);
 
-      if (removingPrimary && newAddresses.length > 0) {
-        newAddresses[0].isPrimary = true;
+      form.removeFieldValue("addresses", indexToRemove);
+      if (removingPrimary && (form.getFieldValue("addresses") || []).length > 0) {
+        form.setFieldValue("addresses[0].isPrimary", true);
       }
-
-      form.setFieldValue("addresses", newAddresses);
+      revalidateList("addresses");
     },
-    [form],
+    [form, revalidateList],
   );
 
   const handleSetPrimaryAddress = useCallback(
@@ -175,18 +170,17 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleAddAlias = useCallback(() => {
     const currentAliases = form.getFieldValue("aliases") || [];
-    const newAliases = [...currentAliases, { aliasGuid: undefined, name: "" }];
-    form.setFieldValue("aliases", newAliases);
+    form.pushFieldValue("aliases", { aliasGuid: undefined, name: "" });
+    revalidateList("aliases");
     focusFieldById(`alias-${currentAliases.length}`);
-  }, [form]);
+  }, [form, focusFieldById, revalidateList]);
 
   const handleRemoveAlias = useCallback(
     (indexToRemove: number) => {
-      const currentAliases = form.getFieldValue("aliases") || [];
-      const newAliases = currentAliases.filter((_: Alias, index: number) => index !== indexToRemove);
-      form.setFieldValue("aliases", newAliases);
+      form.removeFieldValue("aliases", indexToRemove);
+      revalidateList("aliases");
     },
-    [form],
+    [form, revalidateList],
   );
 
   // Contacts (business person xrefs)
@@ -210,17 +204,17 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       isPrimary: currentContacts.length === 0,
       officeAddressGuids: [] as string[],
     };
-    form.setFieldValue("contacts", [...currentContacts, newContact]);
+    form.pushFieldValue("contacts", newContact);
+    revalidateList("contacts");
     focusFieldById(`contact-firstName-${currentContacts.length}`);
-  }, [form]);
+  }, [form, businessGuid, focusFieldById, revalidateList]);
 
   const handleRemoveContact = useCallback(
     (indexToRemove: number) => {
-      const currentContacts = form.getFieldValue("contacts") || [];
-      const newContacts = currentContacts.filter((_: BusinessPerson, index: number) => index !== indexToRemove);
-      form.setFieldValue("contacts", newContacts);
+      form.removeFieldValue("contacts", indexToRemove);
+      revalidateList("contacts");
     },
-    [form],
+    [form, revalidateList],
   );
 
   const handleAddContactMethod = useCallback(
@@ -231,25 +225,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       const existingMethodsOfType =
         currentContacts[contactIndex]?.contactMethods?.filter((cm: ContactMethod) => cm?.typeCode === typeCode) || [];
 
-      const newContactMethod = {
+      form.pushFieldValue(`contacts[${contactIndex}].contactMethods`, {
         contactMethodGuid: undefined, // ← Should be undefined, not empty string
         typeCode: typeCode,
         value: "",
         isPrimary: existingMethodsOfType.length === 0, // First one is primary
-      };
-
-      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
-        const snapshot = toContactSnapshot(contact);
-        if (index === contactIndex) {
-          return {
-            ...snapshot,
-            contactMethods: [...snapshot.contactMethods, newContactMethod],
-          };
-        }
-        return snapshot;
       });
-
-      form.setFieldValue("contacts", updatedContacts);
+      // nudge from the contacts root so the isDefaultContact-dependent name validators re-run
+      revalidateList("contacts");
 
       const fieldId =
         typeCode === ContactMethods.PHONE
@@ -257,46 +240,28 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
           : `contact-email-${contactIndex}-${existingMethodsOfType.length}`;
       focusFieldById(fieldId);
     },
-    [form],
+    [form, focusFieldById, revalidateList],
   );
 
   const handleRemoveContactMethod = useCallback(
     (contactIndex: number, methodIndex: number) => {
-      const currentContacts = form.getFieldValue("contacts") || [];
+      const methodsPath = `contacts[${contactIndex}].contactMethods`;
+      const methodToRemove = (form.getFieldValue(methodsPath) || [])[methodIndex];
 
-      const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
-        const snapshot = toContactSnapshot(contact);
-        if (index === contactIndex) {
-          const contactMethods = snapshot.contactMethods;
+      form.removeFieldValue(methodsPath, methodIndex);
 
-          const methodToRemove = contactMethods[methodIndex];
-          const removingPrimary = methodToRemove?.isPrimary || false;
-          const removingTypeCode = methodToRemove?.typeCode;
-          let newContactMethods = contactMethods.filter((_, i) => i !== methodIndex);
-
-          // If we removed the primary method and there are still methods of the same type left,
-          // make the first one of that type primary
-          if (removingPrimary && removingTypeCode && newContactMethods.length > 0) {
-            const firstOfSameType = newContactMethods.findIndex((cm) => cm?.typeCode === removingTypeCode);
-            if (firstOfSameType !== -1) {
-              newContactMethods[firstOfSameType] = {
-                ...newContactMethods[firstOfSameType],
-                isPrimary: true,
-              };
-            }
-          }
-
-          return {
-            ...snapshot,
-            contactMethods: newContactMethods,
-          };
+      // If we removed the primary method and there are still methods of the same type left,
+      // make the first one of that type primary
+      if (methodToRemove?.isPrimary && methodToRemove?.typeCode) {
+        const remaining = form.getFieldValue(methodsPath) || [];
+        const firstOfSameType = remaining.findIndex((cm: ContactMethod) => cm?.typeCode === methodToRemove.typeCode);
+        if (firstOfSameType !== -1) {
+          form.setFieldValue(`${methodsPath}[${firstOfSameType}].isPrimary`, true);
         }
-        return snapshot;
-      });
-
-      form.setFieldValue("contacts", updatedContacts);
+      }
+      revalidateList("contacts");
     },
-    [form],
+    [form, revalidateList],
   );
 
   const handleSetPrimaryBusinessContact = useCallback(

@@ -59,7 +59,12 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           name={`phoneNumbers[${index}].value`}
           label={index === 0 ? "Phone number" : ""}
           validators={{
-            onChange: ({ value }: { value: string | undefined }) => validatePhoneNumberValue(value),
+            // only validate if there are multiple, a single empty item is allowed
+            onChange: ({ value, fieldApi }: any) => {
+              const rows = fieldApi.form.getFieldValue("phoneNumbers") ?? [];
+              if (rows.length > 1 && !value?.trim()) return "Phone number is required";
+              return validatePhoneNumberValue(value);
+            },
           }}
           render={(field) => (
             <>
@@ -130,7 +135,12 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           name={`emailAddresses[${index}].value` as any}
           label={index === 0 ? "Email" : ""}
           validators={{
-            onChange: ({ value }: { value: string | undefined }) => validateEmailValue(value),
+            // only validate if there are multiple, a single empty item is allowed
+            onChange: ({ value, fieldApi }: any) => {
+              const rows = fieldApi.form.getFieldValue("emailAddresses") ?? [];
+              if (rows.length > 1 && !value?.trim()) return "Email is required";
+              return validateEmailValue(value);
+            },
           }}
           render={(field) => (
             <>
