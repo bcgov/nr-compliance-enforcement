@@ -873,6 +873,9 @@ model investigation_business_person_xref_h {
   operation_executed_at                     DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation             Json?
 
+  @@schema("investigation")
+}
+
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model exhibit_h {

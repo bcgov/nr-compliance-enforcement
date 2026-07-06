@@ -1151,9 +1151,10 @@ export class PartyService {
 
   private _diffAddresses(existingAddresses: Address[], incomingAddresses: AddressInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAddresses) {
-      if (incoming.addressGuid) {
-        const existing = existingAddresses.find((a) => a.addressGuid === incoming.addressGuid);
-        if (!existing) continue;
+      const existing = incoming.addressGuid
+        ? existingAddresses.find((a) => a.addressGuid === incoming.addressGuid)
+        : undefined;
+      if (existing) {
         const label = incoming.addressName || existing.addressName;
         this._compareField("address name", existing.addressName, incoming.addressName, addEvent);
         this._compareField(`street address in address "${label}"`, existing.address, incoming.address, addEvent);

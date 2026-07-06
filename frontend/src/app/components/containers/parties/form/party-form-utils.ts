@@ -196,7 +196,9 @@ export const isDefaultAddress = (a: AddressFormValue): boolean =>
   !hasValue(a.city) &&
   !hasValue(a.postalCode) &&
   !hasValue(a.province) &&
-  !hasValue(a.country);
+  !hasValue(a.country) &&
+  !hasValue(a.phoneNumber) &&
+  !hasValue(a.emailAddress);
 
 // keep guids so edits update the existing rows
 const buildAddressContactMethods = (address: AddressFormValue) => {
