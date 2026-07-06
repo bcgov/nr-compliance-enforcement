@@ -438,6 +438,7 @@ export class InvestigationPartyService {
       FROM investigation.investigation_party
       WHERE investigation_guid = ${investigationGuid}::uuid
         AND party_association_role_ref IS NOT DISTINCT FROM ${partyAssociationRole}
+        AND investigation_party_guid <> ${investigationPartyGuid}::uuid
     `;
     const next = rows[0]?.next ?? 1;
 
