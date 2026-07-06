@@ -30,6 +30,18 @@ const requiredWhenSeized =
   ({ value, fieldApi }: { value: string; fieldApi: ExhibitValidatorApi }) =>
     fieldApi.form.getFieldValue("propertyType") === PropertyTypeEnum.SEIZED && !value?.trim() ? message : undefined;
 
+// Seized-from phone must be a complete 10-digit number when the property type is Seized.
+const phoneRequiredWhenSeized =
+  (message: string) =>
+  ({ value, fieldApi }: { value: string; fieldApi: ExhibitValidatorApi }) => {
+    if (fieldApi.form.getFieldValue("propertyType") !== PropertyTypeEnum.SEIZED) {
+      return undefined;
+    }
+    const digits = (value ?? "").replace(/\D/g, "");
+    const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+    return national.length === 10 ? undefined : message;
+  };
+
 // Derive the "HH:mm" time string the picker expects from a stored Date. Returns null when no date is set.
 const formatTimeForPicker = (date: Date | null): string | null => {
   if (!date) return null;
@@ -348,7 +360,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                         name="seizedFromPhoneNumber"
                         label="Phone number"
                         required
-                        validators={{ onChange: requiredWhenSeized("Phone number is required") }}
+                        validators={{ onChange: phoneRequiredWhenSeized("Enter a valid 10-digit phone number") }}
                         render={(field) => (
                           <ValidationPhoneInput
                             className="comp-details-input"
@@ -357,7 +369,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                             maxLength={14}
                             international={false}
                             id="exhibit-seized-phone-number"
-                            errMsg={field.state.meta.errors?.[0]?.message || ""}
+                            errMsg={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
                           />
                         )}
                       />
