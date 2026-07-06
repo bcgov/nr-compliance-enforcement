@@ -8,10 +8,13 @@ import { Person } from "src/shared/person/dto/person";
 export class BusinessPersonXref {
   businessPersonXrefGuid: string;
   title: string;
+  displayInInvestigation: boolean;
+  isPrimary: boolean;
   business: Business;
   person: Person;
   contactMethods?: [ContactMethod]; // These are at the party level for people so need to be passed in parallel
   associatedAddresses?: [BusinessPersonAddressXref];
+  officeAddressGuids?: string[];
 }
 
 export const mapPrismaBusinessPersonXrefToBusinessPersonXref = (mapper: Mapper) => {
@@ -26,6 +29,14 @@ export const mapPrismaBusinessPersonXrefToBusinessPersonXref = (mapper: Mapper) 
     forMember(
       (dest) => dest.title,
       mapFrom((src) => src.title_role),
+    ),
+    forMember(
+      (dest) => dest.displayInInvestigation,
+      mapFrom((src) => src.display_in_investigation_ind),
+    ),
+    forMember(
+      (dest) => dest.isPrimary,
+      mapFrom((src) => src.is_primary),
     ),
     forMember(
       (dest) => dest.business,

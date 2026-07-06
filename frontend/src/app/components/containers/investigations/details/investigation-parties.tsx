@@ -1,7 +1,7 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,8 +15,6 @@ import { useInvestigationReadOnly } from "../hooks/use-investigation-read-only";
 interface InvestigationPartiesProps {
   investigationGuid: string;
   investigationData?: Investigation;
-  // onDirtyChange is no longer used now that add/edit are full pages; kept for prop compatibility.
-  onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
 const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
@@ -39,10 +37,7 @@ const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
   }
 `;
 
-export const InvestigationParties: FC<InvestigationPartiesProps> = ({
-  investigationGuid,
-  investigationData,
-}) => {
+export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigationGuid, investigationData }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);

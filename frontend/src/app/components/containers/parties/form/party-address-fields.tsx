@@ -2,13 +2,19 @@ import { FC, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
-import { z } from "zod";
+import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { useStore } from "@tanstack/react-form";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { CompSelect } from "@/app/components/common/comp-select";
+import {
+  CANADA_COUNTRY_CODE,
+  isDefaultAddress,
+  validateEmailValue,
+  validatePhoneNumberValue,
+} from "@/app/components/containers/parties/form/party-form-utils";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
-const DEFAULT_COUNTRY = "CA";
 const DEFAULT_CANADA_PROVINCE = "CA-BC";
 
 interface AddressFieldsProps {
@@ -16,8 +22,10 @@ interface AddressFieldsProps {
   form: any;
   isDisabled: boolean;
   isPrimary: boolean;
+  canRemove?: boolean;
   onRemoveAddress: (index: number) => void;
   onSetPrimaryAddress: (index: number) => void;
+  showOfficeFields?: boolean;
 }
 
 export const AddressFields: FC<AddressFieldsProps> = ({
@@ -25,8 +33,10 @@ export const AddressFields: FC<AddressFieldsProps> = ({
   form,
   isDisabled,
   isPrimary,
+  canRemove = true,
   onRemoveAddress,
   onSetPrimaryAddress,
+  showOfficeFields = false,
 }) => {
   const selectedCountry = useStore(
     form.store,
@@ -38,22 +48,9 @@ export const AddressFields: FC<AddressFieldsProps> = ({
     (state: any) => state.values?.addresses?.[addressIndex]?.province ?? "",
   ) as string;
 
-  const isCanada = (selectedCountry || "").trim() === DEFAULT_COUNTRY;
+  const isCanada = (selectedCountry || "").trim() === CANADA_COUNTRY_CODE;
 
-  useEffect(() => {
-    if (!selectedCountry) {
-      form.setFieldValue(`addresses[${addressIndex}].country`, DEFAULT_COUNTRY);
-    }
-  }, [addressIndex, form, selectedCountry]);
-
-  // If the country is not Canada, clear the province
-  useEffect(() => {
-    if (!isCanada) {
-      form.setFieldValue(`addresses[${addressIndex}].province`, "");
-    }
-  }, [addressIndex, form, isCanada]);
-
-  // If the country is Canada and the province is not set, set to the default province (BC)
+  // if the country is Canada and the province is not set set to BC
   useEffect(() => {
     if (isCanada && !selectedProvince) {
       form.setFieldValue(`addresses[${addressIndex}].province`, DEFAULT_CANADA_PROVINCE);
@@ -64,22 +61,10 @@ export const AddressFields: FC<AddressFieldsProps> = ({
   const provinceOptions = useAppSelector(selectCountrySubdivisions);
 
   return (
-    <div className="party-details-item">
+    <>
+      {addressIndex > 0 && <hr className="comp-details-section-divider mt-4 mb-4" />}
       <div className="party-contact-header mb-3">
-        <h4>Address {addressIndex + 1}</h4>
-        <Button
-          variant="outline-primary"
-          size="sm"
-          onClick={() => onRemoveAddress(addressIndex)}
-          type="button"
-        >
-          <i className="bi bi-trash" /> Remove Address
-        </Button>
-      </div>
-
-      <div className="comp-details-form-row">
-        <label htmlFor={`address-primary-${addressIndex}`}>Primary address</label>
-        <div className="comp-details-edit-input">
+        <label htmlFor={`address-primary-${addressIndex}`}>
           <input
             type="radio"
             id={`address-primary-${addressIndex}`}
@@ -87,17 +72,34 @@ export const AddressFields: FC<AddressFieldsProps> = ({
             checked={isPrimary || false}
             onChange={() => onSetPrimaryAddress(addressIndex)}
             disabled={isDisabled}
-          />
-        </div>
+            className="me-2"
+          />{" "}
+          Mark as Primary address
+        </label>
+        {canRemove && (
+          <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={() => onRemoveAddress(addressIndex)}
+            type="button"
+          >
+            <i className="bi bi-trash" /> Remove Address
+          </Button>
+        )}
       </div>
 
       <FormField
         form={form}
         name={`addresses[${addressIndex}].addressName` as any}
-        label="Address name"
+        label="Nickname"
         required
         validators={{
-          onChange: z.string().min(1, "Address name is required"),
+          // ignore if no values and it's the first row
+          onChange: ({ value, fieldApi }: any) => {
+            const address = fieldApi.form.getFieldValue(`addresses[${addressIndex}]`) ?? {};
+            if (isDefaultAddress({ ...address, addressName: value })) return undefined;
+            return value?.trim() ? undefined : "Address nickname is required";
+          },
         }}
         render={(field) => (
           <CompInput
@@ -106,7 +108,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value ?? ""}
-            error={field.state.meta.errors?.[0]?.message || ""}
+            error={getFieldErrorMessage(field)}
             maxLength={128}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
             placeholder="Enter address name"
@@ -117,7 +119,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
       <FormField
         form={form}
         name={`addresses[${addressIndex}].address` as any}
-        label="Street address"
+        label="Address"
         render={(field) => (
           <CompInput
             id={`address-${addressIndex}`}
@@ -157,7 +159,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
           <FormField
             form={form}
             name={`addresses[${addressIndex}].province` as any}
-            label="Province"
+            label="Province/state"
             render={(field) => (
               <CompSelect
                 id="address-province"
@@ -215,6 +217,67 @@ export const AddressFields: FC<AddressFieldsProps> = ({
           />
         )}
       />
-    </div>
+      {showOfficeFields && (
+        <>
+          <FormField
+            form={form}
+            name={`addresses[${addressIndex}].phoneNumber` as any}
+            label="Phone number"
+            validators={{
+              onChange: ({ value }: { value: string | undefined }) => validatePhoneNumberValue(value),
+            }}
+            render={(field) => (
+              <ValidationPhoneInput
+                className="comp-details-input"
+                value={field.state.value ?? ""}
+                onChange={(value: string) => field.handleChange(value || "")}
+                maxLength={14}
+                international={false}
+                id={`address-phone-${addressIndex}`}
+                errMsg={getFieldErrorMessage(field)}
+              />
+            )}
+          />
+          <FormField
+            form={form}
+            name={`addresses[${addressIndex}].emailAddress` as any}
+            label="Email address"
+            validators={{
+              onChange: ({ value }: { value: string | undefined }) => validateEmailValue(value),
+            }}
+            render={(field) => (
+              <CompInput
+                id={`address-email-${addressIndex}`}
+                divid={`address-email-${addressIndex}-div`}
+                type="input"
+                inputClass="comp-form-control comp-details-input"
+                value={field.state.value ?? ""}
+                error={getFieldErrorMessage(field)}
+                maxLength={512}
+                onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                placeholder="Enter email address"
+                disabled={isDisabled}
+              />
+            )}
+          />
+          <FormField
+            form={form}
+            name={`addresses[${addressIndex}].displayInInvestigation` as any}
+            label="Display in investigation"
+            render={(field) => (
+              <div className="comp-details-edit-input">
+                <input
+                  type="checkbox"
+                  id={`address-display-${addressIndex}`}
+                  checked={field.state.value ?? true}
+                  onChange={(evt) => field.handleChange(evt.target.checked)}
+                  disabled={isDisabled}
+                />
+              </div>
+            )}
+          />
+        </>
+      )}
+    </>
   );
 };

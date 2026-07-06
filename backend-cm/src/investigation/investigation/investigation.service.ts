@@ -23,10 +23,9 @@ import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateInvestigationIdentifier } from "src/common/sequence.utility";
+import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
-import { contact_method } from "prisma/shared/generated/contact_method";
-import { investigation_contact_method } from "prisma/investigation/generated/investigation_contact_method";
 
 @Injectable()
 export class InvestigationService {
@@ -96,6 +95,9 @@ export class InvestigationService {
                   investigation_business_person_xref: {
                     include: {
                       investigation_business_person_address_xref: {
+                        where: {
+                          active_ind: true,
+                        },
                         include: {
                           investigation_address: true,
                         },
@@ -104,7 +106,11 @@ export class InvestigationService {
                         include: {
                           investigation_party: {
                             include: {
-                              investigation_contact_method: true,
+                              investigation_contact_method: {
+                                where: {
+                                  active_ind: true,
+                                },
+                              },
                             },
                           },
                         },
@@ -124,6 +130,8 @@ export class InvestigationService {
             },
             where: {
               active_ind: true,
+              // filter business contacts
+              NOT: { party_type_code_ref: PARTY_TYPES.Contact },
             },
           },
           task: {

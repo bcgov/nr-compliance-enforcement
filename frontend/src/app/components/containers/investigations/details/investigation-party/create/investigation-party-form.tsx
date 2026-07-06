@@ -11,12 +11,8 @@ import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import {
   Address,
-  Alias,
-  ContactMethod,
-  InvestigationAlias,
   InvestigationAttachmentReference,
   InvestigationBusinessIdentifier,
-  InvestigationContactMethod,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
   PersonFacialHairStyleCode,
@@ -27,12 +23,17 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
   buildAddresses,
+  buildAliases,
   buildContactMethods,
   buildIdentifiers,
+  buildInvestigationContactPeople,
   buildPersonBase,
+  ContactPersonFormValue,
   createEmptyPartyFormValues,
   mapAddressesFromPartyData,
+  mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
+  seedContactMethods,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { ContactMethods } from "@/app/constants/contact-methods";
@@ -64,14 +65,6 @@ const UPDATE_INVESTIGATION_PARTY = gql`
   }
 `;
 
-// Maps an InvestigationContactMethod onto the shared ContactMethod shape used by the form utils.
-const toContactMethod = (cm: InvestigationContactMethod): ContactMethod => ({
-  contactMethodGuid: cm.contactMethodGuid,
-  typeCode: cm.typeCode,
-  value: cm.value,
-  isPrimary: cm.isPrimary,
-});
-
 interface InvestigationPartyFormProps {
   investigationGuid: string;
   // Present in edit mode; undefined when adding a new party.
@@ -95,7 +88,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
-  const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
+  const [setPendingAttachmentsSaveAfterCreate] = useState(false);
 
   const defaultValues = useMemo(() => {
     if (isEditMode && editParty) {
@@ -153,24 +146,39 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
           return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
         })(),
-        aliases:
-          editParty.aliases
-            ?.filter((a): a is InvestigationAlias => a != null)
-            .map((a) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
-        phoneNumbers: mapContactMethodsFromPartyData(
-          (editParty.contactMethods ?? [])
-            .filter((cm): cm is InvestigationContactMethod => cm != null)
-            .map(toContactMethod),
-          ContactMethods.PHONE,
-        ),
-        emailAddresses: mapContactMethodsFromPartyData(
-          (editParty.contactMethods ?? [])
-            .filter((cm): cm is InvestigationContactMethod => cm != null)
-            .map(toContactMethod),
-          ContactMethods.EMAIL,
-        ),
+        aliases: mapAliasesFromPartyData(editParty.aliases),
+        phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
+        emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
         addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
-        contacts: [] as any[],
+        contacts: (editParty.business?.contactPeople ?? [])
+          .filter((cp): cp is NonNullable<typeof cp> => cp != null)
+          .map(
+            (cp): ContactPersonFormValue => ({
+              businessPersonXrefGuid: cp.businessPersonXrefGuid ?? undefined,
+              business: { businessGuid: editParty.business?.businessGuid ?? undefined },
+              person: {
+                personGuid: cp.person?.personGuid ?? undefined,
+                firstName: cp.person?.firstName ?? "",
+                lastName: cp.person?.lastName ?? "",
+              },
+              contactMethods: seedContactMethods(
+                (cp.contactMethods ?? [])
+                  .filter((cm): cm is NonNullable<typeof cm> => cm != null)
+                  .map((cm) => ({
+                    contactMethodGuid: cm.contactMethodGuid ?? undefined,
+                    typeCode: cm.typeCode ?? undefined,
+                    value: cm.value ?? "",
+                    isPrimary: cm.isPrimary ?? false,
+                  })),
+              ),
+              title: cp.title ?? "",
+              displayInInvestigation: cp.displayInInvestigation ?? true,
+              isPrimary: cp.isPrimary ?? false,
+              officeAddressGuids: (cp.associatedAddresses ?? [])
+                .map((aa) => aa?.address?.addressGuid)
+                .filter((guid): guid is string => !!guid),
+            }),
+          ),
         partyAssociationRole: editParty.partyAssociationRole || "",
       };
     }
@@ -188,8 +196,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         const input: any = {
           partyIdentifier: editParty.partyIdentifier,
           partyAssociationRole: value.partyAssociationRole,
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
-          addresses: buildAddresses(value.addresses, true),
+          aliases: buildAliases(value.aliases, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };
 
@@ -208,6 +216,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           input.business = {
             name: value.businessName,
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            contactPeople: buildInvestigationContactPeople(value.contacts, true) ?? [],
           };
         }
 
@@ -216,9 +225,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
-          addresses: buildAddresses(value.addresses, false),
-          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+          aliases: buildAliases(value.aliases, false),
+          addresses: buildAddresses(value.addresses),
+          contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
@@ -235,6 +244,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           input.business = {
             name: value.businessName,
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            contactPeople: buildInvestigationContactPeople(value.contacts, false),
           };
         }
 
@@ -300,7 +310,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     if (!isEditMode || !editParty) return "New Party";
     if (editParty.business?.name) return editParty.business.name;
     const name = [editParty.person?.firstName, editParty.person?.lastName].filter(Boolean).join(" ").trim();
-    return name || "Edit party";
+    return name || editParty.placeholderName || "Edit party";
   }, [isEditMode, editParty]);
 
   const saveButtonClick = () => {
@@ -367,36 +377,13 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         </div>
 
         <form
+          className="comp-party-form"
           onSubmit={(e) => {
             e.preventDefault();
             saveButtonClick();
           }}
         >
           <fieldset disabled={isDisabled}>
-            <FormField
-              form={form}
-              name="partyType"
-              label="Party Type"
-              required
-              validators={{ onChange: z.string().min(1, "Party type is required") }}
-              render={(field) => (
-                <CompSelect
-                  id="party-type-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input mb-3"
-                  options={partyTypeCodes}
-                  value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select party type"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  isDisabled={isDisabled || isEditMode}
-                />
-              )}
-            />
-
             <FormField
               form={form}
               name="partyAssociationRole"
@@ -420,6 +407,34 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               )}
             />
 
+            <hr className="comp-details-section-divider" />
+            <div className="comp-details-section-header">
+              <h3>Identifying information</h3>
+            </div>
+
+            <FormField
+              form={form}
+              name="partyType"
+              label="Type"
+              required
+              validators={{ onChange: z.string().min(1, "Party type is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="party-type-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input mb-3"
+                  options={partyTypeCodes}
+                  value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select party type"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  isDisabled={isDisabled || isEditMode}
+                />
+              )}
+            />
             {partyTypeValue === PartyTypeCodes.PERSON && (
               <PersonForm
                 form={form}
@@ -431,26 +446,33 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               <BusinessFormFields
                 form={form}
                 isDisabled={isDisabled}
-                showContactPeople={false}
+                showContactPeople={true}
+                showInvestigationFields={true}
+                businessGuid={editParty?.business?.businessGuid ?? undefined}
               />
             )}
           </fieldset>
 
           {partyTypeValue && (
-            <PartyAttachments
-              partyId={partyIdentifier}
-              activityId={investigationGuid}
-              attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
-              attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
-              allowUpload
-              allowDelete
-              triggerSave={triggerSaveAttachments}
-              onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
-              onSaved={() => {
-                ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
-                navigateToParties();
-              }}
-            />
+            <>
+              <div className="comp-details-section-header pt-5">
+                <h3>Attachments</h3>
+              </div>
+              <PartyAttachments
+                partyId={partyIdentifier}
+                activityId={investigationGuid}
+                attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
+                attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                allowUpload
+                allowDelete
+                triggerSave={triggerSaveAttachments}
+                onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
+                onSaved={() => {
+                  ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
+                  navigateToParties();
+                }}
+              />
+            </>
           )}
         </form>
       </section>

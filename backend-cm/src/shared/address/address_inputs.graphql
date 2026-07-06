@@ -1,4 +1,5 @@
 input AddressInput {
+  addressGuid: String
   addressName: String!
   address: String
   city: String
@@ -6,6 +7,8 @@ input AddressInput {
   postalCode: String
   country: String
   isPrimary: Boolean
+  displayInInvestigation: Boolean
+  contactMethods: [ContactMethodInput]
 }
 
 input AddressUpdateInput {
@@ -17,4 +20,6 @@ input AddressUpdateInput {
   postalCode: String
   country: String
   isPrimary: Boolean
+  displayInInvestigation: Boolean
+  contactMethods: [ContactMethodInput]
 }

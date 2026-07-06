@@ -13,7 +13,6 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import {
-  Alias,
   BusinessIdentifier,
   BusinessPerson,
   ContactMethod,
@@ -33,12 +32,18 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
   buildAddresses,
+  buildAliases,
   buildBusinessCreateUpdate,
   buildContactMethods,
   buildPersonForCreate,
   buildPersonForUpdate,
+  createEmptyAddress,
+  createEmptyContactMethod,
   mapAddressesFromPartyData,
+  mapAliasesFromPartyData,
+  isDefaultContact,
   mapContactMethodsFromPartyData,
+  seedContactMethods,
   validateBusinessForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
@@ -130,59 +135,79 @@ const mapContactsFromPartyData = (contactPeople: BusinessPerson[] | undefined) =
         firstName: p.person?.firstName,
         lastName: p.person?.lastName,
       },
-      contactMethods:
+      contactMethods: seedContactMethods(
         p.contactMethods
           ?.filter((cm): cm is ContactMethod => cm != null)
           .map((cm: ContactMethod) => ({
-            contactMethodGuid: cm.contactMethodGuid,
-            typeCode: cm.typeCode,
-            value: cm.value,
+            contactMethodGuid: cm.contactMethodGuid ?? undefined,
+            typeCode: cm.typeCode ?? undefined,
+            value: cm.value ?? "",
             isPrimary: determineContactMethodPrimary(cm, p.contactMethods || [], cm.typeCode || ""),
           })) || [],
+      ),
     })) || []
   );
 };
 
-// Helper to build contact people for updates
-const buildContactPeopleForUpdate = (contacts: BusinessPerson[]) => {
-  return contacts.map((c: BusinessPerson) => ({
-    businessPersonXrefGuid: c.businessPersonXrefGuid,
-    business: {
-      businessGuid: c.business?.businessGuid,
-    },
-    person: {
-      personGuid: c.person?.personGuid ?? "",
-      firstName: c.person?.firstName ?? "",
-      lastName: c.person?.lastName ?? "",
-    },
-    contactMethods: c.contactMethods
-      ?.filter((cm): cm is ContactMethod => cm != null)
-      .map((cm: ContactMethod) => ({
-        contactMethodGuid: cm.contactMethodGuid,
-        typeCode: cm.typeCode ?? "",
-        value: cm.value ?? "",
-        isPrimary: cm.isPrimary ?? false,
-      })),
-  }));
+type ContactFormSnapshot = Pick<
+  BusinessPerson,
+  "businessPersonXrefGuid" | "title" | "displayInInvestigation" | "isPrimary"
+> & {
+  business?: { businessGuid?: string | null } | null;
+  person?: { personGuid?: string | null; firstName?: string | null; lastName?: string | null } | null;
+  contactMethods?: Array<{
+    contactMethodGuid?: string | null;
+    typeCode?: string | null;
+    value?: string | null;
+    isPrimary?: boolean | null;
+  } | null> | null;
 };
 
-// Helper to build contact people for creates
-const buildContactPeopleForCreate = (contacts: BusinessPerson[]) => {
-  return contacts.map((c: BusinessPerson) => ({
-    contactMethods: c.contactMethods?.length
-      ? c.contactMethods
-          .filter((cm): cm is ContactMethod => cm != null)
-          .map((cm: ContactMethod) => ({
-            typeCode: cm.typeCode ?? "",
-            value: cm.value ?? "",
-            isPrimary: cm.isPrimary ?? false,
-          }))
-      : undefined,
-    person: {
-      firstName: c.person?.firstName ?? "",
-      lastName: c.person?.lastName ?? "",
-    },
-  }));
+const buildContactPeopleForUpdate = (contacts: ContactFormSnapshot[]) => {
+  return contacts
+    .filter((c) => !isDefaultContact(c))
+    .map((c) => ({
+      businessPersonXrefGuid: c.businessPersonXrefGuid,
+      business: {
+        businessGuid: c.business?.businessGuid,
+      },
+      person: {
+        personGuid: c.person?.personGuid ?? "",
+        firstName: c.person?.firstName ?? "",
+        lastName: c.person?.lastName ?? "",
+      },
+      contactMethods: c.contactMethods
+        // empty contact rows are not persisted
+        ?.filter((cm): cm is NonNullable<typeof cm> => cm != null && !!cm.value?.trim())
+        .map((cm) => ({
+          contactMethodGuid: cm.contactMethodGuid,
+          typeCode: cm.typeCode ?? "",
+          value: cm.value ?? "",
+          isPrimary: cm.isPrimary ?? false,
+        })),
+    }));
+};
+
+const buildContactPeopleForCreate = (contacts: ContactFormSnapshot[]) => {
+  return contacts
+    .filter((c) => !isDefaultContact(c))
+    .map((c) => {
+      // empty contact rows are not persisted
+      const contactMethods = (c.contactMethods ?? [])
+        .filter((cm): cm is NonNullable<typeof cm> => cm != null && !!cm.value?.trim())
+        .map((cm) => ({
+          typeCode: cm.typeCode ?? "",
+          value: cm.value ?? "",
+          isPrimary: cm.isPrimary ?? false,
+        }));
+      return {
+        contactMethods: contactMethods.length ? contactMethods : undefined,
+        person: {
+          firstName: c.person?.firstName ?? "",
+          lastName: c.person?.lastName ?? "",
+        },
+      };
+    });
 };
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
@@ -256,10 +281,7 @@ const PartyEdit: FC = () => {
         worksafeBCNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
-        aliases: partyData.party.aliases.map((a: Alias) => ({
-          aliasGuid: a.aliasGuid,
-          name: a.name,
-        })),
+        aliases: mapAliasesFromPartyData(partyData.party.aliases),
         phoneNumbers: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.EMAIL),
         contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
@@ -299,11 +321,11 @@ const PartyEdit: FC = () => {
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
-      aliases: [],
-      phoneNumbers: [],
-      emailAddresses: [],
+      aliases: [{ aliasGuid: undefined, name: "" }],
+      phoneNumbers: [createEmptyContactMethod(true)],
+      emailAddresses: [createEmptyContactMethod(true)],
       contacts: [],
-      addresses: [],
+      addresses: [{ ...createEmptyAddress(), isPrimary: true }],
     };
   }, [isEditMode, partyData]);
 
@@ -328,9 +350,9 @@ const PartyEdit: FC = () => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
+          aliases: buildAliases(value.aliases, true),
           images: pendingImagesRef.current,
           business:
             value.partyType === "CMP"
@@ -342,9 +364,9 @@ const PartyEdit: FC = () => {
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
-          aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+          aliases: buildAliases(value.aliases, false),
           business:
             value.partyType === "CMP"
               ? buildBusinessCreateUpdate(value, buildContactPeopleForCreate(value.contacts))
@@ -438,13 +460,6 @@ const PartyEdit: FC = () => {
 
   const saveButtonClick = useCallback(async () => {
     const currentValues = currentFormValues;
-    if (currentValues.partyType === PartyTypeCodes.PERSON) {
-      if (!currentValues.partyType || currentValues.firstName?.trim() === "" || currentValues.lastName?.trim() === "") {
-        ToggleError("Validation error: Please fill in all required fields.");
-        return;
-      }
-    }
-
     if (currentValues.partyType === PartyTypeCodes.BUSINESS) {
       const validationError = await validateBusinessForm(currentValues);
       if (validationError) {
@@ -471,6 +486,10 @@ const PartyEdit: FC = () => {
     setAttachmentsDirty(dirty);
   };
 
+  const firstName = currentFormValues.firstName?.trim();
+  const lastName = currentFormValues.lastName?.trim();
+  const partyDetailsTitle = firstName && lastName ? `${firstName} ${lastName}` : "Party details";
+
   return (
     <div className="comp-complaint-details">
       <PartyEditHeader
@@ -482,7 +501,7 @@ const PartyEdit: FC = () => {
 
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
-          <h2>Party Details</h2>
+          <h2>{partyDetailsTitle}</h2>
         </div>
 
         <PartyAttachments
@@ -508,7 +527,7 @@ const PartyEdit: FC = () => {
             <FormField
               form={form}
               name="partyType"
-              label="Party Type"
+              label="Type"
               required
               validators={{ onChange: z.string().min(1, "Party type is required") }}
               render={(field) => (

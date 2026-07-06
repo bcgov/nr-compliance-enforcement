@@ -157,8 +157,8 @@ export const mapPrismaPartyToInvestigationParty = (mapper: Mapper) => {
     forMember(
       (dest) => dest.placeholderName,
       mapFrom((src) => {
-        const parts = [src.placeholder_name, src.placeholder_number].filter(Boolean);
-        return parts.length > 0 ? parts.join(" ") : null;
+        if (!src.placeholder_name) return null;
+        return [src.placeholder_name, src.placeholder_number].filter(Boolean).join(" ");
       }),
     ),
     forMember(

@@ -16,9 +16,11 @@ interface BusinessContactPersonInformationProps {
 
 export const BusinessContactPersonInformation: FC<BusinessContactPersonInformationProps> = ({ business }) => {
   // If it's an investigation, check the display in Investigation flag
-  const contactPeople = business.contactPeople?.filter((c) =>
-    isInvestigationBusiness(business) ? (c as InvestigationBusinessPerson).displayInInvestigation : true,
-  );
+  const contactPeople = business.contactPeople
+    ?.filter((c) =>
+      isInvestigationBusiness(business) ? (c as InvestigationBusinessPerson).displayInInvestigation : true,
+    )
+    .toSorted((a, b) => Number(b?.isPrimary ?? false) - Number(a?.isPrimary ?? false));
 
   const sortPrimaryFirst = (methods: ContactMethod[]): ContactMethod[] =>
     [...methods].sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary));
@@ -40,7 +42,17 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                 border="default"
               >
                 <Card.Body>
-                  <h3 className="h6 mb-3">{c?.title}</h3>
+                  <h3 className="h6 mb-3">
+                    {c?.title}
+                    {c?.isPrimary && (
+                      <Badge
+                        bg="species-badge comp-species-badge"
+                        className="ms-2"
+                      >
+                        Primary
+                      </Badge>
+                    )}
+                  </h3>
                   <dl>
                     <DetailField label="First name">{c?.person?.firstName}</DetailField>
                     <DetailField label="Last name">{c?.person?.lastName}</DetailField>

@@ -219,6 +219,7 @@ model business_person_xref {
   update_utc_timestamp                                                                                DateTime?                      @db.Timestamp(6)
   display_in_investigation_ind                                                                        Boolean                        @default(true)
   title_role                                                                                          String?                        @db.VarChar(256)
+  is_primary                                                                                          Boolean                        @default(false)
   business_person_address_xref                                                                        business_person_address_xref[]
   business                                                                                            business                       @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_business_fk")
   business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref_code      @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code", fields: [business_person_xref_code], references: [business_person_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_code_fk")
@@ -368,10 +369,8 @@ model contact_method {
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
   address_guid             String?                  @db.Uuid
-  person_guid              String?                  @db.Uuid
   address                  address?                 @relation(fields: [address_guid], references: [address_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_address_fk")
   party                    party?                   @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_party_fk")
-  person                   person?                  @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_person_fk")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
   @@schema("shared")
@@ -835,7 +834,6 @@ model person {
   comments                                                               String?
   bolo_ind                                                               Boolean?
   business_person_xref                                                   business_person_xref[]
-  contact_method                                                         contact_method[]
   party                                                                  party?                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?           @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
   build_code_person_build_codeTobuild_code                               build_code?                     @relation("person_build_codeTobuild_code", fields: [build_code], references: [build_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__build_code")
@@ -994,7 +992,6 @@ model address {
   create_utc_timestamp                                                                DateTime                       @default(now()) @db.Timestamp(6)
   update_user_id                                                                      String?                        @db.VarChar(32)
   update_utc_timestamp                                                                DateTime?                      @db.Timestamp(6)
-  nickname                                                                            String?                        @db.VarChar(128)
   display_in_investigation_ind                                                        Boolean                        @default(true)
   country_code_address_country_codeTocountry_code                                     country_code?                  @relation("address_country_codeTocountry_code", fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_code_fk")
   country_subdivision_code_address_country_subdivision_codeTocountry_subdivision_code country_subdivision_code?      @relation("address_country_subdivision_codeTocountry_subdivision_code", fields: [country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_subdivision_code_fk")

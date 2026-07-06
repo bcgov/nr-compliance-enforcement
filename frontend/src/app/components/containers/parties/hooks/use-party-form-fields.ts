@@ -2,7 +2,11 @@ import { useCallback } from "react";
 import { useStore } from "@tanstack/react-form";
 import { Alias, BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { AddressFormValue, createEmptyAddress } from "@/app/components/containers/parties/form/party-form-utils";
+import {
+  AddressFormValue,
+  createEmptyAddress,
+  seedContactMethods,
+} from "@/app/components/containers/parties/form/party-form-utils";
 
 const toContactSnapshot = (contact: BusinessPerson) => ({
   businessPersonXrefGuid: contact.businessPersonXrefGuid,
@@ -20,6 +24,10 @@ const toContactSnapshot = (contact: BusinessPerson) => ({
       value: cm.value,
       isPrimary: cm.isPrimary ?? false, // adds default
     })),
+  title: contact.title ?? "",
+  displayInInvestigation: contact.displayInInvestigation ?? true,
+  isPrimary: contact.isPrimary ?? false,
+  officeAddressGuids: ((contact as any).officeAddressGuids ?? []) as string[],
 });
 
 export const usePartyFormFields = (form: any, businessGuid?: string) => {
@@ -196,7 +204,11 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
         firstName: "",
         lastName: "",
       },
-      contactMethods: [],
+      contactMethods: seedContactMethods(),
+      title: "",
+      displayInInvestigation: true,
+      isPrimary: currentContacts.length === 0,
+      officeAddressGuids: [] as string[],
     };
     form.setFieldValue("contacts", [...currentContacts, newContact]);
     focusFieldById(`contact-firstName-${currentContacts.length}`);
@@ -227,29 +239,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       };
 
       const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
+        const snapshot = toContactSnapshot(contact);
         if (index === contactIndex) {
           return {
-            businessPersonXrefGuid: contact.businessPersonXrefGuid,
-            business: { businessGuid: contact.business?.businessGuid },
-            person: {
-              personGuid: contact.person?.personGuid,
-              firstName: contact.person?.firstName,
-              lastName: contact.person?.lastName,
-            },
-            contactMethods: [
-              ...(contact.contactMethods || [])
-                .filter((cm): cm is ContactMethod => cm != null)
-                .map((cm) => ({
-                  contactMethodGuid: cm.contactMethodGuid,
-                  typeCode: cm.typeCode,
-                  value: cm.value,
-                  isPrimary: cm.isPrimary ?? false,
-                })),
-              newContactMethod,
-            ],
+            ...snapshot,
+            contactMethods: [...snapshot.contactMethods, newContactMethod],
           };
         }
-        return toContactSnapshot(contact);
+        return snapshot;
       });
 
       form.setFieldValue("contacts", updatedContacts);
@@ -268,20 +265,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
       const currentContacts = form.getFieldValue("contacts") || [];
 
       const updatedContacts = currentContacts.map((contact: BusinessPerson, index: number) => {
+        const snapshot = toContactSnapshot(contact);
         if (index === contactIndex) {
-          const contactMethods = (contact.contactMethods || []).filter((cm): cm is ContactMethod => cm != null);
+          const contactMethods = snapshot.contactMethods;
 
           const methodToRemove = contactMethods[methodIndex];
           const removingPrimary = methodToRemove?.isPrimary || false;
           const removingTypeCode = methodToRemove?.typeCode;
-          let newContactMethods = contactMethods
-            .filter((_, i) => i !== methodIndex)
-            .map((cm) => ({
-              contactMethodGuid: cm.contactMethodGuid,
-              typeCode: cm.typeCode,
-              value: cm.value,
-              isPrimary: cm.isPrimary ?? false,
-            }));
+          let newContactMethods = contactMethods.filter((_, i) => i !== methodIndex);
 
           // If we removed the primary method and there are still methods of the same type left,
           // make the first one of that type primary
@@ -296,19 +287,25 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
           }
 
           return {
-            businessPersonXrefGuid: contact.businessPersonXrefGuid,
-            business: { businessGuid: contact.business?.businessGuid },
+            ...snapshot,
             contactMethods: newContactMethods,
-            person: {
-              personGuid: contact.person?.personGuid,
-              firstName: contact.person?.firstName,
-              lastName: contact.person?.lastName,
-            },
           };
         }
-        return toContactSnapshot(contact);
+        return snapshot;
       });
 
+      form.setFieldValue("contacts", updatedContacts);
+    },
+    [form],
+  );
+
+  const handleSetPrimaryBusinessContact = useCallback(
+    (index: number) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+      const updatedContacts = currentContacts.map((c: BusinessPerson, i: number) => ({
+        ...c,
+        isPrimary: i === index,
+      }));
       form.setFieldValue("contacts", updatedContacts);
     },
     [form],
@@ -318,37 +315,17 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     (contactIndex: number, contactMethodIndex: number, contactMethodType: string) => {
       const currentContacts = form.getFieldValue("contacts") || [];
       const updatedContacts = currentContacts.map((c: BusinessPerson, cIndex: number) => {
+        const snapshot = toContactSnapshot(c);
         if (cIndex === contactIndex) {
           return {
-            businessPersonXrefGuid: c.businessPersonXrefGuid,
-            business: { businessGuid: c.business?.businessGuid },
-            person: {
-              personGuid: c.person?.personGuid,
-              firstName: c.person?.firstName,
-              lastName: c.person?.lastName,
-            },
-            contactMethods: (c.contactMethods || [])
-              .filter((cm): cm is ContactMethod => cm != null)
-              .map((cm, cmIdx) => {
-                if (cm?.typeCode === contactMethodType) {
-                  return {
-                    contactMethodGuid: cm.contactMethodGuid,
-                    typeCode: cm.typeCode,
-                    value: cm.value,
-                    isPrimary: cmIdx === contactMethodIndex,
-                  };
-                }
-                return {
-                  contactMethodGuid: cm.contactMethodGuid,
-                  typeCode: cm.typeCode,
-                  value: cm.value,
-                  isPrimary: cm.isPrimary ?? false, // ← Add default
-                };
-              }),
+            ...snapshot,
+            contactMethods: snapshot.contactMethods.map((cm, cmIdx) => ({
+              ...cm,
+              isPrimary: cm.typeCode === contactMethodType ? cmIdx === contactMethodIndex : cm.isPrimary,
+            })),
           };
         }
-        // Transform the unchanged contact too
-        return toContactSnapshot(c);
+        return snapshot;
       });
       form.setFieldValue("contacts", updatedContacts);
     },
@@ -377,5 +354,6 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
     handleAddContactMethod,
     handleRemoveContactMethod,
     handleSetPrimaryContact,
+    handleSetPrimaryBusinessContact,
   };
 };

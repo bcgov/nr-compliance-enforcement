@@ -1,12 +1,7 @@
 -- Office fields for addresses
 
 ALTER TABLE address
-ADD COLUMN nickname character varying(128);
-
-ALTER TABLE address
 ADD COLUMN display_in_investigation_ind boolean NOT NULL DEFAULT true;
-
-COMMENT ON COLUMN address.nickname IS 'An optional label for the address when it represents a business office (e.g. Head office, Warehouse). Null for person addresses.';
 
 COMMENT ON COLUMN address.display_in_investigation_ind IS 'A boolean indicator of whether the office should be displayed in the investigation.';
 
@@ -19,9 +14,14 @@ ADD COLUMN display_in_investigation_ind boolean NOT NULL DEFAULT true;
 ALTER TABLE business_person_xref
 ADD COLUMN title_role character varying(256);
 
+ALTER TABLE business_person_xref
+ADD COLUMN is_primary boolean NOT NULL DEFAULT false;
+
 COMMENT ON COLUMN business_person_xref.display_in_investigation_ind IS 'A boolean indicator of whether the business contact should be displayed in the investigation.';
 
 COMMENT ON COLUMN business_person_xref.title_role IS 'The free-text title or role of the contact person within the business (e.g. Site Manager, Owner).';
+
+COMMENT ON COLUMN business_person_xref.is_primary IS 'A boolean indicator of whether this contact is the primary contact for the business.';
 
 
 -- Business contact to office xref
@@ -105,7 +105,7 @@ ON business_person_address_xref (business_person_xref_guid, address_guid)
 WHERE active_ind = true;
 
 
--- Update relationships for contact methods to a party, office, or contact person
+-- Update relationships for contact methods to a party or office
 
 ALTER TABLE contact_method
 ALTER COLUMN party_guid DROP NOT NULL;
@@ -114,24 +114,14 @@ ALTER TABLE contact_method
 ADD COLUMN address_guid uuid;
 
 ALTER TABLE contact_method
-ADD COLUMN person_guid uuid;
-
-ALTER TABLE contact_method
 ADD CONSTRAINT contact_method_address_fk
   FOREIGN KEY (address_guid)
   REFERENCES address (address_guid);
 
 ALTER TABLE contact_method
-ADD CONSTRAINT contact_method_person_fk
-  FOREIGN KEY (person_guid)
-  REFERENCES person (person_guid);
-
-ALTER TABLE contact_method
 ADD CONSTRAINT contact_method_parent_chk
-CHECK (num_nonnulls (party_guid, address_guid, person_guid) = 1);
+CHECK (num_nonnulls (party_guid, address_guid) = 1);
 
-COMMENT ON COLUMN contact_method.party_guid IS 'The unique identifier of the party associated with the contact method. Only one of party_guid, address_guid, or person_guid is allowed.';
+COMMENT ON COLUMN contact_method.party_guid IS 'The unique identifier of the party associated with the contact method. Only one of party_guid or address_guid is allowed.';
 
-COMMENT ON COLUMN contact_method.address_guid IS 'The unique identifier of the office (address) associated with the contact method. Only one of party_guid, address_guid, or person_guid is allowed.';
-
-COMMENT ON COLUMN contact_method.person_guid IS 'The unique identifier of the contact person associated with the contact method. Only one of party_guid, address_guid, or person_guid is allowed.';
+COMMENT ON COLUMN contact_method.address_guid IS 'The unique identifier of the office (address) associated with the contact method. Only one of party_guid or address_guid is allowed.';

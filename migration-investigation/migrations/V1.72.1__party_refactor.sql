@@ -1,12 +1,7 @@
 -- Office fields for addresses
 
 ALTER TABLE investigation_address
-ADD COLUMN nickname character varying(128);
-
-ALTER TABLE investigation_address
 ADD COLUMN display_in_investigation_ind boolean NOT NULL DEFAULT true;
-
-COMMENT ON COLUMN investigation_address.nickname IS 'An optional label for the address when it represents a business office (e.g. Head office, Warehouse). Null for person addresses.';
 
 COMMENT ON COLUMN investigation_address.display_in_investigation_ind IS 'A boolean indicator of whether the office should be displayed in the investigation.';
 
@@ -19,9 +14,14 @@ ADD COLUMN display_in_investigation_ind boolean NOT NULL DEFAULT true;
 ALTER TABLE investigation_business_person_xref
 ADD COLUMN title_role character varying(256);
 
+ALTER TABLE investigation_business_person_xref
+ADD COLUMN is_primary boolean NOT NULL DEFAULT false;
+
 COMMENT ON COLUMN investigation_business_person_xref.display_in_investigation_ind IS 'A boolean indicator of whether the business contact should be displayed in the investigation.';
 
 COMMENT ON COLUMN investigation_business_person_xref.title_role IS 'The free-text title or role of the contact person within the business (e.g. Site Manager, Owner).';
+
+COMMENT ON COLUMN investigation_business_person_xref.is_primary IS 'A boolean indicator of whether this contact is the primary contact for the business.';
 
 
 -- Business contact to office xref
@@ -124,7 +124,7 @@ COMMENT ON COLUMN investigation_party.placeholder_name IS 'A persisted display n
 COMMENT ON COLUMN investigation_party.placeholder_number IS 'The monotonic ordinal assigned to a nameless party within its investigation and role. Null for named parties. Never reused (party removal is a soft delete).';
 
 
--- Update relationships for contact methods to a party, office, or contact person
+-- Update relationships for contact methods to a party or office
 
 ALTER TABLE investigation_contact_method
 ALTER COLUMN investigation_party_guid DROP NOT NULL;
@@ -133,24 +133,14 @@ ALTER TABLE investigation_contact_method
 ADD COLUMN investigation_address_guid uuid;
 
 ALTER TABLE investigation_contact_method
-ADD COLUMN investigation_person_guid uuid;
-
-ALTER TABLE investigation_contact_method
 ADD CONSTRAINT investigation_contact_method_address_fk
   FOREIGN KEY (investigation_address_guid)
   REFERENCES investigation_address (investigation_address_guid);
 
 ALTER TABLE investigation_contact_method
-ADD CONSTRAINT investigation_contact_method_person_fk
-  FOREIGN KEY (investigation_person_guid)
-  REFERENCES investigation_person (investigation_person_guid);
-
-ALTER TABLE investigation_contact_method
 ADD CONSTRAINT investigation_contact_method_parent_chk
-CHECK (num_nonnulls (investigation_party_guid, investigation_address_guid, investigation_person_guid) = 1);
+CHECK (num_nonnulls (investigation_party_guid, investigation_address_guid) = 1);
 
-COMMENT ON COLUMN investigation_contact_method.investigation_party_guid IS 'The unique identifier of the party associated with the contact method. Only one of investigation_party_guid, investigation_address_guid, or investigation_person_guid is allowed.';
+COMMENT ON COLUMN investigation_contact_method.investigation_party_guid IS 'The unique identifier of the party associated with the contact method. Only one of investigation_party_guid or investigation_address_guid is allowed.';
 
-COMMENT ON COLUMN investigation_contact_method.investigation_address_guid IS 'The unique identifier of the office (investigation_address) associated with the contact method. Only one of investigation_party_guid, investigation_address_guid, or investigation_person_guid is allowed.';
-
-COMMENT ON COLUMN investigation_contact_method.investigation_person_guid IS 'The unique identifier of the contact person associated with the contact method. Only one of investigation_party_guid, investigation_address_guid, or investigation_person_guid is allowed.';
+COMMENT ON COLUMN investigation_contact_method.investigation_address_guid IS 'The unique identifier of the office (investigation_address) associated with the contact method. Only one of investigation_party_guid or investigation_address_guid is allowed.';

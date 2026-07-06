@@ -7,7 +7,11 @@ import {
   InvestigationBusinessIdentifier,
   UpdateInvestigationBusinessIdentifierInput,
 } from "../../investigation_business_identifier/dto/investigation_business_identifier";
-import { InvestigationBusinessPersonXref } from "src/investigation/investigation_business_person_xref/dto/investigation_business_person_xref";
+import {
+  CreateInvestigationBusinessContactInput,
+  InvestigationBusinessPersonXref,
+  UpdateInvestigationBusinessContactInput,
+} from "src/investigation/investigation_business_person_xref/dto/investigation_business_person_xref";
 
 export class InvestigationBusiness implements BusinessDto {
   businessGuid: string;
@@ -29,6 +33,9 @@ export class CreateInvestigationBusinessInput {
 
   @Field(() => [CreateInvestigationBusinessIdentifierInput], { nullable: true })
   businessIdentifiers?: CreateInvestigationBusinessIdentifierInput[];
+
+  @Field(() => [CreateInvestigationBusinessContactInput], { nullable: true })
+  contactPeople?: CreateInvestigationBusinessContactInput[];
 }
 
 @InputType()
@@ -38,6 +45,9 @@ export class UpdateInvestigationBusinessInput {
 
   @Field(() => [UpdateInvestigationBusinessIdentifierInput], { nullable: true })
   businessIdentifiers?: UpdateInvestigationBusinessIdentifierInput[];
+
+  @Field(() => [UpdateInvestigationBusinessContactInput], { nullable: true })
+  contactPeople?: UpdateInvestigationBusinessContactInput[];
 }
 
 export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {

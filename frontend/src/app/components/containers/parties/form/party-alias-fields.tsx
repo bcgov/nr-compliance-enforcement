@@ -19,7 +19,7 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
         key={alias.aliasGuid || `alias-${index}`}
         form={form}
         name={`aliases[${index}].name` as any}
-        label={index === 0 ? "Alias" : ""}
+        label={index === 0 ? "Alias(es)" : ""}
         render={(field) => (
           <div className="party-alias-container">
             <div className="party-multiple-value-container">
@@ -36,16 +36,18 @@ export const PartyAliasFields: FC<PartyAliasFieldsProps> = ({ form, isDisabled, 
                 disabled={isDisabled}
               />
             </div>
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={() => onRemove(index)}
-              type="button"
-            >
-              <i className="bi bi-trash" />
-              {/**/}
-              Remove
-            </Button>
+            {aliases.length > 1 && (
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => onRemove(index)}
+                type="button"
+              >
+                <i className="bi bi-trash" />
+                {/**/}
+                Remove
+              </Button>
+            )}
           </div>
         )}
       />

@@ -37,6 +37,7 @@ export const GET_PARTY = gql`
         postalCode
         country
         isPrimary
+        displayInInvestigation
       }
       contactMethods {
         contactMethodGuid
@@ -93,6 +94,8 @@ export const GET_PARTY = gql`
         contactPeople {
           businessPersonXrefGuid
           title
+          displayInInvestigation
+          isPrimary
           business {
             businessGuid
           }

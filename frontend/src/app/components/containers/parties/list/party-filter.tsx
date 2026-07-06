@@ -10,7 +10,7 @@ export const PartyFilter: FC = () => {
   const partyTypes = useAppSelector(selectPartyTypeDropdown);
 
   const partyTypeOptions = partyTypes
-    ?.sort((left: any, right: any) => left.displayOrder - right.displayOrder)
+    ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
     .map((code: any) => {
       return {
         value: code.value,
@@ -55,7 +55,7 @@ export const PartyFilter: FC = () => {
     <div className="comp-filter-container">
       {renderSelectFilter(
         "partyType",
-        "Party Type",
+        "Type",
         partyTypeOptions,
         "Select party type",
         partyTypeOptions.find((option) => option.value === searchValues.partyTypeCode) || null,

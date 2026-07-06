@@ -1,20 +1,32 @@
 import { FC } from "react";
 import { Button } from "react-bootstrap";
+import { useStore } from "@tanstack/react-form";
 import { FormField } from "@components/common/form-field";
 import { CompInput } from "@/app/components/common/comp-input";
 import { BusinessPerson, ContactMethod } from "@/generated/graphql";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { ContactMethods } from "@/app/constants/contact-methods";
+import {
+  AddressFormValue,
+  isDefaultContact,
+  validateEmailValue,
+  validatePhoneNumberValue,
+} from "@/app/components/containers/parties/form/party-form-utils";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
 interface ContactPersonFieldsProps {
   contact: BusinessPerson;
   contactIndex: number;
   form: any;
   isDisabled: boolean;
+  isPrimary: boolean;
   onRemoveContact: (index: number) => void;
+  onSetPrimaryBusinessContact: (index: number) => void;
   onAddContactMethod: (contactIndex: number, typeCode: string) => void;
   onRemoveContactMethod: (contactIndex: number, methodIndex: number) => void;
   onSetPrimaryContact: (contactIndex: number, methodIndex: number, typeCode: string) => void;
+  showInvestigationFields?: boolean;
 }
 
 export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
@@ -22,11 +34,21 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
   contactIndex,
   form,
   isDisabled,
+  isPrimary,
   onRemoveContact,
+  onSetPrimaryBusinessContact,
   onAddContactMethod,
   onRemoveContactMethod,
   onSetPrimaryContact,
+  showInvestigationFields = false,
 }) => {
+  const addresses = useStore(form.store, (state: any) => state.values?.addresses ?? []) as AddressFormValue[];
+  const officeOptions = addresses
+    .map((a: AddressFormValue, index: number) => ({
+      value: a.addressGuid ?? "",
+      label: a.addressName?.trim() || `Address ${index + 1}`,
+    }))
+    .filter((opt) => !!opt.value);
   const phoneNumbers =
     contact.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
@@ -41,9 +63,25 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
 
   return (
-    <div className="party-details-item">
+    <>
+      {contactIndex > 0 && <hr className="comp-details-section-divider mt-4 mb-4" />}
       <div className="party-contact-header mb-3">
-        <h4>Contact {contactIndex + 1}</h4>
+        {showInvestigationFields ? (
+          <label htmlFor={`contact-primary-${contactIndex}`}>
+            <input
+              type="radio"
+              id={`contact-primary-${contactIndex}`}
+              name="primaryBusinessContact"
+              checked={isPrimary || false}
+              onChange={() => onSetPrimaryBusinessContact(contactIndex)}
+              disabled={isDisabled}
+              className="me-2"
+            />{" "}
+            Mark as Primary contact
+          </label>
+        ) : (
+          <h4>Contact {contactIndex + 1}</h4>
+        )}
         <Button
           variant="outline-primary"
           size="sm"
@@ -58,6 +96,15 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         form={form}
         name={`contacts[${contactIndex}].person.firstName` as any}
         label="First name"
+        required
+        validators={{
+          // empty contact rows are not persisted
+          onChange: ({ value, fieldApi }: any) => {
+            const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
+            if (isDefaultContact({ ...contact, person: { ...contact.person, firstName: value } })) return undefined;
+            return value?.trim() ? undefined : "First name is required";
+          },
+        }}
         render={(field) => (
           <CompInput
             id={`contact-firstName-${contactIndex}`}
@@ -65,6 +112,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value}
+            error={getFieldErrorMessage(field)}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
             placeholder="Enter first name..."
             disabled={isDisabled}
@@ -76,6 +124,15 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         form={form}
         name={`contacts[${contactIndex}].person.lastName` as any}
         label="Last name"
+        required
+        validators={{
+          // empty contact rows are not persisted
+          onChange: ({ value, fieldApi }: any) => {
+            const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
+            if (isDefaultContact({ ...contact, person: { ...contact.person, lastName: value } })) return undefined;
+            return value?.trim() ? undefined : "Last name is required";
+          },
+        }}
         render={(field) => (
           <CompInput
             id={`contact-lastName-${contactIndex}`}
@@ -83,12 +140,72 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
             type="input"
             inputClass="comp-form-control comp-details-input"
             value={field.state.value}
+            error={getFieldErrorMessage(field)}
             onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
             placeholder="Enter last name..."
             disabled={isDisabled}
           />
         )}
       />
+
+      {showInvestigationFields && (
+        <>
+          <FormField
+            form={form}
+            name={`contacts[${contactIndex}].title` as any}
+            label="Title / role"
+            render={(field) => (
+              <CompInput
+                id={`contact-title-${contactIndex}`}
+                divid=""
+                type="input"
+                inputClass="comp-form-control comp-details-input"
+                value={field.state.value ?? ""}
+                maxLength={256}
+                onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                placeholder="Enter title or role..."
+                disabled={isDisabled}
+              />
+            )}
+          />
+
+          <FormField
+            form={form}
+            name={`contacts[${contactIndex}].officeAddressGuids` as any}
+            label="Offices associated with"
+            render={(field) => (
+              <ValidationMultiSelect
+                id={`contact-offices-${contactIndex}`}
+                className="comp-details-input"
+                classNamePrefix="comp-select"
+                options={officeOptions}
+                values={officeOptions.filter((opt) => (field.state.value ?? []).includes(opt.value))}
+                placeholder="Select offices"
+                onChange={(selected: any) => field.handleChange((selected ?? []).map((opt: any) => opt.value))}
+                errMsg={field.state.meta.errors?.[0]?.message || ""}
+                isDisabled={isDisabled}
+              />
+            )}
+          />
+
+          <FormField
+            form={form}
+            name={`contacts[${contactIndex}].displayInInvestigation` as any}
+            label="Display in investigation"
+            render={(field) => (
+              <div className="comp-details-edit-input">
+                <input
+                  type="checkbox"
+                  id={`contact-display-${contactIndex}`}
+                  checked={field.state.value ?? true}
+                  onChange={(evt) => field.handleChange(evt.target.checked)}
+                  disabled={isDisabled}
+                />
+              </div>
+            )}
+          />
+        </>
+      )}
 
       {/* Phone numbers */}
       {phoneNumbers.map(({ method, originalIndex }, displayIndex) => (
@@ -97,43 +214,52 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           form={form}
           name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value`}
           label={displayIndex === 0 ? "Phone number" : ""}
+          validators={{
+            onChange: ({ value }: { value: string | undefined }) => validatePhoneNumberValue(value),
+          }}
           render={(field) => (
-            <div className="party-contact-method">
-              {displayIndex === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {displayIndex > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`contact-phone-primary-${contactIndex}-${originalIndex}`}
-                name={`primaryContactPhone-${contactIndex}`}
-                checked={method.isPrimary || false}
-                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.PHONE)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <ValidationPhoneInput
-                  className="comp-details-input"
-                  value={method.value ?? ""}
-                  onChange={(value: string) => field.handleChange(value || "")}
-                  maxLength={14}
-                  international={false}
-                  id={`contact-phone-${contactIndex}-${originalIndex}`}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
-                />
+            <>
+              <div className="comp-details-form-row">
+                <label htmlFor={`contact-phone-primary-${contactIndex}-${originalIndex}`}>
+                  <input
+                    type="radio"
+                    id={`contact-phone-primary-${contactIndex}-${originalIndex}`}
+                    name={`primaryContactPhone-${contactIndex}`}
+                    checked={method.isPrimary || false}
+                    onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.PHONE)}
+                    disabled={isDisabled}
+                    className="me-2"
+                  />{" "}
+                  Mark as Primary phone number
+                </label>
               </div>
+              <div className="party-contact-method">
+                <div className="party-multiple-value-container">
+                  <ValidationPhoneInput
+                    className="comp-details-input"
+                    value={method.value ?? ""}
+                    onChange={(value: string) => field.handleChange(value || "")}
+                    maxLength={14}
+                    international={false}
+                    id={`contact-phone-${contactIndex}-${originalIndex}`}
+                    errMsg={getFieldErrorMessage(field)}
+                  />
+                </div>
 
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
+                {phoneNumbers.length > 1 && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
+                    type="button"
+                  >
+                    <i className="bi bi-trash" />
+                    {/**/}
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         />
       ))}
@@ -161,40 +287,50 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           form={form}
           name={`contacts[${contactIndex}].contactMethods[${originalIndex}].value` as any}
           label={displayIndex === 0 ? "Email" : ""}
+          validators={{
+            onChange: ({ value }: { value: string | undefined }) => validateEmailValue(value),
+          }}
           render={(field) => (
-            <div className="party-contact-method">
-              {displayIndex === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {displayIndex > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`email-primary-${displayIndex}`}
-                name={`primaryContactEmail-${contactIndex}`}
-                checked={method?.isPrimary || false}
-                onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.EMAIL)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <CompInput
-                  id={`contact-email-${contactIndex}-${originalIndex}`}
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input"
-                  value={field.state.value}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  disabled={isDisabled}
-                />
+            <>
+              <div className="comp-details-form-row">
+                <label htmlFor={`contact-email-primary-${contactIndex}-${originalIndex}`}>
+                  <input
+                    type="radio"
+                    id={`contact-email-primary-${contactIndex}-${originalIndex}`}
+                    name={`primaryContactEmail-${contactIndex}`}
+                    checked={method?.isPrimary || false}
+                    onChange={() => onSetPrimaryContact(contactIndex, originalIndex, ContactMethods.EMAIL)}
+                    disabled={isDisabled}
+                    className="me-2"
+                  />{" "}
+                  Mark as Primary email
+                </label>
               </div>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
-                type="button"
-              >
-                <i className="bi bi-trash" /> Remove
-              </Button>
-            </div>
+              <div className="party-contact-method">
+                <div className="party-multiple-value-container">
+                  <CompInput
+                    id={`contact-email-${contactIndex}-${originalIndex}`}
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input"
+                    value={field.state.value}
+                    error={getFieldErrorMessage(field)}
+                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                    disabled={isDisabled}
+                  />
+                </div>
+                {emails.length > 1 && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => onRemoveContactMethod(contactIndex, originalIndex)}
+                    type="button"
+                  >
+                    <i className="bi bi-trash" /> Remove
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         />
       ))}
@@ -214,6 +350,6 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
           </Button>
         )}
       />
-    </div>
+    </>
   );
 };

@@ -5,7 +5,12 @@ import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
 import { ContactMethod } from "@/generated/graphql";
 import { CompInput } from "@/app/components/common/comp-input";
 import { AddressFields } from "@/app/components/containers/parties/form/party-address-fields";
-import { AddressFormValue } from "@/app/components/containers/parties/form/party-form-utils";
+import {
+  AddressFormValue,
+  validateEmailValue,
+  validatePhoneNumberValue,
+} from "@/app/components/containers/parties/form/party-form-utils";
+import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 
 type PartyContactFieldsProps = {
   form: any;
@@ -22,6 +27,7 @@ type PartyContactFieldsProps = {
   onAddEmail: () => void;
   onRemoveEmail: (index: number) => void;
   onSetPrimaryEmail: (index: number) => void;
+  showOfficeFields?: boolean;
 };
 
 export const PartyContactFields: FC<PartyContactFieldsProps> = ({
@@ -39,88 +45,65 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
   onAddEmail,
   onRemoveEmail,
   onSetPrimaryEmail,
+  showOfficeFields = false,
 }) => {
   return (
     <>
-      {addresses?.map((address: AddressFormValue, index: number) => (
-        <FormField
-          key={address.addressGuid || `address-${index}`}
-          form={form}
-          name={`address-block-${index}` as any}
-          label={index === 0 ? "Address" : ""}
-          render={() => (
-            <AddressFields
-              addressIndex={index}
-              form={form}
-              isDisabled={isDisabled}
-              isPrimary={address.isPrimary || false}
-              onRemoveAddress={onRemoveAddress}
-              onSetPrimaryAddress={onSetPrimaryAddress}
-            />
-          )}
-        />
-      ))}
-      <FormField
-        form={form}
-        name="add-address-placeholder"
-        label=""
-        render={() => (
-          <Button
-            id="add-address-button"
-            variant="outline-primary"
-            size="sm"
-            onClick={onAddAddress}
-            type="button"
-          >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add address
-          </Button>
-        )}
-      />
+      <div className="comp-details-section-header pt-5">
+        <h3>Contact information</h3>
+      </div>
       {phoneNumbers?.map((phoneNumber: ContactMethod, index: number) => (
         <FormField
           key={phoneNumber.contactMethodGuid || `phone-${index}`}
           form={form}
           name={`phoneNumbers[${index}].value`}
           label={index === 0 ? "Phone number" : ""}
+          validators={{
+            onChange: ({ value }: { value: string | undefined }) => validatePhoneNumberValue(value),
+          }}
           render={(field) => (
-            <div className="party-contact-method">
-              {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {index > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`phone-primary-${index}`}
-                name="primaryPhoneNumber"
-                checked={phoneNumber.isPrimary || false}
-                onChange={() => onSetPrimaryPhoneNumber(index)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <ValidationPhoneInput
-                  className="comp-details-input"
-                  value={phoneNumber.value ?? ""}
-                  onChange={(value: string) => field.handleChange(value || "")}
-                  maxLength={14}
-                  international={false}
-                  id={`phone-number-${index}`}
-                  errMsg={field.state.meta.errors?.[0]?.message || ""}
-                />
+            <>
+              <div className="comp-details-form-row">
+                <label htmlFor={`phone-primary-${index}`}>
+                  <input
+                    type="radio"
+                    id={`phone-primary-${index}`}
+                    name="primaryPhoneNumber"
+                    checked={phoneNumber.isPrimary || false}
+                    onChange={() => onSetPrimaryPhoneNumber(index)}
+                    disabled={isDisabled}
+                    className="me-2"
+                  />{" "}
+                  Mark as Primary phone number
+                </label>
               </div>
+              <div className="party-contact-method">
+                <div className="party-multiple-value-container">
+                  <ValidationPhoneInput
+                    className="comp-details-input"
+                    value={phoneNumber.value ?? ""}
+                    onChange={(value: string) => field.handleChange(value || "")}
+                    maxLength={14}
+                    international={false}
+                    id={`phone-number-${index}`}
+                    errMsg={getFieldErrorMessage(field)}
+                  />
+                </div>
 
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => onRemovePhoneNumber(index)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
+                {phoneNumbers.length > 1 && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => onRemovePhoneNumber(index)}
+                    type="button"
+                  >
+                    <i className="bi bi-trash" />
+                    {/**/}
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         />
       ))}
@@ -136,9 +119,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
             onClick={onAddPhoneNumber}
             type="button"
           >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add phone number
+            <i className="bi bi-plus-circle me-1" /> Add phone number
           </Button>
         )}
       />
@@ -148,44 +129,53 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           form={form}
           name={`emailAddresses[${index}].value` as any}
           label={index === 0 ? "Email" : ""}
+          validators={{
+            onChange: ({ value }: { value: string | undefined }) => validateEmailValue(value),
+          }}
           render={(field) => (
-            <div className="party-contact-method">
-              {index === 0 && <div className="party-primary-contact-method-label">Primary</div>}
-              {index > 0 && <div className="party-primary-contact-spacer"></div>}
-
-              <input
-                type="radio"
-                id={`email-primary-${index}`}
-                name="primaryEmail"
-                checked={email.isPrimary || false}
-                onChange={() => onSetPrimaryEmail(index)}
-                disabled={isDisabled}
-              />
-
-              <div className="party-multiple-value-container">
-                <CompInput
-                  id={`email-${index}`}
-                  divid=""
-                  type="input"
-                  inputClass="comp-form-control comp-details-input"
-                  value={field.state.value}
-                  error={field.state.meta.errors?.[0]?.message || ""}
-                  maxLength={512}
-                  onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                  disabled={isDisabled}
-                />
+            <>
+              <div className="comp-details-form-row">
+                <label htmlFor={`email-primary-${index}`}>
+                  <input
+                    type="radio"
+                    id={`email-primary-${index}`}
+                    name="primaryEmail"
+                    checked={email.isPrimary || false}
+                    onChange={() => onSetPrimaryEmail(index)}
+                    disabled={isDisabled}
+                    className="me-2"
+                  />{" "}
+                  Mark as Primary email
+                </label>
               </div>
-              <Button
-                variant="outline-primary"
-                size="sm"
-                onClick={() => onRemoveEmail(index)}
-                type="button"
-              >
-                <i className="bi bi-trash" />
-                {/**/}
-                Remove
-              </Button>
-            </div>
+              <div className="party-contact-method">
+                <div className="party-multiple-value-container">
+                  <CompInput
+                    id={`email-${index}`}
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input"
+                    value={field.state.value}
+                    error={getFieldErrorMessage(field)}
+                    maxLength={512}
+                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                    disabled={isDisabled}
+                  />
+                </div>
+                {emailAddresses.length > 1 && (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => onRemoveEmail(index)}
+                    type="button"
+                  >
+                    <i className="bi bi-trash" />
+                    {/**/}
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </>
           )}
         />
       ))}
@@ -201,12 +191,36 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
             onClick={onAddEmail}
             type="button"
           >
-            <i className="bi bi-plus-circle me-1" />
-            {/**/}
-            Add email
+            <i className="bi bi-plus-circle me-1" /> Add email
           </Button>
         )}
       />
+      <div className="comp-details-section-header pt-5">
+        <h3>Address(es)</h3>
+      </div>
+      {addresses?.map((address: AddressFormValue, index: number) => (
+        <AddressFields
+          key={address.addressGuid || `address-${index}`}
+          addressIndex={index}
+          form={form}
+          isDisabled={isDisabled}
+          isPrimary={address.isPrimary || false}
+          canRemove={addresses.length > 1}
+          onRemoveAddress={onRemoveAddress}
+          onSetPrimaryAddress={onSetPrimaryAddress}
+          showOfficeFields={showOfficeFields}
+        />
+      ))}
+      <Button
+        id="add-address-button"
+        variant="primary"
+        size="sm"
+        onClick={onAddAddress}
+        type="button"
+        className="mt-3"
+      >
+        <i className="bi bi-plus-circle me-1" /> Add address
+      </Button>
     </>
   );
 };

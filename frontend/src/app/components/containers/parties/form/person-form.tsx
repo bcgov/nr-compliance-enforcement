@@ -14,11 +14,10 @@ import {
   selectHairColourDropdown,
   selectHairLengthDropdown,
 } from "@/app/store/reducers/code-table";
-import { z } from "zod";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { calculateAgeYears, isYoungPerson } from "@/app/common/methods";
-import { Badge, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { selectCountries, selectCountrySubdivisions } from "@/app/store/reducers/code-table-selectors";
 import { PersonFacialHairStyleCode } from "@/generated/graphql";
 import { HeightField, WeightField } from "@/app/components/containers/parties/form/height-weight-fields";
@@ -197,8 +196,6 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         name="firstName"
         label="First name"
-        required
-        validators={{ onChange: z.string().min(1, "First name is required") }}
         render={(field) => (
           <CompInput
             id="FirstName"
@@ -218,8 +215,6 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         form={form}
         name="lastName"
         label="Last name"
-        required
-        validators={{ onChange: z.string().min(1, "Last name is required") }}
         render={(field) => (
           <CompInput
             id="LastName"
@@ -238,7 +233,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       <FormField
         form={form}
         name="middleNames"
-        label="Middle names"
+        label="Middle name(s)"
         render={(field) => (
           <CompInput
             id="MiddleNames"
@@ -263,6 +258,27 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
+        name="genderCode"
+        label="Gender"
+        render={(field) => (
+          <CompSelect
+            id="gender-select"
+            classNamePrefix="comp-select"
+            className="comp-details-input"
+            options={genderCodeOptions}
+            value={genderCodeOptions?.find((opt: any) => opt.value === field.state.value)}
+            onChange={(option) => field.handleChange(option?.value ?? "")}
+            placeholder="Select gender"
+            isClearable={true}
+            showInactive={false}
+            enableValidation={true}
+            errorMessage={field.state.meta.errors?.[0]?.message || ""}
+            isDisabled={isDisabled}
+          />
+        )}
+      />
+      <FormField
+        form={form}
         name="dateOfBirth"
         label="Date of birth"
         render={(field) => (
@@ -284,18 +300,26 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
               yearDropdownItemNumber={100}
             />
             {field.state.value instanceof Date && (
-              <span className="text-muted">{calculateAgeYears(field.state.value)} years old</span>
+              <span className="text-muted mt-1">{calculateAgeYears(field.state.value)} years old</span>
             )}
-            <form.Subscribe selector={(state: any) => state.values.approximateAgeCode}>
-              {(approximateAgeCode: string | undefined) =>
-                isYoungPerson(field.state.value, approximateAgeCode) ? (
-                  <Badge bg="species-badge comp-species-badge">Young person</Badge>
-                ) : null
-              }
-            </form.Subscribe>
           </div>
         )}
       />
+      <form.Subscribe selector={(state: any) => [state.values.dateOfBirth, state.values.approximateAgeCode]}>
+        {([dateOfBirth, approximateAgeCode]: [Date | undefined, string | undefined]) => (
+          <div className="comp-details-form-row">
+            <label htmlFor="young-person">Young person</label>
+            <div className="comp-details-edit-input">
+              <span
+                id="young-person"
+                className="comp-details-static-value"
+              >
+                {isYoungPerson(dateOfBirth, approximateAgeCode) ? "Yes" : "No"}
+              </span>
+            </div>
+          </div>
+        )}
+      </form.Subscribe>
       <form.Subscribe selector={(state: any) => state.values.dateOfBirth}>
         {(dateOfBirth: Date | undefined) =>
           dateOfBirth ? null : (
@@ -326,7 +350,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       <FormField
         form={form}
         name="driversLicenseNumber"
-        label="Driver's licence number"
+        label="Driver's licence"
         render={(field) => (
           <CompInput
             id="DriversLicenseNumber"
@@ -355,27 +379,8 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             <>
               <FormField
                 form={form}
-                name="driversLicenseClass"
-                label="Driver's licence class"
-                render={(field) => (
-                  <CompInput
-                    id="DriversLicenseClass"
-                    divid=""
-                    type="input"
-                    inputClass="comp-form-control comp-details-input"
-                    defaultValue={field.state.value}
-                    error={field.state.meta.errors?.[0]?.message || ""}
-                    maxLength={128}
-                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
-                    placeholder="Enter driver's licence class"
-                    disabled={isDisabled}
-                  />
-                )}
-              />
-              <FormField
-                form={form}
                 name="driversLicenseCountryCode"
-                label="Driver's licence country"
+                label="Location of issue"
                 required
                 validators={{
                   onChange: ({ value }: { value: string | null | undefined }) => {
@@ -412,31 +417,49 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                   countryCode === "CA" ? renderDriversLicenseSubdivisionField() : null
                 }
               </form.Subscribe>
+              <FormField
+                form={form}
+                name="driversLicenseClass"
+                label="Class"
+                render={(field) => (
+                  <CompInput
+                    id="DriversLicenseClass"
+                    divid=""
+                    type="input"
+                    inputClass="comp-form-control comp-details-input"
+                    defaultValue={field.state.value}
+                    error={field.state.meta.errors?.[0]?.message || ""}
+                    maxLength={128}
+                    onChange={(evt: any) => field.handleChange(evt?.target?.value || "")}
+                    placeholder="Enter driver's licence class"
+                    disabled={isDisabled}
+                  />
+                )}
+              />
             </>
           ) : null
         }
       </form.Subscribe>
-      <FormField
+
+      <PartyContactFields
         form={form}
-        name="genderCode"
-        label="Gender"
-        render={(field) => (
-          <CompSelect
-            id="gender-select"
-            classNamePrefix="comp-select"
-            className="comp-details-input"
-            options={genderCodeOptions}
-            value={genderCodeOptions?.find((opt: any) => opt.value === field.state.value)}
-            onChange={(option) => field.handleChange(option?.value ?? "")}
-            placeholder="Select gender"
-            isClearable={true}
-            showInactive={false}
-            enableValidation={true}
-            errorMessage={field.state.meta.errors?.[0]?.message || ""}
-            isDisabled={isDisabled}
-          />
-        )}
+        isDisabled={isDisabled}
+        addresses={addresses}
+        onAddAddress={handleAddAddress}
+        onRemoveAddress={handleRemoveAddress}
+        onSetPrimaryAddress={handleSetPrimaryAddress}
+        phoneNumbers={phoneNumbers}
+        onAddPhoneNumber={handleAddPhoneNumber}
+        onRemovePhoneNumber={handleRemovePhoneNumber}
+        onSetPrimaryPhoneNumber={handleSetPrimaryPhoneNumber}
+        emailAddresses={emailAddresses}
+        onAddEmail={handleAddEmail}
+        onRemoveEmail={handleRemoveEmail}
+        onSetPrimaryEmail={handleSetPrimaryEmail}
       />
+      <div className="comp-details-section-header pt-5">
+        <h3>Descriptors</h3>
+      </div>
       <HeightField
         form={form}
         isDisabled={isDisabled}
@@ -659,12 +682,12 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       <FormField
         form={form}
         name="tattooIndicator"
-        label="Has tattoos?"
+        label="Tattoos"
         render={(field) => (
           <Form.Check
             type="checkbox"
             id="tattoo-ind"
-            label="Has tattoos?"
+            label="Has tattoos"
             checked={field.state.value === true}
             onChange={(evt: any) => {
               const checked = evt.target.checked;
@@ -719,22 +742,6 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             errMsg={field.state.meta.errors?.[0]?.message || ""}
           />
         )}
-      />
-      <PartyContactFields
-        form={form}
-        isDisabled={isDisabled}
-        addresses={addresses}
-        onAddAddress={handleAddAddress}
-        onRemoveAddress={handleRemoveAddress}
-        onSetPrimaryAddress={handleSetPrimaryAddress}
-        phoneNumbers={phoneNumbers}
-        onAddPhoneNumber={handleAddPhoneNumber}
-        onRemovePhoneNumber={handleRemovePhoneNumber}
-        onSetPrimaryPhoneNumber={handleSetPrimaryPhoneNumber}
-        emailAddresses={emailAddresses}
-        onAddEmail={handleAddEmail}
-        onRemoveEmail={handleRemoveEmail}
-        onSetPrimaryEmail={handleSetPrimaryEmail}
       />
       <FormField
         form={form}
