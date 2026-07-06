@@ -1161,6 +1161,39 @@ export class ComplaintService {
     return data.getComplaintIdsLinkedToCase ?? [];
   };
 
+  private _applyLinkedToCaseFilter(
+    builder: SelectQueryBuilder<any>,
+    linkedToCase: string,
+    caseComplaintIds: string[],
+  ): void {
+    const hasCoors = "complaint.reference_number IS NOT NULL AND complaint.reference_number != ''";
+    const noCoors = "(complaint.reference_number IS NULL OR complaint.reference_number = '')";
+
+    if (linkedToCase === "YES") {
+      if (caseComplaintIds.length > 0) {
+        builder.andWhere(
+          new Brackets((qb) => {
+            qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(hasCoors);
+          }),
+        );
+      } else {
+        builder.andWhere(hasCoors);
+      }
+    } else if (linkedToCase === "NO") {
+      if (caseComplaintIds.length > 0) {
+        builder.andWhere(
+          new Brackets((qb) => {
+            qb.where("complaint.complaint_identifier NOT IN(:...case_ids)", {
+              case_ids: caseComplaintIds,
+            }).andWhere(noCoors);
+          }),
+        );
+      } else {
+        builder.andWhere(noCoors);
+      }
+    }
+  }
+
   private readonly _getComplaintsByParkArea = async (token: string, area: string): Promise<string[]> => {
     const { data, errors } = await get(token, {
       query: `{getParksByArea ( parkAreaGuid: "${area}") { parkGuid, name}}`,
@@ -1444,32 +1477,7 @@ export class ComplaintService {
       // -- filter by whether complaint is linked to a case file or has a COORS number
       if (filters.linkedToCase) {
         const caseComplaintIds = await this._getComplaintIdsLinkedToCase(token);
-
-        if (filters.linkedToCase === "YES") {
-          if (caseComplaintIds.length > 0) {
-            builder.andWhere(
-              new Brackets((qb) => {
-                qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(
-                  "complaint.reference_number IS NOT NULL AND complaint.reference_number != ''",
-                );
-              }),
-            );
-          } else {
-            builder.andWhere("complaint.reference_number IS NOT NULL AND complaint.reference_number != ''");
-          }
-        } else if (filters.linkedToCase === "NO") {
-          if (caseComplaintIds.length > 0) {
-            builder.andWhere(
-              new Brackets((qb) => {
-                qb.where("complaint.complaint_identifier NOT IN(:...case_ids)", {
-                  case_ids: caseComplaintIds,
-                }).andWhere("(complaint.reference_number IS NULL OR complaint.reference_number = '')");
-              }),
-            );
-          } else {
-            builder.andWhere("(complaint.reference_number IS NULL OR complaint.reference_number = '')");
-          }
-        }
+        this._applyLinkedToCaseFilter(builder, filters.linkedToCase, caseComplaintIds);
       }
 
       //-- apply search
@@ -1821,31 +1829,7 @@ export class ComplaintService {
       // -- filter by whether complaint is linked to a case file or has a COORS number
       if (filters.linkedToCase) {
         const caseComplaintIds = await this._getComplaintIdsLinkedToCase(token);
-        if (filters.linkedToCase === "YES") {
-          if (caseComplaintIds.length > 0) {
-            builder.andWhere(
-              new Brackets((qb) => {
-                qb.where("complaint.complaint_identifier IN(:...case_ids)", { case_ids: caseComplaintIds }).orWhere(
-                  "complaint.reference_number IS NOT NULL AND complaint.reference_number != ''",
-                );
-              }),
-            );
-          } else {
-            builder.andWhere("complaint.reference_number IS NOT NULL AND complaint.reference_number != ''");
-          }
-        } else if (filters.linkedToCase === "NO") {
-          if (caseComplaintIds.length > 0) {
-            builder.andWhere(
-              new Brackets((qb) => {
-                qb.where("complaint.complaint_identifier NOT IN(:...case_ids)", {
-                  case_ids: caseComplaintIds,
-                }).andWhere("(complaint.reference_number IS NULL OR complaint.reference_number = '')");
-              }),
-            );
-          } else {
-            builder.andWhere("(complaint.reference_number IS NULL OR complaint.reference_number = '')");
-          }
-        }
+        this._applyLinkedToCaseFilter(builder, filters.linkedToCase, caseComplaintIds);
       }
 
       return builder;

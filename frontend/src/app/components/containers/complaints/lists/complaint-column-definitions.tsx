@@ -121,9 +121,10 @@ export const authorizationColumn = <T extends { authorization?: string }>(isHidd
   renderCell: (complaint) => complaint.authorization ?? "-",
 });
 
-// Violation type column (includes "In Progress" indicator when applicable)
+// Violation type column (includes "In Progress" indicator when applicable, hidden for CEEB roles)
 export const violationTypeColumn = <T extends { violation?: string; isInProgress?: boolean }>(
   getViolationDescription: (input: string) => string,
+  isCeebRole: boolean,
 ): CompColumn<T> => ({
   label: "Violation type",
   sortKey: "violation_code",
@@ -132,7 +133,7 @@ export const violationTypeColumn = <T extends { violation?: string; isInProgress
   renderCell: (complaint) => (
     <>
       {getViolationDescription(complaint.violation ?? "")}
-      {complaint.isInProgress && (
+      {!isCeebRole && complaint.isInProgress && (
         <div
           id="comp-details-status-text-id"
           className="comp-box-violation-in-progress mt-1"

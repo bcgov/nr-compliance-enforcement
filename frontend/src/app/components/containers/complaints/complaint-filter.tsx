@@ -100,8 +100,6 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
   const equipmentTypesDropdown = useAppSelector(selectAllEquipmentDropdown).filter((item) => item.isActive === true); //only display active equipment_code
   const outcomeActionedByDropdown = useAppSelector(selectOutcomeActionedByOptions);
 
-  const casesActive = useAppSelector(selectCanAccessCases);
-
   const regions = useAppSelector(selectCascadedRegion(region?.value, zone?.value, community?.value));
   const zones = useAppSelector(selectCascadedZone(region?.value, zone?.value, community?.value));
   const communities = useAppSelector(selectCascadedCommunity(region?.value, zone?.value, community?.value));

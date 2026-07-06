@@ -90,6 +90,7 @@ export const ComplaintTableList: FC<Props> = ({
   const isLocationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.LOCATION_COLUMN));
   const isAuthorizationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.AUTHORIZATION_COLUMN));
   const casesActive = useAppSelector(selectCanAccessCases);
+  const isCeebRole = UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR]);
 
   const complaintIds = useMemo(() => complaints.map((c) => c.id), [complaints]);
 
@@ -185,16 +186,19 @@ export const ComplaintTableList: FC<Props> = ({
           complaintNumberColumn(COMPLAINT_TYPES.ERS),
           dateLoggedColumn(),
           authorizationColumn(!isAuthorizationColumnEnabled),
-          violationTypeColumn(getViolationDescription),
+          violationTypeColumn(getViolationDescription, isCeebRole),
           communityColumn(),
           parkColumn(!isParkColumnEnabled),
           locationAddressColumn(!isLocationColumnEnabled),
           statusColumn(userAgency, getStatusDescription),
           officerAssignedColumn((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
-          caseColumn((complaint) => ({
-            cases: complaintIdToCaseMap.get(complaint.id),
-            coorsNumber: complaint.referenceNumber,
-          }), casesActive),
+          caseColumn(
+            (complaint) => ({
+              cases: complaintIdToCaseMap.get(complaint.id),
+              coorsNumber: complaint.referenceNumber,
+            }),
+            casesActive,
+          ),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];
