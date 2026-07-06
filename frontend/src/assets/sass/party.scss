@@ -22,9 +22,8 @@
 }
 
 .party-carousel-frame {
-  // backwards compat with old thumbs
-  // same aspect as the generated thumbnails, so cover-fit never crops new thumbs
-  aspect-ratio: 578 / 400;
+  // match the complaint aspect ratio
+  aspect-ratio: 289 / 300;
 }
 
 .party-details-summary-info {
