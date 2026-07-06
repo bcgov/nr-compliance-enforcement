@@ -231,7 +231,6 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
         value: "",
         isPrimary: existingMethodsOfType.length === 0, // First one is primary
       });
-      // nudge from the contacts root so the isDefaultContact-dependent name validators re-run
       revalidateList("contacts");
 
       const fieldId =

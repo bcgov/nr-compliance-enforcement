@@ -41,7 +41,6 @@ import {
   createEmptyContactMethod,
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
-  isDefaultContact,
   mapContactMethodsFromPartyData,
   seedContactMethods,
   validateBusinessForm,
@@ -164,9 +163,7 @@ type ContactFormSnapshot = Pick<
 };
 
 const buildContactPeopleForUpdate = (contacts: ContactFormSnapshot[]) => {
-  return contacts
-    .filter((c) => !isDefaultContact(c))
-    .map((c) => ({
+  return contacts.map((c) => ({
       businessPersonXrefGuid: c.businessPersonXrefGuid,
       business: {
         businessGuid: c.business?.businessGuid,
@@ -189,9 +186,7 @@ const buildContactPeopleForUpdate = (contacts: ContactFormSnapshot[]) => {
 };
 
 const buildContactPeopleForCreate = (contacts: ContactFormSnapshot[]) => {
-  return contacts
-    .filter((c) => !isDefaultContact(c))
-    .map((c) => {
+  return contacts.map((c) => {
       // empty contact rows are not persisted
       const contactMethods = (c.contactMethods ?? [])
         .filter((cm): cm is NonNullable<typeof cm> => cm != null && !!cm.value?.trim())

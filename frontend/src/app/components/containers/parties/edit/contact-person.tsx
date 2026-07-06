@@ -9,7 +9,6 @@ import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import {
   AddressFormValue,
-  isDefaultContact,
   validateEmailValue,
   validatePhoneNumberValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -62,11 +61,6 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
 
-  const conditionalValidators = [
-    `contacts[${contactIndex}].title`,
-    `contacts[${contactIndex}].officeAddressGuids`,
-    ...(contact.contactMethods ?? []).map((_, cmIndex) => `contacts[${contactIndex}].contactMethods[${cmIndex}].value`),
-  ];
 
   return (
     <>
@@ -104,18 +98,8 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label="First name"
         required
         validators={{
-          onChangeListenTo: [`contacts[${contactIndex}].person.lastName`, ...conditionalValidators],
-          // only validate if there are multiple, a single empty item is allowed
-          onChange: ({ value, fieldApi }: any) => {
-            const contacts = fieldApi.form.getFieldValue("contacts") ?? [];
-            const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
-            if (
-              contacts.length === 1 &&
-              isDefaultContact({ ...contact, person: { ...contact.person, firstName: value } })
-            )
-              return undefined;
-            return value?.trim() ? undefined : "First name is required";
-          },
+          onChange: ({ value }: { value: string | undefined }) =>
+            value?.trim() ? undefined : "First name is required",
         }}
         render={(field) => (
           <CompInput
@@ -138,18 +122,8 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label="Last name"
         required
         validators={{
-          onChangeListenTo: [`contacts[${contactIndex}].person.firstName`, ...conditionalValidators],
-          // only validate if there are multiple, a single empty item is allowed
-          onChange: ({ value, fieldApi }: any) => {
-            const contacts = fieldApi.form.getFieldValue("contacts") ?? [];
-            const contact = fieldApi.form.getFieldValue(`contacts[${contactIndex}]`) ?? {};
-            if (
-              contacts.length === 1 &&
-              isDefaultContact({ ...contact, person: { ...contact.person, lastName: value } })
-            )
-              return undefined;
-            return value?.trim() ? undefined : "Last name is required";
-          },
+          onChange: ({ value }: { value: string | undefined }) =>
+            value?.trim() ? undefined : "Last name is required",
         }}
         render={(field) => (
           <CompInput

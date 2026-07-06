@@ -198,19 +198,6 @@ export const isDefaultAddress = (a: AddressFormValue): boolean =>
   !hasValue(a.province) &&
   !hasValue(a.country);
 
-// an untouched contact person should not be saved
-export const isDefaultContact = (c: {
-  person?: { firstName?: string | null; lastName?: string | null } | null;
-  title?: string | null;
-  contactMethods?: Array<{ value?: string | null } | null> | null;
-  officeAddressGuids?: string[] | null;
-}): boolean =>
-  !hasValue(c.person?.firstName) &&
-  !hasValue(c.person?.lastName) &&
-  !hasValue(c.title) &&
-  !(c.contactMethods ?? []).some((cm) => hasValue(cm?.value)) &&
-  !(c.officeAddressGuids ?? []).length;
-
 // keep guids so edits update the existing rows
 const buildAddressContactMethods = (address: AddressFormValue) => {
   const methods = [];
@@ -298,9 +285,7 @@ export const buildInvestigationContactPeople = (
   contacts: ContactPersonFormValue[] | undefined,
   isUpdate: boolean,
 ): any[] | undefined => {
-  const built = (contacts ?? [])
-    .filter((c) => !isDefaultContact(c))
-    .map((c) => ({
+  const built = (contacts ?? []).map((c) => ({
       ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
       person: {
         ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
@@ -367,7 +352,6 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
 
   const contacts = (value.contacts as ContactPersonFormValue[] | undefined) ?? [];
   for (const contact of contacts) {
-    if (contacts.length === 1 && isDefaultContact(contact)) continue;
     if (!contact.person?.firstName?.trim()) return "Contact first name is required.";
     if (!contact.person?.lastName?.trim()) return "Contact last name is required.";
   }
