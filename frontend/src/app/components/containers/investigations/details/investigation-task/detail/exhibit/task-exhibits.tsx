@@ -23,9 +23,18 @@ export const GET_EXHIBITS_BY_TASK = gql`
       taskGuid
       investigationGuid
       exhibitNumber
+      exhibitDisplayNumber
+      propertyType
       description
+      quantity
+      seizedFromFirstName
+      seizedFromLastName
+      seizedFromAddress
+      seizedFromPhoneNumber
       dateCollected
       collectedAppUserGuidRef
+      locationOfIntake
+      propertyTagNumber
     }
   }
 `;
@@ -37,9 +46,18 @@ export const GET_EXHIBIT = gql`
       taskGuid
       investigationGuid
       exhibitNumber
+      exhibitDisplayNumber
+      propertyType
       description
+      quantity
+      seizedFromFirstName
+      seizedFromLastName
+      seizedFromAddress
+      seizedFromPhoneNumber
       dateCollected
       collectedAppUserGuidRef
+      locationOfIntake
+      propertyTagNumber
     }
   }
 `;
@@ -51,6 +69,7 @@ export const CREATE_EXHIBIT = gql`
       taskGuid
       investigationGuid
       exhibitNumber
+      exhibitDisplayNumber
       description
       dateCollected
       collectedAppUserGuidRef
@@ -73,6 +92,7 @@ export const UPDATE_EXHIBIT = gql`
       taskGuid
       investigationGuid
       exhibitNumber
+      exhibitDisplayNumber
       description
       dateCollected
       collectedAppUserGuidRef
