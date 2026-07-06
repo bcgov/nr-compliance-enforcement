@@ -34,7 +34,6 @@ import { ValidationMultiSelect } from "@common/validation-multiselect";
 import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
-import { selectCanAccessCases } from "@/app/access/module-access";
 
 const LINKED_TO_CASE_OPTIONS = [
   { value: "YES", label: "Yes" },
