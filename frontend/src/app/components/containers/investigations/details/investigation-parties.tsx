@@ -1,7 +1,7 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { REMOVE_PARTY } from "@/app/types/modal/modal-types";
 import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router-dom";

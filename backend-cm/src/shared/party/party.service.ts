@@ -646,18 +646,7 @@ export class PartyService {
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
         ...(a.contactMethods?.length
-          ? {
-              contact_method: {
-                create: a.contactMethods.map((cm) => ({
-                  contact_method_type: cm.typeCode,
-                  contact_value: cm.value,
-                  is_primary: cm.isPrimary ?? false,
-                  active_ind: true,
-                  create_user_id: this.user.getIdirUsername(),
-                  create_utc_timestamp: new Date(),
-                })),
-              },
-            }
+          ? { contact_method: { create: a.contactMethods.map((cm) => this._contactMethodCreateData(cm)) } }
           : {}),
       }));
     }
@@ -815,6 +804,17 @@ export class PartyService {
     return operations;
   }
 
+  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+    return {
+      contact_method_type: cm.typeCode,
+      contact_value: cm.value,
+      is_primary: cm.isPrimary ?? false,
+      active_ind: true,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+    };
+  }
+
   private async _createPartyAddresses(tx: any, partyGuid: string, addresses: AddressInput[]): Promise<void> {
     for (const a of this._sortAddressesPrimaryLast(addresses)) {
       await tx.address.create({
@@ -832,18 +832,7 @@ export class PartyService {
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(a.contactMethods?.length
-            ? {
-                contact_method: {
-                  create: a.contactMethods.map((cm) => ({
-                    contact_method_type: cm.typeCode,
-                    contact_value: cm.value,
-                    is_primary: cm.isPrimary ?? false,
-                    active_ind: true,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
-                },
-              }
+            ? { contact_method: { create: a.contactMethods.map((cm) => this._contactMethodCreateData(cm)) } }
             : {}),
         },
       });
@@ -898,17 +887,20 @@ export class PartyService {
       },
     });
 
-    const officeAddressGuids = contact.officeAddressGuids ?? [];
-    if (officeAddressGuids.length) {
-      await tx.business_person_address_xref.createMany({
-        data: officeAddressGuids.map((addressGuid) => ({
-          business_person_xref_guid: xref.business_person_xref_guid,
-          address_guid: addressGuid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    await this._createOfficeLinks(tx, xref.business_person_xref_guid, contact.officeAddressGuids ?? []);
+  }
+
+  private async _createOfficeLinks(tx: any, xrefGuid: string, officeAddressGuids: string[]): Promise<void> {
+    if (!officeAddressGuids.length) return;
+
+    await tx.business_person_address_xref.createMany({
+      data: officeAddressGuids.map((addressGuid) => ({
+        business_person_xref_guid: xrefGuid,
+        address_guid: addressGuid,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
   }
 
   // map a contact's office links against the any new addresses
@@ -935,16 +927,7 @@ export class PartyService {
     }
 
     const toAdd = [...incoming].filter((guid) => !existingAddressGuids.has(guid));
-    if (toAdd.length) {
-      await tx.business_person_address_xref.createMany({
-        data: toAdd.map((addressGuid) => ({
-          business_person_xref_guid: xrefGuid,
-          address_guid: addressGuid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    await this._createOfficeLinks(tx, xrefGuid, toAdd);
   }
 
   private _buildBusinessPersonXrefOperations(

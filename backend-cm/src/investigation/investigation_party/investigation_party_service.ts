@@ -796,16 +796,7 @@ export class InvestigationPartyService {
     }
 
     const toAdd = [...incoming].filter((guid) => !existingAddressGuids.has(guid));
-    if (toAdd.length) {
-      await tx.investigation_business_person_address_xref.createMany({
-        data: toAdd.map((addressGuid) => ({
-          investigation_business_person_xref_guid: xrefGuid,
-          investigation_address_guid: addressGuid,
-          create_user_id: this.user.getIdirUsername(),
-          create_utc_timestamp: new Date(),
-        })),
-      });
-    }
+    await this._createOfficeLinks(tx, xrefGuid, toAdd);
   }
 
   /**
@@ -970,37 +961,16 @@ export class InvestigationPartyService {
     return operations;
   }
 
+  // updates and deletes only
   private _buildInvestigationAddressOperations(
     incoming: CreateInvestigationAddressInput[],
     existing: InvestigationAddress[],
   ) {
-    const toCreate = incoming.filter((a) => !a.addressGuid);
     const toUpdate = this._sortAddressesPrimaryLast(incoming.filter((a) => a.addressGuid));
     const existingGuids = new Set(incoming.map((a) => a.addressGuid).filter(Boolean));
     const toDelete = existing.filter((a) => !existingGuids.has(a.addressGuid));
 
     const operations: any = {};
-
-    if (toCreate.length) {
-      operations.create = this._sortAddressesPrimaryLast(toCreate).map((a) => ({
-        address_name: a.addressName.trim(),
-        address: a.address?.trim() || null,
-        city: a.city?.trim() || null,
-        country_subdivision_code_ref: a.province?.trim() || null,
-        postal_code: a.postalCode?.trim() || null,
-        country_code_ref: a.country?.trim() || null,
-        is_primary: a.isPrimary ?? false,
-        display_in_investigation_ind: a.displayInInvestigation ?? true,
-        active_ind: true,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-        ...(a.contactMethods?.length
-          ? {
-              investigation_contact_method: { create: a.contactMethods.map((cm) => this._contactMethodCreateData(cm)) },
-            }
-          : {}),
-      }));
-    }
 
     if (toUpdate.length || toDelete.length) {
       operations.update = [
