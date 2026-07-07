@@ -15,6 +15,7 @@ import {
   InvestigationBusinessIdentifier,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
+  Party,
   PersonFacialHairStyleCode,
 } from "@/generated/graphql";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -45,6 +46,9 @@ import { PartyAttachments } from "@/app/components/containers/parties/attachment
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Button } from "react-bootstrap";
 import { InvestigationPartyHeader } from "../investigation-party-header";
+import { useMatchParty } from "@/app/components/containers/parties/hooks/use-party-match";
+import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
+import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -340,6 +344,13 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
 
+  const { matches, handleFieldBlur } = usePartyMatchTrigger(form);
+
+  // TODO: Implement this.
+  const handleAddMatch = (party: Party) => {
+    console.log("Selected matching party to add:", party);
+  };
+
   return (
     <div className="comp-investigation-edit-headerdetails">
       <InvestigationPartyHeader
@@ -373,105 +384,120 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           <h2>Party details</h2>
         </div>
 
-        <form
-          className="comp-party-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            saveButtonClick();
-          }}
-        >
-          <fieldset disabled={isDisabled}>
-            <FormField
-              form={form}
-              name="partyAssociationRole"
-              label="Investigation role"
-              required
-              validators={{ onChange: z.string().min(1, "Investigation role is required") }}
-              render={(field) => (
-                <CompSelect
-                  id="party-role-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input mb-3"
-                  options={partyRoleOptions}
-                  value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                />
-              )}
-            />
-
-            <hr className="comp-details-section-divider" />
-            <div className="comp-details-section-header">
-              <h3>Identifying information</h3>
-            </div>
-
-            <FormField
-              form={form}
-              name="partyType"
-              label="Type"
-              required
-              validators={{ onChange: z.string().min(1, "Party type is required") }}
-              render={(field) => (
-                <CompSelect
-                  id="party-type-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input mb-3"
-                  options={partyTypeCodes}
-                  value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select party type"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  isDisabled={isDisabled || isEditMode}
-                />
-              )}
-            />
-            {partyTypeValue === PartyTypeCodes.PERSON && (
-              <PersonForm
+        <div className="comp-party-form-layout">
+          <form
+            className="comp-party-form"
+            onBlur={handleFieldBlur}
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveButtonClick();
+            }}
+          >
+            <fieldset disabled={isDisabled}>
+              <FormField
                 form={form}
-                isDisabled={isDisabled}
+                name="partyAssociationRole"
+                label="Investigation role"
+                required
+                validators={{ onChange: z.string().min(1, "Investigation role is required") }}
+                render={(field) => (
+                  <CompSelect
+                    id="party-role-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input mb-3"
+                    options={partyRoleOptions}
+                    value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value || "")}
+                    placeholder="Select"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  />
+                )}
               />
-            )}
 
-            {partyTypeValue === PartyTypeCodes.BUSINESS && (
-              <BusinessFormFields
-                form={form}
-                isDisabled={isDisabled}
-                showContactPeople={true}
-                showInvestigationFields={true}
-                businessGuid={editParty?.business?.businessGuid ?? undefined}
-              />
-            )}
-          </fieldset>
-
-          {partyTypeValue && (
-            <>
-              <div className="comp-details-section-header pt-5">
-                <h3>Attachments</h3>
+              <hr className="comp-details-section-divider" />
+              <div className="comp-details-section-header">
+                <h3>Identifying information</h3>
               </div>
-              <PartyAttachments
-                partyId={partyIdentifier}
-                activityId={investigationGuid}
-                attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
-                attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
-                allowUpload
-                allowDelete
-                triggerSave={triggerSaveAttachments}
-                onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
-                onSaved={() => {
-                  ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
-                  navigateToParties();
-                }}
+
+              <FormField
+                form={form}
+                name="partyType"
+                label="Type"
+                required
+                validators={{ onChange: z.string().min(1, "Party type is required") }}
+                render={(field) => (
+                  <CompSelect
+                    id="party-type-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input mb-3"
+                    options={partyTypeCodes}
+                    value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value || "")}
+                    placeholder="Select party type"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                    isDisabled={isDisabled || isEditMode}
+                  />
+                )}
               />
-            </>
+              {partyTypeValue === PartyTypeCodes.PERSON && (
+                <PersonForm
+                  form={form}
+                  isDisabled={isDisabled}
+                />
+              )}
+
+              {partyTypeValue === PartyTypeCodes.BUSINESS && (
+                <BusinessFormFields
+                  form={form}
+                  isDisabled={isDisabled}
+                  showContactPeople={true}
+                  showInvestigationFields={true}
+                  businessGuid={editParty?.business?.businessGuid ?? undefined}
+                />
+              )}
+            </fieldset>
+
+            {partyTypeValue && (
+              <>
+                <div className="comp-details-section-header pt-5">
+                  <h3>Attachments</h3>
+                </div>
+                <PartyAttachments
+                  partyId={partyIdentifier}
+                  activityId={investigationGuid}
+                  attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
+                  attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  allowUpload
+                  allowDelete
+                  triggerSave={triggerSaveAttachments}
+                  onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
+                  onSaved={() => {
+                    ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
+                    navigateToParties();
+                  }}
+                />
+              </>
+            )}
+          </form>
+          {matches.length > 0 && (
+            <div className="comp-party-match-results">
+              {matches.map((match) => (
+                <PartyMatchCard
+                  key={match.partyIdentifier}
+                  party={match}
+                  onAdd={handleAddMatch}
+                  isDisabled={isDisabled}
+                />
+              ))}
+            </div>
           )}
-        </form>
+        </div>
       </section>
     </div>
   );

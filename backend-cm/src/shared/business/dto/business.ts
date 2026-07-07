@@ -1,8 +1,9 @@
 import { Mapper, createMap, forMember, mapFrom, mapWithArguments } from "@automapper/core";
 import { business } from "../../../../prisma/shared/generated/business";
 import { BusinessDto } from "../../../common/party";
-import { BusinessIdentifier } from "../../business_identifier/dto/business_identifier";
+import { BusinessIdentifier, BusinessIdentifierMatchInput } from "../../business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { Field, InputType } from "@nestjs/graphql";
 
 export class Business implements BusinessDto {
   businessGuid: string;
@@ -10,6 +11,15 @@ export class Business implements BusinessDto {
   name: string;
   businessIdentifiers: BusinessIdentifier[];
   contactPeople: BusinessPersonXref[];
+}
+
+@InputType()
+export class BusinessMatchInput {
+  @Field(() => String, { nullable: true })
+  name?: string;
+
+  @Field(() => BusinessIdentifierMatchInput, { nullable: true })
+  businessIdentifiers?: BusinessIdentifierMatchInput[];
 }
 
 export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {

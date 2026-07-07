@@ -3,7 +3,15 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { party } from "../../../prisma/shared/generated/party";
-import { ImageUpdate, Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
+import {
+  ImageUpdate,
+  Party,
+  PartyCreateInput,
+  PartyFilters,
+  PartyMatchInput,
+  PartyResult,
+  PartyUpdateInput,
+} from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { Alias } from "src/shared/alias/dto/alias";
@@ -1709,5 +1717,151 @@ export class PartyService {
       items: result.items,
       pageInfo: result.pageInfo,
     };
+  }
+
+  private _buildMatchWhere(input: PartyMatchInput): any {
+    const conditions: any[] = [];
+
+    if (input.person?.firstName) {
+      conditions.push({ person: { first_name: { equals: input.person.firstName } } });
+    }
+    if (input.person?.lastName) {
+      conditions.push({ person: { last_name: { equals: input.person.lastName } } });
+    }
+    if (input.person?.dateOfBirth) {
+      conditions.push({ person: { date_of_birth: { equals: input.person.dateOfBirth } } });
+    }
+    if (input.person?.genderCode) {
+      conditions.push({ person: { gender_code: { equals: input.person.genderCode } } });
+    }
+    if (input.person?.driversLicenseNumber) {
+      conditions.push({ person: { drivers_license_number: { equals: input.person.driversLicenseNumber } } });
+    }
+
+    if (input.business?.name) {
+      conditions.push({ business: { name: { equals: input.business.name } } });
+    }
+
+    const businessNumber = input.business?.businessIdentifiers?.find(
+      (i) => i.identifierCode === BUSINESS_NUMBER_CODE,
+    )?.identifierValue;
+    if (businessNumber) {
+      conditions.push({
+        business: {
+          business_identifier: {
+            some: {
+              business_identifier_code: BUSINESS_NUMBER_CODE,
+              identifier_value: { equals: businessNumber },
+            },
+          },
+        },
+      });
+    }
+
+    for (const phone of input.contactMethods ?? []) {
+      if (phone.value) {
+        const normalized = `+${phone.value.replace(/\D/g, "")}`;
+        conditions.push({
+          contact_method: {
+            some: {
+              contact_method_type: "PHONE",
+              contact_value: { equals: normalized },
+            },
+          },
+        });
+      }
+    }
+
+    for (const addr of input.addresses ?? []) {
+      if (addr.address) {
+        conditions.push({
+          address: {
+            some: { address: { equals: addr.address } },
+          },
+        });
+      }
+    }
+
+    return {
+      party_type: { in: [PARTY_TYPES.Person, PARTY_TYPES.Company] },
+      AND: conditions,
+    };
+  }
+
+  async matchParty(input: PartyMatchInput): Promise<Party[]> {
+    const where = this._buildMatchWhere(input);
+
+    // Guard: with no usable conditions the AND clause would match every party.
+    // The frontend enforces the minimum-two-fields rule, but we defend here so a
+    // zero-condition call can never return the entire party table.
+    if (!where.AND.length) {
+      return [];
+    }
+
+    const prismaParties: any = await this.prisma.party.findMany({
+      where,
+      take: 5,
+      include: {
+        party_type_code: {
+          select: {
+            party_type_code: true,
+            short_description: true,
+            long_description: true,
+          },
+        },
+        address: {
+          select: {
+            address: true,
+            city: true,
+            country_subdivision_code: true,
+            is_primary: true,
+          },
+          where: { active_ind: true },
+        },
+        contact_method: {
+          where: { active_ind: true },
+          select: {
+            contact_method_guid: true,
+            contact_method_type: true,
+            contact_value: true,
+            is_primary: true,
+            contact_method_type_code: {
+              select: {
+                contact_method_type_code: true,
+                short_description: true,
+                long_description: true,
+              },
+            },
+          },
+        },
+        business: {
+          select: {
+            business_guid: true,
+            name: true,
+            business_identifier: {
+              where: { active_ind: true },
+              select: {
+                business_identifier_guid: true,
+                identifier_value: true,
+                business_identifier_code: true,
+              },
+            },
+          },
+        },
+        person: {
+          select: {
+            person_guid: true,
+            first_name: true,
+            middle_names: true,
+            last_name: true,
+            date_of_birth: true,
+            gender_code: true,
+            approximate_age_code: true,
+          },
+        },
+      },
+    });
+
+    return this.mapper.mapArray<party, Party>(prismaParties as party[], "party", "Party");
   }
 }

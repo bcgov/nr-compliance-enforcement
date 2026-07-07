@@ -61,3 +61,47 @@
     }
   }
 }
+
+.comp-party-form-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+
+  .comp-party-form {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .comp-party-match-results {
+    flex: 0 0 20rem;
+  }
+}
+
+.comp-party-match-card {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+
+  .comp-party-match-card-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .comp-party-match-card-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .comp-party-match-card-body-line {
+    color: #6c757d;
+    line-height: 1.4;
+  }
+
+  .comp-party-match-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+}

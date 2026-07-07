@@ -3,15 +3,16 @@ import { party } from "../../../../prisma/shared/generated/party";
 import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
 import { Person } from "../../person/dto/person";
-import { Business } from "../../business/dto/business";
+import { Business, BusinessMatchInput } from "../../business/dto/business";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
-import { Address, AddressInput } from "../../address/dto/address";
-import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { Address, AddressInput, AddressMatchInput } from "../../address/dto/address";
+import { ContactMethod, ContactMethodMatchInput } from "src/shared/contact_method/dto/contact_method";
 import { Alias } from "src/shared/alias/dto/alias";
+import { PersonMatchInput } from "src/shared/person/dto/person.input";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -85,6 +86,24 @@ export class PartyFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   sortOrder?: string;
+}
+
+@InputType()
+export class PartyMatchInput {
+  @Field(() => String)
+  partyTypeCode?: string;
+
+  @Field(() => PersonMatchInput)
+  person?: PersonMatchInput;
+
+  @Field(() => BusinessMatchInput)
+  business?: BusinessMatchInput;
+
+  @Field(() => AddressMatchInput)
+  addresses?: AddressMatchInput[];
+
+  @Field(() => ContactMethodMatchInput)
+  contactMethods?: ContactMethodMatchInput[];
 }
 
 export const mapPrismaPartyToParty = (mapper: Mapper) => {
