@@ -684,8 +684,8 @@ export const toSentenceCase = (text: string): string =>
 
 // Transform text from singular form to plural
 export const toPlural = (text: string): string => {
-  const ofMatch = text.match(/^(\S+)(\s+of\s+.+)$/i);
-  if (ofMatch) return toPlural(ofMatch[1]) + ofMatch[2];
+  const ofIndex = text.toLowerCase().indexOf(" of ");
+  if (ofIndex !== -1) return toPlural(text.slice(0, ofIndex)) + text.slice(ofIndex);
   if (/[^aeiou]y$/i.test(text)) return text.slice(0, -1) + "ies";
   if (/(s|x|z|ch|sh)$/i.test(text)) return text + "es";
   return text + "s";
