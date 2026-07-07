@@ -46,9 +46,6 @@ export class investigation_address {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: String })
-  nickname?: string;
-
   @ApiProperty({ type: Boolean })
   display_in_investigation_ind: boolean = true;
 

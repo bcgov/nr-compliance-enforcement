@@ -1,6 +1,5 @@
 import { investigation_address } from "./investigation_address";
 import { investigation_party } from "./investigation_party";
-import { investigation_person } from "./investigation_person";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class investigation_contact_method {
@@ -37,15 +36,9 @@ export class investigation_contact_method {
   @ApiPropertyOptional({ type: String })
   investigation_address_guid?: string;
 
-  @ApiPropertyOptional({ type: String })
-  investigation_person_guid?: string;
-
   @ApiPropertyOptional({ type: () => investigation_address })
   investigation_address?: investigation_address;
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;
-
-  @ApiPropertyOptional({ type: () => investigation_person })
-  investigation_person?: investigation_person;
 }
