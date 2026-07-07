@@ -678,3 +678,15 @@ export const joinWithAnd = (items: string[]): string => {
   if (items.length === 2) return items.join(" and ");
   return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 };
+
+export const toSentenceCase = (text: string): string =>
+  text ? text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() : text;
+
+// Transform text from singular form to plural
+export const toPlural = (text: string): string => {
+  const ofMatch = text.match(/^(\S+)(\s+of\s+.+)$/i);
+  if (ofMatch) return toPlural(ofMatch[1]) + ofMatch[2];
+  if (/[^aeiou]y$/i.test(text)) return text.slice(0, -1) + "ies";
+  if (/(s|x|z|ch|sh)$/i.test(text)) return text + "es";
+  return text + "s";
+};
