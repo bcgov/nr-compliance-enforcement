@@ -5,7 +5,7 @@ import { z } from "zod";
 import { gql } from "graphql-request";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
-import { ToggleSuccess } from "@/app/common/toast";
+import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
@@ -36,8 +36,12 @@ import {
   mapContactMethodsFromPartyData,
   mapPartyToInvestigationPartyInput,
   seedContactMethods,
+  validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  handleBusinessPartyMutationError,
+  scrollToFirstFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
@@ -204,6 +208,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const form = useForm({
     defaultValues,
+    // fires only when a submission attempt is blocked by validation
+    onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
       if (isEditMode && editParty) {
         const input: any = {
@@ -235,6 +241,15 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
         updatePartyMutation.mutate({ investigationGuid, input });
       } else {
+        // an added person must have at least one entered field
+        if (value.partyType === PartyTypeCodes.PERSON) {
+          const validationError = validatePersonForm(value);
+          if (validationError) {
+            ToggleError(validationError);
+            return;
+          }
+        }
+
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
@@ -352,7 +367,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     );
   };
 
+  // disable saving from validation start through mutation completion
+  const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
   const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
+  const saveDisabled = formSubmitting || isDisabled;
 
   const { matches, handleFieldBlur } = usePartyMatchTrigger(form);
 
@@ -403,6 +421,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               title="Save party"
               variant="outline-light"
               onClick={saveButtonClick}
+              disabled={saveDisabled}
             >
               Save changes
             </Button>
@@ -415,38 +434,36 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           <h2>Party details</h2>
         </div>
 
-        <div className="comp-party-form-layout">
-          <form
-            className="comp-party-form"
-            onBlur={handleFieldBlur}
-            onSubmit={(e) => {
-              e.preventDefault();
-              saveButtonClick();
-            }}
-          >
-            <fieldset disabled={isDisabled}>
-              <FormField
-                form={form}
-                name="partyAssociationRole"
-                label="Investigation role"
-                required
-                validators={{ onChange: z.string().min(1, "Investigation role is required") }}
-                render={(field) => (
-                  <CompSelect
-                    id="party-role-select"
-                    classNamePrefix="comp-select"
-                    className="comp-details-input mb-3"
-                    options={partyRoleOptions}
-                    value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
-                    onChange={(option) => field.handleChange(option?.value || "")}
-                    placeholder="Select"
-                    isClearable={true}
-                    showInactive={false}
-                    enableValidation={true}
-                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  />
-                )}
-              />
+        <form
+          className="comp-party-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveButtonClick();
+          }}
+        >
+          <fieldset disabled={isDisabled}>
+            <FormField
+              form={form}
+              name="partyAssociationRole"
+              label="Investigation role"
+              required
+              validators={{ onChange: z.string().min(1, "Investigation role is required") }}
+              render={(field) => (
+                <CompSelect
+                  id="party-role-select"
+                  classNamePrefix="comp-select"
+                  className="comp-details-input mb-3"
+                  options={partyRoleOptions}
+                  value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
+                  onChange={(option) => field.handleChange(option?.value || "")}
+                  placeholder="Select"
+                  isClearable={true}
+                  showInactive={false}
+                  enableValidation={true}
+                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                />
+              )}
+            />
 
               <hr className="comp-details-section-divider" />
               <div className="comp-details-section-header">

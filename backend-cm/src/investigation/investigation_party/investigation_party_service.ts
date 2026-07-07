@@ -107,90 +107,8 @@ export class InvestigationPartyService {
 
     await withRlsTransaction(this.prisma, async (db) => {
       for (const input of inputs) {
-        try {
-          this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
-
-          const investigationParty = await db.investigation_party.create({
-            data: {
-              party_guid_ref: input.partyReference,
-              party_type_code_ref: input.partyTypeCode,
-              investigation_guid: investigationGuid,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              party_association_role_ref: input.partyAssociationRole,
-              ...(input.contactMethods?.length
-                ? {
-                    investigation_contact_method: {
-                      create: input.contactMethods.map((c) => ({
-                        contact_method_type_code_ref: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.aliases?.length
-                ? {
-                    investigation_alias: {
-                      create: input.aliases.map((a) => ({
-                        name: a.name,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.attachmentReferences?.length
-                ? {
-                    investigation_attachment_reference: {
-                      create: input.attachmentReferences.map((ar) => ({
-                        object_guid_ref: ar.objectId,
-                        s3_version_ref: ar.version,
-                        filename_text: ar.fileName,
-                        coms_created_date: ar.createdAt,
-                        thumb_object_guid_ref: ar.thumbObjectId,
-                        thumb_s3_version_ref: ar.thumbVersion,
-                        active_ind: true,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-            },
-          });
-
-          createdPartyGuids.push(investigationParty.investigation_party_guid);
-
-          await this._createAddresses(db, investigationParty.investigation_party_guid, input.addresses ?? []);
-
-          if (input.business) {
-            await this.createBusiness(
-              db,
-              investigationParty.investigation_party_guid,
-              input.business,
-              investigationGuid,
-            );
-          }
-
-          if (input.person) {
-            await this.createPerson(db, investigationParty.investigation_party_guid, input.person);
-
-            if (!this._hasName(input.person)) {
-              await this._assignPlaceholder(
-                db,
-                investigationGuid,
-                investigationParty.investigation_party_guid,
-                input.partyAssociationRole,
-              );
-            }
-          }
-        } catch (error) {
-          this.logger.error("Error creating investigation party:", error);
-          throw error;
-        }
+        const investigationPartyGuid = await this._createSingleParty(db, input, investigation, investigationGuid);
+        createdPartyGuids.push(investigationPartyGuid);
       }
     });
 
@@ -198,6 +116,93 @@ export class InvestigationPartyService {
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
+  }
+
+  private async _createSingleParty(
+    db: any,
+    input: CreateInvestigationPartyInput,
+    investigation: Investigation,
+    investigationGuid: string,
+  ): Promise<string> {
+    try {
+      this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
+
+      const investigationParty = await db.investigation_party.create({
+        data: {
+          party_guid_ref: input.partyReference,
+          party_type_code_ref: input.partyTypeCode,
+          investigation_guid: investigationGuid,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          party_association_role_ref: input.partyAssociationRole,
+          ...(input.contactMethods?.length
+            ? {
+                investigation_contact_method: {
+                  create: input.contactMethods.map((c) => ({
+                    contact_method_type_code_ref: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.aliases?.length
+            ? {
+                investigation_alias: {
+                  create: input.aliases.map((a) => ({
+                    name: a.name,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.attachmentReferences?.length
+            ? {
+                investigation_attachment_reference: {
+                  create: input.attachmentReferences.map((ar) => ({
+                    object_guid_ref: ar.objectId,
+                    s3_version_ref: ar.version,
+                    filename_text: ar.fileName,
+                    coms_created_date: ar.createdAt,
+                    thumb_object_guid_ref: ar.thumbObjectId,
+                    thumb_s3_version_ref: ar.thumbVersion,
+                    active_ind: true,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+        },
+      });
+
+      await this._createAddresses(db, investigationParty.investigation_party_guid, input.addresses ?? []);
+
+      if (input.business) {
+        await this.createBusiness(db, investigationParty.investigation_party_guid, input.business, investigationGuid);
+      }
+
+      if (input.person) {
+        await this.createPerson(db, investigationParty.investigation_party_guid, input.person);
+
+        if (!this._hasName(input.person)) {
+          await this._assignPlaceholder(
+            db,
+            investigationGuid,
+            investigationParty.investigation_party_guid,
+            input.partyAssociationRole,
+          );
+        }
+      }
+
+      return investigationParty.investigation_party_guid;
+    } catch (error) {
+      this.logger.error("Error creating investigation party:", error);
+      throw error;
+    }
   }
 
   private _buildPersonFieldData(input: CreateInvestigationPersonInput | UpdateInvestigationPersonInput) {
@@ -390,10 +395,11 @@ export class InvestigationPartyService {
   }
 
   private async _createOfficeLinks(tx: any, xrefGuid: string, officeAddressGuids: string[]) {
-    if (!officeAddressGuids.length) return;
+    const uniqueAddressGuids = [...new Set(officeAddressGuids)];
+    if (!uniqueAddressGuids.length) return;
 
     await tx.investigation_business_person_address_xref.createMany({
-      data: officeAddressGuids.map((addressGuid) => ({
+      data: uniqueAddressGuids.map((addressGuid) => ({
         investigation_business_person_xref_guid: xrefGuid,
         investigation_address_guid: addressGuid,
         create_user_id: this.user.getIdirUsername(),
@@ -716,62 +722,72 @@ export class InvestigationPartyService {
     }
 
     for (const contact of incoming) {
-      if (!contact.businessPersonXrefGuid) {
-        if (!contact.person) continue;
-        await this._createBusinessContact(
-          tx,
-          investigationBusinessGuid,
-          contact as CreateInvestigationBusinessContactInput,
-          investigationGuid,
-        );
-        continue;
-      }
-
-      const ex = existing.find((x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid);
-      if (!ex) continue;
-
-      await tx.investigation_business_person_xref.update({
-        where: { investigation_business_person_xref_guid: contact.businessPersonXrefGuid },
-        data: {
-          title_role: contact.title ?? null,
-          display_in_investigation_ind: contact.displayInInvestigation ?? true,
-          is_primary: contact.isPrimary ?? false,
-          update_user_id: this.user.getIdirUsername(),
-          update_utc_timestamp: new Date(),
-        },
-      });
-
-      const exPerson = ex.person as InvestigationPerson | undefined;
-      if (contact.person && exPerson) {
-        await this.updatePerson(tx, exPerson, contact.person);
-      }
-
-      // contact methods live on the contact's own party
-      const contactPartyGuid = exPerson?.partyGuid;
-      if (contactPartyGuid) {
-        const cmOps = this._buildInvestigationContactMethodOperations(
-          contact.contactMethods ?? [],
-          (ex.contactMethods as InvestigationContactMethod[] | undefined) ?? [],
-        );
-        if (Object.keys(cmOps).length) {
-          await tx.investigation_party.update({
-            where: { investigation_party_guid: contactPartyGuid },
-            data: {
-              investigation_contact_method: cmOps,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
-        }
-      }
-
-      await this._mapOfficeLinks(
-        tx,
-        contact.businessPersonXrefGuid,
-        contact.officeAddressGuids ?? [],
-        (ex.associatedAddresses as InvestigationBusinessPersonAddressXref[] | undefined) ?? [],
-      );
+      await this._upsertBusinessContact(tx, contact, existing, investigationBusinessGuid, investigationGuid);
     }
+  }
+
+  private async _upsertBusinessContact(
+    tx: any,
+    contact: UpdateInvestigationBusinessContactInput,
+    existing: InvestigationBusinessPersonXref[],
+    investigationBusinessGuid: string,
+    investigationGuid: string,
+  ) {
+    if (!contact.businessPersonXrefGuid) {
+      if (!contact.person) return;
+      await this._createBusinessContact(
+        tx,
+        investigationBusinessGuid,
+        contact as CreateInvestigationBusinessContactInput,
+        investigationGuid,
+      );
+      return;
+    }
+
+    const existingContact = existing.find((x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid);
+    if (!existingContact) return;
+
+    await tx.investigation_business_person_xref.update({
+      where: { investigation_business_person_xref_guid: contact.businessPersonXrefGuid },
+      data: {
+        title_role: contact.title ?? null,
+        display_in_investigation_ind: contact.displayInInvestigation ?? true,
+        is_primary: contact.isPrimary ?? false,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    const existingInvestigationPerson = existingContact.person as InvestigationPerson | undefined;
+    if (contact.person && existingInvestigationPerson) {
+      await this.updatePerson(tx, existingInvestigationPerson, contact.person);
+    }
+
+    // contact methods live on the contact's own party
+    const contactPartyGuid = existingInvestigationPerson?.partyGuid;
+    if (contactPartyGuid) {
+      const cmOps = this._buildInvestigationContactMethodOperations(
+        contact.contactMethods ?? [],
+        (existingContact.contactMethods as InvestigationContactMethod[] | undefined) ?? [],
+      );
+      if (Object.keys(cmOps).length) {
+        await tx.investigation_party.update({
+          where: { investigation_party_guid: contactPartyGuid },
+          data: {
+            investigation_contact_method: cmOps,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    }
+
+    await this._mapOfficeLinks(
+      tx,
+      contact.businessPersonXrefGuid,
+      contact.officeAddressGuids ?? [],
+      (existingContact.associatedAddresses as InvestigationBusinessPersonAddressXref[] | undefined) ?? [],
+    );
   }
 
   private async _mapOfficeLinks(

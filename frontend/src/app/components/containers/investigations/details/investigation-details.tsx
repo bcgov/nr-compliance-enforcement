@@ -110,8 +110,10 @@ export const GET_INVESTIGATION = gql`
           businessGuid
           name
           contactPeople {
+            businessPersonXrefGuid
             title
             displayInInvestigation
+            isPrimary
             associatedAddresses {
               address {
                 addressGuid
@@ -122,8 +124,10 @@ export const GET_INVESTIGATION = gql`
               contactMethodGuid
               typeCode
               value
+              isPrimary
             }
             person {
+              personGuid
               firstName
               lastName
             }

@@ -140,6 +140,7 @@ jobs:
           build_context: tools/n8n/
           tag: ${{ github.event.number }}
           tag_fallback: latest
+          triggers: ('tools/n8n/')
       - uses: shrink/actions-docker-registry-tag@v4
         with:
           registry: ghcr.io

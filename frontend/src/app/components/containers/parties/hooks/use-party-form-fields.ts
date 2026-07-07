@@ -211,7 +211,14 @@ export const usePartyFormFields = (form: any, businessGuid?: string) => {
 
   const handleRemoveContact = useCallback(
     (indexToRemove: number) => {
+      const currentContacts = form.getFieldValue("contacts") || [];
+      const isCurrentPrimary = currentContacts[indexToRemove]?.isPrimary;
+
       form.removeFieldValue("contacts", indexToRemove);
+      // if the removed contact was the primary contact make the next contact the primary contact
+      if (isCurrentPrimary && (form.getFieldValue("contacts") || []).length > 0) {
+        form.setFieldValue("contacts[0].isPrimary", true);
+      }
       revalidateList("contacts");
     },
     [form, revalidateList],

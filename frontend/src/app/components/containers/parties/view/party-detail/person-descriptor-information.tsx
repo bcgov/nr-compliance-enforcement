@@ -78,7 +78,7 @@ export const PersonDescriptorInformation: FC<PersonDescriptorInformationProps> =
       (ref) =>
         facialHairStyleCodeTable?.find(
           (code: FacialHairStyleType) => code.facialHairStyleCode === ref?.facialHairStyleCode,
-        )?.shortDescription ?? ref,
+        )?.shortDescription ?? ref?.facialHairStyleCode,
     )
     .join(", ");
 

@@ -16,7 +16,12 @@ import { InvestigationCreateHeader } from "@/app/components/containers/investiga
 import { InvestigationForm } from "@/app/components/containers/investigations/details/investigation-summary/investigation-form";
 import { GET_INVESTIGATION } from "@/app/components/containers/investigations/details/investigation-details";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
-import { getComplaintById, updateComplaintLastUpdated, selectComplaint } from "@/app/store/reducers/complaints";
+import {
+  getComplaintById,
+  updateComplaintLastUpdated,
+  selectComplaint,
+  updateAllegationComplaintStatus,
+} from "@/app/store/reducers/complaints";
 import { resolveLocationGeometry } from "@/app/common/geocoder";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
@@ -105,6 +110,10 @@ const InvestigationCreate: FC = () => {
     onSuccess: (data: any) => {
       ToggleSuccess("Investigation created successfully");
       if (complaintId) {
+        const userAgency = getUserAgency();
+        if (["EPO", "MINES", "NROS"].includes(userAgency)) {
+          dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+        }
         dispatch(updateComplaintLastUpdated(complaintId));
       }
       allowNavigation();
@@ -145,7 +154,7 @@ const InvestigationCreate: FC = () => {
         discoveryTime: inv.discoveryTime || null,
         community: inv.community || "",
       };
-    } else if (!isEditMode && complaintData) {
+    } else if (!isEditMode && complaintId && complaintData) {
       const offcicerAssigned = complaintData.delegates.find((d) => d.type === "ASSIGNEE");
       return {
         investigationStatus: statusOptions.find((opt) => opt.value === "OPEN")?.value,
@@ -179,7 +188,7 @@ const InvestigationCreate: FC = () => {
       discoveryTime: null,
       community: "",
     };
-  }, [investigationData, isEditMode, statusOptions, complaintData]);
+  }, [investigationData, isEditMode, statusOptions, complaintData, complaintId]);
 
   const form = useForm({
     defaultValues,

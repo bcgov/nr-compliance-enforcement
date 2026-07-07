@@ -7,11 +7,14 @@ interface PartyEditHeaderProps {
   cancelButtonClick: () => void;
   partyIdentifier?: string;
   saveButtonClick: () => void;
+  // disable while a save is in progress
+  saveDisabled?: boolean;
 }
 
 export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
   cancelButtonClick,
   saveButtonClick,
+  saveDisabled = false,
   isEditMode = false,
   partyIdentifier,
 }) => {
@@ -60,6 +63,7 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
               title="Save Party"
               variant="outline-light"
               onClick={saveButtonClick}
+              disabled={saveDisabled}
             >
               Save changes
             </Button>

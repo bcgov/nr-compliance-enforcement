@@ -22,61 +22,32 @@ test.describe("Investigation Party Form", () => {
     await partiesButton.click();
   });
 
-  test("it searches for an existing party and adds to investigation", async ({ page }) => {
-    const addPartyButton = page.locator("#add-party-button");
-    await addPartyButton.click();
-
-    const modal = page.locator(".modal").first();
-    await expect(modal).toBeVisible();
-
-    // Default mode is "Search existing party" — type in the search box
-    const searchInput = modal.locator(".rbt-input-text");
-    await searchInput.pressSequentially("Pure", { delay: 500 });
-
-    // Wait for search results and select the first one
-    const menuItem = page.locator(".rbt-menu .dropdown-item").first();
-    await expect(menuItem).toBeVisible({ timeout: 10000 });
-    await menuItem.click();
-
-    // Select a party association role
-    await selectItemById("party-role-select", "Party of Interest", page);
-
-    // Save
-    const saveButton = modal.locator("#add-party-save-button");
-    await saveButton.click();
-
-    await expect(page.locator(".party-list").getByText("Pure Health Path", { exact: true })).toBeVisible();
-  });
-
   test("it adds a new local person party to investigation", async ({ page }) => {
     const addPartyButton = page.locator("#add-party-button");
     await addPartyButton.click();
 
-    const modal = page.locator(".modal").first();
-    await expect(modal).toBeVisible();
-
-    // Switch to "Create new party" mode
-    const createRadio = modal.locator("#mode-create");
-    await createRadio.click();
+    // "Add party" navigates to the full-page party form
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
 
     // Select party type - Person
     await selectItemById("party-type-select", "Person", page);
 
     // Fill in person fields
-    const firstNameInput = modal.locator("#FirstName");
+    const firstNameInput = page.locator("#FirstName");
     await firstNameInput.fill("Jane");
 
-    const lastNameInput = modal.locator("#LastName");
+    const lastNameInput = page.locator("#LastName");
     await lastNameInput.fill("Doe");
 
     // Select a party association role
     await selectItemById("party-role-select", "Party of Interest", page);
 
     // Save
-    const saveButton = modal.locator("#add-party-save-button");
+    const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
+    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true }).first()).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -84,22 +55,17 @@ test.describe("Investigation Party Form", () => {
     await addPartyButton.click();
     let randomBusinessNumber = Math.random().toString().substring(2, 10);
 
-    const modal = page.locator(".modal").first();
-    await expect(modal).toBeVisible();
-
-    // Switch to "Create new party" mode
-    const createRadio = modal.locator("#mode-create");
-    await createRadio.click();
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/add$/);
 
     // Select party type - Business
     await selectItemById("party-type-select", "Company", page);
 
     // Fill in business name
-    const businessNameInput = modal.locator("#businessName");
+    const businessNameInput = page.locator("#businessName");
     await businessNameInput.fill("Acme Logging Ltd");
 
     // Business number is required for Company parties
-    const businessNumberInput = modal.locator("#businessNumber");
+    const businessNumberInput = page.locator("#businessNumber");
     // Generate a random business number to avoid clashes
     await businessNumberInput.fill(randomBusinessNumber);
 
@@ -107,10 +73,11 @@ test.describe("Investigation Party Form", () => {
     await selectItemById("party-role-select", "Party of Interest", page);
 
     // Save
-    const saveButton = modal.locator("#add-party-save-button");
+    const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".party-list").getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
+    await expect(page.locator(".party-list").getByText("Acme Logging Ltd", { exact: true }).first()).toBeVisible();
   });
 
   test("it edits a person party", async ({ page }) => {
@@ -124,17 +91,17 @@ test.describe("Investigation Party Form", () => {
     const editButton = personItem.locator(".dropdown-item", { hasText: "Edit" });
     await editButton.click();
 
-    const modal = page.locator(".modal").first();
-    await expect(modal).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+\/edit$/);
 
     // Edit the sex code
     await selectItemById("gender-select", "Man/boy", page);
 
     // Save
-    const saveButton = modal.locator("#add-party-save-button");
+    const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
+    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true }).first()).toBeVisible();
   });
 
   test("cleanup - remove all test parties from investigation", async ({ page }) => {

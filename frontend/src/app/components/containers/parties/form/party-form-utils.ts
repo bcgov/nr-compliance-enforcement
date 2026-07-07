@@ -204,7 +204,9 @@ export const isDefaultAddress = (a: AddressFormValue): boolean =>
   !hasValue(a.city) &&
   !hasValue(a.postalCode) &&
   !hasValue(a.province) &&
-  !hasValue(a.country);
+  !hasValue(a.country) &&
+  !hasValue(a.phoneNumber) &&
+  !hasValue(a.emailAddress);
 
 // keep guids so edits update the existing rows
 const buildAddressContactMethods = (address: AddressFormValue) => {
@@ -365,6 +367,47 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
   }
 
   return null;
+};
+
+// at least one field must be entered
+export const validatePersonForm = (value: any): string | null => {
+  const hasSomeText = [
+    value.firstName,
+    value.middleNames,
+    value.lastName,
+    value.approximateAgeCode,
+    value.driversLicenseNumber,
+    value.driversLicenseClass,
+    value.driversLicenseCountryCode,
+    value.driversLicenseCountrySubdivisionCode,
+    value.genderCode,
+    value.complexionCode,
+    value.buildCode,
+    value.hairColourCode,
+    value.hairLengthCode,
+    value.hairColourOther,
+    value.eyeColourCode,
+    value.eyeColourOther,
+    value.additionalHairDescriptors,
+    value.tattooDescription,
+    value.additionalDescriptors,
+    value.comments,
+  ].some(hasValue);
+
+  const hasSomeValue =
+    !!value.dateOfBirth ||
+    value.heightInCm != null ||
+    value.weightInKg != null ||
+    !!value.facialHairIndicator ||
+    !!value.tattooIndicator ||
+    !!value.boloIndicator ||
+    (value.facialHairStyleCodes ?? []).length > 0 ||
+    (value.aliases ?? []).some((a: any) => hasValue(a?.name)) ||
+    (value.phoneNumbers ?? []).some((p: any) => hasValue(p?.value)) ||
+    (value.emailAddresses ?? []).some((e: any) => hasValue(e?.value)) ||
+    (value.addresses ?? []).some((a: AddressFormValue) => !isDefaultAddress(a));
+
+  return hasSomeText || hasSomeValue ? null : "A party can't be saved without any identifying information.";
 };
 
 // Shared base fields for person create/update.

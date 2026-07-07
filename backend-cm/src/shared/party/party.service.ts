@@ -899,10 +899,11 @@ export class PartyService {
   }
 
   private async _createOfficeLinks(tx: any, xrefGuid: string, officeAddressGuids: string[]): Promise<void> {
-    if (!officeAddressGuids.length) return;
+    const uniqueAddressGuids = [...new Set(officeAddressGuids)];
+    if (!uniqueAddressGuids.length) return;
 
     await tx.business_person_address_xref.createMany({
-      data: officeAddressGuids.map((addressGuid) => ({
+      data: uniqueAddressGuids.map((addressGuid) => ({
         business_person_xref_guid: xrefGuid,
         address_guid: addressGuid,
         create_user_id: this.user.getIdirUsername(),
@@ -1159,9 +1160,10 @@ export class PartyService {
 
   private _diffAddresses(existingAddresses: Address[], incomingAddresses: AddressInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAddresses) {
-      if (incoming.addressGuid) {
-        const existing = existingAddresses.find((a) => a.addressGuid === incoming.addressGuid);
-        if (!existing) continue;
+      const existing = incoming.addressGuid
+        ? existingAddresses.find((a) => a.addressGuid === incoming.addressGuid)
+        : undefined;
+      if (existing) {
         const label = incoming.addressName || existing.addressName;
         this._compareField("address name", existing.addressName, incoming.addressName, addEvent);
         this._compareField(`street address in address "${label}"`, existing.address, incoming.address, addEvent);

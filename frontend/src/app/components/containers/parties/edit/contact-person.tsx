@@ -9,6 +9,7 @@ import { ValidationMultiSelect } from "@/app/common/validation-multiselect";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import {
   AddressFormValue,
+  isDefaultAddress,
   validateEmailValue,
   validatePhoneNumberValue,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -47,7 +48,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
       value: a.addressGuid ?? "",
       label: a.addressName?.trim() || `Address ${index + 1}`,
     }))
-    .filter((opt) => !!opt.value);
+    .filter((opt, index) => !!opt.value && !isDefaultAddress(addresses[index]));
   const phoneNumbers =
     contact.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
@@ -60,7 +61,6 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
     contact.contactMethods
       ?.map((cm, cmIndex) => ({ method: cm, originalIndex: cmIndex }))
       .filter(({ method }) => method?.typeCode === ContactMethods.EMAIL) || [];
-
 
   return (
     <>
@@ -122,8 +122,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
         label="Last name"
         required
         validators={{
-          onChange: ({ value }: { value: string | undefined }) =>
-            value?.trim() ? undefined : "Last name is required",
+          onChange: ({ value }: { value: string | undefined }) => (value?.trim() ? undefined : "Last name is required"),
         }}
         render={(field) => (
           <CompInput

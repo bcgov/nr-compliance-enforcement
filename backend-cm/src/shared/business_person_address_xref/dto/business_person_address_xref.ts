@@ -7,6 +7,7 @@ export class BusinessPersonAddressXref {
   businessPersonAddressXrefGuid: string;
   businessPerson: BusinessPersonXref;
   address: Address;
+  activeInd: boolean;
 }
 
 export const mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref = (mapper: Mapper) => {
@@ -25,6 +26,10 @@ export const mapPrismaBusinessPersonAddressXrefToBusinessPersonAddressXref = (ma
     forMember(
       (dest) => dest.address,
       mapWithArguments((src) => mapper.map(src.address, "address", "Address")),
+    ),
+    forMember(
+      (dest) => dest.activeInd,
+      mapFrom((src) => src.active_ind),
     ),
   );
 };

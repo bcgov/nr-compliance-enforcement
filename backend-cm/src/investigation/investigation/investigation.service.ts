@@ -104,6 +104,11 @@ export class InvestigationService {
                       },
                       investigation_person: {
                         include: {
+                          investigation_person_facial_hair_style_code_ref: {
+                            where: {
+                              active_ind: true,
+                            },
+                          },
                           investigation_party: {
                             include: {
                               investigation_contact_method: {
@@ -132,6 +137,9 @@ export class InvestigationService {
               active_ind: true,
               // filter business contacts
               NOT: { party_type_code_ref: PARTY_TYPES.Contact },
+            },
+            orderBy: {
+              create_utc_timestamp: "asc",
             },
           },
           task: {

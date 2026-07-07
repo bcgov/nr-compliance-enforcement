@@ -14,7 +14,8 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { isYoungPerson, joinWithAnd } from "@/app/common/methods";
+import { formatPhoneNumber } from "react-phone-number-input";
+import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -53,7 +54,10 @@ const PartiesList: React.FC<Props> = ({
 
   const getPartyName = (party: InvestigationParty | InspectionParty): string => {
     if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
-    if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
+    if (party.person) {
+      const { firstName, lastName } = party.person;
+      return [lastName, firstName].filter(Boolean).join(", ");
+    }
     if (party.business) return party.business.name ?? "";
     return "-";
   };
@@ -127,7 +131,7 @@ const PartiesList: React.FC<Props> = ({
   const getPersonMissingFields = (invParty: InvestigationParty): string[] => {
     if (!invParty.person) return [];
     const missing: string[] = [];
-    if (!invParty.person.dateOfBirth && !invParty.person.approximateAgeCode) missing.push("age");
+    if (!invParty.person.dateOfBirth) missing.push("age");
 
     if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
       missing.push("phone number");
@@ -221,7 +225,7 @@ const PartiesList: React.FC<Props> = ({
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Gender", gender, "Age", ageDisplay)}
-          {renderDetailRow("Phone number", phone, "Address", address)}
+          {renderDetailRow("Phone number", formatPhoneNumber(phone), "Address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
@@ -242,7 +246,7 @@ const PartiesList: React.FC<Props> = ({
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Alias", aliases, "Business number", businessNumbers)}
-          {renderDetailRow("Primary phone", phone, "Primary address", address)}
+          {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
@@ -259,7 +263,6 @@ const PartiesList: React.FC<Props> = ({
   const renderPartyHeader = (party: InvestigationParty | InspectionParty) => {
     const isPerson = !!party.person;
     const icon = isPerson ? "bi-person" : "bi-building";
-
     const globalParty = isGlobalParty(party);
 
     return (
@@ -274,6 +277,9 @@ const PartiesList: React.FC<Props> = ({
             >
               {getPartyName(party)}
             </Button>
+            {(party?.person as InvestigationPerson)?.boloIndicator && (
+              <Badge className="comp-danger-badge">Caution / BOLO</Badge>
+            )}
             {globalParty && (
               <span className="text-success small d-flex align-items-center gap-1">
                 <i className="bi bi-check-circle-fill"></i> Published
@@ -306,10 +312,13 @@ const PartiesList: React.FC<Props> = ({
     return (
       <div className="party-list mb-3">
         {sortedRoles.map((role) => {
-          const roleText =
-            partyRoles.find(
-              (r) => r.partyAssociationRole === role && r.caseActivityTypeCode === currentActivityTypeCode,
-            )?.shortDescription ?? role;
+          const roleText = toPlural(
+            toSentenceCase(
+              partyRoles.find(
+                (r) => r.partyAssociationRole === role && r.caseActivityTypeCode === currentActivityTypeCode,
+              )?.shortDescription ?? role,
+            ),
+          );
           const roleParties = grouped[role];
           return (
             <div

@@ -28,7 +28,6 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
   const person = party.person;
-  const business = party.business;
   const isPublished = !!party.partyReference;
 
   const getPartyName = (party: InvestigationParty | Party): string => {

@@ -63,6 +63,19 @@ export class CaseFileResolver {
     }
   }
 
+  @Query("getComplaintIdsLinkedToCase")
+  @Roles(coreRoles)
+  async getComplaintIdsLinkedToCase() {
+    try {
+      return await this.caseFileService.getComplaintIdsLinkedToCase();
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error fetching complaint IDs linked to case files", {
+        extensions: { code: "INTERNAL_SERVER_ERROR" },
+      });
+    }
+  }
+
   @Query("searchCaseFiles")
   @Roles(coreRoles)
   async search(

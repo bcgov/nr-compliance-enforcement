@@ -78,6 +78,7 @@ export const ComplaintFilterBar: FC<Props> = ({
     equipmentTypes,
     agency,
     complaintType: complaintTypeFilter,
+    linkedToCase,
   } = filters;
 
   const dateRangeLabel = (startDate: Date | undefined | null, endDate: Date | undefined | null): string | undefined => {
@@ -367,6 +368,14 @@ export const ComplaintFilterBar: FC<Props> = ({
             id="comp-complaint-method-filter"
             label={area?.label}
             name="area"
+            clear={removeFilter}
+          />
+        )}
+        {hasFilter("linkedToCase") && (
+          <FilterButton
+            id="comp-complaint-method-filter"
+            label={linkedToCase?.label === "Yes" ? "Has case" : "Has no case"}
+            name="linkedToCase"
             clear={removeFilter}
           />
         )}

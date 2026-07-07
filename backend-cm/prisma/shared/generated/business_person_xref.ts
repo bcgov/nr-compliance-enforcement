@@ -38,6 +38,9 @@ export class business_person_xref {
   @ApiPropertyOptional({ type: String })
   title_role?: string;
 
+  @ApiProperty({ type: Boolean })
+  is_primary: boolean;
+
   @ApiProperty({ isArray: true, type: () => business_person_address_xref })
   business_person_address_xref: business_person_address_xref[];
 

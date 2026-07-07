@@ -44,8 +44,12 @@ import {
   mapContactMethodsFromPartyData,
   seedContactMethods,
   validateBusinessForm,
+  validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  handleBusinessPartyMutationError,
+  scrollToFirstFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 
@@ -333,6 +337,8 @@ const PartyEdit: FC = () => {
 
   const form = useForm({
     defaultValues,
+    // fires only when a submission attempt is blocked by validation
+    onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
       if (value.partyType === PartyTypeCodes.BUSINESS) {
         const validationError = await validateBusinessForm(value);
@@ -462,9 +468,17 @@ const PartyEdit: FC = () => {
         return;
       }
     }
+    // an added person must have at least one entered field
+    if (!isEditMode && currentValues.partyType === PartyTypeCodes.PERSON) {
+      const validationError = validatePersonForm(currentValues);
+      if (validationError) {
+        ToggleError(validationError);
+        return;
+      }
+    }
     if (isEditMode) {
       setTriggerSaveAttachments(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setTriggerSaveAttachments(false);
         form.handleSubmit();
       }, 0);
@@ -476,6 +490,9 @@ const PartyEdit: FC = () => {
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
+  // disable saving from validation start through mutation completion
+  const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
+  const saveDisabled = formSubmitting || isDisabled;
 
   const handleAttachmentsDirtyChange = (_index: number, dirty: boolean) => {
     setAttachmentsDirty(dirty);
@@ -490,6 +507,7 @@ const PartyEdit: FC = () => {
       <PartyEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
+        saveDisabled={saveDisabled}
         isEditMode={isEditMode}
         partyIdentifier={id}
       />
@@ -517,7 +535,12 @@ const PartyEdit: FC = () => {
           }}
         />
 
-        <form onSubmit={form.handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!saveDisabled) saveButtonClick();
+          }}
+        >
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}

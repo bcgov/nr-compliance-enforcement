@@ -786,6 +786,14 @@ export type CreateUpdateExhibitInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   exhibitGuid?: InputMaybe<Scalars['String']['input']>;
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
+  locationOfIntake?: InputMaybe<Scalars['String']['input']>;
+  propertyTagNumber?: InputMaybe<Scalars['String']['input']>;
+  propertyType?: InputMaybe<Scalars['String']['input']>;
+  quantity?: InputMaybe<Scalars['Int']['input']>;
+  seizedFromAddress?: InputMaybe<Scalars['String']['input']>;
+  seizedFromFirstName?: InputMaybe<Scalars['String']['input']>;
+  seizedFromLastName?: InputMaybe<Scalars['String']['input']>;
+  seizedFromPhoneNumber?: InputMaybe<Scalars['String']['input']>;
   taskGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1136,15 +1144,25 @@ export type Exhibit = {
   createdDate: Scalars['DateTime']['output'];
   dateCollected: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
+  exhibitDisplayNumber: Scalars['String']['output'];
   exhibitGuid: Scalars['String']['output'];
-  exhibitNumber: Scalars['Int']['output'];
+  exhibitNumber: Scalars['String']['output'];
   investigationGuid: Scalars['String']['output'];
+  locationOfIntake?: Maybe<Scalars['String']['output']>;
+  propertyTagNumber: Scalars['String']['output'];
+  propertyType: Scalars['String']['output'];
+  quantity?: Maybe<Scalars['Int']['output']>;
+  seizedFromAddress?: Maybe<Scalars['String']['output']>;
+  seizedFromFirstName?: Maybe<Scalars['String']['output']>;
+  seizedFromLastName?: Maybe<Scalars['String']['output']>;
+  seizedFromPhoneNumber?: Maybe<Scalars['String']['output']>;
   taskGuid: Scalars['String']['output'];
   updatedDate?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type ExhibitFilters = {
   investigationGuid: Scalars['String']['input'];
+  propertyTypeFilter?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;

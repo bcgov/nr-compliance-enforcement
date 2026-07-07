@@ -24,8 +24,9 @@ type Coordinate = number[] | string[] | undefined;
 
 type OptionalDateTimeInput = string | Date | null | undefined;
 
-const SLIDE_HEIGHT = 130;
-const SLIDE_WIDTH = 289; // width of the carousel slide, in pixels
+const THUMB_WIDTH = 578; // 2x the 289x200 carousel slide, for high DPI displays
+const THUMB_HEIGHT = 400;
+const THUMB_QUALITY = 0.9; // 90% saves space with near lossless compression
 
 export const loadGifFrameList = async (gifUrl: string): Promise<HTMLCanvasElement[]> => {
   const response = await fetch(gifUrl);
@@ -476,43 +477,29 @@ export const pad = (num: string, size: number): string => {
   return num;
 };
 
-export const getThumbnailFile = async (file: File): Promise<File> => {
-  try {
-    const tool = await fromImage(file);
-    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio
-      ? tool
-          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toFile(file.name + "-thumb.jpg")
-      : tool
-          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toFile(file.name + "-thumb.jpg"));
-  } catch (error) {
-    return Promise.reject(error);
-  }
+// handle scale and cropping for both landscape or portrait images
+// crop from center of iamge outwards
+const makeThumbnail = async (file: File) => {
+  const tool = await fromImage(file);
+  // get scale from max based on landscape v portrait
+  const scaleRatio = Math.max(THUMB_WIDTH / tool.width, THUMB_HEIGHT / tool.height);
+  tool.scale(Math.round(tool.width * scaleRatio), Math.round(tool.height * scaleRatio));
+  return tool
+    .crop(
+      Math.round((tool.width - THUMB_WIDTH) / 2),
+      Math.round((tool.height - THUMB_HEIGHT) / 2),
+      THUMB_WIDTH,
+      THUMB_HEIGHT,
+    )
+    .quality(THUMB_QUALITY);
 };
 
-export const getThumbnailDataURL = async (file: File): Promise<string> => {
-  try {
-    const tool = await fromImage(file);
-    const heightRatio = SLIDE_HEIGHT / tool.originalHeight;
-    const widthRatio = SLIDE_WIDTH / tool.originalWidth;
-    return await (heightRatio > widthRatio
-      ? tool
-          .scale(tool.originalWidth * heightRatio, tool.originalHeight * heightRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toDataURL()
-      : tool
-          .scale(tool.originalWidth * widthRatio, tool.originalHeight * widthRatio)
-          .crop(0, 0, SLIDE_WIDTH, SLIDE_HEIGHT)
-          .toDataURL());
-  } catch {
-    return "";
-  }
-};
+// saved thumbnail
+export const getThumbnailFile = async (file: File): Promise<File> =>
+  (await makeThumbnail(file)).toFile(file.name + "-thumb.jpg");
+
+// client side thumbnail, not uploaded yet
+export const getThumbnailDataURL = async (file: File): Promise<string> => (await makeThumbnail(file)).toDataURL();
 
 export function isPositiveNum(number: string) {
   return !isNaN(Number(number)) && Number(number) >= 0;
@@ -586,6 +573,19 @@ export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: Optio
   const raw = String(time);
   const timeStr = raw.includes("T") ? raw.split("T")[1]?.replace("Z", "") || "00:00:00" : raw.replace("Z", "");
   return new Date(`${dateStr}T${timeStr}Z`);
+};
+
+// Formats a stored UTC datetime into a local "YYYY-MM-DD HH:mm" string. The date and time are both
+// derived from the same local Date so they never disagree across a timezone midnight boundary.
+export const formatDateTimeStr = (value?: string | null): string => {
+  const local = parseUTCDateTimeToLocal(value, value);
+  if (!local) return "-";
+  const year = local.getFullYear();
+  const month = String(local.getMonth() + 1).padStart(2, "0");
+  const day = String(local.getDate()).padStart(2, "0");
+  const hours = String(local.getHours()).padStart(2, "0");
+  const minutes = String(local.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 /**
@@ -664,4 +664,16 @@ export const joinWithAnd = (items: string[]): string => {
   if (items.length <= 1) return items.join("");
   if (items.length === 2) return items.join(" and ");
   return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
+};
+
+export const toSentenceCase = (text: string): string =>
+  text ? text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() : text;
+
+// Transform text from singular form to plural
+export const toPlural = (text: string): string => {
+  const ofIndex = text.toLowerCase().indexOf(" of ");
+  if (ofIndex !== -1) return toPlural(text.slice(0, ofIndex)) + text.slice(ofIndex);
+  if (/[^aeiou]y$/i.test(text)) return text.slice(0, -1) + "ies";
+  if (/(s|x|z|ch|sh)$/i.test(text)) return text + "es";
+  return text + "s";
 };
