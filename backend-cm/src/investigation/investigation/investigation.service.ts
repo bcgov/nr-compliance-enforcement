@@ -138,6 +138,9 @@ export class InvestigationService {
               // filter business contacts
               NOT: { party_type_code_ref: PARTY_TYPES.Contact },
             },
+            orderBy: {
+              create_utc_timestamp: "asc",
+            },
           },
           task: {
             where: {

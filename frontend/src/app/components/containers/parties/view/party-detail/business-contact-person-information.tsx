@@ -44,14 +44,7 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                 <Card.Body>
                   <h3 className="h6 mb-3">
                     {c?.title}
-                    {c?.isPrimary && (
-                      <Badge
-                        bg="species-badge comp-species-badge"
-                        className="ms-2"
-                      >
-                        Primary
-                      </Badge>
-                    )}
+                    {c?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
                   </h3>
                   <dl>
                     <DetailField label="First name">{c?.person?.firstName}</DetailField>
