@@ -339,10 +339,6 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     return "Name is required.";
   }
 
-  if (!value.businessNumber?.identifierValue?.trim()) {
-    return "Business number is required.";
-  }
-
   // only validate if there are multiple, a single empty item is allowed
   const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
   const missingNameIndex = addresses.findIndex(

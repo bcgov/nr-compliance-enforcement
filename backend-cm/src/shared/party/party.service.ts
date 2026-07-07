@@ -20,8 +20,6 @@ import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { Person } from "src/shared/person/dto/person";
 
-const BUSINESS_NUMBER_CODE = "BNUM";
-
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
 
 @Injectable()
@@ -37,11 +35,6 @@ export class PartyService {
 
   private readonly logger = new Logger(PartyService.name);
 
-  private _getBusinessNumberValue(identifiers?: BusinessIdentifier[]): string | undefined {
-    const businessNumber = identifiers?.find((i) => i.identifierCode === BUSINESS_NUMBER_CODE);
-    return businessNumber?.identifierValue;
-  }
-
   private _validateBusinessInput(business: {
     name?: string;
     businessIdentifiers?: BusinessIdentifier[];
@@ -49,12 +42,6 @@ export class PartyService {
   }): void {
     if (!business.name?.trim()) {
       throw new Error("Name is required.");
-    }
-
-    const businessNumberValue = this._getBusinessNumberValue(business.businessIdentifiers);
-
-    if (!businessNumberValue?.trim()) {
-      throw new Error("Business number is required.");
     }
 
     for (const address of business.addresses ?? []) {

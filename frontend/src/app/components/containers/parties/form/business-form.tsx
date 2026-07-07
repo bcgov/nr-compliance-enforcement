@@ -86,11 +86,6 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         form={form}
         name="businessNumber.identifierValue"
         label="Business number"
-        required
-        validators={{
-          onChange: ({ value }: { value: string | undefined }) =>
-            value && value.trim().length > 0 ? undefined : "Business number is required",
-        }}
         render={(field) => (
           <CompInput
             id="businessNumber"
