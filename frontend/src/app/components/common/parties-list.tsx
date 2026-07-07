@@ -16,6 +16,7 @@ import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
+import { getPartyName } from "@/app/common/party-name";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -51,16 +52,6 @@ const PartiesList: React.FC<Props> = ({
   } else if (isInvestigation) {
     currentActivityTypeCode = "INVSTGTN";
   }
-
-  const getPartyName = (party: InvestigationParty | InspectionParty): string => {
-    if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
-    if (party.person) {
-      const { firstName, lastName } = party.person;
-      return [lastName, firstName].filter(Boolean).join(", ");
-    }
-    if (party.business) return party.business.name ?? "";
-    return "-";
-  };
 
   const getPartyKey = (party: InvestigationParty | InspectionParty): string =>
     party.person?.personGuid ?? party.business?.businessGuid ?? party.partyIdentifier;

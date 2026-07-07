@@ -3,8 +3,9 @@ import { Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { InvestigationParty, Party } from "@/generated/graphql";
+import { InvestigationParty } from "@/generated/graphql";
 import { isYoungPerson } from "@/app/common/methods";
+import { getPartyName } from "@/app/common/party-name";
 import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
@@ -29,13 +30,6 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
 
   const person = party.person;
   const isPublished = !!party.partyReference;
-
-  const getPartyName = (party: InvestigationParty | Party): string => {
-    if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
-    if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
-    if (party.business) return party.business.name ?? "";
-    return "-";
-  };
 
   // Identifying Information data
   const dob = person?.dateOfBirth ? new Date(String(person.dateOfBirth)) : null;

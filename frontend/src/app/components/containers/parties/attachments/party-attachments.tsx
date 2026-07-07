@@ -217,27 +217,22 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       className="comp-details-section"
       id="party-attachments"
     >
-      <div className="comp-details-form-row">
-        {attachmentCount > 0 && <label htmlFor="party-attachments">Party Attachments</label>}
-        <div>
-          <Attachments
-            attachmentType={attachmentType}
-            identifier={identifier}
-            subIdentifier={subidentifier}
-            allowUpload={allowUpload}
-            allowDelete={allowDelete}
-            cancelPendingUpload={isPendingUpload}
-            setCancelPendingUpload={setIsPendingUpload}
-            onFilesSelected={onHandleAddAttachments}
-            onFileDeleted={onHandleDeleteAttachment}
-            onFilesReplaced={onHandleReplaceAttachments}
-            onSlideCountChange={handleSlideCountChange}
-            refreshKey={attachmentRefreshKey}
-            showPreview={attachmentCount > 0}
-            attachmentReferences={attachmentReferences}
-          />
-        </div>
-      </div>
+      <Attachments
+        attachmentType={attachmentType}
+        identifier={identifier}
+        subIdentifier={subidentifier}
+        allowUpload={allowUpload}
+        allowDelete={allowDelete}
+        cancelPendingUpload={isPendingUpload}
+        setCancelPendingUpload={setIsPendingUpload}
+        onFilesSelected={onHandleAddAttachments}
+        onFileDeleted={onHandleDeleteAttachment}
+        onFilesReplaced={onHandleReplaceAttachments}
+        onSlideCountChange={handleSlideCountChange}
+        refreshKey={attachmentRefreshKey}
+        showPreview={attachmentCount > 0}
+        attachmentReferences={attachmentReferences}
+      />
     </section>
   );
 };

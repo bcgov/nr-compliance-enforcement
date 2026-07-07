@@ -517,24 +517,6 @@ const PartyEdit: FC = () => {
           <h2>{partyDetailsTitle}</h2>
         </div>
 
-        <PartyAttachments
-          partyId={partyIdentifier}
-          attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
-          allowUpload
-          allowDelete
-          triggerSave={triggerSaveAttachments}
-          triggerCancel={triggerCancelAttachments}
-          onPendingImagesChange={handlePendingImagesChange}
-          onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
-          onSaved={() => {
-            if (!isEditMode) {
-              ToggleSuccess("Party created successfully");
-              allowNavigation();
-              navigate(`/party/${partyIdentifier}`);
-            }
-          }}
-        />
-
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -580,6 +562,31 @@ const PartyEdit: FC = () => {
               />
             )}
           </fieldset>
+
+          {partyTypeValue && (
+            <>
+              <div className="comp-details-section-header pt-5">
+                <h3>Attachments</h3>
+              </div>
+              <PartyAttachments
+                partyId={partyIdentifier}
+                attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
+                allowUpload
+                allowDelete
+                triggerSave={triggerSaveAttachments}
+                triggerCancel={triggerCancelAttachments}
+                onPendingImagesChange={handlePendingImagesChange}
+                onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
+                onSaved={() => {
+                  if (!isEditMode) {
+                    ToggleSuccess("Party created successfully");
+                    allowNavigation();
+                    navigate(`/party/${partyIdentifier}`);
+                  }
+                }}
+              />
+            </>
+          )}
         </form>
       </section>
     </div>
