@@ -891,10 +891,11 @@ export class PartyService {
   }
 
   private async _createOfficeLinks(tx: any, xrefGuid: string, officeAddressGuids: string[]): Promise<void> {
-    if (!officeAddressGuids.length) return;
+    const uniqueAddressGuids = [...new Set(officeAddressGuids)];
+    if (!uniqueAddressGuids.length) return;
 
     await tx.business_person_address_xref.createMany({
-      data: officeAddressGuids.map((addressGuid) => ({
+      data: uniqueAddressGuids.map((addressGuid) => ({
         business_person_xref_guid: xrefGuid,
         address_guid: addressGuid,
         create_user_id: this.user.getIdirUsername(),

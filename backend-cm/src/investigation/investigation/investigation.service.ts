@@ -104,6 +104,11 @@ export class InvestigationService {
                       },
                       investigation_person: {
                         include: {
+                          investigation_person_facial_hair_style_code_ref: {
+                            where: {
+                              active_ind: true,
+                            },
+                          },
                           investigation_party: {
                             include: {
                               investigation_contact_method: {
