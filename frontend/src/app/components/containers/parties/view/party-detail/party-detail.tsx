@@ -68,11 +68,13 @@ export const PartyDetail: FC<PartyDetailProps> = ({ party, attachmentType, inves
       </DetailSection>
 
       <DetailSection title="Compliance and enforcement history">
-        <PartyComplianceHistory
-          partyReference={partyReference}
-          partyTypeGuid={partyTypeGuid}
-          partyType={party.partyTypeCode ?? ""}
-        />
+        <div className="party-compliance-history-wrapper">
+          <PartyComplianceHistory
+            partyReference={partyReference}
+            partyTypeGuid={partyTypeGuid}
+            partyType={party.partyTypeCode ?? ""}
+          />
+        </div>
       </DetailSection>
     </>
   );
