@@ -15,6 +15,7 @@ import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { isYoungPerson, joinWithAnd } from "@/app/common/methods";
+import { formatPhoneNumber } from "react-phone-number-input";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -53,7 +54,10 @@ const PartiesList: React.FC<Props> = ({
 
   const getPartyName = (party: InvestigationParty | InspectionParty): string => {
     if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
-    if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
+    if (party.person) {
+      const { firstName, lastName } = party.person;
+      return [lastName, firstName].filter(Boolean).join(", ");
+    }
     if (party.business) return party.business.name ?? "";
     return "-";
   };
@@ -221,7 +225,7 @@ const PartiesList: React.FC<Props> = ({
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Gender", gender, "Age", ageDisplay)}
-          {renderDetailRow("Phone number", phone, "Address", address)}
+          {renderDetailRow("Phone number", formatPhoneNumber(phone), "Address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
@@ -242,7 +246,7 @@ const PartiesList: React.FC<Props> = ({
       return (
         <Card.Body className="py-3 px-4">
           {renderDetailRow("Alias", aliases, "Business number", businessNumbers)}
-          {renderDetailRow("Primary phone", phone, "Primary address", address)}
+          {renderDetailRow("Primary phone", formatPhoneNumber(phone), "Primary address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">
               <i className="bi bi-exclamation-circle me-2" />
