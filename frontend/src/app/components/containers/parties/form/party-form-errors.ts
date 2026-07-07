@@ -20,8 +20,8 @@ type FieldWithErrors = {
   };
 };
 
-export const getFieldErrorMessage = (field: FieldWithErrors): string => {
-  for (const error of field.state.meta.errors ?? []) {
+const firstErrorMessage = (errors: unknown[] | undefined): string => {
+  for (const error of errors ?? []) {
     if (!error) {
       continue;
     }
@@ -34,6 +34,8 @@ export const getFieldErrorMessage = (field: FieldWithErrors): string => {
   }
   return "";
 };
+
+export const getFieldErrorMessage = (field: FieldWithErrors): string => firstErrorMessage(field.state.meta.errors);
 
 export const getGraphQLErrorMessage = (error: unknown): string | undefined => {
   const gqlError = (error as GraphQLErrorShape)?.response?.errors?.[0];
@@ -96,3 +98,4 @@ export const scrollToFirstFieldError = () => {
       ?.focus({ preventScroll: true });
   }, 0);
 };
+

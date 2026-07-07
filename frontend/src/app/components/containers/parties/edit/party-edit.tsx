@@ -337,6 +337,8 @@ const PartyEdit: FC = () => {
 
   const form = useForm({
     defaultValues,
+    // fires only when a submission attempt is blocked by validation
+    onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
       if (value.partyType === PartyTypeCodes.BUSINESS) {
         const validationError = await validateBusinessForm(value);
@@ -478,18 +480,19 @@ const PartyEdit: FC = () => {
       setTriggerSaveAttachments(true);
       setTimeout(async () => {
         setTriggerSaveAttachments(false);
-        await form.handleSubmit();
-        if (!form.state.canSubmit) scrollToFirstFieldError();
+        form.handleSubmit();
       }, 0);
     } else {
       setPendingAttachmentsSaveAfterCreate(true);
-      await form.handleSubmit();
-      if (!form.state.canSubmit) scrollToFirstFieldError();
+      form.handleSubmit();
     }
   }, [form, isEditMode, partyData, currentFormValues]);
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
+  // disable saving from validation start through mutation completion
+  const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
+  const saveDisabled = formSubmitting || isDisabled;
 
   const handleAttachmentsDirtyChange = (_index: number, dirty: boolean) => {
     setAttachmentsDirty(dirty);
@@ -504,6 +507,7 @@ const PartyEdit: FC = () => {
       <PartyEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
+        saveDisabled={saveDisabled}
         isEditMode={isEditMode}
         partyIdentifier={id}
       />
@@ -531,7 +535,12 @@ const PartyEdit: FC = () => {
           }}
         />
 
-        <form onSubmit={form.handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!saveDisabled) saveButtonClick();
+          }}
+        >
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}

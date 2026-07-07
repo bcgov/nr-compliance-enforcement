@@ -194,6 +194,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const form = useForm({
     defaultValues,
+    // fires only when a submission attempt is blocked by validation
+    onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
       if (isEditMode && editParty) {
         const input: any = {
@@ -324,9 +326,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return name || editParty.placeholderName || "Edit party";
   }, [isEditMode, editParty]);
 
-  const saveButtonClick = async () => {
-    await form.handleSubmit();
-    if (!form.state.canSubmit) scrollToFirstFieldError();
+  const saveButtonClick = () => {
+    form.handleSubmit();
   };
 
   const confirmCancel = () => {
@@ -352,7 +353,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     );
   };
 
+  // disable saving from validation start through mutation completion
+  const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
   const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
+  const saveDisabled = formSubmitting || isDisabled;
 
   return (
     <div className="comp-investigation-edit-headerdetails">
@@ -375,6 +379,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               title="Save party"
               variant="outline-light"
               onClick={saveButtonClick}
+              disabled={saveDisabled}
             >
               Save changes
             </Button>
@@ -391,7 +396,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           className="comp-party-form"
           onSubmit={(e) => {
             e.preventDefault();
-            saveButtonClick();
+            if (!saveDisabled) saveButtonClick();
           }}
         >
           <fieldset disabled={isDisabled}>

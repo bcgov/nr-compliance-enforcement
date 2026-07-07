@@ -46,6 +46,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
     await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
@@ -75,6 +76,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
     await expect(page.locator(".party-list").getByText("Acme Logging Ltd", { exact: true })).toBeVisible();
   });
 
@@ -98,6 +100,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
+    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
     await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
   });
 
