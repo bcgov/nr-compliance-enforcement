@@ -53,3 +53,15 @@
 .larger-font {
   font-size: 1.11rem;
 }
+
+.smaller-font {
+  font-size: 0.75rem;
+}
+
+.brown-font {
+  color: rgb(167, 127, 41);
+}
+
+#profile-incomplete-tooltip .tooltip-inner {
+  background-color: #003366 !important;
+}

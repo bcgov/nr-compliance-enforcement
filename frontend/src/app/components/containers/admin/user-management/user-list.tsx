@@ -16,6 +16,7 @@ type Props = {
   teams: Option[] | undefined;
   agencyDetailLabel: string;
   onSort: (sortKey: string, sortDirection: string) => void;
+  onEditUser: (officer: AppUser) => void;
 };
 
 // Helper functions moved from SelectUser
@@ -79,6 +80,7 @@ export const UserList: FC<Props> = ({
   teams,
   agencyDetailLabel,
   onSort,
+  onEditUser,
 }) => {
   const getAgencyDetail = useCallback(
     (u: AppUser) => getAgencyDetailDisplay(u, offices, parkAreas, teams),
@@ -92,10 +94,14 @@ export const UserList: FC<Props> = ({
       isSortable: true,
       getValue: (u) => `${(u.last_name ?? "").toLowerCase()}, ${(u.first_name ?? "").toLowerCase()}`,
       renderCell: (u) => (
-        <>
+        <button
+          type="button"
+          className="btn btn-link p-0 text-start"
+          onClick={() => onEditUser(u)}
+        >
           {u.last_name}, {u.first_name}
           {u.deactivate_ind ? " (deactivated)" : ""}
-        </>
+        </button>
       ),
     },
     {

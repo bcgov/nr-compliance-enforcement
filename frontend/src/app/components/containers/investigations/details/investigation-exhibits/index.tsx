@@ -8,10 +8,12 @@ import { ExhibitsFilterBar } from "./exhibits-filter-bar";
 import { ExhibitsList } from "./exhibits-list";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { graphqlRequest } from "@/app/graphql/client";
-import { formatDateStr, escapeCsvCell } from "@common/methods";
+import { escapeCsvCell, formatDateTimeStr } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
+import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
+import { formatPhoneNumber } from "react-phone-number-input";
 
 export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
   query SearchExhibitsByInvestigation($page: Int, $pageSize: Int, $filters: ExhibitFilters!) {
@@ -21,10 +23,18 @@ export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
         taskGuid
         investigationGuid
         exhibitNumber
+        exhibitDisplayNumber
+        propertyType
         description
+        quantity
+        seizedFromFirstName
+        seizedFromLastName
+        seizedFromAddress
+        seizedFromPhoneNumber
         dateCollected
         collectedAppUserGuidRef
-        createdDate
+        locationOfIntake
+        propertyTagNumber
       }
       pageInfo {
         currentPage
@@ -58,6 +68,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
         investigationGuid,
         search: searchValues.search || undefined,
         taskFilter: searchValues.taskFilter || undefined,
+        propertyTypeFilter: searchValues.propertyTypeFilter || undefined,
         sortBy: searchValues.sortBy,
         sortOrder: searchValues.sortOrder,
       },
@@ -73,6 +84,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
       investigationGuid,
       searchValues.search,
       searchValues.taskFilter,
+      searchValues.propertyTypeFilter,
       searchValues.sortBy,
       searchValues.sortOrder,
       searchValues.page,
@@ -117,7 +129,21 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
 
     setIsExporting(true);
     try {
-      const headers = ["Exhibit number", "Description", "Date collected", "Officer collected", "Task", "Date logged"];
+      const headers = [
+        "Exhibit number",
+        "Property type",
+        "Item description",
+        "Quantity",
+        "Officer",
+        "Date/time of intake",
+        "Location of intake",
+        "Property tag number",
+        "Seized from first name",
+        "Seized from last name",
+        "Seized from address",
+        "Seized from phone number",
+        "Task",
+      ];
 
       const pageSize = 500;
       let page = 1;
@@ -132,6 +158,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
             investigationGuid,
             search: searchValues.search || undefined,
             taskFilter: searchValues.taskFilter || undefined,
+            propertyTypeFilter: searchValues.propertyTypeFilter || undefined,
             sortBy: searchValues.sortBy,
             sortOrder: searchValues.sortOrder,
           },
@@ -148,14 +175,20 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
       }
 
       const rows = all.map((exhibit) => {
-        const exhibitNumberStr = exhibit.exhibitNumber == null ? "" : String(exhibit.exhibitNumber).padStart(4, "0");
         return [
-          exhibitNumberStr,
+          exhibit.exhibitDisplayNumber ?? "-",
+          getPropertyTypeLabel(exhibit.propertyType),
           exhibit.description ?? "",
-          exhibit.dateCollected ? formatDateStr(exhibit.dateCollected, "") : "",
+          exhibit.quantity == null ? "" : String(exhibit.quantity),
           getOfficerName(exhibit.collectedAppUserGuidRef ?? ""),
+          exhibit.dateCollected ? formatDateTimeStr(exhibit.dateCollected) : "",
+          exhibit.locationOfIntake ?? "",
+          exhibit.propertyTagNumber ?? "",
+          exhibit.seizedFromFirstName ?? "",
+          exhibit.seizedFromLastName ?? "",
+          exhibit.seizedFromAddress ?? "",
+          formatPhoneNumber(exhibit.seizedFromPhoneNumber ?? ""),
           getTaskLabel(exhibit.taskGuid ?? ""),
-          exhibit.createdDate ? formatDateStr(exhibit.createdDate, "") : "",
         ]
           .map((v) => escapeCsvCell(v ?? ""))
           .join(",");
@@ -189,6 +222,7 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
     searchValues.sortBy,
     searchValues.sortOrder,
     searchValues.taskFilter,
+    searchValues.propertyTypeFilter,
     getOfficerName,
     getTaskLabel,
   ]);

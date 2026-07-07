@@ -55,6 +55,7 @@ export const generateComplaintRequestPayload = (
     outcomeActionedBy,
     equipmentStatus,
     equipmentTypes,
+    linkedToCase,
   } = filters;
 
   const common = {
@@ -72,6 +73,7 @@ export const generateComplaintRequestPayload = (
     endDateFilter: endDate,
     complaintStatusFilter: status,
     girTypeFilter: girType,
+    linkedToCaseFilter: linkedToCase,
     page,
     pageSize,
     showReferrals: complaintType === "ERS",
