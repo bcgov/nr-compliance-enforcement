@@ -127,11 +127,10 @@ div[class^="slideInner"] {
   overflow: hidden;
 
   img {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 100%;
-    min-height: 100%;
+    width: 100%;
+    // fixed image area: every thumb (old 289x130 or new 578x400) cover-fits the same box,
+    height: 300px;
+    object-fit: cover;
   }
 
   svg {
