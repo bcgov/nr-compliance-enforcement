@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -34,6 +34,7 @@ import {
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
+  mapPartyToInvestigationPartyInput,
   seedContactMethods,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
@@ -46,9 +47,10 @@ import { PartyAttachments } from "@/app/components/containers/parties/attachment
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Button } from "react-bootstrap";
 import { InvestigationPartyHeader } from "../investigation-party-header";
-import { useMatchParty } from "@/app/components/containers/parties/hooks/use-party-match";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
+import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -92,6 +94,14 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+
+  const [addMatchGuid, setAddMatchGuid] = useState<string>("");
+
+  const { data: matchPartyData } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
+    queryKey: ["party", addMatchGuid],
+    variables: { partyIdentifier: addMatchGuid },
+    enabled: !!addMatchGuid,
+  });
 
   const defaultValues = useMemo(() => {
     if (isEditMode && editParty) {
@@ -346,10 +356,31 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const { matches, handleFieldBlur } = usePartyMatchTrigger(form);
 
-  // TODO: Implement this.
   const handleAddMatch = (party: Party) => {
-    console.log("Selected matching party to add:", party);
+    const partyAssociationRole = form.getFieldValue("partyAssociationRole");
+
+    if (!partyAssociationRole) {
+      form.validateField("partyAssociationRole", "change");
+      return;
+    }
+
+    if (party.partyIdentifier) {
+      setAddMatchGuid(party.partyIdentifier);
+    }
   };
+
+  useEffect(() => {
+    if (!addMatchGuid || !matchPartyData?.party) {
+      return;
+    }
+
+    const input = mapPartyToInvestigationPartyInput(matchPartyData.party, form.getFieldValue("partyAssociationRole"));
+
+    addPartyMutation.mutate({ investigationGuid, input: [input] });
+
+    // Clear the trigger so stale query data can't re-fire the copy on a later render.
+    setAddMatchGuid("");
+  }, [addMatchGuid, matchPartyData, investigationGuid]);
 
   return (
     <div className="comp-investigation-edit-headerdetails">

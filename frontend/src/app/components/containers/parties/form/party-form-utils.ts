@@ -1,8 +1,16 @@
-import { Address, PersonFacialHairStyleCode, PersonInput, PersonUpdateInput } from "@/generated/graphql";
+import {
+  Address,
+  FacialHairStyleCode,
+  Party,
+  PersonFacialHairStyleCode,
+  PersonInput,
+  PersonUpdateInput,
+} from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { isValidEmail } from "@/app/common/validate-email";
 import { v4 as uuidv4 } from "uuid";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 export type ContactMethodFormValue = {
   contactMethodGuid?: string;
@@ -286,25 +294,25 @@ export const buildInvestigationContactPeople = (
   isUpdate: boolean,
 ): any[] | undefined => {
   const built = (contacts ?? []).map((c) => ({
-      ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
-      person: {
-        ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
-        firstName: c.person.firstName || null,
-        lastName: c.person.lastName || null,
-      },
-      title: c.title || null,
-      displayInInvestigation: c.displayInInvestigation ?? true,
-      isPrimary: c.isPrimary ?? false,
-      contactMethods: (c.contactMethods ?? [])
-        .filter((cm) => hasValue(cm.value))
-        .map((cm) => ({
-          ...(isUpdate && cm.contactMethodGuid ? { contactMethodGuid: cm.contactMethodGuid } : {}),
-          typeCode: cm.typeCode ?? ContactMethods.PHONE,
-          value: cm.value ?? "",
-          isPrimary: cm.isPrimary ?? false,
-        })),
-      officeAddressGuids: c.officeAddressGuids ?? [],
-    }));
+    ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
+    person: {
+      ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
+      firstName: c.person.firstName || null,
+      lastName: c.person.lastName || null,
+    },
+    title: c.title || null,
+    displayInInvestigation: c.displayInInvestigation ?? true,
+    isPrimary: c.isPrimary ?? false,
+    contactMethods: (c.contactMethods ?? [])
+      .filter((cm) => hasValue(cm.value))
+      .map((cm) => ({
+        ...(isUpdate && cm.contactMethodGuid ? { contactMethodGuid: cm.contactMethodGuid } : {}),
+        typeCode: cm.typeCode ?? ContactMethods.PHONE,
+        value: cm.value ?? "",
+        isPrimary: cm.isPrimary ?? false,
+      })),
+    officeAddressGuids: c.officeAddressGuids ?? [],
+  }));
   return built.length ? built : undefined;
 };
 
@@ -454,3 +462,52 @@ export const createEmptyPartyFormValues = () => ({
   addresses: [{ ...createEmptyAddress(), isPrimary: true }] as AddressFormValue[],
   contacts: [] as ContactPersonFormValue[],
 });
+
+/**
+ * Maps a full published Party (from findOne) into the flat form-value shape, for copying a
+ * matched party into an investigation.
+ */
+export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociationRole: string) => {
+  const aliases = mapAliasesFromPartyData(party.aliases)
+    .filter((a) => a.name.trim().length > 0)
+    .map((a) => ({ name: a.name }));
+
+  const phoneNumbers = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.PHONE)
+    .filter((c) => (c.value ?? "").trim().length > 0)
+    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+
+  const emailAddresses = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.EMAIL)
+    .filter((c) => (c.value ?? "").trim().length > 0)
+    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+
+  const addresses = mapAddressesFromPartyData(party.addresses as Address[])
+    .filter((a) => (a.address ?? "").trim().length > 0 || (a.city ?? "").trim().length > 0)
+    .map((a) => ({
+      ...a,
+      addressGuid: undefined,
+      phoneNumberGuid: undefined,
+      emailAddressGuid: undefined,
+    }));
+
+  const personBase = buildPersonBase(party.person);
+
+  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: FacialHairStyleCode) => ({
+    ...fhs,
+    personFacialStyleHairCodeGuid: undefined,
+    personGuid: undefined,
+  }));
+
+  return {
+    partyTypeCode: PartyTypeCodes.PERSON,
+    partyReference: party.partyIdentifier,
+    partyAssociationRole,
+    person: {
+      ...personBase,
+      facialHairStyleCodes,
+      personReference: party.person?.personGuid,
+    },
+    aliases: buildAliases(aliases, false),
+    addresses: buildAddresses(addresses),
+    contactMethods: buildContactMethods(phoneNumbers, emailAddresses, false),
+  };
+};
