@@ -74,6 +74,9 @@
 
   .comp-party-match-results {
     flex: 0 0 20rem;
+    position: sticky;
+    top: 8rem;
+    align-self: flex-start;
   }
 }
 

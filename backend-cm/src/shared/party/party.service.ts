@@ -1719,6 +1719,76 @@ export class PartyService {
     };
   }
 
+  /**
+   * Counts how many of the entered match fields a candidate party actually satisfies.
+   * Each matched field is worth 1.
+   *
+   * Will likely be replaced / enhanced in the future.
+   */
+  private _scoreMatch(input: PartyMatchInput, party: party): number {
+    let score = 0;
+
+    if (input.person?.firstName && party.person?.first_name === input.person.firstName) {
+      score += 1;
+    }
+    if (input.person?.lastName && party.person?.last_name === input.person.lastName) {
+      score += 1;
+    }
+    if (input.person?.dateOfBirth && party.person?.date_of_birth) {
+      const candidateDob = party.person.date_of_birth;
+      const inputDob = input.person.dateOfBirth;
+      const sameDate =
+        candidateDob.getUTCFullYear() === inputDob.getUTCFullYear() &&
+        candidateDob.getUTCMonth() === inputDob.getUTCMonth() &&
+        candidateDob.getUTCDate() === inputDob.getUTCDate();
+      if (sameDate) {
+        score += 1;
+      }
+    }
+    if (input.person?.genderCode && party.person?.gender_code === input.person.genderCode) {
+      score += 1;
+    }
+    if (
+      input.person?.driversLicenseNumber &&
+      party.person?.drivers_license_number === input.person.driversLicenseNumber
+    ) {
+      score += 1;
+    }
+
+    if (input.business?.name && party.business?.name === input.business.name) {
+      score += 1;
+    }
+
+    const businessNumber = input.business?.businessIdentifiers?.find(
+      (i) => i.identifierCode === BUSINESS_NUMBER_CODE,
+    )?.identifierValue;
+    if (
+      businessNumber &&
+      party.business?.business_identifier?.some(
+        (bi: any) => bi.business_identifier_code === BUSINESS_NUMBER_CODE && bi.identifier_value === businessNumber,
+      )
+    ) {
+      score += 1;
+    }
+
+    const phoneValue = input.contactMethods?.find((c) => c.value)?.value;
+    if (
+      phoneValue &&
+      party.contact_method?.some(
+        (cm: any) => cm.contact_method_type === "PHONE" && cm.contact_value === `+${phoneValue.replace(/\D/g, "")}`,
+      )
+    ) {
+      score += 1;
+    }
+
+    const addressLine = input.addresses?.find((a) => a.address)?.address;
+    if (addressLine && party.address?.some((a: any) => a.address === addressLine)) {
+      score += 1;
+    }
+
+    return score;
+  }
+
   private _buildMatchWhere(input: PartyMatchInput): any {
     const conditions: any[] = [];
 
@@ -1784,7 +1854,7 @@ export class PartyService {
 
     return {
       party_type: { in: [PARTY_TYPES.Person, PARTY_TYPES.Company] },
-      AND: conditions,
+      OR: conditions,
     };
   }
 
@@ -1794,13 +1864,13 @@ export class PartyService {
     // Guard: with no usable conditions the AND clause would match every party.
     // The frontend enforces the minimum-two-fields rule, but we defend here so a
     // zero-condition call can never return the entire party table.
-    if (!where.AND.length) {
+    if (!where.OR.length) {
       return [];
     }
 
     const prismaParties: any = await this.prisma.party.findMany({
       where,
-      take: 5,
+      take: 50, // arbitrary number... 10 times the amount displayed before scoring
       include: {
         party_type_code: {
           select: {
@@ -1862,6 +1932,13 @@ export class PartyService {
       },
     });
 
-    return this.mapper.mapArray<party, Party>(prismaParties as party[], "party", "Party");
+    // Rank by number of matched fields (more matches = higher), then return the top 5.
+    const topParties = prismaParties
+      .map((party: any) => ({ party, score: this._scoreMatch(input, party) }))
+      .sort((a: { score: number }, b: { score: number }) => b.score - a.score)
+      .slice(0, 5)
+      .map((scored: { party: any }) => scored.party);
+
+    return this.mapper.mapArray<party, Party>(topParties as party[], "party", "Party");
   }
 }
