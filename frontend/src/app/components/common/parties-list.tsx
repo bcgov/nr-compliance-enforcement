@@ -15,7 +15,7 @@ import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { CaseActivities } from "@/app/constants/case-activities";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { isYoungPerson, joinWithAnd } from "@/app/common/methods";
+import { isYoungPerson, joinWithAnd, toSentenceCase, toPlural } from "@/app/common/methods";
 
 const PARTY_ROLE_DISPLAY_ORDER = ["PTYOFINTRST", "ASSCTE", "WITNESS", "EXTRNLOFFCR", "OTHER"];
 
@@ -123,7 +123,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
   const getPersonMissingFields = (invParty: InvestigationParty): string[] => {
     if (!invParty.person) return [];
     const missing: string[] = [];
-    if (!invParty.person.dateOfBirth && !invParty.person.approximateAgeCode) missing.push("age");
+    if (!invParty.person.dateOfBirth) missing.push("age");
 
     if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
       missing.push("phone number");
@@ -256,7 +256,6 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     const isPerson = !!party.person;
     const icon = isPerson ? "bi-person" : "bi-building";
     const link = getPartyLink(party);
-
     const globalParty = isGlobalParty(party);
 
     return (
@@ -265,6 +264,9 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
           <div className="d-flex align-items-center gap-2">
             <i className={`bi ${icon} text-muted`} />
             <Link to={link}>{getPartyName(party)}</Link>
+            {(party?.person as InvestigationPerson)?.boloIndicator && (
+              <Badge className="comp-danger-badge">Caution / BOLO</Badge>
+            )}
             {globalParty && (
               <span className="text-success small d-flex align-items-center gap-1">
                 <i className="bi bi-check-circle-fill"></i> Published
@@ -297,10 +299,13 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     return (
       <div className="party-list mb-3">
         {sortedRoles.map((role) => {
-          const roleText =
-            partyRoles.find(
-              (r) => r.partyAssociationRole === role && r.caseActivityTypeCode === currentActivityTypeCode,
-            )?.shortDescription ?? role;
+          const roleText = toPlural(
+            toSentenceCase(
+              partyRoles.find(
+                (r) => r.partyAssociationRole === role && r.caseActivityTypeCode === currentActivityTypeCode,
+              )?.shortDescription ?? role,
+            ),
+          );
           const roleParties = grouped[role];
           return (
             <div
