@@ -156,7 +156,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
-  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
 
@@ -327,10 +327,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party added successfully");
         submit();
@@ -346,10 +343,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     onSuccess: () => {
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party updated successfully");
         submit();

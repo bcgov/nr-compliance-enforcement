@@ -228,8 +228,8 @@ const PartyEdit: FC = () => {
 
   const [partyIdentifier, setPartyIdentifier] = useState<string>(id || "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
-  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
-  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
+  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(0);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
 
@@ -288,10 +288,7 @@ const PartyEdit: FC = () => {
       setPartyIdentifier(newPartyIdentifier);
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party created successfully");
         allowNavigation();
@@ -330,9 +327,8 @@ const PartyEdit: FC = () => {
   }, []);
 
   const confirmCancelChanges = useCallback(() => {
-    setTriggerCancelAttachments(true);
+    setTriggerCancelAttachments((n) => n + 1);
     setTimeout(() => {
-      setTriggerCancelAttachments(false);
       form.reset();
       allowNavigation();
       if (isEditMode && id) {
@@ -375,9 +371,8 @@ const PartyEdit: FC = () => {
       }
     }
     if (isEditMode) {
-      setTriggerSaveAttachments(true);
-      setTimeout(async () => {
-        setTriggerSaveAttachments(false);
+      setTriggerSaveAttachments((n) => n + 1);
+      setTimeout(() => {
         form.handleSubmit();
       }, 0);
     } else {
