@@ -479,6 +479,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   isDisabled={isDisabled}
                   showContactPeople={true}
                   showInvestigationFields={true}
+                  showDisplayInInvestigation={true}
                   businessGuid={editParty?.business?.businessGuid ?? undefined}
                 />
               )}

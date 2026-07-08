@@ -16,6 +16,7 @@ type BusinessFormFieldsProps = {
   showContactPeople?: boolean;
   businessGuid?: string;
   showInvestigationFields?: boolean;
+  showDisplayInInvestigation?: boolean;
 };
 
 export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
@@ -24,6 +25,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   showContactPeople = true,
   businessGuid,
   showInvestigationFields = false,
+  showDisplayInInvestigation = false,
 }) => {
   const {
     addresses,
@@ -139,6 +141,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         onRemoveEmail={handleRemoveEmail}
         onSetPrimaryEmail={handleSetPrimaryEmail}
         showOfficeFields={showInvestigationFields}
+        showDisplayInInvestigation={showDisplayInInvestigation}
       />
       {showContactPeople && (
         <>
@@ -159,6 +162,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
               onRemoveContactMethod={handleRemoveContactMethod}
               onSetPrimaryContact={handleSetPrimaryContact}
               showInvestigationFields={showInvestigationFields}
+              showDisplayInInvestigation={showDisplayInInvestigation}
             />
           ))}
           <Button

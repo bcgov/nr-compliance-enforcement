@@ -26,6 +26,7 @@ interface AddressFieldsProps {
   onRemoveAddress: (index: number) => void;
   onSetPrimaryAddress: (index: number) => void;
   showOfficeFields?: boolean;
+  showDisplayInInvestigation?: boolean;
 }
 
 export const AddressFields: FC<AddressFieldsProps> = ({
@@ -37,6 +38,7 @@ export const AddressFields: FC<AddressFieldsProps> = ({
   onRemoveAddress,
   onSetPrimaryAddress,
   showOfficeFields = false,
+  showDisplayInInvestigation = false,
 }) => {
   const selectedCountry = useStore(
     form.store,
@@ -273,22 +275,24 @@ export const AddressFields: FC<AddressFieldsProps> = ({
               />
             )}
           />
-          <FormField
-            form={form}
-            name={`addresses[${addressIndex}].displayInInvestigation` as any}
-            label="Display in investigation"
-            render={(field) => (
-              <div className="comp-details-edit-input">
-                <input
-                  type="checkbox"
-                  id={`address-display-${addressIndex}`}
-                  checked={field.state.value ?? true}
-                  onChange={(evt) => field.handleChange(evt.target.checked)}
-                  disabled={isDisabled}
-                />
-              </div>
-            )}
-          />
+          {showDisplayInInvestigation && (
+            <FormField
+              form={form}
+              name={`addresses[${addressIndex}].displayInInvestigation` as any}
+              label="Display in investigation"
+              render={(field) => (
+                <div className="comp-details-edit-input">
+                  <input
+                    type="checkbox"
+                    id={`address-display-${addressIndex}`}
+                    checked={field.state.value ?? true}
+                    onChange={(evt) => field.handleChange(evt.target.checked)}
+                    disabled={isDisabled}
+                  />
+                </div>
+              )}
+            />
+          )}
         </>
       )}
     </>

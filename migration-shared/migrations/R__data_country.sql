@@ -234,7 +234,7 @@ INSERT INTO shared.country_code (country_code,short_description,long_description
 	 ('AE','United Arab Emirates (the)','United Arab Emirates (the)',2330,true,'system',NOW(),NULL,NULL),
 	 ('GB','United Kingdom of Great Britain and Northern Ireland (the)','United Kingdom of Great Britain and Northern Ireland (the)',2340,true,'system',NOW(),NULL,NULL),
 	 ('UM','United States Minor Outlying Islands (the)','United States Minor Outlying Islands (the)',2350,true,'system',NOW(),NULL,NULL),
-	 ('US','United States of America (the)','United States of America (the)',2360,true,'system',NOW(),NULL,NULL),
+	 ('US','United States of America (the)','United States of America (the)',2,true,'system',NOW(),NULL,NULL),
 	 ('UY','Uruguay','Uruguay',2370,true,'system',NOW(),NULL,NULL),
 	 ('UZ','Uzbekistan','Uzbekistan',2380,true,'system',NOW(),NULL,NULL),
 	 ('VU','Vanuatu','Vanuatu',2390,true,'system',NOW(),NULL,NULL),
