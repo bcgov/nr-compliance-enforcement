@@ -186,6 +186,37 @@ export const mapAliasesFromPartyData = (
   return mapped.length ? mapped : [{ aliasGuid: undefined, name: "" }];
 };
 
+// Shared mapper for business/investigation contact people (BusinessPerson | InvestigationBusinessPerson)
+export const mapContactPeopleFromPartyData = (contactPeople: any): ContactPersonFormValue[] =>
+  (contactPeople ?? [])
+    .filter((cp: any) => cp != null)
+    .map((cp: any): ContactPersonFormValue => {
+      const methods = (cp.contactMethods ?? []).filter((cm: any) => cm != null);
+      return {
+        businessPersonXrefGuid: cp.businessPersonXrefGuid ?? undefined,
+        business: { businessGuid: cp.business?.businessGuid ?? undefined },
+        person: {
+          personGuid: cp.person?.personGuid ?? undefined,
+          firstName: cp.person?.firstName ?? "",
+          lastName: cp.person?.lastName ?? "",
+        },
+        contactMethods: seedContactMethods(
+          methods.map((cm: any) => ({
+            contactMethodGuid: cm.contactMethodGuid ?? undefined,
+            typeCode: cm.typeCode ?? undefined,
+            value: cm.value ?? "",
+            isPrimary: cm.isPrimary ?? methods.filter((m: any) => m.typeCode === cm.typeCode).indexOf(cm) === 0,
+          })),
+        ),
+        title: cp.title ?? "",
+        displayInInvestigation: cp.displayInInvestigation ?? true,
+        isPrimary: cp.isPrimary ?? false,
+        officeAddressGuids: (cp.associatedAddresses ?? [])
+          .map((aa: any) => aa?.address?.addressGuid)
+          .filter((guid: any): guid is string => !!guid),
+      };
+    });
+
 const pickAddressContactMethod = (address: Address, typeCode: string) =>
   address.contactMethods?.filter((cm) => cm?.typeCode === typeCode).find(Boolean) ?? undefined;
 
@@ -283,7 +314,7 @@ export const buildAliases = (
       name: a.name!.trim(),
     }));
 
-export const buildInvestigationContactPeople = (
+export const buildContactPeople = (
   contacts: ContactPersonFormValue[] | undefined,
   isUpdate: boolean,
 ): any[] | undefined => {

@@ -14,8 +14,6 @@ import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import {
   BusinessIdentifier,
-  BusinessPerson,
-  ContactMethod,
   ImageUpdateInput,
   PartyCreateInput,
   PartyUpdateInput,
@@ -35,6 +33,7 @@ import {
   buildAliases,
   buildBusinessCreateUpdate,
   buildContactMethods,
+  buildContactPeople,
   buildPersonForCreate,
   buildPersonForUpdate,
   createEmptyAddress,
@@ -42,7 +41,7 @@ import {
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
-  seedContactMethods,
+  mapContactPeopleFromPartyData,
   validateBusinessForm,
   validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
@@ -107,107 +106,6 @@ const CREATE_PARTY_MUTATION = gql`
     }
   }
 `;
-
-// Helper Functions for working with the data
-
-// Helper function to determine if contact method is primary
-const determineContactMethodPrimary = (
-  contactMethod: ContactMethod,
-  allContactMethods: (ContactMethod | null | undefined)[],
-  typeCode: string,
-): boolean => {
-  if (contactMethod.isPrimary !== null && contactMethod.isPrimary !== undefined) {
-    return contactMethod.isPrimary;
-  }
-
-  const methodsOfType = allContactMethods.filter((c): c is ContactMethod => c?.typeCode === typeCode);
-  const index = methodsOfType.indexOf(contactMethod);
-  return index === 0;
-};
-
-// Helper function to map contacts from party data
-const mapContactsFromPartyData = (contactPeople: BusinessPerson[] | undefined) => {
-  return (
-    contactPeople?.map((p: BusinessPerson) => ({
-      businessPersonXrefGuid: p.businessPersonXrefGuid,
-      business: {
-        businessGuid: p.business?.businessGuid,
-      },
-      person: {
-        personGuid: p.person?.personGuid,
-        firstName: p.person?.firstName,
-        lastName: p.person?.lastName,
-      },
-      contactMethods: seedContactMethods(
-        p.contactMethods
-          ?.filter((cm): cm is ContactMethod => cm != null)
-          .map((cm: ContactMethod) => ({
-            contactMethodGuid: cm.contactMethodGuid ?? undefined,
-            typeCode: cm.typeCode ?? undefined,
-            value: cm.value ?? "",
-            isPrimary: determineContactMethodPrimary(cm, p.contactMethods || [], cm.typeCode || ""),
-          })) || [],
-      ),
-    })) || []
-  );
-};
-
-type ContactFormSnapshot = Pick<
-  BusinessPerson,
-  "businessPersonXrefGuid" | "title" | "displayInInvestigation" | "isPrimary"
-> & {
-  business?: { businessGuid?: string | null } | null;
-  person?: { personGuid?: string | null; firstName?: string | null; lastName?: string | null } | null;
-  contactMethods?: Array<{
-    contactMethodGuid?: string | null;
-    typeCode?: string | null;
-    value?: string | null;
-    isPrimary?: boolean | null;
-  } | null> | null;
-};
-
-const buildContactPeopleForUpdate = (contacts: ContactFormSnapshot[]) => {
-  return contacts.map((c) => ({
-      businessPersonXrefGuid: c.businessPersonXrefGuid,
-      business: {
-        businessGuid: c.business?.businessGuid,
-      },
-      person: {
-        personGuid: c.person?.personGuid ?? "",
-        firstName: c.person?.firstName ?? "",
-        lastName: c.person?.lastName ?? "",
-      },
-      contactMethods: c.contactMethods
-        // empty contact rows are not persisted
-        ?.filter((cm): cm is NonNullable<typeof cm> => cm != null && !!cm.value?.trim())
-        .map((cm) => ({
-          contactMethodGuid: cm.contactMethodGuid,
-          typeCode: cm.typeCode ?? "",
-          value: cm.value ?? "",
-          isPrimary: cm.isPrimary ?? false,
-        })),
-    }));
-};
-
-const buildContactPeopleForCreate = (contacts: ContactFormSnapshot[]) => {
-  return contacts.map((c) => {
-      // empty contact rows are not persisted
-      const contactMethods = (c.contactMethods ?? [])
-        .filter((cm): cm is NonNullable<typeof cm> => cm != null && !!cm.value?.trim())
-        .map((cm) => ({
-          typeCode: cm.typeCode ?? "",
-          value: cm.value ?? "",
-          isPrimary: cm.isPrimary ?? false,
-        }));
-      return {
-        contactMethods: contactMethods.length ? contactMethods : undefined,
-        person: {
-          firstName: c.person?.firstName ?? "",
-          lastName: c.person?.lastName ?? "",
-        },
-      };
-    });
-};
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
@@ -283,7 +181,7 @@ const PartyEdit: FC = () => {
         aliases: mapAliasesFromPartyData(partyData.party.aliases),
         phoneNumbers: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.EMAIL),
-        contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
+        contacts: mapContactPeopleFromPartyData(partyData.party.business?.contactPeople),
         addresses: mapAddressesFromPartyData(partyData.party.addresses),
       };
     }
@@ -357,7 +255,7 @@ const PartyEdit: FC = () => {
           images: pendingImagesRef.current,
           business:
             value.partyType === "CMP"
-              ? buildBusinessCreateUpdate(value, buildContactPeopleForUpdate(value.contacts))
+              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, true))
               : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
@@ -370,7 +268,7 @@ const PartyEdit: FC = () => {
           aliases: buildAliases(value.aliases, false),
           business:
             value.partyType === "CMP"
-              ? buildBusinessCreateUpdate(value, buildContactPeopleForCreate(value.contacts))
+              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, false))
               : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };
@@ -558,6 +456,7 @@ const PartyEdit: FC = () => {
                 form={form}
                 isDisabled={isDisabled}
                 showContactPeople={true}
+                showInvestigationFields={true}
                 businessGuid={partyData?.party?.business?.businessGuid}
               />
             )}

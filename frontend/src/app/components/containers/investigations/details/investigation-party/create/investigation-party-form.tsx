@@ -25,15 +25,14 @@ import {
   buildAddresses,
   buildAliases,
   buildContactMethods,
+  buildContactPeople,
   buildIdentifiers,
-  buildInvestigationContactPeople,
   buildPersonBase,
-  ContactPersonFormValue,
   createEmptyPartyFormValues,
   mapAddressesFromPartyData,
   mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
-  seedContactMethods,
+  mapContactPeopleFromPartyData,
   validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import {
@@ -153,35 +152,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
         addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
-        contacts: (editParty.business?.contactPeople ?? [])
-          .filter((cp): cp is NonNullable<typeof cp> => cp != null)
-          .map(
-            (cp): ContactPersonFormValue => ({
-              businessPersonXrefGuid: cp.businessPersonXrefGuid ?? undefined,
-              business: { businessGuid: editParty.business?.businessGuid ?? undefined },
-              person: {
-                personGuid: cp.person?.personGuid ?? undefined,
-                firstName: cp.person?.firstName ?? "",
-                lastName: cp.person?.lastName ?? "",
-              },
-              contactMethods: seedContactMethods(
-                (cp.contactMethods ?? [])
-                  .filter((cm): cm is NonNullable<typeof cm> => cm != null)
-                  .map((cm) => ({
-                    contactMethodGuid: cm.contactMethodGuid ?? undefined,
-                    typeCode: cm.typeCode ?? undefined,
-                    value: cm.value ?? "",
-                    isPrimary: cm.isPrimary ?? false,
-                  })),
-              ),
-              title: cp.title ?? "",
-              displayInInvestigation: cp.displayInInvestigation ?? true,
-              isPrimary: cp.isPrimary ?? false,
-              officeAddressGuids: (cp.associatedAddresses ?? [])
-                .map((aa) => aa?.address?.addressGuid)
-                .filter((guid): guid is string => !!guid),
-            }),
-          ),
+        contacts: mapContactPeopleFromPartyData(editParty.business?.contactPeople),
         partyAssociationRole: editParty.partyAssociationRole || "",
       };
     }
@@ -221,7 +192,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           input.business = {
             name: value.businessName,
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            contactPeople: buildInvestigationContactPeople(value.contacts, true) ?? [],
+            contactPeople: buildContactPeople(value.contacts, true) ?? [],
           };
         }
 
@@ -258,7 +229,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           input.business = {
             name: value.businessName,
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            contactPeople: buildInvestigationContactPeople(value.contacts, false),
+            contactPeople: buildContactPeople(value.contacts, false),
           };
         }
 
