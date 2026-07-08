@@ -134,7 +134,12 @@ test.describe("Investigation Party Form", () => {
     const saveButton = modal.locator("#add-party-save-button");
     await saveButton.click();
 
-    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true })).toBeVisible();
+    await expect(
+      page
+        .locator(".party-card", { has: page.locator(".bi-person") })
+        .first()
+        .getByText("Doe, Jane", { exact: true }),
+    ).toBeVisible();
   });
 
   test("cleanup - remove all test parties from investigation", async ({ page }) => {
