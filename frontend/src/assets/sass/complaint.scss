@@ -1800,6 +1800,14 @@ p {
   min-width: 0;
 }
 
+// edit form row override, matches the 6px label offset applied at lg+
+@include media-breakpoint-up(lg) {
+  .comp-details-static-value {
+    display: inline-block;
+    margin-top: 6px;
+  }
+}
+
 .btn-close {
   box-sizing: content-box;
   width: 0.15em;

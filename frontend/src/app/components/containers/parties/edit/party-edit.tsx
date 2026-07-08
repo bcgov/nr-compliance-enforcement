@@ -13,10 +13,7 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import {
-  Alias,
   BusinessIdentifier,
-  BusinessPerson,
-  ContactMethod,
   ImageUpdateInput,
   PartyCreateInput,
   PartyUpdateInput,
@@ -33,15 +30,25 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
   buildAddresses,
+  buildAliases,
   buildBusinessCreateUpdate,
   buildContactMethods,
+  buildContactPeople,
   buildPersonForCreate,
   buildPersonForUpdate,
+  createEmptyAddress,
+  createEmptyContactMethod,
   mapAddressesFromPartyData,
+  mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
+  mapContactPeopleFromPartyData,
   validateBusinessForm,
+  validatePersonForm,
 } from "@/app/components/containers/parties/form/party-form-utils";
-import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import {
+  handleBusinessPartyMutationError,
+  scrollToFirstFieldError,
+} from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 
@@ -99,91 +106,6 @@ const CREATE_PARTY_MUTATION = gql`
     }
   }
 `;
-
-// Helper Functions for working with the data
-
-// Helper function to determine if contact method is primary
-const determineContactMethodPrimary = (
-  contactMethod: ContactMethod,
-  allContactMethods: (ContactMethod | null | undefined)[],
-  typeCode: string,
-): boolean => {
-  if (contactMethod.isPrimary !== null && contactMethod.isPrimary !== undefined) {
-    return contactMethod.isPrimary;
-  }
-
-  const methodsOfType = allContactMethods.filter((c): c is ContactMethod => c?.typeCode === typeCode);
-  const index = methodsOfType.indexOf(contactMethod);
-  return index === 0;
-};
-
-// Helper function to map contacts from party data
-const mapContactsFromPartyData = (contactPeople: BusinessPerson[] | undefined) => {
-  return (
-    contactPeople?.map((p: BusinessPerson) => ({
-      businessPersonXrefGuid: p.businessPersonXrefGuid,
-      business: {
-        businessGuid: p.business?.businessGuid,
-      },
-      person: {
-        personGuid: p.person?.personGuid,
-        firstName: p.person?.firstName,
-        lastName: p.person?.lastName,
-      },
-      contactMethods:
-        p.contactMethods
-          ?.filter((cm): cm is ContactMethod => cm != null)
-          .map((cm: ContactMethod) => ({
-            contactMethodGuid: cm.contactMethodGuid,
-            typeCode: cm.typeCode,
-            value: cm.value,
-            isPrimary: determineContactMethodPrimary(cm, p.contactMethods || [], cm.typeCode || ""),
-          })) || [],
-    })) || []
-  );
-};
-
-// Helper to build contact people for updates
-const buildContactPeopleForUpdate = (contacts: BusinessPerson[]) => {
-  return contacts.map((c: BusinessPerson) => ({
-    businessPersonXrefGuid: c.businessPersonXrefGuid,
-    business: {
-      businessGuid: c.business?.businessGuid,
-    },
-    person: {
-      personGuid: c.person?.personGuid ?? "",
-      firstName: c.person?.firstName ?? "",
-      lastName: c.person?.lastName ?? "",
-    },
-    contactMethods: c.contactMethods
-      ?.filter((cm): cm is ContactMethod => cm != null)
-      .map((cm: ContactMethod) => ({
-        contactMethodGuid: cm.contactMethodGuid,
-        typeCode: cm.typeCode ?? "",
-        value: cm.value ?? "",
-        isPrimary: cm.isPrimary ?? false,
-      })),
-  }));
-};
-
-// Helper to build contact people for creates
-const buildContactPeopleForCreate = (contacts: BusinessPerson[]) => {
-  return contacts.map((c: BusinessPerson) => ({
-    contactMethods: c.contactMethods?.length
-      ? c.contactMethods
-          .filter((cm): cm is ContactMethod => cm != null)
-          .map((cm: ContactMethod) => ({
-            typeCode: cm.typeCode ?? "",
-            value: cm.value ?? "",
-            isPrimary: cm.isPrimary ?? false,
-          }))
-      : undefined,
-    person: {
-      firstName: c.person?.firstName ?? "",
-      lastName: c.person?.lastName ?? "",
-    },
-  }));
-};
 
 const parseDateOnly = (dateStr: string) => parse(dateStr.slice(0, 10), "yyyy-MM-dd", new Date());
 
@@ -250,19 +172,16 @@ const PartyEdit: FC = () => {
         comments: person?.comments || null,
         boloIndicator: person?.boloIndicator || null,
         businessName: partyData.party.business?.name || "",
-        businessNumber: partyData.party.business?.identifiers?.find(
+        businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
         ),
-        worksafeBCNumber: partyData.party.business?.identifiers?.find(
+        worksafeBCNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.WSBC_NUMBER,
         ),
-        aliases: partyData.party.aliases.map((a: Alias) => ({
-          aliasGuid: a.aliasGuid,
-          name: a.name,
-        })),
+        aliases: mapAliasesFromPartyData(partyData.party.aliases),
         phoneNumbers: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.PHONE),
         emailAddresses: mapContactMethodsFromPartyData(partyData.party.contactMethods, ContactMethods.EMAIL),
-        contacts: mapContactsFromPartyData(partyData.party.business?.contactPeople),
+        contacts: mapContactPeopleFromPartyData(partyData.party.business?.contactPeople),
         addresses: mapAddressesFromPartyData(partyData.party.addresses),
       };
     }
@@ -299,23 +218,25 @@ const PartyEdit: FC = () => {
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
-      aliases: [],
-      phoneNumbers: [],
-      emailAddresses: [],
+      aliases: [{ aliasGuid: undefined, name: "" }],
+      phoneNumbers: [createEmptyContactMethod(true)],
+      emailAddresses: [createEmptyContactMethod(true)],
       contacts: [],
-      addresses: [],
+      addresses: [{ ...createEmptyAddress(), isPrimary: true }],
     };
   }, [isEditMode, partyData]);
 
   const [partyIdentifier, setPartyIdentifier] = useState<string>(id || "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
-  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
-  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
+  const [triggerCancelAttachments, setTriggerCancelAttachments] = useState(0);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
 
   const form = useForm({
     defaultValues,
+    // fires only when a submission attempt is blocked by validation
+    onSubmitInvalid: () => scrollToFirstFieldError(),
     onSubmit: async ({ value }) => {
       if (value.partyType === PartyTypeCodes.BUSINESS) {
         const validationError = await validateBusinessForm(value);
@@ -328,13 +249,13 @@ const PartyEdit: FC = () => {
       if (isEditMode) {
         const updateInput: PartyUpdateInput = {
           partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
+          aliases: buildAliases(value.aliases, true),
           images: pendingImagesRef.current,
           business:
             value.partyType === "CMP"
-              ? buildBusinessCreateUpdate(value, buildContactPeopleForUpdate(value.contacts))
+              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, true))
               : null,
           person: value.partyType === "PRS" ? buildPersonForUpdate(value) : null,
         };
@@ -342,12 +263,12 @@ const PartyEdit: FC = () => {
       } else {
         const createInput: PartyCreateInput = {
           partyTypeCode: value.partyType,
-          addresses: buildAddresses(value.addresses, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, false),
-          aliases: value.aliases?.map((a: Alias) => ({ name: a.name })) || [],
+          aliases: buildAliases(value.aliases, false),
           business:
             value.partyType === "CMP"
-              ? buildBusinessCreateUpdate(value, buildContactPeopleForCreate(value.contacts))
+              ? buildBusinessCreateUpdate(value, buildContactPeople(value.contacts, false))
               : null,
           person: value.partyType === "PRS" ? buildPersonForCreate(value) : null,
         };
@@ -367,10 +288,7 @@ const PartyEdit: FC = () => {
       setPartyIdentifier(newPartyIdentifier);
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party created successfully");
         allowNavigation();
@@ -409,9 +327,8 @@ const PartyEdit: FC = () => {
   }, []);
 
   const confirmCancelChanges = useCallback(() => {
-    setTriggerCancelAttachments(true);
+    setTriggerCancelAttachments((n) => n + 1);
     setTimeout(() => {
-      setTriggerCancelAttachments(false);
       form.reset();
       allowNavigation();
       if (isEditMode && id) {
@@ -438,13 +355,6 @@ const PartyEdit: FC = () => {
 
   const saveButtonClick = useCallback(async () => {
     const currentValues = currentFormValues;
-    if (currentValues.partyType === PartyTypeCodes.PERSON) {
-      if (!currentValues.partyType || currentValues.firstName?.trim() === "" || currentValues.lastName?.trim() === "") {
-        ToggleError("Validation error: Please fill in all required fields.");
-        return;
-      }
-    }
-
     if (currentValues.partyType === PartyTypeCodes.BUSINESS) {
       const validationError = await validateBusinessForm(currentValues);
       if (validationError) {
@@ -452,10 +362,17 @@ const PartyEdit: FC = () => {
         return;
       }
     }
+    // an added person must have at least one entered field
+    if (!isEditMode && currentValues.partyType === PartyTypeCodes.PERSON) {
+      const validationError = validatePersonForm(currentValues);
+      if (validationError) {
+        ToggleError(validationError);
+        return;
+      }
+    }
     if (isEditMode) {
-      setTriggerSaveAttachments(true);
+      setTriggerSaveAttachments((n) => n + 1);
       setTimeout(() => {
-        setTriggerSaveAttachments(false);
         form.handleSubmit();
       }, 0);
     } else {
@@ -466,47 +383,44 @@ const PartyEdit: FC = () => {
 
   const isSubmitting = createPartyMutation.isPending || updatePartyMutation.isPending;
   const isDisabled = isSubmitting || isLoading;
+  // disable saving from validation start through mutation completion
+  const formSubmitting = useStore(form.store, (state: any) => state.isSubmitting) as boolean;
+  const saveDisabled = formSubmitting || isDisabled;
 
   const handleAttachmentsDirtyChange = (_index: number, dirty: boolean) => {
     setAttachmentsDirty(dirty);
   };
+
+  const firstName = currentFormValues.firstName?.trim();
+  const lastName = currentFormValues.lastName?.trim();
+  const partyDetailsTitle = firstName && lastName ? `${firstName} ${lastName}` : "Party details";
 
   return (
     <div className="comp-complaint-details">
       <PartyEditHeader
         cancelButtonClick={cancelButtonClick}
         saveButtonClick={saveButtonClick}
+        saveDisabled={saveDisabled}
         isEditMode={isEditMode}
         partyIdentifier={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
-          <h2>Party Details</h2>
+          <h2>{partyDetailsTitle}</h2>
         </div>
 
-        <PartyAttachments
-          partyId={partyIdentifier}
-          attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
-          triggerSave={triggerSaveAttachments}
-          triggerCancel={triggerCancelAttachments}
-          onPendingImagesChange={handlePendingImagesChange}
-          onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
-          onSaved={() => {
-            if (!isEditMode) {
-              ToggleSuccess("Party created successfully");
-              allowNavigation();
-              navigate(`/party/${partyIdentifier}`);
-            }
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!saveDisabled) saveButtonClick();
           }}
-        />
-
-        <form onSubmit={form.handleSubmit}>
+        >
           <fieldset disabled={isDisabled}>
             <FormField
               form={form}
               name="partyType"
-              label="Party Type"
+              label="Type"
               required
               validators={{ onChange: z.string().min(1, "Party type is required") }}
               render={(field) => (
@@ -537,10 +451,36 @@ const PartyEdit: FC = () => {
                 form={form}
                 isDisabled={isDisabled}
                 showContactPeople={true}
+                showInvestigationFields={true}
                 businessGuid={partyData?.party?.business?.businessGuid}
               />
             )}
           </fieldset>
+
+          {partyTypeValue && (
+            <>
+              <div className="comp-details-section-header pt-5">
+                <h3>Attachments</h3>
+              </div>
+              <PartyAttachments
+                partyId={partyIdentifier}
+                attachmentType={AttachmentEnum.PARTY_ATTACHMENT}
+                allowUpload
+                allowDelete
+                triggerSave={triggerSaveAttachments}
+                triggerCancel={triggerCancelAttachments}
+                onPendingImagesChange={handlePendingImagesChange}
+                onDirtyChange={(index: number, isDirty: boolean) => handleAttachmentsDirtyChange(index, isDirty)}
+                onSaved={() => {
+                  if (!isEditMode) {
+                    ToggleSuccess("Party created successfully");
+                    allowNavigation();
+                    navigate(`/party/${partyIdentifier}`);
+                  }
+                }}
+              />
+            </>
+          )}
         </form>
       </section>
     </div>

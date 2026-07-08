@@ -23,6 +23,7 @@ import { InvestigationSearchMapParameters } from "./dto/search-map-parameters";
 import { SearchMapResults } from "./dto/search-map-results";
 import { MapSearchUtility } from "../../common/map_search.utility";
 import { generateInvestigationIdentifier } from "src/common/sequence.utility";
+import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
 
@@ -67,6 +68,9 @@ export class InvestigationService {
                 },
               },
               investigation_address: {
+                include: {
+                  investigation_contact_method: true,
+                },
                 where: {
                   active_ind: true,
                 },
@@ -88,6 +92,39 @@ export class InvestigationService {
                   active_ind: true,
                 },
                 include: {
+                  investigation_business_person_xref: {
+                    include: {
+                      investigation_business_person_address_xref: {
+                        where: {
+                          active_ind: true,
+                        },
+                        include: {
+                          investigation_address: true,
+                        },
+                      },
+                      investigation_person: {
+                        include: {
+                          investigation_person_facial_hair_style_code_ref: {
+                            where: {
+                              active_ind: true,
+                            },
+                          },
+                          investigation_party: {
+                            include: {
+                              investigation_contact_method: {
+                                where: {
+                                  active_ind: true,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    where: {
+                      active_ind: true,
+                    },
+                  },
                   investigation_business_identifier: {
                     where: {
                       active_ind: true,
@@ -98,6 +135,8 @@ export class InvestigationService {
             },
             where: {
               active_ind: true,
+              // filter business contacts
+              NOT: { party_type_code_ref: PARTY_TYPES.Contact },
             },
             orderBy: {
               create_utc_timestamp: "asc",
@@ -222,6 +261,7 @@ export class InvestigationService {
           },
         },
       });
+
       const guids = found.map((inv) => inv.investigation_guid);
       const geometryByGuid = await this.fetchLocationGeometryPoints(guids, db);
       for (const inv of found) {
@@ -265,6 +305,7 @@ export class InvestigationService {
                       },
                       enforcement_action: {
                         include: {
+                          ticket: true,
                           contravention_party_xref: true,
                           enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
                             true,
@@ -287,7 +328,7 @@ export class InvestigationService {
       },
     });
 
-    if (partyType == "Person") {
+    if (partyType == "PRS") {
       prismaParties = await this.prisma.investigation_person.findMany({
         where: {
           person_guid_ref: partyId,
@@ -296,7 +337,7 @@ export class InvestigationService {
         },
         include,
       });
-    } else if (partyType == "Business") {
+    } else if (partyType == "CMP") {
       prismaParties = await this.prisma.investigation_business.findMany({
         where: {
           business_guid_ref: partyId,

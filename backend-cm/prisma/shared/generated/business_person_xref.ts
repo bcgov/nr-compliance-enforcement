@@ -1,3 +1,4 @@
+import { business_person_address_xref } from "./business_person_address_xref";
 import { business } from "./business";
 import { business_person_xref_code } from "./business_person_xref_code";
 import { person } from "./person";
@@ -30,6 +31,18 @@ export class business_person_xref {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiProperty({ type: Boolean })
+  display_in_investigation_ind: boolean = true;
+
+  @ApiPropertyOptional({ type: String })
+  title_role?: string;
+
+  @ApiProperty({ type: Boolean })
+  is_primary: boolean;
+
+  @ApiProperty({ isArray: true, type: () => business_person_address_xref })
+  business_person_address_xref: business_person_address_xref[];
 
   @ApiProperty({ type: () => business })
   business: business;

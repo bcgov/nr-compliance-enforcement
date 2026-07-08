@@ -337,7 +337,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           const details = [
             dob,
             primaryAddress
-              ? `${primaryAddress?.address} ${primaryAddress?.city} ${primaryAddress?.province} ${primaryAddress?.postalCode}`
+              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${primaryAddress?.province ?? ""} ${primaryAddress?.postalCode ?? ""}`
               : null,
             phone,
           ]
@@ -371,7 +371,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
                   </span>
                 )}
               </h5>
-              <span className="text-muted smaller-font">{details}</span>
+              <span className="text-muted fw-bold smaller-font">{details}</span>
               <div className="comp-data-container">
                 <ContraventionTable
                   contraventions={groupedContraventions}

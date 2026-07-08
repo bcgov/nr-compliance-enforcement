@@ -30,8 +30,10 @@ interface PartyAttachmentsProps {
   partyId: string;
   activityId?: string;
   attachmentType: number;
-  triggerSave: boolean;
-  triggerCancel?: boolean;
+  allowUpload: boolean;
+  allowDelete: boolean;
+  triggerSave?: boolean | number;
+  triggerCancel?: boolean | number;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
   attachmentReferences?: InvestigationAttachmentReference[];
@@ -42,6 +44,8 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
   partyId,
   activityId,
   attachmentType,
+  allowUpload,
+  allowDelete,
   triggerSave,
   triggerCancel,
   onDirtyChange,
@@ -210,30 +214,25 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
 
   return (
     <section
-      className="comp-details-section mb-3"
+      className="comp-details-section"
       id="party-attachments"
     >
-      <div className="comp-details-form-row">
-        <label htmlFor="party-attachments">Party Attachments</label>
-        <div className="comp-details-edit-input">
-          <Attachments
-            attachmentType={attachmentType}
-            identifier={identifier}
-            subIdentifier={subidentifier}
-            allowUpload={true}
-            allowDelete={true}
-            cancelPendingUpload={isPendingUpload}
-            setCancelPendingUpload={setIsPendingUpload}
-            onFilesSelected={onHandleAddAttachments}
-            onFileDeleted={onHandleDeleteAttachment}
-            onFilesReplaced={onHandleReplaceAttachments}
-            onSlideCountChange={handleSlideCountChange}
-            refreshKey={attachmentRefreshKey}
-            showPreview={attachmentCount > 0}
-            attachmentReferences={attachmentReferences}
-          />
-        </div>
-      </div>
+      <Attachments
+        attachmentType={attachmentType}
+        identifier={identifier}
+        subIdentifier={subidentifier}
+        allowUpload={allowUpload}
+        allowDelete={allowDelete}
+        cancelPendingUpload={isPendingUpload}
+        setCancelPendingUpload={setIsPendingUpload}
+        onFilesSelected={onHandleAddAttachments}
+        onFileDeleted={onHandleDeleteAttachment}
+        onFilesReplaced={onHandleReplaceAttachments}
+        onSlideCountChange={handleSlideCountChange}
+        refreshKey={attachmentRefreshKey}
+        showPreview={attachmentCount > 0}
+        attachmentReferences={attachmentReferences}
+      />
     </section>
   );
 };

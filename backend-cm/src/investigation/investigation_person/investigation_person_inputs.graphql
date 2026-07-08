@@ -30,7 +30,7 @@ input CreateInvestigationPersonInput {
 }
 
 input UpdateInvestigationPersonInput {
-  personGuid: String!
+  personGuid: String
   firstName: String!
   middleNames: String
   lastName: String!

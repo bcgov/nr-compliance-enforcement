@@ -5,6 +5,7 @@ input CreateInvestigationBusinessInput {
   businessIdentifiers: [CreateInvestigationBusinessIdentifierInput]
   aliases: [CreateInvestigationAliasInput]
   addresses: [CreateInvestigationAddressInput]
+  contactPeople: [CreateInvestigationBusinessContactInput]
 }
 
 input UpdateInvestigationBusinessInput {
@@ -13,4 +14,5 @@ input UpdateInvestigationBusinessInput {
   businessIdentifiers: [UpdateInvestigationBusinessIdentifierInput]
   aliases: [UpdateInvestigationAliasInput]
   addresses: [UpdateInvestigationAddressInput]
+  contactPeople: [UpdateInvestigationBusinessContactInput]
 }

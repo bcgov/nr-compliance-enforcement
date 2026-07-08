@@ -3,22 +3,22 @@ import { Field, InputType } from "@nestjs/graphql";
 import { investigation_person_facial_hair_style_code_ref } from "prisma/investigation/generated/investigation_person_facial_hair_style_code_ref";
 
 export class InvestigationPersonFacialHairStyleCodeRef {
-  investigationPersonFacialStyleHairCodeRefGuid: string;
-  investigationPersonGuid: string;
-  facialHairStyleCodeRef: string;
+  personFacialStyleHairCodeGuid: string;
+  personGuid: string;
+  facialHairStyleCode: string;
   activeIndicator: boolean;
 }
 
 @InputType()
 export class InvestigationPersonFacialHairStyleCodeRefInput {
   @Field(() => String)
-  investigationPersonFacialStyleHairCodeRefGuid: string;
+  personFacialStyleHairCodeGuid: string;
 
   @Field(() => String)
-  investigationPersonGuid: string;
+  personGuid: string;
 
   @Field(() => String)
-  facialHairStyleCodeRef: string;
+  facialHairStyleCode: string;
 
   @Field(() => String)
   activeIndicator: string;
@@ -32,15 +32,15 @@ export const mapPrismaInvestigationPersonFacialHairStyleCodeRefToInvestigationPe
     "investigation_person_facial_hair_style_code_ref",
     "InvestigationPersonFacialHairStyleCodeRef",
     forMember(
-      (dest) => dest.investigationPersonFacialStyleHairCodeRefGuid,
+      (dest) => dest.personFacialStyleHairCodeGuid,
       mapFrom((src) => src.investigation_person_facial_hair_style_code_ref_guid),
     ),
     forMember(
-      (dest) => dest.investigationPersonGuid,
+      (dest) => dest.personGuid,
       mapFrom((src) => src.investigation_person_guid),
     ),
     forMember(
-      (dest) => dest.facialHairStyleCodeRef,
+      (dest) => dest.facialHairStyleCode,
       mapFrom((src) => src.facial_hair_style_code_ref),
     ),
     forMember(
