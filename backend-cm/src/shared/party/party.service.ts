@@ -1749,12 +1749,12 @@ export class PartyService {
     }
 
     const businessNumber = input.business?.businessIdentifiers?.find(
-      (i) => i.identifierCode === BUSINESS_NUMBER_CODE,
+      (i) => i.identifierCode === "BNUM",
     )?.identifierValue;
     if (
       businessNumber &&
       party.business?.business_identifier?.some(
-        (bi: any) => bi.business_identifier_code === BUSINESS_NUMBER_CODE && bi.identifier_value === businessNumber,
+        (bi: any) => bi.business_identifier_code === "BNUM" && bi.identifier_value === businessNumber,
       )
     ) {
       score += 1;
@@ -1802,14 +1802,14 @@ export class PartyService {
     }
 
     const businessNumber = input.business?.businessIdentifiers?.find(
-      (i) => i.identifierCode === BUSINESS_NUMBER_CODE,
+      (i) => i.identifierCode === "BNUM",
     )?.identifierValue;
     if (businessNumber) {
       conditions.push({
         business: {
           business_identifier: {
             some: {
-              business_identifier_code: BUSINESS_NUMBER_CODE,
+              business_identifier_code: "BNUM",
               identifier_value: { equals: businessNumber },
             },
           },

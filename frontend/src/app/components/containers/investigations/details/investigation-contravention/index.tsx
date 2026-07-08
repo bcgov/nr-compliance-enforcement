@@ -422,7 +422,10 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 // Helper
 export function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
-  if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
+  if (party.person) {
+    const { firstName, lastName } = party.person;
+    return [lastName, firstName].filter(Boolean).join(", ");
+  }
   return "Unknown parties";
 }
 

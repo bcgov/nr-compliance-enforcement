@@ -405,36 +405,38 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           <h2>Party details</h2>
         </div>
 
-        <form
-          className="comp-party-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            saveButtonClick();
-          }}
-        >
-          <fieldset disabled={isDisabled}>
-            <FormField
-              form={form}
-              name="partyAssociationRole"
-              label="Investigation role"
-              required
-              validators={{ onChange: z.string().min(1, "Investigation role is required") }}
-              render={(field) => (
-                <CompSelect
-                  id="party-role-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input mb-3"
-                  options={partyRoleOptions}
-                  value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                />
-              )}
-            />
+        <div className="comp-party-form-layout">
+          <form
+            className="comp-party-form"
+            onBlur={handleFieldBlur}
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveButtonClick();
+            }}
+          >
+            <fieldset disabled={isDisabled}>
+              <FormField
+                form={form}
+                name="partyAssociationRole"
+                label="Investigation role"
+                required
+                validators={{ onChange: z.string().min(1, "Investigation role is required") }}
+                render={(field) => (
+                  <CompSelect
+                    id="party-role-select"
+                    classNamePrefix="comp-select"
+                    className="comp-details-input mb-3"
+                    options={partyRoleOptions}
+                    value={partyRoleOptions?.find((opt: any) => opt.value === field.state.value)}
+                    onChange={(option) => field.handleChange(option?.value || "")}
+                    placeholder="Select"
+                    isClearable={true}
+                    showInactive={false}
+                    enableValidation={true}
+                    errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                  />
+                )}
+              />
 
               <hr className="comp-details-section-divider" />
               <div className="comp-details-section-header">
