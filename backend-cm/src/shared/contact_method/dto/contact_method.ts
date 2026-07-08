@@ -13,11 +13,17 @@ export class ContactMethod {
 
 @InputType()
 export class ContactMethodInput {
+  @Field(() => String, { nullable: true })
+  contactMethodGuid?: string;
+
   @Field(() => String)
   typeCode: string;
 
   @Field(() => String)
   value: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isPrimary?: boolean;
 }
 
 export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {

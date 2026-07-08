@@ -101,8 +101,8 @@ const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): Comp
     headerClassName: "comp-cell-min-width-110",
     cellClassName: "comp-cell-width-110",
     isSortable: false,
-    getValue: (party) => getBusinessNumber(party.business?.identifiers),
-    renderCell: (party) => getBusinessNumber(party.business?.identifiers),
+    getValue: (party) => getBusinessNumber(party.business?.businessIdentifiers),
+    renderCell: (party) => getBusinessNumber(party.business?.businessIdentifiers),
   },
   {
     label: "Primary phone",

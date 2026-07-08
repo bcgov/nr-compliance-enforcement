@@ -55,7 +55,9 @@ export type Address = {
   addressGuid?: Maybe<Scalars['String']['output']>;
   addressName?: Maybe<Scalars['String']['output']>;
   city?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
   country?: Maybe<Scalars['String']['output']>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;
   province?: Maybe<Scalars['String']['output']>;
@@ -63,9 +65,12 @@ export type Address = {
 
 export type AddressInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  addressGuid?: InputMaybe<Scalars['String']['input']>;
   addressName: Scalars['String']['input'];
   city?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   country?: InputMaybe<Scalars['String']['input']>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
@@ -76,7 +81,9 @@ export type AddressUpdateInput = {
   addressGuid?: InputMaybe<Scalars['String']['input']>;
   addressName: Scalars['String']['input'];
   city?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
   country?: InputMaybe<Scalars['String']['input']>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
@@ -201,16 +208,16 @@ export type Business = {
   __typename?: 'Business';
   aliases?: Maybe<Array<Maybe<Alias>>>;
   businessGuid?: Maybe<Scalars['String']['output']>;
+  businessIdentifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
-  identifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   name?: Maybe<Scalars['String']['output']>;
 };
 
 export type BusinessIdentifier = {
   __typename?: 'BusinessIdentifier';
   businessIdentifierGuid?: Maybe<Scalars['String']['output']>;
-  identifierCode?: Maybe<Scalars['String']['output']>;
-  identifierValue?: Maybe<Scalars['String']['output']>;
+  identifierCode: Scalars['String']['output'];
+  identifierValue: Scalars['String']['output'];
 };
 
 export type BusinessIdentifierCode = {
@@ -237,38 +244,58 @@ export type BusinessIdentifierUpdateInput = {
 
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
+  businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   name: Scalars['String']['input'];
 };
 
 export type BusinessPerson = {
   __typename?: 'BusinessPerson';
+  associatedAddresses?: Maybe<Array<Maybe<BusinessPersonAddress>>>;
   business?: Maybe<Business>;
   businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<ContactMethod>>>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
   person?: Maybe<Person>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type BusinessPersonAddress = {
+  __typename?: 'BusinessPersonAddress';
+  activeInd: Scalars['Boolean']['output'];
+  address: Address;
+  businessPerson: BusinessPerson;
+  businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
 export type BusinessPersonInput = {
   business?: InputMaybe<BusinessInput>;
   businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   person?: InputMaybe<PersonInput>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessPersonUpdateInput = {
   business?: InputMaybe<BusinessUpdateInput>;
   businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<ContactMethodInput>>>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   person?: InputMaybe<PersonUpdateInput>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BusinessUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
+  businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
-  identifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -424,11 +451,11 @@ export type ConflictHistoryCode = {
 
 export type ContactMethod = {
   __typename?: 'ContactMethod';
-  contactMethodGuid?: Maybe<Scalars['String']['output']>;
-  isPrimary?: Maybe<Scalars['Boolean']['output']>;
-  typeCode?: Maybe<Scalars['String']['output']>;
-  typeDescription?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['String']['output']>;
+  contactMethodGuid: Scalars['String']['output'];
+  isPrimary: Scalars['Boolean']['output'];
+  typeCode: Scalars['String']['output'];
+  typeDescription: Scalars['String']['output'];
+  value: Scalars['String']['output'];
 };
 
 export type ContactMethodInput = {
@@ -586,9 +613,12 @@ export type CreateInspectionPersonInput = {
 
 export type CreateInvestigationAddressInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  addressGuid?: InputMaybe<Scalars['String']['input']>;
   addressName: Scalars['String']['input'];
   city?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
   country?: InputMaybe<Scalars['String']['input']>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
@@ -596,6 +626,15 @@ export type CreateInvestigationAddressInput = {
 
 export type CreateInvestigationAliasInput = {
   name: Scalars['String']['input'];
+};
+
+export type CreateInvestigationBusinessContactInput = {
+  contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  person: CreateInvestigationPersonInput;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateInvestigationBusinessIdentifierInput = {
@@ -610,14 +649,15 @@ export type CreateInvestigationBusinessInput = {
   businessIdentifiers?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessIdentifierInput>>>;
   businessReference?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessContactInput>>>;
   name: Scalars['String']['input'];
 };
 
 export type CreateInvestigationContactMethodInput = {
   contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
-  value?: InputMaybe<Scalars['String']['input']>;
+  value: Scalars['String']['input'];
 };
 
 export type CreateInvestigationInput = {
@@ -1332,7 +1372,9 @@ export type InvestigationAddress = {
   addressGuid?: Maybe<Scalars['String']['output']>;
   addressName?: Maybe<Scalars['String']['output']>;
   city?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
   country?: Maybe<Scalars['String']['output']>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
   isPrimary?: Maybe<Scalars['Boolean']['output']>;
   postalCode?: Maybe<Scalars['String']['output']>;
   province?: Maybe<Scalars['String']['output']>;
@@ -1363,6 +1405,7 @@ export type InvestigationBusiness = {
   businessIdentifiers?: Maybe<Array<Maybe<InvestigationBusinessIdentifier>>>;
   businessReference?: Maybe<Scalars['String']['output']>;
   contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
+  contactPeople?: Maybe<Array<Maybe<InvestigationBusinessPerson>>>;
   name: Scalars['String']['output'];
   partyGuid: Scalars['String']['output'];
 };
@@ -1374,12 +1417,32 @@ export type InvestigationBusinessIdentifier = {
   identifierValue: Scalars['String']['output'];
 };
 
+export type InvestigationBusinessPerson = {
+  __typename?: 'InvestigationBusinessPerson';
+  associatedAddresses?: Maybe<Array<Maybe<InvestigationBusinessPersonAddress>>>;
+  business?: Maybe<InvestigationBusiness>;
+  businessPersonXrefGuid?: Maybe<Scalars['String']['output']>;
+  contactMethods?: Maybe<Array<Maybe<InvestigationContactMethod>>>;
+  displayInInvestigation?: Maybe<Scalars['Boolean']['output']>;
+  isPrimary?: Maybe<Scalars['Boolean']['output']>;
+  person?: Maybe<InvestigationPerson>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type InvestigationBusinessPersonAddress = {
+  __typename?: 'InvestigationBusinessPersonAddress';
+  activeInd: Scalars['Boolean']['output'];
+  address: Address;
+  businessPerson: BusinessPerson;
+  businessPersonAddressXrefGuid: Scalars['String']['output'];
+};
+
 export type InvestigationContactMethod = {
   __typename?: 'InvestigationContactMethod';
   contactMethodGuid: Scalars['String']['output'];
   isPrimary: Scalars['Boolean']['output'];
   typeCode: Scalars['String']['output'];
-  value?: Maybe<Scalars['String']['output']>;
+  value: Scalars['String']['output'];
 };
 
 export type InvestigationFilters = {
@@ -1410,6 +1473,7 @@ export type InvestigationParty = {
   partyReference?: Maybe<Scalars['String']['output']>;
   partyTypeCode: Scalars['String']['output'];
   person?: Maybe<InvestigationPerson>;
+  placeholderName?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationPerson = {
@@ -1449,16 +1513,16 @@ export type InvestigationPerson = {
 export type InvestigationPersonFacialHairStyleCodeRef = {
   __typename?: 'InvestigationPersonFacialHairStyleCodeRef';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  facialHairStyleCodeRef?: Maybe<Scalars['String']['output']>;
-  investigationPersonFacialStyleHairCodeRefGuid?: Maybe<Scalars['String']['output']>;
-  investigationPersonGuid?: Maybe<Scalars['String']['output']>;
+  facialHairStyleCode?: Maybe<Scalars['String']['output']>;
+  personFacialStyleHairCodeGuid?: Maybe<Scalars['String']['output']>;
+  personGuid?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationPersonFacialHairStyleCodeRefInput = {
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
-  facialHairStyleCodeRef?: InputMaybe<Scalars['String']['input']>;
-  investigationPersonFacialStyleHairCodeRefGuid?: InputMaybe<Scalars['String']['input']>;
-  investigationPersonGuid?: InputMaybe<Scalars['String']['input']>;
+  facialHairStyleCode?: InputMaybe<Scalars['String']['input']>;
+  personFacialStyleHairCodeGuid?: InputMaybe<Scalars['String']['input']>;
+  personGuid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type InvestigationResult = {
@@ -3044,7 +3108,9 @@ export type UpdateInvestigationAddressInput = {
   addressGuid?: InputMaybe<Scalars['String']['input']>;
   addressName: Scalars['String']['input'];
   city?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
   country?: InputMaybe<Scalars['String']['input']>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
   isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
@@ -3053,6 +3119,16 @@ export type UpdateInvestigationAddressInput = {
 export type UpdateInvestigationAliasInput = {
   aliasGuid?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
+};
+
+export type UpdateInvestigationBusinessContactInput = {
+  businessPersonXrefGuid?: InputMaybe<Scalars['String']['input']>;
+  contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
+  displayInInvestigation?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  officeAddressGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  person?: InputMaybe<UpdateInvestigationPersonInput>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateInvestigationBusinessIdentifierInput = {
@@ -3066,14 +3142,15 @@ export type UpdateInvestigationBusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<UpdateInvestigationAliasInput>>>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessIdentifierInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
+  contactPeople?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessContactInput>>>;
   name: Scalars['String']['input'];
 };
 
 export type UpdateInvestigationContactMethodInput = {
   contactMethodGuid?: InputMaybe<Scalars['String']['input']>;
-  isPrimary?: InputMaybe<Scalars['Boolean']['input']>;
+  isPrimary: Scalars['Boolean']['input'];
   typeCode: Scalars['String']['input'];
-  value?: InputMaybe<Scalars['String']['input']>;
+  value: Scalars['String']['input'];
 };
 
 export type UpdateInvestigationInput = {
@@ -3126,7 +3203,7 @@ export type UpdateInvestigationPersonInput = {
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
-  personGuid: Scalars['String']['input'];
+  personGuid?: InputMaybe<Scalars['String']['input']>;
   personReference?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;

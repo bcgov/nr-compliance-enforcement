@@ -2,12 +2,20 @@ input BusinessPersonInput {
   businessPersonXrefGuid: String
   person: PersonInput
   business: BusinessInput
+  title: String
+  displayInInvestigation: Boolean
+  isPrimary: Boolean
   contactMethods: [ContactMethodInput]
+  officeAddressGuids: [String]
 }
 
 input BusinessPersonUpdateInput {
   businessPersonXrefGuid: String
   person: PersonUpdateInput
   business: BusinessUpdateInput
+  title: String
+  displayInInvestigation: Boolean
+  isPrimary: Boolean
   contactMethods: [ContactMethodInput]
+  officeAddressGuids: [String]
 }

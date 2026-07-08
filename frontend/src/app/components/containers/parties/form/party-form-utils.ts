@@ -1,15 +1,18 @@
-import {
-  Address,
-  Alias,
-  ContactMethod,
-  PersonFacialHairStyleCode,
-  PersonInput,
-  PersonUpdateInput,
-} from "@/generated/graphql";
+import { Address, PersonFacialHairStyleCode, PersonInput, PersonUpdateInput } from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
+import { isValidEmail } from "@/app/common/validate-email";
+import { v4 as uuidv4 } from "uuid";
+
+export type ContactMethodFormValue = {
+  contactMethodGuid?: string;
+  typeCode?: string;
+  value?: string;
+  isPrimary?: boolean;
+};
 
 export type AddressFormValue = {
+  // client-generated for new addresses
   addressGuid?: string;
   addressName?: string;
   address?: string;
@@ -18,9 +21,28 @@ export type AddressFormValue = {
   postalCode?: string;
   country?: string;
   isPrimary?: boolean;
+  displayInInvestigation?: boolean;
+  phoneNumber?: string;
+  phoneNumberGuid?: string;
+  emailAddress?: string;
+  emailAddressGuid?: string;
 };
 
+export type ContactPersonFormValue = {
+  businessPersonXrefGuid?: string;
+  business: { businessGuid?: string };
+  person: { personGuid?: string; firstName?: string; lastName?: string };
+  contactMethods: ContactMethodFormValue[];
+  title?: string;
+  displayInInvestigation?: boolean;
+  isPrimary?: boolean;
+  officeAddressGuids?: string[];
+};
+
+export const CANADA_COUNTRY_CODE = "CA";
+
 export const createEmptyAddress = (): AddressFormValue => ({
+  addressGuid: uuidv4(),
   addressName: "",
   address: "",
   city: "",
@@ -28,7 +50,26 @@ export const createEmptyAddress = (): AddressFormValue => ({
   postalCode: "",
   country: "",
   isPrimary: false,
+  displayInInvestigation: true,
+  phoneNumber: "",
+  emailAddress: "",
 });
+
+export const createEmptyContactMethod = (isPrimary = false): ContactMethodFormValue => ({
+  contactMethodGuid: "",
+  value: "",
+  isPrimary,
+});
+
+// contacts always show at least one phone and one email row
+export const seedContactMethods = (methods: ContactMethodFormValue[] = []): ContactMethodFormValue[] => {
+  const seeded = [...methods];
+  if (!seeded.some((cm) => cm.typeCode === ContactMethods.PHONE))
+    seeded.push({ contactMethodGuid: undefined, typeCode: ContactMethods.PHONE, value: "", isPrimary: true });
+  if (!seeded.some((cm) => cm.typeCode === ContactMethods.EMAIL))
+    seeded.push({ contactMethodGuid: undefined, typeCode: ContactMethods.EMAIL, value: "", isPrimary: true });
+  return seeded;
+};
 
 // heightWeightConversions.ts
 // Canonical storage is centimetres (height) and kilograms (weight). These helpers
@@ -73,78 +114,231 @@ export function lbToKg(lb: number): number {
   return Math.round(lb * KG_PER_LB * 10) / 10;
 }
 
-// Helper function to map contact methods from party data
-export const mapContactMethodsFromPartyData = (contactMethods: ContactMethod[] | undefined, typeCode: string) => {
-  return (
+// an untouched row shouldn't be sent to the backend
+const hasValue = (value?: string | null) => !!value?.trim();
+
+export const validatePhoneNumberValue = (value?: string): string | undefined => {
+  if (!value?.startsWith("+")) return undefined;
+  if (value.length !== 12) return "Phone number must be 10 digits";
+  if (value.startsWith("+11") || value.startsWith("+10")) return "Invalid Format";
+  return undefined;
+};
+
+export const validateEmailValue = (value?: string): string | undefined => {
+  if (!value?.trim()) return undefined;
+  return isValidEmail(value.trim()) ? undefined : "Please enter a valid email";
+};
+
+export const mapContactMethodsFromPartyData = (
+  contactMethods:
+    | Array<{
+        contactMethodGuid?: string | null;
+        typeCode?: string | null;
+        value?: string | null;
+        isPrimary?: boolean | null;
+      } | null>
+    | null
+    | undefined,
+  typeCode: string,
+): ContactMethodFormValue[] => {
+  const mapped =
     contactMethods
-      ?.filter((c: ContactMethod) => c.typeCode === typeCode)
-      .map((c: ContactMethod, index: number) => ({
-        contactMethodGuid: c.contactMethodGuid,
-        value: c.value,
+      ?.filter((c): c is NonNullable<typeof c> => c?.typeCode === typeCode)
+      .map((c, index: number) => ({
+        contactMethodGuid: c.contactMethodGuid ?? undefined,
+        value: c.value ?? "",
         isPrimary: c.isPrimary ?? index === 0,
-      })) || []
-  );
+      })) || [];
+  // multi item fields always show at least one row
+  return mapped.length ? mapped : [createEmptyContactMethod(true)];
 };
 
 // Helper function to map addresses from party data
-export const mapAddressesFromPartyData = (addresses: Array<Address | null> | null | undefined): AddressFormValue[] =>
-  addresses
-    ?.filter((address): address is Address => address != null)
-    .map((address, index) => ({
-      addressGuid: address.addressGuid ?? undefined,
-      addressName: address.addressName ?? "",
-      address: address.address ?? "",
-      city: address.city ?? "",
-      province: address.province ?? "",
-      postalCode: address.postalCode ?? "",
-      country: address.country ?? "",
-      isPrimary: address.isPrimary ?? index === 0,
-    })) ?? [];
+export const mapAddressesFromPartyData = (addresses: Array<Address | null> | null | undefined): AddressFormValue[] => {
+  const mapped =
+    addresses
+      ?.filter((address): address is Address => address != null)
+      .map((address, index) => ({
+        addressGuid: address.addressGuid ?? undefined,
+        addressName: address.addressName ?? "",
+        address: address.address ?? "",
+        city: address.city ?? "",
+        province: address.province ?? "",
+        postalCode: address.postalCode ?? "",
+        country: address.country ?? "",
+        isPrimary: address.isPrimary ?? index === 0,
+        displayInInvestigation: address.displayInInvestigation ?? true,
+        phoneNumber: pickAddressContactMethod(address, ContactMethods.PHONE)?.value ?? "",
+        phoneNumberGuid: pickAddressContactMethod(address, ContactMethods.PHONE)?.contactMethodGuid ?? undefined,
+        emailAddress: pickAddressContactMethod(address, ContactMethods.EMAIL)?.value ?? "",
+        emailAddressGuid: pickAddressContactMethod(address, ContactMethods.EMAIL)?.contactMethodGuid ?? undefined,
+      })) ?? [];
+  return mapped.length ? mapped : [{ ...createEmptyAddress(), isPrimary: true }];
+};
 
-// Helper to build addresses array for mutations
-export const buildAddresses = (addresses: AddressFormValue[] | undefined, isUpdate: boolean) =>
-  (addresses ?? []).map((address) => ({
-    ...(isUpdate && address.addressGuid ? { addressGuid: address.addressGuid } : {}),
-    addressName: address.addressName?.trim() ?? "",
-    address: address.address?.trim() || null,
-    city: address.city?.trim() || null,
-    province: address.province?.trim() || null,
-    postalCode: address.postalCode?.trim() || null,
-    country: address.country?.trim() || null,
-    isPrimary: address.isPrimary ?? false,
-  }));
+export const mapAliasesFromPartyData = (
+  aliases: Array<{ aliasGuid?: string | null; name?: string | null } | null> | null | undefined,
+): Array<{ aliasGuid?: string; name: string }> => {
+  const mapped =
+    aliases
+      ?.filter((a): a is NonNullable<typeof a> => a != null)
+      .map((a) => ({ aliasGuid: a.aliasGuid ?? undefined, name: a.name ?? "" })) ?? [];
+  return mapped.length ? mapped : [{ aliasGuid: undefined, name: "" }];
+};
 
-// Helper to build contact methods array
+// Shared mapper for business/investigation contact people (BusinessPerson | InvestigationBusinessPerson)
+export const mapContactPeopleFromPartyData = (contactPeople: any): ContactPersonFormValue[] =>
+  (contactPeople ?? [])
+    .filter((cp: any) => cp != null)
+    .map((cp: any): ContactPersonFormValue => {
+      const methods = (cp.contactMethods ?? []).filter((cm: any) => cm != null);
+      return {
+        businessPersonXrefGuid: cp.businessPersonXrefGuid ?? undefined,
+        business: { businessGuid: cp.business?.businessGuid ?? undefined },
+        person: {
+          personGuid: cp.person?.personGuid ?? undefined,
+          firstName: cp.person?.firstName ?? "",
+          lastName: cp.person?.lastName ?? "",
+        },
+        contactMethods: seedContactMethods(
+          methods.map((cm: any) => ({
+            contactMethodGuid: cm.contactMethodGuid ?? undefined,
+            typeCode: cm.typeCode ?? undefined,
+            value: cm.value ?? "",
+            isPrimary: cm.isPrimary ?? methods.filter((m: any) => m.typeCode === cm.typeCode).indexOf(cm) === 0,
+          })),
+        ),
+        title: cp.title ?? "",
+        displayInInvestigation: cp.displayInInvestigation ?? true,
+        isPrimary: cp.isPrimary ?? false,
+        officeAddressGuids: (cp.associatedAddresses ?? [])
+          .map((aa: any) => aa?.address?.addressGuid)
+          .filter((guid: any): guid is string => !!guid),
+      };
+    });
+
+const pickAddressContactMethod = (address: Address, typeCode: string) =>
+  address.contactMethods?.filter((cm) => cm?.typeCode === typeCode).find(Boolean) ?? undefined;
+
+// an untouched row should not be saved
+export const isDefaultAddress = (a: AddressFormValue): boolean =>
+  !hasValue(a.addressName) &&
+  !hasValue(a.address) &&
+  !hasValue(a.city) &&
+  !hasValue(a.postalCode) &&
+  !hasValue(a.province) &&
+  !hasValue(a.country) &&
+  !hasValue(a.phoneNumber) &&
+  !hasValue(a.emailAddress);
+
+// keep guids so edits update the existing rows
+const buildAddressContactMethods = (address: AddressFormValue) => {
+  const methods = [];
+  if (hasValue(address.phoneNumber))
+    methods.push({
+      ...(address.phoneNumberGuid ? { contactMethodGuid: address.phoneNumberGuid } : {}),
+      typeCode: ContactMethods.PHONE,
+      value: address.phoneNumber!.trim(),
+      isPrimary: true,
+    });
+  if (hasValue(address.emailAddress))
+    methods.push({
+      ...(address.emailAddressGuid ? { contactMethodGuid: address.emailAddressGuid } : {}),
+      typeCode: ContactMethods.EMAIL,
+      value: address.emailAddress!.trim(),
+      isPrimary: true,
+    });
+  return methods.length ? methods : undefined;
+};
+
+export const buildAddresses = (addresses: AddressFormValue[] | undefined) =>
+  (addresses ?? [])
+    .filter((address) => !isDefaultAddress(address))
+    .map((address) => ({
+      addressGuid: address.addressGuid,
+      addressName: address.addressName?.trim() ?? "",
+      address: address.address?.trim() || null,
+      city: address.city?.trim() || null,
+      province: address.province?.trim() || null,
+      postalCode: address.postalCode?.trim() || null,
+      country: address.country?.trim() || null,
+      isPrimary: address.isPrimary ?? false,
+      displayInInvestigation: address.displayInInvestigation ?? true,
+      contactMethods: buildAddressContactMethods(address),
+    }));
+
 export const buildContactMethods = (
-  phoneNumbers: ContactMethod[],
-  emailAddresses: ContactMethod[],
+  phoneNumbers: ContactMethodFormValue[] | undefined,
+  emailAddresses: ContactMethodFormValue[] | undefined,
   includeGuid: boolean,
 ) => {
   const methods = [];
 
   if (phoneNumbers) {
     methods.push(
-      ...phoneNumbers.map((p: ContactMethod) => ({
-        ...(includeGuid && { contactMethodGuid: p.contactMethodGuid }),
-        typeCode: ContactMethods.PHONE,
-        value: p.value ?? "",
-        isPrimary: p.isPrimary ?? false,
-      })),
+      ...phoneNumbers
+        .filter((p) => hasValue(p.value))
+        .map((p) => ({
+          ...(includeGuid && p.contactMethodGuid ? { contactMethodGuid: p.contactMethodGuid } : {}),
+          typeCode: ContactMethods.PHONE,
+          value: p.value ?? "",
+          isPrimary: p.isPrimary ?? false,
+        })),
     );
   }
 
   if (emailAddresses) {
     methods.push(
-      ...emailAddresses.map((e: ContactMethod) => ({
-        ...(includeGuid && { contactMethodGuid: e.contactMethodGuid }),
-        typeCode: ContactMethods.EMAIL,
-        value: e.value ?? "",
-        isPrimary: e.isPrimary ?? false,
-      })),
+      ...emailAddresses
+        .filter((e) => hasValue(e.value))
+        .map((e) => ({
+          ...(includeGuid && e.contactMethodGuid ? { contactMethodGuid: e.contactMethodGuid } : {}),
+          typeCode: ContactMethods.EMAIL,
+          value: e.value ?? "",
+          isPrimary: e.isPrimary ?? false,
+        })),
     );
   }
 
   return methods;
+};
+
+export const buildAliases = (
+  aliases: Array<{ aliasGuid?: string; name?: string | null }> | undefined,
+  includeGuid: boolean,
+) =>
+  (aliases ?? [])
+    .filter((a) => hasValue(a.name))
+    .map((a) => ({
+      ...(includeGuid && a.aliasGuid ? { aliasGuid: a.aliasGuid } : {}),
+      name: a.name!.trim(),
+    }));
+
+export const buildContactPeople = (
+  contacts: ContactPersonFormValue[] | undefined,
+  isUpdate: boolean,
+): any[] | undefined => {
+  const built = (contacts ?? []).map((c) => ({
+    ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
+    person: {
+      ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
+      firstName: c.person.firstName || null,
+      lastName: c.person.lastName || null,
+    },
+    title: c.title || null,
+    displayInInvestigation: c.displayInInvestigation ?? true,
+    isPrimary: c.isPrimary ?? false,
+    contactMethods: (c.contactMethods ?? [])
+      .filter((cm) => hasValue(cm.value))
+      .map((cm) => ({
+        ...(isUpdate && cm.contactMethodGuid ? { contactMethodGuid: cm.contactMethodGuid } : {}),
+        typeCode: cm.typeCode ?? ContactMethods.PHONE,
+        value: cm.value ?? "",
+        isPrimary: cm.isPrimary ?? false,
+      })),
+    officeAddressGuids: c.officeAddressGuids ?? [],
+  }));
+  return built.length ? built : undefined;
 };
 
 // Helper to build identifiers array
@@ -176,17 +370,63 @@ export const validateBusinessForm = async (value: any): Promise<string | null> =
     return "Name is required.";
   }
 
-  if (!value.businessNumber?.identifierValue?.trim()) {
-    return "Business number is required.";
-  }
-
+  // only validate if there are multiple, a single empty item is allowed
   const addresses = (value.addresses as AddressFormValue[] | undefined) ?? [];
-  const missingNameIndex = addresses.findIndex((address) => !address.addressName?.trim());
+  const missingNameIndex = addresses.findIndex(
+    (address) => (addresses.length > 1 || !isDefaultAddress(address)) && !address.addressName?.trim(),
+  );
   if (missingNameIndex >= 0) {
     return "Address name is required.";
   }
 
+  const contacts = (value.contacts as ContactPersonFormValue[] | undefined) ?? [];
+  for (const contact of contacts) {
+    if (!contact.person?.firstName?.trim()) return "Contact first name is required.";
+    if (!contact.person?.lastName?.trim()) return "Contact last name is required.";
+  }
+
   return null;
+};
+
+// at least one field must be entered
+export const validatePersonForm = (value: any): string | null => {
+  const hasSomeText = [
+    value.firstName,
+    value.middleNames,
+    value.lastName,
+    value.approximateAgeCode,
+    value.driversLicenseNumber,
+    value.driversLicenseClass,
+    value.driversLicenseCountryCode,
+    value.driversLicenseCountrySubdivisionCode,
+    value.genderCode,
+    value.complexionCode,
+    value.buildCode,
+    value.hairColourCode,
+    value.hairLengthCode,
+    value.hairColourOther,
+    value.eyeColourCode,
+    value.eyeColourOther,
+    value.additionalHairDescriptors,
+    value.tattooDescription,
+    value.additionalDescriptors,
+    value.comments,
+  ].some(hasValue);
+
+  const hasSomeValue =
+    !!value.dateOfBirth ||
+    value.heightInCm != null ||
+    value.weightInKg != null ||
+    !!value.facialHairIndicator ||
+    !!value.tattooIndicator ||
+    !!value.boloIndicator ||
+    (value.facialHairStyleCodes ?? []).length > 0 ||
+    (value.aliases ?? []).some((a: any) => hasValue(a?.name)) ||
+    (value.phoneNumbers ?? []).some((p: any) => hasValue(p?.value)) ||
+    (value.emailAddresses ?? []).some((e: any) => hasValue(e?.value)) ||
+    (value.addresses ?? []).some((a: AddressFormValue) => !isDefaultAddress(a));
+
+  return hasSomeText || hasSomeValue ? null : "A party can't be saved without any identifying information.";
 };
 
 // Shared base fields for person create/update.
@@ -239,7 +479,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
     name: value.businessName,
-    identifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+    businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
 };
@@ -278,9 +518,9 @@ export const createEmptyPartyFormValues = () => ({
   businessName: "",
   businessNumber: {} as any,
   worksafeBCNumber: {} as any,
-  aliases: [] as Alias[],
-  phoneNumbers: [] as ContactMethod[],
-  emailAddresses: [] as ContactMethod[],
-  addresses: [] as AddressFormValue[],
-  contacts: [] as any[],
+  aliases: [{ aliasGuid: undefined, name: "" }] as Array<{ aliasGuid?: string; name: string }>,
+  phoneNumbers: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
+  emailAddresses: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
+  addresses: [{ ...createEmptyAddress(), isPrimary: true }] as AddressFormValue[],
+  contacts: [] as ContactPersonFormValue[],
 });

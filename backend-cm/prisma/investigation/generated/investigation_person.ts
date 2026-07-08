@@ -1,3 +1,5 @@
+import { investigation_business_person_xref } from "./investigation_business_person_xref";
+import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation_party } from "./investigation_party";
 import { investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -12,14 +14,14 @@ export class investigation_person {
   @ApiPropertyOptional({ type: String })
   investigation_party_guid?: string;
 
-  @ApiProperty({ type: String })
-  first_name: string;
+  @ApiPropertyOptional({ type: String })
+  first_name?: string;
 
   @ApiPropertyOptional({ type: String })
   middle_names?: string;
 
-  @ApiProperty({ type: String })
-  last_name: string;
+  @ApiPropertyOptional({ type: String })
+  last_name?: string;
 
   @ApiProperty({ type: Boolean })
   active_ind: boolean = true;
@@ -104,6 +106,12 @@ export class investigation_person {
 
   @ApiPropertyOptional({ type: Boolean })
   bolo_ind?: boolean;
+
+  @ApiProperty({ isArray: true, type: () => investigation_business_person_xref })
+  investigation_business_person_xref: investigation_business_person_xref[];
+
+  @ApiProperty({ isArray: true, type: () => investigation_contact_method })
+  investigation_contact_method: investigation_contact_method[];
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;

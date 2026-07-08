@@ -55,6 +55,8 @@ import Parties from "@/app/components/containers/parties/parties";
 import InvestigationCreate from "@/app/components/containers/investigations/create/investigation-create";
 import TaskDetail from "@/app/components/containers/investigations/details/investigation-task/detail/task-detail";
 import TaskCreate from "@/app/components/containers/investigations/details/investigation-task/create/task-create";
+import InvestigationPartyEdit from "@/app/components/containers/investigations/details/investigation-party/create/investigation-party-edit";
+import InvestigationPartyView from "@/app/components/containers/investigations/details/investigation-party/view/investigation-party-view";
 import { LegislationManagement } from "@/app/components/containers/admin/legislation-management";
 
 const App: FC = () => {
@@ -226,6 +228,24 @@ const App: FC = () => {
               <Route
                 path="/investigation/:investigationGuid/task/:taskId"
                 element={pilotGate(<TaskDetail />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/add"
+                element={pilotGate(<InvestigationPartyEdit />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier/edit"
+                element={pilotGate(<InvestigationPartyEdit />)}
+              />
+            )}
+            {investigationsFeatureOn && (
+              <Route
+                path="/investigation/:investigationGuid/party/:partyIdentifier"
+                element={pilotGate(<InvestigationPartyView />)}
               />
             )}
             {investigationsFeatureOn && (

@@ -41,6 +41,10 @@ import { investigation_address as _investigation_address } from "./investigation
 import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
 import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
 import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
+import { investigation_business_person_address_xref as _investigation_business_person_address_xref } from "./investigation_business_person_address_xref";
+import { investigation_business_person_address_xref_h as _investigation_business_person_address_xref_h } from "./investigation_business_person_address_xref_h";
+import { investigation_business_person_xref as _investigation_business_person_xref } from "./investigation_business_person_xref";
+import { investigation_business_person_xref_h as _investigation_business_person_xref_h } from "./investigation_business_person_xref_h";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -86,6 +90,10 @@ export namespace PrismaModel {
   export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
   export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
   export class investigation_attachment_reference extends _investigation_attachment_reference {}
+  export class investigation_business_person_address_xref extends _investigation_business_person_address_xref {}
+  export class investigation_business_person_address_xref_h extends _investigation_business_person_address_xref_h {}
+  export class investigation_business_person_xref extends _investigation_business_person_xref {}
+  export class investigation_business_person_xref_h extends _investigation_business_person_xref_h {}
 
   export const extraModels = [
     activity_note,
@@ -131,5 +139,9 @@ export namespace PrismaModel {
     investigation_person_facial_hair_style_code_ref,
     investigation_person_facial_hair_style_code_ref_h,
     investigation_attachment_reference,
+    investigation_business_person_address_xref,
+    investigation_business_person_address_xref_h,
+    investigation_business_person_xref,
+    investigation_business_person_xref_h,
   ];
 }

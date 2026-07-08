@@ -1,0 +1,6 @@
+type BusinessPersonAddress {
+  businessPersonAddressXrefGuid: String!
+  address: Address!
+  businessPerson: BusinessPerson!
+  activeInd: Boolean!
+}
