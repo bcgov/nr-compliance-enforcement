@@ -1,0 +1,10 @@
+type InvestigationBusinessPerson {
+  businessPersonXrefGuid: String
+  title: String
+  displayInInvestigation: Boolean
+  isPrimary: Boolean
+  person: InvestigationPerson
+  business: InvestigationBusiness
+  contactMethods: [InvestigationContactMethod]
+  associatedAddresses: [InvestigationBusinessPersonAddress]
+}

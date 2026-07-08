@@ -63,6 +63,8 @@ import { eye_colour_code as _eye_colour_code } from "./eye_colour_code";
 import { facial_hair_style_code as _facial_hair_style_code } from "./facial_hair_style_code";
 import { person_facial_hair_style_code as _person_facial_hair_style_code } from "./person_facial_hair_style_code";
 import { person_facial_hair_style_code_h as _person_facial_hair_style_code_h } from "./person_facial_hair_style_code_h";
+import { business_person_address_xref as _business_person_address_xref } from "./business_person_address_xref";
+import { business_person_address_xref_h as _business_person_address_xref_h } from "./business_person_address_xref_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -130,6 +132,8 @@ export namespace PrismaModel {
   export class facial_hair_style_code extends _facial_hair_style_code {}
   export class person_facial_hair_style_code extends _person_facial_hair_style_code {}
   export class person_facial_hair_style_code_h extends _person_facial_hair_style_code_h {}
+  export class business_person_address_xref extends _business_person_address_xref {}
+  export class business_person_address_xref_h extends _business_person_address_xref_h {}
 
   export const extraModels = [
     agency_code,
@@ -197,5 +201,7 @@ export namespace PrismaModel {
     facial_hair_style_code,
     person_facial_hair_style_code,
     person_facial_hair_style_code_h,
+    business_person_address_xref,
+    business_person_address_xref_h,
   ];
 }

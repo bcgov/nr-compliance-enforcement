@@ -147,7 +147,7 @@ export class InspectionService {
 
     let prismaParties = null;
 
-    if (partyType == "Person") {
+    if (partyType == "PRS") {
       prismaParties = await this.prisma.inspection_person.findMany({
         where: {
           person_guid_ref: partyId,
@@ -169,7 +169,7 @@ export class InspectionService {
           },
         },
       });
-    } else if (partyType == "Business") {
+    } else if (partyType == "CMP") {
       prismaParties = await this.prisma.inspection_business.findMany({
         where: {
           business_guid_ref: partyId,

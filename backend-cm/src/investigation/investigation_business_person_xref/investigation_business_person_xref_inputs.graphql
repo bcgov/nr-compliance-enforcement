@@ -1,0 +1,18 @@
+input CreateInvestigationBusinessContactInput {
+  person: CreateInvestigationPersonInput!
+  title: String
+  displayInInvestigation: Boolean
+  isPrimary: Boolean
+  contactMethods: [CreateInvestigationContactMethodInput]
+  officeAddressGuids: [String]
+}
+
+input UpdateInvestigationBusinessContactInput {
+  businessPersonXrefGuid: String
+  person: UpdateInvestigationPersonInput
+  title: String
+  displayInInvestigation: Boolean
+  isPrimary: Boolean
+  contactMethods: [UpdateInvestigationContactMethodInput]
+  officeAddressGuids: [String]
+}

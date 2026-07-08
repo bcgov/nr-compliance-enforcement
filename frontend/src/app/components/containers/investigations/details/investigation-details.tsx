@@ -30,9 +30,11 @@ export const GET_INVESTIGATION = gql`
         longDescription
       }
       parties {
+        __typename
         partyIdentifier
         partyReference
         partyTypeCode
+        placeholderName
         attachmentReferences {
           objectId
           version
@@ -53,6 +55,12 @@ export const GET_INVESTIGATION = gql`
           isPrimary
         }
         addresses {
+          contactMethods {
+            contactMethodGuid
+            typeCode
+            value
+            isPrimary
+          }
           addressGuid
           addressName
           address
@@ -60,6 +68,7 @@ export const GET_INVESTIGATION = gql`
           province
           postalCode
           country
+          displayInInvestigation
           isPrimary
         }
         person {
@@ -86,8 +95,8 @@ export const GET_INVESTIGATION = gql`
           eyeColourOther
           facialHairIndicator
           facialHairStyleCodes {
-            investigationPersonFacialStyleHairCodeRefGuid
-            facialHairStyleCodeRef
+            personFacialStyleHairCodeGuid
+            facialHairStyleCode
           }
           additionalHairDescriptors
           tattooIndicator
@@ -97,8 +106,32 @@ export const GET_INVESTIGATION = gql`
           boloIndicator
         }
         business {
+          __typename
           businessGuid
           name
+          contactPeople {
+            businessPersonXrefGuid
+            title
+            displayInInvestigation
+            isPrimary
+            associatedAddresses {
+              address {
+                addressGuid
+                addressName
+              }
+            }
+            contactMethods {
+              contactMethodGuid
+              typeCode
+              value
+              isPrimary
+            }
+            person {
+              personGuid
+              firstName
+              lastName
+            }
+          }
           businessIdentifiers {
             businessIdentifierGuid
             identifierCode
@@ -225,7 +258,6 @@ export const InvestigationDetails: FC = () => {
         <InvestigationParties
           investigationData={investigationData}
           investigationGuid={investigationGuid}
-          onDirtyChange={handleChildDirtyChange}
         />
       );
     }

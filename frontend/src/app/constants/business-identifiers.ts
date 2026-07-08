@@ -4,6 +4,6 @@ export const BusinessIdentifiers = {
 };
 
 export const BUSINESS_IDENTIFIER_LABELS: Record<string, string> = {
-  BNUM: "Business Number",
-  WSBC: "Worksafe BC Number",
+  BNUM: "Business number",
+  WSBC: "Worksafe BC number",
 };

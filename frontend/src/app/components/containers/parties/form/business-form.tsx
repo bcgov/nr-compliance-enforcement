@@ -15,6 +15,8 @@ type BusinessFormFieldsProps = {
   isDisabled: boolean;
   showContactPeople?: boolean;
   businessGuid?: string;
+  showInvestigationFields?: boolean;
+  showDisplayInInvestigation?: boolean;
 };
 
 export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
@@ -22,6 +24,8 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
   isDisabled,
   showContactPeople = true,
   businessGuid,
+  showInvestigationFields = false,
+  showDisplayInInvestigation = false,
 }) => {
   const {
     addresses,
@@ -45,6 +49,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
     handleAddContactMethod,
     handleRemoveContactMethod,
     handleSetPrimaryContact,
+    handleSetPrimaryBusinessContact,
   } = usePartyFormFields(form, businessGuid);
 
   return (
@@ -83,11 +88,6 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         form={form}
         name="businessNumber.identifierValue"
         label="Business number"
-        required
-        validators={{
-          onChange: ({ value }: { value: string | undefined }) =>
-            value && value.trim().length > 0 ? undefined : "Business number is required",
-        }}
         render={(field) => (
           <CompInput
             id="businessNumber"
@@ -140,44 +140,40 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
         onAddEmail={handleAddEmail}
         onRemoveEmail={handleRemoveEmail}
         onSetPrimaryEmail={handleSetPrimaryEmail}
+        showOfficeFields={showInvestigationFields}
+        showDisplayInInvestigation={showDisplayInInvestigation}
       />
       {showContactPeople && (
         <>
+          <div className="comp-details-section-header pt-5">
+            <h3>Contact(s)</h3>
+          </div>
           {contacts?.map((contact: BusinessPerson, contactIndex: number) => (
-            <FormField
+            <ContactPersonFields
               key={contact.businessPersonXrefGuid || `contact-${contactIndex}`}
+              contact={contact}
+              contactIndex={contactIndex}
               form={form}
-              name={`contact-${contactIndex}.person`}
-              label={contactIndex === 0 ? "Contact" : ""}
-              render={() => (
-                <ContactPersonFields
-                  contact={contact}
-                  contactIndex={contactIndex}
-                  form={form}
-                  isDisabled={isDisabled}
-                  onRemoveContact={handleRemoveContact}
-                  onAddContactMethod={handleAddContactMethod}
-                  onRemoveContactMethod={handleRemoveContactMethod}
-                  onSetPrimaryContact={handleSetPrimaryContact}
-                />
-              )}
+              isDisabled={isDisabled}
+              isPrimary={contact.isPrimary || false}
+              onRemoveContact={handleRemoveContact}
+              onSetPrimaryBusinessContact={handleSetPrimaryBusinessContact}
+              onAddContactMethod={handleAddContactMethod}
+              onRemoveContactMethod={handleRemoveContactMethod}
+              onSetPrimaryContact={handleSetPrimaryContact}
+              showInvestigationFields={showInvestigationFields}
+              showDisplayInInvestigation={showDisplayInInvestigation}
             />
           ))}
-          <FormField
-            form={form}
-            name="add-contact-placeholder"
-            label=""
-            render={() => (
-              <Button
-                variant="outline-primary"
-                onClick={handleAddContact}
-                size="sm"
-                type="button"
-              >
-                <i className="bi bi-plus-circle me-1" /> Add contact
-              </Button>
-            )}
-          />
+          <Button
+            variant="primary"
+            size="sm"
+            className="mt-3"
+            type="button"
+            onClick={handleAddContact}
+          >
+            <i className="bi bi-plus-circle me-1" /> Add contact
+          </Button>
         </>
       )}
     </>

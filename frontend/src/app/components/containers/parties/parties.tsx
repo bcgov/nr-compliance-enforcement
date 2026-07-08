@@ -42,7 +42,7 @@ const SEARCH_PARTIES = gql`
         business {
           businessGuid
           name
-          identifiers {
+          businessIdentifiers {
             identifierValue
             identifierCode
           }

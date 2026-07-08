@@ -2,6 +2,6 @@ type Business {
   businessGuid: String
   name: String
   aliases: [Alias]
-  identifiers: [BusinessIdentifier]
+  businessIdentifiers: [BusinessIdentifier]
   contactPeople: [BusinessPerson]
 }

@@ -8,7 +8,7 @@ export class Business implements BusinessDto {
   businessGuid: string;
   partyGuid: string;
   name: string;
-  identifiers: BusinessIdentifier[];
+  businessIdentifiers: BusinessIdentifier[];
   contactPeople: BusinessPersonXref[];
 }
 
@@ -26,7 +26,7 @@ export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {
       mapFrom((src) => src.name),
     ),
     forMember(
-      (dest) => dest.identifiers,
+      (dest) => dest.businessIdentifiers,
       mapWithArguments((src) =>
         mapper.mapArray(src.business_identifier ?? [], "business_identifier", "BusinessIdentifier"),
       ),

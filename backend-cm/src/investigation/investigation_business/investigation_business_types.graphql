@@ -7,4 +7,5 @@ type InvestigationBusiness {
   businessIdentifiers: [InvestigationBusinessIdentifier]
   aliases: [InvestigationAlias]
   addresses: [InvestigationAddress]
+  contactPeople: [InvestigationBusinessPerson]
 }
