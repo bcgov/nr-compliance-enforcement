@@ -1,11 +1,12 @@
 import { InspectionParty, InvestigationParty, Party } from "@/generated/graphql";
 
 export const getPartyName = (party: InvestigationParty | InspectionParty | Party): string => {
-  if (party.__typename === "InvestigationParty" && party.placeholderName) return party.placeholderName;
   if (party.person) {
     const { firstName, lastName } = party.person;
-    return [lastName, firstName].filter(Boolean).join(", ");
+    const name = [lastName, firstName].filter(Boolean).join(", ");
+    if (name) return name;
   }
-  if (party.business) return party.business.name ?? "";
+  if (party.business?.name) return party.business.name;
+  if ("placeholderName" in party && party.placeholderName) return party.placeholderName;
   return "-";
 };
