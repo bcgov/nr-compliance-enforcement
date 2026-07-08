@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
 import { selectItemById } from "../../utils/helpers";
 
@@ -11,15 +11,41 @@ test.describe("Investigation Party Form", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
   test.describe.configure({ mode: "serial" });
 
+  const INVESTIGATION_PATH = "investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f200/";
+
+  const openPartiesTab = async (page: Page) => {
+    await page.goto(INVESTIGATION_PATH);
+    await expect(page.locator("h1.comp-box-complaint-id")).not.toContainText("Unknown", { timeout: 15000 });
+    await page.locator("#parties").click();
+  };
+
+  // Remove parties so that the investigation doesn't accumulate duplicate parties
+  const removeAllParties = async (page: Page) => {
+    await openPartiesTab(page);
+    const partyItems = page.locator(".party-accordion .list-group-item");
+    let count = await partyItems.count();
+    while (count > 0) {
+      await partyItems.first().locator(".dropdown-toggle-no-caret").click();
+      await page.locator(".dropdown-item", { hasText: "Remove" }).click();
+
+      const confirmModal = page.locator(".modal").first();
+      await expect(confirmModal).toBeVisible();
+      await confirmModal.locator("button", { hasText: "Yes, remove party" }).click();
+
+      await expect(partyItems).toHaveCount(count - 1, { timeout: 10000 });
+      count = await partyItems.count();
+    }
+  };
+
   test.beforeEach(async ({ page }) => {
-    await page.goto("investigation/66dd3a1f-4bc5-4758-a986-a664b8d8f200/");
+    await openPartiesTab(page);
+  });
 
-    const header = page.locator("h1.comp-box-complaint-id");
-    await expect(header).not.toContainText("Unknown", { timeout: 15000 });
-
-    // Click Parties tab
-    const partiesButton = page.locator("#parties");
-    await partiesButton.click();
+  // Runs even when a test fails
+  test.afterAll(async ({ browser }) => {
+    const context = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.COS });
+    const page = await context.newPage();
+    await removeAllParties(page);
   });
 
   test("it adds a new local person party to investigation", async ({ page }) => {
@@ -64,9 +90,8 @@ test.describe("Investigation Party Form", () => {
     const businessNameInput = page.locator("#businessName");
     await businessNameInput.fill("Acme Logging Ltd");
 
-    // Business number is required for Company parties
+    // Business number is optional, let's enter one anyways
     const businessNumberInput = page.locator("#businessNumber");
-    // Generate a random business number to avoid clashes
     await businessNumberInput.fill(randomBusinessNumber);
 
     // Select a party association role
@@ -102,38 +127,5 @@ test.describe("Investigation Party Form", () => {
 
     await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
     await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true }).first()).toBeVisible();
-  });
-
-  test("cleanup - remove all test parties from investigation", async ({ page }) => {
-    // Remove all parties by clicking the kebab menu and selecting Remove for each one
-    // Loop until no more parties remain
-    const removeParties = async () => {
-      const partyItems = page.locator(".party-accordion .list-group-item");
-      const count = await partyItems.count();
-
-      if (count === 0) return;
-
-      const kebabMenu = partyItems.first().locator(".dropdown-toggle-no-caret");
-      await kebabMenu.click();
-
-      const removeButton = page.locator(".dropdown-item", { hasText: "Remove" });
-      await removeButton.click();
-
-      const confirmModal = page.locator(".modal").first();
-      await expect(confirmModal).toBeVisible();
-      const confirmButton = confirmModal.locator("button", { hasText: "Yes, remove party" });
-      await confirmButton.click();
-
-      // Wait for the list to update before trying the next one
-      await expect(partyItems).toHaveCount(count - 1, { timeout: 10000 });
-
-      await removeParties();
-    };
-
-    await removeParties();
-
-    // Verify no parties remain
-    const remainingParties = page.locator(".party-accordion .list-group-item");
-    await expect(remainingParties).toHaveCount(0, { timeout: 10000 });
   });
 });
