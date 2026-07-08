@@ -90,7 +90,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
   const [attachmentsDirty, setAttachmentsDirty] = useState(false);
-  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
 
   const defaultValues = useMemo(() => {
     if (isEditMode && editParty) {
@@ -245,8 +245,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
   const flushAttachmentsThenNavigate = () => {
-    setTriggerSaveAttachments(true);
-    setTimeout(() => setTriggerSaveAttachments(false), 0);
+    // Work around for timing issue
+    setTriggerSaveAttachments((n) => n + 1);
   };
 
   const addPartyMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION, {

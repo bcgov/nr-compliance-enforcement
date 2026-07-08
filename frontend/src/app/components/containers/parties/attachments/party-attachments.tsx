@@ -32,8 +32,8 @@ interface PartyAttachmentsProps {
   attachmentType: number;
   allowUpload: boolean;
   allowDelete: boolean;
-  triggerSave?: boolean;
-  triggerCancel?: boolean;
+  triggerSave?: boolean | number;
+  triggerCancel?: boolean | number;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onSaved?: () => void;
   attachmentReferences?: InvestigationAttachmentReference[];
