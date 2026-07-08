@@ -27,6 +27,7 @@ interface ContactPersonFieldsProps {
   onRemoveContactMethod: (contactIndex: number, methodIndex: number) => void;
   onSetPrimaryContact: (contactIndex: number, methodIndex: number, typeCode: string) => void;
   showInvestigationFields?: boolean;
+  showDisplayInInvestigation?: boolean;
 }
 
 export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
@@ -41,6 +42,7 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
   onRemoveContactMethod,
   onSetPrimaryContact,
   showInvestigationFields = false,
+  showDisplayInInvestigation = false,
 }) => {
   const addresses = useStore(form.store, (state: any) => state.values?.addresses ?? []) as AddressFormValue[];
   const officeOptions = addresses
@@ -179,22 +181,24 @@ export const ContactPersonFields: FC<ContactPersonFieldsProps> = ({
             )}
           />
 
-          <FormField
-            form={form}
-            name={`contacts[${contactIndex}].displayInInvestigation` as any}
-            label="Display in investigation"
-            render={(field) => (
-              <div className="comp-details-edit-input">
-                <input
-                  type="checkbox"
-                  id={`contact-display-${contactIndex}`}
-                  checked={field.state.value ?? true}
-                  onChange={(evt) => field.handleChange(evt.target.checked)}
-                  disabled={isDisabled}
-                />
-              </div>
-            )}
-          />
+          {showDisplayInInvestigation && (
+            <FormField
+              form={form}
+              name={`contacts[${contactIndex}].displayInInvestigation` as any}
+              label="Display in investigation"
+              render={(field) => (
+                <div className="comp-details-edit-input">
+                  <input
+                    type="checkbox"
+                    id={`contact-display-${contactIndex}`}
+                    checked={field.state.value ?? true}
+                    onChange={(evt) => field.handleChange(evt.target.checked)}
+                    disabled={isDisabled}
+                  />
+                </div>
+              )}
+            />
+          )}
         </>
       )}
 

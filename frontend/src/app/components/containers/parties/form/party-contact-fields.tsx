@@ -28,6 +28,7 @@ type PartyContactFieldsProps = {
   onRemoveEmail: (index: number) => void;
   onSetPrimaryEmail: (index: number) => void;
   showOfficeFields?: boolean;
+  showDisplayInInvestigation?: boolean;
 };
 
 export const PartyContactFields: FC<PartyContactFieldsProps> = ({
@@ -46,6 +47,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
   onRemoveEmail,
   onSetPrimaryEmail,
   showOfficeFields = false,
+  showDisplayInInvestigation = false,
 }) => {
   return (
     <>
@@ -219,6 +221,7 @@ export const PartyContactFields: FC<PartyContactFieldsProps> = ({
           onRemoveAddress={onRemoveAddress}
           onSetPrimaryAddress={onSetPrimaryAddress}
           showOfficeFields={showOfficeFields}
+          showDisplayInInvestigation={showDisplayInInvestigation}
         />
       ))}
       <Button
