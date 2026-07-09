@@ -34,10 +34,11 @@ type AssessedOrClosedAlertProps = {
   isClosed: boolean;
   canQuickCloseComplaint: boolean;
   complaint_identifier: string;
+  complaint_type: string;
   close: () => void;
 };
 const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
-  ({ isClosed, hasOutcomeData, canQuickCloseComplaint, complaint_identifier, close }) =>
+  ({ isClosed, hasOutcomeData, canQuickCloseComplaint, complaint_identifier, complaint_type, close }) =>
     hasOutcomeData || isClosed || !canQuickCloseComplaint ? (
       <Alert
         variant="warning"
@@ -52,7 +53,7 @@ const AssessedOrClosedAlert: FC<AssessedOrClosedAlertProps> = memo(
             {!canQuickCloseComplaint && " This complaint does not meet the requirements to be closed. "}
           </span>
           <Link
-            to={`/complaint/HWCR/${complaint_identifier}`}
+            to={`/complaint/${complaint_type}/${complaint_identifier}`}
             id={complaint_identifier}
             onClick={close}
           >
@@ -129,6 +130,7 @@ export const QuickCloseModal: FC<QuickCloseModalProps> = ({
             hasOutcomeData={hasOutcomeData}
             canQuickCloseComplaint={validationResults.canQuickCloseComplaint}
             complaint_identifier={complaint_identifier}
+            complaint_type={complaint_type}
             close={close}
           />
         )}

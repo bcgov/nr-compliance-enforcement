@@ -13,4 +13,5 @@ export class AssessmentInput {
   conflictHistory?: KeyValuePairInput;
   categoryLevel?: KeyValuePairInput;
   cat1Actions?: [AssessmentActionInput];
+  note?: string;
 }

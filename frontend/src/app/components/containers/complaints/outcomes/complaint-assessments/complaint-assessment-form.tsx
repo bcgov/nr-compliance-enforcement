@@ -48,6 +48,11 @@ import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { ValidationTextArea } from "@common/validation-textarea";
+
+// ERS/GIR assessments use their own justification codes, separate from the HWC set
+const ERS_GIR_JUSTIFICATION_CODES = ["NOINFID", "NORES", "PKNOINFID", "PKNORES"];
 
 type Props = {
   id: string;
@@ -98,6 +103,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
+  const [note, setNote] = useState<string>(assessment?.note ?? "");
 
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
@@ -123,6 +129,10 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const validationResults = useValidateComplaint();
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const isHwcrComplaint = getComplaintType(complaintData) === COMPLAINT_TYPES.HWCR;
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(
+    selectComplaintAssessmentApplies(getComplaintType(complaintData), ownedByAgencyCode?.agency),
+  );
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors =
@@ -191,8 +201,10 @@ export const ComplaintAssessmentForm: FC<Props> = ({
         return !o.outcomeAgencyCode || o.outcomeAgencyCode === agency;
       });
     }
-    return list;
-  }, [justificationList]);
+    return assessmentApplies
+      ? list.filter((option) => ERS_GIR_JUSTIFICATION_CODES.includes(option.value ?? ""))
+      : list.filter((option) => !ERS_GIR_JUSTIFICATION_CODES.includes(option.value ?? ""));
+  }, [justificationList, assessmentApplies]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();
@@ -269,6 +281,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
     setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
+    setNote(assessmentState.note ?? "");
 
     resetValidationErrors();
 
@@ -348,6 +361,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
         : mapOptions(selectedAssessmentCat1Types),
+    note: selectedActionRequired?.value === "No" && note.trim() ? note : undefined,
     agency: UserService.getUserAgency(),
   });
 
@@ -618,6 +632,30 @@ export const ComplaintAssessmentForm: FC<Props> = ({
                 />
               </div>
             </div>
+            {/* Additional notes - ERS/GIR assessments only */}
+            {assessmentApplies && (
+              <div
+                className={`comp-details-form-row ${justificationEditClass}`}
+                id="assessment-note-div"
+              >
+                <label htmlFor="assessment-note">Additional notes</label>
+                <div className="comp-details-input full-width">
+                  <ValidationTextArea
+                    className="comp-form-control"
+                    id="assessment-note"
+                    defaultValue={assessment?.note ?? ""}
+                    rows={4}
+                    maxLength={4000}
+                    errMsg=""
+                    onChange={(value: string) => {
+                      setNote(value);
+                      markDirty();
+                    }}
+                    disabled={isReadOnly}
+                  />
+                </div>
+              </div>
+            )}
             {showDuplicateOptions && !quickClose && (
               <div className="comp-details-form-row">
                 <label

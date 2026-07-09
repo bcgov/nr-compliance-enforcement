@@ -53,6 +53,18 @@ export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) =
                   <span>{assessment.justification?.key}</span>
                 </dd>
               </div>
+              {/* Additional notes - view state */}
+              {assessment.note && (
+                <div
+                  id="assessment-note-div"
+                  className={justificationLabelClass}
+                >
+                  <dt>Additional notes</dt>
+                  <dd>
+                    <span>{assessment.note}</span>
+                  </dd>
+                </div>
+              )}
               {showDuplicateOptions && linkedComplaintData?.length > 0 && (
                 <div
                   id="linked-complaint-div"

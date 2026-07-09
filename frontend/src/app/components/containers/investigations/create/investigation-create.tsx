@@ -23,6 +23,8 @@ import {
   updateAllegationComplaintStatus,
 } from "@/app/store/reducers/complaints";
 import { resolveLocationGeometry } from "@/app/common/geocoder";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { closeComplaintWithAssessment } from "@/app/store/reducers/complaint-outcome-thunks";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -92,6 +94,10 @@ const InvestigationCreate: FC = () => {
     }
   }, [complaintId, complaintType]);
   const complaintData = useAppSelector(selectComplaint);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(
+    selectComplaintAssessmentApplies(complaintType ?? undefined, complaintData?.ownedBy),
+  );
 
   const isEditMode = Boolean(investigationGuid);
 
@@ -113,6 +119,11 @@ const InvestigationCreate: FC = () => {
         const userAgency = getUserAgency();
         if (["EPO", "MINES", "NROS"].includes(userAgency)) {
           dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+        } else if (assessmentApplies && complaintType) {
+          // COS/PARKS ERS+GIR: assess and close the complaint on investigation creation
+          dispatch(
+            closeComplaintWithAssessment(complaintId, complaintType, data.createInvestigation.primaryInvestigatorGuid),
+          );
         }
         dispatch(updateComplaintLastUpdated(complaintId));
       }

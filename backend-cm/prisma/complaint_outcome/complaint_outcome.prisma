@@ -38,6 +38,7 @@ model action {
   equipment                    equipment?              @relation(fields: [equipment_guid], references: [equipment_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_action__equipment_guid")
   wildlife                     wildlife?               @relation(fields: [wildlife_guid], references: [wildlife_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_action__wildlife_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_action_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -133,6 +134,7 @@ model assessment {
   create_utc_timestamp                                                       DateTime               @db.Timestamp(6)
   update_user_id                                                             String?                @db.VarChar(32)
   update_utc_timestamp                                                       DateTime?              @db.Timestamp(6)
+  note_text                                                                  String?                @db.VarChar(4000)
   action                                                                     action[]
   outcome_agency_code_assessment_outcome_agency_codeTooutcome_agency_code    outcome_agency_code    @relation("assessment_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_assessment__assessed_by_agency_code")
   inaction_reason_code_assessment_inaction_reason_codeToinaction_reason_code inaction_reason_code?  @relation("assessment_inaction_reason_codeToinaction_reason_code", fields: [inaction_reason_code], references: [inaction_reason_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_assessment__inaction_reason_code")
@@ -141,6 +143,7 @@ model assessment {
   case_location_code_assessment_case_location_codeTocase_location_code       case_location_code?    @relation("assessment_case_location_codeTocase_location_code", fields: [case_location_code], references: [case_location_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_assessment__case_location_code")
   threat_level_code                                                          threat_level_code?     @relation(fields: [case_threat_level_code], references: [threat_level_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_assessment__case_threat_level_code")
 
+  @@index([complaint_outcome_guid], map: "idx_assessment_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -151,6 +154,7 @@ model assessment_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
+  note_text                     String?  @db.VarChar(4000)
 
   @@schema("complaint_outcome")
 }
@@ -167,6 +171,7 @@ model authorization_permit {
   update_utc_timestamp      DateTime?         @db.Timestamp(6)
   complaint_outcome         complaint_outcome @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_authorization_permit__case_file_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_authorization_permit_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -213,6 +218,7 @@ model case_note {
   outcome_agency_code_case_note_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("case_note_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_note__agency_code")
   complaint_outcome                                                      complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_case_note__case_file_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_case_note_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -317,6 +323,7 @@ model decision {
   non_compliance_decision_matrix_code_decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code non_compliance_decision_matrix_code? @relation("decision_non_compliance_decision_matrix_codeTonon_compliance_decision_matrix_code", fields: [non_compliance_decision_matrix_code], references: [non_compliance_decision_matrix_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_decision__ncdm_code")
   schedule_sector_xref                                                                                                  schedule_sector_xref                 @relation(fields: [schedule_sector_xref_guid], references: [schedule_sector_xref_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_decision__schedule_sector_xref_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_decision_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -675,6 +682,7 @@ model prevention_education {
   outcome_agency_code_prevention_education_outcome_agency_codeTooutcome_agency_code outcome_agency_code @relation("prevention_education_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__agency_code")
   complaint_outcome                                                                 complaint_outcome   @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_prevention_education__case_file_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_prevention_education_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -755,6 +763,7 @@ model site {
   update_utc_timestamp   DateTime?         @db.Timestamp(6)
   complaint_outcome      complaint_outcome @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_site__case_file_guid")
 
+  @@index([complaint_outcome_guid], map: "idx_site_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 
@@ -813,6 +822,7 @@ model wildlife {
   sex_code_wildlife_sex_codeTosex_code                                                                sex_code?                      @relation("wildlife_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__sex_code")
   threat_level_code_wildlife_threat_level_codeTothreat_level_code                                     threat_level_code?             @relation("wildlife_threat_level_codeTothreat_level_code", fields: [threat_level_code], references: [threat_level_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__threat_level_code")
 
+  @@index([complaint_outcome_guid], map: "idx_wildlife_complaint_outcome_guid")
   @@schema("complaint_outcome")
 }
 

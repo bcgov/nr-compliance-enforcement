@@ -17,4 +17,5 @@ export class Assessment {
   conflictHistory?: KeyValuePair;
   categoryLevel?: KeyValuePair;
   cat1Actions?: CaseFileAction[];
+  note?: string;
 }

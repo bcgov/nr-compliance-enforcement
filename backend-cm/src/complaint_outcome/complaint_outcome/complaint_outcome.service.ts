@@ -157,6 +157,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: model.assessment.actionNotRequired,
             complainant_contacted_ind: model.assessment.contactedComplainant,
             attended_ind: model.assessment.attended,
+            note_text: model.assessment.note,
             case_location_code_assessment_case_location_codeTocase_location_code: model.assessment.locationType
               ? {
                   connect: {
@@ -296,6 +297,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: true,
             complainant_contacted_ind: true,
             attended_ind: true,
+            note_text: true,
             case_location_code_assessment_case_location_codeTocase_location_code: {
               select: {
                 case_location_code: true,
@@ -572,6 +574,7 @@ export class ComplaintOutcomeService {
             case_location_code_assessment_case_location_codeTocase_location_code: locationType,
             conflict_history_code: conflictHistory,
             threat_level_code: categoryLevel,
+            note_text: note,
           } = assessment;
 
           const actions = await this.caseFileActionService.findActionsByAssessmentIdAndType(
@@ -596,6 +599,7 @@ export class ComplaintOutcomeService {
             cat1Actions,
             contactedComplainant,
             attended,
+            note,
             conflictHistory: {
               key: conflictHistory?.short_description ?? "",
               value: conflictHistory?.conflict_history_code ?? "",
@@ -829,6 +833,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: model.assessment.actionNotRequired,
             complainant_contacted_ind: model.assessment.contactedComplainant,
             attended_ind: model.assessment.attended,
+            note_text: model.assessment.note ?? null,
             case_location_code_assessment_case_location_codeTocase_location_code: model.assessment.locationType
               ? {
                   connect: {

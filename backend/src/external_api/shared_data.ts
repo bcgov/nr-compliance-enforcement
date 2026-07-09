@@ -123,6 +123,7 @@ export const caseFileQueryFields: string = `
     }
     contactedComplainant
     attended
+    note
     locationType {
       key
       value

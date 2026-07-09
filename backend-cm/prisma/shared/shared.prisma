@@ -68,6 +68,7 @@ model alias_h {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model app_user {
   app_user_guid        String               @id(map: "PK_app_user") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   auth_user_guid       String?              @unique @db.Uuid
@@ -266,6 +267,7 @@ model case_activity {
   case_activity_type_code case_activity_type_code @relation(fields: [activity_type], references: [case_activity_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_activity__case_activity_type_code")
   case_file               case_file               @relation(fields: [case_file_guid], references: [case_file_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_activity__case_file")
 
+  @@index([activity_identifier_ref], map: "idx_case_activity_activity_identifier_ref")
   @@schema("shared")
 }
 
@@ -317,6 +319,7 @@ model case_file {
   case_status_code         case_status_code @relation(fields: [case_status], references: [case_status_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_case_file__case_status_code")
 
   @@unique([name, lead_agency], map: "uq_case_file_name_agency")
+  @@index([lead_agency, case_status], map: "idx_case_file_lead_agency_status")
   @@schema("shared")
 }
 
