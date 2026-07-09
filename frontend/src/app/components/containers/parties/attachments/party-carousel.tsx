@@ -97,10 +97,7 @@ export const PartyCarousel: FC<{ partyId: string }> = ({ partyId }) => {
         <i className="bi bi-caret-left-fill" />
       </button>
 
-      <div
-        className="d-flex align-items-center justify-content-center flex-shrink-0 overflow-hidden rounded border bg-light"
-        style={{ height: "220px" }}
-      >
+      <div className="party-carousel-frame d-flex align-items-center justify-content-center flex-grow-1 overflow-hidden rounded border bg-light">
         {att?.imageIconString ? (
           <button
             type="button"
@@ -112,7 +109,7 @@ export const PartyCarousel: FC<{ partyId: string }> = ({ partyId }) => {
             <img
               src={att.imageIconString}
               alt={att.name}
-              className="img-fluid w-100 h-100"
+              className="w-100 h-100 object-fit-cover"
             />
           </button>
         ) : (

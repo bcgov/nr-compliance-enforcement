@@ -208,18 +208,22 @@ model business_identifier_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business_person_xref {
-  business_person_xref_guid                                                                           String                    @id(map: "business_person_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  business_guid                                                                                       String                    @db.Uuid
-  person_guid                                                                                         String                    @db.Uuid
-  business_person_xref_code                                                                           String                    @db.VarChar(16)
-  active_ind                                                                                          Boolean                   @default(true)
-  create_user_id                                                                                      String                    @db.VarChar(32)
-  create_utc_timestamp                                                                                DateTime                  @default(now()) @db.Timestamp(6)
-  update_user_id                                                                                      String?                   @db.VarChar(32)
-  update_utc_timestamp                                                                                DateTime?                 @db.Timestamp(6)
-  business                                                                                            business                  @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_business_fk")
-  business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref_code @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code", fields: [business_person_xref_code], references: [business_person_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_code_fk")
-  person                                                                                              person                    @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_person_fk")
+  business_person_xref_guid                                                                           String                         @id(map: "business_person_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_guid                                                                                       String                         @db.Uuid
+  person_guid                                                                                         String                         @db.Uuid
+  business_person_xref_code                                                                           String                         @db.VarChar(16)
+  active_ind                                                                                          Boolean                        @default(true)
+  create_user_id                                                                                      String                         @db.VarChar(32)
+  create_utc_timestamp                                                                                DateTime                       @default(now()) @db.Timestamp(6)
+  update_user_id                                                                                      String?                        @db.VarChar(32)
+  update_utc_timestamp                                                                                DateTime?                      @db.Timestamp(6)
+  display_in_investigation_ind                                                                        Boolean                        @default(true)
+  title_role                                                                                          String?                        @db.VarChar(256)
+  is_primary                                                                                          Boolean                        @default(false)
+  business_person_address_xref                                                                        business_person_address_xref[]
+  business                                                                                            business                       @relation(fields: [business_guid], references: [business_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_business_fk")
+  business_person_xref_code_business_person_xref_business_person_xref_codeTobusiness_person_xref_code business_person_xref_code      @relation("business_person_xref_business_person_xref_codeTobusiness_person_xref_code", fields: [business_person_xref_code], references: [business_person_xref_code], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_code_fk")
+  person                                                                                              person                         @relation(fields: [person_guid], references: [person_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_xref_person_fk")
 
   @@schema("shared")
 }
@@ -355,7 +359,7 @@ model case_status_code {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model contact_method {
   contact_method_guid      String                   @id(map: "contact_method_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid               String                   @db.Uuid
+  party_guid               String?                  @db.Uuid
   contact_method_type      String                   @db.VarChar(10)
   contact_value            String                   @db.VarChar(512)
   is_primary               Boolean                  @default(false)
@@ -364,7 +368,9 @@ model contact_method {
   create_utc_timestamp     DateTime                 @default(now()) @db.Timestamp(6)
   update_user_id           String?                  @db.VarChar(32)
   update_utc_timestamp     DateTime?                @db.Timestamp(6)
-  party                    party                    @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_party_fk")
+  address_guid             String?                  @db.Uuid
+  address                  address?                 @relation(fields: [address_guid], references: [address_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_address_fk")
+  party                    party?                   @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "contact_method_party_fk")
   contact_method_type_code contact_method_type_code @relation(fields: [contact_method_type], references: [contact_method_type_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_contact_method_type")
 
   @@schema("shared")
@@ -972,23 +978,26 @@ model gender_code {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model address {
-  address_guid                                                                        String                    @id(map: "address_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  party_guid                                                                          String                    @db.Uuid
-  address_name                                                                        String                    @db.VarChar(128)
-  address                                                                             String?                   @db.VarChar(120)
-  city                                                                                String?                   @db.VarChar(128)
-  country_subdivision_code                                                            String?                   @db.VarChar(16)
-  postal_code                                                                         String?                   @db.VarChar(16)
-  country_code                                                                        String?                   @db.VarChar(4)
-  is_primary                                                                          Boolean                   @default(false)
-  active_ind                                                                          Boolean                   @default(true)
-  create_user_id                                                                      String                    @db.VarChar(32)
-  create_utc_timestamp                                                                DateTime                  @default(now()) @db.Timestamp(6)
-  update_user_id                                                                      String?                   @db.VarChar(32)
-  update_utc_timestamp                                                                DateTime?                 @db.Timestamp(6)
-  country_code_address_country_codeTocountry_code                                     country_code?             @relation("address_country_codeTocountry_code", fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_code_fk")
-  country_subdivision_code_address_country_subdivision_codeTocountry_subdivision_code country_subdivision_code? @relation("address_country_subdivision_codeTocountry_subdivision_code", fields: [country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_subdivision_code_fk")
-  party                                                                               party                     @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "address_party_fk")
+  address_guid                                                                        String                         @id(map: "address_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  party_guid                                                                          String                         @db.Uuid
+  address_name                                                                        String                         @db.VarChar(128)
+  address                                                                             String?                        @db.VarChar(120)
+  city                                                                                String?                        @db.VarChar(128)
+  country_subdivision_code                                                            String?                        @db.VarChar(16)
+  postal_code                                                                         String?                        @db.VarChar(16)
+  country_code                                                                        String?                        @db.VarChar(4)
+  is_primary                                                                          Boolean                        @default(false)
+  active_ind                                                                          Boolean                        @default(true)
+  create_user_id                                                                      String                         @db.VarChar(32)
+  create_utc_timestamp                                                                DateTime                       @default(now()) @db.Timestamp(6)
+  update_user_id                                                                      String?                        @db.VarChar(32)
+  update_utc_timestamp                                                                DateTime?                      @db.Timestamp(6)
+  display_in_investigation_ind                                                        Boolean                        @default(true)
+  country_code_address_country_codeTocountry_code                                     country_code?                  @relation("address_country_codeTocountry_code", fields: [country_code], references: [country_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_code_fk")
+  country_subdivision_code_address_country_subdivision_codeTocountry_subdivision_code country_subdivision_code?      @relation("address_country_subdivision_codeTocountry_subdivision_code", fields: [country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "address_country_subdivision_code_fk")
+  party                                                                               party                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "address_party_fk")
+  business_person_address_xref                                                        business_person_address_xref[]
+  contact_method                                                                      contact_method[]
 
   @@schema("shared")
 }
@@ -1128,5 +1137,33 @@ model address_h {
   data_after_executed_operation Json?
 
   @@ignore
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_person_address_xref {
+  business_person_address_xref_guid String               @id(map: "business_person_address_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  business_person_xref_guid         String               @db.Uuid
+  address_guid                      String               @db.Uuid
+  active_ind                        Boolean              @default(true)
+  create_user_id                    String               @db.VarChar(32)
+  create_utc_timestamp              DateTime             @default(now()) @db.Timestamp(6)
+  update_user_id                    String?              @db.VarChar(32)
+  update_utc_timestamp              DateTime?            @db.Timestamp(6)
+  address                           address              @relation(fields: [address_guid], references: [address_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_address_xref_address_fk")
+  business_person_xref              business_person_xref @relation(fields: [business_person_xref_guid], references: [business_person_xref_guid], onDelete: NoAction, onUpdate: NoAction, map: "business_person_address_xref_business_person_xref_fk")
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model business_person_address_xref_h {
+  h_business_person_address_xref_guid String   @id(map: "pk_h_business_person_address_xref") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                       String   @db.Uuid
+  operation_type                      String   @db.Char(1)
+  operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation       Json?
+
   @@schema("shared")
 }

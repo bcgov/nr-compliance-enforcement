@@ -121,8 +121,21 @@ export class CaseFileService {
 
     const caseFileGuids = caseActivityXrefRecords.map((record) => record.case_file_guid);
     const uniqueCaseFileGuids = [...new Set(caseFileGuids)];
-
     return await this.findMany(uniqueCaseFileGuids);
+  }
+
+  async getComplaintIdsLinkedToCase(): Promise<string[]> {
+    const records = await this.prisma.case_activity.findMany({
+      where: {
+        activity_type: "COMP",
+        expiry_utc_timestamp: null,
+      },
+      select: {
+        activity_identifier_ref: true,
+      },
+    });
+
+    return [...new Set(records.map((r) => r.activity_identifier_ref))];
   }
 
   async create(input: CaseFileCreateInput): Promise<CaseFile> {

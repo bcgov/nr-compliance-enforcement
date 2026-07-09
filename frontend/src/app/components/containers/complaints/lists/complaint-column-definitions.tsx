@@ -121,38 +121,75 @@ export const authorizationColumn = <T extends { authorization?: string }>(isHidd
   renderCell: (complaint) => complaint.authorization ?? "-",
 });
 
-// Violation type column
-export const violationTypeColumn = <T extends { violation?: string }>(
+// Violation type column (includes "In Progress" indicator when applicable, hidden for CEEB roles)
+export const violationTypeColumn = <T extends { violation?: string; isInProgress?: boolean }>(
   getViolationDescription: (input: string) => string,
+  isCeebRole: boolean,
 ): CompColumn<T> => ({
   label: "Violation type",
   sortKey: "violation_code",
   isSortable: true,
   getValue: (complaint) => getViolationDescription(complaint.violation ?? ""),
-  renderCell: (complaint) => getViolationDescription(complaint.violation ?? ""),
+  renderCell: (complaint) => (
+    <>
+      {getViolationDescription(complaint.violation ?? "")}
+      {!isCeebRole && complaint.isInProgress && (
+        <div
+          id="comp-details-status-text-id"
+          className="comp-box-violation-in-progress mt-1"
+        >
+          <FontAwesomeIcon
+            id="violation-in-progress-icon"
+            className="comp-cell-violation-in-progress-icon"
+            icon={faExclamationCircle}
+          />
+          In Progress
+        </div>
+      )}
+    </>
+  ),
 });
 
-// Violation in progress column
-export const violationInProgressColumn = <T extends { isInProgress?: boolean }>(isHidden: boolean): CompColumn<T> => ({
-  label: "Violation in progress",
-  sortKey: "in_progress_ind",
-  isSortable: true,
-  isHidden,
-  getValue: (complaint) => (complaint.isInProgress ? "In Progress" : ""),
-  renderCell: (complaint) =>
-    complaint.isInProgress ? (
-      <div
-        id="comp-details-status-text-id"
-        className="comp-box-violation-in-progress"
-      >
-        <FontAwesomeIcon
-          id="violation-in-progress-icon"
-          className="comp-cell-violation-in-progress-icon"
-          icon={faExclamationCircle}
-        />
-        In Progress
-      </div>
-    ) : null,
+// Case column (ERS only) — linked case(s) as link(s) when casesActive, COORS number as plain text
+export const caseColumn = <T extends { id: string; referenceNumber?: string }>(
+  getCaseData: (complaint: T) => {
+    cases: Array<{ name: string; caseIdentifier: string }> | undefined;
+    coorsNumber: string | undefined;
+  },
+  casesActive: boolean,
+): CompColumn<T> => ({
+  label: "Case",
+  isSortable: false,
+  cellClassName: "comp-cell-width-130",
+  getValue: (complaint) => {
+    const { cases, coorsNumber } = getCaseData(complaint);
+    return cases?.map((c) => c.name).join(", ") || coorsNumber || "";
+  },
+  renderCell: (complaint) => {
+    const { cases, coorsNumber } = getCaseData(complaint);
+    if (cases && cases.length > 0) {
+      return (
+        <>
+          {cases.map((c, i) => (
+            <span key={c.caseIdentifier}>
+              {i > 0 && ", "}
+              {casesActive ? (
+                <Link
+                  to={`/case/${c.caseIdentifier}`}
+                  className="comp-cell-link"
+                >
+                  {c.name}
+                </Link>
+              ) : (
+                c.name
+              )}
+            </span>
+          ))}
+        </>
+      );
+    }
+    return coorsNumber || "";
+  },
 });
 
 // GIR Specific Columns

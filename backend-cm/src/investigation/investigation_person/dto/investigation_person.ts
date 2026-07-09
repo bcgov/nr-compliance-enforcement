@@ -130,8 +130,9 @@ export class CreateInvestigationPersonInput {
 
 @InputType()
 export class UpdateInvestigationPersonInput extends CreateInvestigationPersonInput {
-  @Field(() => String)
-  investigationPersonGuid: string;
+  // null for contact person newly added during an update
+  @Field(() => String, { nullable: true })
+  personGuid?: string;
 }
 
 export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {

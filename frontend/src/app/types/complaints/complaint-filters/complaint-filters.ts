@@ -35,5 +35,7 @@ export type ComplaintFilters = {
   equipmentStatus?: DropdownOption | null;
   equipmentTypes?: Option[];
 
+  linkedToCase?: DropdownOption | null;
+
   filters: Array<any>;
 };

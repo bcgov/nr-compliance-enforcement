@@ -39,11 +39,23 @@ import {
   InvestigationPersonFacialHairStyleCodeRef,
   InvestigationPersonFacialHairStyleCodeRefInput,
 } from "../investigation_person_facial_hair_style_code_ref/dto/InvestigationPersonFacialHairStyleCodeRef";
+import {
+  CreateInvestigationBusinessContactInput,
+  InvestigationBusinessPersonXref,
+  UpdateInvestigationBusinessContactInput,
+} from "../investigation_business_person_xref/dto/investigation_business_person_xref";
+import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
+import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
+import { PARTY_TYPES } from "src/common/party";
+
+const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
+const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
 
 @Injectable()
 export class InvestigationPartyService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
+    private readonly sharedPrisma: SharedPrismaService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
@@ -95,91 +107,8 @@ export class InvestigationPartyService {
 
     await withRlsTransaction(this.prisma, async (db) => {
       for (const input of inputs) {
-        try {
-          this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
-
-          const investigationParty = await db.investigation_party.create({
-            data: {
-              party_guid_ref: input.partyReference,
-              party_type_code_ref: input.partyTypeCode,
-              investigation_guid: investigationGuid,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-              party_association_role_ref: input.partyAssociationRole,
-              ...(input.addresses?.length
-                ? {
-                    investigation_address: {
-                      create: input.addresses.map((a) => ({
-                        address_name: a.addressName.trim(),
-                        address: a.address?.trim() || null,
-                        city: a.city?.trim() || null,
-                        country_subdivision_code_ref: a.province?.trim() || null,
-                        postal_code: a.postalCode?.trim() || null,
-                        country_code_ref: a.country?.trim() || null,
-                        is_primary: a.isPrimary ?? false,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.contactMethods?.length
-                ? {
-                    investigation_contact_method: {
-                      create: input.contactMethods.map((c) => ({
-                        contact_method_type_code_ref: c.typeCode,
-                        contact_value: c.value,
-                        is_primary: c.isPrimary,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.aliases?.length
-                ? {
-                    investigation_alias: {
-                      create: input.aliases.map((a) => ({
-                        name: a.name,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-              ...(input.attachmentReferences?.length
-                ? {
-                    investigation_attachment_reference: {
-                      create: input.attachmentReferences.map((ar) => ({
-                        object_guid_ref: ar.objectId,
-                        s3_version_ref: ar.version,
-                        filename_text: ar.fileName,
-                        coms_created_date: ar.createdAt,
-                        thumb_object_guid_ref: ar.thumbObjectId,
-                        thumb_s3_version_ref: ar.thumbVersion,
-                        active_ind: true,
-                        create_user_id: this.user.getIdirUsername(),
-                        create_utc_timestamp: new Date(),
-                      })),
-                    },
-                  }
-                : {}),
-            },
-          });
-
-          createdPartyGuids.push(investigationParty.investigation_party_guid);
-
-          if (input.business) {
-            await this.createBusiness(db, investigationParty.investigation_party_guid, input.business);
-          }
-
-          if (input.person) {
-            await this.createPerson(db, investigationParty.investigation_party_guid, input.person);
-          }
-        } catch (error) {
-          this.logger.error("Error creating investigation party:", error);
-          throw error;
-        }
+        const investigationPartyGuid = await this._createSingleParty(db, input, investigation, investigationGuid);
+        createdPartyGuids.push(investigationPartyGuid);
       }
     });
 
@@ -187,6 +116,93 @@ export class InvestigationPartyService {
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.filter((party) => createdPartyGuids.includes(party.partyIdentifier));
+  }
+
+  private async _createSingleParty(
+    db: any,
+    input: CreateInvestigationPartyInput,
+    investigation: Investigation,
+    investigationGuid: string,
+  ): Promise<string> {
+    try {
+      this.ensurePartyNotAlreadyOnInvestigation(investigation, input);
+
+      const investigationParty = await db.investigation_party.create({
+        data: {
+          party_guid_ref: input.partyReference,
+          party_type_code_ref: input.partyTypeCode,
+          investigation_guid: investigationGuid,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          party_association_role_ref: input.partyAssociationRole,
+          ...(input.contactMethods?.length
+            ? {
+                investigation_contact_method: {
+                  create: input.contactMethods.map((c) => ({
+                    contact_method_type_code_ref: c.typeCode,
+                    contact_value: c.value,
+                    is_primary: c.isPrimary,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.aliases?.length
+            ? {
+                investigation_alias: {
+                  create: input.aliases.map((a) => ({
+                    name: a.name,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+          ...(input.attachmentReferences?.length
+            ? {
+                investigation_attachment_reference: {
+                  create: input.attachmentReferences.map((ar) => ({
+                    object_guid_ref: ar.objectId,
+                    s3_version_ref: ar.version,
+                    filename_text: ar.fileName,
+                    coms_created_date: ar.createdAt,
+                    thumb_object_guid_ref: ar.thumbObjectId,
+                    thumb_s3_version_ref: ar.thumbVersion,
+                    active_ind: true,
+                    create_user_id: this.user.getIdirUsername(),
+                    create_utc_timestamp: new Date(),
+                  })),
+                },
+              }
+            : {}),
+        },
+      });
+
+      await this._createAddresses(db, investigationParty.investigation_party_guid, input.addresses ?? []);
+
+      if (input.business) {
+        await this.createBusiness(db, investigationParty.investigation_party_guid, input.business, investigationGuid);
+      }
+
+      if (input.person) {
+        await this.createPerson(db, investigationParty.investigation_party_guid, input.person);
+
+        if (!this._hasName(input.person)) {
+          await this._assignPlaceholder(
+            db,
+            investigationGuid,
+            investigationParty.investigation_party_guid,
+            input.partyAssociationRole,
+          );
+        }
+      }
+
+      return investigationParty.investigation_party_guid;
+    } catch (error) {
+      this.logger.error("Error creating investigation party:", error);
+      throw error;
+    }
   }
 
   private _buildPersonFieldData(input: CreateInvestigationPersonInput | UpdateInvestigationPersonInput) {
@@ -221,7 +237,7 @@ export class InvestigationPartyService {
   }
 
   private async createPerson(tx: any, investigationPartyGuid: string, input: CreateInvestigationPersonInput) {
-    await tx.investigation_person.create({
+    return await tx.investigation_person.create({
       data: {
         person_guid_ref: input.personReference,
         investigation_party_guid: investigationPartyGuid,
@@ -230,7 +246,7 @@ export class InvestigationPartyService {
           ? {
               investigation_person_facial_hair_style_code_ref: {
                 create: input.facialHairStyleCodes.map((fhs) => ({
-                  facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
+                  facial_hair_style_code_ref: fhs.facialHairStyleCode,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
                 })),
@@ -257,7 +273,12 @@ export class InvestigationPartyService {
     return dateOfBirth ? null : approximateAgeCode;
   }
 
-  private async createBusiness(tx: any, investigationPartyGuid: string, input: CreateInvestigationBusinessInput) {
+  private async createBusiness(
+    tx: any,
+    investigationPartyGuid: string,
+    input: CreateInvestigationBusinessInput,
+    investigationGuid: string,
+  ) {
     const investigationBusiness = await tx.investigation_business.create({
       data: {
         business_guid_ref: input.businessReference,
@@ -279,6 +300,163 @@ export class InvestigationPartyService {
         })),
       });
     }
+
+    for (const contact of input.contactPeople ?? []) {
+      await this._createBusinessContact(
+        tx,
+        investigationBusiness.investigation_business_guid,
+        contact,
+        investigationGuid,
+      );
+    }
+  }
+
+  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+    return {
+      contact_method_type_code_ref: cm.typeCode,
+      contact_value: cm.value,
+      is_primary: cm.isPrimary ?? false,
+      active_ind: true,
+      create_user_id: this.user.getIdirUsername(),
+      create_utc_timestamp: new Date(),
+    };
+  }
+
+  private async _createAddresses(
+    tx: any,
+    investigationPartyGuid: string,
+    addresses: CreateInvestigationAddressInput[],
+  ) {
+    for (const a of this._sortAddressesPrimaryLast(addresses)) {
+      await tx.investigation_address.create({
+        data: {
+          ...(a.addressGuid ? { investigation_address_guid: a.addressGuid } : {}),
+          investigation_party_guid: investigationPartyGuid,
+          address_name: a.addressName.trim(),
+          address: a.address?.trim() || null,
+          city: a.city?.trim() || null,
+          country_subdivision_code_ref: a.province?.trim() || null,
+          postal_code: a.postalCode?.trim() || null,
+          country_code_ref: a.country?.trim() || null,
+          is_primary: a.isPrimary ?? false,
+          display_in_investigation_ind: a.displayInInvestigation ?? true,
+          create_user_id: this.user.getIdirUsername(),
+          create_utc_timestamp: new Date(),
+          ...(a.contactMethods?.length
+            ? {
+                investigation_contact_method: {
+                  create: a.contactMethods.map((cm) => this._contactMethodCreateData(cm)),
+                },
+              }
+            : {}),
+        },
+      });
+    }
+  }
+
+  private async _createBusinessContact(
+    tx: any,
+    investigationBusinessGuid: string,
+    contact: CreateInvestigationBusinessContactInput,
+    investigationGuid: string,
+  ) {
+    const contactParty = await tx.investigation_party.create({
+      data: {
+        party_type_code_ref: PARTY_TYPES.Contact,
+        investigation_guid: investigationGuid,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+        ...(contact.contactMethods?.length
+          ? {
+              investigation_contact_method: {
+                create: contact.contactMethods.map((cm) => this._contactMethodCreateData(cm)),
+              },
+            }
+          : {}),
+      },
+    });
+
+    const contactPerson = await this.createPerson(tx, contactParty.investigation_party_guid, contact.person);
+
+    const xref = await tx.investigation_business_person_xref.create({
+      data: {
+        investigation_business_guid: investigationBusinessGuid,
+        investigation_person_guid: contactPerson.investigation_person_guid,
+        business_person_xref_code_ref: BUSINESS_PERSON_XREF_CONTACT_CODE,
+        display_in_investigation_ind: contact.displayInInvestigation ?? true,
+        title_role: contact.title ?? null,
+        is_primary: contact.isPrimary ?? false,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      },
+    });
+
+    await this._createOfficeLinks(tx, xref.investigation_business_person_xref_guid, contact.officeAddressGuids ?? []);
+  }
+
+  private async _createOfficeLinks(tx: any, xrefGuid: string, officeAddressGuids: string[]) {
+    const uniqueAddressGuids = [...new Set(officeAddressGuids)];
+    if (!uniqueAddressGuids.length) return;
+
+    await tx.investigation_business_person_address_xref.createMany({
+      data: uniqueAddressGuids.map((addressGuid) => ({
+        investigation_business_person_xref_guid: xrefGuid,
+        investigation_address_guid: addressGuid,
+        create_user_id: this.user.getIdirUsername(),
+        create_utc_timestamp: new Date(),
+      })),
+    });
+  }
+
+  private _hasName(person: { firstName?: string | null; lastName?: string | null }): boolean {
+    return !!(person.firstName?.trim() || person.lastName?.trim());
+  }
+
+  private async _getRoleLabel(partyAssociationRole?: string | null): Promise<string> {
+    if (!partyAssociationRole) return "Party";
+
+    const roleCode = await this.sharedPrisma.party_association_role_code.findFirst({
+      where: {
+        party_association_role_code: partyAssociationRole,
+        case_activity_type_code: INVESTIGATION_CASE_ACTIVITY_TYPE,
+      },
+      select: { short_description: true },
+    });
+
+    return roleCode?.short_description ?? partyAssociationRole;
+  }
+
+  // assigns placeholder names on a per investigation basis
+  private async _assignPlaceholder(
+    tx: any,
+    investigationGuid: string,
+    investigationPartyGuid: string,
+    partyAssociationRole?: string | null,
+  ) {
+    const roleLabel = await this._getRoleLabel(partyAssociationRole);
+    const role = partyAssociationRole ?? "";
+
+    // serialize placeholder number assignment
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${investigationGuid} || ':' || ${role}))`;
+
+    const rows: Array<{ next: number }> = await tx.$queryRaw`
+      SELECT (COALESCE(MAX(placeholder_number), 0) + 1)::int AS next
+      FROM investigation.investigation_party
+      WHERE investigation_guid = ${investigationGuid}::uuid
+        AND party_association_role_ref IS NOT DISTINCT FROM ${partyAssociationRole}
+        AND investigation_party_guid <> ${investigationPartyGuid}::uuid
+    `;
+    const next = rows[0]?.next ?? 1;
+
+    await tx.investigation_party.update({
+      where: { investigation_party_guid: investigationPartyGuid },
+      data: {
+        placeholder_name: roleLabel,
+        placeholder_number: next,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
   }
 
   async remove(investigationGuid: string, partyIdentifier: string): Promise<Investigation> {
@@ -381,8 +559,10 @@ export class InvestigationPartyService {
     await this.prisma.$transaction(async (tx) => {
       const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
 
+      const incomingAddresses = input.addresses ?? [];
+      const existingAddressGuids = new Set((existingParty.addresses ?? []).map((a) => a.addressGuid));
       const addressOperations = this._buildInvestigationAddressOperations(
-        input.addresses ?? [],
+        incomingAddresses.filter((a) => a.addressGuid && existingAddressGuids.has(a.addressGuid)),
         existingParty.addresses ?? [],
       );
 
@@ -407,12 +587,36 @@ export class InvestigationPartyService {
           },
         });
 
+        await this._createAddresses(
+          tx,
+          input.partyIdentifier,
+          incomingAddresses.filter((a) => !a.addressGuid || !existingAddressGuids.has(a.addressGuid)),
+        );
+
         if (input.person && existingParty.person) {
           await this.updatePerson(tx, existingParty.person, input.person);
+
+          if (this._hasName(input.person)) {
+            if (existingParty.placeholderName) {
+              await tx.investigation_party.update({
+                where: { investigation_party_guid: input.partyIdentifier },
+                data: {
+                  placeholder_name: null,
+                  update_user_id: this.user.getIdirUsername(),
+                  update_utc_timestamp: new Date(),
+                },
+              });
+            }
+          } else if (
+            !existingParty.placeholderName ||
+            input.partyAssociationRole !== existingParty.partyAssociationRole
+          ) {
+            await this._assignPlaceholder(tx, investigationGuid, input.partyIdentifier, input.partyAssociationRole);
+          }
         }
 
         if (input.business && existingParty.business) {
-          await this.updateBusiness(tx, existingParty.business, input.business);
+          await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
         }
       } catch (error) {
         this.logger.error("Error updating investigation party:", error);
@@ -452,6 +656,7 @@ export class InvestigationPartyService {
     tx: any,
     existingBusiness: InvestigationBusiness,
     input: UpdateInvestigationBusinessInput,
+    investigationGuid: string,
   ) {
     await tx.investigation_business.update({
       where: { investigation_business_guid: existingBusiness.businessGuid },
@@ -471,6 +676,144 @@ export class InvestigationPartyService {
       );
       await Promise.all(identifierOps);
     }
+
+    if (input.contactPeople) {
+      await this._mapBusinessContacts(
+        tx,
+        existingBusiness.businessGuid,
+        input.contactPeople,
+        existingBusiness.contactPeople ?? [],
+        investigationGuid,
+      );
+    }
+  }
+
+  private async _mapBusinessContacts(
+    tx: any,
+    investigationBusinessGuid: string,
+    incoming: UpdateInvestigationBusinessContactInput[],
+    existing: InvestigationBusinessPersonXref[],
+    investigationGuid: string,
+  ) {
+    const incomingGuids = new Set(incoming.map((c) => c.businessPersonXrefGuid).filter(Boolean));
+
+    // handle removed contacts
+    for (const ex of existing.filter((x) => !incomingGuids.has(x.businessPersonXrefGuid))) {
+      await tx.investigation_business_person_xref.update({
+        where: { investigation_business_person_xref_guid: ex.businessPersonXrefGuid },
+        data: {
+          active_ind: false,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+
+      const contactPartyGuid = (ex.person as InvestigationPerson | undefined)?.partyGuid;
+      if (contactPartyGuid) {
+        await tx.investigation_party.update({
+          where: { investigation_party_guid: contactPartyGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    }
+
+    for (const contact of incoming) {
+      await this._upsertBusinessContact(tx, contact, existing, investigationBusinessGuid, investigationGuid);
+    }
+  }
+
+  private async _upsertBusinessContact(
+    tx: any,
+    contact: UpdateInvestigationBusinessContactInput,
+    existing: InvestigationBusinessPersonXref[],
+    investigationBusinessGuid: string,
+    investigationGuid: string,
+  ) {
+    if (!contact.businessPersonXrefGuid) {
+      if (!contact.person) return;
+      await this._createBusinessContact(
+        tx,
+        investigationBusinessGuid,
+        contact as CreateInvestigationBusinessContactInput,
+        investigationGuid,
+      );
+      return;
+    }
+
+    const existingContact = existing.find((x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid);
+    if (!existingContact) return;
+
+    await tx.investigation_business_person_xref.update({
+      where: { investigation_business_person_xref_guid: contact.businessPersonXrefGuid },
+      data: {
+        title_role: contact.title ?? null,
+        display_in_investigation_ind: contact.displayInInvestigation ?? true,
+        is_primary: contact.isPrimary ?? false,
+        update_user_id: this.user.getIdirUsername(),
+        update_utc_timestamp: new Date(),
+      },
+    });
+
+    const existingInvestigationPerson = existingContact.person as InvestigationPerson | undefined;
+    if (contact.person && existingInvestigationPerson) {
+      await this.updatePerson(tx, existingInvestigationPerson, contact.person);
+    }
+
+    // contact methods live on the contact's own party
+    const contactPartyGuid = existingInvestigationPerson?.partyGuid;
+    if (contactPartyGuid) {
+      const cmOps = this._buildInvestigationContactMethodOperations(
+        contact.contactMethods ?? [],
+        (existingContact.contactMethods as InvestigationContactMethod[] | undefined) ?? [],
+      );
+      if (Object.keys(cmOps).length) {
+        await tx.investigation_party.update({
+          where: { investigation_party_guid: contactPartyGuid },
+          data: {
+            investigation_contact_method: cmOps,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    }
+
+    await this._mapOfficeLinks(
+      tx,
+      contact.businessPersonXrefGuid,
+      contact.officeAddressGuids ?? [],
+      (existingContact.associatedAddresses as InvestigationBusinessPersonAddressXref[] | undefined) ?? [],
+    );
+  }
+
+  private async _mapOfficeLinks(
+    tx: any,
+    xrefGuid: string,
+    officeAddressGuids: string[],
+    existingLinks: InvestigationBusinessPersonAddressXref[],
+  ) {
+    const incoming = new Set(officeAddressGuids);
+    const existingAddressGuids = new Set(existingLinks.map((l) => l.address?.addressGuid).filter(Boolean));
+
+    for (const link of existingLinks) {
+      if (link.address?.addressGuid && !incoming.has(link.address.addressGuid)) {
+        await tx.investigation_business_person_address_xref.update({
+          where: { investigation_business_person_address_xref_guid: link.businessPersonAddressXrefGuid },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    }
+
+    const toAdd = [...incoming].filter((guid) => !existingAddressGuids.has(guid));
+    await this._createOfficeLinks(tx, xrefGuid, toAdd);
   }
 
   /**
@@ -635,31 +978,16 @@ export class InvestigationPartyService {
     return operations;
   }
 
+  // updates and deletes only
   private _buildInvestigationAddressOperations(
     incoming: CreateInvestigationAddressInput[],
     existing: InvestigationAddress[],
   ) {
-    const toCreate = incoming.filter((a) => !a.addressGuid);
     const toUpdate = this._sortAddressesPrimaryLast(incoming.filter((a) => a.addressGuid));
     const existingGuids = new Set(incoming.map((a) => a.addressGuid).filter(Boolean));
     const toDelete = existing.filter((a) => !existingGuids.has(a.addressGuid));
 
     const operations: any = {};
-
-    if (toCreate.length) {
-      operations.create = this._sortAddressesPrimaryLast(toCreate).map((a) => ({
-        address_name: a.addressName.trim(),
-        address: a.address?.trim() || null,
-        city: a.city?.trim() || null,
-        country_subdivision_code_ref: a.province?.trim() || null,
-        postal_code: a.postalCode?.trim() || null,
-        country_code_ref: a.country?.trim() || null,
-        is_primary: a.isPrimary ?? false,
-        active_ind: true,
-        create_user_id: this.user.getIdirUsername(),
-        create_utc_timestamp: new Date(),
-      }));
-    }
 
     if (toUpdate.length || toDelete.length) {
       operations.update = [
@@ -673,29 +1001,31 @@ export class InvestigationPartyService {
             update_utc_timestamp: new Date(),
           },
         })),
-        ...toUpdate.map((a) => ({
-          where: { investigation_address_guid: a.addressGuid },
-          data: {
-            address_name: a.addressName.trim(),
-            address: a.address?.trim() || null,
-            city: a.city?.trim() || null,
-            country_subdivision_code_ref: a.province?.trim() || null,
-            postal_code: a.postalCode?.trim() || null,
-            country_code_ref: a.country?.trim() || null,
-            is_primary: a.isPrimary ?? false,
-            active_ind: true,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
-        ...toDelete.map((a) => ({
-          where: { investigation_address_guid: a.addressGuid },
-          data: {
-            active_ind: false,
-            update_user_id: this.user.getIdirUsername(),
-            update_utc_timestamp: new Date(),
-          },
-        })),
+        ...toUpdate.map((a) => {
+          const existingAddress = existing.find((e) => e.addressGuid === a.addressGuid);
+          const contactMethodOps = this._buildInvestigationContactMethodOperations(
+            a.contactMethods ?? [],
+            (existingAddress?.contactMethods as InvestigationContactMethod[] | undefined) ?? [],
+          );
+
+          return {
+            where: { investigation_address_guid: a.addressGuid },
+            data: {
+              address_name: a.addressName.trim(),
+              address: a.address?.trim() || null,
+              city: a.city?.trim() || null,
+              country_subdivision_code_ref: a.province?.trim() || null,
+              postal_code: a.postalCode?.trim() || null,
+              country_code_ref: a.country?.trim() || null,
+              is_primary: a.isPrimary ?? false,
+              display_in_investigation_ind: a.displayInInvestigation ?? true,
+              active_ind: true,
+              update_user_id: this.user.getIdirUsername(),
+              update_utc_timestamp: new Date(),
+              ...(Object.keys(contactMethodOps).length ? { investigation_contact_method: contactMethodOps } : {}),
+            },
+          };
+        }),
       ];
     }
 
@@ -706,12 +1036,12 @@ export class InvestigationPartyService {
     incomingFacialHairStyles: InvestigationPersonFacialHairStyleCodeRefInput[],
     existingFacialHairStyles: InvestigationPersonFacialHairStyleCodeRef[],
   ): any {
-    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.investigationPersonFacialStyleHairCodeRefGuid);
-    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.investigationPersonFacialStyleHairCodeRefGuid);
+    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
+    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
     const fhsToDelete = existingFacialHairStyles.filter(
       (fhs) =>
-        !new Set(incomingFacialHairStyles.map((fhs) => fhs.investigationPersonFacialStyleHairCodeRefGuid)).has(
-          fhs.investigationPersonFacialStyleHairCodeRefGuid,
+        !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
+          fhs.personFacialStyleHairCodeGuid,
         ),
     );
 
@@ -719,8 +1049,8 @@ export class InvestigationPartyService {
 
     if (fhsToCreate.length) {
       operations.create = fhsToCreate.map((fhs) => ({
-        facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
-        investigation_person_guid: fhs.investigationPersonGuid,
+        facial_hair_style_code_ref: fhs.facialHairStyleCode,
+        investigation_person_guid: fhs.personGuid,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
@@ -731,11 +1061,11 @@ export class InvestigationPartyService {
       operations.update = [
         ...fhsToUpdate.map((fhs) => ({
           where: {
-            investigation_person_facial_hair_style_code_ref_guid: fhs.investigationPersonFacialStyleHairCodeRefGuid,
+            investigation_person_facial_hair_style_code_ref_guid: fhs.personFacialStyleHairCodeGuid,
           },
           data: {
-            facial_hair_style_code_ref: fhs.facialHairStyleCodeRef,
-            investigation_person_guid: fhs.investigationPersonGuid,
+            facial_hair_style_code_ref: fhs.facialHairStyleCode,
+            investigation_person_guid: fhs.personGuid,
             active_ind: true,
             update_user_id: this.user.getIdirUsername(),
             update_utc_timestamp: new Date(),
@@ -743,7 +1073,7 @@ export class InvestigationPartyService {
         })),
         ...fhsToDelete.map((fhs) => ({
           where: {
-            investigation_person_facial_hair_style_code_ref_guid: fhs.investigationPersonFacialStyleHairCodeRefGuid,
+            investigation_person_facial_hair_style_code_ref_guid: fhs.personFacialStyleHairCodeGuid,
           },
           data: {
             active_ind: false,

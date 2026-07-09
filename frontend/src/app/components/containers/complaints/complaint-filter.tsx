@@ -35,6 +35,11 @@ import { ParkSelect } from "@/app/components/common/park-select";
 import { OUTCOMES_REQUIRING_ACTIONED_BY } from "@/app/constants/outcomes-requiring-actioned-by";
 import { selectParkAreasDropdown } from "@/app/store/reducers/code-table-selectors";
 
+const LINKED_TO_CASE_OPTIONS = [
+  { value: "YES", label: "Yes" },
+  { value: "NO", label: "No" },
+];
+
 type Props = {
   type: string;
 };
@@ -65,6 +70,7 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
       outcomeAnimalEndDate,
       equipmentStatus,
       equipmentTypes,
+      linkedToCase,
     },
     dispatch,
   } = useContext(ComplaintFilterContext);
@@ -343,29 +349,30 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
           </div>
         )}
 
-        {(UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) || UserService.hasRole(Roles.MINES)) && type !== COMPLAINT_TYPES.SECTOR && (
-          <div id="comp-filter-action-taken-id">
-            <label htmlFor="action-taken-select-id">Action taken</label>
-            <div className="filter-select-padding">
-              <CompSelect
-                id="action-taken-select-id"
-                showInactive={true}
-                classNamePrefix="comp-select"
-                onChange={(option) => {
-                  setFilter("actionTaken", option);
-                }}
-                classNames={{
-                  menu: () => "top-layer-select",
-                }}
-                options={decisionTypeDropdown}
-                placeholder="Select"
-                enableValidation={false}
-                value={actionTaken}
-                isClearable={true}
-              />
+        {(UserService.hasRole(Roles.CEEB) || UserService.hasRole(Roles.NROS) || UserService.hasRole(Roles.MINES)) &&
+          type !== COMPLAINT_TYPES.SECTOR && (
+            <div id="comp-filter-action-taken-id">
+              <label htmlFor="action-taken-select-id">Action taken</label>
+              <div className="filter-select-padding">
+                <CompSelect
+                  id="action-taken-select-id"
+                  showInactive={true}
+                  classNamePrefix="comp-select"
+                  onChange={(option) => {
+                    setFilter("actionTaken", option);
+                  }}
+                  classNames={{
+                    menu: () => "top-layer-select",
+                  }}
+                  options={decisionTypeDropdown}
+                  placeholder="Select"
+                  enableValidation={false}
+                  value={actionTaken}
+                  isClearable={true}
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {showHWCRFilters && activeFilters.showOutcomeAnimalFilter && (
           <div id="comp-filter-outcome-id">
@@ -472,6 +479,30 @@ export const ComplaintFilter: FC<Props> = ({ type }) => {
                 errMsg={""}
                 values={equipmentTypes}
                 isDisabled={equipmentStatus === null}
+                isClearable={true}
+              />
+            </div>
+          </div>
+        )}
+
+        {type !== COMPLAINT_TYPES.SECTOR && (
+          <div id="comp-filter-linked-to-case-id">
+            <label htmlFor="linked-to-case-select-id">Case</label>
+            <div className="filter-select-padding">
+              <CompSelect
+                id="linked-to-case-select-id"
+                showInactive={false}
+                classNamePrefix="comp-select"
+                onChange={(option) => {
+                  setFilter("linkedToCase", option);
+                }}
+                classNames={{
+                  menu: () => "top-layer-select",
+                }}
+                options={LINKED_TO_CASE_OPTIONS}
+                placeholder="Select"
+                enableValidation={false}
+                value={linkedToCase}
                 isClearable={true}
               />
             </div>

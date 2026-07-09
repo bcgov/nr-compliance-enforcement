@@ -10,9 +10,7 @@ import {
   ContactMethod,
   CreateInspectionPartyInput,
   CreateInvestigationPartyInput,
-  InvestigationAlias,
   InvestigationBusinessIdentifier,
-  InvestigationContactMethod,
   InvestigationParty,
   Party,
   InvestigationPersonFacialHairStyleCodeRef,
@@ -34,14 +32,17 @@ import { PersonForm } from "@/app/components/containers/parties/form/person-form
 import { BusinessFormFields } from "@/app/components/containers/parties/form/business-form";
 import {
   buildAddresses,
+  buildAliases,
   buildContactMethods,
   buildIdentifiers,
   buildPersonBase,
   createEmptyPartyFormValues,
   mapAddressesFromPartyData,
+  mapAliasesFromPartyData,
   mapContactMethodsFromPartyData,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
+import { v4 as uuidv4 } from "uuid";
 import z from "zod";
 import { formatDateOfBirth } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
@@ -124,14 +125,6 @@ const ModalLoading: FC = memo(() => (
   </div>
 ));
 
-// Helper to map between global ContactMethod types and locals
-const toContactMethod = (cm: InvestigationContactMethod): ContactMethod => ({
-  contactMethodGuid: cm.contactMethodGuid,
-  typeCode: cm.typeCode,
-  value: cm.value,
-  isPrimary: cm.isPrimary,
-});
-
 type AddEditPartyModalProps = {
   activityType: ActivityType;
   modalMode: "add" | "edit";
@@ -163,7 +156,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
   const [selectedPartyRole, setSelectedPartyRole] = useState<string | null>();
   const [partyErrorMessage, setPartyErrorMessage] = useState<string>("");
   const [partyRoleErrorMessage, setPartyRoleErrorMessage] = useState<string>("");
-  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(false);
+  const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
   const [pendingAttachmentsSaveAfterCreate, setPendingAttachmentsSaveAfterCreate] = useState(false);
   const [partyIdentifier, setPartyIdentifier] = useState<string>(editParty?.partyIdentifier ?? "");
 
@@ -205,9 +198,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           editParty.person?.facialHairStyleCodes
             ?.filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
             .map((fhs) => ({
-              personFacialStyleHairCodeGuid: fhs?.investigationPersonFacialStyleHairCodeRefGuid,
-              personGuid: fhs?.investigationPersonGuid,
-              facialHairStyleCode: fhs?.facialHairStyleCodeRef,
+              personFacialStyleHairCodeGuid: fhs?.personFacialStyleHairCodeGuid,
+              personGuid: fhs?.personGuid,
+              facialHairStyleCode: fhs?.facialHairStyleCode,
             })) ?? [],
         additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
         tattooIndicator: editParty.person?.tattooIndicator || null,
@@ -230,25 +223,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
           return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
         })(),
-        aliases:
-          editParty.aliases
-            ?.filter((a): a is InvestigationAlias => a != null)
-            .map((a) => ({
-              aliasGuid: a.aliasGuid,
-              name: a.name,
-            })) || [],
-        phoneNumbers: mapContactMethodsFromPartyData(
-          (editParty.contactMethods ?? [])
-            .filter((cm): cm is InvestigationContactMethod => cm != null)
-            .map(toContactMethod),
-          ContactMethods.PHONE,
-        ),
-        emailAddresses: mapContactMethodsFromPartyData(
-          (editParty.contactMethods ?? [])
-            .filter((cm): cm is InvestigationContactMethod => cm != null)
-            .map(toContactMethod),
-          ContactMethods.EMAIL,
-        ),
+        aliases: mapAliasesFromPartyData(editParty.aliases),
+        phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
+        emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
         addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
         contacts: [] as any[],
         partyAssociationRole: editParty.partyAssociationRole || "",
@@ -270,8 +247,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         const input: any = {
           partyIdentifier: editParty.partyIdentifier,
           partyAssociationRole: value.partyAssociationRole,
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
-          addresses: buildAddresses(value.addresses, true),
+          aliases: buildAliases(value.aliases, true),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };
 
@@ -281,9 +258,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {
@@ -299,8 +276,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         const input: any = {
           partyTypeCode: value.partyType,
           partyAssociationRole: value.partyAssociationRole,
-          aliases: value.aliases?.map((a: Alias) => ({ aliasGuid: a.aliasGuid, name: a.name })) || [],
-          addresses: buildAddresses(value.addresses, false),
+          aliases: buildAliases(value.aliases, false),
+          addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
         };
 
@@ -309,9 +286,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
             ...buildPersonBase(value),
             facialHairStyleCodes:
               value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-                investigationPersonGuid: fhs.personGuid,
-                facialHairStyleCodeRef: fhs.facialHairStyleCode,
+                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+                personGuid: fhs.personGuid,
+                facialHairStyleCode: fhs.facialHairStyleCode,
               })) || [],
           };
         } else {
@@ -323,7 +300,13 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         if (activityType === "investigation") {
           addPartyMutation.mutate({ investigationGuid: activityGuid, input });
         } else {
-          addPartyMutation.mutate({ inspectionGuid: activityGuid, input });
+          const {
+            aliases: _aliases,
+            addresses: _addresses,
+            contactMethods: _contactMethods,
+            ...inspectionInput
+          } = input;
+          addPartyMutation.mutate({ inspectionGuid: activityGuid, input: inspectionInput });
         }
       }
     },
@@ -344,10 +327,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party added successfully");
         submit();
@@ -363,10 +343,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
     onSuccess: () => {
       if (pendingAttachmentsSaveAfterCreate) {
         setPendingAttachmentsSaveAfterCreate(false);
-        setTriggerSaveAttachments(true);
-        setTimeout(() => {
-          setTriggerSaveAttachments(false);
-        }, 0);
+        setTriggerSaveAttachments((n) => n + 1);
       } else {
         ToggleSuccess("Party updated successfully");
         submit();
@@ -468,6 +445,12 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
       });
     }
 
+    // new guids for the copied addresses so the same party can be added more than once
+    const newAddressGuidByAddressReference = new Map<string, string>();
+    for (const address of party.addresses ?? []) {
+      if (address?.addressGuid) newAddressGuidByAddressReference.set(address.addressGuid, uuidv4());
+    }
+
     const addPartyInput = {
       partyTypeCode: party.partyTypeCode || "",
       partyReference: party.partyIdentifier,
@@ -503,6 +486,15 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           postalCode: address.postalCode ?? null,
           country: address.country ?? null,
           isPrimary: address.isPrimary ?? false,
+          displayInInvestigation: address.displayInInvestigation ?? true,
+          addressGuid: newAddressGuidByAddressReference.get(address.addressGuid ?? ""),
+          contactMethods: address.contactMethods
+            ?.filter((cm): cm is ContactMethod => cm != null)
+            .map((cm: ContactMethod) => ({
+              typeCode: cm.typeCode,
+              value: cm.value,
+              isPrimary: cm.isPrimary ?? false,
+            })),
         })),
       ...(party.person?.lastName && {
         person: {
@@ -510,9 +502,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           personReference: party.person?.personGuid || "",
           facialHairStyleCodes:
             party.person?.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-              investigationPersonFacialStyleHairCodeRefGuid: fhs.personFacialStyleHairCodeGuid,
-              investigationPersonGuid: fhs.personGuid,
-              facialHairStyleCodeRef: fhs.facialHairStyleCode,
+              personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+              personGuid: fhs.personGuid,
+              facialHairStyleCode: fhs.facialHairStyleCode,
             })) || [],
         },
       }),
@@ -520,34 +512,55 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         business: {
           name: party.business.name,
           businessReference: party.business.businessGuid,
-          businessIdentifiers: party.business?.identifiers
+          businessIdentifiers: party.business?.businessIdentifiers
             ?.filter((bi: BusinessIdentifier): bi is BusinessIdentifier => bi != null)
             .map((bi: BusinessIdentifier) => ({
               identifierCode: bi.identifierCode,
               identifierValue: bi.identifierValue,
+            })),
+          contactPeople: party.business?.contactPeople
+            ?.filter((cp: any) => cp?.person != null)
+            .map((cp: any) => ({
+              person: {
+                personReference: cp.person.personGuid || "",
+                firstName: cp.person.firstName ?? null,
+                lastName: cp.person.lastName ?? null,
+              },
+              title: cp.title ?? null,
+              displayInInvestigation: cp.displayInInvestigation ?? true,
+              isPrimary: cp.isPrimary ?? false,
+              contactMethods: cp.contactMethods
+                ?.filter((cm: ContactMethod | null): cm is ContactMethod => cm != null)
+                .map((cm: ContactMethod) => ({
+                  typeCode: cm.typeCode,
+                  value: cm.value,
+                  isPrimary: cm.isPrimary ?? false,
+                })),
+              // map office address references to the new guids created for the copied addresses above
+              officeAddressGuids: cp.associatedAddresses
+                ?.map((aa: any) => newAddressGuidByAddressReference.get(aa?.address?.addressGuid ?? ""))
+                .filter((guid: string | undefined): guid is string => !!guid),
             })),
         },
       }),
       partyAssociationRole: selectedPartyRole,
     };
 
-    const typeCastedInput =
-      activityType === "investigation"
-        ? (addPartyInput as CreateInvestigationPartyInput)
-        : (addPartyInput as CreateInspectionPartyInput);
-
     setPendingAttachmentsSaveAfterCreate(false);
 
     // Backend expects the named ids
     if (activityType === "investigation") {
-      addPartyMutation.mutate({ investigationGuid: activityGuid, input: typeCastedInput });
+      addPartyMutation.mutate({
+        investigationGuid: activityGuid,
+        input: addPartyInput as CreateInvestigationPartyInput,
+      });
     } else {
-      addPartyMutation.mutate({ inspectionGuid: activityGuid, input: typeCastedInput });
+      addPartyMutation.mutate({ inspectionGuid: activityGuid, input: addPartyInput as CreateInspectionPartyInput });
     }
   };
 
   const partyRoleOptions = partyRoles
-    ?.sort((left: any, right: any) => left.displayOrder - right.displayOrder)
+    ?.toSorted((left: any, right: any) => left.displayOrder - right.displayOrder)
     .filter((option: any) => {
       return (
         (activityType === "investigation" && option.caseActivityTypeCode === "INVSTGTN") ||
@@ -584,7 +597,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                 inline
                 type="radio"
                 id="mode-search"
-                label="Search existing party"
+                label="Known"
                 checked={mode === "search"}
                 onChange={() => setMode("search")}
               />
@@ -592,9 +605,15 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                 inline
                 type="radio"
                 id="mode-create"
-                label="Create new party"
+                label="Unknown"
                 checked={mode === "create"}
                 onChange={() => {
+                  // unknown parties are created on the full party form
+                  if (modalData.onSelectUnknown) {
+                    close();
+                    modalData.onSelectUnknown();
+                    return;
+                  }
                   markDirty();
                   setMode("create");
                 }}
@@ -675,7 +694,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
               <FormField
                 form={partyForm}
                 name="partyType"
-                label="Party Type"
+                label="Type"
                 required
                 validators={{ onChange: z.string().min(1, "Party type is required") }}
                 render={(field) => (
@@ -686,7 +705,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                     options={partyTypeCodes}
                     value={partyTypeCodes?.find((opt: any) => opt.value === field.state.value)}
                     onChange={(option) => field.handleChange(option?.value || "")}
-                    placeholder="Select party type"
+                    placeholder="Select type"
                     isClearable={true}
                     showInactive={false}
                     enableValidation={true}
@@ -702,6 +721,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
                   activityId={activityGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  allowUpload
+                  allowDelete
                   triggerSave={triggerSaveAttachments}
                   onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)}
                   onSaved={() => {

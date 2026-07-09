@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { truncateString } from "@common/methods";
@@ -14,10 +14,30 @@ import { getUserAgency } from "@/app/service/user-service";
 import getOfficerAssigned from "@common/get-officer-assigned";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { gql } from "graphql-request";
+import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { selectCanAccessCases } from "@/app/access/module-access";
+import { CaseFile } from "@/generated/graphql";
+
+const GET_CASE_FILES_BY_COMPLAINT_IDS = gql`
+  query caseFilesByActivityIds($activityIdentifiers: [String!]!) {
+    caseFilesByActivityIds(activityIdentifiers: $activityIdentifiers) {
+      caseIdentifier
+      name
+      activities {
+        activityIdentifier
+        activityType {
+          caseActivityTypeCode
+        }
+      }
+    }
+  }
+`;
 import {
   actionsColumn,
   agencyColumn,
   authorizationColumn,
+  caseColumn,
   communityColumn,
   complaintNumberColumn,
   complaintTypeColumn,
@@ -32,7 +52,6 @@ import {
   speciesColumn,
   statusColumn,
   typeOfIssueColumn,
-  violationInProgressColumn,
   violationTypeColumn,
 } from "./complaint-column-definitions";
 
@@ -70,7 +89,34 @@ export const ComplaintTableList: FC<Props> = ({
   const isParkColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.PARK_COLUMN));
   const isLocationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.LOCATION_COLUMN));
   const isAuthorizationColumnEnabled = useAppSelector(isFeatureActive(FEATURE_TYPES.AUTHORIZATION_COLUMN));
+  const casesActive = useAppSelector(selectCanAccessCases);
   const isCeebRole = UserService.hasRole([Roles.CEEB, Roles.CEEB_COMPLIANCE_COORDINATOR]);
+
+  const complaintIds = useMemo(() => complaints.map((c) => c.id), [complaints]);
+
+  const { data: caseFilesData } = useGraphQLQuery<{ caseFilesByActivityIds: CaseFile[] }>(
+    GET_CASE_FILES_BY_COMPLAINT_IDS,
+    {
+      queryKey: ["caseFilesByActivityIds", ...complaintIds],
+      variables: { activityIdentifiers: complaintIds },
+      enabled: complaintType === COMPLAINT_TYPES.ERS && complaintIds.length > 0 && !isCeebRole,
+    },
+  );
+
+  const complaintIdToCaseMap = useMemo(() => {
+    const map = new Map<string, Array<{ name: string; caseIdentifier: string }>>();
+    for (const caseFile of caseFilesData?.caseFilesByActivityIds ?? []) {
+      if (!caseFile.name || !caseFile.caseIdentifier) continue;
+      for (const activity of caseFile.activities ?? []) {
+        if (activity?.activityIdentifier && activity.activityType?.caseActivityTypeCode === "COMP") {
+          const existing = map.get(activity.activityIdentifier) ?? [];
+          existing.push({ name: caseFile.name, caseIdentifier: caseFile.caseIdentifier });
+          map.set(activity.activityIdentifier, existing);
+        }
+      }
+    }
+    return map;
+  }, [caseFilesData]);
 
   const userAgency = getUserAgency();
 
@@ -140,13 +186,23 @@ export const ComplaintTableList: FC<Props> = ({
           complaintNumberColumn(COMPLAINT_TYPES.ERS),
           dateLoggedColumn(),
           authorizationColumn(!isAuthorizationColumnEnabled),
-          violationTypeColumn(getViolationDescription),
-          violationInProgressColumn(isCeebRole),
+          violationTypeColumn(getViolationDescription, isCeebRole),
           communityColumn(),
           parkColumn(!isParkColumnEnabled),
           locationAddressColumn(!isLocationColumnEnabled),
           statusColumn(userAgency, getStatusDescription),
           officerAssignedColumn((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
+          ...(!isCeebRole
+            ? [
+                caseColumn(
+                  (complaint) => ({
+                    cases: complaintIdToCaseMap.get(complaint.id),
+                    coorsNumber: complaint.referenceNumber,
+                  }),
+                  casesActive,
+                ),
+              ]
+            : []),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];

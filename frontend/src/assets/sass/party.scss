@@ -2,6 +2,10 @@
   padding-bottom: 0;
 }
 
+.comp-party-form {
+  max-width: 64rem;
+}
+
 .party-details-summary-container {
   display: flex;
   flex-direction: row;
@@ -11,11 +15,19 @@
 
 .party-details-summary-vcard-container {
   margin-left: 5em;
+  // fixed frame so the carousel doesn't shrink-wrap to each image's intrinsic width
+  width: 320px;
+  flex-shrink: 0;
 }
 
 .party-details-summary-vcard {
   font-size: 12em;
   display: flex;
+}
+
+.party-carousel-frame {
+  // match the complaint aspect ratio
+  aspect-ratio: 289 / 300;
 }
 
 .party-details-summary-info {
@@ -56,4 +68,9 @@
       background-color: $gray-110;
     }
   }
+}
+
+.party-compliance-history-wrapper {
+  width: 100%;
+  display: block;
 }
