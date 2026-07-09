@@ -65,7 +65,7 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
   return { input, populatedCount };
 };
 
-export const usePartyMatchTrigger = (form: any) => {
+export const usePartyMatchTrigger = (form: any, isLinkedParty: boolean) => {
   const [enabled, setEnabled] = useState(false);
 
   const values = useStore(form.store, (state: any) => state.values);
@@ -74,8 +74,8 @@ export const usePartyMatchTrigger = (form: any) => {
   // Called from each match-field's onBlur. Enables the query once the threshold is met;
   // disables it again if the user has cleared fields back below the minimum.
   const handleFieldBlur = useCallback(() => {
-    setEnabled(populatedCount >= MINIMUM_MATCH_FIELDS);
-  }, [populatedCount]);
+    setEnabled(!isLinkedParty && populatedCount >= MINIMUM_MATCH_FIELDS);
+  }, [isLinkedParty, populatedCount]);
 
   const { data, isLoading, error } = useMatchParty(input, enabled);
 

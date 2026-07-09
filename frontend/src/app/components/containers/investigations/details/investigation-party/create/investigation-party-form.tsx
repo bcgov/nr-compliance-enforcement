@@ -54,6 +54,7 @@ import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { REMOVE_PARTY_FROM_INVESTIGATION_MUTATION } from "@/app/components/containers/investigations/details/investigation-parties";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -99,6 +100,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const [triggerSaveAttachments, setTriggerSaveAttachments] = useState(0);
 
   const [addMatchGuid, setAddMatchGuid] = useState<string>("");
+
+  const isLinkedParty = !!editParty?.partyReference;
 
   const { data: matchPartyData } = useGraphQLQuery<{ party: Party }>(GET_PARTY, {
     queryKey: ["party", addMatchGuid],
@@ -287,6 +290,38 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
   });
 
+  const removePartyMutation = useGraphQLMutation(REMOVE_PARTY_FROM_INVESTIGATION_MUTATION, {
+    invalidateQueries: [["getInvestigation", investigationGuid]],
+    onSuccess: () => {
+      flushAttachmentsThenNavigate();
+    },
+    onError: (error: any) => {
+      console.error("Error removing original party after copy:", error);
+      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to remove the original party");
+    },
+  });
+
+  // handles the scenario where a placeholder party is added but a suggested party is later
+  // added to the investigation.   Removes the placeholder and adds the global party.
+  // in the future might need merge logic to prevent data loss
+  const replaceLocalPartyWithGlobalMutation = useGraphQLMutation(ADD_PARTY_TO_INVESTIGATION, {
+    invalidateQueries: [["getInvestigation", investigationGuid]],
+    onSuccess: (data: any) => {
+      const created = data?.addPartyToInvestigation?.[0];
+      if (created?.partyIdentifier) setPartyIdentifier(created.partyIdentifier);
+
+      if (isEditMode && editParty?.partyIdentifier) {
+        removePartyMutation.mutate({ investigationGuid, partyIdentifier: editParty.partyIdentifier });
+      } else {
+        flushAttachmentsThenNavigate();
+      }
+    },
+    onError: (error: any) => {
+      console.error("Error copying party:", error);
+      handleBusinessPartyMutationError(form, error, "Failed to add party");
+    },
+  });
+
   const isDirty =
     useStore(form.baseStore, (state) => Object.values(state.fieldMetaBase).some((field) => field?.isTouched)) ||
     attachmentsDirty;
@@ -343,7 +378,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const isDisabled = addPartyMutation.isPending || updatePartyMutation.isPending;
   const saveDisabled = formSubmitting || isDisabled;
 
-  const { matches, handleFieldBlur } = usePartyMatchTrigger(form);
+  const { matches, handleFieldBlur } = usePartyMatchTrigger(form, isLinkedParty);
 
   const handleAddMatch = (party: Party) => {
     const partyAssociationRole = form.getFieldValue("partyAssociationRole");
@@ -365,7 +400,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
     const input = mapPartyToInvestigationPartyInput(matchPartyData.party, form.getFieldValue("partyAssociationRole"));
 
-    addPartyMutation.mutate({ investigationGuid, input: [input] });
+    replaceLocalPartyWithGlobalMutation.mutate({ investigationGuid, input: [input] });
 
     // Clear the trigger so stale query data can't re-fire the copy on a later render.
     setAddMatchGuid("");
