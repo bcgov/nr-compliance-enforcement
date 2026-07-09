@@ -1562,6 +1562,66 @@ export class PartyService {
     }
   }
 
+  // Shared include to reduce duplication between the global party list and party matching function
+  private readonly _partySummaryInclude = {
+    party_type_code: {
+      select: {
+        party_type_code: true,
+        short_description: true,
+        long_description: true,
+      },
+    },
+    address: {
+      select: {
+        address: true,
+        city: true,
+        country_subdivision_code: true,
+        is_primary: true,
+      },
+      where: { active_ind: true },
+    },
+    contact_method: {
+      where: { active_ind: true },
+      select: {
+        contact_method_guid: true,
+        contact_method_type: true,
+        contact_value: true,
+        is_primary: true,
+        contact_method_type_code: {
+          select: {
+            contact_method_type_code: true,
+            short_description: true,
+            long_description: true,
+          },
+        },
+      },
+    },
+    business: {
+      select: {
+        business_guid: true,
+        name: true,
+        business_identifier: {
+          where: { active_ind: true },
+          select: {
+            business_identifier_guid: true,
+            identifier_value: true,
+            business_identifier_code: true,
+          },
+        },
+      },
+    },
+    person: {
+      select: {
+        person_guid: true,
+        first_name: true,
+        last_name: true,
+        date_of_birth: true,
+        gender_code: true,
+        approximate_age_code: true,
+      },
+    },
+  };
+
   async search(page: number = 1, pageSize: number = 25, filters?: PartyFilters): Promise<PartyResult> {
     const where: any = {
       party_type: {
@@ -1655,64 +1715,7 @@ export class PartyService {
         destinationTypeName: "Party",
         mapper: this.mapper,
         whereClause: where,
-        includeClause: {
-          party_type_code: {
-            select: {
-              party_type_code: true,
-              short_description: true,
-              long_description: true,
-            },
-          },
-          address: {
-            select: {
-              address: true,
-              city: true,
-              country_subdivision_code: true,
-              is_primary: true,
-            },
-            where: { active_ind: true },
-          },
-          contact_method: {
-            where: { active_ind: true },
-            select: {
-              contact_method_guid: true,
-              contact_method_type: true,
-              contact_value: true,
-              is_primary: true,
-              contact_method_type_code: {
-                select: {
-                  contact_method_type_code: true,
-                  short_description: true,
-                  long_description: true,
-                },
-              },
-            },
-          },
-          business: {
-            select: {
-              business_guid: true,
-              name: true,
-              business_identifier: {
-                where: { active_ind: true },
-                select: {
-                  business_identifier_guid: true,
-                  identifier_value: true,
-                  business_identifier_code: true,
-                },
-              },
-            },
-          },
-          person: {
-            select: {
-              person_guid: true,
-              first_name: true,
-              last_name: true,
-              date_of_birth: true,
-              gender_code: true,
-              approximate_age_code: true,
-            },
-          },
-        },
+        includeClause: this._partySummaryInclude,
         orderByClause: orderBy,
       },
     );
@@ -1891,61 +1894,11 @@ export class PartyService {
       where,
       take: 50, // arbitrary number... 10 times the amount displayed before scoring
       include: {
-        party_type_code: {
-          select: {
-            party_type_code: true,
-            short_description: true,
-            long_description: true,
-          },
-        },
-        address: {
-          select: {
-            address: true,
-            city: true,
-            country_subdivision_code: true,
-            is_primary: true,
-          },
-          where: { active_ind: true },
-        },
-        contact_method: {
-          where: { active_ind: true },
-          select: {
-            contact_method_guid: true,
-            contact_method_type: true,
-            contact_value: true,
-            is_primary: true,
-            contact_method_type_code: {
-              select: {
-                contact_method_type_code: true,
-                short_description: true,
-                long_description: true,
-              },
-            },
-          },
-        },
-        business: {
-          select: {
-            business_guid: true,
-            name: true,
-            business_identifier: {
-              where: { active_ind: true },
-              select: {
-                business_identifier_guid: true,
-                identifier_value: true,
-                business_identifier_code: true,
-              },
-            },
-          },
-        },
+        ...this._partySummaryInclude,
         person: {
           select: {
-            person_guid: true,
-            first_name: true,
+            ...this._partySummaryInclude.person.select,
             middle_names: true,
-            last_name: true,
-            date_of_birth: true,
-            gender_code: true,
-            approximate_age_code: true,
           },
         },
       },
