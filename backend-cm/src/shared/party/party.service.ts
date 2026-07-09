@@ -27,8 +27,23 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { Person } from "src/shared/person/dto/person";
+import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
+
+// Initial cut at scoring algorithm
+// DL Number and Business Number shoot matches to top of list regardless of what is entered
+const MATCH_FIELD_WEIGHTS = {
+  firstName: 1,
+  lastName: 1,
+  dateOfBirth: 1,
+  genderCode: 1,
+  driversLicenseNumber: 10,
+  businessName: 1,
+  businessNumber: 10,
+  phone: 1,
+  addressLine: 1,
+} as const;
 
 @Injectable()
 export class PartyService {
@@ -1708,9 +1723,58 @@ export class PartyService {
     };
   }
 
+  private _scoreDateOfBirth(input: PartyMatchInput, party: party): number {
+    const candidateDob = party.person?.date_of_birth;
+    const inputDob = input.person?.dateOfBirth;
+    if (!candidateDob || !inputDob) {
+      return 0;
+    }
+    const sameDate =
+      candidateDob.getUTCFullYear() === inputDob.getUTCFullYear() &&
+      candidateDob.getUTCMonth() === inputDob.getUTCMonth() &&
+      candidateDob.getUTCDate() === inputDob.getUTCDate();
+    return sameDate ? MATCH_FIELD_WEIGHTS.dateOfBirth : 0;
+  }
+
+  private _scoreBusinessNumber(input: PartyMatchInput, party: party): number {
+    const businessNumber = input.business?.businessIdentifiers?.find(
+      (i) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
+    )?.identifierValue;
+    if (!businessNumber) {
+      return 0;
+    }
+    const hasMatch = party.business?.business_identifier?.some(
+      (bi: any) =>
+        bi.business_identifier_code === BusinessIdentifiers.BUSINESS_NUMBER && bi.identifier_value === businessNumber,
+    );
+    return hasMatch ? MATCH_FIELD_WEIGHTS.businessNumber : 0;
+  }
+
+  private _scorePhone(input: PartyMatchInput, party: party): number {
+    const phoneValue = input.contactMethods?.find((c) => c.value)?.value;
+    if (!phoneValue) {
+      return 0;
+    }
+    const normalized = `+${phoneValue.replace(/\D/g, "")}`;
+    const hasMatch = party.contact_method?.some(
+      (cm: any) => cm.contact_method_type === "PHONE" && cm.contact_value === normalized,
+    );
+    return hasMatch ? MATCH_FIELD_WEIGHTS.phone : 0;
+  }
+
+  private _scoreAddressLine(input: PartyMatchInput, party: party): number {
+    const addressLine = input.addresses?.find((a) => a.address)?.address;
+    if (!addressLine) {
+      return 0;
+    }
+    const hasMatch = party.address?.some((a: any) => a.address === addressLine);
+    return hasMatch ? MATCH_FIELD_WEIGHTS.addressLine : 0;
+  }
+
   /**
-   * Counts how many of the entered match fields a candidate party actually satisfies.
-   * Each matched field is worth 1.
+   * Counts how many of the entered match fields a candidate party actually satisfies,
+   * summing each matched field's weight. Simple scalar matches are checked inline;
+   * the fields with more involved logic are delegated to dedicated helpers.
    *
    * Will likely be replaced / enhanced in the future.
    */
@@ -1718,62 +1782,28 @@ export class PartyService {
     let score = 0;
 
     if (input.person?.firstName && party.person?.first_name === input.person.firstName) {
-      score += 1;
+      score += MATCH_FIELD_WEIGHTS.firstName;
     }
     if (input.person?.lastName && party.person?.last_name === input.person.lastName) {
-      score += 1;
-    }
-    if (input.person?.dateOfBirth && party.person?.date_of_birth) {
-      const candidateDob = party.person.date_of_birth;
-      const inputDob = input.person.dateOfBirth;
-      const sameDate =
-        candidateDob.getUTCFullYear() === inputDob.getUTCFullYear() &&
-        candidateDob.getUTCMonth() === inputDob.getUTCMonth() &&
-        candidateDob.getUTCDate() === inputDob.getUTCDate();
-      if (sameDate) {
-        score += 1;
-      }
+      score += MATCH_FIELD_WEIGHTS.lastName;
     }
     if (input.person?.genderCode && party.person?.gender_code === input.person.genderCode) {
-      score += 1;
+      score += MATCH_FIELD_WEIGHTS.genderCode;
     }
     if (
       input.person?.driversLicenseNumber &&
       party.person?.drivers_license_number === input.person.driversLicenseNumber
     ) {
-      score += 1;
+      score += MATCH_FIELD_WEIGHTS.driversLicenseNumber;
     }
-
     if (input.business?.name && party.business?.name === input.business.name) {
-      score += 1;
+      score += MATCH_FIELD_WEIGHTS.businessName;
     }
 
-    const businessNumber = input.business?.businessIdentifiers?.find(
-      (i) => i.identifierCode === "BNUM",
-    )?.identifierValue;
-    if (
-      businessNumber &&
-      party.business?.business_identifier?.some(
-        (bi: any) => bi.business_identifier_code === "BNUM" && bi.identifier_value === businessNumber,
-      )
-    ) {
-      score += 1;
-    }
-
-    const phoneValue = input.contactMethods?.find((c) => c.value)?.value;
-    if (
-      phoneValue &&
-      party.contact_method?.some(
-        (cm: any) => cm.contact_method_type === "PHONE" && cm.contact_value === `+${phoneValue.replace(/\D/g, "")}`,
-      )
-    ) {
-      score += 1;
-    }
-
-    const addressLine = input.addresses?.find((a) => a.address)?.address;
-    if (addressLine && party.address?.some((a: any) => a.address === addressLine)) {
-      score += 1;
-    }
+    score += this._scoreDateOfBirth(input, party);
+    score += this._scoreBusinessNumber(input, party);
+    score += this._scorePhone(input, party);
+    score += this._scoreAddressLine(input, party);
 
     return score;
   }
@@ -1802,14 +1832,14 @@ export class PartyService {
     }
 
     const businessNumber = input.business?.businessIdentifiers?.find(
-      (i) => i.identifierCode === "BNUM",
+      (i) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
     )?.identifierValue;
     if (businessNumber) {
       conditions.push({
         business: {
           business_identifier: {
             some: {
-              business_identifier_code: "BNUM",
+              business_identifier_code: BusinessIdentifiers.BUSINESS_NUMBER,
               identifier_value: { equals: businessNumber },
             },
           },
