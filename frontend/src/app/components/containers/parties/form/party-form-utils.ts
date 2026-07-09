@@ -1,4 +1,11 @@
-import { Address, PersonFacialHairStyleCode, PersonInput, PersonUpdateInput } from "@/generated/graphql";
+import {
+  Address,
+  FacialHairStyleCode,
+  Party,
+  PersonFacialHairStyleCode,
+  PersonInput,
+  PersonUpdateInput,
+} from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { isValidEmail } from "@/app/common/validate-email";
