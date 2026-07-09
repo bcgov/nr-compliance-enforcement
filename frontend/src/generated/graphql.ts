@@ -169,6 +169,7 @@ export type Assessment = {
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   locationType?: Maybe<KeyValuePair>;
+  note?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
@@ -193,6 +194,7 @@ export type AssessmentInput = {
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   locationType?: InputMaybe<KeyValuePairInput>;
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BuildCode = {
@@ -1432,8 +1434,8 @@ export type InvestigationBusinessPerson = {
 export type InvestigationBusinessPersonAddress = {
   __typename?: 'InvestigationBusinessPersonAddress';
   activeInd: Scalars['Boolean']['output'];
-  address: Address;
-  businessPerson: BusinessPerson;
+  address: InvestigationAddress;
+  businessPerson: InvestigationBusinessPerson;
   businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
@@ -2426,6 +2428,7 @@ export type Query = {
   getActivityNote?: Maybe<ActivityNote>;
   getActivityNotes?: Maybe<Array<ActivityNote>>;
   getActivityNotesByTask?: Maybe<Array<ActivityNote>>;
+  getComplaintIdsLinkedToCase?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getComplaintOutcome?: Maybe<ComplaintOutcome>;
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;

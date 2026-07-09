@@ -26,7 +26,7 @@ INSERT INTO
   )
 VALUES
   (
-    'CREATECASE',
+    'ERSGIRASMT',
     'COS',
     false,
     'FLWYAY',
@@ -48,7 +48,7 @@ INSERT INTO
   )
 VALUES
   (
-    'CREATECASE',
+    'ERSGIRASMT',
     'PARKS',
     false,
     'FLWYAY',

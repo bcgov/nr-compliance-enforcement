@@ -138,9 +138,9 @@ export const upsertAssessment =
         ToggleError("Unable to update assessment: complaint outcome was not found.");
         return;
       }
-      dispatch(updateAssessment(assessment, complaintIdentifier, guid));
+      await dispatch(updateAssessment(assessment, complaintIdentifier, guid));
     } else {
-      dispatch(addAssessment(assessment, complaintIdentifier));
+      await dispatch(addAssessment(assessment, complaintIdentifier));
     }
   };
 

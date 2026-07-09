@@ -113,19 +113,20 @@ const InvestigationCreate: FC = () => {
   });
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       ToggleSuccess("Investigation created successfully");
       if (complaintId) {
         const userAgency = getUserAgency();
+        // awaited so the investigation page doesn't load stale complaint status
         if (["EPO", "MINES", "NROS"].includes(userAgency)) {
-          dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+          await dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
         } else if (assessmentApplies && complaintType) {
           // COS/PARKS ERS+GIR: assess and close the complaint on investigation creation
-          dispatch(
+          await dispatch(
             closeComplaintWithAssessment(complaintId, complaintType, data.createInvestigation.primaryInvestigatorGuid),
           );
         }
-        dispatch(updateComplaintLastUpdated(complaintId));
+        await dispatch(updateComplaintLastUpdated(complaintId));
       }
       allowNavigation();
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);
