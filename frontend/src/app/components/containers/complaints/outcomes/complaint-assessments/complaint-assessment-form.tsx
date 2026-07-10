@@ -52,7 +52,7 @@ import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import { ValidationTextArea } from "@common/validation-textarea";
 
 // ERS/GIR assessments use their own justification codes, separate from the HWC set
-const ERS_GIR_JUSTIFICATION_CODES = ["NOINFID", "NORES", "PKNOINFID", "PKNORES"];
+const ERS_GIR_JUSTIFICATION_CODES = new Set(["NOINFID", "NORES", "PKNOINFID", "PKNORES"]);
 
 type Props = {
   id: string;
@@ -202,8 +202,8 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       });
     }
     return assessmentApplies
-      ? list.filter((option) => ERS_GIR_JUSTIFICATION_CODES.includes(option.value ?? ""))
-      : list.filter((option) => !ERS_GIR_JUSTIFICATION_CODES.includes(option.value ?? ""));
+      ? list.filter((option) => ERS_GIR_JUSTIFICATION_CODES.has(option.value ?? ""))
+      : list.filter((option) => !ERS_GIR_JUSTIFICATION_CODES.has(option.value ?? ""));
   }, [justificationList, assessmentApplies]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);

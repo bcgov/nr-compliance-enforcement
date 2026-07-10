@@ -42,6 +42,8 @@ import {
 import { assignComplaintToOfficer } from "./officer";
 import { appUserGuid } from "./app";
 import UserService from "@service/user-service";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { getComplaintType } from "@common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "@/app/types/app/complaint-outcomes/animal-outcome/create-animal-outcome-input";
@@ -241,6 +243,14 @@ const addAssessment =
         }
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
+        // quick close also closes the complaint server-side (actionCloseComplaint)
+        if (assessment.close_complaint) {
+          const state = getState();
+          const complaint = selectComplaint(state);
+          if (selectComplaintAssessmentApplies(getComplaintType(complaint), complaint?.ownedBy)(state)) {
+            ToggleSuccess("Complaint closed");
+          }
+        }
       } else {
         dispatch(clearAssessment());
         ToggleError(`Unable to create assessment`);
