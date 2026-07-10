@@ -1815,10 +1815,10 @@ export class PartyService {
     const conditions: any[] = [];
 
     if (input.person?.firstName) {
-      conditions.push({ person: { first_name: { equals: input.person.firstName } } });
+      conditions.push({ person: { first_name: { equals: input.person.firstName, mode: "insensitive" } } });
     }
     if (input.person?.lastName) {
-      conditions.push({ person: { last_name: { equals: input.person.lastName } } });
+      conditions.push({ person: { last_name: { equals: input.person.lastName, mode: "insensitive" } } });
     }
     if (input.person?.dateOfBirth) {
       conditions.push({ person: { date_of_birth: { equals: input.person.dateOfBirth } } });
@@ -1831,7 +1831,7 @@ export class PartyService {
     }
 
     if (input.business?.name) {
-      conditions.push({ business: { name: { equals: input.business.name } } });
+      conditions.push({ business: { name: { equals: input.business.name, mode: "insensitive" } } });
     }
 
     const businessNumber = input.business?.businessIdentifiers?.find(
@@ -1868,7 +1868,7 @@ export class PartyService {
       if (addr.address) {
         conditions.push({
           address: {
-            some: { address: { equals: addr.address } },
+            some: { address: { equals: addr.address, mode: "insensitive" } },
           },
         });
       }
