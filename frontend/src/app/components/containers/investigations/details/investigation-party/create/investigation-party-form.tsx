@@ -48,6 +48,7 @@ import { PartyAttachments } from "@/app/components/containers/parties/attachment
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Button } from "react-bootstrap";
 import { InvestigationPartyHeader } from "../investigation-party-header";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -363,6 +364,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           <h2>Party details</h2>
         </div>
 
+        <FormErrorBanner form={form} />
         <form
           className="comp-party-form"
           onSubmit={(e) => {
