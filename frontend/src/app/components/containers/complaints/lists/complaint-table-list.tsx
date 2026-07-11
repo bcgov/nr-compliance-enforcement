@@ -99,7 +99,7 @@ export const ComplaintTableList: FC<Props> = ({
     {
       queryKey: ["caseFilesByActivityIds", ...complaintIds],
       variables: { activityIdentifiers: complaintIds },
-      enabled: complaintType === COMPLAINT_TYPES.ERS && complaintIds.length > 0,
+      enabled: complaintType === COMPLAINT_TYPES.ERS && complaintIds.length > 0 && !isCeebRole,
     },
   );
 
@@ -192,13 +192,17 @@ export const ComplaintTableList: FC<Props> = ({
           locationAddressColumn(!isLocationColumnEnabled),
           statusColumn(userAgency, getStatusDescription),
           officerAssignedColumn((complaint) => getOfficerAssigned(complaint, officers) ?? ""),
-          caseColumn(
-            (complaint) => ({
-              cases: complaintIdToCaseMap.get(complaint.id),
-              coorsNumber: complaint.referenceNumber,
-            }),
-            casesActive,
-          ),
+          ...(!isCeebRole
+            ? [
+                caseColumn(
+                  (complaint) => ({
+                    cases: complaintIdToCaseMap.get(complaint.id),
+                    coorsNumber: complaint.referenceNumber,
+                  }),
+                  casesActive,
+                ),
+              ]
+            : []),
           lastUpdatedColumn(),
           actionsColumn(COMPLAINT_TYPES.ERS),
         ];

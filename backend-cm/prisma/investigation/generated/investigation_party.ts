@@ -42,6 +42,12 @@ export class investigation_party {
   @ApiPropertyOptional({ type: String })
   created_by_app_user_guid_ref?: string;
 
+  @ApiPropertyOptional({ type: String })
+  placeholder_name?: string;
+
+  @ApiPropertyOptional({ type: Number })
+  placeholder_number?: number;
+
   @ApiProperty({ isArray: true, type: () => contravention_party_xref })
   contravention_party_xref: contravention_party_xref[];
 

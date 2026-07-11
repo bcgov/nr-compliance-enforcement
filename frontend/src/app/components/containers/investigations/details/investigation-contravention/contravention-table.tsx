@@ -229,7 +229,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
                 <Dropdown.Item
                   id={`add-enforcement-contravention-${c.contraventionIdentifier}`}
                   onClick={() => onAddEnforcementAction(c.contraventionIdentifier, partyGuid)}
-                  disabled={isReadOnly}
+                  disabled={isReadOnly || !isProfileComplete}
                 >
                   <i className="bi bi-plus-circle" /> Add enforcement action
                 </Dropdown.Item>

@@ -2,6 +2,10 @@
   padding-bottom: 0;
 }
 
+.comp-party-form {
+  max-width: 64rem;
+}
+
 .party-details-summary-container {
   display: flex;
   flex-direction: row;
@@ -64,4 +68,9 @@
       background-color: $gray-110;
     }
   }
+}
+
+.party-compliance-history-wrapper {
+  width: 100%;
+  display: block;
 }

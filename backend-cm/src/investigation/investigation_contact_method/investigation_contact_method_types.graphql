@@ -1,6 +1,6 @@
 type InvestigationContactMethod {
   contactMethodGuid: String!
   typeCode: String!
-  value: String
+  value: String!
   isPrimary: Boolean!
 }

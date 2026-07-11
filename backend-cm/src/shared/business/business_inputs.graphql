@@ -1,7 +1,7 @@
 input BusinessInput {
   name: String!
   aliases: [AliasInput]
-  identifiers: [BusinessIdentifierInput]
+  businessIdentifiers: [BusinessIdentifierInput]
   contactPeople: [BusinessPersonInput]
 }
 
@@ -9,6 +9,6 @@ input BusinessUpdateInput {
   businessGuid: String
   name: String
   aliases: [AliasUpdateInput]
-  identifiers: [BusinessIdentifierUpdateInput]
+  businessIdentifiers: [BusinessIdentifierUpdateInput]
   contactPeople: [BusinessPersonUpdateInput]
 }
