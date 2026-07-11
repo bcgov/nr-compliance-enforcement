@@ -55,7 +55,7 @@ export const RelinkIdirModal: FC<RelinkIdirModalProps> = ({ close, submit }) => 
         } else {
           setOptions([]);
         }
-      } catch (err) {
+      } catch {
         ToggleError("Unable to find matching IDIR accounts");
         setOptions([]);
       } finally {
@@ -76,7 +76,7 @@ export const RelinkIdirModal: FC<RelinkIdirModalProps> = ({ close, submit }) => 
       if (typeof onRelink === "function") {
         await onRelink(selected.value);
       }
-    } catch (e) {
+    } catch {
       ToggleError("Unable to relink IDIR account");
     }
     setSelected(null);
