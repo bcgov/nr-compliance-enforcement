@@ -23,3 +23,8 @@ input AddressUpdateInput {
   displayInInvestigation: Boolean
   contactMethods: [ContactMethodInput]
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input AddressMatchInput {
+  address: String
+}

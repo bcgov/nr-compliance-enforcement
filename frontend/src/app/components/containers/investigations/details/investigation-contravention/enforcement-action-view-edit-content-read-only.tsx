@@ -5,8 +5,8 @@ import { getDisplayFilename } from "@/app/common/attachment-utils";
 import { generateApiParameters, get } from "@/app/common/api";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { EnforcementActionAttachment } from "@/app/common/enforcement-action-attachment-utils";
-import { getPartyLabel } from "@/app/components/containers/investigations/details/investigation-contravention";
 import config from "@/config";
+import { getPartyName } from "@/app/common/party-name";
 
 interface EnforcementActionViewEditContentReadOnlyProps {
   enforcementAction: EnforcementAction;
@@ -77,7 +77,7 @@ export const EnforcementActionViewEditContentReadOnly: FC<EnforcementActionViewE
     <>
       <div className="border rounded bg-bc-brand-background-light-gray text-dark px-3 py-3 mb-4">
         <div className="text-muted small mb-1">Party</div>
-        <div className="mb-2">{getPartyLabel(party)}</div>
+        <div className="mb-2">{getPartyName(party)}</div>
         <div className="text-muted small mb-1">Contravention</div>
         <div>{contraventionLabel}</div>
       </div>

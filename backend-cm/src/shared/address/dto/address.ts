@@ -53,6 +53,12 @@ export class AddressInput {
   contactMethods?: ContactMethodInput[];
 }
 
+@InputType()
+export class AddressMatchInput {
+  @Field(() => String, { nullable: true })
+  address?: string;
+}
+
 export const mapPrismaAddressToAddress = (mapper: Mapper) => {
   createMap<address, Address>(
     mapper,
