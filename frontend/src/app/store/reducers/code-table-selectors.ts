@@ -133,7 +133,9 @@ export const selectTicketOutcomes = createSelector([selectCodeTables], (codeTabl
 
 export const selectCountries = createSelector([selectCodeTables], (codeTables) => {
   const { "country-type": items } = codeTables;
-  return items.map(({ countryCode: value, longDescription: label }) => ({ label, value }));
+  return [...items]
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+    .map(({ countryCode: value, longDescription: label }) => ({ label, value }));
 });
 
 export const selectCountrySubdivisions = createSelector([selectCodeTables], (codeTables) => {

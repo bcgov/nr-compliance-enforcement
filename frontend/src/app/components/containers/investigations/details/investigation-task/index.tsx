@@ -1,10 +1,13 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { gql } from "graphql-request";
-import { Button } from "react-bootstrap";
+import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { TaskList } from "@/app/components/containers/investigations/details/investigation-task/task-list";
 import { TaskDetailEditModal } from "@/app/components/containers/investigations/details/investigation-task/detail/task-detail-edit-modal";
+import { TaskFilter } from "./task-filter";
+import { TaskFilterBar } from "./task-filter-bar";
+import { useTaskSearch } from "./hooks/use-task-search";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Investigation, Task } from "@/generated/graphql";
 import type { CreateUpdateTaskInput } from "@/generated/graphql";
@@ -38,8 +41,12 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   const dispatch = useAppDispatch();
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [showDesktopFilters, setShowDesktopFilters] = useState(false);
   const tasks = (investigationData?.tasks as Task[]) ?? [];
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
+
+  const { searchValues } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
@@ -47,6 +54,32 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
   const officers = useAppSelector(selectOfficers);
   const currentDownload = useSelector(selectCurrentDownload);
   const isDownloadInProgress = currentDownload?.downloadId === investigationGuid;
+
+  const toggleShowMobileFilters = useCallback(() => setShowMobileFilters((prev) => !prev), []);
+  const toggleShowDesktopFilters = useCallback(() => setShowDesktopFilters((prev) => !prev), []);
+
+  const filteredTasks = useMemo(
+    () =>
+      tasks.filter((task) => {
+        if (searchValues.categoryFilter && task.taskCategoryTypeCode !== searchValues.categoryFilter) return false;
+        if (searchValues.subCategoryFilter && task.taskTypeCode !== searchValues.subCategoryFilter) return false;
+        if (searchValues.statusFilter && task.taskStatusCode !== searchValues.statusFilter) return false;
+        if (searchValues.officerFilter && task.assignedUserIdentifier !== searchValues.officerFilter) return false;
+        return true;
+      }),
+    [
+      tasks,
+      searchValues.categoryFilter,
+      searchValues.subCategoryFilter,
+      searchValues.statusFilter,
+      searchValues.officerFilter,
+    ],
+  );
+
+  const assignedOfficerIds = useMemo(
+    () => Array.from(new Set(tasks.map((t) => t.assignedUserIdentifier).filter((id): id is string => !!id))),
+    [tasks],
+  );
 
   const createTaskMutation = useGraphQLMutation<{ createTask: { taskIdentifier: string } }>(CREATE_TASK, {
     onSuccess: (data) => {
@@ -83,7 +116,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         draggable: false,
       });
 
-      const sortedTasks = [...tasks].sort((a, b) => (a.taskNumber ?? 0) - (b.taskNumber ?? 0));
+      const sortedTasks = [...filteredTasks].sort((a, b) => (a.taskNumber ?? 0) - (b.taskNumber ?? 0));
 
       const headers = [
         "Task #",
@@ -138,7 +171,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
       if (toastId !== undefined) DismissToast(toastId);
     }
   }, [
-    tasks,
+    filteredTasks,
     taskCategories,
     taskSubCategories,
     taskStatuses,
@@ -148,42 +181,68 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     dispatch,
   ]);
 
-  return (
-    <div className="comp-details-section--list-view">
-      <div className="d-flex align-items-center justify-content-between my-2">
-        <h2>Tasks</h2>
-        <div className="d-flex gap-2">
-          <Button
-            id="export-tasks-button"
-            variant="outline-primary"
-            size="sm"
-            className="icon-start"
-            onClick={handleExportTasks}
-            disabled={tasks.length === 0 || isDownloadInProgress}
-          >
-            <i className="bi bi-download" />
-            <span className="ms-1">{isDownloadInProgress ? "Downloading..." : "Download and export data"}</span>
-          </Button>
-          <Button
-            id="add-task-button"
-            variant="primary"
-            size="sm"
-            onClick={() => setShowAddTaskModal(true)}
-            disabled={isReadOnly}
-          >
-            <i className="bi bi-plus-circle me-1" /> Add task
-          </Button>
+  const renderDesktopFilterSection = () => (
+    <Collapse
+      in={showDesktopFilters}
+      dimension="width"
+    >
+      <div className="comp-data-filters">
+        <div className="comp-data-filters-inner">
+          <div className="comp-data-filters-header">
+            Filter by{" "}
+            <CloseButton
+              onClick={() => setShowDesktopFilters(false)}
+              aria-expanded={showDesktopFilters}
+              aria-label="Close filters"
+            />
+          </div>
+          <div className="comp-data-filters-body">
+            <TaskFilter assignedOfficerIds={assignedOfficerIds} />
+          </div>
         </div>
       </div>
+    </Collapse>
+  );
+
+  const renderMobileFilters = () => (
+    <Offcanvas
+      show={showMobileFilters}
+      onHide={() => setShowMobileFilters(false)}
+      placement="end"
+    >
+      <Offcanvas.Header closeButton>
+        <Offcanvas.Title>Filters</Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body>
+        <TaskFilter assignedOfficerIds={assignedOfficerIds} />
+      </Offcanvas.Body>
+    </Offcanvas>
+  );
+
+  return (
+    <div className="comp-details-section--list-view">
+      <h2>Tasks</h2>
+      <TaskFilterBar
+        toggleShowMobileFilters={toggleShowMobileFilters}
+        toggleShowDesktopFilters={toggleShowDesktopFilters}
+        onExport={handleExportTasks}
+        isExportDisabled={filteredTasks.length === 0}
+        isDownloadInProgress={isDownloadInProgress}
+        onAddTask={() => setShowAddTaskModal(true)}
+        isAddTaskDisabled={isReadOnly}
+      />
 
       <div className="comp-data-container">
+        {renderDesktopFilterSection()}
         <div className="comp-data-list-map">
           <TaskList
-            tasks={tasks}
+            tasks={filteredTasks}
             investigationGuid={investigationGuid}
           />
         </div>
       </div>
+
+      {renderMobileFilters()}
 
       <TaskDetailEditModal
         show={showAddTaskModal}
