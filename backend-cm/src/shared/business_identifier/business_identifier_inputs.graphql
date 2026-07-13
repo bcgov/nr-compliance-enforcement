@@ -10,3 +10,9 @@ input BusinessIdentifierUpdateInput {
   identifierValue: String!
   identifierCode: String!
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input BusinessIdentifierMatchInput {
+  identifierCode: String!
+  identifierValue: String
+}

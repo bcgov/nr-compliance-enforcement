@@ -60,3 +60,12 @@ input PersonUpdateInput {
   comments: String
   boloIndicator: Boolean
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input PersonMatchInput {
+  firstName: String
+  lastName: String
+  dateOfBirth: DateTime
+  genderCode: String
+  driversLicenseNumber: String
+}

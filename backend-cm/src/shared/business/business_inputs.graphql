@@ -12,3 +12,9 @@ input BusinessUpdateInput {
   businessIdentifiers: [BusinessIdentifierUpdateInput]
   contactPeople: [BusinessPersonUpdateInput]
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input BusinessMatchInput {
+  name: String
+  businessIdentifiers: [BusinessIdentifierMatchInput!]
+}
