@@ -5,16 +5,21 @@ import { useTaskSearch } from "./hooks/use-task-search";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficerAgency } from "@/app/store/reducers/app";
-import { selectOfficersByAgency } from "@/app/store/reducers/officer";
+import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 
-export const TaskFilter: FC = () => {
+type Props = {
+  assignedOfficerIds: string[];
+};
+
+export const TaskFilter: FC<Props> = ({ assignedOfficerIds }) => {
   const { searchValues, setValues } = useTaskSearch();
 
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const agency = useAppSelector(selectOfficerAgency);
-  const officers = useAppSelector((state) => selectOfficersByAgency(state, agency));
+  const officers = useAppSelector(selectOfficers);
+  const officersInAgencyList = useAppSelector((state) => selectOfficersByAgency(state, agency));
 
   const categoryOptions: Option[] = taskCategories.map((c) => ({
     value: String(c.value ?? ""),
@@ -30,7 +35,13 @@ export const TaskFilter: FC = () => {
     label: String(s.label ?? ""),
   }));
 
-  const officerOptions: Option[] = [...(officers ?? [])]
+  // Include officers assigned to a task on this investigation even if outside the current agency
+  const agencyOfficerGuids = new Set((officersInAgencyList ?? []).map((o) => o.app_user_guid));
+  const assignedOutsideAgency = (officers ?? []).filter(
+    (o) => assignedOfficerIds.includes(o.app_user_guid) && !agencyOfficerGuids.has(o.app_user_guid),
+  );
+
+  const officerOptions: Option[] = [...(officersInAgencyList ?? []), ...assignedOutsideAgency]
     .map((o) => ({ value: o.app_user_guid, label: `${o.last_name}, ${o.first_name}` }))
     .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }));
 

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Table } from "react-bootstrap";
 import Paginator from "@components/common/paginator";
 import { SortableHeader } from "@components/common/sortable-header";
@@ -87,6 +87,15 @@ export const CompTable = <T,>({
       return 0;
     });
   }, [data, columns, sortBy, sortOrder, isServerSort]);
+
+  // set a valid page number if the dataset shrinks when a filter is applied
+  useEffect(() => {
+    if (isServerPagination) return;
+    const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
+    if (internalCurrentPage > totalPages) {
+      setInternalCurrentPage(totalPages);
+    }
+  }, [sortedData.length, pageSize, isServerPagination, internalCurrentPage]);
 
   const paginatedData = useMemo(() => {
     if (isServerPagination) return data;

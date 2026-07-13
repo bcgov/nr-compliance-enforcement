@@ -76,6 +76,11 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
     ],
   );
 
+  const assignedOfficerIds = useMemo(
+    () => Array.from(new Set(tasks.map((t) => t.assignedUserIdentifier).filter((id): id is string => !!id))),
+    [tasks],
+  );
+
   const createTaskMutation = useGraphQLMutation<{ createTask: { taskIdentifier: string } }>(CREATE_TASK, {
     onSuccess: (data) => {
       ToggleSuccess("Task created successfully");
@@ -192,7 +197,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
             />
           </div>
           <div className="comp-data-filters-body">
-            <TaskFilter />
+            <TaskFilter assignedOfficerIds={assignedOfficerIds} />
           </div>
         </div>
       </div>
@@ -209,7 +214,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
         <Offcanvas.Title>Filters</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
-        <TaskFilter />
+        <TaskFilter assignedOfficerIds={assignedOfficerIds} />
       </Offcanvas.Body>
     </Offcanvas>
   );
