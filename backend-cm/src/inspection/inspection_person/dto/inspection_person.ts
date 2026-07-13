@@ -8,8 +8,7 @@ export class InspectionPerson implements PersonDto {
   partyGuid: string;
   personReference?: string;
   firstName: string;
-  middleName?: string;
-  middleName2?: string;
+  middleNames?: string;
   lastName: string;
   isActive: boolean;
 }
@@ -23,10 +22,7 @@ export class CreateInspectionPersonInput {
   firstName: string;
 
   @Field(() => String)
-  middleName: string;
-
-  @Field(() => String)
-  middleName2: string;
+  middleNames: string;
 
   @Field(() => String)
   lastName: string;
@@ -54,12 +50,8 @@ export const mapPrismaPersonToInspectionPerson = (mapper: Mapper) => {
       mapFrom((src) => src.first_name),
     ),
     forMember(
-      (dest) => dest.middleName,
+      (dest) => dest.middleNames,
       mapFrom((src) => src.middle_name),
-    ),
-    forMember(
-      (dest) => dest.middleName2,
-      mapFrom((src) => src.middle_name_2),
     ),
     forMember(
       (dest) => dest.lastName,

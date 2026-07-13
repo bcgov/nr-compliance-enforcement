@@ -5,8 +5,11 @@ import { useAppSelector } from "@hooks/hooks";
 import { selectGenderDropdown } from "@/app/store/reducers/code-table";
 import { calculateAgeYears } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
-import { Address, ContactMethod, Party } from "@/generated/graphql";
+import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input";
+import { PartyTypeCodes } from "@/app/constants/party-types";
+import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
+import { getPartyName } from "@/app/common/party-name";
 
 type PartyMatchCardProps = {
   party: Party;
@@ -17,10 +20,19 @@ type PartyMatchCardProps = {
 export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabled = false }) => {
   const genderOptions = useAppSelector(selectGenderDropdown);
 
-  const { person } = party;
+  const { person, business } = party;
+  const isBusiness = party.partyTypeCode === PartyTypeCodes.BUSINESS;
 
-  const fullName = [person?.firstName, person?.middleNames, person?.lastName].filter(Boolean).join(" ").trim();
+  // --- Business-specific derivations ---
+  const aliases = (party.aliases ?? []).filter((a): a is Alias => a != null).slice(0, 2);
 
+  const businessNumber = (business?.businessIdentifiers ?? [])
+    .filter((bi): bi is BusinessIdentifier => bi != null)
+    .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER)?.identifierValue;
+
+  const businessAddresses = (party.addresses ?? []).filter((a): a is Address => a != null).slice(0, 2);
+
+  // --- Person-specific derivations ---
   const genderLabel = genderOptions?.find(
     (opt: { value: string; label: string }) => opt.value === person?.genderCode,
   )?.label;
@@ -32,6 +44,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
   const genderAge = [genderLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
   const descriptorLine = [genderAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
 
+  // --- Shared derivations ---
+  const name = getPartyName(party);
   const contactMethods = (party.contactMethods ?? []).filter((cm): cm is ContactMethod => cm != null);
   const phones = contactMethods.filter((cm) => cm.typeCode === ContactMethods.PHONE);
   const primaryPhone = phones.find((cm) => cm.isPrimary) ?? phones[0];
@@ -44,12 +58,44 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
       <Card.Body>
         <div className="comp-party-match-card-title">Potential matching profile:</div>
         <hr className="mt-0 mb-0"></hr>
-        <div className="comp-party-match-card-name">{fullName || "-"}</div>
-        {descriptorLine && <div className="comp-party-match-card-body-line">{descriptorLine}</div>}
-        {primaryPhone?.value && (
-          <div className="comp-party-match-card-body-line">{formatPhoneNumber(primaryPhone.value)}</div>
+        {isBusiness ? (
+          <>
+            <div className="comp-party-match-card-name">{name}</div>
+            {aliases.map((alias) => (
+              <div
+                key={alias.aliasGuid}
+                className="comp-party-match-card-body-line"
+              >
+                {alias.name}
+              </div>
+            ))}
+            {businessNumber && (
+              <div className="comp-party-match-card-body-line">{`Business number: ${businessNumber}`}</div>
+            )}
+            {businessAddresses.map((address) => (
+              <div
+                key={address.addressGuid}
+                className="comp-party-match-card-body-line"
+              >
+                {`${address.addressName}: ${address.address}`}
+              </div>
+            ))}
+            {primaryPhone?.value && (
+              <div className="comp-party-match-card-body-line">{`Primary: ${formatPhoneNumber(primaryPhone.value)}`}</div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="comp-party-match-card-name">{name}</div>
+            {descriptorLine && <div className="comp-party-match-card-body-line">{descriptorLine}</div>}
+            {primaryPhone?.value && (
+              <div className="comp-party-match-card-body-line">{`Primary: ${formatPhoneNumber(primaryPhone.value)}`}</div>
+            )}
+            {primaryAddress?.address && (
+              <div className="comp-party-match-card-body-line">{`${primaryAddress.addressName}: ${primaryAddress.address}`}</div>
+            )}
+          </>
         )}
-        {primaryAddress?.address && <div className="comp-party-match-card-body-line">{primaryAddress.address}</div>}
         <div className="comp-party-match-card-actions">
           <Button
             variant="primary"

@@ -12,12 +12,16 @@ const MATCH_PARTY = gql`
       shortDescription
       longDescription
       createdDateTime
+      aliases {
+        name
+      }
       contactMethods {
         typeCode
         value
         isPrimary
       }
       addresses {
+        addressName
         address
         city
         province

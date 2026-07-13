@@ -1573,6 +1573,7 @@ export class PartyService {
     },
     address: {
       select: {
+        address_name: true,
         address: true,
         city: true,
         country_subdivision_code: true,
@@ -1875,7 +1876,7 @@ export class PartyService {
     }
 
     return {
-      party_type: { in: [PARTY_TYPES.Person, PARTY_TYPES.Company] },
+      party_type: { equals: input.partyTypeCode },
       OR: conditions,
     };
   }
@@ -1890,6 +1891,7 @@ export class PartyService {
       return [];
     }
 
+    // The bulk of this query is shared with the parties tab but there are some screen specific overrides expressed
     const prismaParties: any = await this.prisma.party.findMany({
       where,
       take: 50, // arbitrary number... 10 times the amount displayed before scoring
@@ -1899,6 +1901,18 @@ export class PartyService {
           select: {
             ...this._partySummaryInclude.person.select,
             middle_names: true,
+          },
+        },
+        address: {
+          ...this._partySummaryInclude.address,
+          orderBy: [{ is_primary: "desc" }, { create_utc_timestamp: "asc" }],
+        },
+        alias: {
+          where: { active_ind: true },
+          orderBy: { create_utc_timestamp: "asc" },
+          select: {
+            alias_guid: true,
+            name: true,
           },
         },
       },

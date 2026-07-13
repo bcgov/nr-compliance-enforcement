@@ -625,8 +625,7 @@ export type CreateInspectionPartyInput = {
 export type CreateInspectionPersonInput = {
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
-  middleName?: InputMaybe<Scalars['String']['input']>;
-  middleName2?: InputMaybe<Scalars['String']['input']>;
+  middleNames?: InputMaybe<Scalars['String']['input']>;
   personReference?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1332,8 +1331,7 @@ export type InspectionPerson = {
   __typename?: 'InspectionPerson';
   firstName: Scalars['String']['output'];
   lastName: Scalars['String']['output'];
-  middleName?: Maybe<Scalars['String']['output']>;
-  middleName2?: Maybe<Scalars['String']['output']>;
+  middleNames?: Maybe<Scalars['String']['output']>;
   partyGuid: Scalars['String']['output'];
   personGuid: Scalars['String']['output'];
   personReference?: Maybe<Scalars['String']['output']>;
@@ -1451,8 +1449,8 @@ export type InvestigationBusinessPerson = {
 export type InvestigationBusinessPersonAddress = {
   __typename?: 'InvestigationBusinessPersonAddress';
   activeInd: Scalars['Boolean']['output'];
-  address: Address;
-  businessPerson: BusinessPerson;
+  address: InvestigationAddress;
+  businessPerson: InvestigationBusinessPerson;
   businessPersonAddressXrefGuid: Scalars['String']['output'];
 };
 
@@ -2461,6 +2459,7 @@ export type Query = {
   getActivityNote?: Maybe<ActivityNote>;
   getActivityNotes?: Maybe<Array<ActivityNote>>;
   getActivityNotesByTask?: Maybe<Array<ActivityNote>>;
+  getComplaintIdsLinkedToCase?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   getComplaintOutcome?: Maybe<ComplaintOutcome>;
   getComplaintOutcomeByComplaintId?: Maybe<ComplaintOutcome>;
   getComplaintOutcomesByComplaintId?: Maybe<Array<Maybe<ComplaintOutcome>>>;
