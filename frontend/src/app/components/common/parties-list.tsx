@@ -122,8 +122,8 @@ const PartiesList: React.FC<Props> = ({
   const getPersonMissingFields = (invParty: InvestigationParty): string[] => {
     if (!invParty.person) return [];
     const missing: string[] = [];
+    if (!invParty.person.firstName || !invParty.person.lastName) missing.push("name");
     if (!invParty.person.dateOfBirth) missing.push("age");
-
     if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
       missing.push("phone number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
@@ -133,6 +133,7 @@ const PartiesList: React.FC<Props> = ({
   const getBusinessMissingFields = (invParty: InvestigationParty): string[] => {
     if (!invParty.business) return [];
     const missing: string[] = [];
+    if (!invParty.business.name) missing.push("name");
     if (!getBusinessNumbers(invParty.business)) missing.push("business number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");
     return missing;

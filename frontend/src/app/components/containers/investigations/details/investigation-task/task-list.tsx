@@ -98,7 +98,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: true,
       getValue: (task) => task.dueDate ?? "",
-      renderCell: (task) => formatDate(task.dueDate) ?? "-",
+      renderCell: (task) => formatDate(task.dueDate?.slice(0, 10)) ?? "-",
     },
     {
       label: "Last updated",
