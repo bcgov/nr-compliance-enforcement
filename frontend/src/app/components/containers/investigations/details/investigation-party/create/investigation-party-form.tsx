@@ -440,9 +440,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         <div className="comp-details-section-header">
           <h2>Party details</h2>
         </div>
+        <FormErrorBanner form={form} />
 
         <div className="comp-party-form-layout">
-          <FormErrorBanner form={form} />
           <form
             className="comp-party-form"
             onBlur={handleFieldBlur}
