@@ -51,6 +51,7 @@ import {
 } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -410,6 +411,7 @@ const PartyEdit: FC = () => {
           <h2>{partyDetailsTitle}</h2>
         </div>
 
+        <FormErrorBanner form={form} />
         <form
           onSubmit={(e) => {
             e.preventDefault();

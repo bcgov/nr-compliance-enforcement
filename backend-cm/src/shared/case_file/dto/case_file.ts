@@ -1,7 +1,6 @@
 import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
 import { AgencyCode } from "../../agency_code/dto/agency_code";
 import { CaseActivity } from "../../case_activity/dto/case_activity";
-import { CaseStatusCode } from "../../case_status_code/dto/case_status_code";
 import { case_file } from "../../../../prisma/shared/generated/case_file";
 import { Field, InputType, ObjectType, Int } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
@@ -12,7 +11,6 @@ export class CaseFile {
   openedTimestamp: Date;
   updatedTimestamp: Date;
   leadAgency: AgencyCode;
-  caseStatus: CaseStatusCode;
   description?: string;
   name: string;
   createdByAppUserGuid?: string;
@@ -23,9 +21,6 @@ export class CaseFile {
 export class CaseFileCreateInput {
   @Field(() => String)
   leadAgency: string;
-
-  @Field(() => String)
-  caseStatus: string;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -51,10 +46,6 @@ export class CaseFileUpdateInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  caseStatus?: string;
-
-  @Field(() => String, { nullable: true })
-  @IsOptional()
   description?: string;
 }
 
@@ -67,10 +58,6 @@ export class CaseFileFilters {
   @Field(() => String, { nullable: true })
   @IsOptional()
   leadAgency?: string;
-
-  @Field(() => String, { nullable: true })
-  @IsOptional()
-  caseStatus?: string;
 
   @Field(() => Date, { nullable: true })
   @IsOptional()
@@ -143,10 +130,6 @@ export const mapPrismaCaseFileToCaseFile = (mapper: Mapper) => {
     forMember(
       (dest) => dest.leadAgency,
       mapFrom((src) => mapper.map(src.agency_code, "agency_code", "AgencyCode")),
-    ),
-    forMember(
-      (dest) => dest.caseStatus,
-      mapFrom((src) => mapper.map(src.case_status_code, "case_status_code", "CaseStatusCode")),
     ),
     forMember(
       (dest) => dest.description,

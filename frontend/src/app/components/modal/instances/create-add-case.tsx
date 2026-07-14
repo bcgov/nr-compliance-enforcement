@@ -29,11 +29,6 @@ const CREATE_CASE_MUTATION = gql`
       updatedTimestamp
       description
       name
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
       leadAgency {
         agencyCode
         shortDescription
@@ -105,7 +100,6 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
     onSubmit: async ({ value }) => {
       if (createOrAddOption === "create") {
         const createInput: CaseFileCreateInput = {
-          caseStatus: "OPEN",
           leadAgency: agency_code,
           activityType: "COMP",
           activityIdentifier: complaint_identifier,
@@ -204,7 +198,9 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
 
   const handleCreateAddCase = async () => {
     if (!validationResults.canAddToCase) {
-      ToggleError(`Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`);
+      ToggleError(
+        `Before adding this complaint to a case, please ${joinWithAnd(validationResults.validationMissing)}.`,
+      );
       return;
     }
     if (createOrAddOption === "add") {

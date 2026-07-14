@@ -3,7 +3,6 @@
 INSERT INTO shared.case_file (
   case_file_guid,
   lead_agency,
-  case_status,
   opened_utc_timestamp,
   create_user_id,
   create_utc_timestamp,
@@ -14,7 +13,6 @@ VALUES
   (
     '77dd3a1f-4bc5-4758-a986-a664b8d8f2ee',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -24,7 +22,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000002',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -34,7 +31,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000003',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -44,7 +40,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000004',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -54,7 +49,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000005',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -64,7 +58,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000006',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -74,7 +67,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000007',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -84,7 +76,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000008',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -94,7 +85,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000009',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -104,7 +94,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000a',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -114,7 +103,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000b',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -124,7 +112,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000c',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -134,7 +121,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000d',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -144,7 +130,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000e',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -154,7 +139,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000000f',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -164,7 +148,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000010',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -174,7 +157,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000011',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -184,7 +166,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000012',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -194,7 +175,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000013',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -204,7 +184,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000014',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -214,7 +193,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000015',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -224,7 +202,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000016',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -234,7 +211,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000017',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -244,7 +220,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000018',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -254,7 +229,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000019',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -264,7 +238,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001a',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -274,7 +247,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001b',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -284,7 +256,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001c',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -294,7 +265,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001d',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -304,7 +274,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001e',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -314,7 +283,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000001f',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -324,7 +292,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000020',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -334,7 +301,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000021',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -344,7 +310,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000022',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -354,7 +319,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000023',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -364,7 +328,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000024',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -374,7 +337,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000025',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -384,7 +346,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000026',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -394,7 +355,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000027',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -404,7 +364,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000028',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -414,7 +373,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000029',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -424,7 +382,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002a',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -434,7 +391,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002b',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -444,7 +400,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002c',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -454,7 +409,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002d',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -464,7 +418,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002e',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -474,7 +427,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-00000000002f',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -484,7 +436,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000030',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -494,7 +445,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000031',
     'COS',
-    'CLOSED',
     now (),
     'system',
     now (),
@@ -504,7 +454,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000032',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
@@ -514,7 +463,6 @@ VALUES
   (
     'a2000000-0000-4000-a000-000000000033',
     'COS',
-    'OPEN',
     now (),
     'system',
     now (),
