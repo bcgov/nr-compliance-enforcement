@@ -31,6 +31,7 @@ export interface ContraventionDetailsFormValues {
 interface ContraventionDetailsFormProps {
   contravention?: Contravention;
   discoveryDate?: string | null;
+  investigationCommunity?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate?: (validateForm: () => Promise<boolean>) => void;
   onRequestValues?: (getValues: () => ContraventionDetailsFormValues) => void;
@@ -76,6 +77,7 @@ const formatLegislationSourceUrl = (source: LegislationSource) => {
 export const ContraventionDetailsForm = ({
   contravention,
   discoveryDate,
+  investigationCommunity,
   onDirtyChange,
   onRequestValidate,
   onRequestValues,
@@ -85,13 +87,19 @@ export const ContraventionDetailsForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
+  // Default the community when adding a new contravention
+  const defaultCommunity = useMemo(
+    () => (contravention ? "" : (investigationCommunity ?? "")),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
   const form = useForm({
     defaultValues: {
       act: "",
       regulation: "",
       section: "",
       contraventionDate: defaultDate as Date | null,
-      communityCode: "",
+      communityCode: defaultCommunity,
       subsection: "",
     },
     onSubmit: async () => {},
