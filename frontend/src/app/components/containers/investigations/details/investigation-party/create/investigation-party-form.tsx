@@ -50,6 +50,7 @@ import { PartyAttachments } from "@/app/components/containers/parties/attachment
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
 import { Button } from "react-bootstrap";
 import { InvestigationPartyHeader } from "../investigation-party-header";
+import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/use-party-match-trigger";
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
@@ -439,6 +440,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         <div className="comp-details-section-header">
           <h2>Party details</h2>
         </div>
+        <FormErrorBanner form={form} />
 
         <div className="comp-party-form-layout">
           <form
