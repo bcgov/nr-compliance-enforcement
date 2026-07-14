@@ -330,8 +330,8 @@ export const buildContactPeople = (
     ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
     person: {
       ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
-      firstName: c.person.firstName?.trim() || null,
-      lastName: c.person.lastName?.trim() || null,
+      firstName: c.person.firstName?.trim() ?? "",
+      lastName: c.person.lastName?.trim() ?? "",
     },
     title: c.title || null,
     displayInInvestigation: c.displayInInvestigation ?? true,
@@ -440,9 +440,9 @@ export const validatePersonForm = (value: any): string | null => {
 // Shared base fields for person create/update.
 export function buildPersonBase(value: any) {
   return {
-    firstName: value.firstName?.trim() || null,
+    firstName: value.firstName?.trim() ?? "",
     middleNames: value.middleNames?.trim() || null,
-    lastName: value.lastName?.trim() || null,
+    lastName: value.lastName?.trim() ?? "",
     dateOfBirth: value?.dateOfBirth ? new Date(value.dateOfBirth) : null,
     approximateAgeCode: value.approximateAgeCode || null,
     driversLicenseNumber: value.driversLicenseNumber || null,

@@ -1,7 +1,9 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { ContraventionViewEditModalContent } from "./contravention-read-only-panel";
 import { ContraventionTable } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-table";
-import { useAppDispatch } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
@@ -26,6 +28,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
@@ -256,6 +259,10 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         const phone = formatPhoneNumber(rawPhone);
         const rawDob = party.person?.dateOfBirth ?? "";
         const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
+        const province =
+          primaryAddress?.province &&
+          countrySubdivisions?.find((code: any) => code.countrySubdivisionCode === primaryAddress.province)
+            ?.shortDescription;
         return {
           partyName: getPartyName(party),
           partyGuid: party.partyIdentifier ?? null,
@@ -266,8 +273,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             ? {
                 address: primaryAddress?.address,
                 city: primaryAddress?.city,
-                province: primaryAddress?.province,
+                province,
                 postalCode: primaryAddress?.postalCode,
+                country: primaryAddress?.country,
               }
             : undefined,
         };
@@ -284,7 +292,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       : [];
 
     return { knownGroups, unknownGroups };
-  }, [contraventions, parties]);
+  }, [contraventions, parties, countrySubdivisions]);
 
   const { knownGroups, unknownGroups } = allGroups;
 
@@ -339,7 +347,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           const details = [
             dob,
             primaryAddress
-              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${primaryAddress?.province ?? ""} ${primaryAddress?.postalCode ?? ""}`
+              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${[primaryAddress?.province, primaryAddress?.country].filter(Boolean).join(", ")} ${primaryAddress?.postalCode ?? ""}`
               : null,
             phone,
           ]
