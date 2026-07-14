@@ -84,14 +84,12 @@ export const ContraventionDetailsForm = ({
 }: ContraventionDetailsFormProps) => {
   const defaultDate = useMemo(
     () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [discoveryDate],
   );
   // Default the community when adding a new contravention
   const defaultCommunity = useMemo(
     () => (contravention ? "" : (investigationCommunity ?? "")),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [contravention, investigationCommunity],
   );
   const form = useForm({
     defaultValues: {
