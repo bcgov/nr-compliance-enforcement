@@ -207,7 +207,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           };
         } else {
           input.business = {
-            name: value.businessName,
+            name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, true) ?? [],
           };
@@ -244,7 +244,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           };
         } else {
           input.business = {
-            name: value.businessName,
+            name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, false),
           };
