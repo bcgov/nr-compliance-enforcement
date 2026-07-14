@@ -26,6 +26,15 @@ export class ContactMethodInput {
   isPrimary?: boolean;
 }
 
+@InputType()
+export class ContactMethodMatchInput {
+  @Field(() => String)
+  typeCode: string;
+
+  @Field(() => String, { nullable: true })
+  value: string;
+}
+
 export const mapPrismaContactMethodToContactMethod = (mapper: Mapper) => {
   createMap<contact_method, ContactMethod>(
     mapper,

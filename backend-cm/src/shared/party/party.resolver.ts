@@ -5,7 +5,7 @@ import { Roles } from "../../auth/decorators/roles.decorator";
 import { coreRoles } from "../../enum/role.enum";
 import { GraphQLError } from "graphql";
 import { PartyService } from "./party.service";
-import { PartyCreateInput, PartyFilters, PartyUpdateInput } from "./dto/party";
+import { PartyCreateInput, PartyFilters, PartyMatchInput, PartyUpdateInput } from "./dto/party";
 
 @UseGuards(JwtRoleGuard)
 @Resolver("Party")
@@ -40,6 +40,21 @@ export class PartyResolver {
     } catch (error) {
       this.logger.error(error);
       throw new GraphQLError("Error searching paginated data from Shared schema", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+        },
+      });
+    }
+  }
+
+  @Query("matchParty")
+  @Roles(coreRoles)
+  async matchParty(@Args("input") input: PartyMatchInput) {
+    try {
+      return await this.partyService.matchParty(input);
+    } catch (error) {
+      this.logger.error(error);
+      throw new GraphQLError("Error matching parties from Shared schema", {
         extensions: {
           code: "INTERNAL_SERVER_ERROR",
         },

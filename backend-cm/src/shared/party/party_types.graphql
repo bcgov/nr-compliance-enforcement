@@ -63,3 +63,12 @@ input PartyFilters {
   sortBy: String
   sortOrder: String
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input PartyMatchInput {
+  partyTypeCode: String!
+  person: PersonMatchInput
+  business: BusinessMatchInput
+  addresses: [AddressMatchInput!]
+  contactMethods: [ContactMethodMatchInput!]
+}

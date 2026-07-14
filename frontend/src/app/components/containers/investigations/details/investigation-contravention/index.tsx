@@ -12,6 +12,7 @@ import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
+import { getPartyName } from "@/app/common/party-name";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
@@ -255,7 +256,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         const rawDob = party.person?.dateOfBirth ?? "";
         const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
         return {
-          partyName: getPartyLabel(party),
+          partyName: getPartyName(party),
           partyGuid: party.partyIdentifier ?? null,
           contraventions: existing?.contraventions ?? [],
           phone,
@@ -419,13 +420,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   );
 };
 
-// Helper
-export function getPartyLabel(party: InvestigationParty): string {
-  if (party.business) return party.business.name;
-  if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
-  return "Unknown parties";
-}
-
 function groupContraventionsByParty(
   contraventions: Contravention[] | null | undefined,
 ): { partyName: string; partyGuid: string | null; contraventions: Contravention[] }[] {
@@ -438,7 +432,7 @@ function groupContraventionsByParty(
 
     if (parties?.length) {
       for (const party of parties) {
-        const key = getPartyLabel(party);
+        const key = getPartyName(party);
         const existing = map.get(key);
         map.set(key, {
           partyGuid: party.partyIdentifier ?? null,
