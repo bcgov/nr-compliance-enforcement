@@ -1,4 +1,5 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
+import { Field, InputType } from "@nestjs/graphql";
 import { business_identifier } from "prisma/shared/generated/business_identifier";
 
 export class BusinessIdentifier {
@@ -6,6 +7,15 @@ export class BusinessIdentifier {
   businessGuid: string;
   identifierCode: string;
   identifierValue: string;
+}
+
+@InputType()
+export class BusinessIdentifierMatchInput {
+  @Field(() => String)
+  identifierCode?: string;
+
+  @Field(() => String, { nullable: true })
+  identifierValue?: string;
 }
 
 export const mapPrismaBusinessIdentifierToIdentifier = (mapper: Mapper) => {

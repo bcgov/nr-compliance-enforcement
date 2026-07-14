@@ -17,7 +17,7 @@ interface InvestigationPartiesProps {
   investigationData?: Investigation;
 }
 
-const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
+export const REMOVE_PARTY_FROM_INVESTIGATION_MUTATION = gql`
   mutation RemovePartyFromInvestigation($investigationGuid: String!, $partyIdentifier: String!) {
     removePartyFromInvestigation(investigationGuid: $investigationGuid, partyIdentifier: $partyIdentifier) {
       investigationGuid

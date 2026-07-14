@@ -15,8 +15,8 @@ export interface PartySearchParams {
 const DEFAULT_SEARCH_VALUES: PartySearchParams = {
   search: "",
   partyTypeCode: "",
-  sortBy: "partyIdentifier",
-  sortOrder: SORT_TYPES.DESC,
+  sortBy: "partyName",
+  sortOrder: SORT_TYPES.ASC,
   page: 1,
   pageSize: 50,
   viewType: "list",

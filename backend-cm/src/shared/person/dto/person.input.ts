@@ -57,3 +57,21 @@ export class PersonInput {
   @Field(() => [PersonFacialHairStyleCodeInput], { nullable: true })
   facialHairStyleCodes?: PersonFacialHairStyleCodeInput[];
 }
+
+@InputType()
+export class PersonMatchInput {
+  @Field(() => String, { nullable: true })
+  firstName?: string;
+
+  @Field(() => String, { nullable: true })
+  lastName?: string;
+
+  @Field(() => Date, { nullable: true })
+  dateOfBirth?: Date;
+
+  @Field(() => String, { nullable: true })
+  driversLicenseNumber?: string;
+
+  @Field(() => String, { nullable: true })
+  genderCode?: string;
+}
