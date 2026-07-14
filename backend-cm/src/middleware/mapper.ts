@@ -5,7 +5,6 @@ import { mapPrismaParkToPark } from "../shared/park/dto/park";
 import { mapPrismaParkAreaToParkArea } from "../shared/park/dto/park_area";
 import { mapPrismaParkAreaMappingToParkAreaMapping } from "../shared/park/dto/park_area_mapping";
 import { mapPrismaAgencyCodeToAgencyCode } from "../shared/agency_code/dto/agency_code";
-import { mapPrismaCaseStatusCodeToCaseStatusCode } from "../shared/case_status_code/dto/case_status_code";
 import { mapPrismaCaseActivityTypeCodeToCaseActivityTypeCode } from "../shared/case_activity_type_code/dto/case_activity_type_code";
 import { mapPrismaCaseActivityToCaseActivity } from "../shared/case_activity/dto/case_activity";
 import { mapPrismaCaseFileToCaseFile } from "../shared/case_file/dto/case_file";
@@ -81,7 +80,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaParkAreaToParkArea(mapper);
   mapPrismaParkAreaMappingToParkAreaMapping(mapper);
   mapPrismaAgencyCodeToAgencyCode(mapper);
-  mapPrismaCaseStatusCodeToCaseStatusCode(mapper);
   mapPrismaCaseActivityTypeCodeToCaseActivityTypeCode(mapper);
   mapPrismaCaseActivityToCaseActivity(mapper);
   mapPrismaCaseFileToCaseFile(mapper);

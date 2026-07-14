@@ -341,8 +341,8 @@ export const buildContactPeople = (
     ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
     person: {
       ...buildContactPersonGuid(isUpdate, c.person.personGuid),
-      firstName: c.person.firstName || null,
-      lastName: c.person.lastName || null,
+      firstName: c.person.firstName?.trim() ?? "",
+      lastName: c.person.lastName?.trim() ?? "",
     },
     title: c.title || null,
     displayInInvestigation: c.displayInInvestigation ?? true,
@@ -451,9 +451,9 @@ export const validatePersonForm = (value: any): string | null => {
 // Shared base fields for person create/update.
 export function buildPersonBase(value: any) {
   return {
-    firstName: value.firstName,
+    firstName: value.firstName?.trim() ?? "",
     middleNames: value.middleNames?.trim() || null,
-    lastName: value.lastName,
+    lastName: value.lastName?.trim() ?? "",
     dateOfBirth: value?.dateOfBirth ? new Date(value.dateOfBirth) : null,
     approximateAgeCode: value.approximateAgeCode || null,
     driversLicenseNumber: value.driversLicenseNumber || null,
@@ -497,7 +497,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 // Helper to build business object for creates
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
-    name: value.businessName,
+    name: value.businessName?.trim(),
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };

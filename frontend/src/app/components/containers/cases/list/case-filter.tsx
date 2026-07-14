@@ -4,14 +4,13 @@ import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
 import { CaseSearchParams, useCaseSearch } from "../hooks/use-case-search";
 import { useAppSelector } from "@hooks/hooks";
-import { selectAgencyDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import { selectAgencyDropdown } from "@store/reducers/code-table";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 export const CaseFilter: FC = () => {
   const { searchValues, setValues } = useCaseSearch();
   const leadAgencyOptions = useAppSelector(selectAgencyDropdown);
-  const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
 
   const handleFieldChange = (fieldName: keyof CaseSearchParams) => (option: Option | null) => {
     setValues({ [fieldName]: option?.value });
@@ -64,15 +63,6 @@ export const CaseFilter: FC = () => {
 
   return (
     <div className="comp-filter-container">
-      {renderSelectFilter(
-        "caseStatus",
-        "Status",
-        statusOptions,
-        "Select status",
-        statusOptions.find((option) => option.value === searchValues.caseStatus) || null,
-        handleFieldChange("caseStatus"),
-      )}
-
       <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
         {renderSelectFilter(
           "lead-agency",
