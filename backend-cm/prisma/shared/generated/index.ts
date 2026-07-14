@@ -18,7 +18,6 @@ import { case_activity_h as _case_activity_h } from "./case_activity_h";
 import { case_activity_type_code as _case_activity_type_code } from "./case_activity_type_code";
 import { case_file as _case_file } from "./case_file";
 import { case_file_h as _case_file_h } from "./case_file_h";
-import { case_status_code as _case_status_code } from "./case_status_code";
 import { contact_method as _contact_method } from "./contact_method";
 import { contact_method_h as _contact_method_h } from "./contact_method_h";
 import { contact_method_type_code as _contact_method_type_code } from "./contact_method_type_code";
@@ -87,7 +86,6 @@ export namespace PrismaModel {
   export class case_activity_type_code extends _case_activity_type_code {}
   export class case_file extends _case_file {}
   export class case_file_h extends _case_file_h {}
-  export class case_status_code extends _case_status_code {}
   export class contact_method extends _contact_method {}
   export class contact_method_h extends _contact_method_h {}
   export class contact_method_type_code extends _contact_method_type_code {}
@@ -156,7 +154,6 @@ export namespace PrismaModel {
     case_activity_type_code,
     case_file,
     case_file_h,
-    case_status_code,
     contact_method,
     contact_method_h,
     contact_method_type_code,

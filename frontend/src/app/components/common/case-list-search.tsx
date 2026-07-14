@@ -4,10 +4,6 @@ import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Badge } from "react-bootstrap";
 import Option from "@apptypes/app/option";
-import { useAppSelector } from "@hooks/hooks";
-import { selectCodeTable } from "@store/reducers/code-table";
-import { CODE_TABLE_TYPES } from "@constants/code-table-types";
-import { applyStatusClass } from "@common/methods";
 import { useCaseSearchQuery } from "@/app/graphql/hooks/useCaseSearchQuery";
 import { CompAsyncTypeahead } from "@/app/components/common/comp-type-ahead";
 import { useInvestigationSearchQuery } from "@/app/graphql/hooks/useInvestigationSearchQuery";
@@ -23,13 +19,10 @@ type CaseSearchOption = {
   id: string;
   name: string;
   agency: string;
-  status: string;
   investigations: Array<{ name: string; openedTimestamp: Date }>;
 };
 
 export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = () => {}, errorMessage = "" }) => {
-  const statusCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COMPLAINT_STATUS));
-
   //States
   const [selectedCase, setSelectedCase] = useState<any>(null);
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -127,18 +120,12 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
           id: item.caseIdentifier,
           name: item.name || item.caseIdentifier,
           agency: item.leadAgency?.longDescription || "Unknown",
-          status: item.caseStatus?.caseStatusCode || "Unknown",
           investigations,
         };
       });
 
     setCaseFileData(merged);
   }, [caseData, investigationsByGuid]);
-
-  const getStatusDescription = (input: string): string => {
-    const code = statusCodes.find((item) => item.complaintStatus === input);
-    return code.longDescription;
-  };
 
   const handleCaseSelect = async (selected: any[]) => {
     if (selected.length === 0) {
@@ -153,7 +140,7 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
     onChange(
       selected.length > 0 ? ({ label: selected[0].name as string, value: selected[0].id as string } as Option) : null,
     );
-    setHintText(isFocused ? `${selectedCase.name}, ${getStatusDescription(selectedCase.status) || ""}` : "");
+    setHintText(isFocused ? `${selectedCase.name} || ""}` : "");
   };
 
   const handleInputChange = (text: string) => {
@@ -191,9 +178,6 @@ export const CaseListSearch: FC<Props> = ({ id = "caseListSearch", onChange = ()
                 <span className="case-search-result__case-id">
                   <Highlighter search={props.text}>{caseOption.name}</Highlighter>
                 </span>
-                <div className={`badge ${applyStatusClass(caseOption.status)}`}>
-                  {getStatusDescription(caseOption.status)}
-                </div>
                 <Badge bg="species-badge comp-species-badge">{caseOption.agency}</Badge>
               </div>
               {caseOption.investigations.map((investigation) => (

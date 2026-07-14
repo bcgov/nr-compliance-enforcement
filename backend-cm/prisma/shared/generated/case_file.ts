@@ -1,7 +1,6 @@
 import { case_activity } from "./case_activity";
 import { app_user } from "./app_user";
 import { agency_code } from "./agency_code";
-import { case_status_code } from "./case_status_code";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class case_file {
@@ -10,9 +9,6 @@ export class case_file {
 
   @ApiProperty({ type: String })
   lead_agency: string;
-
-  @ApiProperty({ type: String })
-  case_status: string;
 
   @ApiProperty({ type: Date })
   opened_utc_timestamp: Date;
@@ -46,7 +42,4 @@ export class case_file {
 
   @ApiProperty({ type: () => agency_code })
   agency_code: agency_code;
-
-  @ApiProperty({ type: () => case_status_code })
-  case_status_code: case_status_code;
 }

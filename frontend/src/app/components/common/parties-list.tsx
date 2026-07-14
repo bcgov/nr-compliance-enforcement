@@ -43,6 +43,8 @@ const PartiesList: React.FC<Props> = ({
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
+  const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
+  const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
 
   const isInvestigation = activityType === CaseActivities.INVESTIGATION;
 
@@ -95,9 +97,12 @@ const PartiesList: React.FC<Props> = ({
   const getPartyAddress = (addresses: Array<InvestigationAddress | null> | null | undefined): string => {
     const primary = (addresses ?? []).find((a) => a?.isPrimary) ?? (addresses ?? [])[0];
     if (!primary) return "-";
-    return [primary.address, primary.city, primary.province, primary.postalCode, primary.country]
-      .filter(Boolean)
-      .join(", ");
+    const province =
+      primary.province &&
+      countrySubdivisions?.find((code: any) => code.countrySubdivisionCode === primary.province)?.shortDescription;
+    const country =
+      primary.country && countries?.find((code: any) => code.countryCode === primary.country)?.longDescription;
+    return [primary.address, primary.city, province, primary.postalCode, country].filter(Boolean).join(", ");
   };
 
   const getAliases = (aliases: Array<InvestigationAlias | null> | null | undefined): string =>
@@ -123,7 +128,7 @@ const PartiesList: React.FC<Props> = ({
     if (!invParty.person) return [];
     const missing: string[] = [];
     if (!invParty.person.firstName || !invParty.person.lastName) missing.push("name");
-    if (!invParty.person.dateOfBirth) missing.push("age");
+    if (!invParty.person.dateOfBirth) missing.push("date of birth");
     if (!invParty.contactMethods?.some((cm) => cm?.typeCode === ContactMethods.PHONE && cm?.value))
       missing.push("phone number");
     if (getPartyAddress(invParty.addresses) === "-") missing.push("address");

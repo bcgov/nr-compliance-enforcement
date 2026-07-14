@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Badge } from "react-bootstrap";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
@@ -17,7 +16,6 @@ interface CaseHeaderProps {
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }) => {
   const caseId = caseData?.name || caseData?.caseIdentifier || "Unknown";
-  const status = caseData?.caseStatus?.shortDescription || "Active";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
   const lastUpdated = lastUpdatedDisplay ?? undefined;
@@ -66,15 +64,6 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
               </h1>
             </div>
 
-            {/* Badges */}
-            <div className="comp-details-badge-container">
-              <Badge
-                id="comp-details-status-text-id"
-                className={`badge ${applyStatusClass(status)}`}
-              >
-                {status}
-              </Badge>
-            </div>
             <FeatureFlag feature={FEATURE_TYPES.LEGACY_CASE_VIEW}>
               <ActionMenu />
             </FeatureFlag>
@@ -170,7 +159,6 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
               </div>
             </div>
           </section>
-          {/* <!-- case status details end --> */}
           <hr className="mt-0 mb-2" />
         </div>
       )}

@@ -8,7 +8,7 @@ import { CompSelect } from "@components/common/comp-select";
 import { FormField } from "@components/common/form-field";
 import { ValidationTextArea } from "@common/validation-textarea";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
-import { selectAgencyDropdown, selectComplaintStatusCodeDropdown } from "@store/reducers/code-table";
+import { selectAgencyDropdown } from "@store/reducers/code-table";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { useGraphQLQuery } from "@graphql/hooks/useGraphQLQuery";
 import { useGraphQLMutation } from "@graphql/hooks/useGraphQLMutation";
@@ -28,11 +28,6 @@ const CREATE_CASE_MUTATION = gql`
       updatedTimestamp
       description
       name
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
       leadAgency {
         agencyCode
         shortDescription
@@ -50,11 +45,6 @@ const UPDATE_CASE_MUTATION = gql`
       updatedTimestamp
       description
       name
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
       leadAgency {
         agencyCode
         shortDescription
@@ -73,11 +63,6 @@ const GET_CASE_FILE = gql`
       updatedTimestamp
       description
       name
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
       leadAgency {
         agencyCode
         shortDescription
@@ -100,7 +85,6 @@ const CaseEdit: FC = () => {
   const { id } = useParams<{ id?: string }>();
   const isEditMode = !!id;
 
-  const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
   const agencyOptions = useAppSelector(selectAgencyDropdown);
   const currentAppUserGuid = useAppSelector(appUserGuid);
   const showLegacy = useAppSelector(isFeatureActive(FEATURE_TYPES.LEGACY_CASE_VIEW));
@@ -139,13 +123,11 @@ const CaseEdit: FC = () => {
     // If there is case data set the default state of the form to the case data
     if (isEditMode && caseData?.caseFile) {
       return {
-        caseStatus: caseData.caseFile.caseStatus?.caseStatusCode || "",
         leadAgency: caseData.caseFile.leadAgency?.agencyCode || "",
         description: caseData.caseFile.description || "",
       };
     }
     return {
-      caseStatus: statusOptions.filter((opt) => opt.value === "OPEN")[0].value,
       leadAgency: getUserAgency(),
       description: "",
     };
@@ -159,7 +141,6 @@ const CaseEdit: FC = () => {
     onSubmit: async ({ value }) => {
       if (isEditMode) {
         const updateInput: CaseFileUpdateInput = {
-          caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
           ...(showLegacy && { description: value.description }),
@@ -171,7 +152,6 @@ const CaseEdit: FC = () => {
         });
       } else {
         const createInput: CaseFileCreateInput = {
-          caseStatus: value.caseStatus,
           leadAgency: value.leadAgency,
           description: value.description,
           createdByAppUserGuid: currentAppUserGuid || "",
@@ -239,30 +219,6 @@ const CaseEdit: FC = () => {
         <FormErrorBanner form={form} />
         <form onSubmit={form.handleSubmit}>
           <fieldset disabled={isDisabled}>
-            <FormField
-              form={form}
-              name="caseStatus"
-              label="Case status"
-              required
-              validators={{ onChange: z.string().min(1, "Case status is required") }}
-              render={(field) => (
-                <CompSelect
-                  id="case-status-select"
-                  classNamePrefix="comp-select"
-                  className="comp-details-input"
-                  options={statusOptions}
-                  value={statusOptions.find((opt) => opt.value === field.state.value)}
-                  onChange={(option) => field.handleChange(option?.value || "")}
-                  placeholder="Select case status"
-                  isClearable={true}
-                  showInactive={false}
-                  enableValidation={true}
-                  errorMessage={field.state.meta.errors?.[0]?.message || ""}
-                  isDisabled={isDisabled}
-                />
-              )}
-            />
-
             <FormField
               form={form}
               name="leadAgency"
