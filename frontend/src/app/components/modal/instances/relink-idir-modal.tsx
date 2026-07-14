@@ -48,7 +48,7 @@ export const RelinkIdirModal: FC<RelinkIdirModalProps> = ({ close, submit }) => 
         const data: any = await get(dispatch, parameters);
         if (Array.isArray(data)) {
           const mapped: Option[] = data.map((item: any) => ({
-            label: item?.attributes?.display_name?.[0] ?? "",
+            label: `${item?.attributes?.display_name?.[0] ?? ""} (${item?.attributes?.idir_username?.[0] ?? ""})`,
             value: formatGuid(item?.attributes?.idir_user_guid?.[0]),
           }));
           setOptions(mapped);
