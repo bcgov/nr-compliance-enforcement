@@ -331,9 +331,10 @@ export const buildContactPeople = (
   isUpdate: boolean,
 ): any[] | undefined => {
   const buildContactPersonGuid = (isUpdate: boolean, personGuid?: string) => {
-    if (!isUpdate) return { personGuid: uuidv4() };
-
-    return personGuid ? { personGuid } : {};
+    // If it is a create return nothing - there is no personGuid on the type
+    if (!isUpdate) return {};
+    // Otherwise return the personGuid if it exists, or create one
+    return personGuid ? { personGuid } : { personGuid: uuidv4() };
   };
 
   const built = (contacts ?? []).map((c) => ({
@@ -635,7 +636,7 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
         { identifierValue: findIdentifierValue(party, BusinessIdentifiers.BUSINESS_NUMBER) },
         { identifierValue: findIdentifierValue(party, BusinessIdentifiers.WSBC_NUMBER) },
       ),
-      contactPeople: buildContactPeople(contacts, true),
+      contactPeople: buildContactPeople(contacts, false),
     },
     addresses: buildAddresses(addresses),
   };
