@@ -387,7 +387,6 @@ export class InvestigationService {
     if (!caseIdentifier) {
       const newCase = await this.caseFileService.create({
         leadAgency,
-        caseStatus: "OPEN",
         description: "Auto-generated case file for investigation",
         createdByAppUserGuid: input.createdByAppUserGuid,
       });

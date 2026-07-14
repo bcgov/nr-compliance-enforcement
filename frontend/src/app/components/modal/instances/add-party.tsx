@@ -265,7 +265,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           };
         } else {
           input.business = {
-            name: value.businessName,
+            name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
           };
         }
@@ -293,7 +293,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           };
         } else {
           input.business = {
-            name: value.businessName,
+            name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
           };
         }

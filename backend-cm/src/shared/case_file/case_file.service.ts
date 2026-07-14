@@ -44,7 +44,6 @@ export class CaseFileService {
       },
       include: {
         agency_code: true,
-        case_status_code: true,
         case_activity: {
           include: {
             case_activity_type_code: true,
@@ -81,7 +80,6 @@ export class CaseFileService {
       },
       include: {
         agency_code: true,
-        case_status_code: true,
         case_activity: {
           include: {
             case_activity_type_code: true,
@@ -145,7 +143,6 @@ export class CaseFileService {
       db.case_file.create({
         data: {
           lead_agency: input.leadAgency,
-          case_status: input.caseStatus,
           description: input.description,
           name: generatedName,
           opened_utc_timestamp: new Date(),
@@ -154,7 +151,6 @@ export class CaseFileService {
         },
         include: {
           agency_code: true,
-          case_status_code: true,
           case_activity: {
             include: {
               case_activity_type_code: true,
@@ -220,9 +216,6 @@ export class CaseFileService {
     if (input.leadAgency !== undefined) {
       updateData.lead_agency = input.leadAgency;
     }
-    if (input.caseStatus !== undefined) {
-      updateData.case_status = input.caseStatus;
-    }
     if (input.description !== undefined) {
       updateData.description = input.description;
     }
@@ -232,7 +225,6 @@ export class CaseFileService {
       data: updateData,
       include: {
         agency_code: true,
-        case_status_code: true,
         case_activity: {
           include: {
             case_activity_type_code: true,
@@ -240,21 +232,6 @@ export class CaseFileService {
         },
       },
     });
-
-    if (input.caseStatus !== undefined) {
-      let eventStatus = input.caseStatus === "OPEN" ? "OPENED" : input.caseStatus;
-      const eventTopic = `${EVENT_STREAM_NAME}.case.${eventStatus.toLowerCase()}`;
-      const event: EventCreateInput = {
-        eventVerbTypeCode: eventStatus,
-        sourceId: caseFile.case_file_guid,
-        sourceEntityTypeCode: "CASE",
-        actorId: this.user.getUserGuid(),
-        actorEntityTypeCode: "USER",
-        targetId: caseFile.case_file_guid,
-        targetEntityTypeCode: "CASE",
-      };
-      this.eventPublisher.publishEvent(event, eventTopic);
-    }
 
     try {
       return this.mapper.map<case_file, CaseFile>(caseFile as case_file, "case_file", "CaseFile");
@@ -301,7 +278,6 @@ export class CaseFileService {
         whereClause: where,
         includeClause: {
           agency_code: true,
-          case_status_code: true,
           case_activity: {
             include: {
               case_activity_type_code: true,
@@ -344,10 +320,6 @@ export class CaseFileService {
       where.lead_agency = filters.leadAgency;
     }
 
-    if (filters?.caseStatus) {
-      where.case_status = filters.caseStatus;
-    }
-
     if (filters?.startDate || filters?.endDate) {
       where.opened_utc_timestamp = {};
 
@@ -374,7 +346,6 @@ export class CaseFileService {
       caseIdentifier: "case_file_guid",
       openedTimestamp: "opened_utc_timestamp",
       leadAgency: "lead_agency",
-      caseStatus: "case_status",
       name: "name",
     };
 

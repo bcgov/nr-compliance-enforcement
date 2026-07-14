@@ -348,7 +348,6 @@ export type CaseFile = {
   __typename?: 'CaseFile';
   activities?: Maybe<Array<Maybe<CaseActivity>>>;
   caseIdentifier?: Maybe<Scalars['String']['output']>;
-  caseStatus?: Maybe<CaseStatusCode>;
   createdByAppUserGuid?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   leadAgency?: Maybe<AgencyCode>;
@@ -374,7 +373,6 @@ export type CaseFileAction = {
 export type CaseFileCreateInput = {
   activityIdentifier?: InputMaybe<Scalars['String']['input']>;
   activityType?: InputMaybe<Scalars['String']['input']>;
-  caseStatus: Scalars['String']['input'];
   createdByAppUserGuid: Scalars['String']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
@@ -382,7 +380,6 @@ export type CaseFileCreateInput = {
 
 export type CaseFileFilters = {
   activityGuids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
   endDate?: InputMaybe<Scalars['DateTime']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
@@ -398,7 +395,6 @@ export type CaseFileResult = {
 };
 
 export type CaseFileUpdateInput = {
-  caseStatus?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -408,15 +404,6 @@ export type CaseLocationCode = {
   __typename?: 'CaseLocationCode';
   activeIndicator?: Maybe<Scalars['Boolean']['output']>;
   caseLocationCode?: Maybe<Scalars['String']['output']>;
-  displayOrder?: Maybe<Scalars['Int']['output']>;
-  longDescription?: Maybe<Scalars['String']['output']>;
-  shortDescription?: Maybe<Scalars['String']['output']>;
-};
-
-export type CaseStatusCode = {
-  __typename?: 'CaseStatusCode';
-  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
-  caseStatusCode?: Maybe<Scalars['String']['output']>;
   displayOrder?: Maybe<Scalars['Int']['output']>;
   longDescription?: Maybe<Scalars['String']['output']>;
   shortDescription?: Maybe<Scalars['String']['output']>;
