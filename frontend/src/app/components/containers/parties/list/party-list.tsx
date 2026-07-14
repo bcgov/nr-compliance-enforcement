@@ -205,8 +205,8 @@ export const PartyList: FC<Props> = ({ parties, partyTypeCode, totalItems = 0, i
       totalItems={totalItems}
       currentPage={searchValues.page}
       pageSize={searchValues.pageSize}
-      defaultSort="partyIdentifier"
-      defaultSortDirection={SORT_TYPES.DESC}
+      defaultSort="partyName"
+      defaultSortDirection={SORT_TYPES.ASC}
       onSort={handleSort}
       onPageChange={handlePageChange}
     />
