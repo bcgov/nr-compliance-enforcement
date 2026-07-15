@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { CaseHeader } from "./case-header";
 import { useCaseActivities } from "@/app/hooks/use-case-activities";
