@@ -2,7 +2,6 @@ import { FC, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { CaseHeader } from "./case-header";
-import { Button } from "react-bootstrap";
 import { useCaseActivities } from "@/app/hooks/use-case-activities";
 import {
   ComplaintColumn,
@@ -59,10 +58,6 @@ export const CaseView: FC = () => {
     if (times.length === 0) return undefined;
     return new Date(Math.max(...times)).toString();
   }, [caseData, linkedComplaints, investigations, inspections]);
-
-  const editButtonClick = () => {
-    navigate(`/case/${id}/edit`);
-  };
 
   const renderTabContent = () => {
     if (currentTab === "history") {
