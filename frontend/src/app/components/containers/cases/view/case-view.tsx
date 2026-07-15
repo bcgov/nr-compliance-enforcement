@@ -21,7 +21,6 @@ export type CaseParams = {
 
 export const CaseView: FC = () => {
   const { id = "", tabKey } = useParams<CaseParams>();
-  const navigate = useNavigate();
 
   const currentTab = tabKey || "summary";
 
