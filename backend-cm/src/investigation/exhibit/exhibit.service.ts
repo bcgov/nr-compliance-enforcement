@@ -100,6 +100,23 @@ export class ExhibitService {
       conditions.push({ OR: searchConditions });
     }
 
+    if (filters.officerFilter) {
+      conditions.push({ collected_by_app_user_guid_ref: filters.officerFilter });
+    }
+
+    if (filters.intakeStartDate || filters.intakeEndDate) {
+      const dateCondition: any = {};
+      if (filters.intakeStartDate) {
+        dateCondition.gte = new Date(filters.intakeStartDate);
+      }
+      if (filters.intakeEndDate) {
+        const end = new Date(filters.intakeEndDate);
+        end.setDate(end.getDate() + 1);
+        dateCondition.lt = end;
+      }
+      conditions.push({ collected_utc_timestamp: dateCondition });
+    }
+
     return { AND: conditions };
   }
 
