@@ -107,13 +107,6 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
                   >
                     <i className="bi bi-eye" /> View Case
                   </Dropdown.Item>
-                  <Dropdown.Item
-                    as={Link}
-                    to={`/case/${caseFile.caseIdentifier}/edit`}
-                    id={`edit-case-${caseFile.caseIdentifier}`}
-                  >
-                    <i className="bi bi-pencil" /> Edit Case
-                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             ),

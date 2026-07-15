@@ -1,70 +1,6 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
-
-/**
- * Tests for Case History Tab functionality
- */
-async function createHistoryData(page: Page): Promise<string> {
-  await page.goto("/cases");
-  await waitForSpinner(page);
-
-  const rows = page.locator("#case-list tbody tr");
-  expect(await rows.count(), "No cases found.").toBeGreaterThan(0);
-
-  // Get the first case link and its href
-  const caseLink = rows.first().locator("a.comp-cell-link").first();
-  await expect(caseLink).toBeVisible({ timeout: 10000 });
-  const href = await caseLink.getAttribute("href");
-  const caseGuid = href?.replace("/case/", "") || "";
-
-  await caseLink.click();
-  await waitForSpinner(page);
-
-  // Wait for case data to load
-  const header = page.locator("h1.comp-box-complaint-id");
-  await expect(header).not.toContainText("Unknown", { timeout: 15000 });
-
-  // Edit the case to create history
-  const editButton = page.locator("#details-screen-edit-button");
-  await expect(editButton).toBeVisible({ timeout: 10000 });
-  await editButton.click();
-  await waitForSpinner(page);
-
-  // Description is hidden for MVP
-  /* NOSONAR
-    // Ensure description is filled (required field)
-    const descriptionInput = page.locator("#description");
-    await expect(descriptionInput).toBeVisible({ timeout: 10000 });
-    const currentDescription = await descriptionInput.inputValue();
-    if (!currentDescription) {
-      await descriptionInput.fill("Test case description for history");
-    }
-  */
-
-  // Change status to generate history entry
-  const statusSelect = page.locator("#case-status-select");
-  await expect(statusSelect).toBeVisible({ timeout: 10000 });
-  await statusSelect.click();
-
-  // Get current status and toggle it
-  const currentStatus = await statusSelect.textContent();
-  const newStatus = currentStatus?.includes("Open") ? "Closed" : "Open";
-  const statusOption = page.locator(".comp-select__option", { hasText: newStatus });
-  await expect(statusOption).toBeVisible({ timeout: 5000 });
-  await statusOption.click();
-
-  // Save changes
-  const saveButton = page.locator("#details-screen-save-button-top");
-  await expect(saveButton).toBeVisible({ timeout: 5000 });
-  await saveButton.dispatchEvent("click");
-
-  // Wait for navigation back to case view
-  await page.waitForURL(/\/case\/[^/]+$/, { timeout: 30000 });
-  await waitForSpinner(page);
-
-  return caseGuid;
-}
+import { navigateToCaseWithActivities, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case History Tab functionality
@@ -73,19 +9,25 @@ async function createHistoryData(page: Page): Promise<string> {
 test.describe("Case History Tab", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
-  let caseGuid: string;
+  let caseUrl: string;
 
   test.beforeAll(async ({ browser }) => {
     // Create history data once before all tests in this describe block
     const context = await browser.newContext({ storageState: STORAGE_STATE_BY_ROLE.COS });
     const page = await context.newPage();
-    caseGuid = await createHistoryData(page);
+    const success = await navigateToCaseWithActivities(page);
+    expect(success, "Could not navigate to case.").toBe(true);
+    caseUrl = page.url();
     await context.close();
   });
 
   test.beforeEach(async ({ page }) => {
+    // Navigate to case
+    await page.goto(caseUrl);
+    await waitForSpinner(page);
+
     // Navigate directly to the case's history tab
-    await page.goto(`/case/${caseGuid}/history`);
+    await page.locator("#history").click();
     await waitForSpinner(page);
 
     // Wait for history tab to be active

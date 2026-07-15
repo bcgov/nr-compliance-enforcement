@@ -677,3 +677,12 @@ export const toPlural = (text: string): string => {
   if (/(s|x|z|ch|sh)$/i.test(text)) return text + "es";
   return text + "s";
 };
+
+export const formatGuid = (input?: string) => {
+  if (!input) return "";
+  const clean = input.replace(/[^a-fA-F0-9]/g, "");
+  if (clean.length === 32) {
+    return `${clean.slice(0, 8)}-${clean.slice(8, 12)}-${clean.slice(12, 16)}-${clean.slice(16, 20)}-${clean.slice(20)}`.toLowerCase();
+  }
+  return input;
+};

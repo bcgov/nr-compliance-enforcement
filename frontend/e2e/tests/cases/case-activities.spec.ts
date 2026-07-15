@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { navigateToCaseWithActivities, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case Activities functionality
@@ -244,29 +244,6 @@ test.describe("Case Activities - Three Column Layout", () => {
   });
 });
 
-// Navigate to a case with linked activities, ensuring case history exists for subsequent tests
-async function navigateToCaseWithActivities(page: any): Promise<boolean> {
-  await page.goto("/cases");
-  await waitForSpinner(page);
-
-  // Find CASE26-000001 specifically (falls back to the first case below if not visible)
-  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE26-000001" });
-
-  if ((await caseLink.count()) === 0) {
-    // Fall back to first case
-    const rows = page.locator("#case-list tbody tr");
-    if ((await rows.count()) === 0) {
-      return false;
-    }
-    await rows.first().locator("a.comp-cell-link").first().click();
-  } else {
-    await caseLink.first().click();
-  }
-
-  await waitForSpinner(page);
-  return true;
-}
-
 test.describe("Case Activities - Add Complaint Modal", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
@@ -316,12 +293,22 @@ test.describe("Case Activities - Add Complaint Modal", () => {
     const dropdownMenu = page.locator(".rbt-menu");
     const dropdownItem = dropdownMenu.locator(".dropdown-item").first();
 
-    if (await dropdownItem.isVisible({ timeout: 10000 }).catch(() => false)) {
+    if (
+      await dropdownItem.waitFor({ state: "visible", timeout: 10000 }).then(
+        () => true,
+        () => false,
+      )
+    ) {
       await dropdownItem.click();
 
       // Check if complaint is already added from a previous test run
       const alreadyAddedError = modal.locator("text=This complaint is already added");
-      if (await alreadyAddedError.isVisible({ timeout: 1000 }).catch(() => false)) {
+      if (
+        await alreadyAddedError.waitFor({ state: "visible", timeout: 1000 }).then(
+          () => true,
+          () => false,
+        )
+      ) {
         test.skip(true, "Complaint is already added to the case from a previous test run");
         return;
       }

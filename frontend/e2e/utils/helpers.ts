@@ -351,3 +351,26 @@ export async function validateComplaint(page: Page, expectedComplaintId: string,
   await expect(page.locator(".comp-box-complaint-id")).toContainText(expectedComplaintId);
   await expect(page.locator(".comp-box-species-type")).toContainText(expectedSpecies);
 }
+
+// Navigate to a case with linked activities, ensuring case history exists for subsequent tests
+export async function navigateToCaseWithActivities(page: any): Promise<boolean> {
+  await page.goto("/cases");
+  await waitForSpinner(page);
+
+  // Find CASE26-000001 specifically (falls back to the first case below if not visible)
+  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE26-000001" });
+
+  if ((await caseLink.count()) === 0) {
+    // Fall back to first case
+    const rows = page.locator("#case-list tbody tr");
+    if ((await rows.count()) === 0) {
+      return false;
+    }
+    await rows.first().locator("a.comp-cell-link").first().click();
+  } else {
+    await caseLink.first().click();
+  }
+
+  await waitForSpinner(page);
+  return true;
+}

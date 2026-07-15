@@ -20,6 +20,7 @@ import {
   selectNotification,
   userId,
 } from "@store/reducers/app";
+import { RELINK_IDIR } from "@apptypes/modal/modal-types";
 import { selectAgencySectorDropdown, selectTeamDropdown } from "@store/reducers/code-table";
 import {
   CEEB_ROLE_OPTIONS,
@@ -165,9 +166,7 @@ export const EditUser: FC<EditUserProps> = ({
     }
 
     if (
-      (primaryAgency === AgencyType.NROS ||
-        primaryAgency === AgencyType.COS ||
-        primaryAgency === AgencyType.MINES) &&
+      (primaryAgency === AgencyType.NROS || primaryAgency === AgencyType.COS || primaryAgency === AgencyType.MINES) &&
       officerData.office_guid
     ) {
       const officeGuid =
@@ -429,6 +428,25 @@ export const EditUser: FC<EditUserProps> = ({
     );
   };
 
+  const updateAuthUserGuid = async (id: string) => {
+    const guid = officerData?.app_user_guid;
+    if (!guid) {
+      ToggleError("No user to relink");
+      return;
+    }
+
+    const res = await dispatch(updateOfficerReducer(guid, { auth_user_guid: id }));
+    if (res === "success") {
+      dispatch(getOfficers());
+      ToggleSuccess("Officer relinked successfully");
+      if (officer.value === userAppUserGuid) {
+        dispatch(getTokenProfile());
+      }
+    } else {
+      ToggleError("Unable to relink officer");
+    }
+  };
+
   const resetComsAccess = () => {
     const guid = officerData?.app_user_guid;
     if (!guid) return;
@@ -492,6 +510,21 @@ export const EditUser: FC<EditUserProps> = ({
           <h3>{isInAddUserView ? "Add new user" : "Edit user"}</h3>
           {!isInAddUserView && (
             <div className="admin-header-buttons">
+              <Button
+                variant="outline-primary"
+                onClick={() =>
+                  dispatch(
+                    openModal({
+                      modalSize: "md",
+                      modalType: RELINK_IDIR,
+                      data: { firstName, lastName, onRelink: updateAuthUserGuid },
+                    }),
+                  )
+                }
+                disabled={officerData?.deactivate_ind}
+              >
+                <i className="comp-sidenav-item-icon bi bi-link-45deg"></i>Relink IDIR
+              </Button>
               <Button
                 variant="outline-primary"
                 onClick={resetComsAccess}
@@ -724,6 +757,7 @@ export const EditUser: FC<EditUserProps> = ({
           </Button>
         </div>
       </section>
+      
     </div>
   );
 };

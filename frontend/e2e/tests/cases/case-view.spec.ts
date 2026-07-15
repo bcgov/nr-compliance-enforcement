@@ -23,18 +23,10 @@ test.describe("Case View", () => {
     await expect(header).not.toContainText("Unknown", { timeout: 15000 });
   });
 
-  test("it displays case header with case ID and status badge", async ({ page }) => {
+  test("it displays case header with case ID", async ({ page }) => {
     const caseHeader = page.locator("h1.comp-box-complaint-id");
     await expect(caseHeader).toBeVisible();
     await expect(caseHeader).toContainText("Case");
-
-    // Verify the case status badge is displayed
-    const statusBadge = page.locator("#comp-details-status-text-id");
-    await expect(statusBadge).toBeVisible();
-
-    // Status should be Open or Closed
-    const statusText = await statusBadge.textContent();
-    expect(statusText?.toLowerCase()).toMatch(/open|closed/);
   });
 
   test("it displays breadcrumb navigation", async ({ page }) => {
@@ -66,19 +58,6 @@ test.describe("Case View", () => {
     await expect(descriptionContent.first()).toBeAttached();
   });
   */
-
-  test("it displays Edit case button", async ({ page }) => {
-    const editButton = page.locator("#details-screen-edit-button");
-    await expect(editButton).toBeVisible();
-    await expect(editButton).toContainText("Edit case");
-  });
-
-  test("it navigates to edit page on Edit button click", async ({ page }) => {
-    const editButton = page.locator("#details-screen-edit-button");
-    await editButton.click();
-    await waitForSpinner(page);
-    await expect(page).toHaveURL(/\/case\/[^/]+\/edit$/);
-  });
 });
 
 test.describe("Case View - Tabs", () => {

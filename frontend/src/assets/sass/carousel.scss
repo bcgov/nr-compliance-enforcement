@@ -41,6 +41,7 @@ div[class^="slideInner"] {
   color: $gray-400;
   cursor: pointer;
   min-height: 200px;
+  position: relative;
 }
 
 .comp-attachment-upload-btn,
