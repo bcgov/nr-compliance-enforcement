@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
-import { navigateToCaseWithActivities } from "./case-activities.spec";
+import { navigateToCaseWithActivities, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case History Tab functionality

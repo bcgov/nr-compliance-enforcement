@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { STORAGE_STATE_BY_ROLE } from "../../utils/authConfig";
-import { waitForSpinner } from "../../utils/helpers";
+import { navigateToCaseWithActivities, waitForSpinner } from "../../utils/helpers";
 
 /**
  * Tests for Case Activities functionality
@@ -243,29 +243,6 @@ test.describe("Case Activities - Three Column Layout", () => {
     }
   });
 });
-
-// Navigate to a case with linked activities, ensuring case history exists for subsequent tests
-export async function navigateToCaseWithActivities(page: any): Promise<boolean> {
-  await page.goto("/cases");
-  await waitForSpinner(page);
-
-  // Find CASE26-000001 specifically (falls back to the first case below if not visible)
-  const caseLink = page.locator("#case-list tbody tr a.comp-cell-link", { hasText: "CASE26-000001" });
-
-  if ((await caseLink.count()) === 0) {
-    // Fall back to first case
-    const rows = page.locator("#case-list tbody tr");
-    if ((await rows.count()) === 0) {
-      return false;
-    }
-    await rows.first().locator("a.comp-cell-link").first().click();
-  } else {
-    await caseLink.first().click();
-  }
-
-  await waitForSpinner(page);
-  return true;
-}
 
 test.describe("Case Activities - Add Complaint Modal", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
