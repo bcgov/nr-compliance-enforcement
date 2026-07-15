@@ -85,17 +85,6 @@ export const CaseView: FC = () => {
                 <p>{caseData?.description}</p>
               </div>
             </FeatureFlag>
-            <div className="comp-details-section-header-actions align-self-center text-nowrap ms-auto">
-              <Button
-                variant="outline-primary"
-                size="sm"
-                id="details-screen-edit-button"
-                onClick={editButtonClick}
-              >
-                {" "}
-                <i className="bi bi-pencil" /> Edit case
-              </Button>
-            </div>
           </div>
         </div>
 
