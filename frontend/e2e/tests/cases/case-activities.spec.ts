@@ -245,7 +245,7 @@ test.describe("Case Activities - Three Column Layout", () => {
 });
 
 // Navigate to a case with linked activities, ensuring case history exists for subsequent tests
-async function navigateToCaseWithActivities(page: any): Promise<boolean> {
+export async function navigateToCaseWithActivities(page: any): Promise<boolean> {
   await page.goto("/cases");
   await waitForSpinner(page);
 
@@ -316,12 +316,22 @@ test.describe("Case Activities - Add Complaint Modal", () => {
     const dropdownMenu = page.locator(".rbt-menu");
     const dropdownItem = dropdownMenu.locator(".dropdown-item").first();
 
-    if (await dropdownItem.isVisible({ timeout: 10000 }).catch(() => false)) {
+    if (
+      await dropdownItem.waitFor({ state: "visible", timeout: 10000 }).then(
+        () => true,
+        () => false,
+      )
+    ) {
       await dropdownItem.click();
 
       // Check if complaint is already added from a previous test run
       const alreadyAddedError = modal.locator("text=This complaint is already added");
-      if (await alreadyAddedError.isVisible({ timeout: 1000 }).catch(() => false)) {
+      if (
+        await alreadyAddedError.waitFor({ state: "visible", timeout: 1000 }).then(
+          () => true,
+          () => false,
+        )
+      ) {
         test.skip(true, "Complaint is already added to the case from a previous test run");
         return;
       }
