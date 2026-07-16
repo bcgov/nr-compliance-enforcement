@@ -111,8 +111,8 @@ export class ExhibitService {
       }
       if (filters.intakeEndDate) {
         const end = new Date(filters.intakeEndDate);
-        end.setDate(end.getDate() + 1);
-        dateCondition.lt = end;
+        // Add exactly 24 h in ms to cover the full end date in the user's local timezone
+        dateCondition.lt = new Date(end.getTime() + 24 * 60 * 60 * 1000);
       }
       conditions.push({ collected_utc_timestamp: dateCondition });
     }

@@ -43,8 +43,8 @@ export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
   const handleIntakeDateChange = (dates: [Date, Date]) => {
     const [start, end] = dates;
     setValues({
-      intakeStartDate: start ? start.toISOString().slice(0, 10) : null,
-      intakeEndDate: end ? end.toISOString().slice(0, 10) : null,
+      intakeStartDate: start ? start.toISOString() : null,
+      intakeEndDate: end ? end.toISOString() : null,
     });
   };
 

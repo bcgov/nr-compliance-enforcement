@@ -94,9 +94,7 @@ export const ExhibitsFilterBar: FC<Props> = ({
 
   const formatDateLabel = (dateStr: string | null | undefined): string => {
     if (!dateStr) return "";
-    // append T00:00:00 to treat the value as local time, avoiding UTC shift
-    const d = new Date(`${dateStr}T00:00:00`);
-    return d.toLocaleDateString();
+    return new Date(dateStr).toLocaleDateString();
   };
 
   const getDateRangeLabel = (): string => {
