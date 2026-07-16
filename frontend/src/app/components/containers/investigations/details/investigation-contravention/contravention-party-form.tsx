@@ -8,6 +8,7 @@ import { FormField } from "@/app/components/common/form-field";
 
 import z from "zod";
 import { CardOption, CardOptionSelector } from "@/app/components/common/card-option";
+import { getPartyName } from "@/app/common/party-name";
 
 export interface ContraventionPartyFormValues {
   partyType: string;
@@ -50,7 +51,7 @@ export const ContraventionPartyForm = ({
       ?.filter((p: InvestigationParty | InspectionParty) => p.partyAssociationRole === "PTYOFINTRST")
       .map((party: InvestigationParty | InspectionParty) => ({
         value: party.partyIdentifier,
-        label: party.business ? party.business.name : `${party?.person?.lastName}, ${party?.person?.firstName}`,
+        label: getPartyName(party),
       })) ?? [];
 
   const hasParties = partyOptions.length > 0;

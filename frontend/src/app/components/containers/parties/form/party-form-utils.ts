@@ -1,8 +1,20 @@
-import { Address, PersonFacialHairStyleCode, PersonInput, PersonUpdateInput } from "@/generated/graphql";
+import {
+  Address,
+  BusinessIdentifier,
+  BusinessPerson,
+  BusinessPersonAddress,
+  ContactMethod,
+  FacialHairStyleCode,
+  Party,
+  PersonFacialHairStyleCode,
+  PersonInput,
+  PersonUpdateInput,
+} from "@/generated/graphql";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { isValidEmail } from "@/app/common/validate-email";
 import { v4 as uuidv4 } from "uuid";
+import { PartyTypeCodes } from "@/app/constants/party-types";
 
 export type ContactMethodFormValue = {
   contactMethodGuid?: string;
@@ -318,12 +330,19 @@ export const buildContactPeople = (
   contacts: ContactPersonFormValue[] | undefined,
   isUpdate: boolean,
 ): any[] | undefined => {
+  const buildContactPersonGuid = (isUpdate: boolean, personGuid?: string) => {
+    // If it is a create return nothing - there is no personGuid on the type
+    if (!isUpdate) return {};
+    // Otherwise return the personGuid if it exists, or create one
+    return personGuid ? { personGuid } : { personGuid: uuidv4() };
+  };
+
   const built = (contacts ?? []).map((c) => ({
     ...(isUpdate && c.businessPersonXrefGuid ? { businessPersonXrefGuid: c.businessPersonXrefGuid } : {}),
     person: {
-      ...(isUpdate && c.person.personGuid ? { personGuid: c.person.personGuid } : {}),
-      firstName: c.person.firstName || null,
-      lastName: c.person.lastName || null,
+      ...buildContactPersonGuid(isUpdate, c.person.personGuid),
+      firstName: c.person.firstName?.trim() ?? "",
+      lastName: c.person.lastName?.trim() ?? "",
     },
     title: c.title || null,
     displayInInvestigation: c.displayInInvestigation ?? true,
@@ -432,9 +451,9 @@ export const validatePersonForm = (value: any): string | null => {
 // Shared base fields for person create/update.
 export function buildPersonBase(value: any) {
   return {
-    firstName: value.firstName,
+    firstName: value.firstName?.trim() ?? "",
     middleNames: value.middleNames?.trim() || null,
-    lastName: value.lastName,
+    lastName: value.lastName?.trim() ?? "",
     dateOfBirth: value?.dateOfBirth ? new Date(value.dateOfBirth) : null,
     approximateAgeCode: value.approximateAgeCode || null,
     driversLicenseNumber: value.driversLicenseNumber || null,
@@ -478,7 +497,7 @@ export function buildPersonForUpdate(value: any): PersonUpdateInput {
 // Helper to build business object for creates
 export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => {
   return {
-    name: value.businessName,
+    name: value.businessName?.trim(),
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
@@ -524,3 +543,138 @@ export const createEmptyPartyFormValues = () => ({
   addresses: [{ ...createEmptyAddress(), isPrimary: true }] as AddressFormValue[],
   contacts: [] as ContactPersonFormValue[],
 });
+
+/** Finds a business identifier value by code on the source party. */
+const findIdentifierValue = (party: Party, code: string) =>
+  (party.business?.businessIdentifiers ?? [])
+    .filter((bi): bi is BusinessIdentifier => bi != null)
+    .find((bi) => bi.identifierCode === code)?.identifierValue;
+
+/** Maps a published business contact person onto the form-value shape buildContactPeople expects. */
+const mapCopyContactPerson = (
+  contact: BusinessPerson,
+  addressGuidMap: Map<string, string>,
+): ContactPersonFormValue => ({
+  business: {},
+  person: {
+    firstName: contact.person?.firstName ?? "",
+    lastName: contact.person?.lastName ?? "",
+  },
+  contactMethods: (contact.contactMethods ?? [])
+    .filter((cm): cm is ContactMethod => cm != null)
+    .map((cm) => ({
+      typeCode: cm.typeCode ?? ContactMethods.PHONE,
+      value: cm.value ?? "",
+      isPrimary: cm.isPrimary ?? false,
+    })),
+  title: contact.title ?? "",
+  displayInInvestigation: contact.displayInInvestigation ?? true,
+  isPrimary: contact.isPrimary ?? false,
+  // Office associations are re-pointed at the copied addresses. Source addresses that weren't
+  // copied resolve to nothing and drop out rather than pointing at the source party's rows.
+  officeAddressGuids: (contact.associatedAddresses ?? [])
+    .filter((aa): aa is BusinessPersonAddress => aa != null)
+    .map((aa) => addressGuidMap.get(aa.address?.addressGuid ?? ""))
+    .filter((guid): guid is string => !!guid),
+});
+
+const buildPersonCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
+  const personBase = buildPersonBase(party.person);
+
+  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: FacialHairStyleCode) => ({
+    ...fhs,
+    personFacialStyleHairCodeGuid: undefined,
+    personGuid: undefined,
+  }));
+
+  return {
+    partyTypeCode: PartyTypeCodes.PERSON,
+    person: {
+      ...personBase,
+      facialHairStyleCodes,
+      personReference: party.person?.personGuid,
+    },
+    addresses: buildAddresses(
+      copiedAddresses.map((a) => ({
+        ...a,
+        addressGuid: undefined,
+        phoneNumberGuid: undefined,
+        emailAddressGuid: undefined,
+      })),
+    ),
+  };
+};
+
+const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
+  // Copied addresses get client-generated GUIDs so contact office associations can point at the
+  // copies rather than the source party's addresses.
+  const addressGuidMap = new Map<string, string>();
+
+  const addresses = copiedAddresses.map((a) => {
+    const copiedAddressGuid = uuidv4();
+    if (a.addressGuid) {
+      addressGuidMap.set(a.addressGuid, copiedAddressGuid);
+    }
+    return {
+      ...a,
+      addressGuid: copiedAddressGuid,
+      phoneNumberGuid: undefined,
+      emailAddressGuid: undefined,
+    };
+  });
+
+  const contacts = (party.business?.contactPeople ?? [])
+    .filter((cp): cp is BusinessPerson => cp != null)
+    .map((cp) => mapCopyContactPerson(cp, addressGuidMap));
+
+  return {
+    partyTypeCode: PartyTypeCodes.BUSINESS,
+    business: {
+      name: party.business?.name ?? "",
+      businessReference: party.business?.businessGuid,
+      businessIdentifiers: buildIdentifiers(
+        { identifierValue: findIdentifierValue(party, BusinessIdentifiers.BUSINESS_NUMBER) },
+        { identifierValue: findIdentifierValue(party, BusinessIdentifiers.WSBC_NUMBER) },
+      ),
+      contactPeople: buildContactPeople(contacts, false),
+    },
+    addresses: buildAddresses(addresses),
+  };
+};
+
+/**
+ * Maps a full published Party (from findOne) into a CreateInvestigationPartyInput for copying a
+ * matched party into an investigation. Reuses the existing build/map helpers and applies the copy
+ * rules: fresh child rows (no source GUIDs carried over) and party/person/business level references
+ * linking the copy back to the published profile.
+ */
+export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociationRole: string) => {
+  const aliases = mapAliasesFromPartyData(party.aliases)
+    .filter((a) => a.name.trim().length > 0)
+    .map((a) => ({ name: a.name }));
+
+  const phoneNumbers = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.PHONE)
+    .filter((c) => (c.value ?? "").trim().length > 0)
+    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+
+  const emailAddresses = mapContactMethodsFromPartyData(party.contactMethods, ContactMethods.EMAIL)
+    .filter((c) => (c.value ?? "").trim().length > 0)
+    .map((c) => ({ ...c, contactMethodGuid: undefined }));
+
+  const copiedAddresses = mapAddressesFromPartyData(party.addresses as Address[]).filter(
+    (a) => (a.address ?? "").trim().length > 0 || (a.city ?? "").trim().length > 0,
+  );
+
+  const common = {
+    partyReference: party.partyIdentifier,
+    partyAssociationRole,
+    aliases: buildAliases(aliases, false),
+    contactMethods: buildContactMethods(phoneNumbers, emailAddresses, false),
+  };
+
+  if (party.partyTypeCode === PartyTypeCodes.BUSINESS) {
+    return { ...common, ...buildBusinessCopy(party, copiedAddresses) };
+  }
+
+  return { ...common, ...buildPersonCopy(party, copiedAddresses) };
+};

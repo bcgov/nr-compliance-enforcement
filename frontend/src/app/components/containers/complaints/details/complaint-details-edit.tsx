@@ -106,11 +106,6 @@ const GET_ASSOCIATED_CASE_FILES = gql`
         shortDescription
         longDescription
       }
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
     }
   }
 `;
@@ -211,7 +206,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const enablePrivacyFeature =
     ownedByAgencyCode?.agency &&
-    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS || ownedByAgencyCode?.agency === AgencyType.MINES);
+    (ownedByAgencyCode?.agency === AgencyType.CEEB ||
+      ownedByAgencyCode?.agency === AgencyType.NROS ||
+      ownedByAgencyCode?.agency === AgencyType.MINES);
   const enableOfficeFeature =
     ownedByAgencyCode?.agency &&
     ownedByAgencyCode?.agency !== AgencyType.CEEB &&

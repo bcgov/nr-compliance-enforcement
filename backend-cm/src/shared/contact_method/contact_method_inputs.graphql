@@ -4,3 +4,9 @@ input ContactMethodInput {
   value: String!
   isPrimary: Boolean!
 }
+
+# Distinct input type as shared parties currently have mandatory fields.  Could combine in future.
+input ContactMethodMatchInput {
+  typeCode: String!
+  value: String
+}

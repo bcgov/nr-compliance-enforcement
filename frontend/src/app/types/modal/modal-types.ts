@@ -25,6 +25,7 @@ export const ADD_EDIT_TASK_ACTION = "ADD_EDIT_TASK_ACTION";
 export const MULTI_STEP_MODAL = "MULTI_STEP_MODAL";
 export const ADD_EDIT_TASK_EXHIBIT = "ADD_EDIT_TASK_EXHIBIT";
 export const ADD_EDIT_ENFORCEMENT_ACTION = "ADD_EDIT_ENFORCEMENT_ACTION";
+export const RELINK_IDIR = "RELINK_IDIR";
 
 export interface ModalProps {
   modalType: string;

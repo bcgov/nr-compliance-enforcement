@@ -3,7 +3,15 @@ import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { party } from "../../../prisma/shared/generated/party";
-import { ImageUpdate, Party, PartyCreateInput, PartyFilters, PartyResult, PartyUpdateInput } from "./dto/party";
+import {
+  ImageUpdate,
+  Party,
+  PartyCreateInput,
+  PartyFilters,
+  PartyMatchInput,
+  PartyResult,
+  PartyUpdateInput,
+} from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { Alias } from "src/shared/alias/dto/alias";
@@ -19,8 +27,23 @@ import { EventPublisherService } from "../../event_publisher/event_publisher.ser
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
 import { Person } from "src/shared/person/dto/person";
+import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
+
+// Initial cut at scoring algorithm
+// DL Number and Business Number shoot matches to top of list regardless of what is entered
+const MATCH_FIELD_WEIGHTS = {
+  firstName: 1,
+  lastName: 1,
+  dateOfBirth: 1,
+  genderCode: 1,
+  driversLicenseNumber: 10,
+  businessName: 1,
+  businessNumber: 10,
+  phone: 1,
+  addressLine: 1,
+} as const;
 
 @Injectable()
 export class PartyService {
@@ -1539,6 +1562,67 @@ export class PartyService {
     }
   }
 
+  // Shared include to reduce duplication between the global party list and party matching function
+  private readonly _partySummaryInclude = {
+    party_type_code: {
+      select: {
+        party_type_code: true,
+        short_description: true,
+        long_description: true,
+      },
+    },
+    address: {
+      select: {
+        address_name: true,
+        address: true,
+        city: true,
+        country_subdivision_code: true,
+        is_primary: true,
+      },
+      where: { active_ind: true },
+    },
+    contact_method: {
+      where: { active_ind: true },
+      select: {
+        contact_method_guid: true,
+        contact_method_type: true,
+        contact_value: true,
+        is_primary: true,
+        contact_method_type_code: {
+          select: {
+            contact_method_type_code: true,
+            short_description: true,
+            long_description: true,
+          },
+        },
+      },
+    },
+    business: {
+      select: {
+        business_guid: true,
+        name: true,
+        business_identifier: {
+          where: { active_ind: true },
+          select: {
+            business_identifier_guid: true,
+            identifier_value: true,
+            business_identifier_code: true,
+          },
+        },
+      },
+    },
+    person: {
+      select: {
+        person_guid: true,
+        first_name: true,
+        last_name: true,
+        date_of_birth: true,
+        gender_code: true,
+        approximate_age_code: true,
+      },
+    },
+  };
+
   async search(page: number = 1, pageSize: number = 25, filters?: PartyFilters): Promise<PartyResult> {
     const where: any = {
       party_type: {
@@ -1632,64 +1716,7 @@ export class PartyService {
         destinationTypeName: "Party",
         mapper: this.mapper,
         whereClause: where,
-        includeClause: {
-          party_type_code: {
-            select: {
-              party_type_code: true,
-              short_description: true,
-              long_description: true,
-            },
-          },
-          address: {
-            select: {
-              address: true,
-              city: true,
-              country_subdivision_code: true,
-              is_primary: true,
-            },
-            where: { active_ind: true },
-          },
-          contact_method: {
-            where: { active_ind: true },
-            select: {
-              contact_method_guid: true,
-              contact_method_type: true,
-              contact_value: true,
-              is_primary: true,
-              contact_method_type_code: {
-                select: {
-                  contact_method_type_code: true,
-                  short_description: true,
-                  long_description: true,
-                },
-              },
-            },
-          },
-          business: {
-            select: {
-              business_guid: true,
-              name: true,
-              business_identifier: {
-                where: { active_ind: true },
-                select: {
-                  business_identifier_guid: true,
-                  identifier_value: true,
-                  business_identifier_code: true,
-                },
-              },
-            },
-          },
-          person: {
-            select: {
-              person_guid: true,
-              first_name: true,
-              last_name: true,
-              date_of_birth: true,
-              gender_code: true,
-              approximate_age_code: true,
-            },
-          },
-        },
+        includeClause: this._partySummaryInclude,
         orderByClause: orderBy,
       },
     );
@@ -1698,5 +1725,206 @@ export class PartyService {
       items: result.items,
       pageInfo: result.pageInfo,
     };
+  }
+
+  private _scoreDateOfBirth(input: PartyMatchInput, party: party): number {
+    const candidateDob = party.person?.date_of_birth;
+    const inputDob = input.person?.dateOfBirth;
+    if (!candidateDob || !inputDob) {
+      return 0;
+    }
+    const sameDate =
+      candidateDob.getUTCFullYear() === inputDob.getUTCFullYear() &&
+      candidateDob.getUTCMonth() === inputDob.getUTCMonth() &&
+      candidateDob.getUTCDate() === inputDob.getUTCDate();
+    return sameDate ? MATCH_FIELD_WEIGHTS.dateOfBirth : 0;
+  }
+
+  private _scoreBusinessNumber(input: PartyMatchInput, party: party): number {
+    const businessNumber = input.business?.businessIdentifiers?.find(
+      (i) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
+    )?.identifierValue;
+    if (!businessNumber) {
+      return 0;
+    }
+    const hasMatch = party.business?.business_identifier?.some(
+      (bi: any) =>
+        bi.business_identifier_code === BusinessIdentifiers.BUSINESS_NUMBER && bi.identifier_value === businessNumber,
+    );
+    return hasMatch ? MATCH_FIELD_WEIGHTS.businessNumber : 0;
+  }
+
+  private _scorePhone(input: PartyMatchInput, party: party): number {
+    const phoneValue = input.contactMethods?.find((c) => c.value)?.value;
+    if (!phoneValue) {
+      return 0;
+    }
+    const normalized = `+${phoneValue.replace(/\D/g, "")}`;
+    const hasMatch = party.contact_method?.some(
+      (cm: any) => cm.contact_method_type === "PHONE" && cm.contact_value === normalized,
+    );
+    return hasMatch ? MATCH_FIELD_WEIGHTS.phone : 0;
+  }
+
+  private _scoreAddressLine(input: PartyMatchInput, party: party): number {
+    const addressLine = input.addresses?.find((a) => a.address)?.address;
+    if (!addressLine) {
+      return 0;
+    }
+    const hasMatch = party.address?.some((a: any) => a.address === addressLine);
+    return hasMatch ? MATCH_FIELD_WEIGHTS.addressLine : 0;
+  }
+
+  /**
+   * Counts how many of the entered match fields a candidate party actually satisfies,
+   * summing each matched field's weight. Simple scalar matches are checked inline;
+   * the fields with more involved logic are delegated to dedicated helpers.
+   *
+   * Will likely be replaced / enhanced in the future.
+   */
+  private _scoreMatch(input: PartyMatchInput, party: party): number {
+    let score = 0;
+
+    if (input.person?.firstName && party.person?.first_name === input.person.firstName) {
+      score += MATCH_FIELD_WEIGHTS.firstName;
+    }
+    if (input.person?.lastName && party.person?.last_name === input.person.lastName) {
+      score += MATCH_FIELD_WEIGHTS.lastName;
+    }
+    if (input.person?.genderCode && party.person?.gender_code === input.person.genderCode) {
+      score += MATCH_FIELD_WEIGHTS.genderCode;
+    }
+    if (
+      input.person?.driversLicenseNumber &&
+      party.person?.drivers_license_number === input.person.driversLicenseNumber
+    ) {
+      score += MATCH_FIELD_WEIGHTS.driversLicenseNumber;
+    }
+    if (input.business?.name && party.business?.name === input.business.name) {
+      score += MATCH_FIELD_WEIGHTS.businessName;
+    }
+
+    score += this._scoreDateOfBirth(input, party);
+    score += this._scoreBusinessNumber(input, party);
+    score += this._scorePhone(input, party);
+    score += this._scoreAddressLine(input, party);
+
+    return score;
+  }
+
+  private _buildMatchWhere(input: PartyMatchInput): any {
+    const conditions: any[] = [];
+
+    if (input.person?.firstName) {
+      conditions.push({ person: { first_name: { equals: input.person.firstName, mode: "insensitive" } } });
+    }
+    if (input.person?.lastName) {
+      conditions.push({ person: { last_name: { equals: input.person.lastName, mode: "insensitive" } } });
+    }
+    if (input.person?.dateOfBirth) {
+      conditions.push({ person: { date_of_birth: { equals: input.person.dateOfBirth } } });
+    }
+    if (input.person?.genderCode) {
+      conditions.push({ person: { gender_code: { equals: input.person.genderCode } } });
+    }
+    if (input.person?.driversLicenseNumber) {
+      conditions.push({ person: { drivers_license_number: { equals: input.person.driversLicenseNumber } } });
+    }
+
+    if (input.business?.name) {
+      conditions.push({ business: { name: { equals: input.business.name, mode: "insensitive" } } });
+    }
+
+    const businessNumber = input.business?.businessIdentifiers?.find(
+      (i) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
+    )?.identifierValue;
+    if (businessNumber) {
+      conditions.push({
+        business: {
+          business_identifier: {
+            some: {
+              business_identifier_code: BusinessIdentifiers.BUSINESS_NUMBER,
+              identifier_value: { equals: businessNumber },
+            },
+          },
+        },
+      });
+    }
+
+    for (const phone of input.contactMethods ?? []) {
+      if (phone.value) {
+        const normalized = `+${phone.value.replace(/\D/g, "")}`;
+        conditions.push({
+          contact_method: {
+            some: {
+              contact_method_type: "PHONE",
+              contact_value: { equals: normalized },
+            },
+          },
+        });
+      }
+    }
+
+    for (const addr of input.addresses ?? []) {
+      if (addr.address) {
+        conditions.push({
+          address: {
+            some: { address: { equals: addr.address, mode: "insensitive" } },
+          },
+        });
+      }
+    }
+
+    return {
+      party_type: { equals: input.partyTypeCode },
+      OR: conditions,
+    };
+  }
+
+  async matchParty(input: PartyMatchInput): Promise<Party[]> {
+    const where = this._buildMatchWhere(input);
+
+    // Guard: with no usable conditions the AND clause would match every party.
+    // The frontend enforces the minimum-two-fields rule, but we defend here so a
+    // zero-condition call can never return the entire party table.
+    if (!where.OR.length) {
+      return [];
+    }
+
+    // The bulk of this query is shared with the parties tab but there are some screen specific overrides expressed
+    const prismaParties: any = await this.prisma.party.findMany({
+      where,
+      take: 50, // arbitrary number... 10 times the amount displayed before scoring
+      include: {
+        ...this._partySummaryInclude,
+        person: {
+          select: {
+            ...this._partySummaryInclude.person.select,
+            middle_names: true,
+          },
+        },
+        address: {
+          ...this._partySummaryInclude.address,
+          orderBy: [{ is_primary: "desc" }, { create_utc_timestamp: "asc" }],
+        },
+        alias: {
+          where: { active_ind: true },
+          orderBy: { create_utc_timestamp: "asc" },
+          select: {
+            alias_guid: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    // Rank by number of matched fields (more matches = higher), then return the top 5.
+    const topParties = prismaParties
+      .map((party: any) => ({ party, score: this._scoreMatch(input, party) }))
+      .sort((a: { score: number }, b: { score: number }) => b.score - a.score)
+      .slice(0, 5)
+      .map((scored: { party: any }) => scored.party);
+
+    return this.mapper.mapArray<party, Party>(topParties as party[], "party", "Party");
   }
 }

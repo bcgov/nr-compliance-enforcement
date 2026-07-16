@@ -1,7 +1,9 @@
 import { ContraventionForm } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-form";
 import { ContraventionViewEditModalContent } from "./contravention-read-only-panel";
 import { ContraventionTable } from "@/app/components/containers/investigations/details/investigation-contravention/contravention-table";
-import { useAppDispatch } from "@/app/hooks/hooks";
+import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
+import { selectCodeTable } from "@store/reducers/code-table";
+import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { openModal } from "@/app/store/reducers/app";
 import { MULTI_STEP_MODAL } from "@/app/types/modal/modal-types";
@@ -12,6 +14,7 @@ import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 import { EnforcementActionViewEditContent } from "./enforcement-action-view-edit-content";
 import { useEnforcementActionAttachmentIds } from "./hooks/use-enforcement-action-attachment-ids";
+import { getPartyName } from "@/app/common/party-name";
 
 interface InvestigationContraventionProps {
   investigationGuid: string;
@@ -25,6 +28,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   onDirtyChange,
 }) => {
   const dispatch = useAppDispatch();
+  const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const enforcementActionsWithAttachments = useEnforcementActionAttachmentIds(investigationGuid);
   const contraventions = investigationData?.contraventions;
@@ -130,6 +134,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
               partyGuid={partyGuid ?? null}
               parties={investigationData?.parties as InvestigationParty[]}
               discoveryDate={investigationData?.discoveryDate}
+              investigationCommunity={investigationData?.community}
               onDirtyChange={handleChildDirtyChange}
               onRequestValidate={onRequestValidate}
               onRequestSave={onRequestSave}
@@ -254,8 +259,12 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
         const phone = formatPhoneNumber(rawPhone);
         const rawDob = party.person?.dateOfBirth ?? "";
         const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
+        const province =
+          primaryAddress?.province &&
+          countrySubdivisions?.find((code: any) => code.countrySubdivisionCode === primaryAddress.province)
+            ?.shortDescription;
         return {
-          partyName: getPartyLabel(party),
+          partyName: getPartyName(party),
           partyGuid: party.partyIdentifier ?? null,
           contraventions: existing?.contraventions ?? [],
           phone,
@@ -264,8 +273,9 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
             ? {
                 address: primaryAddress?.address,
                 city: primaryAddress?.city,
-                province: primaryAddress?.province,
+                province,
                 postalCode: primaryAddress?.postalCode,
+                country: primaryAddress?.country,
               }
             : undefined,
         };
@@ -282,7 +292,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
       : [];
 
     return { knownGroups, unknownGroups };
-  }, [contraventions, parties]);
+  }, [contraventions, parties, countrySubdivisions]);
 
   const { knownGroups, unknownGroups } = allGroups;
 
@@ -337,7 +347,7 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
           const details = [
             dob,
             primaryAddress
-              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${primaryAddress?.province ?? ""} ${primaryAddress?.postalCode ?? ""}`
+              ? `${primaryAddress?.address ?? ""} ${primaryAddress?.city ?? ""} ${[primaryAddress?.province, primaryAddress?.country].filter(Boolean).join(", ")} ${primaryAddress?.postalCode ?? ""}`
               : null,
             phone,
           ]
@@ -419,13 +429,6 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
   );
 };
 
-// Helper
-export function getPartyLabel(party: InvestigationParty): string {
-  if (party.business) return party.business.name;
-  if (party.person) return `${party.person.lastName}, ${party.person.firstName}`;
-  return "Unknown parties";
-}
-
 function groupContraventionsByParty(
   contraventions: Contravention[] | null | undefined,
 ): { partyName: string; partyGuid: string | null; contraventions: Contravention[] }[] {
@@ -438,7 +441,7 @@ function groupContraventionsByParty(
 
     if (parties?.length) {
       for (const party of parties) {
-        const key = getPartyLabel(party);
+        const key = getPartyName(party);
         const existing = map.get(key);
         map.set(key, {
           partyGuid: party.partyIdentifier ?? null,

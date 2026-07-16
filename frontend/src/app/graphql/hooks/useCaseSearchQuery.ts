@@ -11,11 +11,6 @@ const SEARCH_CASE_FILES = gql`
         name
         openedTimestamp
         updatedTimestamp
-        caseStatus {
-          caseStatusCode
-          shortDescription
-          longDescription
-        }
         leadAgency {
           agencyCode
           shortDescription

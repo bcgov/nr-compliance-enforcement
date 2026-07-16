@@ -73,7 +73,7 @@ test.describe("Investigation Party Form", () => {
     await saveButton.click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
-    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true }).first()).toBeVisible();
+    await expect(page.locator(".party-list").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -126,6 +126,6 @@ test.describe("Investigation Party Form", () => {
     await saveButton.click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
-    await expect(page.locator(".party-list").getByText("Doe, Jane", { exact: true }).first()).toBeVisible();
+    await expect(page.locator(".party-list").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
   });
 });

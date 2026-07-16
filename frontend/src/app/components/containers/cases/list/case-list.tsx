@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { applyStatusClass, formatDateTime } from "@common/methods";
+import { formatDateTime } from "@common/methods";
 import { useCaseSearch } from "../hooks/use-case-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { isFeatureActive } from "@/app/store/reducers/app";
@@ -62,20 +62,6 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       getValue: (caseFile) => caseFile.openedTimestamp ?? "",
       renderCell: (caseFile) => formatDateTime(caseFile.openedTimestamp),
     },
-    {
-      label: "Status",
-      sortKey: "caseStatus",
-      headerClassName: "comp-cell-width-110",
-      cellClassName: "comp-cell-width-110",
-      isSortable: true,
-      getValue: (caseFile) => caseFile.caseStatus?.caseStatusCode ?? "",
-      renderCell: (caseFile) =>
-        caseFile.caseStatus ? (
-          <span className={`badge ${applyStatusClass(caseFile.caseStatus.caseStatusCode)}`}>
-            {caseFile.caseStatus.shortDescription}
-          </span>
-        ) : null,
-    },
     ...(showLegacyColumns
       ? [
           {
@@ -120,13 +106,6 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
                     id={`view-case-${caseFile.caseIdentifier}`}
                   >
                     <i className="bi bi-eye" /> View Case
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    as={Link}
-                    to={`/case/${caseFile.caseIdentifier}/edit`}
-                    id={`edit-case-${caseFile.caseIdentifier}`}
-                  >
-                    <i className="bi bi-pencil" /> Edit Case
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
