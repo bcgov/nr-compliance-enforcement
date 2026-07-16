@@ -632,8 +632,8 @@ export const ComplaintAssessmentForm: FC<Props> = ({
                 />
               </div>
             </div>
-            {/* Additional notes - ERS/GIR assessments only */}
-            {assessmentApplies && (
+            {/* Additional notes - GIR assessments only and ERS uses the standalone Notes section instead */}
+            {assessmentApplies && getComplaintType(complaintData) === COMPLAINT_TYPES.GIR && (
               <div
                 className={`comp-details-form-row ${justificationEditClass}`}
                 id="assessment-note-div"

@@ -4,12 +4,11 @@ import { ComplaintAssessments } from "./complaint-assessments/complaint-assessme
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
 interface ERSOutcomeReportProps {
-  showAssessments?: boolean;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-// Outcome report for COS/PARKS enforcement complaints (CEEB/NROS/MINES have their own)
-export const ERSOutcomeReport: FC<ERSOutcomeReportProps> = ({ showAssessments, onDirtyChange }) => {
+// Outcome report for COS/PARKS enforcement complaints (CEEB/NROS/MINES have their own).
+export const ERSOutcomeReport: FC<ERSOutcomeReportProps> = ({ onDirtyChange }) => {
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   return (
@@ -18,7 +17,7 @@ export const ERSOutcomeReport: FC<ERSOutcomeReportProps> = ({ showAssessments, o
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      {showAssessments && <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />}
+      <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
       <Notes onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} />
     </section>
   );

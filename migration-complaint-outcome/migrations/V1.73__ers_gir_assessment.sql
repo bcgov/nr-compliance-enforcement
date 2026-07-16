@@ -6,4 +6,3 @@ INSERT INTO complaint_outcome.inaction_reason_code VALUES ('PKNORES', 'PARKS', '
 
 -- add note fields and history for assessments
   ALTER TABLE complaint_outcome.assessment ADD COLUMN note_text varchar(4000);
-  ALTER TABLE complaint_outcome.assessment_h ADD COLUMN note_text varchar(4000);

@@ -1689,15 +1689,12 @@ export const ComplaintDetailsEdit: FC = () => {
         <MinesOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
-      {/* COS/PARKS ERS Outcome Report */}
-      {readOnly &&
-        complaintType === COMPLAINT_TYPES.ERS &&
-        (ownedByAgencyCode?.agency === AgencyType.COS || ownedByAgencyCode?.agency === AgencyType.PARKS) && (
-          <ERSOutcomeReport
-            showAssessments={assessmentApplies}
-            onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} // Outcome transactions (index 1)
-          />
-        )}
+      {/* COS/PARKS ERS Outcome Report (assessmentApplies = ERSGIRASMT flag + COS/PARKS) */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && assessmentApplies && (
+        <ERSOutcomeReport
+          onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} // Outcome transactions (index 1)
+        />
+      )}
 
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
         <GIROutcomeReport
