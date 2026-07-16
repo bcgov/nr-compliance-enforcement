@@ -154,7 +154,6 @@ model assessment_h {
   operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation Json?
-  note_text                     String?  @db.VarChar(4000)
 
   @@schema("complaint_outcome")
 }
