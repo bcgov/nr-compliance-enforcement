@@ -7,7 +7,7 @@ interface ERSOutcomeReportProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-// Outcome report for COS/PARKS enforcement complaints (CEEB/NROS/MINES have their own).
+// Outcome report for COS/PARKS enforcement complaints
 export const ERSOutcomeReport: FC<ERSOutcomeReportProps> = ({ onDirtyChange }) => {
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
