@@ -6,6 +6,9 @@ export interface ExhibitsSearchParams {
   search: string;
   taskFilter: string | null;
   propertyTypeFilter: string | null;
+  officerFilter: string | null;
+  intakeStartDate: string | null;
+  intakeEndDate: string | null;
   sortBy: string;
   sortOrder: string;
   page: number;
@@ -16,6 +19,9 @@ const DEFAULT_SEARCH_VALUES: ExhibitsSearchParams = {
   search: "",
   taskFilter: null,
   propertyTypeFilter: null,
+  officerFilter: null,
+  intakeStartDate: null,
+  intakeEndDate: null,
   sortBy: "exhibitNumber",
   sortOrder: SORT_TYPES.ASC,
   page: 1,
@@ -49,6 +55,9 @@ export const useExhibitsSearch = () => {
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       taskFilter: searchParams.get("taskFilter"),
       propertyTypeFilter: searchParams.get("propertyTypeFilter"),
+      officerFilter: searchParams.get("officerFilter"),
+      intakeStartDate: searchParams.get("intakeStartDate"),
+      intakeEndDate: searchParams.get("intakeEndDate"),
       sortBy: searchParams.get("sortBy") || DEFAULT_SEARCH_VALUES.sortBy,
       sortOrder: searchParams.get("sortOrder") || DEFAULT_SEARCH_VALUES.sortOrder,
       page: Number.parseInt(searchParams.get("page") || "1", 10),
