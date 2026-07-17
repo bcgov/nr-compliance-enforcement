@@ -161,3 +161,10 @@
   gap: 8px;
   align-items: center;
 }
+
+.comp-date-time-input {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 500px;
+}
