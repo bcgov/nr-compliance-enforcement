@@ -21,5 +21,4 @@ export interface Assessment {
   category_level?: KeyValuePair | null;
   assessment_cat1_type: KeyValuePair[];
   assessment_type_legacy?: KeyValuePair[];
-  note?: string;
 }

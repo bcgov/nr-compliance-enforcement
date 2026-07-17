@@ -34,7 +34,6 @@ type Assessment {
   conflictHistory: KeyValuePair
   categoryLevel: KeyValuePair
   cat1Actions: [CaseFileAction]
-  note: String
 }
 
 type Prevention {

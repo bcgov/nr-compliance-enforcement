@@ -17,5 +17,4 @@ export interface AssessmentDto {
   conflictHistory: KeyValuePair;
   categoryLevel: KeyValuePair;
   cat1Actions: Array<AssessmentActionDto>;
-  note?: string;
 }

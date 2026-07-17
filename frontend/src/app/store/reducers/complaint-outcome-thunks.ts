@@ -180,7 +180,6 @@ const addAssessment =
         locationType: assessment.location_type,
         conflictHistory: assessment.conflict_history,
         categoryLevel: assessment.category_level,
-        note: assessment.note,
         cat1Actions: assessment.assessment_cat1_type
           ? assessment.assessment_cat1_type.map((item) => {
               return {
@@ -293,7 +292,6 @@ const updateAssessment =
         locationType: assessment.location_type,
         conflictHistory: assessment.conflict_history,
         categoryLevel: assessment.category_level,
-        note: assessment.note,
         cat1Actions: assessment.assessment_cat1_type
           ? assessment.assessment_cat1_type.map((item) => {
               return {
@@ -396,7 +394,6 @@ const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: AppUs
       location_type: assessment.locationType,
       conflict_history: assessment.conflictHistory,
       category_level: assessment.categoryLevel,
-      note: assessment.note,
       assessment_cat1_type: assessment.cat1Actions
         .filter((action: { activeIndicator: any }) => {
           return action.activeIndicator;

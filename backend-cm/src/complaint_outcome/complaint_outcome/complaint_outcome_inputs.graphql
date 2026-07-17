@@ -26,7 +26,6 @@ input AssessmentInput {
   conflictHistory: KeyValuePairInput
   categoryLevel: KeyValuePairInput
   cat1Actions: [AssessmentActionInput]
-  note: String
 }
 
 input AssessmentActionInput {

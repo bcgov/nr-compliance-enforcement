@@ -134,7 +134,6 @@ model assessment {
   create_utc_timestamp                                                       DateTime               @db.Timestamp(6)
   update_user_id                                                             String?                @db.VarChar(32)
   update_utc_timestamp                                                       DateTime?              @db.Timestamp(6)
-  note_text                                                                  String?                @db.VarChar(4000)
   action                                                                     action[]
   outcome_agency_code_assessment_outcome_agency_codeTooutcome_agency_code    outcome_agency_code    @relation("assessment_outcome_agency_codeTooutcome_agency_code", fields: [outcome_agency_code], references: [outcome_agency_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_assessment__assessed_by_agency_code")
   inaction_reason_code_assessment_inaction_reason_codeToinaction_reason_code inaction_reason_code?  @relation("assessment_inaction_reason_codeToinaction_reason_code", fields: [inaction_reason_code], references: [inaction_reason_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_assessment__inaction_reason_code")

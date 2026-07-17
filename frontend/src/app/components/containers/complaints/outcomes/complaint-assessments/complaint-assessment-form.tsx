@@ -49,7 +49,6 @@ import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
-import { ValidationTextArea } from "@common/validation-textarea";
 
 // ERS/GIR assessments use their own justification codes, separate from the HWC set
 const ERS_GIR_JUSTIFICATION_CODES = new Set(["NOINFID", "NORES", "PKNOINFID", "PKNORES"]);
@@ -103,7 +102,6 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
-  const [note, setNote] = useState<string>(assessment?.note ?? "");
 
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
@@ -281,7 +279,6 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
     setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
-    setNote(assessmentState.note ?? "");
 
     resetValidationErrors();
 
@@ -361,7 +358,6 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
         : mapOptions(selectedAssessmentCat1Types),
-    note: selectedActionRequired?.value === "No" && note.trim() ? note : undefined,
     agency: UserService.getUserAgency(),
   });
 
@@ -632,30 +628,6 @@ export const ComplaintAssessmentForm: FC<Props> = ({
                 />
               </div>
             </div>
-            {/* Additional notes - GIR assessments only and ERS uses the standalone Notes section instead */}
-            {assessmentApplies && getComplaintType(complaintData) === COMPLAINT_TYPES.GIR && (
-              <div
-                className={`comp-details-form-row ${justificationEditClass}`}
-                id="assessment-note-div"
-              >
-                <label htmlFor="assessment-note">Additional notes</label>
-                <div className="comp-details-input full-width">
-                  <ValidationTextArea
-                    className="comp-form-control"
-                    id="assessment-note"
-                    defaultValue={assessment?.note ?? ""}
-                    rows={4}
-                    maxLength={4000}
-                    errMsg=""
-                    onChange={(value: string) => {
-                      setNote(value);
-                      markDirty();
-                    }}
-                    disabled={isReadOnly}
-                  />
-                </div>
-              </div>
-            )}
             {showDuplicateOptions && !quickClose && (
               <div className="comp-details-form-row">
                 <label
