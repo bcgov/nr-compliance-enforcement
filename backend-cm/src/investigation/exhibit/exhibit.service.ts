@@ -100,6 +100,23 @@ export class ExhibitService {
       conditions.push({ OR: searchConditions });
     }
 
+    if (filters.officerFilter) {
+      conditions.push({ collected_by_app_user_guid_ref: filters.officerFilter });
+    }
+
+    if (filters.intakeStartDate || filters.intakeEndDate) {
+      const dateCondition: any = {};
+      if (filters.intakeStartDate) {
+        dateCondition.gte = new Date(filters.intakeStartDate);
+      }
+      if (filters.intakeEndDate) {
+        const end = new Date(filters.intakeEndDate);
+        // Add exactly 24 h in ms to cover the full end date in the user's local timezone
+        dateCondition.lt = new Date(end.getTime() + 24 * 60 * 60 * 1000);
+      }
+      conditions.push({ collected_utc_timestamp: dateCondition });
+    }
+
     return { AND: conditions };
   }
 

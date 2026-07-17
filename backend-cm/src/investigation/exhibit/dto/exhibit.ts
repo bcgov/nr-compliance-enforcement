@@ -46,6 +46,9 @@ export class ExhibitFilters {
   search?: string;
   taskFilter?: string;
   propertyTypeFilter?: string;
+  officerFilter?: string;
+  intakeStartDate?: string;
+  intakeEndDate?: string;
   sortBy?: string;
   sortOrder?: string;
 }

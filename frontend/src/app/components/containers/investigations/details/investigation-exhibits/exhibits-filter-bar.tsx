@@ -1,9 +1,11 @@
 import { FC, useCallback, ChangeEvent, KeyboardEvent, useState, useEffect, MouseEventHandler } from "react";
 import { Button, CloseButton, InputGroup } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
-import { useExhibitsSearch } from "./hooks/use-exhibits-search";
+import { useExhibitsSearch, ExhibitsSearchParams } from "./hooks/use-exhibits-search";
 import { Task } from "@/generated/graphql";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
+import { useAppSelector } from "@/app/hooks/hooks";
+import { selectOfficers } from "@/app/store/reducers/officer";
 
 type Props = {
   tasks?: Task[];
@@ -24,6 +26,7 @@ export const ExhibitsFilterBar: FC<Props> = ({
 }) => {
   const { searchValues, setValues, clearValues } = useExhibitsSearch();
   const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
+  const officers = useAppSelector(selectOfficers);
 
   useEffect(() => {
     if (!searchValues.search) {
@@ -58,13 +61,21 @@ export const ExhibitsFilterBar: FC<Props> = ({
 
   const removeFilter = useCallback(
     (filterName: string) => {
-      clearValues(filterName as keyof typeof searchValues);
+      clearValues(filterName as keyof ExhibitsSearchParams);
     },
     [clearValues],
   );
 
+  const removeIntakeDateFilter = useCallback(() => {
+    setValues({ intakeStartDate: null, intakeEndDate: null });
+  }, [setValues]);
+
   const hasFilter = (filterName: string): boolean => {
     return searchValues[filterName as keyof typeof searchValues] != null;
+  };
+
+  const hasDateRange = (): boolean => {
+    return searchValues.intakeStartDate != null || searchValues.intakeEndDate != null;
   };
 
   const getTaskFilterLabel = (): string => {
@@ -74,6 +85,25 @@ export const ExhibitsFilterBar: FC<Props> = ({
 
   const getPropertyTypeFilterLabel = (): string => {
     return getPropertyTypeLabel(searchValues.propertyTypeFilter);
+  };
+
+  const getOfficerFilterLabel = (): string => {
+    const officer = officers?.find((o) => o.app_user_guid === searchValues.officerFilter);
+    return officer ? `${officer.last_name}, ${officer.first_name}` : "Officer";
+  };
+
+  const formatDateLabel = (dateStr: string | null | undefined): string => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString();
+  };
+
+  const getDateRangeLabel = (): string => {
+    const start = formatDateLabel(searchValues.intakeStartDate);
+    const end = formatDateLabel(searchValues.intakeEndDate);
+    if (start && end) return `${start} – ${end}`;
+    if (start) return `From ${start}`;
+    if (end) return `Until ${end}`;
+    return "Date of intake";
   };
 
   const renderFilterButton = (variant: "desktop" | "mobile", onClick: MouseEventHandler, id?: string) => (
@@ -141,6 +171,24 @@ export const ExhibitsFilterBar: FC<Props> = ({
             label={getPropertyTypeFilterLabel()}
             name="propertyTypeFilter"
             clear={removeFilter}
+          />
+        )}
+
+        {hasFilter("officerFilter") && (
+          <FilterButton
+            id="officer-filter-pill"
+            label={getOfficerFilterLabel()}
+            name="officerFilter"
+            clear={removeFilter}
+          />
+        )}
+
+        {hasDateRange() && (
+          <FilterButton
+            id="intake-date-filter-pill"
+            label={getDateRangeLabel()}
+            name="intakeDateFilter"
+            clear={removeIntakeDateFilter}
           />
         )}
 

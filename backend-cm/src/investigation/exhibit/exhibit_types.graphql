@@ -39,6 +39,9 @@ input ExhibitFilters {
   search: String
   taskFilter: String
   propertyTypeFilter: String
+  officerFilter: String
+  intakeStartDate: String
+  intakeEndDate: String
   sortBy: String
   sortOrder: String
 }
