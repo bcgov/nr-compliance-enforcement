@@ -1117,11 +1117,6 @@ const parseContent = (content: any): ParsedLegislationNode[] => {
     return a.displayOrder - b.displayOrder;
   });
 
-  // Re-sequence displayOrder after sorting
-  children.forEach((child, index) => {
-    child.displayOrder = index + 1;
-  });
-
   // displayOrder is left as the raw XML position here; parseBcLawsXml re-sequences
   // once across all content elements (multi-part documents have several).
   return children;
