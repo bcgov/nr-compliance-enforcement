@@ -12,5 +12,4 @@ export interface AssessmentDto {
   actionJustificationLongDescription: string;
   actionJustificationActiveIndicator: boolean;
   actions: Array<AssessmentActionDto>;
-  note: string;
 }
