@@ -7,9 +7,10 @@ interface Props {
   startDate: Date | undefined;
   endDate: Date | undefined;
   handleDateChange: (dates: [Date, Date]) => void;
+  popperPlacement?: "top-start" | "top-end" | "bottom-start" | "bottom-end" | "auto";
 }
 
-export const FilterDate: FC<Props> = ({ id, label, startDate, endDate, handleDateChange }) => {
+export const FilterDate: FC<Props> = ({ id, label, startDate, endDate, handleDateChange, popperPlacement }) => {
   // manual entry of date change listener.  Looks for a date range format of {yyyy-mm-dd} - {yyyy-mm-dd}
   const handleManualDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.value?.includes(" - ")) {
@@ -95,6 +96,7 @@ export const FilterDate: FC<Props> = ({ id, label, startDate, endDate, handleDat
             wrapperClassName="comp-filter-calendar-input"
             showPreviousMonths
             maxDate={new Date()}
+            popperPlacement={popperPlacement}
           />
         </div>
       </div>
