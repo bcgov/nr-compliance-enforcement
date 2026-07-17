@@ -164,7 +164,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromAddress: exhibit?.seizedFromAddress ?? "",
       seizedFromPhoneNumber: exhibit?.seizedFromPhoneNumber ?? "",
       description: exhibit?.description ?? "",
-      quantity: exhibit?.quantity ?? null,
+      quantity: exhibit?.quantity ?? 1,
       dateCollected: exhibit?.dateCollected ? new Date(exhibit.dateCollected) : new Date(),
       collectedAppUserGuidRef: collectedByInitialValue,
       locationOfIntake: exhibit?.locationOfIntake ?? "",
@@ -411,6 +411,14 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                   form={form}
                   name="quantity"
                   label="Quantity"
+                  required
+                  validators={{
+                    onChange: z
+                      .number()
+                      .min(1, "Quantity must be at least 1")
+                      .nullable()
+                      .refine((value) => value !== null, { message: "Quantity is required" }),
+                  }}
                   render={(field) => (
                     <CompInput
                       id="exhibit-quantity"
@@ -428,6 +436,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                       }}
                       value={field.state.value ?? ""}
                       placeholder="Enter quantity"
+                      error={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
                     />
                   )}
                 />
