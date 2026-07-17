@@ -9,7 +9,7 @@ const INVESTIGATION_TAB_ITEMS = {
   exhibits: "Exhibits",
   parties: "Parties",
   continuation: "Continuation report",
-  documents: "Documentation",
+  documents: "Attachments",
 };
 
 type InvestigationParams = {
