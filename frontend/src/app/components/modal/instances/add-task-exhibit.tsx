@@ -370,6 +370,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                             international={false}
                             id="exhibit-seized-phone-number"
                             errMsg={field.state.meta.errors.map((error: any) => error.message || error).join(", ")}
+                            placeholder="Enter phone number"
                           />
                         )}
                       />
