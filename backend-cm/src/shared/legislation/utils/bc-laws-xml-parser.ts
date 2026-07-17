@@ -1122,6 +1122,8 @@ const parseContent = (content: any): ParsedLegislationNode[] => {
     child.displayOrder = index + 1;
   });
 
+  // displayOrder is left as the raw XML position here; parseBcLawsXml re-sequences
+  // once across all content elements (multi-part documents have several).
   return children;
 };
 
@@ -1201,6 +1203,11 @@ export const parseBcLawsXml = (xmlString: string): ParsedBcLawsDocument => {
   const children: ParsedLegislationNode[] = [];
   ensureArray(rootElement[`${nsPrefix}content`]).forEach((content) => {
     children.push(...parseContent(content));
+  });
+
+  // Re-sequence across all content elements so multi-part documents don't restart at 1
+  children.forEach((child, index) => {
+    child.displayOrder = index + 1;
   });
 
   return {
