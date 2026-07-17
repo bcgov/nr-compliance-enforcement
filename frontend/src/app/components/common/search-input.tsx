@@ -11,7 +11,7 @@ type Props = {
   searchQuery: string | undefined;
   applySearchQuery: Function;
   handleSearch: (input: string) => void;
-  tooltipContext?: "case" | "person" | "business" | "complaint" | "inspection" | "investigation";
+  tooltipContext?: "case" | "person" | "business" | "complaint" | "inspection" | "investigation" | "attachments";
 };
 
 const SearchInput: FC<Props> = ({
@@ -182,6 +182,19 @@ const SearchInput: FC<Props> = ({
     </Tooltip>
   );
 
+  const renderAttachmentsTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Attachments searchable fields:"
+        items={["ID", "Description", "Title", "Location", "File name", "File type", "Taken by"]}
+      />
+    </Tooltip>
+  );
+
   const renderSectorTooltip = (props: any) => (
     <Tooltip
       id="search-button-tooltip"
@@ -254,6 +267,8 @@ const SearchInput: FC<Props> = ({
         return renderInspectionTooltip({});
       case "investigation":
         return renderInvestigationTooltip({});
+      case "attachments":
+        return renderAttachmentsTooltip({});
       case "complaint":
       default:
         return renderTooltip({});

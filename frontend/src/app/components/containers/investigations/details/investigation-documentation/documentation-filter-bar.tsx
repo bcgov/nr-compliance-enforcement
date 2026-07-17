@@ -1,10 +1,11 @@
-import { FC, useCallback, ChangeEvent, KeyboardEvent, useState, useEffect, MouseEventHandler } from "react";
-import { Button, CloseButton, InputGroup } from "react-bootstrap";
+import { FC, useCallback, MouseEventHandler } from "react";
+import { Button } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Task } from "@/generated/graphql";
 import { useSelector } from "react-redux";
 import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
+import SearchInput from "@/app/components/common/search-input";
 
 type Props = {
   investigationId: string;
@@ -26,39 +27,17 @@ export const DocumentationFilterBar: FC<Props> = ({
   const currentDownload = useSelector(selectCurrentDownload);
   const isDownloadInProgress = currentDownload?.downloadId === investigationId;
   const { searchValues, setValues, clearValues } = useDocumentationSearch();
-  const [searchInput, setSearchInput] = useState<string>(searchValues.search || "");
 
-  // Sync search input with URL state
-  useEffect(() => {
-    if (!searchValues.search) {
-      setSearchInput("");
-    }
-  }, [searchValues.search]);
-
-  const handleSearchChange = (evt: ChangeEvent<HTMLInputElement>) => {
-    const value = evt.target.value;
-    if (!value) {
-      handleClearSearch();
-    }
-    setSearchInput(value);
-  };
-
-  const handleSearchKeyPress = (evt: KeyboardEvent<HTMLInputElement>) => {
-    if (evt.key.toUpperCase() === "ENTER") {
-      applySearch();
+  const handleSearchChange = (query: string) => {
+    if (query) {
+      setValues({ search: query });
+    } else {
+      clearValues("search");
     }
   };
 
-  const applySearch = () => {
-    if (searchInput.length >= 3) {
-      setValues({ search: searchInput });
-    }
-  };
-
-  const handleClearSearch = () => {
-    setSearchInput("");
-    clearValues("search");
-  };
+  // Search is handled through the form hook
+  const handleSearch = () => {};
 
   const removeFilter = useCallback(
     (filterName: string) => {
@@ -96,34 +75,13 @@ export const DocumentationFilterBar: FC<Props> = ({
   return (
     <div className="comp-filter-bar">
       <div className="search-bar">
-        <InputGroup className="search-input-group">
-          <input
-            id="documentation-search"
-            placeholder="Search..."
-            aria-label="Search by filename"
-            className="comp-form-control comp-search-input form-control"
-            onChange={handleSearchChange}
-            onKeyDown={handleSearchKeyPress}
-            value={searchInput}
-          />
-          {searchInput && (
-            <CloseButton
-              id="clear-search"
-              className="clear-search-button"
-              onClick={handleClearSearch}
-              tabIndex={0}
-            />
-          )}
-          <button
-            id="search-button"
-            className="btn text-white"
-            onClick={applySearch}
-            type="button"
-            aria-label="Search"
-          >
-            <i className="bi bi-search"></i>
-          </button>
-        </InputGroup>
+        <SearchInput
+          viewType="list"
+          searchQuery={searchValues.search}
+          applySearchQuery={handleSearchChange}
+          handleSearch={handleSearch}
+          tooltipContext="attachments"
+        />
       </div>
 
       <div className="filter-pills-container">
