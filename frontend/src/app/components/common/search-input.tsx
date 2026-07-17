@@ -190,7 +190,7 @@ const SearchInput: FC<Props> = ({
     >
       <TooltipContent
         title="Attachments searchable fields:"
-        items={["ID", "Description", "Title", "Location", "File name", "File type", "Taken by"]}
+        items={["File type", "ID", "Description", "Title", "Taken by", "Location", "File name"]}
       />
     </Tooltip>
   );
