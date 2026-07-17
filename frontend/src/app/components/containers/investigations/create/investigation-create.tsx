@@ -23,6 +23,8 @@ import {
   updateAllegationComplaintStatus,
 } from "@/app/store/reducers/complaints";
 import { resolveLocationGeometry } from "@/app/common/geocoder";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { closeComplaintWithAssessment } from "@/app/store/reducers/complaint-outcome-thunks";
 
 const CREATE_INVESTIGATION_MUTATION = gql`
   mutation CreateInvestigation($input: CreateInvestigationInput!) {
@@ -92,6 +94,10 @@ const InvestigationCreate: FC = () => {
     }
   }, [complaintId, complaintType]);
   const complaintData = useAppSelector(selectComplaint);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(
+    selectComplaintAssessmentApplies(complaintType ?? undefined, complaintData?.ownedBy),
+  );
 
   const isEditMode = Boolean(investigationGuid);
 
@@ -107,14 +113,20 @@ const InvestigationCreate: FC = () => {
   });
 
   const createInvestigationMutation = useGraphQLMutation(CREATE_INVESTIGATION_MUTATION, {
-    onSuccess: (data: any) => {
+    onSuccess: async (data: any) => {
       ToggleSuccess("Investigation created successfully");
       if (complaintId) {
         const userAgency = getUserAgency();
+        // awaited so the investigation page doesn't load stale complaint status
         if (["EPO", "MINES", "NROS"].includes(userAgency)) {
-          dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+          await dispatch(updateAllegationComplaintStatus(complaintId, "CLOSED"));
+        } else if (assessmentApplies && complaintType) {
+          // COS/PARKS ERS+GIR: assess and close the complaint on investigation creation
+          await dispatch(
+            closeComplaintWithAssessment(complaintId, complaintType, data.createInvestigation.primaryInvestigatorGuid),
+          );
         }
-        dispatch(updateComplaintLastUpdated(complaintId));
+        await dispatch(updateComplaintLastUpdated(complaintId));
       }
       allowNavigation();
       navigate(`/investigation/${data.createInvestigation.investigationGuid}`);

@@ -18,6 +18,7 @@ import { selectComplaint } from "@/app/store/reducers/complaints";
 import { getComplaintType } from "@/app/common/methods";
 import { Roles } from "@apptypes/app/roles";
 import UserService from "@service/user-service";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 
 type validationResults = {
   canCloseComplaint: boolean;
@@ -66,6 +67,8 @@ const useValidateComplaint = () => {
   const complaint = useAppSelector(selectComplaint);
   const authorization = useAppSelector(selectCeebAuthorization);
   const complaintType = getComplaintType(complaint);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaintType, complaint?.ownedBy));
 
   // State
   const [validationResults, setValidationResults] = useState<validationResults>({
@@ -109,8 +112,9 @@ const useValidateComplaint = () => {
         !isInEdit.attachments &&
         !isInEdit.fileReview;
 
-      //check Assessment section must be filled out if complaint type is HWCR
-      const assessmentCriteria = complaintType === COMPLAINT_TYPES.HWCR ? assessments.length !== 0 : true;
+      //check Assessment section must be filled out for HWCR, and for ERS/GIR when the assessment feature applies
+      const assessmentCriteria =
+        complaintType === COMPLAINT_TYPES.HWCR || assessmentApplies ? assessments.length !== 0 : true;
 
       //check Prevention must be filled out if action required is Yes
       const preventionCriteria = assessments.some((assessment) => assessment.action_required === "Yes")
@@ -158,7 +162,12 @@ const useValidateComplaint = () => {
       const hasAuthorization = !!authorization?.id;
       const requireValidation =
         complaintType === COMPLAINT_TYPES.ERS && ["EPO", "NROS", "MINES"].includes(complaint?.ownedBy ?? "");
-      const validationMissing = getCaseValidationMessages(requireValidation, isAssigned, hasAssessment, hasAuthorization);
+      const validationMissing = getCaseValidationMessages(
+        requireValidation,
+        isAssigned,
+        hasAssessment,
+        hasAuthorization,
+      );
       const canCreateCase = validationMissing.length === 0;
 
       const scrollToErrorSection = (
@@ -258,6 +267,7 @@ const useValidateComplaint = () => {
     complaintType,
     outcomes,
     complaint,
+    assessmentApplies,
   ]);
 
   return validationResults;

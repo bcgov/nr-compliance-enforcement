@@ -11,7 +11,7 @@ import {
 import { Dropdown } from "react-bootstrap";
 import { getAssessment, getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { selectCanAccessCases } from "@/app/access/module-access";
+import { selectCanAccessCases, selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import { getComplaintById, getLinkedComplaints } from "@/app/store/reducers/complaints";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -35,6 +35,8 @@ export const ComplaintActionItems: FC<Props> = ({
   const dispatch = useAppDispatch();
   const showExperimentalFeature = useAppSelector(isFeatureActive(FEATURE_TYPES.EXPERIMENTAL_FEATURE));
   const showCreateAddCase = useAppSelector(selectCanAccessCases);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaint_type, agency_code));
 
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
@@ -179,7 +181,7 @@ export const ComplaintActionItems: FC<Props> = ({
           />{" "}
           Assign complaint
         </Dropdown.Item>
-        {complaint_type === "HWCR" && (
+        {(complaint_type === "HWCR" || assessmentApplies) && (
           <Dropdown.Item
             onClick={openQuickCloseModal}
             disabled={complaint_status === "CLOSED" || complaint_status === "Referred"}

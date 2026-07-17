@@ -173,6 +173,7 @@ export type Assessment = {
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   locationType?: Maybe<KeyValuePair>;
+  note?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
@@ -197,6 +198,7 @@ export type AssessmentInput = {
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   locationType?: InputMaybe<KeyValuePairInput>;
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BuildCode = {

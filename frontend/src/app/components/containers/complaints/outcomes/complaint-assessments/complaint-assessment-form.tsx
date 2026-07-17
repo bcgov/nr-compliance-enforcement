@@ -48,6 +48,10 @@ import UserService from "@/app/service/user-service";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+
+// ERS/GIR assessments use their own justification codes, separate from the HWC set
+const ERS_GIR_JUSTIFICATION_CODES = new Set(["NOINFID", "NORES", "PKNOINFID", "PKNORES"]);
 
 type Props = {
   id: string;
@@ -123,6 +127,10 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const validationResults = useValidateComplaint();
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const isHwcrComplaint = getComplaintType(complaintData) === COMPLAINT_TYPES.HWCR;
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(
+    selectComplaintAssessmentApplies(getComplaintType(complaintData), ownedByAgencyCode?.agency),
+  );
 
   const hasAssessments = Boolean(assessment);
   const showSectionErrors =
@@ -191,8 +199,10 @@ export const ComplaintAssessmentForm: FC<Props> = ({
         return !o.outcomeAgencyCode || o.outcomeAgencyCode === agency;
       });
     }
-    return list;
-  }, [justificationList]);
+    return assessmentApplies
+      ? list.filter((option) => ERS_GIR_JUSTIFICATION_CODES.has(option.value ?? ""))
+      : list.filter((option) => !ERS_GIR_JUSTIFICATION_CODES.has(option.value ?? ""));
+  }, [justificationList, assessmentApplies]);
   const assessmentTypeList = useAppSelector(selectAssessmentTypeCodeDropdown);
   const assigned = useAppSelector(selectComplaintAssignedBy);
   const noYesOptions = [...actionRequiredList].reverse();

@@ -3,21 +3,21 @@ import { Notes } from "./notes";
 import { ComplaintAssessments } from "./complaint-assessments/complaint-assessments";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
-interface GIROutcomeReportProps {
-  showAssessments?: boolean;
+interface ERSOutcomeReportProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
 }
 
-export const GIROutcomeReport: FC<GIROutcomeReportProps> = ({ showAssessments, onDirtyChange }) => {
+// Outcome report for COS/PARKS enforcement complaints
+export const ERSOutcomeReport: FC<ERSOutcomeReportProps> = ({ onDirtyChange }) => {
   const { handleChildDirtyChange } = useFormDirtyState(onDirtyChange);
 
   return (
-    <section className="comp-details-body comp-container comp-gir-outcome-report">
+    <section className="comp-details-body comp-container comp-ers-outcome-report">
       <hr className="comp-details-body-spacer"></hr>
       <div className="comp-details-section-header">
         <h2>Outcome report</h2>
       </div>
-      {showAssessments && <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />}
+      <ComplaintAssessments onDirtyChange={(_, isDirty) => handleChildDirtyChange(0, isDirty)} />
       <Notes onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} />
     </section>
   );
