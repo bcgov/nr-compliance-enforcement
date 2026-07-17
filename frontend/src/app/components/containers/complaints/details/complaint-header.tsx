@@ -26,7 +26,7 @@ import {
 } from "@apptypes/modal/modal-types";
 import { exportComplaint, exportComplaintWithAttachments } from "@store/reducers/documents-thunks";
 import { FEATURE_TYPES } from "@constants/feature-flag-types";
-import { selectCanAccessCases } from "@/app/access/module-access";
+import { selectCanAccessCases, selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { getUserAgency } from "@/app/service/user-service";
@@ -75,6 +75,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
   const showComplaintCollaboration = useAppSelector(isFeatureActive(FEATURE_TYPES.COMPLAINT_COLLABORATION));
   const [showExportModal, setShowExportModal] = useState<boolean>(false);
   const showCreateAddCase = useAppSelector(selectCanAccessCases);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints: quick close is
+  // promoted to a header button and Update status moves into "More actions"
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaintType, complaintAgency));
   const userGuid = useAppSelector(appUserGuid);
   const isReadOnly = useAppSelector(selectComplaintViewMode);
   const collaborators = useAppSelector(selectActiveComplaintCollaborators);
@@ -357,9 +360,9 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     </OverlayTrigger>
   );
 
-  const renderCommonDropdownItems = (showStartInvestigation = false) => (
+  const renderCommonDropdownItems = (showStartInvestigation = false, showQuickClose = false) => (
     <>
-      {complaintType === "HWCR" && (
+      {(complaintType === "HWCR" || (assessmentApplies && showQuickClose)) && (
         <Dropdown.Item
           as="button"
           id="quick-close-button"
@@ -511,7 +514,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                         <i className="bi bi-arrow-repeat"></i>
                         <span>Update Status</span>
                       </Dropdown.Item>
-                      {renderCommonDropdownItems(true)}
+                      {renderCommonDropdownItems(true, true)}
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
@@ -527,16 +530,31 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <span>{assignText}</span>
                   </Button>
 
-                  <Button
-                    id="details-screen-update-status-button"
-                    title="Update status"
-                    variant="outline-light"
-                    onClick={openStatusChangeModal}
-                    disabled={complaintAgency !== userAgency}
-                  >
-                    <i className="bi bi-arrow-repeat"></i>
-                    <span>Update status</span>
-                  </Button>
+                  {!assessmentApplies && (
+                    <Button
+                      id="details-screen-update-status-button"
+                      title="Update status"
+                      variant="outline-light"
+                      onClick={openStatusChangeModal}
+                      disabled={complaintAgency !== userAgency}
+                    >
+                      <i className="bi bi-arrow-repeat"></i>
+                      <span>Update status</span>
+                    </Button>
+                  )}
+
+                  {assessmentApplies && (
+                    <Button
+                      id="details-screen-quick-close-button"
+                      title="Quick close"
+                      variant="outline-light"
+                      onClick={openQuickCloseModal}
+                      disabled={complaintAgency !== userAgency || isReadOnly}
+                    >
+                      <i className="bi bi-journal-x"></i>
+                      <span>Quick close</span>
+                    </Button>
+                  )}
 
                   {showCreateAddCase && complaintType === COMPLAINT_TYPES.ERS && (
                     <Button
@@ -561,7 +579,20 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       <i className="bi bi-three-dots-vertical"></i>
                       <span>More actions</span>
                     </Dropdown.Toggle>
-                    <Dropdown.Menu align="end">{renderCommonDropdownItems()}</Dropdown.Menu>
+                    <Dropdown.Menu align="end">
+                      {assessmentApplies && (
+                        <Dropdown.Item
+                          as="button"
+                          id="update-status-menu-item"
+                          onClick={openStatusChangeModal}
+                          disabled={complaintAgency !== userAgency}
+                        >
+                          <i className="bi bi-arrow-repeat"></i>
+                          <span>Update status</span>
+                        </Dropdown.Item>
+                      )}
+                      {renderCommonDropdownItems()}
+                    </Dropdown.Menu>
                   </Dropdown>
                 </div>
               </div>

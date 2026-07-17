@@ -19,6 +19,8 @@ import { selectOfficers } from "@store/reducers/officer";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import UserService from "@service/user-service";
 import { Roles } from "@apptypes/app/roles";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { closeComplaintWithAssessment } from "@store/reducers/complaint-outcome-thunks";
 
 interface ExternalFileReferenceProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -33,6 +35,8 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
   const officers = useAppSelector(selectOfficers);
 
   const hasCaseAccessRole = UserService.hasRole(Roles.CASE_ACCESS);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaintType, complaintData?.ownedBy));
   const isCoorsEditRestricted =
     hasCaseAccessRole &&
     !!complaintData &&
@@ -119,7 +123,12 @@ export const ExternalFileReference: FC<ExternalFileReferenceProps> = ({ onDirtyC
       //since the updateComplaintById thunk has an asynchronous operation inside it we need to make sure it finishes before moving on
       await dispatch(updateComplaintById(data, complaintType));
       if (complaintType === COMPLAINT_TYPES.ERS && [AgencyType.COS, AgencyType.PARKS].includes(complaintData.ownedBy)) {
-        await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
+        if (assessmentApplies) {
+          // Feature flagged: record an assessment as part of the auto-close
+          await dispatch(closeComplaintWithAssessment(complaintData.id, complaintType));
+        } else {
+          await dispatch(updateAllegationComplaintStatus(complaintData.id, "CLOSED"));
+        }
       }
       markClean();
       dispatch(getComplaintById(complaintData.id, complaintType));

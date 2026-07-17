@@ -32,7 +32,18 @@ import { ReviewCompleteAction } from "@/app/types/app/complaint-outcomes/review-
 import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
 import { CreateEquipmentInput } from "@/app/types/app/complaint-outcomes/equipment-inputs/create-equipment-input";
 import { UpdateEquipmentInput } from "@/app/types/app/complaint-outcomes/equipment-inputs/update-equipment-input";
-import { getComplaintStatusById, clearComplaint } from "./complaints";
+import {
+  getComplaintStatusById,
+  clearComplaint,
+  selectComplaint,
+  updateAllegationComplaintStatus,
+  updateGeneralIncidentComplaintStatus,
+} from "./complaints";
+import { assignComplaintToOfficer } from "./officer";
+import { appUserGuid } from "./app";
+import UserService from "@service/user-service";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { getComplaintType } from "@common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { AnimalOutcome } from "@apptypes/app/complaints/outcomes/wildlife/animal-outcome";
 import { CreateAnimalOutcomeInput } from "@/app/types/app/complaint-outcomes/animal-outcome/create-animal-outcome-input";
@@ -129,9 +140,9 @@ export const upsertAssessment =
         ToggleError("Unable to update assessment: complaint outcome was not found.");
         return;
       }
-      dispatch(updateAssessment(assessment, complaintIdentifier, guid));
+      await dispatch(updateAssessment(assessment, complaintIdentifier, guid));
     } else {
-      dispatch(addAssessment(assessment, complaintIdentifier));
+      await dispatch(addAssessment(assessment, complaintIdentifier));
     }
   };
 
@@ -231,6 +242,14 @@ const addAssessment =
         }
         dispatch(clearComplaint());
         ToggleSuccess(`Assessment has been saved`);
+        // quick close also closes the complaint server-side (actionCloseComplaint)
+        if (assessment.close_complaint) {
+          const state = getState();
+          const complaint = selectComplaint(state);
+          if (selectComplaintAssessmentApplies(getComplaintType(complaint), complaint?.ownedBy)(state)) {
+            ToggleSuccess("Complaint closed");
+          }
+        }
       } else {
         dispatch(clearAssessment());
         ToggleError(`Unable to create assessment`);
@@ -398,6 +417,55 @@ const parseAssessmentResponse = async (res: ComplaintOutcomeDto, officers: AppUs
 
     return updatedAssessmentData;
   }) || [];
+
+// Auto-assessment for COS/PARKS ERS + GIR complaints: records an "action required"
+// assessment, assigns the officer if the complaint is unassigned, and closes the
+// complaint unless it is already closed. Used by the investigation-create, add-to-case
+// and COORS-number flows; callers gate on selectComplaintAssessmentApplies.
+export const closeComplaintWithAssessment =
+  (complaintIdentifier: string, complaintType: string, officerAppUserGuid?: string): AppThunk =>
+  async (dispatch, getState) => {
+    const state = getState();
+    const {
+      officers: { officers },
+    } = state;
+    const complaint = selectComplaint(state);
+    const complaintLoaded = complaint?.id === complaintIdentifier;
+
+    const assignee = complaintLoaded
+      ? complaint?.delegates?.find((delegate: any) => delegate.type === "ASSIGNEE" && delegate.isActive)
+      : undefined;
+    const actorAppUserGuid = officerAppUserGuid || assignee?.appUserGuid || appUserGuid(state);
+    const officer = officers?.find((item: AppUser) => item.app_user_guid === actorAppUserGuid);
+
+    if (!officer) {
+      ToggleError("Unable to save an assessment on the complaint: no officer could be determined");
+      return;
+    }
+
+    await dispatch(
+      upsertAssessment(complaintIdentifier, {
+        action_required: "Yes",
+        close_complaint: false,
+        officer: { key: `${officer.last_name}, ${officer.first_name}`, value: officer.auth_user_guid },
+        date: new Date(),
+        assessment_type: [],
+        assessment_cat1_type: [],
+        agency: UserService.getUserAgency(),
+      } as Assessment),
+    );
+
+    if (!assignee) {
+      await dispatch(assignComplaintToOfficer(complaintIdentifier, officer.app_user_guid));
+    }
+
+    // already-closed complaints just get the additional assessment
+    if (!complaintLoaded || complaint?.status !== "CLOSED") {
+      const updateStatus =
+        complaintType === COMPLAINT_TYPES.GIR ? updateGeneralIncidentComplaintStatus : updateAllegationComplaintStatus;
+      await dispatch(updateStatus(complaintIdentifier, "CLOSED"));
+    }
+  };
 
 //-- prevention and education thunks
 export const getPrevention =

@@ -4,6 +4,7 @@ import { ToggleError, ToggleSuccess } from "@common/toast";
 import { Table } from "react-bootstrap";
 import { generateApiParameters, get, patch } from "@common/api";
 import config from "@/config";
+import { getFeatureFlag } from "@store/reducers/app";
 
 export const FeatureManagement: FC = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,8 @@ export const FeatureManagement: FC = () => {
       const parameters = generateApiParameters(`${config.API_BASE_URL}/v1/feature-flag/${id}`, update);
       const response = await patch(dispatch, parameters);
       if (response) {
+        // refresh this session's flags so the change is testable without a reload
+        dispatch(getFeatureFlag());
         ToggleSuccess("Feature has been updated");
       }
     } catch (err) {

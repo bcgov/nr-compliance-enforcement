@@ -20,6 +20,8 @@ import { updateComplaintLastUpdated, updateAllegationComplaintStatus } from "@st
 import { AgencyType } from "@apptypes/app/agency-types";
 import { joinWithAnd } from "@common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { closeComplaintWithAssessment } from "@store/reducers/complaint-outcome-thunks";
 
 const CREATE_CASE_MUTATION = gql`
   mutation CreateCaseFile($input: CaseFileCreateInput!) {
@@ -77,6 +79,8 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
   // Vars
   const { title, complaint_identifier, complaint_type, agency_code, onDirtyChange } = modalData;
   const { markDirty } = useFormDirtyState(onDirtyChange);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaint_type, agency_code));
   const createOrAddOptions: Option[] = showCreateCaseBtn
     ? [
         { label: "Create a new case", value: "create" },
@@ -153,6 +157,10 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
       ) {
         dispatch(updateAllegationComplaintStatus(complaint_identifier, "CLOSED"));
       }
+      // COS/PARKS ERS+GIR complaints are assessed and closed once added to a case
+      if (assessmentApplies && complaint_identifier) {
+        dispatch(closeComplaintWithAssessment(complaint_identifier, complaint_type));
+      }
     },
     onError: (error: any) => {
       console.error("Error creating case:", error);
@@ -188,6 +196,10 @@ export const CreateAddCaseModal: FC<CreateAddCaseModalProps> = ({ close, submit 
         complaint_identifier
       ) {
         dispatch(updateAllegationComplaintStatus(complaint_identifier, "CLOSED"));
+      }
+      // COS/PARKS ERS+GIR complaints are assessed and closed once added to a case
+      if (assessmentApplies && complaint_identifier) {
+        dispatch(closeComplaintWithAssessment(complaint_identifier, complaint_type));
       }
     },
     onError: (error: any) => {

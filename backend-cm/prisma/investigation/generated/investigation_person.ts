@@ -1,5 +1,4 @@
 import { investigation_business_person_xref } from "./investigation_business_person_xref";
-import { investigation_contact_method } from "./investigation_contact_method";
 import { investigation_party } from "./investigation_party";
 import { investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -109,9 +108,6 @@ export class investigation_person {
 
   @ApiProperty({ isArray: true, type: () => investigation_business_person_xref })
   investigation_business_person_xref: investigation_business_person_xref[];
-
-  @ApiProperty({ isArray: true, type: () => investigation_contact_method })
-  investigation_contact_method: investigation_contact_method[];
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;
