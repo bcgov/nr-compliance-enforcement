@@ -16,11 +16,6 @@ const GET_CASE_FILE = gql`
       updatedTimestamp
       description
       createdByAppUserGuid
-      caseStatus {
-        caseStatusCode
-        shortDescription
-        longDescription
-      }
       leadAgency {
         agencyCode
         shortDescription

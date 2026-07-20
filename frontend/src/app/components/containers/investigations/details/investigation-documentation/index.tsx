@@ -164,7 +164,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
 
   return (
     <div className="comp-details-section--list-view">
-      <h2>Documentation</h2>
+      <h2>Attachments</h2>
       <DocumentationFilterBar
         investigationId={investigationGuid}
         tasks={tasks}

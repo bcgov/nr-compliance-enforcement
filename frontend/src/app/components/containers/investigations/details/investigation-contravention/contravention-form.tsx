@@ -14,6 +14,7 @@ interface ContraventionFormProps {
   parties?: InvestigationParty[];
   partyGuid?: string | null;
   discoveryDate?: string | null;
+  investigationCommunity?: string | null;
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate: (fn: (step: number) => Promise<boolean>) => void;
   onRequestSave: (fn: () => Promise<void>) => void;
@@ -57,6 +58,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
   parties,
   partyGuid,
   discoveryDate,
+  investigationCommunity,
   onDirtyChange,
   onRequestValidate,
   onRequestSave,
@@ -171,6 +173,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         <ContraventionDetailsForm
           contravention={contravention}
           discoveryDate={discoveryDate}
+          investigationCommunity={investigationCommunity}
           onDirtyChange={onDirtyChange}
           onRequestValidate={(fn) => registerStepValidate(0, fn)}
           onRequestValues={(fn) => registerStepValues<ContraventionDetailsFormValues>(0, fn)}

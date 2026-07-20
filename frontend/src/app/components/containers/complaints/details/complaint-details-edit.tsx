@@ -79,6 +79,7 @@ import { ExternalFileReference } from "@components/containers/complaints/outcome
 import { getCaseFile } from "@/app/store/reducers/complaint-outcome-thunks";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { GIROutcomeReport } from "@/app/components/containers/complaints/outcomes/gir-outcome-report";
+import { ERSOutcomeReport } from "@/app/components/containers/complaints/outcomes/ers-outcome-report";
 import { RootState } from "@/app/store/store";
 import { Roles } from "@/app/types/app/roles";
 import { ParkSelect } from "@/app/components/common/park-select";
@@ -88,7 +89,7 @@ import { isValidEmail } from "@/app/common/validate-email";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { CaseFile } from "@/generated/graphql";
-import { selectCanAccessCases } from "@/app/access/module-access";
+import { selectCanAccessCases, selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
@@ -102,11 +103,6 @@ const GET_ASSOCIATED_CASE_FILES = gql`
       description
       leadAgency {
         agencyCode
-        shortDescription
-        longDescription
-      }
-      caseStatus {
-        caseStatusCode
         shortDescription
         longDescription
       }
@@ -210,12 +206,17 @@ export const ComplaintDetailsEdit: FC = () => {
 
   const enablePrivacyFeature =
     ownedByAgencyCode?.agency &&
-    (ownedByAgencyCode?.agency === AgencyType.CEEB || ownedByAgencyCode?.agency === AgencyType.NROS || ownedByAgencyCode?.agency === AgencyType.MINES);
+    (ownedByAgencyCode?.agency === AgencyType.CEEB ||
+      ownedByAgencyCode?.agency === AgencyType.NROS ||
+      ownedByAgencyCode?.agency === AgencyType.MINES);
   const enableOfficeFeature =
     ownedByAgencyCode?.agency &&
     ownedByAgencyCode?.agency !== AgencyType.CEEB &&
     ownedByAgencyCode?.agency !== AgencyType.NROS &&
     ownedByAgencyCode?.agency !== AgencyType.MINES;
+
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaintType, ownedByAgencyCode?.agency));
 
   // Get the code table lists to populate the Selects
   const speciesCodes = useSelector(selectSpeciesCodeDropdown) as Option[];
@@ -1685,8 +1686,18 @@ export const ComplaintDetailsEdit: FC = () => {
         <MinesOutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
       )}
 
+      {/* COS/PARKS ERS Outcome Report (assessmentApplies = ERSGIRASMT flag + COS/PARKS) */}
+      {readOnly && complaintType === COMPLAINT_TYPES.ERS && assessmentApplies && (
+        <ERSOutcomeReport
+          onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} // Outcome transactions (index 1)
+        />
+      )}
+
       {readOnly && complaintType === COMPLAINT_TYPES.GIR && (
-        <GIROutcomeReport onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} /> // Outcome transactions (index 1)
+        <GIROutcomeReport
+          showAssessments={assessmentApplies}
+          onDirtyChange={(_, isDirty) => handleChildDirtyChange(1, isDirty)} // Outcome transactions (index 1)
+        />
       )}
 
       {/* COS ERS File Linkage */}

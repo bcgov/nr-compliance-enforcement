@@ -3,7 +3,6 @@ scalar DateTime
 type CaseFile {
   caseIdentifier: String
   leadAgency: AgencyCode
-  caseStatus: CaseStatusCode
   openedTimestamp: DateTime
   updatedTimestamp: DateTime
   description: String
@@ -28,7 +27,6 @@ type CaseFileResult {
 
 input CaseFileCreateInput {
   leadAgency: String!
-  caseStatus: String!
   description: String
   activityIdentifier: String
   activityType: String
@@ -37,7 +35,6 @@ input CaseFileCreateInput {
 
 input CaseFileUpdateInput {
   leadAgency: String
-  caseStatus: String
   description: String
   name: String
 }
@@ -45,7 +42,6 @@ input CaseFileUpdateInput {
 input CaseFileFilters {
   search: String
   leadAgency: String
-  caseStatus: String
   startDate: DateTime
   endDate: DateTime
   sortBy: String

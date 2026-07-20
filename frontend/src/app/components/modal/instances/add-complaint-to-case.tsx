@@ -15,10 +15,11 @@ import {
   getComplaintById,
   selectComplaint,
 } from "@store/reducers/complaints";
-import { getCaseFile } from "@store/reducers/complaint-outcome-thunks";
+import { getCaseFile, closeComplaintWithAssessment } from "@store/reducers/complaint-outcome-thunks";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { joinWithAnd } from "@common/methods";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 
 const ADD_COMPLAINT_TO_CASE_MUTATION = gql`
   mutation CreateCaseActivity($input: CaseActivityCreateInput!) {
@@ -67,6 +68,11 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
   const [selectedComplaint, setSelectedComplaint] = useState<AddComplaintToCaseOption | null>();
   const [addComplaintErrorMessage, setAddComplaintErrorMessage] = useState<string>("");
 
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(
+    selectComplaintAssessmentApplies(selectedComplaint?.complaintType, complaint?.ownedBy),
+  );
+
   // Effects
   useEffect(() => {
     if (selectedComplaint) {
@@ -101,6 +107,10 @@ export const AddComplaintToCaseModal: FC<AddComplaintToCaseModalProps> = ({ clos
         selectedComplaint?.value
       ) {
         dispatch(updateAllegationComplaintStatus(selectedComplaint.value, "CLOSED"));
+      }
+      // COS/PARKS ERS+GIR complaints are assessed and closed once added to a case
+      if (assessmentApplies && selectedComplaint?.value) {
+        dispatch(closeComplaintWithAssessment(selectedComplaint.value, selectedComplaint.complaintType));
       }
       ToggleSuccess("Complaint successfully added");
     },

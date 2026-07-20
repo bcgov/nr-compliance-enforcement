@@ -817,6 +817,20 @@ model investigation_attachment_reference_h {
   @@schema("investigation")
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exhibit_h {
+  h_exhibit_guid                String   @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@ignore
+  @@schema("investigation")
+}
+
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model investigation_business_person_address_xref {
   investigation_business_person_address_xref_guid String                             @id(map: "investigation_business_person_address_xref_pk") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid

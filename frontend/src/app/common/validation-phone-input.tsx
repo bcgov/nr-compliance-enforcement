@@ -10,6 +10,7 @@ interface ValidationPhoneInputProps {
   defaultValue?: string;
   maxLength?: number;
   international?: boolean;
+  placeholder?: string;
 }
 
 export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
@@ -21,6 +22,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
   errMsg,
   maxLength,
   international,
+  placeholder,
 }) => {
   const errClass = errMsg === "" ? "" : "error-message";
   const calulatedClass = errMsg === "" ? "comp-form-control" : "comp-form-control error-border";
@@ -35,6 +37,7 @@ export const ValidationPhoneInput: FC<ValidationPhoneInputProps> = ({
           onChange={(e) => onChange(e)}
           maxLength={maxLength} //phone input counts () - space, so this is actually a 10 character number
           international={international}
+          placeholder={placeholder}
         />
       </div>
       <div className={errClass}>{errMsg}</div>

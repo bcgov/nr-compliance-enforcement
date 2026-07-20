@@ -287,6 +287,11 @@ export class InvestigationService {
       return [];
     }
 
+    const partyMatch =
+      partyType == "PRS"
+        ? { investigation_person: { some: { person_guid_ref: partyId, active_ind: true } } }
+        : { investigation_business: { some: { business_guid_ref: partyId, active_ind: true } } };
+
     let prismaParties = null;
 
     const include = Prisma.validator<Prisma.investigation_personInclude>()({
@@ -315,7 +320,15 @@ export class InvestigationService {
                     where: { active_ind: true },
                   },
                 },
-                where: { active_ind: true },
+                where: {
+                  active_ind: true,
+                  contravention_party_xref: {
+                    some: {
+                      active_ind: true,
+                      investigation_party: { is: { active_ind: true, ...partyMatch } },
+                    },
+                  },
+                },
               },
               investigation_status_code: true,
             },
@@ -373,7 +386,6 @@ export class InvestigationService {
     if (!caseIdentifier) {
       const newCase = await this.caseFileService.create({
         leadAgency,
-        caseStatus: "OPEN",
         description: "Auto-generated case file for investigation",
         createdByAppUserGuid: input.createdByAppUserGuid,
       });

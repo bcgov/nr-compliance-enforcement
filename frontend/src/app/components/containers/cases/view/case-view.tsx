@@ -1,8 +1,7 @@
 import { FC, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { CaseHeader } from "./case-header";
-import { Button } from "react-bootstrap";
 import { useCaseActivities } from "@/app/hooks/use-case-activities";
 import {
   ComplaintColumn,
@@ -22,7 +21,6 @@ export type CaseParams = {
 
 export const CaseView: FC = () => {
   const { id = "", tabKey } = useParams<CaseParams>();
-  const navigate = useNavigate();
 
   const currentTab = tabKey || "summary";
 
@@ -60,10 +58,6 @@ export const CaseView: FC = () => {
     return new Date(Math.max(...times)).toString();
   }, [caseData, linkedComplaints, investigations, inspections]);
 
-  const editButtonClick = () => {
-    navigate(`/case/${id}/edit`);
-  };
-
   const renderTabContent = () => {
     if (currentTab === "history") {
       return <CaseHistoryTab caseIdentifier={id} />;
@@ -85,17 +79,6 @@ export const CaseView: FC = () => {
                 <p>{caseData?.description}</p>
               </div>
             </FeatureFlag>
-            <div className="comp-details-section-header-actions align-self-center text-nowrap ms-auto">
-              <Button
-                variant="outline-primary"
-                size="sm"
-                id="details-screen-edit-button"
-                onClick={editButtonClick}
-              >
-                {" "}
-                <i className="bi bi-pencil" /> Edit case
-              </Button>
-            </div>
           </div>
         </div>
 

@@ -15,7 +15,6 @@ test.describe("Case Create Form", () => {
   });
 
   test("it displays the create case form", async ({ page }) => {
-    await expect(page.locator("#case-status-select")).toBeVisible();
     await expect(page.locator("#lead-agency-select")).toBeVisible();
 
     // Description is hidden for MVP
@@ -38,11 +37,6 @@ test.describe("Case Create Form", () => {
 
     await expect(saveButton).toBeVisible();
     await expect(saveButton).toContainText("Save");
-  });
-
-  test("it defaults case status to Open", async ({ page }) => {
-    const statusSelect = page.locator("#case-status-select");
-    await expect(statusSelect).toContainText("Open");
   });
 
   test("it sets the default lead agency based on the users agency", async ({ page }) => {
