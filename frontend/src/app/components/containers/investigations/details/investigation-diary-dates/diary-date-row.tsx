@@ -5,7 +5,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
-import { Button } from "react-bootstrap";
+import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 interface DiaryDateRowProps {
@@ -67,19 +67,12 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
         </div>
       </td>
       <td className="align-top text-end">
-        <div className="d-flex gap-1 justify-content-end">
-          <Button
-            type="button"
-            variant="outline-primary"
-            size="sm"
-            onClick={handleEditClick}
-            title="Edit diary date"
-            aria-label="edit-diary-date"
-            disabled={isReadOnly}
-          >
-            <i className="bi bi-pencil ms-1 me-1" />
-          </Button>
-        </div>
+        <EditButton
+          title="Edit diary date"
+          ariaLabel="edit-diary-date"
+          onClick={handleEditClick}
+          disabled={isReadOnly}
+        />
       </td>
     </tr>
   );

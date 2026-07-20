@@ -10,6 +10,7 @@ import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
+import { EditButton } from "@components/common/comp-table-edit-column";
 
 interface TaskActionsProps {
   investigationGuid: string;
@@ -63,17 +64,12 @@ const TaskActionRow: FC<{
         </div>
       </td>
       <td className="align-top text-end">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline-primary"
-          onClick={() => onEdit?.(taskAction)}
+        <EditButton
           title="Edit task action"
-          aria-label="Edit task action"
+          ariaLabel="Edit task action"
+          onClick={() => onEdit?.(taskAction)}
           disabled={isReadOnly}
-        >
-          <i className="bi bi-pencil ms-1 me-1" />
-        </Button>
+        />
       </td>
     </tr>
   );
