@@ -77,6 +77,27 @@ export const DocumentationList: FC<Props> = ({
 
   const columns: CompColumn<AttachmentWithTask>[] = [
     {
+      label: "Task",
+      sortKey: "taskNumber",
+      headerClassName: "comp-cell-width-50 comp-cell-min-width-50",
+      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
+      isSortable: true,
+      getValue: (attachment) => (attachment.task ? `Task ${attachment.task.taskNumber}` : ""),
+      renderCell: (attachment) => {
+        const taskLabel = attachment.task ? `Task ${attachment.task.taskNumber}` : "-";
+        return attachment.task ? (
+          <Link
+            to={`/investigation/${investigationGuid}/task/${attachment.task.taskIdentifier}`}
+            className="comp-cell-link"
+          >
+            {taskLabel}
+          </Link>
+        ) : (
+          <span>{taskLabel}</span>
+        );
+      },
+    },
+    {
       label: "File type",
       sortKey: "fileType",
       headerClassName: "comp-cell-min-width-50",
@@ -138,27 +159,6 @@ export const DocumentationList: FC<Props> = ({
       isSortable: true,
       getValue: (attachment) => attachment.location ?? "",
       renderCell: (attachment) => attachment.location ?? "-",
-    },
-    {
-      label: "Task",
-      sortKey: "taskNumber",
-      headerClassName: "comp-cell-width-50 comp-cell-min-width-50",
-      cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
-      isSortable: true,
-      getValue: (attachment) => (attachment.task ? `Task ${attachment.task.taskNumber}` : ""),
-      renderCell: (attachment) => {
-        const taskLabel = attachment.task ? `Task ${attachment.task.taskNumber}` : "-";
-        return attachment.task ? (
-          <Link
-            to={`/investigation/${investigationGuid}/task/${attachment.task.taskIdentifier}`}
-            className="comp-cell-link"
-          >
-            {taskLabel}
-          </Link>
-        ) : (
-          <span>{taskLabel}</span>
-        );
-      },
     },
     {
       label: "File name",
