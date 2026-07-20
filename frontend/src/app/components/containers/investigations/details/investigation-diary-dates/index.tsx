@@ -79,11 +79,19 @@ interface DiaryDatesProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   // When set, only diary dates for this task are shown
   taskGuid?: string;
+  isReadOnly?: boolean;
 }
 
-export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigationData, onDirtyChange, taskGuid }) => {
+export const DiaryDates: FC<DiaryDatesProps> = ({
+  investigationGuid,
+  investigationData,
+  onDirtyChange,
+  taskGuid,
+  isReadOnly: isReadOnlyProp,
+}) => {
   const dispatch = useAppDispatch();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
+  const investigationReadOnly = useInvestigationReadOnly(investigationGuid);
+  const isReadOnly = isReadOnlyProp ?? investigationReadOnly;
   const tasks = investigationData?.tasks || [];
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning(onDirtyChange);
 
@@ -209,6 +217,7 @@ export const DiaryDates: FC<DiaryDatesProps> = ({ investigationGuid, investigati
                     onDelete={handleDeleteClick}
                     taskNumber={taskNumber ?? null}
                     showTaskBadge={!taskGuid}
+                    isReadOnly={isReadOnly}
                   />
                 );
               })}

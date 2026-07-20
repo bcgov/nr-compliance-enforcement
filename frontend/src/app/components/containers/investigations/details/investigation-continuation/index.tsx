@@ -14,7 +14,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid } from "@/app/store/reducers/app";
 import { exportContinuationReport } from "@/app/store/reducers/documents-thunks";
-import { ReportRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/report-renderer";
+import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
@@ -263,9 +263,9 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       )}
                                     </div>
                                     <div className="prose prose-sm max-w-none">
-                                      <ReportRenderer
+                                      <RichTextRenderer
                                         key={report.activityNoteGuid}
-                                        json={report.contentJson ? JSON.parse(report.contentJson) : {}}
+                                        json={report.contentJson}
                                       />
                                     </div>
                                     <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
