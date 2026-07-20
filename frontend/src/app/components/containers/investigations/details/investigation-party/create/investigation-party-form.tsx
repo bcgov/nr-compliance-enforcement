@@ -44,7 +44,7 @@ import {
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { formatDateOfBirth } from "@/app/common/methods";
+import { formatDateOfBirth, isYoungPerson } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
@@ -56,6 +56,7 @@ import { PartyMatchCard } from "@/app/components/containers/parties/match/party-
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { REMOVE_PARTY_FROM_INVESTIGATION_MUTATION } from "@/app/components/containers/investigations/details/investigation-parties";
+import { getPartyName } from "@/app/common/party-name";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -109,6 +110,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     variables: { partyIdentifier: addMatchGuid },
     enabled: !!addMatchGuid,
   });
+
+  // Identifying Information data
+  const dob = editParty?.person?.dateOfBirth ? new Date(String(editParty?.person?.dateOfBirth)) : null;
+
+  // Young person badge (shown in header): DOB under 19, or approximate age 18 and under.
+  const personIsYoung = isYoungPerson(dob, editParty?.person?.approximateAgeCode);
 
   const defaultValues = useMemo(() => {
     if (isEditMode && editParty) {
@@ -343,7 +350,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   const title = useMemo(() => {
     if (!isEditMode || !editParty) return "New Party";
     if (editParty.business?.name) return editParty.business.name;
-    const name = [editParty.person?.firstName, editParty.person?.lastName].filter(Boolean).join(" ").trim();
+    const name = getPartyName(editParty);
     return name || editParty.placeholderName || "Edit party";
   }, [isEditMode, editParty]);
 
@@ -434,6 +441,23 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             </Button>
           </>
         }
+        badges={
+          <>
+            {editParty?.person?.boloIndicator && (
+              <div className="badge comp-status-badge-pending-review">
+                <i className="bi bi-exclamation-circle"></i> Safety concern
+              </div>
+            )}
+            {editParty?.partyReference && (
+              <div className="badge comp-status-badge-open">
+                <i className="bi bi-check-circle-fill"></i> Published
+              </div>
+            )}
+            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
+          </>
+        }
+        isEditMode={true}
+        identifier={editParty?.partyIdentifier}
       />
 
       <section className="comp-details-body comp-details-form comp-container">

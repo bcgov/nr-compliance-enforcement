@@ -84,6 +84,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             )}
           </>
         }
+        isEditMode={false}
       />
       <section className="comp-details-body comp-container">
         <div className="comp-details-view">

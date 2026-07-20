@@ -52,6 +52,7 @@ import {
 import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
+import { getPartyName } from "@/app/common/party-name";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -392,10 +393,6 @@ const PartyEdit: FC = () => {
     setAttachmentsDirty(dirty);
   };
 
-  const firstName = currentFormValues.firstName?.trim();
-  const lastName = currentFormValues.lastName?.trim();
-  const partyDetailsTitle = firstName && lastName ? `${firstName} ${lastName}` : "Party details";
-
   return (
     <div className="comp-complaint-details">
       <PartyEditHeader
@@ -403,14 +400,11 @@ const PartyEdit: FC = () => {
         saveButtonClick={saveButtonClick}
         saveDisabled={saveDisabled}
         isEditMode={isEditMode}
+        partyName={partyData?.party ? getPartyName(partyData?.party) : ""}
         partyIdentifier={id}
       />
 
       <section className="comp-details-body comp-details-form comp-container">
-        <div className="comp-details-section-header">
-          <h2>{partyDetailsTitle}</h2>
-        </div>
-
         <FormErrorBanner form={form} />
         <form
           onSubmit={(e) => {

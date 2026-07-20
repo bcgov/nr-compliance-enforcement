@@ -35,6 +35,7 @@ const SEARCH_PARTIES = gql`
           personGuid
           firstName
           lastName
+          middleNames
           dateOfBirth
           genderCode
           approximateAgeCode
