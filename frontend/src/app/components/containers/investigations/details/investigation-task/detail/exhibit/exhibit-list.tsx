@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
-import { Button } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
+import { editColumn } from "@components/common/comp-table-edit-column";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -12,10 +12,16 @@ import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
   isLoading?: boolean;
+  isReadOnly?: boolean;
   onEdit: (exhibit: Exhibit) => void;
 };
 
-export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading = false, onEdit }) => {
+export const TaskExhibitList: FC<TaskExhibitListProps> = ({
+  exhibits,
+  isLoading = false,
+  isReadOnly = false,
+  onEdit,
+}) => {
   const officers = useAppSelector(selectOfficers);
 
   const getOfficerName = useCallback(
@@ -30,7 +36,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
     {
       label: "Exhibit number",
       headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
-      cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
+      cellClassName: "comp-cell-width-80 comp-cell-min-width-80 align-middle",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? "",
       renderCell: (exhibit) => exhibit.exhibitDisplayNumber ?? "-",
@@ -45,7 +51,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
     },
     {
       label: "Item description",
-      headerClassName: "comp-cell-width-250 comp-cell-min-width-250",
+      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: true,
       getValue: (exhibit) => (exhibit.description ?? "").toLowerCase(),
@@ -91,27 +97,12 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       getValue: (exhibit) => (exhibit.propertyTagNumber ?? "").toLowerCase(),
       renderCell: (exhibit) => exhibit.propertyTagNumber ?? "-",
     },
-    {
-      label: "",
-      headerClassName: "comp-cell-width-30 comp-cell-min-width-30",
-      cellClassName: "comp-cell-width-30 comp-cell-min-width-30 text-end",
-      isSortable: false,
-      renderCell: (exhibit) => (
-        <div className="d-flex justify-content-end">
-          <Button
-            className="comp-cell-width-30 comp-cell-height-30 d-flex align-items-center justify-content-center"
-            type="button"
-            variant="outline-primary"
-            size="sm"
-            onClick={() => onEdit(exhibit)}
-            title="Edit exhibit"
-            aria-label={`Edit exhibit ${exhibit.exhibitDisplayNumber}`}
-          >
-            <i className="bi bi-pencil ms-1 me-1" />
-          </Button>
-        </div>
-      ),
-    },
+    editColumn({
+      title: "Edit exhibit",
+      getAriaLabel: (exhibit) => `Edit exhibit ${exhibit.exhibitDisplayNumber}`,
+      onEdit,
+      isReadOnly,
+    }),
   ];
 
   return (
@@ -125,6 +116,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       defaultSort="Exhibit number"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No exhibits found."
+      itemLabel="exhibits"
     />
   );
 };

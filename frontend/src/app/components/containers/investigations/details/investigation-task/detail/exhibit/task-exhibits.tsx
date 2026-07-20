@@ -8,12 +8,12 @@ import { Button } from "react-bootstrap";
 import { TaskExhibitList } from "./exhibit-list";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { useInvestigationReadOnly } from "../../../../hooks/use-investigation-read-only";
 
 interface TaskExhibitsProps {
   investigationGuid: string;
   task: Task | undefined;
   taskAssignedUserGuid?: string | null;
+  isReadOnly: boolean;
 }
 
 export const GET_EXHIBITS_BY_TASK = gql`
@@ -100,10 +100,14 @@ export const UPDATE_EXHIBIT = gql`
   }
 `;
 
-export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task, taskAssignedUserGuid }) => {
+export const TaskExhibits: FC<TaskExhibitsProps> = ({
+  investigationGuid,
+  task,
+  taskAssignedUserGuid,
+  isReadOnly,
+}) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
   const taskGuid = task?.taskIdentifier ?? "";
   const queryVariables = useMemo(() => ({ taskId: taskGuid }), [taskGuid]);
@@ -190,6 +194,7 @@ export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task, t
           <TaskExhibitList
             exhibits={exhibits}
             isLoading={isLoading}
+            isReadOnly={isReadOnly}
             onEdit={handleEditExhibit}
           />
         </div>
