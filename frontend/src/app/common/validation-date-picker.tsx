@@ -143,7 +143,7 @@ export const ValidationDatePicker: FC<ValidationDatePickerProps> = ({
 
   return (
     <>
-      <div className={`comp-lat-long-input ${vertical ? "d-flex flex-column" : ""}`}>
+      <div className={`comp-date-time-input ${vertical ? "d-flex flex-column" : ""}`}>
         <div className="d-flex flex-row gap-2">
           <div
             className={`d-flex comp-date-time-picker align-items-center ${calculatedBorderClass}`}
