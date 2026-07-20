@@ -6,7 +6,11 @@ import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { FormField } from "@/app/components/common/form-field";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { getUserAgency } from "@/app/service/user-service";
-import { selectCommunityCodeDropdown, selectComplaintStatusCodeDropdown } from "@/app/store/reducers/code-table";
+import {
+  selectCommunityCodeDropdown,
+  selectComplaintStatusCodeDropdown,
+  selectInvestigationSourceCodeDropdown,
+} from "@/app/store/reducers/code-table";
 import { selectOfficers, selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { RootState } from "@/app/store/store";
 import { AppUser } from "@/app/types/app/app_user/app_user";
@@ -46,7 +50,7 @@ export const InvestigationForm = ({
   const officersInAgencyList = useSelector((state: RootState) => selectOfficersByAgency(state, leadAgency));
   const allOfficers = useAppSelector(selectOfficers) ?? [];
   const statusOptions = useAppSelector(selectComplaintStatusCodeDropdown);
-
+  const investigationSourceOptions = useAppSelector(selectInvestigationSourceCodeDropdown);
   const assignableOfficers: Option[] =
     officersInAgencyList && officersInAgencyList.length > 0
       ? officersInAgencyList.map((officer: AppUser) => ({
@@ -171,6 +175,29 @@ export const InvestigationForm = ({
                 value={resolveOfficerOption(field.state.value)}
                 onChange={(option) => field.handleChange(option?.value || "")}
                 placeholder="Select coordinator"
+                isClearable={true}
+                showInactive={false}
+                enableValidation={true}
+                errorMessage={field.state.meta.errors?.[0]?.message || ""}
+                isDisabled={isDisabled}
+              />
+            )}
+          />
+          <FormField
+            form={form}
+            name="investigationSourceCode"
+            label="Source"
+            required
+            validators={{ onChange: z.string().min(1, "Source is required") }}
+            render={(field) => (
+              <CompSelect
+                id="investigation-source-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input"
+                options={investigationSourceOptions}
+                value={investigationSourceOptions.find((opt) => opt.value === field.state.value)}
+                onChange={(option) => field.handleChange(option?.value || "")}
+                placeholder="Select source"
                 isClearable={true}
                 showInactive={false}
                 enableValidation={true}

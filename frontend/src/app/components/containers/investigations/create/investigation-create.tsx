@@ -45,6 +45,7 @@ const CREATE_INVESTIGATION_MUTATION = gql`
       discoveryDate
       discoveryTime
       community
+      investigationSourceCode
     }
   }
 `;
@@ -70,6 +71,7 @@ const UPDATE_INVESTIGATION_MUTATION = gql`
       discoveryDate
       discoveryTime
       community
+      investigationSourceCode
     }
   }
 `;
@@ -153,6 +155,7 @@ const InvestigationCreate: FC = () => {
         discoveryDate: inv.discoveryDate || null,
         discoveryTime: inv.discoveryTime || null,
         community: inv.community || "",
+        investigationSourceCode: inv.investigationSourceCode || "",
       };
     } else if (!isEditMode && complaintId && complaintData) {
       const offcicerAssigned = complaintData.delegates.find((d) => d.type === "ASSIGNEE");
@@ -172,6 +175,7 @@ const InvestigationCreate: FC = () => {
         discoveryDate: complaintData?.reportedOn || null,
         discoveryTime: complaintData?.reportedOn || null,
         community: complaintData.organization.area || "",
+        investigationSourceCode: "REPRDT",
       };
     }
     return {
@@ -187,6 +191,7 @@ const InvestigationCreate: FC = () => {
       discoveryDate: "",
       discoveryTime: null,
       community: "",
+      investigationSourceCode: "OFFND",
     };
   }, [investigationData, isEditMode, statusOptions, complaintData, complaintId]);
 
@@ -214,6 +219,7 @@ const InvestigationCreate: FC = () => {
           discoveryDate: value.discoveryDate,
           discoveryTime: value.discoveryTime,
           community: value.community,
+          investigationSourceCode: value.investigationSourceCode,
         };
         updateInvestigationMutation.mutate({
           investigationGuid,
@@ -236,6 +242,7 @@ const InvestigationCreate: FC = () => {
           discoveryDate: value.discoveryDate,
           discoveryTime: value.discoveryTime,
           community: value.community || undefined,
+          investigationSourceCode: value.investigationSourceCode,
         };
         createInvestigationMutation.mutate({ input: createInput });
       }
@@ -323,6 +330,7 @@ const InvestigationCreate: FC = () => {
           discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? complaintData?.reportedOn ?? undefined}
           discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? complaintData?.reportedOn ?? undefined}
           isEditMode={isEditMode}
+          complaintId={complaintId}
         />
       </section>
     </div>

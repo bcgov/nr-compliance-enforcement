@@ -97,6 +97,13 @@ export const selectTaskStatus = createSelector([selectCodeTables], (codeTables) 
   return items.map(({ taskStatusCode: value, longDescription: label }) => ({ label, value }));
 });
 
+export const selectInvestigationSourceTypes = createSelector([selectCodeTables], (codeTables) => {
+  const { "investigation-source-type": items } = codeTables;
+  return (items as Array<{ investigationSourceCode: string; longDescription: string }>).map(
+    ({ investigationSourceCode: value, longDescription: label }) => ({ label, value }),
+  );
+});
+
 export const selectLegislationTypes = createSelector([selectCodeTables], (codeTables) => {
   const { "legislation-type": items } = codeTables;
   return items;

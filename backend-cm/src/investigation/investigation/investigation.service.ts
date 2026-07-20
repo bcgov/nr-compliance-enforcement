@@ -307,8 +307,7 @@ export class InvestigationService {
                         include: {
                           ticket: true,
                           contravention_party_xref: true,
-                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
-                            true,
+                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
                         },
                         where: { active_ind: true },
                       },
@@ -414,6 +413,7 @@ export class InvestigationService {
             discovery_date_utc_date: input.discoveryDate,
             discovery_date_utc_time: input.discoveryTime,
             geo_organization_unit_code_ref: input.community || null,
+            investigation_source: input.investigationSourceCode || "OFFND",
             create_user_id: this.user.getIdirUsername(),
             created_by_app_user_guid_ref: input.createdByAppUserGuid,
             create_utc_timestamp: new Date(),
@@ -541,6 +541,9 @@ export class InvestigationService {
         }
         if (input.community !== undefined) {
           updateData.geo_organization_unit_code_ref = input.community || null;
+        }
+        if (input.investigationSourceCode !== undefined) {
+          updateData.investigation_source = input.investigationSourceCode;
         }
         // Perform the update
         updatedInvestigation = await db.investigation.update({

@@ -250,11 +250,13 @@ model investigation {
   discovery_date_utc_date            DateTime?                    @db.Date
   discovery_date_utc_time            DateTime?                    @db.Time(6)
   geo_organization_unit_code_ref     String?                      @db.VarChar(10)
+  investigation_source               String                       @db.VarChar(16)
   activity_note                      activity_note[]
   contravention                      contravention[]
   diary_date                         diary_date[]
   exhibit                            exhibit[]
   investigation_status_code          investigation_status_code    @relation(fields: [investigation_status], references: [investigation_status_code], onDelete: NoAction, onUpdate: NoAction, map: "FK_investigation__investigation_status")
+  investigation_source_code          investigation_source_code    @relation(fields: [investigation_source], references: [investigation_source_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_source_code")
   investigation_party                investigation_party[]
   officer_investigation_xref         officer_investigation_xref[]
   task                               task[]
@@ -887,5 +889,21 @@ model exhibit_h {
   data_after_executed_operation Json?
 
   @@ignore
+  @@schema("investigation")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model investigation_source_code {
+  investigation_source_code String          @id @db.VarChar(16)
+  short_description         String          @db.VarChar(64)
+  long_description          String?         @db.VarChar(256)
+  display_order             Int?
+  active_ind                Boolean         @default(true)
+  create_user_id            String          @db.VarChar(32)
+  create_utc_timestamp      DateTime        @default(now()) @db.Timestamp(6)
+  update_user_id            String?         @db.VarChar(32)
+  update_utc_timestamp      DateTime?       @db.Timestamp(6)
+  investigation             investigation[]
+
   @@schema("investigation")
 }

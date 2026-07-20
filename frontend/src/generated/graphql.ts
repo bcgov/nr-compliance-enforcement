@@ -687,6 +687,7 @@ export type CreateInvestigationInput = {
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
+  investigationSourceCode?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency: Scalars['String']['input'];
   locationAddress?: InputMaybe<Scalars['String']['input']>;
@@ -1369,6 +1370,7 @@ export type Investigation = {
   discoveryTime?: Maybe<Scalars['DateTime']['output']>;
   fileCoordinatorGuid?: Maybe<Scalars['String']['output']>;
   investigationGuid?: Maybe<Scalars['String']['output']>;
+  investigationSourceCode?: Maybe<Scalars['String']['output']>;
   investigationStatus?: Maybe<InvestigationStatusCode>;
   leadAgency?: Maybe<Scalars['String']['output']>;
   locationAddress?: Maybe<Scalars['String']['output']>;
@@ -1552,6 +1554,15 @@ export type InvestigationSearchMapParameters = {
   bbox?: InputMaybe<Scalars['String']['input']>;
   filters?: InputMaybe<InvestigationFilters>;
   zoom: Scalars['Int']['input'];
+};
+
+export type InvestigationSourceCode = {
+  __typename?: 'InvestigationSourceCode';
+  activeIndicator?: Maybe<Scalars['Boolean']['output']>;
+  displayOrder?: Maybe<Scalars['Int']['output']>;
+  investigationSourceCode?: Maybe<Scalars['String']['output']>;
+  longDescription?: Maybe<Scalars['String']['output']>;
+  shortDescription?: Maybe<Scalars['String']['output']>;
 };
 
 export type InvestigationStatusCode = {
@@ -2481,6 +2492,7 @@ export type Query = {
   hwcrOutcomeActionedByCodes: Array<Maybe<HWCROutcomeActionedByCode>>;
   hwcrOutcomeCodes: Array<Maybe<HWCROutcomeCode>>;
   inactionJustificationCodes: Array<Maybe<InactionJustificationType>>;
+  investigationSourceCodes: Array<Maybe<InvestigationSourceCode>>;
   ipmAuthCategoryCodes: Array<Maybe<IPMAuthCategoryCodeType>>;
   legislation?: Maybe<Legislation>;
   legislationSource?: Maybe<LegislationSource>;
@@ -3199,6 +3211,7 @@ export type UpdateInvestigationInput = {
   discoveryDate?: InputMaybe<Scalars['DateTime']['input']>;
   discoveryTime?: InputMaybe<Scalars['DateTime']['input']>;
   fileCoordinatorGuid?: InputMaybe<Scalars['String']['input']>;
+  investigationSourceCode?: InputMaybe<Scalars['String']['input']>;
   investigationStatus?: InputMaybe<Scalars['String']['input']>;
   leadAgency?: InputMaybe<Scalars['String']['input']>;
   locationAddress?: InputMaybe<Scalars['String']['input']>;

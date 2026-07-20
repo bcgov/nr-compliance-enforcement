@@ -3,6 +3,7 @@ import { contravention } from "./contravention";
 import { diary_date } from "./diary_date";
 import { exhibit } from "./exhibit";
 import { investigation_status_code } from "./investigation_status_code";
+import { investigation_source_code } from "./investigation_source_code";
 import { investigation_party } from "./investigation_party";
 import { officer_investigation_xref } from "./officer_investigation_xref";
 import { task } from "./task";
@@ -66,6 +67,9 @@ export class investigation {
   @ApiPropertyOptional({ type: String })
   geo_organization_unit_code_ref?: string;
 
+  @ApiProperty({ type: String })
+  investigation_source: string;
+
   @ApiProperty({ isArray: true, type: () => activity_note })
   activity_note: activity_note[];
 
@@ -80,6 +84,9 @@ export class investigation {
 
   @ApiProperty({ type: () => investigation_status_code })
   investigation_status_code: investigation_status_code;
+
+  @ApiProperty({ type: () => investigation_source_code })
+  investigation_source_code: investigation_source_code;
 
   @ApiProperty({ isArray: true, type: () => investigation_party })
   investigation_party: investigation_party[];
