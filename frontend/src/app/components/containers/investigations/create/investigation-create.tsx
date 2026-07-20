@@ -342,7 +342,6 @@ const InvestigationCreate: FC = () => {
           discoveryDate={investigationData?.getInvestigation?.discoveryDate ?? complaintData?.reportedOn ?? undefined}
           discoveryTime={investigationData?.getInvestigation?.discoveryTime ?? complaintData?.reportedOn ?? undefined}
           isEditMode={isEditMode}
-          complaintId={complaintId}
         />
       </section>
     </div>
