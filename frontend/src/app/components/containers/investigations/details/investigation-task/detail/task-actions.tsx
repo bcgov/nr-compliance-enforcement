@@ -9,7 +9,7 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
-import { RichTextRenderer } from "../../investigation-continuation/rich-text-renderer";
+import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 
 interface TaskActionsProps {
   investigationGuid: string;

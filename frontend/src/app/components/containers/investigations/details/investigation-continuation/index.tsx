@@ -14,7 +14,7 @@ import { selectOfficersByAgency } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { appUserGuid } from "@/app/store/reducers/app";
 import { exportContinuationReport } from "@/app/store/reducers/documents-thunks";
-import { RichTextRenderer } from "@/app/components/containers/investigations/details/investigation-continuation/rich-text-renderer";
+import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";

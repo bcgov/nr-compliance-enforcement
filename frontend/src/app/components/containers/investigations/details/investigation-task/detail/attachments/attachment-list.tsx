@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
-import { Button } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
+import { editColumn } from "@components/common/comp-table-edit-column";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getDisplayFilename } from "@/app/common/attachment-utils";
@@ -127,25 +127,12 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
         );
       },
     },
-    {
-      label: "",
-      headerClassName: "comp-cell-width-30 comp-cell-min-width-30 sticky-col sticky-col--right actions-col",
-      cellClassName: "comp-cell-width-30 comp-cell-min-width-30 text-end sticky-col sticky-col--right actions-col",
-      isSortable: false,
-      renderCell: (attachment) => (
-        <Button
-          type="button"
-          variant="outline-primary"
-          size="sm"
-          onClick={() => onEdit(attachment)}
-          title="Edit attachment data"
-          aria-label={`Edit ${getDisplayFilename(attachment.name)}`}
-          disabled={isReadOnly}
-        >
-          <i className="bi bi-pencil ms-1 me-1" />
-        </Button>
-      ),
-    },
+    editColumn({
+      title: "Edit attachment data",
+      getAriaLabel: (attachment) => `Edit ${getDisplayFilename(attachment.name)}`,
+      onEdit,
+      isReadOnly,
+    }),
   ];
 
   return (
@@ -158,7 +145,8 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
       isLoading={isLoading}
       defaultSort="Date"
       defaultSortDirection={SORT_TYPES.DESC}
-      secondarySort={(attachment) => Number(attachment.sequenceNumber ?? 0)}
+      // negated so ID ties break opposite the primary sort direction
+      secondarySort={(attachment) => -Number(attachment.sequenceNumber ?? 0)}
     />
   );
 };
