@@ -14,6 +14,7 @@ interface DiaryDateRowProps {
   onDelete: (diaryDateGuid: string) => void;
   taskNumber: number | null;
   showTaskBadge?: boolean;
+  isReadOnly?: boolean;
 }
 
 export const DiaryDateRow: FC<DiaryDateRowProps> = ({
@@ -22,10 +23,12 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
   onDelete,
   taskNumber,
   showTaskBadge = true,
+  isReadOnly: isReadOnlyProp,
 }) => {
   const navigate = useNavigate();
   const { investigationGuid } = useParams<InvestigationParams>();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
+  const investigationReadOnly = useInvestigationReadOnly(investigationGuid ?? "");
+  const isReadOnly = isReadOnlyProp ?? investigationReadOnly;
 
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(diaryDate.addedUserGuid));
   const addedByName = addedByUser

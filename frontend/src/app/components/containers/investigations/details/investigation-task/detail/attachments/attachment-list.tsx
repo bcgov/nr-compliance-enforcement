@@ -158,6 +158,7 @@ export const TaskAttachmentList: FC<TaskAttachmentListProps> = ({
       isLoading={isLoading}
       defaultSort="Date"
       defaultSortDirection={SORT_TYPES.DESC}
+      secondarySort={(attachment) => Number(attachment.sequenceNumber ?? 0)}
     />
   );
 };

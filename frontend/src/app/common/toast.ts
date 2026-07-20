@@ -23,6 +23,9 @@ export const UpdateToast = (toastId: Id, message: ReactNode) => {
   toast.update(toastId, { render: message });
 };
 
+// Timing can trigger race condition in some cases. Delay the dismiss past the update window so it always wins.
+const UPDATE_DISMISS_DELAY_MS = 300;
+
 export const DismissToast = (toastId: Id) => {
-  toast.dismiss(toastId);
+  setTimeout(() => toast.dismiss(toastId), UPDATE_DISMISS_DELAY_MS);
 };

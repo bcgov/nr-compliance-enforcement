@@ -12,10 +12,16 @@ import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
   isLoading?: boolean;
+  isReadOnly?: boolean;
   onEdit: (exhibit: Exhibit) => void;
 };
 
-export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading = false, onEdit }) => {
+export const TaskExhibitList: FC<TaskExhibitListProps> = ({
+  exhibits,
+  isLoading = false,
+  isReadOnly = false,
+  onEdit,
+}) => {
   const officers = useAppSelector(selectOfficers);
 
   const getOfficerName = useCallback(
@@ -106,6 +112,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
             onClick={() => onEdit(exhibit)}
             title="Edit exhibit"
             aria-label={`Edit exhibit ${exhibit.exhibitDisplayNumber}`}
+            disabled={isReadOnly}
           >
             <i className="bi bi-pencil ms-1 me-1" />
           </Button>
@@ -125,6 +132,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({ exhibits, isLoading 
       defaultSort="Exhibit number"
       defaultSortDirection={SORT_TYPES.ASC}
       emptyMessage="No exhibits found."
+      itemLabel="exhibits"
     />
   );
 };

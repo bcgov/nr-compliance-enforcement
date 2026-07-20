@@ -9,19 +9,21 @@ import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
-import { useInvestigationReadOnly } from "../../../hooks/use-investigation-read-only";
+import { RichTextRenderer } from "../../investigation-continuation/rich-text-renderer";
 
 interface TaskActionsProps {
   investigationGuid: string;
   taskIdentifier: string | undefined;
   taskAssignedUserGuid?: string | null;
+  isReadOnly: boolean;
   onEdit?: (taskAction: ActivityNote) => void;
 }
 
 const TaskActionRow: FC<{
   taskAction: ActivityNote;
+  isReadOnly: boolean;
   onEdit?: (taskAction: ActivityNote) => void;
-}> = ({ taskAction, onEdit }) => {
+}> = ({ taskAction, isReadOnly, onEdit }) => {
   const actionedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.actionedAppUserGuidRef ?? undefined));
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.reportedAppUserGuidRef ?? undefined));
 
@@ -41,8 +43,6 @@ const TaskActionRow: FC<{
     ? formatDateTime(new Date(taskAction.reportedTimestamp).toISOString())
     : "";
 
-  const description = taskAction.contentText?.trim() || "(No description)";
-
   return (
     <tr>
       <td>
@@ -52,7 +52,12 @@ const TaskActionRow: FC<{
           {"  |  "}
           <span className="text-nowrap">Officer</span> <span className="text-dark">{actionedOfficerStr}</span>
         </div>
-        <div className="mb-1">{description}</div>
+        <div className="mb-1">
+          <RichTextRenderer
+            json={taskAction.contentJson}
+            fallback={taskAction.contentText?.trim()}
+          />
+        </div>
         <div className="text-muted small mt-1 mb-0">
           Added on {reportedTimestampStr} by {addedOnStr}
         </div>
@@ -65,6 +70,7 @@ const TaskActionRow: FC<{
           onClick={() => onEdit?.(taskAction)}
           title="Edit task action"
           aria-label="Edit task action"
+          disabled={isReadOnly}
         >
           <i className="bi bi-pencil ms-1 me-1" />
         </Button>
@@ -77,10 +83,10 @@ export const TaskActions: FC<TaskActionsProps> = ({
   investigationGuid,
   taskIdentifier,
   taskAssignedUserGuid,
+  isReadOnly,
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
   const { data, refetch } = useGraphQLQuery<{ getActivityNotesByTask: ActivityNote[] }>(GET_ACTIVITY_NOTES_BY_TASK, {
@@ -138,6 +144,7 @@ export const TaskActions: FC<TaskActionsProps> = ({
           <TaskActionRow
             key={ta.activityNoteGuid}
             taskAction={ta}
+            isReadOnly={isReadOnly}
             onEdit={handleEditClick}
           />
         ))}

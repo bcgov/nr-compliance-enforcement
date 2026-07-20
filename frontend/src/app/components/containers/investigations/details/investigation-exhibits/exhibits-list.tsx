@@ -166,6 +166,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       onSort={handleSort}
       onPageChange={handlePageChange}
       emptyMessage={emptyMessage}
+      itemLabel="exhibits"
     />
   );
 };

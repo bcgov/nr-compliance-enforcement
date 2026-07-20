@@ -1,4 +1,3 @@
-import { BulkDownloadButton } from "@/app/components/common/attachment-download-button";
 import { useDocumentationSearch } from "@/app/components/containers/investigations/details/investigation-documentation/hooks/use-documentation-search";
 import {
   Attachment,
@@ -12,17 +11,16 @@ import { ADD_EDIT_TASK_ATTACHMENT } from "@/app/types/modal/modal-types";
 import { Task } from "@/generated/graphql";
 import { FC } from "react";
 import { Button } from "react-bootstrap";
-import { useInvestigationReadOnly } from "../../../../hooks/use-investigation-read-only";
 
 interface TaskAttachmentProps {
   investigationGuid: string;
   task: Task | undefined;
+  isReadOnly: boolean;
 }
 
-export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, task }) => {
+export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, task, isReadOnly }) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
 
   const { searchValues } = useDocumentationSearch();
 
@@ -80,25 +78,18 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
     <div className="mt-3">
       <div className="d-flex align-items-center my-3">
         <h3 className="me-3 mb-0">Attachments</h3>
-        {task?.taskIdentifier && attachments.length > 0 && (
-          <BulkDownloadButton
-            taskId={task.taskIdentifier}
-            taskNumber={task.taskNumber}
-            investigationGuid={investigationGuid}
-          />
-        )}
         <div className="d-flex align-items-center gap-3 ms-auto">
           {attachments.length > 0 && (
             <Button
               id="add-task-attachment"
-              title="Add attachment"
+              title="Add attachment(s)"
               variant="primary"
               size="sm"
               onClick={handleAddAttachment}
               disabled={isReadOnly}
             >
-              <i className="bi bi-upload"></i>
-              <span>Add attachment</span>
+              <i className="bi bi-plus-circle"></i>
+              <span>Add attachment(s)</span>
             </Button>
           )}
         </div>
@@ -108,14 +99,14 @@ export const TaskAttachments: FC<TaskAttachmentProps> = ({ investigationGuid, ta
         <div>
           <Button
             id="add-task-attachment"
-            title="Add attachment"
+            title="Add attachment(s)"
             variant="primary"
             size="sm"
             onClick={handleAddAttachment}
             disabled={isReadOnly}
           >
-            <i className="bi bi-upload"></i>
-            <span>Add attachment</span>
+            <i className="bi bi-plus-circle"></i>
+            <span>Add attachment(s)</span>
           </Button>
         </div>
       ) : (

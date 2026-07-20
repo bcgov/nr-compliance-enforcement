@@ -70,6 +70,7 @@ export const AddEditTaskActionModal: FC<AddEditTaskActionModalProps> = ({ close,
       activityNoteCode: "TASKACT",
       activityNoteGuid: taskAction?.activityNoteGuid ?? editValues.activityNoteGuid,
       reportedAppUserGuidRef: currentUserGuid,
+      reportedTimestamp: taskAction?.reportedTimestamp ?? new Date(),
     };
     await saveMutation.mutateAsync({ input });
   };

@@ -8,7 +8,7 @@ import { TaskDetailHeader } from "./task-detail-header";
 import { TaskActions } from "./task-actions";
 import { TaskDetailEditModal } from "./task-detail-edit-modal";
 import { DiaryDates } from "@/app/components/containers/investigations/details/investigation-diary-dates";
-import { Button, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -50,13 +50,10 @@ const UPDATE_TASK = gql`
 
 interface TaskDetailSectionProps {
   task?: Task;
-  investigationGuid: string;
-  onEditClick?: () => void;
 }
 
 //-----------TASK DETAIL SECTION----------------
-const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid, onEditClick }) => {
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
+const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task }) => {
   const taskCategories = useAppSelector(selectTaskCategory);
   const taskSubCategories = useAppSelector(selectTaskSubCategory);
   const officers = useAppSelector(selectOfficers);
@@ -74,24 +71,9 @@ const TaskDetailSection: FC<TaskDetailSectionProps> = ({ task, investigationGuid
     <div className="comp-details-section">
       <h3 className="mb-0">Task details</h3>
       <Card
-        className="mb-3 mt-3 position-relative"
+        className="mb-3 mt-3"
         border="default"
       >
-        {task?.taskIdentifier && onEditClick && (
-          <Button
-            id="task-edit-button"
-            type="button"
-            variant="outline-primary"
-            size="sm"
-            title="Edit task"
-            className="position-absolute top-0 end-0 m-3"
-            onClick={onEditClick}
-            disabled={isReadOnly}
-          >
-            <i className="bi bi-pencil" />
-            <span>Edit</span>
-          </Button>
-        )}
         <Card.Body>
           <dl>
             <div>
@@ -161,6 +143,9 @@ const TaskDetail: FC = () => {
   });
 
   const task = useMemo(() => data?.task, [data]);
+  const investigationReadOnly = useInvestigationReadOnly(investigationGuid);
+  const isReadOnly = investigationReadOnly || task?.taskStatusCode === "CLOSED";
+
   const handleHideTaskDetailEditModal = () => {
     const result = hideCallback();
     if (result === false) return;
@@ -186,13 +171,11 @@ const TaskDetail: FC = () => {
         task={task}
         investigationGuid={investigationGuid}
         onStatusUpdated={refetch}
+        onEdit={() => setShowTaskDetailEditModal(true)}
+        isReadOnly={isReadOnly}
       />
       <section className="comp-details-body comp-details-form comp-container">
-        <TaskDetailSection
-          task={task}
-          investigationGuid={investigationGuid}
-          onEditClick={() => setShowTaskDetailEditModal(true)}
-        />
+        <TaskDetailSection task={task} />
         <TaskDetailEditModal
           show={showTaskDetailEditModal}
           onHide={handleHideTaskDetailEditModal}
@@ -206,20 +189,24 @@ const TaskDetail: FC = () => {
           investigationGuid={investigationGuid}
           investigationData={task ? { tasks: [task] } : undefined}
           taskGuid={task?.taskIdentifier}
+          isReadOnly={isReadOnly}
         />
         <TaskActions
           investigationGuid={investigationGuid}
           taskIdentifier={task?.taskIdentifier}
           taskAssignedUserGuid={task?.assignedUserIdentifier}
+          isReadOnly={isReadOnly}
         />
         <TaskExhibits
           investigationGuid={investigationGuid}
           task={task}
           taskAssignedUserGuid={task?.assignedUserIdentifier}
+          isReadOnly={isReadOnly}
         />
         <TaskAttachments
           investigationGuid={investigationGuid}
           task={task}
+          isReadOnly={isReadOnly}
         />
       </section>
     </div>
