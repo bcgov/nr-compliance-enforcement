@@ -263,9 +263,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     },
   });
 
-  const navigateToParties = () => {
+  const navigateToPreviousParty = () => {
     allowNavigation();
-    navigate(`/investigation/${investigationGuid}/parties`);
+    navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`);
   };
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
@@ -360,12 +360,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const confirmCancel = () => {
     form.reset();
-    navigateToParties();
+    navigateToPreviousParty();
   };
 
   const cancelButtonClick = () => {
     if (!isDirty) {
-      navigateToParties();
+      navigateToPreviousParty();
       return;
     }
     dispatch(
@@ -562,7 +562,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   onDirtyChange={(_, dirty) => setAttachmentsDirty(dirty)}
                   onSaved={() => {
                     ToggleSuccess(isEditMode ? "Party updated successfully" : "Party added successfully");
-                    navigateToParties();
+                    navigateToPreviousParty();
                   }}
                 />
               </>
