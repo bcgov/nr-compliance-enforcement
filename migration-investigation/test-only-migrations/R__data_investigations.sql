@@ -17,7 +17,8 @@ INSERT INTO investigation.investigation (
   primary_investigator_guid_ref,
   supervisor_guid_ref,
   discovery_date_utc_date,
-  discovery_date_utc_time
+  discovery_date_utc_time,
+  investigation_source
 )
 VALUES
   (
@@ -34,8 +35,9 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
-  ),
+    time '09:30:00',
+    'OFFND'
+ ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f201',
     'Test INVESTIGATION2',
@@ -50,7 +52,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f202',
@@ -66,7 +69,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     '66dd3a1f-4bc5-4758-a986-a664b8d8f203',
@@ -82,7 +86,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000005',
@@ -98,7 +103,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000006',
@@ -114,7 +120,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000007',
@@ -130,7 +137,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000008',
@@ -146,7 +154,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000009',
@@ -162,7 +171,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000a',
@@ -178,7 +188,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000b',
@@ -194,7 +205,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000c',
@@ -210,7 +222,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000d',
@@ -226,7 +239,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000e',
@@ -242,7 +256,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000000f',
@@ -258,7 +273,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000010',
@@ -274,7 +290,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000011',
@@ -290,7 +307,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000012',
@@ -306,7 +324,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000013',
@@ -322,7 +341,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000014',
@@ -338,7 +358,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000015',
@@ -354,7 +375,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000016',
@@ -370,7 +392,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000017',
@@ -386,7 +409,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000018',
@@ -402,7 +426,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000019',
@@ -418,7 +443,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001a',
@@ -434,7 +460,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001b',
@@ -450,7 +477,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001c',
@@ -466,7 +494,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001d',
@@ -482,7 +511,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001e',
@@ -498,7 +528,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000001f',
@@ -514,7 +545,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000020',
@@ -530,7 +562,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000021',
@@ -546,7 +579,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000022',
@@ -562,7 +596,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000023',
@@ -578,7 +613,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000024',
@@ -594,7 +630,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000025',
@@ -610,7 +647,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000026',
@@ -626,7 +664,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000027',
@@ -642,7 +681,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000028',
@@ -658,7 +698,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000029',
@@ -674,7 +715,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002a',
@@ -690,7 +732,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002b',
@@ -706,7 +749,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002c',
@@ -722,7 +766,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002d',
@@ -738,7 +783,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002e',
@@ -754,7 +800,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-00000000002f',
@@ -770,7 +817,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000030',
@@ -786,7 +834,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000031',
@@ -802,7 +851,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000032',
@@ -818,7 +868,8 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   ),
   (
     'b2000000-0000-4000-a000-000000000033',
@@ -834,6 +885,7 @@ VALUES
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     '63f8bda9-7cdc-42d5-a405-81f6bdb554f6'::uuid,
     now ()::date,
-    time '09:30:00'
+    time '09:30:00',
+    'OFFND'
   )
 ON CONFLICT DO NOTHING;

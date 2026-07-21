@@ -1,0 +1,7 @@
+type InvestigationSourceCode {
+  investigationSourceCode: String
+  shortDescription: String
+  longDescription: String
+  displayOrder: Int
+  activeIndicator: Boolean
+}

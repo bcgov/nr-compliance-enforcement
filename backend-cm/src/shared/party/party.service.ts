@@ -1616,6 +1616,7 @@ export class PartyService {
         person_guid: true,
         first_name: true,
         last_name: true,
+        middle_names: true,
         date_of_birth: true,
         gender_code: true,
         approximate_age_code: true,
