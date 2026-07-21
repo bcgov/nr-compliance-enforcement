@@ -107,8 +107,8 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date();
-    return formatLocalTime(d);
+    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime);
+    return d && initialData?.actionedTime ? formatLocalTime(d) : null;
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
@@ -164,7 +164,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
-    let actionedTime: Date | undefined = undefined;
+    let actionedTime: Date | null = null;
     let actionedDate: Date | undefined = selectedActionedDateTime;
     if (selectedActionedDateTime && selectedActionedTime) {
       const { utcDate } = formatLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
