@@ -14,6 +14,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
 import { GenderType } from "@/app/types/app/code-tables/gender";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
+import { getPartyName } from "@/app/common/party-name";
 
 type Props = {
   parties: any[];
@@ -58,17 +59,6 @@ const getBusinessNumber = (identifiers: BusinessIdentifier[]): string => {
   return businessNumber?.identifierValue ?? "";
 };
 
-const getPartyDisplayName = (party: any): string => {
-  if (party.partyTypeCode === PartyTypeCodes.BUSINESS) {
-    return party.business?.name ?? "";
-  }
-
-  const lastName = party.person?.lastName ?? "";
-  const firstName = party.person?.firstName ?? "";
-
-  return [lastName, firstName].filter(Boolean).join(", ");
-};
-
 const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
   const dateOfBirth = party.person?.dateOfBirth;
   if (!dateOfBirth) {
@@ -83,13 +73,13 @@ const partyNameColumn: CompColumn<any> = {
   headerClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
   cellClassName: "comp-cell-width-140 comp-cell-min-width-140 sticky-col sticky-col--left",
   isSortable: true,
-  getValue: (party) => getPartyDisplayName(party),
+  getValue: (party) => getPartyName(party),
   renderCell: (party) => (
     <Link
       to={`/party/${party.partyIdentifier}`}
       className="comp-cell-link"
     >
-      {getPartyDisplayName(party)}
+      {getPartyName(party)}
     </Link>
   ),
 };

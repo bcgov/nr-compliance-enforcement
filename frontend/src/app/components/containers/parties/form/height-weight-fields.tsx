@@ -85,52 +85,55 @@ export function HeightField({ form, isDisabled }: Readonly<HeightWeightFieldProp
                 ft / in
               </ToggleButton>
             </ToggleButtonGroup>
-
-            {unit === "metric" ? (
-              <CompInput
-                id="HeightInCm"
-                divid=""
-                type="input"
-                inputClass="comp-form-control comp-details-input mt-3"
-                value={cm == null ? "" : String(Math.round(cm))}
-                error={error}
-                maxLength={3}
-                onChange={(evt: any) => handleCmChange(evt?.target?.value || "")}
-                placeholder="Enter height in cm"
-                disabled={isDisabled}
-              />
-            ) : (
-              <Row className="mt-3">
+            <Row>
+              {unit === "metric" ? (
                 <Col>
                   <CompInput
-                    id="HeightFeet"
+                    id="HeightInCm"
                     divid=""
                     type="input"
                     inputClass="comp-form-control comp-details-input mt-3"
-                    value={feetInches ? String(feetInches.feet) : ""}
-                    error=""
-                    maxLength={1}
-                    onChange={(evt: any) => handleFeetChange(evt?.target?.value || "")}
-                    placeholder="Feet"
-                    disabled={isDisabled}
-                  />
-                </Col>
-                <Col>
-                  <CompInput
-                    id="HeightInches"
-                    divid=""
-                    type="input"
-                    inputClass="comp-form-control comp-details-input mt-3"
-                    value={feetInches ? String(feetInches.inches) : ""}
+                    value={cm == null ? "" : String(Math.round(cm))}
                     error={error}
-                    maxLength={2}
-                    onChange={(evt: any) => handleInchesChange(evt?.target?.value || "")}
-                    placeholder="Inches"
+                    maxLength={3}
+                    onChange={(evt: any) => handleCmChange(evt?.target?.value || "")}
+                    placeholder="Enter height in cm"
                     disabled={isDisabled}
                   />
                 </Col>
-              </Row>
-            )}
+              ) : (
+                <>
+                  <Col>
+                    <CompInput
+                      id="HeightFeet"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input mt-3"
+                      value={feetInches ? String(feetInches.feet) : ""}
+                      error=""
+                      maxLength={1}
+                      onChange={(evt: any) => handleFeetChange(evt?.target?.value || "")}
+                      placeholder="Feet"
+                      disabled={isDisabled}
+                    />
+                  </Col>
+                  <Col>
+                    <CompInput
+                      id="HeightInches"
+                      divid=""
+                      type="input"
+                      inputClass="comp-form-control comp-details-input mt-3"
+                      value={feetInches ? String(feetInches.inches) : ""}
+                      error={error}
+                      maxLength={2}
+                      onChange={(evt: any) => handleInchesChange(evt?.target?.value || "")}
+                      placeholder="Inches"
+                      disabled={isDisabled}
+                    />
+                  </Col>
+                </>
+              )}
+            </Row>
           </>
         );
       }}
