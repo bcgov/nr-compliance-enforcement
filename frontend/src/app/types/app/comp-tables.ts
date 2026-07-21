@@ -32,6 +32,8 @@ export type CompTableProps<T> = CompTableSharedProps<T> & {
   currentPage?: number; // the current page the user is on
   emptyMessage?: string; // custom message to display when there is no data to display in the table
   alwaysShowFooter?: boolean; // set to false if the footer / pagination should only be shown when there are multiple pages
+  itemLabel?: string; //label for the total count in the footer e.g. "exhibits", defaults to "items"
+  secondarySort?: (row: T) => string | number; // secondary sort when primary sort is equal
 };
 
 export type CompTableRowProps<T> = CompTableSharedProps<T> & {

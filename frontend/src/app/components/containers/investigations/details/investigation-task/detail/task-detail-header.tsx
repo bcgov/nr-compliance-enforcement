@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { gql } from "graphql-request";
 import { useInvestigationSearch } from "../../../hooks/use-investigation-search";
 import { Task } from "@/generated/graphql";
@@ -26,11 +26,20 @@ interface TaskDetailHeaderProps {
   task?: Task;
   investigationGuid: string;
   onStatusUpdated?: () => void;
+  onEdit?: () => void;
+  isReadOnly?: boolean;
 }
 
-export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigationGuid, onStatusUpdated }) => {
+export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({
+  task,
+  investigationGuid,
+  onStatusUpdated,
+  onEdit,
+  isReadOnly,
+}) => {
   const dispatch = useAppDispatch();
-  const isReadOnly = useInvestigationReadOnly(investigationGuid);
+  const navigate = useNavigate();
+  const investigationReadOnly = useInvestigationReadOnly(investigationGuid);
   const taskStatuses = useAppSelector(selectTaskStatus);
   const status = taskStatuses.find((s) => s.value === task?.taskStatusCode);
   const taskDisplay = task ? `Task #${task.taskNumber}` : "Task";
@@ -94,14 +103,35 @@ export const TaskDetailHeader: FC<TaskDetailHeaderProps> = ({ task, investigatio
             )}
           </div>
           {task && (
-            <div className="comp-header-actions-desktop ms-auto">
+            <div className="comp-header-actions">
+              <Button
+                variant="outline-light"
+                size="sm"
+                onClick={() => navigate(`/investigation/${investigationGuid}/tasks`)}
+              >
+                <i className="bi bi-arrow-left" />
+                <span>Tasks</span>
+              </Button>
+              {onEdit && (
+                <Button
+                  id="task-edit-button"
+                  title="Edit task"
+                  variant="outline-light"
+                  size="sm"
+                  onClick={onEdit}
+                  disabled={isReadOnly}
+                >
+                  <i className="bi bi-pencil" />
+                  <span>Edit task</span>
+                </Button>
+              )}
               <Button
                 id="task-details-update-status-button"
                 title="Update status"
                 variant="outline-light"
                 size="sm"
                 onClick={handleOpenStatusModal}
-                disabled={isReadOnly}
+                disabled={investigationReadOnly}
               >
                 <i className="bi bi-arrow-repeat" />
                 <span>Update status</span>

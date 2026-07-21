@@ -26,6 +26,8 @@ export const CompTable = <T,>({
   currentPage: externalCurrentPage,
   emptyMessage,
   alwaysShowFooter = true,
+  itemLabel,
+  secondarySort,
 }: CompTableProps<T>) => {
   const [sortBy, setSortBy] = useState<string>(defaultSort);
   const [sortOrder, setSortOrder] = useState<string>(defaultSortDirection);
@@ -79,14 +81,21 @@ export const CompTable = <T,>({
     const activeColumn = columns.find((col) => (col.sortKey ?? col.label) === sortBy);
     if (!activeColumn?.getValue) return [...data];
 
-    return [...data].sort((a, b) => {
-      const aVal = activeColumn.getValue!(a);
-      const bVal = activeColumn.getValue!(b);
-      if (aVal < bVal) return sortOrder === SORT_TYPES.ASC ? -1 : 1;
-      if (aVal > bVal) return sortOrder === SORT_TYPES.ASC ? 1 : -1;
+    // directional compare that honours the active sort order
+    const dir = sortOrder === SORT_TYPES.ASC ? 1 : -1;
+    const compare = (aVal: string | number, bVal: string | number) => {
+      if (aVal < bVal) return -dir;
+      if (aVal > bVal) return dir;
       return 0;
+    };
+
+    return [...data].sort((a, b) => {
+      const primary = compare(activeColumn.getValue!(a), activeColumn.getValue!(b));
+      // break ties on the secondary sort value, following the primary sort direction
+      if (primary !== 0 || !secondarySort) return primary;
+      return compare(secondarySort(a), secondarySort(b));
     });
-  }, [data, columns, sortBy, sortOrder, isServerSort]);
+  }, [data, columns, sortBy, sortOrder, isServerSort, secondarySort]);
 
   // set a valid page number if the dataset shrinks when a filter is applied
   useEffect(() => {
@@ -223,6 +232,7 @@ export const CompTable = <T,>({
           totalItems={totalCount}
           onPageChange={handlePageChange}
           resultsPerPage={pageSize}
+          itemLabel={itemLabel}
         />
       )}
     </div>
