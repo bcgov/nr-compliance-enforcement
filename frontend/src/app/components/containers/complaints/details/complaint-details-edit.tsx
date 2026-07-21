@@ -311,7 +311,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     if (incidentDate) {
-      setSelectedIncidentDate(incidentDate instanceof Date ? incidentDate : new Date(incidentDate));
+      const parsed = incidentDate instanceof Date ? incidentDate : new Date(incidentDate);
+      // Drop the time components so the date picker doesn't get confused
+      setSelectedIncidentDate(new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()));
       if (incidentTime) {
         setSelectedIncidentTime(incidentTime);
       }
