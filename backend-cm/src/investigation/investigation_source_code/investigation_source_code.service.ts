@@ -25,7 +25,7 @@ export class InvestigationSourceCodeService {
         active_ind: true,
       },
       orderBy: {
-        short_description: "asc",
+        display_order: "asc",
       },
     });
 
