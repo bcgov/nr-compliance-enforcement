@@ -153,9 +153,8 @@ const useValidateComplaint = () => {
         complaint &&
         ["COS", "PARKS"].includes(complaint.ownedBy) &&
         !hasCaseAccessRole
-          ? assessmentApplies
-            ? assessments.some((assessment) => assessment.action_required === "No")
-            : !!complaint.referenceNumber
+          ? !!complaint.referenceNumber ||
+            (assessmentApplies && assessments.some((assessment) => assessment.action_required === "No"))
           : true;
 
       // check validation for investigation/case actions (for CEEB/NROS/MINES)

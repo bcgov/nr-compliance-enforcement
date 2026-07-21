@@ -10,6 +10,7 @@ import {
   updateGeneralIncidentComplaintStatus,
 } from "@store/reducers/complaints";
 import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
+import { selectAssessments } from "@/app/store/reducers/complaint-outcome-selectors";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
@@ -38,6 +39,7 @@ export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = (
   const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
   const complaintData = useAppSelector(selectComplaint);
+  const assessments = useAppSelector(selectAssessments);
   // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
   const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaint_type, complaintData?.ownedBy));
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
@@ -128,7 +130,7 @@ export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = (
               </Col>
               <Col>
                 <div>
-                  {assessmentApplies
+                  {assessmentApplies && assessments.length === 0
                     ? "An assessment must be completed before the complaint can be closed."
                     : "COORS number is required before the complaint can be closed."}
                 </div>
