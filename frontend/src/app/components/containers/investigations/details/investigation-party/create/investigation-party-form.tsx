@@ -265,7 +265,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
   const navigateToPreviousParty = () => {
     allowNavigation();
-    navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`);
+    if (partyIdentifier) {
+      navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`);
+    } else {
+      navigate(`/investigation/${investigationGuid}/parties`);
+    }
   };
 
   // After the create/update succeeds, flush attachments; their onSaved callback handles navigation.
