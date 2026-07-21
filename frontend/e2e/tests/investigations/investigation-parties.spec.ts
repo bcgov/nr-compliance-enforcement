@@ -112,7 +112,7 @@ test.describe("Investigation Party Form", () => {
     const personItem = page.locator(".party-card", { has: page.locator(".bi-person") }).first();
     await expect(personItem).toBeVisible();
 
-    const partyButton = page.getByRole("button", { name: "DOE, Jane" });
+    const partyButton = page.getByRole("button", { name: "DOE, Jane" }).first();
     await partyButton.click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
