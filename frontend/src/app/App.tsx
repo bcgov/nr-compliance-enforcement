@@ -112,7 +112,7 @@ const App: FC = () => {
                 element={pilotGate(<Cases />)}
               />
             )}
-            {casesFeatureOn && (
+            {casesFeatureOn && false && (
               <Route
                 path="/case/create"
                 element={pilotGate(<CaseEdit />)}

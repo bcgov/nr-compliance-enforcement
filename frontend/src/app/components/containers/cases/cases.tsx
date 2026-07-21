@@ -41,7 +41,7 @@ const SEARCH_CASE_FILES = gql`
 const Cases: FC = () => {
   const navigate = useNavigate();
 
-  const showCreateCaseBtn = useAppSelector(isFeatureActive(FEATURE_TYPES.CREATE_CASE));
+  const showCreateCaseBtn = useAppSelector(isFeatureActive(FEATURE_TYPES.CREATE_CASE)) && false;
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);
