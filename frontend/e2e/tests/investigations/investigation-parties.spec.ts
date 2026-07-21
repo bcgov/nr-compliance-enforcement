@@ -72,8 +72,8 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
-    await expect(page.locator(".party-list").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
+    await expect(page.locator(".comp-box-complaint-id").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
   });
 
   test("it adds a new local business party to investigation", async ({ page }) => {
@@ -101,19 +101,24 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
-    await expect(page.locator(".party-list").getByText("Acme Logging Ltd", { exact: true }).first()).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
+    await expect(
+      page.locator(".comp-box-complaint-id").getByText("Acme Logging Ltd", { exact: true }).first(),
+    ).toBeVisible();
   });
 
   test("it edits a person party", async ({ page }) => {
-    // Find a person party in the list and open the kebab menu
+    // Find a person party in the list and access the details page
     const personItem = page.locator(".party-card", { has: page.locator(".bi-person") }).first();
     await expect(personItem).toBeVisible();
 
-    const kebabMenu = personItem.locator(".comp-kebab-toggle");
-    await kebabMenu.click();
+    const partyButton = page.getByRole("button", { name: "DOE, Jane" });
+    await partyButton.click();
 
-    const editButton = personItem.locator(".dropdown-item", { hasText: "Edit" });
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
+
+    //Edit the person
+    const editButton = page.locator("#party-detail-edit-button");
     await editButton.click();
 
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+\/edit$/);
@@ -125,7 +130,7 @@ test.describe("Investigation Party Form", () => {
     const saveButton = page.locator("#party-save-button");
     await saveButton.click();
 
-    await page.waitForURL(/\/investigation\/[^/]+\/parties$/);
-    await expect(page.locator(".party-list").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
+    await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+$/);
+    await expect(page.locator(".comp-box-complaint-id").getByText("DOE, Jane", { exact: true }).first()).toBeVisible();
   });
 });
