@@ -45,6 +45,7 @@ import { investigation_business_person_address_xref as _investigation_business_p
 import { investigation_business_person_address_xref_h as _investigation_business_person_address_xref_h } from "./investigation_business_person_address_xref_h";
 import { investigation_business_person_xref as _investigation_business_person_xref } from "./investigation_business_person_xref";
 import { investigation_business_person_xref_h as _investigation_business_person_xref_h } from "./investigation_business_person_xref_h";
+import { investigation_source_code as _investigation_source_code } from "./investigation_source_code";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -94,6 +95,7 @@ export namespace PrismaModel {
   export class investigation_business_person_address_xref_h extends _investigation_business_person_address_xref_h {}
   export class investigation_business_person_xref extends _investigation_business_person_xref {}
   export class investigation_business_person_xref_h extends _investigation_business_person_xref_h {}
+  export class investigation_source_code extends _investigation_source_code {}
 
   export const extraModels = [
     activity_note,
@@ -143,5 +145,6 @@ export namespace PrismaModel {
     investigation_business_person_address_xref_h,
     investigation_business_person_xref,
     investigation_business_person_xref_h,
+    investigation_source_code,
   ];
 }
