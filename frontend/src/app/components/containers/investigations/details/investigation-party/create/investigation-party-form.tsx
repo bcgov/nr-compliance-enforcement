@@ -462,7 +462,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
 
       <section className="comp-details-body comp-details-form comp-container">
         <div className="comp-details-section-header">
-          <h2>Party details</h2>
+          <h3>Party details</h3>
         </div>
         <FormErrorBanner form={form} />
 

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,7 @@ interface PartyEditHeaderProps {
   saveButtonClick: () => void;
   // disable while a save is in progress
   saveDisabled?: boolean;
+  badges?: ReactNode;
 }
 
 export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
@@ -19,6 +20,7 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
   isEditMode = false,
   partyIdentifier,
   partyName,
+  badges,
 }) => {
   return (
     <div className="comp-details-header">
@@ -55,6 +57,7 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
                 <span>{isEditMode ? "Edit party" : "Create party"} </span>
               )}
             </h1>
+            {badges}
           </div>
           <div className="comp-header-actions">
             <Button

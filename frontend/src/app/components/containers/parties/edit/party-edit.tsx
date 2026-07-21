@@ -53,6 +53,7 @@ import { PartyAttachments } from "../attachments/party-attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { getPartyName } from "@/app/common/party-name";
+import { isYoungPerson } from "@/app/common/methods";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -393,6 +394,11 @@ const PartyEdit: FC = () => {
     setAttachmentsDirty(dirty);
   };
 
+  const personDob = partyData?.party?.person?.dateOfBirth ? new Date(partyData.party?.person.dateOfBirth) : null;
+  const personIsYoung = partyData?.party?.person
+    ? isYoungPerson(personDob, partyData.party.person.approximateAgeCode)
+    : false;
+
   return (
     <div className="comp-complaint-details">
       <PartyEditHeader
@@ -402,9 +408,22 @@ const PartyEdit: FC = () => {
         isEditMode={isEditMode}
         partyName={partyData?.party ? getPartyName(partyData?.party) : ""}
         partyIdentifier={id}
+        badges={
+          <>
+            {partyData?.party?.person?.boloIndicator && (
+              <div className="badge comp-status-badge-pending-review">
+                <i className="bi bi-exclamation-circle"></i> Safety concern
+              </div>
+            )}
+            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
+          </>
+        }
       />
 
       <section className="comp-details-body comp-details-form comp-container">
+        <div className="comp-details-section-header">
+          <h3>Identifying information</h3>
+        </div>
         <FormErrorBanner form={form} />
         <form
           onSubmit={(e) => {

@@ -9,6 +9,10 @@ import { getPartyName } from "@/app/common/party-name";
 import { InvestigationPartyHeader } from "../investigation-party/investigation-party-header";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
+import {
+  DetailField,
+  DetailSection,
+} from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -87,26 +91,12 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
         isEditMode={false}
       />
       <section className="comp-details-body comp-container">
-        <div className="comp-details-section-header">
-          <h2>Party details</h2>
-        </div>
         <div className="comp-details-view">
           <div className="comp-details-content">
             {/* Investigation role — own section at top*/}
-            <section className="comp-details-section">
-              <Card className="mb-3 border-0">
-                <Card.Body className="pt-0">
-                  <dl>
-                    <div>
-                      <dt>Investigation role</dt>
-                      <dd>{roleText}</dd>
-                    </div>
-                  </dl>
-                </Card.Body>
-              </Card>
-            </section>
-
-            <hr />
+            <DetailSection title="Party details">
+              <DetailField label="Investigation role">{roleText}</DetailField>
+            </DetailSection>
 
             <PartyDetail
               party={party}
