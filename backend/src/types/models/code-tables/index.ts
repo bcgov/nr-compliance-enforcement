@@ -85,6 +85,7 @@ export const AvailableCodeTables = [
   "hair-length-type",
   "eye-colour-type",
   "facial-hair-style-type",
+  "investigation-source-code",
 ];
 
 export const AvailableAgencies = ["cos"];
