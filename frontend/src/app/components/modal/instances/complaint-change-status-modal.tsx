@@ -4,14 +4,17 @@ import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { selectModalData } from "@store/reducers/app";
 import ComplaintStatusSelect from "@components/codes/complaint-status-select";
 import {
+  selectComplaint,
   updateAllegationComplaintStatus,
   updateWildlifeComplaintStatus,
   updateGeneralIncidentComplaintStatus,
 } from "@store/reducers/complaints";
+import { selectComplaintAssessmentApplies } from "@/app/access/module-access";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import useValidateComplaint from "@hooks/validate-complaint";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { ToggleError } from "@common/toast";
 
 type ComplaintChangeStatusModalProps = {
   close: () => void;
@@ -34,6 +37,9 @@ export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = (
   const { title, description, complaint_identifier, onDirtyChange } = modalData;
   const isReviewRequired = useAppSelector((state) => state.complaintOutcomes.isReviewRequired);
   const reviewCompleteAction = useAppSelector((state) => state.complaintOutcomes.reviewComplete);
+  const complaintData = useAppSelector(selectComplaint);
+  // Feature-flagged assessments for COS/PARKS ERS + GIR complaints
+  const assessmentApplies = useAppSelector(selectComplaintAssessmentApplies(complaint_type, complaintData?.ownedBy));
   const [statusChangeDisabledInd, setStatusChangeDisabledInd] = useState<boolean>(false);
 
   const dispatch = useAppDispatch();
@@ -68,6 +74,7 @@ export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = (
     if (selectedStatus === "CLOSED" && !validationResults.canCloseComplaint) {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true }));
+      ToggleError("Errors in form");
     } else {
       dispatchStatusUpdate();
       dispatch(setIsInEdit({ showSectionErrors: false }));
@@ -120,7 +127,11 @@ export const ComplaintChangeStatusModal: FC<ComplaintChangeStatusModalProps> = (
                 <i className="bi bi-exclamation-circle"></i>
               </Col>
               <Col>
-                <div>COORS number is required before the complaint can be closed.</div>
+                <div>
+                  {assessmentApplies
+                    ? "An assessment must be completed before the complaint can be closed."
+                    : "COORS number is required before the complaint can be closed."}
+                </div>
               </Col>
             </Row>
           )
