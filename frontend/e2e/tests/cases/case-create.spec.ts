@@ -7,6 +7,7 @@ import { waitForSpinner } from "../../utils/helpers";
  * Verifies form display, validation, and case creation
  */
 test.describe.skip("Case Create Form", () => {
+  //skipped because the create case button is hidden for MVP
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {
@@ -82,6 +83,7 @@ test.describe("Case Create - Navigation", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.skip("it navigates to create from cases list", async ({ page }) => {
+    //skipped because the create case button is hidden for MVP
     await page.goto("/cases");
     await waitForSpinner(page);
 
