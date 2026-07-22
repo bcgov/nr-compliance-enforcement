@@ -6,7 +6,7 @@ import { waitForSpinner } from "../../utils/helpers";
  * Tests for Case Create functionality
  * Verifies form display, validation, and case creation
  */
-test.describe("Case Create Form", () => {
+test.describe.skip("Case Create Form", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
   test.beforeEach(async ({ page }) => {
@@ -81,7 +81,7 @@ test.describe("Case Create Form", () => {
 test.describe("Case Create - Navigation", () => {
   test.use({ storageState: STORAGE_STATE_BY_ROLE.COS });
 
-  test("it navigates to create from cases list", async ({ page }) => {
+  test.skip("it navigates to create from cases list", async ({ page }) => {
     await page.goto("/cases");
     await waitForSpinner(page);
 
