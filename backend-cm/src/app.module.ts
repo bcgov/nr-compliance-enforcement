@@ -73,6 +73,7 @@ import { LegislationSourceModule } from "./shared/legislation_source/legislation
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 import { TaskStatusCodeModule } from "./investigation/task_status_code/task_status_code.module";
 import { TaskCategoryTypeCodeModule } from "./investigation/task_category_type_code/task_category_type_code.module";
+import { InvestigationSourceCodeModule } from "./investigation/investigation_source_code/investigation_source_code.module";
 import { TaskModule } from "./investigation/task/task.module";
 import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
 import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
@@ -165,6 +166,7 @@ import { InvestigationAttachmentReferenceModule } from "src/investigation/invest
     TaskStatusCodeModule,
     TaskTypeCodeModule,
     TaskCategoryTypeCodeModule,
+    InvestigationSourceCodeModule,
     TaskModule,
     DiaryDateModule,
     ExhibitModule,

@@ -121,6 +121,7 @@ export const ExhibitsFilter: FC<Props> = ({ tasks = [] }) => {
               isClearable={true}
               showInactive={false}
               menuPlacement="top"
+              maxMenuHeight={200}
             />
           </div>
         </div>

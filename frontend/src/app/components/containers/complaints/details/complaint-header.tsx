@@ -173,6 +173,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
     if (!validationResults.canQuickCloseComplaint) {
       validationResults.scrollToErrors();
       dispatch(setIsInEdit({ showSectionErrors: true, hideAssessmentErrors: true }));
+      ToggleError("Errors in form");
     } else {
       document.body.click();
       dispatch(

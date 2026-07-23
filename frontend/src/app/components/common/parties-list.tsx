@@ -26,20 +26,11 @@ interface Props {
   people?: (InvestigationParty | InspectionParty)[];
   parties?: (InvestigationParty | InspectionParty)[];
   onRemoveParty?: (partyIdentifier: string, partyName: string) => void;
-  onEditParty?: (party: InvestigationParty | InspectionParty) => void;
   onViewParty?: (partyIdentifier: string) => void;
   activityType: string;
 }
 
-const PartiesList: React.FC<Props> = ({
-  companies,
-  people,
-  parties,
-  onRemoveParty,
-  onEditParty,
-  onViewParty,
-  activityType,
-}) => {
+const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemoveParty, onViewParty, activityType }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
@@ -144,7 +135,7 @@ const PartiesList: React.FC<Props> = ({
   };
 
   const renderActionsDropdown = (party: InvestigationParty | InspectionParty) => {
-    if (!onRemoveParty && !onEditParty) return null;
+    if (!onRemoveParty) return null;
     return (
       <Dropdown
         drop="start"
@@ -171,11 +162,6 @@ const PartiesList: React.FC<Props> = ({
             ],
           }}
         >
-          {onEditParty && (
-            <Dropdown.Item onClick={() => onEditParty(party)}>
-              <i className="bi bi-pencil me-2"></i> Edit
-            </Dropdown.Item>
-          )}
           {onRemoveParty && (
             <Dropdown.Item onClick={() => onRemoveParty(party.partyIdentifier, getPartyRemoveName(party))}>
               <i className="bi bi-trash me-2"></i> Remove

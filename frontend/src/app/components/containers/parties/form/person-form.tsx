@@ -750,6 +750,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           />
         )}
       />
+      <h3>Additional information</h3>
       <FormField
         form={form}
         name="comments"

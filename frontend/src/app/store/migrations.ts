@@ -45,6 +45,7 @@ import { AddEnforcementActions } from "@/app/store/migrations/migration-45";
 import { AddInvestigationListUrl } from "@/app/store/migrations/migration-46";
 import { Countries } from "@/app/store/migrations/migration-47";
 import { PersonProfileUpdates } from "@/app/store/migrations/migration-48";
+import { InvestigationSourceCodes } from "./migrations/migration-49";
 
 const BaseMigration = {
   0: (state: any) => {
@@ -104,6 +105,7 @@ migration = {
   ...AddInvestigationListUrl,
   ...Countries,
   ...PersonProfileUpdates,
+  ...InvestigationSourceCodes,
 };
 
 export default migration;
