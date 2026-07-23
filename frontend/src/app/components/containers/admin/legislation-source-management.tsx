@@ -1,7 +1,7 @@
 import { FC, useState, useMemo } from "react";
 import { Table, Button, Modal, Dropdown } from "react-bootstrap";
 import { ToggleError, ToggleSuccess } from "@common/toast";
-import { formatDateTime } from "@common/methods";
+import { formatTimestampAsLocalDateTime } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencySectorDropdown } from "@store/reducers/code-table";
 import { CompInput } from "@components/common/comp-input";
@@ -304,7 +304,7 @@ export const LegislationSourceManagement: FC = () => {
           )}
         </td>
         <td className="text-center">{getStatusBadge(source)}</td>
-        <td>{formatDateTime(source.lastImportTimestamp ?? undefined)}</td>
+        <td>{formatTimestampAsLocalDateTime(source.lastImportTimestamp ?? undefined)}</td>
         <td className="text-center">
           <Dropdown
             id={`source-action-button-${source.legislationSourceGuid}`}
@@ -639,7 +639,8 @@ export const LegislationSourceManagement: FC = () => {
             <strong>Status:</strong> {viewLogSource && getStatusBadge(viewLogSource)}
           </div>
           <div className="mb-3">
-            <strong>Last Import:</strong> {formatDateTime(viewLogSource?.lastImportTimestamp ?? undefined) || "Never"}
+            <strong>Last Import:</strong>{" "}
+            {formatTimestampAsLocalDateTime(viewLogSource?.lastImportTimestamp ?? undefined) || "Never"}
           </div>
           <div>
             <strong>Log:</strong>

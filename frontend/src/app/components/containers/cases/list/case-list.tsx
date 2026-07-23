@@ -3,7 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTime } from "@common/methods";
+import { formatTimestampAsLocalDateTime } from "@common/methods";
 import { useCaseSearch } from "../hooks/use-case-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { isFeatureActive } from "@/app/store/reducers/app";
@@ -60,7 +60,7 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (caseFile) => caseFile.openedTimestamp ?? "",
-      renderCell: (caseFile) => formatDateTime(caseFile.openedTimestamp),
+      renderCell: (caseFile) => formatTimestampAsLocalDateTime(caseFile.openedTimestamp),
     },
     ...(showLegacyColumns
       ? [

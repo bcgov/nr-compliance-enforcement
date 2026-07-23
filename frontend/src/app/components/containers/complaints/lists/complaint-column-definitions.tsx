@@ -1,5 +1,5 @@
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTime, applyStatusClass } from "@common/methods";
+import { formatTimestampAsLocalDateTime, applyStatusClass } from "@common/methods";
 import { ParkCell } from "@/app/components/containers/complaints/lists/park-cell";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -18,7 +18,7 @@ export const dateLoggedColumn = <T extends { reportedOn?: any }>(): CompColumn<T
   cellClassName: "comp-cell-width-160 comp-cell-min-width-160 comp-table-date-cell",
   isSortable: true,
   getValue: (complaint) => complaint.reportedOn?.toString() ?? "",
-  renderCell: (complaint) => formatDateTime(complaint.reportedOn?.toString()),
+  renderCell: (complaint) => formatTimestampAsLocalDateTime(complaint.reportedOn?.toString()),
 });
 
 // Location/address column
@@ -73,7 +73,7 @@ export const lastUpdatedColumn = <T extends { updatedOn?: any }>(): CompColumn<T
   cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
   isSortable: true,
   getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
-  renderCell: (complaint) => formatDateTime(complaint.updatedOn?.toString()),
+  renderCell: (complaint) => formatTimestampAsLocalDateTime(complaint.updatedOn?.toString()),
 });
 
 // Community

@@ -6,7 +6,7 @@ import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { applyStatusClass, formatDate, formatDateTime } from "@/app/common/methods";
+import { applyStatusClass, formatDate, formatTimestampAsLocalDateTime } from "@/app/common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { TaskListExpandedContent } from "./task-list-item";
 
@@ -106,7 +106,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: true,
       getValue: (task) => task.updatedDate ?? task.createdDate ?? "",
-      renderCell: (task) => formatDateTime(task.updatedDate ?? task.createdDate),
+      renderCell: (task) => formatTimestampAsLocalDateTime(task.updatedDate ?? task.createdDate),
     },
   ];
 

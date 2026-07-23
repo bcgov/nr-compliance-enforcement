@@ -171,14 +171,6 @@ export const formatDate = (input: string | undefined, includeRelative: boolean =
   }
 };
 
-export const formatDateTime = (input: string | undefined): string => {
-  if (!input) {
-    return "";
-  }
-
-  return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
-};
-
 // Protect values with quotes, commas and new lines for CSV export
 export const escapeCsvCell = (value: string): string => {
   const raw = String(value ?? "");
@@ -595,6 +587,14 @@ export const formatTimestampAsLocalTime = (input: string | undefined): string =>
   }
 
   return format(Date.parse(input), "HH:mm");
+};
+
+export const formatTimestampAsLocalDateTime = (input: string | undefined): string => {
+  if (!input) {
+    return "";
+  }
+
+  return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
 /**

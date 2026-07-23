@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
-import { formatDate, formatDateTime } from "@common/methods";
+import { formatDate, formatTimestampAsLocalDateTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -35,7 +35,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
     ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
     : "Unknown";
   const addedTimestamp = diaryDate.addedTimestamp
-    ? formatDateTime(new Date(diaryDate.addedTimestamp).toISOString())
+    ? formatTimestampAsLocalDateTime(new Date(diaryDate.addedTimestamp).toISOString())
     : "";
   const handleEditClick = () => {
     onEdit(diaryDate);

@@ -6,7 +6,12 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTimestampAsLocalTime } from "@common/methods";
+import {
+  parseUTCDateTimeToLocal,
+  formatDate,
+  formatTimestampAsLocalDateTime,
+  formatTimestampAsLocalTime,
+} from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -269,7 +274,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       />
                                     </div>
                                     <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                      {`• Recorded on ${formatDateTime(report.reportedTimestamp)} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
+                                      {`• Recorded on ${formatTimestampAsLocalDateTime(report.reportedTimestamp)} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
                                     </div>
                                   </div>
                                 );
