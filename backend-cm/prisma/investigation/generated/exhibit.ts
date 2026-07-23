@@ -39,9 +39,6 @@ export class exhibit {
   @ApiPropertyOptional({ type: String })
   seized_from_phone_number?: string;
 
-  @ApiProperty({ type: Date })
-  collected_utc_timestamp: Date;
-
   @ApiProperty({ type: String })
   collected_by_app_user_guid_ref: string;
 
@@ -65,6 +62,12 @@ export class exhibit {
 
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
+
+  @ApiProperty({ type: Date })
+  collected_utc_date: Date;
+
+  @ApiPropertyOptional({ type: Date })
+  collected_utc_time?: Date;
 
   @ApiProperty({ type: () => investigation })
   investigation: investigation;

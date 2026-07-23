@@ -36,7 +36,8 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       seizedFromLastName
       seizedFromAddress
       seizedFromPhoneNumber
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
       locationOfIntake
       propertyTagNumber
@@ -128,8 +129,8 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
         seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
         propertyType: _resolvePropertyTypeLabel(exhibit.propertyType),
         isSeized: exhibit.propertyType === "S",
-        dateCollected: formatDate(exhibit.dateCollected),
-        intakeTime: exhibit.dateCollected ? formatTime(exhibit.dateCollected, tz) : "",
+        dateCollected: formatDate(exhibit.intakeDate),
+        intakeTime: exhibit.intakeTime,
         collectedBy: _resolveUser(exhibit.collectedAppUserGuidRef),
       })),
     activityNotes: getActivityNotesByTask.map((note) => ({

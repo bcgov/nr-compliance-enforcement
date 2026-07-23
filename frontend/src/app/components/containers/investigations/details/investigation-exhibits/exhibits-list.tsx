@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTimeStr, truncateString } from "@common/methods";
+import { formatDate, formatLocalTime, parseUTCDateTimeToLocal, truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -106,8 +106,13 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       sortKey: "dateCollected",
       isSortable: true,
-      getValue: (exhibit) => exhibit.dateCollected ?? "",
-      renderCell: (exhibit) => formatDateTimeStr(exhibit.dateCollected),
+      getValue: (exhibit) => parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime)?.getTime() ?? 0,
+      renderCell: (exhibit) => {
+        const localIntake = parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime);
+        if (!localIntake) return "";
+        const datePart = formatDate(localIntake.toISOString());
+        return exhibit.intakeTime ? `${datePart} ${formatLocalTime(localIntake)}` : datePart;
+      },
     },
     {
       label: "Location of intake",

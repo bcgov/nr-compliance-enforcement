@@ -10,18 +10,26 @@ import { enforcement_action_h as _enforcement_action_h } from "./enforcement_act
 import { exhibit as _exhibit } from "./exhibit";
 import { flyway_schema_history as _flyway_schema_history } from "./flyway_schema_history";
 import { investigation as _investigation } from "./investigation";
+import { investigation_address as _investigation_address } from "./investigation_address";
 import { investigation_alias as _investigation_alias } from "./investigation_alias";
 import { investigation_alias_h as _investigation_alias_h } from "./investigation_alias_h";
+import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
 import { investigation_business as _investigation_business } from "./investigation_business";
 import { investigation_business_h as _investigation_business_h } from "./investigation_business_h";
 import { investigation_business_identifier as _investigation_business_identifier } from "./investigation_business_identifier";
 import { investigation_business_identifier_h as _investigation_business_identifier_h } from "./investigation_business_identifier_h";
+import { investigation_business_person_address_xref as _investigation_business_person_address_xref } from "./investigation_business_person_address_xref";
+import { investigation_business_person_address_xref_h as _investigation_business_person_address_xref_h } from "./investigation_business_person_address_xref_h";
+import { investigation_business_person_xref as _investigation_business_person_xref } from "./investigation_business_person_xref";
+import { investigation_business_person_xref_h as _investigation_business_person_xref_h } from "./investigation_business_person_xref_h";
 import { investigation_contact_method as _investigation_contact_method } from "./investigation_contact_method";
 import { investigation_contact_method_h as _investigation_contact_method_h } from "./investigation_contact_method_h";
 import { investigation_h as _investigation_h } from "./investigation_h";
 import { investigation_party as _investigation_party } from "./investigation_party";
 import { investigation_party_h as _investigation_party_h } from "./investigation_party_h";
 import { investigation_person as _investigation_person } from "./investigation_person";
+import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
+import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
 import { investigation_person_h as _investigation_person_h } from "./investigation_person_h";
 import { investigation_status_code as _investigation_status_code } from "./investigation_status_code";
 import { investigation_status_code_h as _investigation_status_code_h } from "./investigation_status_code_h";
@@ -37,14 +45,6 @@ import { task_type_code as _task_type_code } from "./task_type_code";
 import { ticket as _ticket } from "./ticket";
 import { ticket_h as _ticket_h } from "./ticket_h";
 import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
-import { investigation_address as _investigation_address } from "./investigation_address";
-import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
-import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
-import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
-import { investigation_business_person_address_xref as _investigation_business_person_address_xref } from "./investigation_business_person_address_xref";
-import { investigation_business_person_address_xref_h as _investigation_business_person_address_xref_h } from "./investigation_business_person_address_xref_h";
-import { investigation_business_person_xref as _investigation_business_person_xref } from "./investigation_business_person_xref";
-import { investigation_business_person_xref_h as _investigation_business_person_xref_h } from "./investigation_business_person_xref_h";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -59,18 +59,26 @@ export namespace PrismaModel {
   export class exhibit extends _exhibit {}
   export class flyway_schema_history extends _flyway_schema_history {}
   export class investigation extends _investigation {}
+  export class investigation_address extends _investigation_address {}
   export class investigation_alias extends _investigation_alias {}
   export class investigation_alias_h extends _investigation_alias_h {}
+  export class investigation_attachment_reference extends _investigation_attachment_reference {}
   export class investigation_business extends _investigation_business {}
   export class investigation_business_h extends _investigation_business_h {}
   export class investigation_business_identifier extends _investigation_business_identifier {}
   export class investigation_business_identifier_h extends _investigation_business_identifier_h {}
+  export class investigation_business_person_address_xref extends _investigation_business_person_address_xref {}
+  export class investigation_business_person_address_xref_h extends _investigation_business_person_address_xref_h {}
+  export class investigation_business_person_xref extends _investigation_business_person_xref {}
+  export class investigation_business_person_xref_h extends _investigation_business_person_xref_h {}
   export class investigation_contact_method extends _investigation_contact_method {}
   export class investigation_contact_method_h extends _investigation_contact_method_h {}
   export class investigation_h extends _investigation_h {}
   export class investigation_party extends _investigation_party {}
   export class investigation_party_h extends _investigation_party_h {}
   export class investigation_person extends _investigation_person {}
+  export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
+  export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
   export class investigation_person_h extends _investigation_person_h {}
   export class investigation_status_code extends _investigation_status_code {}
   export class investigation_status_code_h extends _investigation_status_code_h {}
@@ -86,14 +94,6 @@ export namespace PrismaModel {
   export class ticket extends _ticket {}
   export class ticket_h extends _ticket_h {}
   export class ticket_outcome_code extends _ticket_outcome_code {}
-  export class investigation_address extends _investigation_address {}
-  export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
-  export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
-  export class investigation_attachment_reference extends _investigation_attachment_reference {}
-  export class investigation_business_person_address_xref extends _investigation_business_person_address_xref {}
-  export class investigation_business_person_address_xref_h extends _investigation_business_person_address_xref_h {}
-  export class investigation_business_person_xref extends _investigation_business_person_xref {}
-  export class investigation_business_person_xref_h extends _investigation_business_person_xref_h {}
 
   export const extraModels = [
     activity_note,
@@ -108,18 +108,26 @@ export namespace PrismaModel {
     exhibit,
     flyway_schema_history,
     investigation,
+    investigation_address,
     investigation_alias,
     investigation_alias_h,
+    investigation_attachment_reference,
     investigation_business,
     investigation_business_h,
     investigation_business_identifier,
     investigation_business_identifier_h,
+    investigation_business_person_address_xref,
+    investigation_business_person_address_xref_h,
+    investigation_business_person_xref,
+    investigation_business_person_xref_h,
     investigation_contact_method,
     investigation_contact_method_h,
     investigation_h,
     investigation_party,
     investigation_party_h,
     investigation_person,
+    investigation_person_facial_hair_style_code_ref,
+    investigation_person_facial_hair_style_code_ref_h,
     investigation_person_h,
     investigation_status_code,
     investigation_status_code_h,
@@ -135,13 +143,5 @@ export namespace PrismaModel {
     ticket,
     ticket_h,
     ticket_outcome_code,
-    investigation_address,
-    investigation_person_facial_hair_style_code_ref,
-    investigation_person_facial_hair_style_code_ref_h,
-    investigation_attachment_reference,
-    investigation_business_person_address_xref,
-    investigation_business_person_address_xref_h,
-    investigation_business_person_xref,
-    investigation_business_person_xref_h,
   ];
 }

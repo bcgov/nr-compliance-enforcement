@@ -173,7 +173,6 @@ export type Assessment = {
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   locationType?: Maybe<KeyValuePair>;
-  note?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
@@ -198,7 +197,6 @@ export type AssessmentInput = {
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   locationType?: InputMaybe<KeyValuePairInput>;
-  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BuildCode = {
@@ -770,9 +768,10 @@ export type CreateUpdateContraventionInput = {
 export type CreateUpdateExhibitInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   collectedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  dateCollected?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   exhibitGuid?: InputMaybe<Scalars['String']['input']>;
+  intakeDate: Scalars['DateTime']['input'];
+  intakeTime?: InputMaybe<Scalars['DateTime']['input']>;
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
   locationOfIntake?: InputMaybe<Scalars['String']['input']>;
   propertyTagNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1130,11 +1129,12 @@ export type Exhibit = {
   activeIndicator: Scalars['Boolean']['output'];
   collectedAppUserGuidRef: Scalars['String']['output'];
   createdDate: Scalars['DateTime']['output'];
-  dateCollected: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   exhibitDisplayNumber: Scalars['String']['output'];
   exhibitGuid: Scalars['String']['output'];
   exhibitNumber: Scalars['String']['output'];
+  intakeDate: Scalars['DateTime']['output'];
+  intakeTime?: Maybe<Scalars['DateTime']['output']>;
   investigationGuid: Scalars['String']['output'];
   locationOfIntake?: Maybe<Scalars['String']['output']>;
   propertyTagNumber: Scalars['String']['output'];
@@ -1149,7 +1149,10 @@ export type Exhibit = {
 };
 
 export type ExhibitFilters = {
+  intakeEndDate?: InputMaybe<Scalars['String']['input']>;
+  intakeStartDate?: InputMaybe<Scalars['String']['input']>;
   investigationGuid: Scalars['String']['input'];
+  officerFilter?: InputMaybe<Scalars['String']['input']>;
   propertyTypeFilter?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;

@@ -15,7 +15,8 @@ export class Exhibit {
   seizedFromLastName: string;
   seizedFromAddress: string;
   seizedFromPhoneNumber: string;
-  dateCollected: Date;
+  intakeDate: Date;
+  intakeTime: Date;
   collectedAppUserGuidRef: string;
   locationOfIntake: string;
   propertyTagNumber: string;
@@ -35,7 +36,8 @@ export class CreateUpdateExhibitInput {
   seizedFromLastName?: string;
   seizedFromAddress?: string;
   seizedFromPhoneNumber?: string;
-  dateCollected?: Date;
+  intakeDate?: Date;
+  intakeTime?: Date;
   collectedAppUserGuidRef?: string;
   locationOfIntake?: string;
   propertyTagNumber?: string;
@@ -112,8 +114,12 @@ export const mapPrismaExhibitToExhibit = (mapper: Mapper) => {
       mapFrom((src) => src.seized_from_phone_number),
     ),
     forMember(
-      (dest) => dest.dateCollected,
-      mapFrom((src) => src.collected_utc_timestamp),
+      (dest) => dest.intakeDate,
+      mapFrom((src) => src.collected_utc_date),
+    ),
+    forMember(
+      (dest) => dest.intakeTime,
+      mapFrom((src) => src.collected_utc_time),
     ),
     forMember(
       (dest) => dest.collectedAppUserGuidRef,

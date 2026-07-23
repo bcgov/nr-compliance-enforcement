@@ -31,7 +31,8 @@ export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
         seizedFromLastName
         seizedFromAddress
         seizedFromPhoneNumber
-        dateCollected
+        intakeDate
+        intakeTime
         collectedAppUserGuidRef
         locationOfIntake
         propertyTagNumber
@@ -190,7 +191,8 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
           exhibit.description ?? "",
           exhibit.quantity == null ? "" : String(exhibit.quantity),
           getOfficerName(exhibit.collectedAppUserGuidRef ?? ""),
-          exhibit.dateCollected ? formatDateTimeStr(exhibit.dateCollected) : "",
+          exhibit.intakeDate ?? new Date(),
+          exhibit.intakeTime ?? "",
           exhibit.locationOfIntake ?? "",
           exhibit.propertyTagNumber ?? "",
           exhibit.seizedFromFirstName ?? "",
