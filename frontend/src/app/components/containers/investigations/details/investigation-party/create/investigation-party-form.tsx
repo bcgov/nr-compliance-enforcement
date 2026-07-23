@@ -44,7 +44,7 @@ import {
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { formatDateOfBirth } from "@/app/common/methods";
+import { formatDateColumnAsDate } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
@@ -119,7 +119,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateOfBirth(String(editParty.person.dateOfBirth))
+          ? formatDateColumnAsDate(String(editParty.person.dateOfBirth))
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,

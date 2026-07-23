@@ -44,7 +44,7 @@ import {
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
-import { formatDateOfBirth } from "@/app/common/methods";
+import { formatDateColumnAsDate } from "@/app/common/methods";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
@@ -176,7 +176,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateOfBirth(String(editParty.person.dateOfBirth))
+          ? formatDateColumnAsDate(String(editParty.person.dateOfBirth))
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,

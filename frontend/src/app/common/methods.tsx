@@ -575,31 +575,6 @@ export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: Optio
   return new Date(`${dateStr}T${timeStr}Z`);
 };
 
-// Formats a stored UTC datetime into a local "YYYY-MM-DD HH:mm" string. The date and time are both
-// derived from the same local Date so they never disagree across a timezone midnight boundary.
-export const formatDateTimeStr = (value?: string | null): string => {
-  const local = parseUTCDateTimeToLocal(value, value);
-  if (!local) return "-";
-  const year = local.getFullYear();
-  const month = String(local.getMonth() + 1).padStart(2, "0");
-  const day = String(local.getDate()).padStart(2, "0");
-  const hours = String(local.getHours()).padStart(2, "0");
-  const minutes = String(local.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
-
-/**
- * Formats a GraphQL DateTime (or date-like value) as yyyy-MM-dd using parseUTCDateTimeToLocal
- *
- * @param whenAbsent returned when the input is missing or cannot be parsed (e.g. "-" in tables, "" in CSV)
- */
-export const formatDateStr = (inputDate: OptionalDateTimeInput, whenAbsent: string = "-"): string => {
-  const d = parseUTCDateTimeToLocal(inputDate, null);
-  if (!d) return whenAbsent;
-  const s = d.toISOString?.() ?? d.toString();
-  return formatDate(s);
-};
-
 /**
  * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
  */
@@ -629,14 +604,14 @@ export const formatLocalTime = (date: Date): string => {
 };
 
 /**
- * Formats date of birth
+ * Formats a date column in the database by dropping the time portion to prevent off by one errors.
  */
-export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAbsent: string = ""): string => {
-  if (!dateOfBirth) {
+export const formatDateColumnAsDate = (date: string | null | undefined, whenAbsent: string = ""): string => {
+  if (!date) {
     return whenAbsent;
   }
-  const dateOnly = String(dateOfBirth).slice(0, 10);
-  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(dateOfBirth);
+  const dateOnly = String(date).slice(0, 10);
+  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(date);
   return formatted || whenAbsent;
 };
 

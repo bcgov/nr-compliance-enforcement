@@ -1,4 +1,4 @@
-import { calculateAgeYears, formatDateStr } from "@/app/common/methods";
+import { calculateAgeYears, formatDateColumnAsDate } from "@/app/common/methods";
 import {
   DetailField,
   DetailSection,
@@ -60,6 +60,8 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
         ?.shortDescription ?? person?.driversLicenseCountryCode)
     : undefined;
 
+  console.log(person?.dateOfBirth);
+
   return (
     <>
       {person && (
@@ -69,7 +71,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Last name">{person.lastName}</DetailField>
           <DetailField label="Alias(es)">{aliases}</DetailField>
           <DetailField label="Gender">{gender}</DetailField>
-          <DetailField label="Date of birth">{formatDateStr(person.dateOfBirth, "")}</DetailField>
+          <DetailField label="Date of birth">{formatDateColumnAsDate(person.dateOfBirth, "")}</DetailField>
           <DetailField label="Age">{ageDisplay}</DetailField>
           <DetailField label="Approximate age">{approximateAge}</DetailField>
           <DetailField label="Driver's licence number">{person.driversLicenseNumber}</DetailField>
