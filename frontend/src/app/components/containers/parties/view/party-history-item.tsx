@@ -126,9 +126,8 @@ const useEventDescription = (event: Event): string => {
     case "EDITED": {
       if (oldValue === newValue) {
         return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
-      } else {
-        return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
       }
+      return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
     }
     default:
       return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
