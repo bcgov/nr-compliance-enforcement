@@ -38,6 +38,7 @@ const MATCH_FIELD_WEIGHTS = {
   lastName: 1,
   dateOfBirth: 1,
   genderCode: 1,
+  sexCode: 1,
   driversLicenseNumber: 10,
   businessName: 1,
   businessNumber: 10,
@@ -236,6 +237,7 @@ export class PartyService {
             drivers_license_country_code: true,
             drivers_license_country_subdivision_code: true,
             gender_code: true,
+            sex_code: true,
             complexion_code: true,
             build_code: true,
             hair_colour_code: true,
@@ -382,6 +384,7 @@ export class PartyService {
       drivers_license_country_code: person?.driversLicenseCountryCode,
       drivers_license_country_subdivision_code: person?.driversLicenseCountrySubdivisionCode,
       gender_code: person?.genderCode,
+      sex_code: person?.sexCode,
       height_cm: person?.heightInCm,
       weight_kg: person?.weightInKg,
       complexion_code: person?.complexionCode,
@@ -1346,6 +1349,7 @@ export class PartyService {
       addEvent,
     );
     this._compareField("gender", oldPerson.genderCode, newPerson.genderCode, addEvent);
+    this._compareField("sex", oldPerson.sexCode, newPerson.sexCode, addEvent);
     this._compareField("height", oldPerson.heightInCm, newPerson.heightInCm, addEvent);
     this._compareField("weight", oldPerson.weightInKg, newPerson.weightInKg, addEvent);
     this._compareField("complexion", oldPerson.complexionCode, newPerson.complexionCode, addEvent);
@@ -1619,6 +1623,7 @@ export class PartyService {
         middle_names: true,
         date_of_birth: true,
         gender_code: true,
+        sex_code: true,
         approximate_age_code: true,
       },
     },
@@ -1795,6 +1800,9 @@ export class PartyService {
     if (input.person?.genderCode && party.person?.gender_code === input.person.genderCode) {
       score += MATCH_FIELD_WEIGHTS.genderCode;
     }
+    if (input.person?.sexCode && party.person?.sex_code === input.person.sexCode) {
+      score += MATCH_FIELD_WEIGHTS.sexCode;
+    }
     if (
       input.person?.driversLicenseNumber &&
       party.person?.drivers_license_number === input.person.driversLicenseNumber
@@ -1827,6 +1835,9 @@ export class PartyService {
     }
     if (input.person?.genderCode) {
       conditions.push({ person: { gender_code: { equals: input.person.genderCode } } });
+    }
+    if (input.person?.sexCode) {
+      conditions.push({ person: { sex_code: { equals: input.person.sexCode } } });
     }
     if (input.person?.driversLicenseNumber) {
       conditions.push({ person: { drivers_license_number: { equals: input.person.driversLicenseNumber } } });

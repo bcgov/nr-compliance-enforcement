@@ -43,12 +43,14 @@ import { Note } from "./entities/note.entity";
 import { Prevention } from "./entities/prevention.entity";
 import { DeletePreventionInput } from "./dto/delete-prevention.input";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+import { SexCodeService } from "../../shared/sex_code/sex_code.service";
 
 @Injectable()
 export class ComplaintOutcomeService {
   constructor(
     private readonly prisma: ComplaintOutcomePrismaService,
     private readonly caseFileActionService: CaseFileActionService,
+    private readonly sexCodeService: SexCodeService,
   ) {}
 
   private readonly logger = new Logger(ComplaintOutcomeService.name);
@@ -357,12 +359,7 @@ export class ComplaintOutcomeService {
                 short_description: true,
               },
             },
-            sex_code_wildlife_sex_codeTosex_code: {
-              select: {
-                sex_code: true,
-                short_description: true,
-              },
-            },
+            sex_code_ref: true,
             identifying_features: true,
             threat_level_code: true,
             threat_level_code_wildlife_threat_level_codeTothreat_level_code: {
@@ -2028,13 +2025,16 @@ export class ComplaintOutcomeService {
     if (query?.wildlife) {
       const { wildlife } = query;
 
+      const sexCodes = await this.sexCodeService.findAll();
+      const sexDescriptions = new Map(sexCodes.map((sexCode) => [sexCode.sexCode, sexCode.shortDescription]));
+
       result = wildlife
         .sort((a, b) => a.create_utc_timestamp.getTime() - b.create_utc_timestamp.getTime())
         .map((item, idx) => {
           const {
             wildlife_guid: id,
             species_code: species,
-            sex_code_wildlife_sex_codeTosex_code: sexObject,
+            sex_code_ref: sex,
             age_code_wildlife_age_codeToage_code: ageObject,
             threat_level_code_wildlife_threat_level_codeTothreat_level_code: categoryLevelObject,
             identifying_features: identifyingFeatures,
@@ -2046,8 +2046,7 @@ export class ComplaintOutcomeService {
             action,
           } = item;
 
-          const sex = sexObject?.sex_code;
-          const sexDescription = sexObject?.short_description;
+          const sexDescription = sex ? sexDescriptions.get(sex) : undefined;
 
           const age = ageObject?.age_code;
           const ageDescription = ageObject?.short_description;
@@ -2209,7 +2208,7 @@ export class ComplaintOutcomeService {
         };
 
         if (wildlife.sex) {
-          record = { ...record, sex_code: wildlife.sex };
+          record = { ...record, sex_code_ref: wildlife.sex };
         }
 
         if (wildlife.age) {
@@ -2440,7 +2439,7 @@ export class ComplaintOutcomeService {
         //-- create a new data record to update based on the input provided
         let data = {
           species_code: species,
-          sex_code: sex || null,
+          sex_code_ref: sex || null,
           age_code: age || null,
           threat_level_code: categoryLevel || null,
           identifying_features: identifyingFeatures || null,

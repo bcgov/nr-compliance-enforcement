@@ -81,7 +81,7 @@ const generateWildlifeData = async (complaint_outcome_guid) => {
     wildlife_guid: faker.datatype.uuid(), 
     complaint_outcome_guid: complaint_outcome_guid,
     threat_level_code: faker.random.arrayElement(['1', '2', '3', 'U']), // Random threat level code
-    sex_code: faker.random.arrayElement(['M', 'F', 'U']), // Random sex code
+    sex_code_ref: faker.random.arrayElement(['M', 'F', 'U']), // Random sex code
     age_code: faker.random.arrayElement(['ADLT', 'YRLN', 'YOFY', 'UNKN']), // Random age code
     hwcr_outcome_code: faker.random.arrayElement(['LESSLETHAL', 
       'DEADONARR', 'GONEONARR', 'REFRTOBIO', 'SHRTRELOC', 'TRANSLCTD', 'TRANSREHB']), // Random outcome code
@@ -275,7 +275,7 @@ const insertHWCRData = async (records) => {
           caseFile.wildlife.wildlife_guid,
           caseFile.wildlife.complaint_outcome_guid,
           caseFile.wildlife.threat_level_code,
-          caseFile.wildlife.sex_code,
+          caseFile.wildlife.sex_code_ref,
           caseFile.wildlife.age_code,
           caseFile.wildlife.hwcr_outcome_code,
           caseFile.wildlife.species_code,
@@ -379,7 +379,7 @@ const insertHWCRData = async (records) => {
           wildlife_guid,
           complaint_outcome_guid,
           threat_level_code,
-          sex_code,
+          sex_code_ref,
           age_code,
           hwcr_outcome_code,
           species_code,

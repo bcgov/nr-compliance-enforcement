@@ -34,6 +34,9 @@ export class PersonInput {
   genderCode?: string;
 
   @Field(() => String, { nullable: true })
+  sexCode?: string;
+
+  @Field(() => String, { nullable: true })
   complexionCode?: string;
 
   @Field(() => String, { nullable: true })
@@ -74,4 +77,7 @@ export class PersonMatchInput {
 
   @Field(() => String, { nullable: true })
   genderCode?: string;
+
+  @Field(() => String, { nullable: true })
+  sexCode?: string;
 }

@@ -32,7 +32,6 @@ interface Props {
 
 const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemoveParty, onViewParty, activityType }) => {
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
@@ -75,9 +74,9 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     return "-";
   };
 
-  const getGender = (person: InvestigationPerson): string => {
-    if (!person.genderCode) return "-";
-    return genderCodes?.find((code: any) => code.genderCode === person.genderCode)?.shortDescription ?? "-";
+  const getSex = (person: InvestigationPerson): string => {
+    if (!person.sexCode) return "-";
+    return person.sexCode;
   };
 
   const getPhone = (contactMethods: Array<InvestigationContactMethod | null> | null | undefined): string => {
@@ -189,7 +188,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
     const invParty = party as InvestigationParty;
 
     if (invParty.person) {
-      const gender = getGender(invParty.person);
+      const sex = getSex(invParty.person);
       const phone = getPhone(invParty.contactMethods);
       const address = getPartyAddress(invParty.addresses);
       const age = getAge(invParty.person);
@@ -207,7 +206,7 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
 
       return (
         <Card.Body className="py-3 px-4">
-          {renderDetailRow("Gender", gender, "Age", ageDisplay)}
+          {renderDetailRow("Sex as per ID", sex, "Age", ageDisplay)}
           {renderDetailRow("Phone number", formatPhoneNumber(phone), "Address", address)}
           {isPartyOfInterest && missingFields.length > 0 && (
             <div className="alert alert-warning d-flex align-items-center py-2 px-3 mb-0 mt-2 small">

@@ -134,6 +134,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         driversLicenseCountryCode: editParty.person?.driversLicenseCountryCode || null,
         driversLicenseCountrySubdivisionCode: editParty.person?.driversLicenseCountrySubdivisionCode || null,
         genderCode: editParty.person?.genderCode || "",
+        sexCode: editParty.person?.sexCode || "",
         heightInCm: editParty.person?.heightInCm || null,
         weightInKg: editParty.person?.weightInKg || null,
         complexionCode: editParty.person?.complexionCode || "",

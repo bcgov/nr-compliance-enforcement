@@ -217,6 +217,7 @@ export class InvestigationPartyService {
       drivers_license_country_code_ref: input.driversLicenseCountryCode,
       drivers_license_country_subdivision_code_ref: input.driversLicenseCountrySubdivisionCode,
       gender_code_ref: input.genderCode,
+      sex_code_ref: input.sexCode,
       height_cm: input.heightInCm,
       weight_kg: input.weightInKg,
       complexion_code_ref: input.complexionCode,

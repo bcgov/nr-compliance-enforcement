@@ -13,7 +13,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { JwtAuthModule } from "./auth/jwtauth.module";
 import { AgeCodeModule } from "./complaint_outcome/age_code/age_code.module";
 import { EquipmentCodeModule } from "./complaint_outcome/equipment_code/equipment_code.module";
-import { SexCodeModule } from "./complaint_outcome/sex_code/sex_code.module";
+import { SexCodeModule } from "./shared/sex_code/sex_code.module";
 import { ThreatLevelCodeModule } from "./complaint_outcome/threat_level_code/threat_level_code.module";
 import { ConflictHistoryCodeModule } from "./complaint_outcome/conflict_history_code/conflict_history_code.module";
 import { EarCodeModule } from "./complaint_outcome/ear_code/ear_code.module";
