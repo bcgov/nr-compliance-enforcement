@@ -34,6 +34,7 @@ const MATCH_PARTY = gql`
         lastName
         dateOfBirth
         genderCode
+        sexCode
         approximateAgeCode
       }
       business {

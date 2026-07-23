@@ -12,7 +12,6 @@ import { formatPhoneNumber } from "react-phone-number-input/input";
 import { Address, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
-import { GenderType } from "@/app/types/app/code-tables/gender";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 
 type Props = {
@@ -124,7 +123,6 @@ const getBusinessColumns = (countrySubdivisions: CountrySubdivisionType[]): Comp
 
 const getPersonColumns = (
   countrySubdivisions: CountrySubdivisionType[],
-  genders: GenderType[],
   approxAges: ApproximateAgeType[],
 ): CompColumn<any>[] => [
   partyNameColumn,
@@ -138,13 +136,12 @@ const getPersonColumns = (
     renderCell: (party) => getAgeDisplay(party, approxAges),
   },
   {
-    label: "Gender",
-    sortKey: "gender",
+    label: "Sex as per ID",
     headerClassName: "comp-cell-min-width-110",
     cellClassName: "comp-cell-width-110",
     isSortable: false,
-    getValue: (party) => genders.find((g) => g.genderCode === party.person?.genderCode)?.shortDescription ?? "",
-    renderCell: (party) => genders.find((g) => g.genderCode === party.person?.genderCode)?.shortDescription ?? "",
+    getValue: (party) => party.person?.sexCode ?? "",
+    renderCell: (party) => party.person?.sexCode ?? "",
   },
   {
     label: "Primary phone",
@@ -182,14 +179,13 @@ export const PartyList: FC<Props> = ({ parties, partyTypeCode, totalItems = 0, i
   );
 
   const countrySubdivisions = useAppSelector((state) => state.codeTables["country-subdivision-type"]);
-  const genders = useAppSelector((state) => state.codeTables["gender-type"]);
   const approximateAgeCodes = useAppSelector((state) => state.codeTables["approximate-age-type"]);
 
   const columns = useMemo(
     () =>
       partyTypeCode === PartyTypeCodes.BUSINESS
         ? getBusinessColumns(countrySubdivisions)
-        : getPersonColumns(countrySubdivisions, genders, approximateAgeCodes),
+        : getPersonColumns(countrySubdivisions, approximateAgeCodes),
     [partyTypeCode],
   );
 

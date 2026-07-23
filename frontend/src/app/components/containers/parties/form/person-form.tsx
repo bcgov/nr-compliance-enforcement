@@ -10,9 +10,9 @@ import {
   selectComplexionDropdown,
   selectEyeColourDropdown,
   selectFacialHairStyleDropdown,
-  selectGenderDropdown,
   selectHairColourDropdown,
   selectHairLengthDropdown,
+  selectPersonSexDropdown,
 } from "@/app/store/reducers/code-table";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
@@ -32,9 +32,10 @@ type PersonFormProps = {
 };
 
 export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
-  const genderCodeOptions = useAppSelector(selectGenderDropdown)
-    ?.filter((opt: { activeInd?: boolean }) => opt.activeInd !== false)
-    .map((opt: { value: string; label: string }) => ({ value: opt.value, label: opt.label }));
+  const sexCodeOptions = useAppSelector(selectPersonSexDropdown).map((opt: { value: string; label: string }) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
 
   const approximateAgeOptions = useAppSelector(selectApproximateAgeDropdown)
     ?.filter((opt: { activeInd?: boolean }) => opt.activeInd !== false)
@@ -258,17 +259,17 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
       />
       <FormField
         form={form}
-        name="genderCode"
-        label="Gender"
+        name="sexCode"
+        label="Sex as per ID"
         render={(field) => (
           <CompSelect
-            id="gender-select"
+            id="sex-select"
             classNamePrefix="comp-select"
             className="comp-details-input"
-            options={genderCodeOptions}
-            value={genderCodeOptions?.find((opt: any) => opt.value === field.state.value)}
+            options={sexCodeOptions}
+            value={sexCodeOptions?.find((opt: any) => opt.value === field.state.value)}
             onChange={(option) => field.handleChange(option?.value ?? "")}
-            placeholder="Select gender"
+            placeholder="Select sex"
             isClearable={true}
             showInactive={false}
             enableValidation={true}

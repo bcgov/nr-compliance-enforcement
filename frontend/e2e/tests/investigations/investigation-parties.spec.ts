@@ -119,7 +119,7 @@ test.describe("Investigation Party Form", () => {
     await page.waitForURL(/\/investigation\/[^/]+\/party\/[^/]+\/edit$/);
 
     // Edit the sex code
-    await selectItemById("gender-select", "Man/boy", page);
+    await selectItemById("sex-select", "M", page);
 
     // Save
     const saveButton = page.locator("#party-save-button");

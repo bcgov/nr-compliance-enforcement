@@ -1449,11 +1449,22 @@ export const selectCascadedCommunity =
 export const selectSexDropdown = createSelector(
   (state: RootState) => state.codeTables.sex,
   (items) =>
-    items.map(({ sex: value, shortDescription: label, isActive }) => ({
-      label,
-      value,
-      isActive,
-    })),
+    items
+      .filter(({ sex }) => sex !== "X")
+      .map(({ sex: value, shortDescription: label, isActive }) => ({
+        label,
+        value,
+        isActive,
+      })),
+);
+
+export const selectPersonSexDropdown = createSelector(
+  (state: RootState) => state.codeTables.sex,
+  (items) =>
+    items
+      .filter(({ sex, isActive }) => sex !== "U" && isActive !== false)
+      .map(({ sex }) => ({ label: sex, value: sex }))
+      .sort((a, b) => a.value.localeCompare(b.value)),
 );
 
 export const selectGenderDropdown = createSelector(

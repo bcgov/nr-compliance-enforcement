@@ -9,6 +9,7 @@ input PersonInput {
   driversLicenseCountryCode: String
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
+  sexCode: String
   aliases: [AliasInput]
   heightInCm: Float
   weightInKg: Float
@@ -41,6 +42,7 @@ input PersonUpdateInput {
   driversLicenseCountryCode: String
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
+  sexCode: String
   aliases: [AliasInput]
   heightInCm: Float
   weightInKg: Float
@@ -67,5 +69,6 @@ input PersonMatchInput {
   lastName: String
   dateOfBirth: DateTime
   genderCode: String
+  sexCode: String
   driversLicenseNumber: String
 }
