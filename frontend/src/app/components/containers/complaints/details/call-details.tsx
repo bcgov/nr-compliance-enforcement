@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTime } from "@common/methods";
+import { formatDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
@@ -131,8 +131,8 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
             <CompLocationInfo
-              xCoordinate={coordinates?.[0] === 0 ? "" : coordinates?.[0].toString() ?? ""}
-              yCoordinate={coordinates?.[1] === 0 ? "" : coordinates?.[1].toString() ?? ""}
+              xCoordinate={coordinates?.[0] === 0 ? "" : (coordinates?.[0].toString() ?? "")}
+              yCoordinate={coordinates?.[1] === 0 ? "" : (coordinates?.[1].toString() ?? "")}
             />
             <br />
           </dl>

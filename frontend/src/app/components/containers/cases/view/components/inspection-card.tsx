@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatDate, formatTime } from "@common/methods";
+import { applyStatusClass, formatDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
@@ -31,7 +31,7 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, case
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatDate(lastUpdatedDate)} {formatTime(lastUpdatedDate)}
+          {formatDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
         </ActivityCardField>
       </div>
       {caseIdentifier && (

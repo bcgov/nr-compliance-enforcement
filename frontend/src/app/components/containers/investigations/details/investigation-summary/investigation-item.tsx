@@ -1,4 +1,4 @@
-import { formatDate, formatTime } from "@/app/common/methods";
+import { formatDate, formatTimestampAsLocalTime } from "@/app/common/methods";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { Investigation } from "@/generated/graphql";
@@ -19,7 +19,8 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
   const createdBy = createdByObj ? `${createdByObj?.last_name}, ${createdByObj?.first_name}` : "Not Assigned";
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
   const communityLabel = investigationData.community
-    ? (communityOptions.find((o: Option) => o.value === investigationData.community)?.label ?? investigationData.community)
+    ? (communityOptions.find((o: Option) => o.value === investigationData.community)?.label ??
+      investigationData.community)
     : "";
   return (
     <section className="comp-details-section">
@@ -48,7 +49,7 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
                   <div>
                     <i className="bi bi-calendar"></i>&nbsp;{formatDate(investigationData.openedTimestamp)}
                     &nbsp;&nbsp;
-                    <i className="bi bi-clock"></i>&nbsp;{formatTime(investigationData.openedTimestamp)}
+                    <i className="bi bi-clock"></i>&nbsp;{formatTimestampAsLocalTime(investigationData.openedTimestamp)}
                   </div>
                 )}
               </dd>

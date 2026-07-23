@@ -171,14 +171,6 @@ export const formatDate = (input: string | undefined, includeRelative: boolean =
   }
 };
 
-export const formatTime = (input: string | undefined): string => {
-  if (!input) {
-    return "";
-  }
-
-  return format(Date.parse(input), "HH:mm");
-};
-
 export const formatDateTime = (input: string | undefined): string => {
   if (!input) {
     return "";
@@ -592,6 +584,17 @@ export const parseLocalDateTimeToUTC = (
     utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
     utcTime: `${utcHH}:${utcMM}`,
   };
+};
+
+/**
+ * Returns the time portion only of a database timestamp, displays in the users local time
+ */
+export const formatTimestampAsLocalTime = (input: string | undefined): string => {
+  if (!input) {
+    return "";
+  }
+
+  return format(Date.parse(input), "HH:mm");
 };
 
 /**

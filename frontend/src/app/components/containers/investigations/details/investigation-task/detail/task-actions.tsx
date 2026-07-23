@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { ActivityNote } from "@/generated/graphql";
-import { formatDate, formatTime, formatDateTime, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { formatDate, formatTimestampAsLocalTime, formatDateTime, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
@@ -32,7 +32,7 @@ const TaskActionRow: FC<{
     const d = parseUTCDateTimeToLocal(taskAction.actionedDate, taskAction.actionedTime);
     if (!d) return "";
     const s = d.toISOString?.() ?? d.toString();
-    return taskAction.actionedTime ? `${formatDate(s)} ${formatTime(s)}` : formatDate(s);
+    return taskAction.actionedTime ? `${formatDate(s)} ${formatTimestampAsLocalTime(s)}` : formatDate(s);
   })();
 
   const actionedOfficerStr = actionedByUser ? `${actionedByUser.last_name}, ${actionedByUser.first_name}` : "-";

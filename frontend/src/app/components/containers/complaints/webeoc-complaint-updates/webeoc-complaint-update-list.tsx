@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { getWebEOCChangeCount, selectRelatedData, getRelatedData } from "@store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
-import { formatDate, formatTime } from "@common/methods";
+import { formatDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { UUID } from "node:crypto";
@@ -171,7 +171,7 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                       <i className="bi bi-calendar"></i>
                       {formatDate(update.header.date)}
                       <i className="bi bi-clock comp-margin-left-xs"></i>
-                      {formatTime(update.header.date)}
+                      {formatTimestampAsLocalTime(update.header.date)}
                     </span>{" "}
                     | <span>{update.header.officer}</span>
                   </div>

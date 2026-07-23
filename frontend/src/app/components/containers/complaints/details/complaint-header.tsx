@@ -10,7 +10,13 @@ import {
   selectComplaintViewMode,
   selectRelatedData,
 } from "@store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
+import {
+  applyStatusClass,
+  formatDate,
+  formatTimestampAsLocalTime,
+  getAvatarInitials,
+  joinWithAnd,
+} from "@common/methods";
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -692,7 +698,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTime(loggedDate)}
+                    {formatTimestampAsLocalTime(loggedDate)}
                   </div>
                 </dd>
               </dl>
@@ -708,7 +714,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                       </div>
                       <div>
                         <i className="bi bi-clock"></i>
-                        {formatTime(lastUpdated)}
+                        {formatTimestampAsLocalTime(lastUpdated)}
                       </div>
                     </>
                   )}

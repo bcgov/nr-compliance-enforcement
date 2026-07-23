@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { formatTime } from "@/app/common/methods";
+import { formatTimestampAsLocalTime } from "@/app/common/methods";
 import { Event } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 
@@ -167,7 +167,7 @@ export const CaseHistoryItem: FC<CaseHistoryItemProps> = ({ event, appUsers, ent
   return (
     <li className="list-group-item d-flex align-items-center py-2">
       <i className={`bi ${getIconByVerb(event.eventVerbTypeCode.eventVerbTypeCode)} me-3 text-primary`}></i>
-      <span className="me-3 text-muted">{formatTime(event.publishedTimestamp)}</span>
+      <span className="me-3 text-muted">{formatTimestampAsLocalTime(event.publishedTimestamp)}</span>
       <span className="me-3 text-muted">{`•`}</span>
       <span className="fw-bold me-2">{getActorName()}</span>
       <span>{getEventDescription(event, entityNames)}</span>

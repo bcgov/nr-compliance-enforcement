@@ -6,7 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTime } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTimestampAsLocalTime } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -258,7 +258,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       {report.actionedTime && (
                                         <div>
                                           <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                          {formatTime(report.actionedTime?.toString())}
+                                          {formatTimestampAsLocalTime(report.actionedTime?.toString())}
                                         </div>
                                       )}
                                     </div>

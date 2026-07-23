@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatDate, formatTime } from "@common/methods";
+import { applyStatusClass, formatDate, formatTimestampAsLocalTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { selectOfficerByAppUserGuid } from "@store/reducers/officer";
@@ -55,7 +55,7 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatDate(lastUpdatedDate)} {formatTime(lastUpdatedDate)}
+          {formatDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
         </ActivityCardField>
         <ActivityCardField label="Community">{community}</ActivityCardField>
         <ActivityCardField label="Parties">{partyCount}</ActivityCardField>

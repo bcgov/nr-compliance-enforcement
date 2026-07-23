@@ -3,7 +3,7 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { parseUTCDateTimeToLocal, formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
@@ -97,7 +97,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   {investigationData?.discoveryTime && (
                     <div>
                       <i className="bi bi-clock"></i>
-                      {formatTime(discoveryDate)}
+                      {formatTimestampAsLocalTime(discoveryDate)}
                     </div>
                   )}
                 </>
@@ -117,7 +117,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTime(lastUpdated)}
+                    {formatTimestampAsLocalTime(lastUpdated)}
                   </div>
                 </>
               )}
