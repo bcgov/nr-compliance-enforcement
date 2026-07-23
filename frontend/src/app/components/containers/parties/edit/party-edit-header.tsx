@@ -1,14 +1,16 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 interface PartyEditHeaderProps {
   isEditMode?: boolean;
   cancelButtonClick: () => void;
+  partyName?: string;
   partyIdentifier?: string;
   saveButtonClick: () => void;
   // disable while a save is in progress
   saveDisabled?: boolean;
+  badges?: ReactNode;
 }
 
 export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
@@ -17,6 +19,8 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
   saveDisabled = false,
   isEditMode = false,
   partyIdentifier,
+  partyName,
+  badges,
 }) => {
   return (
     <div className="comp-details-header">
@@ -28,6 +32,11 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to="/parties">Parties</Link>
               </li>
+              {isEditMode && (
+                <li className="breadcrumb-item comp-nav-item-name-inverted">
+                  <Link to={`/party/${partyIdentifier}`}>{partyName}</Link>
+                </li>
+              )}
               <li
                 className="breadcrumb-item"
                 aria-current="page"
@@ -42,12 +51,13 @@ export const PartyEditHeader: FC<PartyEditHeaderProps> = ({
         <div className="comp-details-title-container">
           <div className="comp-details-title-info">
             <h1 className="comp-box-complaint-id">
-              {isEditMode && partyIdentifier ? (
-                <span>Party of interest #{partyIdentifier}</span>
+              {isEditMode && partyName ? (
+                <span>{partyName}</span>
               ) : (
                 <span>{isEditMode ? "Edit party" : "Create party"} </span>
               )}
             </h1>
+            {badges}
           </div>
           <div className="comp-header-actions">
             <Button

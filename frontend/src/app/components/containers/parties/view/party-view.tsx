@@ -10,6 +10,7 @@ import { Button } from "react-bootstrap";
 import PartyDetail from "@/app/components/containers/parties/view/party-detail/party-detail";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
+import { getPartyName } from "@/app/common/party-name";
 
 export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -148,19 +149,6 @@ export const PartyView: FC = () => {
 
   const backToParties = () => navigate(`/parties/`);
 
-  const displayName = () => {
-    let result = "";
-    if (partyData?.person) {
-      const parts = [partyData.person?.firstName, partyData.person?.middleNames, partyData.person?.lastName].filter(
-        Boolean,
-      );
-      result = parts.join(" ");
-    } else if (partyData?.business) {
-      result = `${partyData.business?.name}`;
-    }
-    return result;
-  };
-
   const personDob = partyData?.person?.dateOfBirth ? new Date(partyData.person.dateOfBirth) : null;
   const personIsYoung = partyData?.person ? isYoungPerson(personDob, partyData.person.approximateAgeCode) : false;
 
@@ -182,7 +170,7 @@ export const PartyView: FC = () => {
       {partyData && (
         <div className="comp-complaint-details">
           <PartyHeader
-            title={displayName()}
+            title={getPartyName(partyData)}
             badges={
               <>
                 {partyData?.person?.boloIndicator && (

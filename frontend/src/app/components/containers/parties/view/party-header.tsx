@@ -16,7 +16,13 @@ export const PartyHeader: FC<PartyHeaderProps> = ({ title, badges, actions }) =>
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <li className="breadcrumb-item comp-nav-item-name-inverted">
-                <Link to="/parties">Published parties</Link>
+                <Link to="/parties">Parties</Link>
+              </li>
+              <li
+                className="breadcrumb-item"
+                aria-current="page"
+              >
+                {title}
               </li>
             </ol>
           </nav>

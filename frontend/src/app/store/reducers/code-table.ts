@@ -49,6 +49,7 @@ import {
   fetchTaskStatusTypes,
   fetchTaskCategoryTypes,
   fetchTaskTypes,
+  fetchInvestigationSourceCodes,
   fetchLegislationTypes,
   fetchEnforcementActionTypes,
   fetchTicketOutcomeTypes,
@@ -117,6 +118,7 @@ const initialState: CodeTableState = {
   "task-status-type": [],
   "task-category-type": [],
   "task-type": [],
+  "investigation-source-code": [],
   "legislation-type": [],
   "enforcement-action-type": [],
   "ticket-outcome-type": [],
@@ -203,6 +205,7 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
       "task-status-type": taskStatusType,
       "task-category-type": taskCategoryType,
       "task-type": taskType,
+      "investigation-source-code": investigationSourceCode,
       "legislation-type": legislationType,
       "enforcement-action-type": enforcementActionType,
       "ticket-outcome-type": ticketOutcomeType,
@@ -370,6 +373,9 @@ export const fetchAllCodeTables = (): AppThunk => async (dispatch) => {
     }
     if (!from(taskType).any()) {
       dispatch(fetchTaskTypes());
+    }
+    if (!from(investigationSourceCode).any()) {
+      dispatch(fetchInvestigationSourceCodes());
     }
     if (!from(legislationType).any()) {
       dispatch(fetchLegislationTypes());
@@ -1751,6 +1757,16 @@ export const selectFacialHairStyleDropdown = createSelector(
   (state: RootState) => state.codeTables["facial-hair-style-type"],
   (items) =>
     items.map(({ facialHairStyleCode: value, shortDescription: label, activeInd }) => ({
+      label,
+      value,
+      activeInd,
+    })),
+);
+
+export const selectInvestigationSourceCodeDropdown = createSelector(
+  (state: RootState) => state.codeTables["investigation-source-code"],
+  (items) =>
+    items.map(({ investigationSourceCode: value, shortDescription: label, activeInd }) => ({
       label,
       value,
       activeInd,

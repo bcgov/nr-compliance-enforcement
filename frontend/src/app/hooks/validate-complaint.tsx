@@ -146,14 +146,15 @@ const useValidateComplaint = () => {
       //check if file review is required, review must be completed
       const fileReviewCriteria = (isReviewRequired && reviewComplete !== null) || !isReviewRequired;
 
-      // check External file reference exists if required required
+      // check External file reference exists if required
       const hasCaseAccessRole = UserService.hasRole(Roles.CASE_ACCESS);
       const referenceNumberCriteria =
         complaintType === COMPLAINT_TYPES.ERS &&
         complaint &&
         ["COS", "PARKS"].includes(complaint.ownedBy) &&
         !hasCaseAccessRole
-          ? !!complaint.referenceNumber
+          ? !!complaint.referenceNumber ||
+            (assessmentApplies && assessments.some((assessment) => assessment.action_required === "No"))
           : true;
 
       // check validation for investigation/case actions (for CEEB/NROS/MINES)

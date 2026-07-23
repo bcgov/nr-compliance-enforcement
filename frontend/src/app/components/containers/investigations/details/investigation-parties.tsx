@@ -2,7 +2,7 @@ import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
 import { REMOVE_PARTY } from "@/app/types/modal/modal-types";
-import { InspectionParty, Investigation, InvestigationParty } from "@/generated/graphql";
+import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
@@ -78,10 +78,6 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
     [dispatch, investigationGuid, removePartyMutation],
   );
 
-  const handleEditParty = (party: InvestigationParty | InspectionParty) => {
-    navigate(`/investigation/${investigationGuid}/party/${(party as InvestigationParty).partyIdentifier}/edit`);
-  };
-
   const parties = (investigationData?.parties ?? []).filter(Boolean) as InvestigationParty[];
 
   return (
@@ -108,7 +104,6 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
           <PartiesList
             parties={parties}
             onRemoveParty={isReadOnly ? undefined : handleRemoveParty}
-            onEditParty={isReadOnly ? undefined : handleEditParty}
             onViewParty={(partyIdentifier) => navigate(`/investigation/${investigationGuid}/party/${partyIdentifier}`)}
             activityType={CaseActivities.INVESTIGATION}
           />

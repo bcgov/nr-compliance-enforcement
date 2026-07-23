@@ -20,6 +20,7 @@ type Investigation {
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
+  investigationSourceCode: String
   parties: [InvestigationParty]
   contraventions: [Contravention]
   tasks: [Task]
@@ -41,6 +42,7 @@ input CreateInvestigationInput {
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
+  investigationSourceCode: String
 }
 
 input UpdateInvestigationInput {
@@ -56,6 +58,7 @@ input UpdateInvestigationInput {
   discoveryDate: DateTime
   discoveryTime: DateTime
   community: String
+  investigationSourceCode: String
 }
 
 input InvestigationFilters {
