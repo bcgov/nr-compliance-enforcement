@@ -6,7 +6,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDate, formatLocalTime, formatTime, parseUTCDateTimeToLocal, truncateString } from "@/app/common/methods";
+import { formatDate, formatLocalTime, parseUTCDateTimeToLocal, truncateString } from "@/app/common/methods";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type TaskExhibitListProps = {

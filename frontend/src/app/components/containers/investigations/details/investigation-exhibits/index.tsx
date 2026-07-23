@@ -8,7 +8,7 @@ import { ExhibitsFilterBar } from "./exhibits-filter-bar";
 import { ExhibitsList } from "./exhibits-list";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { graphqlRequest } from "@/app/graphql/client";
-import { escapeCsvCell, formatDateTimeStr } from "@common/methods";
+import { escapeCsvCell } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
