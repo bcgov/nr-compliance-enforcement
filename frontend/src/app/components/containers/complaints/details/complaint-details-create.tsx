@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
-import { bcUtmZoneNumbers, formatLatLongCoordinate, formatLocalDateTimeToUTC } from "@common/methods";
+import { bcUtmZoneNumbers, formatLatLongCoordinate, parseLocalDateTimeToUTC } from "@common/methods";
 import { ValidationTextArea } from "@common/validation-textarea";
 import Select from "react-select";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -588,7 +588,7 @@ export const CreateComplaint: FC = () => {
       } else {
         setIncidentDateTimeErrorMsg("");
       }
-      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const { utcDate, utcTime } = parseLocalDateTimeToUTC(date, time);
       const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
       applyComplaintData(complaint);
     } else {

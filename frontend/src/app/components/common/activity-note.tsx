@@ -11,7 +11,7 @@ import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { parseUTCDateTimeToLocal, formatLocalTime, formatLocalDateTimeToUTC } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatLocalTime, parseLocalDateTimeToUTC } from "@common/methods";
 import { gql } from "graphql-request";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -167,7 +167,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     let actionedTime: Date | null = null;
     let actionedDate: Date | undefined = selectedActionedDateTime;
     if (selectedActionedDateTime && selectedActionedTime) {
-      const { utcDate } = formatLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
+      const { utcDate } = parseLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
       const combined = new Date(selectedActionedDateTime);
       const [hh, mm] = selectedActionedTime.split(":").map(Number);
       combined.setHours(hh, mm, 0, 0);

@@ -4,7 +4,7 @@ import {
   bcUtmZoneNumbers,
   getSelectedOfficer,
   formatLatLongCoordinate,
-  formatLocalDateTimeToUTC,
+  parseLocalDateTimeToUTC,
 } from "@common/methods";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
@@ -697,7 +697,7 @@ export const ComplaintDetailsEdit: FC = () => {
       } else {
         setIncidentDateTimeErrorMsg("");
       }
-      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const { utcDate, utcTime } = parseLocalDateTimeToUTC(date, time);
       const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     } else {

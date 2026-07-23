@@ -578,7 +578,7 @@ export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: Optio
 /**
  * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
  */
-export const formatLocalDateTimeToUTC = (
+export const parseLocalDateTimeToUTC = (
   date: Date,
   time: string | null | undefined,
 ): { utcDate: Date; utcTime: string | null } => {
