@@ -32,7 +32,7 @@ import {
   getGirTypeByGirTypeCode,
   getIssueDescription,
   parseUTCDateTimeToLocal,
-  formatLocalTime,
+  formatDateObjectAsLocalTime,
 } from "@common/methods";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
@@ -1104,7 +1104,7 @@ export const selectComplaintDetails = createSelector(
 
       // Parse UTC date+time from backend into local Date, and extract local time string
       const localDate = parseUTCDateTimeToLocal(incidentDate, incidentTime);
-      const localIncidentTime = localDate && incidentTime ? formatLocalTime(localDate) : incidentTime;
+      const localIncidentTime = localDate && incidentTime ? formatDateObjectAsLocalTime(localDate) : incidentTime;
 
       result = {
         ...result,

@@ -11,7 +11,7 @@ import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { parseUTCDateTimeToLocal, formatLocalTime, parseLocalDateTimeToUTC } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatDateObjectAsLocalTime, parseLocalDateTimeToUTC } from "@common/methods";
 import { gql } from "graphql-request";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -108,7 +108,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
     const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime);
-    return d && initialData?.actionedTime ? formatLocalTime(d) : null;
+    return d && initialData?.actionedTime ? formatDateObjectAsLocalTime(d) : null;
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 

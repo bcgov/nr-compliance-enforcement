@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatLocalTime } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatDateObjectAsLocalTime } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -39,7 +39,7 @@ export const InvestigationForm = ({
   );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
     const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
-    return d && discoveryTime ? formatLocalTime(d) : null;
+    return d && discoveryTime ? formatDateObjectAsLocalTime(d) : null;
   });
 
   const leadAgency = getUserAgency();
