@@ -7,6 +7,7 @@ import { country_code } from "./country_code";
 import { country_subdivision_code } from "./country_subdivision_code";
 import { eye_colour_code } from "./eye_colour_code";
 import { gender_code } from "./gender_code";
+import { sex_code } from "./sex_code";
 import { hair_colour_code } from "./hair_colour_code";
 import { hair_length_code } from "./hair_length_code";
 import { person_facial_hair_style_code } from "./person_facial_hair_style_code";
@@ -51,6 +52,9 @@ export class person {
 
   @ApiPropertyOptional({ type: String })
   gender_code?: string;
+
+  @ApiPropertyOptional({ type: String })
+  sex_code?: string;
 
   @ApiPropertyOptional({ type: String })
   drivers_license_class?: string;
@@ -135,6 +139,9 @@ export class person {
 
   @ApiPropertyOptional({ type: () => gender_code })
   gender_code_person_gender_codeTogender_code?: gender_code;
+
+  @ApiPropertyOptional({ type: () => sex_code })
+  sex_code_person_sex_codeTosex_code?: sex_code;
 
   @ApiPropertyOptional({ type: () => hair_colour_code })
   hair_colour_code_person_hair_colour_codeTohair_colour_code?: hair_colour_code;
