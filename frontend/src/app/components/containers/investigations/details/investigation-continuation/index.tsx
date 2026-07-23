@@ -8,7 +8,7 @@ import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/grap
 import { startOfDay } from "date-fns";
 import {
   parseUTCDateTimeToLocal,
-  formatDate,
+  formatTimestampAsLocalDate,
   formatTimestampAsLocalDateTime,
   formatTimestampAsLocalTime,
 } from "@common/methods";
@@ -220,7 +220,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                 id="complaint-incident-date"
                                 style={{ marginRight: "8px" }}
                               ></i>
-                              {formatDate(group.date.toString())}
+                              {formatTimestampAsLocalDate(group.date.toString())}
                             </div>
                             <div>
                               {isOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}

@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTimestampAsLocalTime } from "@common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -57,7 +57,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
         <div key={action.actor}>
           <span>{getActorDisplayName(action.actor, officers)}</span>
           <span>
-            {` (${formatDate(new Date(action.date).toString())} ${formatTimestampAsLocalTime(new Date(action.date).toString())})`}
+            {` (${formatTimestampAsLocalDate(new Date(action.date).toString())} ${formatTimestampAsLocalTime(new Date(action.date).toString())})`}
           </span>
         </div>
       ))}
@@ -101,7 +101,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                     className="bi bi-calendar comp-margin-right-xxs"
                     id="complaint-incident-date"
                   ></i>
-                  {formatDate(new Date(actions[0]?.date).toString())}
+                  {formatTimestampAsLocalDate(new Date(actions[0]?.date).toString())}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                   {formatTimestampAsLocalTime(new Date(actions[0]?.date).toString())}
                   {actions.length > 1 && (

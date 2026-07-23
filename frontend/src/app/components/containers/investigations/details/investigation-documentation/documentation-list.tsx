@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDate, truncateFilenameString } from "@common/methods";
+import { formatTimestampAsLocalDate, truncateFilenameString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
@@ -140,7 +140,7 @@ export const DocumentationList: FC<Props> = ({
       cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.date ?? "",
-      renderCell: (attachment) => (attachment.date ? formatDate(attachment.date) : "-"),
+      renderCell: (attachment) => (attachment.date ? formatTimestampAsLocalDate(attachment.date) : "-"),
     },
     {
       label: "Taken by",

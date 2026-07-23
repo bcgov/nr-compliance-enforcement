@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTimestampAsLocalTime } from "@common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
@@ -66,7 +66,7 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
                       className="bi bi-calendar comp-margin-right-xxs"
                       id="complaint-incident-date"
                     ></i>
-                    {formatDate(incidentDate?.toString())}
+                    {formatTimestampAsLocalDate(incidentDate?.toString())}
                   </>
                 )}
                 {incidentTime && (

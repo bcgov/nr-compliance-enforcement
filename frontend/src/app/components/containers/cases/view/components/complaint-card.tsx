@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
-import { applyStatusClass, formatDate } from "@common/methods";
+import { applyStatusClass, formatTimestampAsLocalDate } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
@@ -69,7 +69,7 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint, caseNam
     }
   };
 
-  const dateLogged = complaint.reportedOn ? formatDate(complaint.reportedOn.toString()) : "—";
+  const dateLogged = complaint.reportedOn ? formatTimestampAsLocalDate(complaint.reportedOn.toString()) : "—";
   const agency = getAgencyDescription(complaint.ownedBy || "");
   const complaintType = complaintTypeToName(complaint.type || "");
   const issueType = getIssueType(complaint.type || "", complaint.issueType || "");

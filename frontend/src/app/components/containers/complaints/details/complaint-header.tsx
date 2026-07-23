@@ -12,7 +12,7 @@ import {
 } from "@store/reducers/complaints";
 import {
   applyStatusClass,
-  formatDate,
+  formatTimestampAsLocalDate,
   formatTimestampAsLocalTime,
   getAvatarInitials,
   joinWithAnd,
@@ -694,7 +694,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 <dd className="comp-date-time-value">
                   <div id="complaint-date-logged">
                     <i className="bi bi-calendar"></i>
-                    {formatDate(loggedDate)}
+                    {formatTimestampAsLocalDate(loggedDate)}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
@@ -710,7 +710,7 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <>
                       <div>
                         <i className="bi bi-calendar"></i>
-                        {formatDate(lastUpdated)}
+                        {formatTimestampAsLocalDate(lastUpdated)}
                       </div>
                       <div>
                         <i className="bi bi-clock"></i>

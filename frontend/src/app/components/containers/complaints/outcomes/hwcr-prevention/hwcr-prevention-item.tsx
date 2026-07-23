@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Prevention } from "@/app/types/outcomes/prevention";
 import { Badge, Button, Card } from "react-bootstrap";
-import { formatDate } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { selectComplaintViewMode } from "@store/reducers/complaints";
 import { useAppSelector } from "@/app/hooks/hooks";
 import UserService from "@/app/service/user-service";
@@ -49,7 +49,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               </div>
               <div id="prev-educ-outcome-date-div">
                 <dt>Date</dt>
-                <dd>{formatDate(`${new Date(prevention.date ?? new Date())}`)}</dd>
+                <dd>{formatTimestampAsLocalDate(`${new Date(prevention.date ?? new Date())}`)}</dd>
               </div>
             </dl>
           </div>

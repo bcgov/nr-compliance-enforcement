@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { selectComplaintDetails, selectComplaintHeader } from "@store/reducers/complaints";
 import { useAppSelector } from "@hooks/hooks";
-import { applyStatusClass, formatDate } from "@common/methods";
+import { applyStatusClass, formatTimestampAsLocalDate } from "@common/methods";
 import { Badge, Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
@@ -78,7 +78,7 @@ export const ComplaintSummaryPopup: FC<Props> = ({ complaint_identifier, complai
               <dt className="comp-summary-popup-details">
                 <i className="bi bi-calendar-fill" /> Logged
               </dt>
-              <dd>{formatDate(loggedDate, true)}</dd>
+              <dd>{formatTimestampAsLocalDate(loggedDate, true)}</dd>
             </div>
             <div>
               <dt className="comp-summary-popup-details">

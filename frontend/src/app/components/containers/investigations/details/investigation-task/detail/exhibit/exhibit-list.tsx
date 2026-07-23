@@ -6,7 +6,12 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDate, formatDateObjectAsLocalTime, parseUTCDateTimeToLocal, truncateString } from "@/app/common/methods";
+import {
+  formatTimestampAsLocalDate,
+  formatDateObjectAsLocalTime,
+  parseUTCDateTimeToLocal,
+  truncateString,
+} from "@/app/common/methods";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 
 type TaskExhibitListProps = {
@@ -82,7 +87,7 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({
       renderCell: (exhibit) => {
         const localIntake = parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime);
         if (!localIntake) return "";
-        const datePart = formatDate(localIntake.toISOString());
+        const datePart = formatTimestampAsLocalDate(localIntake.toISOString());
         return exhibit.intakeTime ? `${datePart} ${formatDateObjectAsLocalTime(localIntake)}` : datePart;
       },
     },

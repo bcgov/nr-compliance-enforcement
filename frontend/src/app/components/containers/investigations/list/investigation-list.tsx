@@ -4,7 +4,7 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { Investigation } from "@/generated/graphql";
-import { applyStatusClass, formatDate } from "@common/methods";
+import { applyStatusClass, formatTimestampAsLocalDate } from "@common/methods";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -67,7 +67,7 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (investigation) => investigation.openedTimestamp ?? "",
-      renderCell: (investigation) => formatDate(investigation.openedTimestamp),
+      renderCell: (investigation) => formatTimestampAsLocalDate(investigation.openedTimestamp),
     },
     {
       label: "Community",
@@ -136,7 +136,7 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (investigation) => investigation.updatedTimestamp ?? "",
-      renderCell: (investigation) => formatDate(investigation.updatedTimestamp) || "-",
+      renderCell: (investigation) => formatTimestampAsLocalDate(investigation.updatedTimestamp) || "-",
     },
   ];
 

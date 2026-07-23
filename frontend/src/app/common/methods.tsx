@@ -139,38 +139,6 @@ export const getFileExtension = (filename: string) => {
   return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
 };
 
-export const formatDate = (input: string | undefined, includeRelative: boolean = false): string => {
-  if (!input) {
-    return "";
-  }
-
-  try {
-    // Handle date-only strings eg (YYYY-MM-DD)
-    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
-      if (!includeRelative) return input;
-      return `${input} (${formatDistanceToNow(new Date(input + "T00:00:00Z"), { addSuffix: true })})`;
-    }
-
-    const date = new Date(input);
-
-    if (Number.isNaN(date.getTime())) {
-      throw new Error("Invalid date format");
-    }
-
-    const formattedDate = format(date, "yyyy-MM-dd");
-
-    if (includeRelative) {
-      const relative = formatDistanceToNow(date, { addSuffix: true });
-      return `${formattedDate} (${relative})`;
-    }
-
-    return formattedDate;
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return "";
-  }
-};
-
 // Protect values with quotes, commas and new lines for CSV export
 export const escapeCsvCell = (value: string): string => {
   const raw = String(value ?? "");
@@ -579,6 +547,48 @@ export const parseLocalDateTimeToUTC = (
 };
 
 /**
+ * Formats a UTC timestamp column value as a local yyyy-MM-dd date string.
+ *
+ * Input is expected to be a full ISO timestamp (e.g. "2026-07-01T05:00:00.000Z"), which is
+ * converted to the runtime's local timezone before formatting.
+ *
+ * In general this method should not be used as it may lead to misleading dates and off by one errors
+ * However it is in widespread use today - ideally these call sites should be updated to use formatDateColumnAsDate
+ * and their database columns should be changed from timestamp to date
+ */
+export const formatTimestampAsLocalDate = (input: string | undefined, includeRelative: boolean = false): string => {
+  if (!input) {
+    return "";
+  }
+
+  try {
+    // Handle date-only strings eg (YYYY-MM-DD)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+      if (!includeRelative) return input;
+      return `${input} (${formatDistanceToNow(new Date(input + "T00:00:00Z"), { addSuffix: true })})`;
+    }
+
+    const date = new Date(input);
+
+    if (Number.isNaN(date.getTime())) {
+      throw new Error("Invalid date format");
+    }
+
+    const formattedDate = format(date, "yyyy-MM-dd");
+
+    if (includeRelative) {
+      const relative = formatDistanceToNow(date, { addSuffix: true });
+      return `${formattedDate} (${relative})`;
+    }
+
+    return formattedDate;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
+};
+
+/**
  * Returns the time portion only of a database timestamp, displays in the users local time
  */
 export const formatTimestampAsLocalTime = (input: string | undefined): string => {
@@ -589,6 +599,9 @@ export const formatTimestampAsLocalTime = (input: string | undefined): string =>
   return format(Date.parse(input), "HH:mm");
 };
 
+/**
+ * Returns both the date and time portions of a database timestamp, displays in the users local time
+ */
 export const formatTimestampAsLocalDateTime = (input: string | undefined): string => {
   if (!input) {
     return "";
@@ -614,7 +627,9 @@ export const formatDateColumnAsDate = (date: string | null | undefined, whenAbse
     return whenAbsent;
   }
   const dateOnly = String(date).slice(0, 10);
-  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(date);
+  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly)
+    ? formatTimestampAsLocalDate(dateOnly)
+    : formatTimestampAsLocalDate(date);
   return formatted || whenAbsent;
 };
 

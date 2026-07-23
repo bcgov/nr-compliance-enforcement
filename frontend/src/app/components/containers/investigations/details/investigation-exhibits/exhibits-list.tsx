@@ -2,7 +2,12 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDate, formatDateObjectAsLocalTime, parseUTCDateTimeToLocal, truncateString } from "@common/methods";
+import {
+  formatTimestampAsLocalDate,
+  formatDateObjectAsLocalTime,
+  parseUTCDateTimeToLocal,
+  truncateString,
+} from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
@@ -110,7 +115,7 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       renderCell: (exhibit) => {
         const localIntake = parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime);
         if (!localIntake) return "";
-        const datePart = formatDate(localIntake.toISOString());
+        const datePart = formatTimestampAsLocalDate(localIntake.toISOString());
         return exhibit.intakeTime ? `${datePart} ${formatDateObjectAsLocalTime(localIntake)}` : datePart;
       },
     },

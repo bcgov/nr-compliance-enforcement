@@ -4,7 +4,7 @@ import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { openModal, profileDisplayName } from "@store/reducers/app";
-import { formatDate } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { getComplaintStatusById, selectComplaint, selectComplaintViewMode } from "@store/reducers/complaints";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -341,7 +341,9 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
 
                     <div id="complaint-file-review-date-div">
                       <dt>Date</dt>
-                      <dd id="file-review-date">{formatDate(new Date(reviewCompleteDate).toString())}</dd>
+                      <dd id="file-review-date">
+                        {formatTimestampAsLocalDate(new Date(reviewCompleteDate).toString())}
+                      </dd>
                     </div>
                   </dl>
                 )}

@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { Card, Button, Badge } from "react-bootstrap";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 
 import { DeleteConfirmModal } from "@components/modal/instances/delete-confirm-modal";
 import { EquipmentDetailsDto } from "@/app/types/app/complaint-outcomes/equipment-details";
@@ -165,7 +165,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
             </div>
             <div>
               <dt>Set/used date</dt>
-              <dd id="equipment-date-set-div">{formatDate(setEquipmentDate?.toString())}</dd>
+              <dd id="equipment-date-set-div">{formatTimestampAsLocalDate(setEquipmentDate?.toString())}</dd>
             </div>
             {equipment.id &&
               removedEquipmentActor &&
@@ -180,7 +180,7 @@ export const EquipmentItem: FC<EquipmentItemProps> = ({ equipment, isEditDisable
                   </div>
                   <div>
                     <dt>Removal date</dt>
-                    <dd id="equipment-removal-date">{formatDate(removedEquipmentDate?.toString())}</dd>
+                    <dd id="equipment-removal-date">{formatTimestampAsLocalDate(removedEquipmentDate?.toString())}</dd>
                   </div>
                 </>
               )}

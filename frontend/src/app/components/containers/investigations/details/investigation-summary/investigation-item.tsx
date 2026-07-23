@@ -1,4 +1,4 @@
-import { formatDate, formatTimestampAsLocalTime } from "@/app/common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@/app/common/methods";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { Investigation } from "@/generated/graphql";
@@ -47,7 +47,8 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
               <dd id="comp-details-date-logged">
                 {investigationData.openedTimestamp && (
                   <div>
-                    <i className="bi bi-calendar"></i>&nbsp;{formatDate(investigationData.openedTimestamp)}
+                    <i className="bi bi-calendar"></i>&nbsp;
+                    {formatTimestampAsLocalDate(investigationData.openedTimestamp)}
                     &nbsp;&nbsp;
                     <i className="bi bi-clock"></i>&nbsp;{formatTimestampAsLocalTime(investigationData.openedTimestamp)}
                   </div>

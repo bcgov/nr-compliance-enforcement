@@ -12,7 +12,7 @@ import {
 } from "@store/reducers/code-table";
 import { from } from "linq-to-typescript";
 import { BsExclamationCircleFill } from "react-icons/bs";
-import { formatDate, pad } from "@common/methods";
+import { formatTimestampAsLocalDate, pad } from "@common/methods";
 import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { DrugItem } from "./drug-item";
 import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
@@ -273,7 +273,7 @@ export const AnimalOutcome: FC<props> = ({ index, data, agency, edit, remove, ou
               md={6}
             >
               <dt>Date</dt>
-              <dd>{data?.date ? formatDate(data?.date?.toString()) : "Date pending"}</dd>
+              <dd>{data?.date ? formatTimestampAsLocalDate(data?.date?.toString()) : "Date pending"}</dd>
             </Col>
           </Row>
         </section>

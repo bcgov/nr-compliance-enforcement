@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { formatDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
@@ -98,7 +98,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                       <>
                         <div id="case-date-logged">
                           <i className="bi bi-calendar"></i>
-                          {formatDate(dateLogged)}
+                          {formatTimestampAsLocalDate(dateLogged)}
                         </div>
                         <div>
                           <i className="bi bi-clock"></i>
@@ -117,7 +117,7 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                       <>
                         <div>
                           <i className="bi bi-calendar"></i>
-                          {formatDate(lastUpdated)}
+                          {formatTimestampAsLocalDate(lastUpdated)}
                         </div>
                         <div>
                           <i className="bi bi-clock"></i>

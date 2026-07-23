@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { formatDate, getDropdownOption } from "@common/methods";
+import { formatTimestampAsLocalDate, getDropdownOption } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import {
@@ -93,7 +93,9 @@ export const DecisionItem: FC<props> = ({
       </div>
       <div>
         <dt>Date action taken</dt>
-        <dd id="decision-date">{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>
+        <dd id="decision-date">
+          {actionTakenDate !== null && formatTimestampAsLocalDate(new Date(actionTakenDate).toString())}
+        </dd>
       </div>
     </dl>
   );

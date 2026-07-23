@@ -1,7 +1,7 @@
 import { FC, useState, useCallback } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { Task } from "@/generated/graphql";
-import { formatDate, escapeCsvCell } from "@common/methods";
+import { formatTimestampAsLocalDate, escapeCsvCell } from "@common/methods";
 import { getDisplayFilename } from "@common/attachment-utils";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
@@ -78,7 +78,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
           a.sequenceNumber,
           a.description,
           a.title,
-          a.date ? formatDate(a.date) : "",
+          a.date ? formatTimestampAsLocalDate(a.date) : "",
           getOfficerName(a.takenBy ?? ""),
           a.location,
           task ? `Task ${task.taskNumber}` : "",

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
-import { formatDate, applyStatusClass } from "@common/methods";
+import { formatTimestampAsLocalDate, applyStatusClass } from "@common/methods";
 import { Investigation } from "@/generated/graphql";
 import { SummaryPopupLayout } from "./summary-popup-layout";
 import { useAppSelector } from "@hooks/hooks";
@@ -40,7 +40,9 @@ export const InvestigationSummaryPopup: FC<Props> = ({ investigationGuid }) => {
 
   const investigation = data?.getInvestigation;
   const status = investigation?.investigationStatus?.shortDescription ?? "Unknown";
-  const openedDate = investigation?.openedTimestamp ? formatDate(investigation.openedTimestamp, true) : "Unknown";
+  const openedDate = investigation?.openedTimestamp
+    ? formatTimestampAsLocalDate(investigation.openedTimestamp, true)
+    : "Unknown";
   const community = investigation?.locationAddress ?? "Unknown";
   const leadAgency = investigation?.leadAgency ?? "Unknown agency";
   const name = investigation?.name ?? investigationGuid;

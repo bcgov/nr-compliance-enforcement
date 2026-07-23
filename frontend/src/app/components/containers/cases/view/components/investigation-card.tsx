@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatDate, formatTimestampAsLocalTime } from "@common/methods";
+import { applyStatusClass, formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { selectOfficerByAppUserGuid } from "@store/reducers/officer";
@@ -35,7 +35,9 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
   };
 
   const investigationId = investigation.name ?? "";
-  const dateOpened = investigation.openedTimestamp ? formatDate(investigation.openedTimestamp.toString()) : "";
+  const dateOpened = investigation.openedTimestamp
+    ? formatTimestampAsLocalDate(investigation.openedTimestamp.toString())
+    : "";
   const community = getCommunityName(investigation.community ?? "");
   const status = investigation.investigationStatus?.longDescription ?? "";
   const primaryInvestigatorName = formatOfficerName(primaryInvestigator ?? undefined);
@@ -55,7 +57,7 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
+          {formatTimestampAsLocalDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
         </ActivityCardField>
         <ActivityCardField label="Community">{community}</ActivityCardField>
         <ActivityCardField label="Parties">{partyCount}</ActivityCardField>

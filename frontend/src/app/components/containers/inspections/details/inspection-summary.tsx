@@ -5,7 +5,7 @@ import { MapObjectLocation } from "@/app/components/mapping/map-object-location"
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { formatDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
@@ -78,7 +78,7 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                 <>
                   <div id="case-date-logged">
                     <i className="bi bi-calendar"></i>
-                    {formatDate(dateLogged)}
+                    {formatTimestampAsLocalDate(dateLogged)}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
@@ -97,7 +97,7 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                 <>
                   <div>
                     <i className="bi bi-calendar"></i>
-                    {formatDate(lastUpdated)}
+                    {formatTimestampAsLocalDate(lastUpdated)}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>

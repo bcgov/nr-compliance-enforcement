@@ -3,7 +3,7 @@ import { Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention, EnforcementAction } from "@/generated/graphql";
-import { formatDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { formatTimestampAsLocalDate, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
@@ -83,7 +83,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "comp-cell-width-80 comp-cell-min-width-80",
       isSortable: true,
       getValue: (c) => c.date ?? "",
-      renderCell: (c) => formatDate(parseUTCDateTimeToLocal(c.date, null)?.toString()),
+      renderCell: (c) => formatTimestampAsLocalDate(parseUTCDateTimeToLocal(c.date, null)?.toString()),
     },
     {
       label: "Community",

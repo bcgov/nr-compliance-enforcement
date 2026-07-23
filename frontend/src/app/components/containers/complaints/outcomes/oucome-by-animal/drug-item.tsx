@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { Row, Col, ListGroup } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectDrugs, selectDrugUseMethods, selectRemainingDrugUse } from "@store/reducers/code-table";
-import { formatDate } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { selectOfficerAndCollaboratorListByAgency } from "@store/reducers/officer";
 import { from } from "linq-to-typescript";
 
@@ -126,7 +126,7 @@ export const DrugItem: FC<props> = ({
           md={6}
         >
           <dt>Date</dt>
-          <dd>{formatDate(date?.toString())}</dd>
+          <dd>{formatTimestampAsLocalDate(date?.toString())}</dd>
         </Col>
       </Row>
     </ListGroup.Item>

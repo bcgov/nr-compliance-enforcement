@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatDate, formatTimestampAsLocalTime } from "@common/methods";
+import { applyStatusClass, formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
@@ -15,7 +15,9 @@ interface InspectionCardProps {
 
 export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, caseName, caseIdentifier }) => {
   const inspectionId = inspection.name ?? "";
-  const dateOpened = inspection.openedTimestamp ? formatDate(inspection.openedTimestamp.toString()) : "";
+  const dateOpened = inspection.openedTimestamp
+    ? formatTimestampAsLocalDate(inspection.openedTimestamp.toString())
+    : "";
   const status = inspection.inspectionStatus?.longDescription ?? "";
   const lastUpdatedDate = inspection.updatedTimestamp;
 
@@ -31,7 +33,7 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, case
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
+          {formatTimestampAsLocalDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
         </ActivityCardField>
       </div>
       {caseIdentifier && (

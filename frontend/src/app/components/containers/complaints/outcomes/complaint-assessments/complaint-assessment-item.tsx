@@ -7,7 +7,7 @@ import {
   selectLinkedComplaints,
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
-import { formatDate } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
@@ -206,7 +206,7 @@ export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) =
               </div>
               <div id="assessment-date-div">
                 <dt>Date</dt>
-                <dd>{formatDate(`${assessment?.date ? new Date(assessment.date) : new Date()}`)}</dd>
+                <dd>{formatTimestampAsLocalDate(`${assessment?.date ? new Date(assessment.date) : new Date()}`)}</dd>
               </div>
             </dl>
           </div>

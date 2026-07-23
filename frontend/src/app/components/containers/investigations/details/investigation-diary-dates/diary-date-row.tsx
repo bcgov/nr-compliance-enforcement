@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
-import { formatDate, formatTimestampAsLocalDateTime } from "@common/methods";
+import { formatTimestampAsLocalDate, formatTimestampAsLocalDateTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
@@ -47,7 +47,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
         <div className="d-flex gap-4 ">
           <span className="d-flex text-nowrap">
             <i className="bi bi-calendar me-2"></i>
-            <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
+            <strong>{diaryDate.dueDate ? formatTimestampAsLocalDate(diaryDate.dueDate) : "N/A"}</strong>
           </span>
           <span>{diaryDate.description}</span>
           {showTaskBadge && taskNumber && diaryDate.taskGuid && (

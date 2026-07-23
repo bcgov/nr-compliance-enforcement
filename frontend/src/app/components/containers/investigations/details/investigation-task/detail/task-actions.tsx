@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { ActivityNote } from "@/generated/graphql";
 import {
-  formatDate,
+  formatTimestampAsLocalDate,
   formatTimestampAsLocalTime,
   formatTimestampAsLocalDateTime,
   parseUTCDateTimeToLocal,
@@ -37,7 +37,9 @@ const TaskActionRow: FC<{
     const d = parseUTCDateTimeToLocal(taskAction.actionedDate, taskAction.actionedTime);
     if (!d) return "";
     const s = d.toISOString?.() ?? d.toString();
-    return taskAction.actionedTime ? `${formatDate(s)} ${formatTimestampAsLocalTime(s)}` : formatDate(s);
+    return taskAction.actionedTime
+      ? `${formatTimestampAsLocalDate(s)} ${formatTimestampAsLocalTime(s)}`
+      : formatTimestampAsLocalDate(s);
   })();
 
   const actionedOfficerStr = actionedByUser ? `${actionedByUser.last_name}, ${actionedByUser.first_name}` : "-";

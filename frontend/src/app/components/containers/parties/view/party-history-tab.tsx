@@ -7,7 +7,7 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Paginator from "@/app/components/common/paginator";
-import { formatDate } from "@/app/common/methods";
+import { formatTimestampAsLocalDate } from "@/app/common/methods";
 import { Button } from "react-bootstrap";
 
 const SEARCH_EVENTS = gql`
@@ -88,15 +88,12 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
   }, [events, allOfficers]);
 
   const groupedEvents = useMemo(() => {
-    return events.reduce<{ [key: string]: Event[] }>(
-      (groups, event) => {
-        const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
-        if (!groups[dateKey]) groups[dateKey] = [];
-        groups[dateKey].push(event);
-        return groups;
-      },
-      {},
-    );
+    return events.reduce<{ [key: string]: Event[] }>((groups, event) => {
+      const dateKey = new Date(event.publishedTimestamp).toISOString().split("T")[0];
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(event);
+      return groups;
+    }, {});
   }, [events]);
 
   const toggleSortOrder = () => {
@@ -151,7 +148,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
             >
               <h6 className="px-0 mb-3">
                 <i className="bi bi-calendar me-3 text-primary"></i>
-                {formatDate(dateKey)}
+                {formatTimestampAsLocalDate(dateKey)}
               </h6>
               <hr className="px-0 m-0" />
               <ul className="px-0">

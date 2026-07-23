@@ -19,7 +19,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { exportTasksList } from "@/app/store/reducers/documents-thunks";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
-import { escapeCsvCell, formatDate, formatTimestampAsLocalDateTime } from "@/app/common/methods";
+import { escapeCsvCell, formatTimestampAsLocalDate, formatTimestampAsLocalDateTime } from "@/app/common/methods";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
 
 const CREATE_TASK = gql`
@@ -144,7 +144,7 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
           t.remarks ?? "",
           status,
           officerName,
-          formatDate(t.dueDate ?? undefined),
+          formatTimestampAsLocalDate(t.dueDate ?? undefined),
           formatTimestampAsLocalDateTime(t.updatedDate ?? t.createdDate ?? undefined),
         ]
           .map((v) => escapeCsvCell(v ?? ""))
