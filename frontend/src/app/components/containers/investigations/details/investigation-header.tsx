@@ -206,7 +206,7 @@ export const InvestigationHeader: FC<InvestigationHeaderProps> = ({ investigatio
                   <span>Update status</span>
                 </Button>
 
-                <Dropdown className="comp-header-kebab-menu">
+                <Dropdown className="comp-header-kebab-menu d-none">
                   <Dropdown.Toggle
                     aria-label="Actions Menu"
                     variant="outline-light"
