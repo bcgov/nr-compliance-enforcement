@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";

@@ -5,7 +5,7 @@ import { MapObjectLocation } from "@/app/components/mapping/map-object-location"
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { selectAgencyDropdown, selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { formatTimestampAsLocalDate, formatTimestampAsLocalTime, getAvatarInitials } from "@common/methods";
+import { getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
@@ -13,6 +13,7 @@ import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { getMapZoom } from "@/app/common/geocoder";
 import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface InspectionSummaryProps {
   inspectionData?: Inspection;
@@ -35,10 +36,8 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
   const agencyText = leadAgencyOptions.find((option: Option) => option.value === inspectionData?.leadAgency);
   const leadAgency = agencyText ? agencyText.label : "Unknown";
 
-  const dateLogged = inspectionData?.openedTimestamp ? new Date(inspectionData.openedTimestamp).toString() : undefined;
-  const lastUpdated = inspectionData?.updatedTimestamp
-    ? new Date(inspectionData.updatedTimestamp).toString()
-    : undefined;
+  const dateLogged = parseUTCTimestampToLocal(inspectionData?.openedTimestamp);
+  const lastUpdated = parseUTCTimestampToLocal(inspectionData?.updatedTimestamp);
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(inspectionData?.createdByAppUserGuid));
@@ -78,11 +77,11 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                 <>
                   <div id="case-date-logged">
                     <i className="bi bi-calendar"></i>
-                    {formatTimestampAsLocalDate(dateLogged)}
+                    {formatDateObjectAsString(dateLogged, { format: "date" })}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTimestampAsLocalTime(dateLogged)}
+                    {formatDateObjectAsString(dateLogged, { format: "time" })}
                   </div>
                 </>
               )}
@@ -97,11 +96,11 @@ export const InspectionSummary: FC<InspectionSummaryProps> = ({
                 <>
                   <div>
                     <i className="bi bi-calendar"></i>
-                    {formatTimestampAsLocalDate(lastUpdated)}
+                    {formatDateObjectAsString(lastUpdated, { format: "date" })}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTimestampAsLocalTime(lastUpdated)}
+                    {formatDateObjectAsString(lastUpdated, { format: "time" })}
                   </div>
                 </>
               )}

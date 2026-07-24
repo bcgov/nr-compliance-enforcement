@@ -2,13 +2,13 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { getWebEOCChangeCount, selectRelatedData, getRelatedData } from "@store/reducers/complaints";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
-import { formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
 import { ActionTaken } from "@apptypes/app/complaints/action-taken";
 import { ComplaintReferral } from "@/app/types/app/complaints/complaint-referral";
 import { UUID } from "node:crypto";
 import { formatPhoneNumber } from "react-phone-number-input/input";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { selectOfficers } from "@store/reducers/officer";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   complaintIdentifier: string;
@@ -169,9 +169,9 @@ export const WebEOCComplaintUpdateList: FC<Props> = ({ complaintIdentifier }) =>
                     <span style={{ fontWeight: 700 }}>{update.header.title}</span> |{" "}
                     <span>
                       <i className="bi bi-calendar"></i>
-                      {formatTimestampAsLocalDate(update.header.date)}
+                      {formatDateObjectAsString(parseUTCTimestampToLocal(update.header.date), { format: "date" })}
                       <i className="bi bi-clock comp-margin-left-xs"></i>
-                      {formatTimestampAsLocalTime(update.header.date)}
+                      {formatDateObjectAsString(parseUTCTimestampToLocal(update.header.date), { format: "time" })}
                     </span>{" "}
                     | <span>{update.header.officer}</span>
                   </div>

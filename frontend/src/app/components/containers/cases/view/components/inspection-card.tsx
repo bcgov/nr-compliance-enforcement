@@ -1,11 +1,12 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatTimestampAsLocalDate, formatTimestampAsLocalTime } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
 import { Inspection } from "@/generated/graphql";
 import { ActivityCardField } from "@/app/components/containers/cases/view/components/activity-card-field";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface InspectionCardProps {
   item: Inspection;
@@ -15,11 +16,9 @@ interface InspectionCardProps {
 
 export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, caseName, caseIdentifier }) => {
   const inspectionId = inspection.name ?? "";
-  const dateOpened = inspection.openedTimestamp
-    ? formatTimestampAsLocalDate(inspection.openedTimestamp.toString())
-    : "";
+  const dateOpened = formatDateObjectAsString(parseUTCTimestampToLocal(inspection.openedTimestamp), { format: "date" });
   const status = inspection.inspectionStatus?.longDescription ?? "";
-  const lastUpdatedDate = inspection.updatedTimestamp;
+  const lastUpdatedDate = parseUTCTimestampToLocal(inspection.updatedTimestamp);
 
   return (
     <ActivityCard
@@ -33,7 +32,7 @@ export const InspectionCard: FC<InspectionCardProps> = ({ item: inspection, case
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatTimestampAsLocalDate(lastUpdatedDate)} {formatTimestampAsLocalTime(lastUpdatedDate)}
+          {formatDateObjectAsString(lastUpdatedDate, { format: "dateTime" })}
         </ActivityCardField>
       </div>
       {caseIdentifier && (

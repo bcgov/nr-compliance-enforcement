@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { ActivityNote } from "@/generated/graphql";
-import { formatTimestampAsLocalDate, formatTimestampAsLocalTime, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
@@ -29,14 +29,10 @@ const TaskActionRow: FC<{
   const actionedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.actionedAppUserGuidRef ?? undefined));
   const addedByUser = useAppSelector(selectOfficerByAppUserGuid(taskAction.reportedAppUserGuidRef ?? undefined));
 
-  const actionedDateTimeStr = (() => {
-    const d = parseUTCDateTimeToLocal(taskAction.actionedDate, taskAction.actionedTime);
-    if (!d) return "";
-    const s = d.toISOString?.() ?? d.toString();
-    return taskAction.actionedTime
-      ? `${formatTimestampAsLocalDate(s)} ${formatTimestampAsLocalTime(s)}`
-      : formatTimestampAsLocalDate(s);
-  })();
+  const localActioned = parseUTCDateTimeToLocal(taskAction.actionedDate, taskAction.actionedTime);
+  const actionedDateTimeStr = taskAction.actionedTime
+    ? formatDateObjectAsString(localActioned, { format: "dateTime" })
+    : formatDateObjectAsString(localActioned, { format: "date" });
 
   const actionedOfficerStr = actionedByUser ? `${actionedByUser.last_name}, ${actionedByUser.first_name}` : "-";
 
