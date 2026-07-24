@@ -22,7 +22,7 @@ const DATE_FORMAT_PATTERNS: Record<DateFormatPreset, string> = {
  * Formats a local Date for display.
  *
  * The Date passed in must already carry the correct local wall-clock value — build it with
- * parseUTCDateTimeToLocal, passing both the date and time columns where the record has them.
+ * parseUTCDateTimeToLocal if required, passing both the date and time columns where the record has them.
  * A Date constructed from a time column alone cannot resolve daylight saving and will be an
  * hour out for part of the year.
  *

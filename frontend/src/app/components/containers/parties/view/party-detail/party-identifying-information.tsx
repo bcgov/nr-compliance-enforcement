@@ -1,5 +1,5 @@
 import { formatDateObjectAsString } from "@/app/common/date-utils";
-import { calculateAgeYears } from "@/app/common/methods";
+import { calculateAgeYears, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import {
   DetailField,
   DetailSection,
@@ -33,7 +33,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
     .map((a) => a!.name)
     .join(", ");
 
-  const dob = person?.dateOfBirth ? new Date(String(person.dateOfBirth)) : null;
+  const dob = parseUTCDateTimeToLocal(person?.dateOfBirth, null) ?? null;
 
   // Age only when we have a DOB.
   const ageDisplay = dob === null ? undefined : `${calculateAgeYears(dob)} years old`;
@@ -61,8 +61,6 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
         ?.shortDescription ?? person?.driversLicenseCountryCode)
     : undefined;
 
-  console.log(person?.dateOfBirth);
-
   return (
     <>
       {person && (
@@ -73,7 +71,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Alias(es)">{aliases}</DetailField>
           <DetailField label="Gender">{gender}</DetailField>
           <DetailField label="Date of birth">
-            {formatDateObjectAsString(person.dateOfBirth, { format: "date", whenAbsent: "" })}
+            {formatDateObjectAsString(parseUTCDateTimeToLocal(person.dateOfBirth, null), { format: "date" })}
           </DetailField>
           <DetailField label="Age">{ageDisplay}</DetailField>
           <DetailField label="Approximate age">{approximateAge}</DetailField>

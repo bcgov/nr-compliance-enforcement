@@ -3,13 +3,14 @@ import { FC } from "react";
 import { Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectGenderDropdown } from "@/app/store/reducers/code-table";
-import { calculateAgeYears } from "@/app/common/methods";
+import { calculateAgeYears, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type PartyMatchCardProps = {
   party: Party;
@@ -37,8 +38,9 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
     (opt: { value: string; label: string }) => opt.value === person?.genderCode,
   )?.label;
 
-  const dateOfBirth = person?.dateOfBirth ? String(person.dateOfBirth).slice(0, 10) : "";
-  const age = person?.dateOfBirth ? calculateAgeYears(new Date(person.dateOfBirth)) : "";
+  const dobDate = parseUTCDateTimeToLocal(person?.dateOfBirth, null);
+  const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
+  const age = dobDate ? calculateAgeYears(dobDate) : "";
 
   // Compose "Male, 24 (2002-02-23)", dropping whichever pieces are absent.
   const genderAge = [genderLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");

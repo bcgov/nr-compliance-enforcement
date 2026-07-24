@@ -5,7 +5,7 @@ import { CompColumn } from "@/app/types/app/comp-tables";
 import { usePartySearch } from "../hooks/use-party-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { calculateAgeYears } from "@common/methods";
+import { calculateAgeYears, parseUTCDateTimeToLocal } from "@common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -70,11 +70,11 @@ const getPartyDisplayName = (party: any): string => {
 };
 
 const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
-  const dateOfBirth = party.person?.dateOfBirth;
+  const dateOfBirth = parseUTCDateTimeToLocal(party?.person?.dateOfBirth, null) ?? null;
   if (!dateOfBirth) {
     return approxAges.find((a) => a.approximateAgeCode === party.person?.approximateAgeCode)?.shortDescription ?? "";
   }
-  return calculateAgeYears(new Date(dateOfBirth)) ?? "";
+  return calculateAgeYears(dateOfBirth) ?? "";
 };
 
 const partyNameColumn: CompColumn<any> = {
