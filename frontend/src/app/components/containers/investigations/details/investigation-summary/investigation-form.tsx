@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatDateObjectAsLocalTime } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useState } from "react";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 interface InvestigationFormProps {
   form: any;
@@ -39,7 +40,7 @@ export const InvestigationForm = ({
   );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
     const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
-    return d && discoveryTime ? formatDateObjectAsLocalTime(d) : null;
+    return d && discoveryTime ? formatDateObjectAsString(d, { format: "time" }) : null;
   });
 
   const leadAgency = getUserAgency();

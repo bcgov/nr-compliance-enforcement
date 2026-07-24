@@ -21,7 +21,8 @@ import {
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
-import { formatDateObjectAsLocalTime, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -89,7 +90,9 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   const initialIntakeDateTime = parseUTCDateTimeToLocal(exhibit?.intakeDate, exhibit?.intakeTime);
 
   const [selectedIntakeTime, setSelectedIntakeTime] = useState<string | null>(() =>
-    initialIntakeDateTime && exhibit?.intakeTime ? formatDateObjectAsLocalTime(initialIntakeDateTime) : null,
+    initialIntakeDateTime && exhibit?.intakeTime
+      ? formatDateObjectAsString(initialIntakeDateTime, { format: "time" })
+      : null,
   );
 
   // Include the initial officer in the dropdown list even if they're inactive or in a different agency

@@ -611,15 +611,6 @@ export const formatTimestampAsLocalDateTime = (input: string | undefined): strin
 };
 
 /**
- * Extracts local "HH:MM" from a Date object.
- */
-export const formatDateObjectAsLocalTime = (date: Date): string => {
-  const hh = date.getHours().toString().padStart(2, "0");
-  const mm = date.getMinutes().toString().padStart(2, "0");
-  return `${hh}:${mm}`;
-};
-
-/**
  * Formats a date column in the database by dropping the time portion to prevent off by one errors.
  */
 export const formatDateColumnAsDate = (date: string | null | undefined, whenAbsent: string = ""): string => {
