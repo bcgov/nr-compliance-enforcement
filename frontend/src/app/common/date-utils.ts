@@ -29,11 +29,13 @@ const DATE_FORMAT_PATTERNS: Record<DateFormatPreset, string> = {
  * hour out for part of the year.
  *
  * All output is read from the Date's local getters; no timezone conversion happens here.
+ *
  */
 export const formatDateObjectAsString = (
   date: Date | null | undefined,
   { format: preset = "date", whenAbsent = "", includeRelative = false }: FormatDateObjectOptions = {},
 ): string => {
+  // Getting an error on the next line? You forgot to call a parse method!
   if (!date || Number.isNaN(date.getTime())) {
     return whenAbsent;
   }

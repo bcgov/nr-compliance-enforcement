@@ -1,5 +1,5 @@
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatTimestampAsLocalDateTime, applyStatusClass } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { ParkCell } from "@/app/components/containers/complaints/lists/park-cell";
 import { Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -7,6 +7,7 @@ import { ComplaintActionsCell } from "@/app/components/containers/complaints/lis
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import COMPLAINT_TYPES, { complaintTypeToName } from "@/app/types/app/complaint-types";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 // COMMON COLUMNS
 
@@ -18,7 +19,8 @@ export const dateLoggedColumn = <T extends { reportedOn?: any }>(): CompColumn<T
   cellClassName: "comp-cell-width-160 comp-cell-min-width-160 comp-table-date-cell",
   isSortable: true,
   getValue: (complaint) => complaint.reportedOn?.toString() ?? "",
-  renderCell: (complaint) => formatTimestampAsLocalDateTime(complaint.reportedOn?.toString()),
+  renderCell: (complaint) =>
+    formatDateObjectAsString(parseUTCTimestampToLocal(complaint.reportedOn), { format: "dateTime" }),
 });
 
 // Location/address column
@@ -73,7 +75,8 @@ export const lastUpdatedColumn = <T extends { updatedOn?: any }>(): CompColumn<T
   cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
   isSortable: true,
   getValue: (complaint) => complaint.updatedOn?.toString() ?? "",
-  renderCell: (complaint) => formatTimestampAsLocalDateTime(complaint.updatedOn?.toString()),
+  renderCell: (complaint) =>
+    formatDateObjectAsString(parseUTCTimestampToLocal(complaint.updatedOn), { format: "dateTime" }),
 });
 
 // Community

@@ -6,7 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { parseUTCDateTimeToLocal, formatTimestampAsLocalDate, formatTimestampAsLocalDateTime } from "@common/methods";
+import { parseUTCDateTimeToLocal, formatTimestampAsLocalDate } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -18,7 +18,7 @@ import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -275,7 +275,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       />
                                     </div>
                                     <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                      {`• Recorded on ${formatTimestampAsLocalDateTime(report.reportedTimestamp)} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
+                                      {`• Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
                                     </div>
                                   </div>
                                 );

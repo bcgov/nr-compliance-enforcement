@@ -19,8 +19,9 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { selectCurrentDownload } from "@/app/store/reducers/bulk-download";
 import { exportTasksList } from "@/app/store/reducers/documents-thunks";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
-import { escapeCsvCell, formatTimestampAsLocalDate, formatTimestampAsLocalDateTime } from "@/app/common/methods";
+import { escapeCsvCell, formatTimestampAsLocalDate } from "@/app/common/methods";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 const CREATE_TASK = gql`
   mutation CreateTask($input: CreateUpdateTaskInput!) {
@@ -145,7 +146,9 @@ export const InvestigationTasksNew: FC<InvestigationTasksNewProps> = ({ investig
           status,
           officerName,
           formatTimestampAsLocalDate(t.dueDate ?? undefined),
-          formatTimestampAsLocalDateTime(t.updatedDate ?? t.createdDate ?? undefined),
+          formatDateObjectAsString(parseUTCTimestampToLocal(t.updatedDate ?? t.createdDate ?? undefined), {
+            format: "dateTime",
+          }),
         ]
           .map((v) => escapeCsvCell(v ?? ""))
           .join(",");

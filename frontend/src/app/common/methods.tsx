@@ -601,17 +601,6 @@ export const formatTimestampAsLocalTime = (input: string | undefined): string =>
   return format(Date.parse(input), "HH:mm");
 };
 
-/**
- * Returns both the date and time portions of a database timestamp, displays in the users local time
- */
-export const formatTimestampAsLocalDateTime = (input: string | undefined): string => {
-  if (!input) {
-    return "";
-  }
-
-  return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
-};
-
 // Determine an age based on a DOB
 export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {
   let age = today.getFullYear() - dob.getFullYear();

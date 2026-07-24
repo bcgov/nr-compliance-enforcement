@@ -1,12 +1,13 @@
 import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
-import { formatTimestampAsLocalDate, formatTimestampAsLocalDateTime } from "@common/methods";
+import { formatTimestampAsLocalDate } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
@@ -34,9 +35,9 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
   const addedByName = addedByUser
     ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
     : "Unknown";
-  const addedTimestamp = diaryDate.addedTimestamp
-    ? formatTimestampAsLocalDateTime(new Date(diaryDate.addedTimestamp).toISOString())
-    : "";
+  const addedTimestamp = formatDateObjectAsString(parseUTCTimestampToLocal(diaryDate.addedTimestamp), {
+    format: "dateTime",
+  });
   const handleEditClick = () => {
     onEdit(diaryDate);
   };
