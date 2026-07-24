@@ -553,7 +553,7 @@ export const parseLocalDateTimeToUTC = (
  * converted to the runtime's local timezone before formatting.
  *
  * In general this method should not be used as it may lead to misleading dates and off by one errors
- * However it is in widespread use today - ideally these call sites should be updated to use formatDateColumnAsDate
+ * However it is in widespread use today - ideally these call sites should be updated to use formatDateObjectAsString
  * and their database columns should be changed from timestamp to date
  */
 export const formatTimestampAsLocalDate = (input: string | undefined, includeRelative: boolean = false): string => {
@@ -608,20 +608,6 @@ export const formatTimestampAsLocalDateTime = (input: string | undefined): strin
   }
 
   return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
-};
-
-/**
- * Formats a date column in the database by dropping the time portion to prevent off by one errors.
- */
-export const formatDateColumnAsDate = (date: string | null | undefined, whenAbsent: string = ""): string => {
-  if (!date) {
-    return whenAbsent;
-  }
-  const dateOnly = String(date).slice(0, 10);
-  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly)
-    ? formatTimestampAsLocalDate(dateOnly)
-    : formatTimestampAsLocalDate(date);
-  return formatted || whenAbsent;
 };
 
 // Determine an age based on a DOB

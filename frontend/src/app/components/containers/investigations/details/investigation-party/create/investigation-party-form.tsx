@@ -44,7 +44,6 @@ import {
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { formatDateColumnAsDate } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
@@ -56,6 +55,7 @@ import { PartyMatchCard } from "@/app/components/containers/parties/match/party-
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { REMOVE_PARTY_FROM_INVESTIGATION_MUTATION } from "@/app/components/containers/investigations/details/investigation-parties";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -119,7 +119,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateColumnAsDate(String(editParty.person.dateOfBirth))
+          ? formatDateObjectAsString(editParty.person.dateOfBirth, { format: "date" })
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
