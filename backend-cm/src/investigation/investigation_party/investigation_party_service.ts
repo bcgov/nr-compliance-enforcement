@@ -508,7 +508,7 @@ export class InvestigationPartyService {
     }
 
     const investigation = await this.investigationService.findOne(investigationGuid);
-    const existingParty = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+    const existingParty = investigation.parties.some((p) => p.partyIdentifier === partyIdentifier && p.isActive);
 
     if (!existingParty) {
       throw new Error("Party not found on this investigation.");
