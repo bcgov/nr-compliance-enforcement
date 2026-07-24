@@ -156,7 +156,7 @@ export const ContraventionItem = ({ contravention, investigationGuid, index, onE
         >
           <Col xs={6}>
             <dt>Date:</dt>
-            <dd>{formatTimestampAsLocalDate(parseUTCDateTimeToLocal(contravention.date, null)?.toString())}</dd>
+            <dd>{formatTimestampAsLocalDate(parseUTCDateTimeToLocal(contravention.date)?.toString())}</dd>
           </Col>
           {community?.areaName && (
             <Col xs={6}>

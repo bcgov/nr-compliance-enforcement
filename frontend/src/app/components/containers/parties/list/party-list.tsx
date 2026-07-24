@@ -70,7 +70,7 @@ const getPartyDisplayName = (party: any): string => {
 };
 
 const getAgeDisplay = (party: Party, approxAges: ApproximateAgeType[]): number | string => {
-  const dateOfBirth = parseUTCDateTimeToLocal(party?.person?.dateOfBirth, null) ?? null;
+  const dateOfBirth = parseUTCDateTimeToLocal(party?.person?.dateOfBirth) ?? null;
   if (!dateOfBirth) {
     return approxAges.find((a) => a.approximateAgeCode === party.person?.approximateAgeCode)?.shortDescription ?? "";
   }

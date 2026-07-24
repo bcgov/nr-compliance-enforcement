@@ -82,10 +82,7 @@ export const ContraventionDetailsForm = ({
   onRequestValidate,
   onRequestValues,
 }: ContraventionDetailsFormProps) => {
-  const defaultDate = useMemo(
-    () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
-    [discoveryDate],
-  );
+  const defaultDate = useMemo(() => parseUTCDateTimeToLocal(discoveryDate ?? null) ?? new Date(), [discoveryDate]);
   // Default the community when adding a new contravention
   const defaultCommunity = useMemo(
     () => (contravention ? "" : (investigationCommunity ?? "")),
@@ -242,7 +239,7 @@ export const ContraventionDetailsForm = ({
 
     // Populate date
     if (contravention.date) {
-      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date, null));
+      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date));
       form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 

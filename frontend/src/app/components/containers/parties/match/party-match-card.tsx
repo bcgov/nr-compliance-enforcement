@@ -38,7 +38,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
     (opt: { value: string; label: string }) => opt.value === person?.genderCode,
   )?.label;
 
-  const dobDate = parseUTCDateTimeToLocal(person?.dateOfBirth, null);
+  const dobDate = parseUTCDateTimeToLocal(person?.dateOfBirth);
   const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
   const age = dobDate ? calculateAgeYears(dobDate) : "";
 

@@ -33,7 +33,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
     .map((a) => a!.name)
     .join(", ");
 
-  const dob = parseUTCDateTimeToLocal(person?.dateOfBirth, null) ?? null;
+  const dob = parseUTCDateTimeToLocal(person?.dateOfBirth) ?? null;
 
   // Age only when we have a DOB.
   const ageDisplay = dob === null ? undefined : `${calculateAgeYears(dob)} years old`;
@@ -71,7 +71,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Alias(es)">{aliases}</DetailField>
           <DetailField label="Gender">{gender}</DetailField>
           <DetailField label="Date of birth">
-            {formatDateObjectAsString(parseUTCDateTimeToLocal(person.dateOfBirth, null), { format: "date" })}
+            {formatDateObjectAsString(parseUTCDateTimeToLocal(person.dateOfBirth), { format: "date" })}
           </DetailField>
           <DetailField label="Age">{ageDisplay}</DetailField>
           <DetailField label="Approximate age">{approximateAge}</DetailField>

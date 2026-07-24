@@ -1,7 +1,9 @@
 import format from "date-fns/format";
 import { formatDistanceToNow } from "date-fns";
+import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 
 type DateFormatPreset = "date" | "time" | "dateTime";
+type OptionalDateTimeInput = string | Date | null | undefined;
 
 interface FormatDateObjectOptions {
   /** Output shape. Defaults to "date". */
@@ -22,7 +24,7 @@ const DATE_FORMAT_PATTERNS: Record<DateFormatPreset, string> = {
  * Formats a local Date for display.
  *
  * The Date passed in must already carry the correct local wall-clock value — build it with
- * parseUTCDateTimeToLocal if required, passing both the date and time columns where the record has them.
+ * parseUTCDateTimeToLocal or parseUTCTimestampToLocal if required, passing both the date and time columns where the record has them.
  * A Date constructed from a time column alone cannot resolve daylight saving and will be an
  * hour out for part of the year.
  *
@@ -44,3 +46,17 @@ export const formatDateObjectAsString = (
 
   return formatted;
 };
+
+/**
+ * Parses a single UTC TIMESTAMP column value into a local Date.
+ *
+ * For TIMESTAMP columns, the one stored value carries both date and time, so it is passed to
+ * parseUTCDateTimeToLocal as both arguments — the date argument reads the date portion, the time
+ * argument reads the time portion, and they recombine into a single local instant.
+ *
+ * For DATE columns use parseUTCDateTimeToLocal(value).
+ * For split DATE/TIME columns use parseUTCDateTimeToLocal(dateColumn, timeColumn).
+ * For TIMESTAMP columns use parseUTCTimestampToLocal(value).
+ */
+export const parseUTCTimestampToLocal = (value: OptionalDateTimeInput): Date | null =>
+  parseUTCDateTimeToLocal(value, value);

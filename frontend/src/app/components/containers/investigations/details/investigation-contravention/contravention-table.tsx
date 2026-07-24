@@ -83,7 +83,7 @@ export const ContraventionTable: FC<ContraventionTableProps> = ({
       cellClassName: "comp-cell-width-80 comp-cell-min-width-80",
       isSortable: true,
       getValue: (c) => c.date ?? "",
-      renderCell: (c) => formatTimestampAsLocalDate(parseUTCDateTimeToLocal(c.date, null)?.toString()),
+      renderCell: (c) => formatTimestampAsLocalDate(parseUTCDateTimeToLocal(c.date)?.toString()),
     },
     {
       label: "Community",
