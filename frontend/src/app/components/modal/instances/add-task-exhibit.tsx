@@ -186,9 +186,27 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
     if (isFormDirty) markDirty();
   }, [isFormDirty, markDirty]);
 
+  const buildIntakeFields = (
+    dateCollected: Date | null,
+    time: string | null,
+  ): { intakeDate: string | null; intakeTime: string | null } => {
+    if (!dateCollected) {
+      return { intakeDate: null, intakeTime: null };
+    }
+    if (time) {
+      const combined = new Date(dateCollected);
+      const [hh, mm] = time.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      const iso = combined.toISOString();
+      return { intakeDate: iso, intakeTime: iso };
+    }
+    return { intakeDate: formatDateObjectAsString(dateCollected, { format: "date" }), intakeTime: null };
+  };
+
   // Handlers
   const handleCreate = async (value: FormValues) => {
     const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
+    const { intakeDate, intakeTime } = buildIntakeFields(value.dateCollected, selectedIntakeTime);
     const input: CreateUpdateExhibitInput = {
       taskGuid: taskIdentifier,
       investigationGuid: investigationIdentifier,
@@ -199,8 +217,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      intakeDate: value.dateCollected,
-      intakeTime: selectedIntakeTime ? value.dateCollected : null,
+      intakeDate: intakeDate,
+      intakeTime: intakeTime,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
@@ -212,6 +230,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   const handleUpdate = async (value: FormValues) => {
     const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
+    const { intakeDate, intakeTime } = buildIntakeFields(value.dateCollected, selectedIntakeTime);
     const input: CreateUpdateExhibitInput = {
       exhibitGuid: exhibit!.exhibitGuid,
       taskGuid: taskIdentifier,
@@ -223,8 +242,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      intakeDate: value.dateCollected,
-      intakeTime: selectedIntakeTime ? value.dateCollected : null,
+      intakeDate: intakeDate,
+      intakeTime: intakeTime,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
