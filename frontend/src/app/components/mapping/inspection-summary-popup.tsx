@@ -1,10 +1,11 @@
 import { FC } from "react";
 import { gql } from "graphql-request";
 import { useGraphQLQuery } from "@graphql/hooks";
-import { formatTimestampAsLocalDate, applyStatusClass } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { Inspection } from "@/generated/graphql";
 import { SummaryPopupLayout } from "./summary-popup-layout";
 import { useAppSelector } from "@hooks/hooks";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 const GET_INSPECTION_POPUP = gql`
   query GetInspectionForPopup($inspectionGuid: String!) {
@@ -39,7 +40,10 @@ export const InspectionSummaryPopup: FC<Props> = ({ inspectionGuid }) => {
   const name = inspection?.name ?? "Inspection";
   const status = inspection?.inspectionStatus?.shortDescription ?? "Unknown";
   const openedDate = inspection?.openedTimestamp
-    ? formatTimestampAsLocalDate(inspection.openedTimestamp, true)
+    ? formatDateObjectAsString(parseUTCTimestampToLocal(inspection?.openedTimestamp), {
+        format: "date",
+        includeRelative: true,
+      })
     : "Unknown";
   const location = inspection?.locationAddress ?? "Unknown";
   const leadAgency = inspection?.leadAgency ?? "Unknown agency";
