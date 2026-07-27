@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
-import { applyStatusClass, formatTimestampAsLocalDate } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
@@ -9,6 +9,7 @@ import { ActivityCard } from "./activity-card";
 import { ActivityActionMenu } from "./activity-action-menu";
 import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
 import { ActivityCardField } from "@/app/components/containers/cases/view/components/activity-card-field";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface ComplaintCardProps {
   item: SectorComplaint;
@@ -69,7 +70,9 @@ export const ComplaintCard: FC<ComplaintCardProps> = ({ item: complaint, caseNam
     }
   };
 
-  const dateLogged = complaint.reportedOn ? formatTimestampAsLocalDate(complaint.reportedOn.toString()) : "—";
+  const dateLogged = complaint.reportedOn
+    ? formatDateObjectAsString(parseUTCTimestampToLocal(complaint.reportedOn), { format: "date" })
+    : "—";
   const agency = getAgencyDescription(complaint.ownedBy || "");
   const complaintType = complaintTypeToName(complaint.type || "");
   const issueType = getIssueType(complaint.type || "", complaint.issueType || "");
