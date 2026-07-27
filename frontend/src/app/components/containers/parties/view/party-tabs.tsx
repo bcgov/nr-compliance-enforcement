@@ -3,8 +3,8 @@ import { Nav } from "react-bootstrap";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 
 const PARTY_TAB_ITEMS = {
-  details: "Party Details",
-  history: "Party History",
+  details: "Party details",
+  history: "Party history",
 };
 
 type PartyTabParams = {

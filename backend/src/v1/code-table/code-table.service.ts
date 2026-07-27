@@ -1002,6 +1002,15 @@ export class CodeTableService {
         const results = data.facialHairStyleCodes;
         return results;
       }
+      case "investigation-source-code": {
+        const { data } = await get(token, {
+          query:
+            "{ investigationSourceCodes { investigationSourceCode shortDescription longDescription displayOrder activeIndicator }}",
+        });
+
+        const results = data.investigationSourceCodes;
+        return results;
+      }
     }
   };
 

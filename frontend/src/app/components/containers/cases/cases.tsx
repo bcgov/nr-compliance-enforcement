@@ -9,9 +9,6 @@ import { CaseList } from "./list";
 import { CaseFilterBar } from "./list/case-filter-bar";
 import { CaseMap } from "./map/case-map";
 import { useCaseSearch } from "./hooks/use-case-search";
-import { useAppSelector } from "@/app/hooks/hooks";
-import { isFeatureActive } from "@store/reducers/app";
-import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 const SEARCH_CASE_FILES = gql`
   query SearchCaseFiles($page: Int, $pageSize: Int, $filters: CaseFileFilters) {
@@ -41,7 +38,7 @@ const SEARCH_CASE_FILES = gql`
 const Cases: FC = () => {
   const navigate = useNavigate();
 
-  const showCreateCaseBtn = useAppSelector(isFeatureActive(FEATURE_TYPES.CREATE_CASE));
+  const showCreateCaseBtn = false;
 
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [showDesktopFilters, setShowDesktopFilters] = useState(false);

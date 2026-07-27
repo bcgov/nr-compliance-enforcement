@@ -69,6 +69,8 @@ export const DocumentationFilter: FC<Props> = ({ tasks = [] }) => {
             value={selectedFileType}
             isClearable={true}
             showInactive={false}
+            menuPlacement="top"
+            maxMenuHeight={110}
           />
         </div>
       </div>

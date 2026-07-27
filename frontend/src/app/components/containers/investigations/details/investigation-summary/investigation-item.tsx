@@ -4,7 +4,7 @@ import { Investigation } from "@/generated/graphql";
 import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
-import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
+import { selectCommunityCodeDropdown, selectInvestigationSourceCodeDropdown } from "@/app/store/reducers/code-table";
 import Option from "@apptypes/app/option";
 import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
@@ -21,6 +21,11 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
   const communityLabel = investigationData.community
     ? (communityOptions.find((o: Option) => o.value === investigationData.community)?.label ??
       investigationData.community)
+    : "";
+  const investigationSourceOptions = useAppSelector(selectInvestigationSourceCodeDropdown);
+  const investigationSourceLabel = investigationData.investigationSourceCode
+    ? (investigationSourceOptions.find((o: Option) => o.value === investigationData.investigationSourceCode)?.label ??
+      investigationData.investigationSourceCode)
     : "";
   return (
     <section className="comp-details-section">
@@ -59,6 +64,10 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
                   </div>
                 )}
               </dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd id="investigation-summary-source">{investigationSourceLabel}</dd>
             </div>
             {investigationData.description && (
               <div>

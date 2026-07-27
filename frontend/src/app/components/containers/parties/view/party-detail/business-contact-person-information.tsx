@@ -29,7 +29,7 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
     <>
       {contactPeople && contactPeople.length > 0 ? (
         <section className="comp-details-section">
-          <h2 className="mb-3">Contact(s)</h2>
+          <h3 className="mb-3">Contact(s)</h3>
           {contactPeople.map((c) => {
             const methods = (c?.contactMethods ?? []).filter(Boolean) as ContactMethod[];
             const phones = sortPrimaryFirst(methods.filter((cm) => cm.typeCode === ContactMethods.PHONE && cm.value));
@@ -41,32 +41,34 @@ export const BusinessContactPersonInformation: FC<BusinessContactPersonInformati
                 className="mb-3"
                 border="default"
               >
-                <Card.Body>
-                  <h3 className="h6 mb-3">
-                    {c?.title}
-                    {c?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                  </h3>
-                  <dl>
-                    <DetailField label="First name">{c?.person?.firstName}</DetailField>
-                    <DetailField label="Last name">{c?.person?.lastName}</DetailField>
-                    {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
-                    {renderContactRows(emails, "email address", (value) => value)}
-                    {c?.associatedAddresses && c?.associatedAddresses.length > 0 && (
-                      <DetailField label="Offices associated with">
-                        {c?.associatedAddresses?.map((a) => {
-                          return (
-                            <Badge
-                              bg="species-badge comp-species-badge"
-                              className="me-2"
-                              key={a?.address.addressGuid}
-                            >
-                              {a?.address.addressName}
-                            </Badge>
-                          );
-                        })}
-                      </DetailField>
-                    )}
-                  </dl>
+                <Card.Body className="comp-details-form">
+                  <fieldset>
+                    <legend className="mb-3">
+                      {c?.title}
+                      {c?.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+                    </legend>
+                    <dl>
+                      <DetailField label="First name">{c?.person?.firstName}</DetailField>
+                      <DetailField label="Last name">{c?.person?.lastName}</DetailField>
+                      {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
+                      {renderContactRows(emails, "email address", (value) => value)}
+                      {c?.associatedAddresses && c?.associatedAddresses.length > 0 && (
+                        <DetailField label="Offices associated with">
+                          {c?.associatedAddresses?.map((a) => {
+                            return (
+                              <Badge
+                                bg="species-badge comp-species-badge"
+                                className="me-2"
+                                key={a?.address.addressGuid}
+                              >
+                                {a?.address.addressName}
+                              </Badge>
+                            );
+                          })}
+                        </DetailField>
+                      )}
+                    </dl>
+                  </fieldset>
                 </Card.Body>
               </Card>
             );

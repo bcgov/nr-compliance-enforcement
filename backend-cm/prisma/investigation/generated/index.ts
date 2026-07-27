@@ -45,6 +45,15 @@ import { task_type_code as _task_type_code } from "./task_type_code";
 import { ticket as _ticket } from "./ticket";
 import { ticket_h as _ticket_h } from "./ticket_h";
 import { ticket_outcome_code as _ticket_outcome_code } from "./ticket_outcome_code";
+import { investigation_address as _investigation_address } from "./investigation_address";
+import { investigation_person_facial_hair_style_code_ref as _investigation_person_facial_hair_style_code_ref } from "./investigation_person_facial_hair_style_code_ref";
+import { investigation_person_facial_hair_style_code_ref_h as _investigation_person_facial_hair_style_code_ref_h } from "./investigation_person_facial_hair_style_code_ref_h";
+import { investigation_attachment_reference as _investigation_attachment_reference } from "./investigation_attachment_reference";
+import { investigation_business_person_address_xref as _investigation_business_person_address_xref } from "./investigation_business_person_address_xref";
+import { investigation_business_person_address_xref_h as _investigation_business_person_address_xref_h } from "./investigation_business_person_address_xref_h";
+import { investigation_business_person_xref as _investigation_business_person_xref } from "./investigation_business_person_xref";
+import { investigation_business_person_xref_h as _investigation_business_person_xref_h } from "./investigation_business_person_xref_h";
+import { investigation_source_code as _investigation_source_code } from "./investigation_source_code";
 
 export namespace PrismaModel {
   export class activity_note extends _activity_note {}
@@ -94,6 +103,15 @@ export namespace PrismaModel {
   export class ticket extends _ticket {}
   export class ticket_h extends _ticket_h {}
   export class ticket_outcome_code extends _ticket_outcome_code {}
+  export class investigation_address extends _investigation_address {}
+  export class investigation_person_facial_hair_style_code_ref extends _investigation_person_facial_hair_style_code_ref {}
+  export class investigation_person_facial_hair_style_code_ref_h extends _investigation_person_facial_hair_style_code_ref_h {}
+  export class investigation_attachment_reference extends _investigation_attachment_reference {}
+  export class investigation_business_person_address_xref extends _investigation_business_person_address_xref {}
+  export class investigation_business_person_address_xref_h extends _investigation_business_person_address_xref_h {}
+  export class investigation_business_person_xref extends _investigation_business_person_xref {}
+  export class investigation_business_person_xref_h extends _investigation_business_person_xref_h {}
+  export class investigation_source_code extends _investigation_source_code {}
 
   export const extraModels = [
     activity_note,
@@ -143,5 +161,14 @@ export namespace PrismaModel {
     ticket,
     ticket_h,
     ticket_outcome_code,
+    investigation_address,
+    investigation_person_facial_hair_style_code_ref,
+    investigation_person_facial_hair_style_code_ref_h,
+    investigation_attachment_reference,
+    investigation_business_person_address_xref,
+    investigation_business_person_address_xref_h,
+    investigation_business_person_xref,
+    investigation_business_person_xref_h,
+    investigation_source_code,
   ];
 }

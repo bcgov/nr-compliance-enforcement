@@ -8,6 +8,8 @@ interface InvestigationPartyHeaderProps {
   investigationLabel?: string;
   badges?: ReactNode;
   actions?: ReactNode;
+  isEditMode?: boolean;
+  identifier?: string;
 }
 
 export const InvestigationPartyHeader: FC<InvestigationPartyHeaderProps> = ({
@@ -16,6 +18,8 @@ export const InvestigationPartyHeader: FC<InvestigationPartyHeaderProps> = ({
   investigationLabel,
   badges,
   actions,
+  isEditMode = false,
+  identifier,
 }) => {
   const { searchURL: investigationSearchURL } = useInvestigationSearch();
 
@@ -34,12 +38,16 @@ export const InvestigationPartyHeader: FC<InvestigationPartyHeaderProps> = ({
               <li className="breadcrumb-item comp-nav-item-name-inverted">
                 <Link to={`/investigation/${investigationGuid}/parties`}>Parties</Link>
               </li>
-              <li
-                className="breadcrumb-item"
-                aria-current="page"
-              >
-                {title}
-              </li>
+              {identifier && isEditMode ? (
+                <>
+                  <li className="breadcrumb-item comp-nav-item-name-inverted">
+                    <Link to={`/investigation/${investigationGuid}/party/${identifier}`}>{title}</Link>
+                  </li>
+                  <li className="breadcrumb-item">Edit party</li>
+                </>
+              ) : (
+                <li className="breadcrumb-item">{title}</li>
+              )}
             </ol>
           </nav>
         </div>
