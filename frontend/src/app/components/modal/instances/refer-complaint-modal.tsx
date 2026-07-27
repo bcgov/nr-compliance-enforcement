@@ -16,8 +16,8 @@ import { AppUser } from "@/app/types/app/app_user/app_user";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { isValidEmail } from "@/app/common/validate-email";
-import { formatTimestampAsLocalDate } from "@/app/common/methods";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type ReferComplaintModalProps = {
   close: () => void;
@@ -236,7 +236,7 @@ export const ReferComplaintModal: FC<ReferComplaintModalProps> = ({ close, submi
         >
           <Modal.Title as="h3">
             {`${title} #${id}`}
-            <p className="text-muted refer-complaint-modal-subtitle">{`${complaintAgency?.shortDescription}\u2002•\u2002 ${complaint_type}\u2002•\u2002${formatTimestampAsLocalDate(currentDate?.toString())}`}</p>
+            <p className="text-muted refer-complaint-modal-subtitle">{`${complaintAgency?.shortDescription}\u2002•\u2002 ${complaint_type}\u2002•\u2002${formatDateObjectAsString(currentDate)}`}</p>
           </Modal.Title>
         </Modal.Header>
       )}

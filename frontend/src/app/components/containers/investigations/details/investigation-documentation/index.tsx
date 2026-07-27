@@ -1,7 +1,7 @@
 import { FC, useState, useCallback } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { Task } from "@/generated/graphql";
-import { formatTimestampAsLocalDate, escapeCsvCell } from "@common/methods";
+import { escapeCsvCell, parseUTCDateTimeToLocal } from "@common/methods";
 import { getDisplayFilename } from "@common/attachment-utils";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
@@ -14,6 +14,7 @@ import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   investigationGuid: string;
@@ -78,7 +79,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
           a.sequenceNumber,
           a.description,
           a.title,
-          a.date ? formatTimestampAsLocalDate(a.date) : "",
+          a.date ? formatDateObjectAsString(parseUTCDateTimeToLocal(a.date), { format: "date" }) : "",
           getOfficerName(a.takenBy ?? ""),
           a.location,
           task ? `Task ${task.taskNumber}` : "",

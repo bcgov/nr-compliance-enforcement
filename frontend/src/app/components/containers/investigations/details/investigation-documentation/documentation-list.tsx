@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatTimestampAsLocalDate, truncateFilenameString } from "@common/methods";
+import { parseUTCDateTimeToLocal, truncateFilenameString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
@@ -12,6 +12,7 @@ import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Attachment } from "./hooks/use-investigation-attachments";
 import { SORT_TYPES } from "@constants/sort-direction";
 import config from "@/config";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type AttachmentWithTask = Attachment & {
   task?: Task;
@@ -140,7 +141,8 @@ export const DocumentationList: FC<Props> = ({
       cellClassName: "comp-cell-width-50 comp-cell-min-width-50",
       isSortable: true,
       getValue: (attachment) => attachment.date ?? "",
-      renderCell: (attachment) => (attachment.date ? formatTimestampAsLocalDate(attachment.date) : "-"),
+      renderCell: (attachment) =>
+        attachment.date ? formatDateObjectAsString(parseUTCDateTimeToLocal(attachment.date), { format: "date" }) : "-",
     },
     {
       label: "Taken by",

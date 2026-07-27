@@ -4,13 +4,14 @@ import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { Investigation } from "@/generated/graphql";
-import { applyStatusClass, formatTimestampAsLocalDate } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   investigations: Investigation[];
@@ -67,7 +68,8 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (investigation) => investigation.openedTimestamp ?? "",
-      renderCell: (investigation) => formatTimestampAsLocalDate(investigation.openedTimestamp),
+      renderCell: (investigation) =>
+        formatDateObjectAsString(parseUTCTimestampToLocal(investigation.openedTimestamp), { format: "dateTime" }),
     },
     {
       label: "Community",
@@ -136,7 +138,9 @@ export const InvestigationList: FC<Props> = ({ investigations, totalItems = 0, i
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (investigation) => investigation.updatedTimestamp ?? "",
-      renderCell: (investigation) => formatTimestampAsLocalDate(investigation.updatedTimestamp) || "-",
+      renderCell: (investigation) =>
+        formatDateObjectAsString(parseUTCTimestampToLocal(investigation.updatedTimestamp), { format: "dateTime" }) ||
+        "-",
     },
   ];
 
