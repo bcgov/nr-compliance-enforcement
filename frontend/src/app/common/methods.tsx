@@ -529,25 +529,6 @@ export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time?: Opti
   return new Date(`${dateStr}T${timeStr}Z`);
 };
 
-/**
- * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
- */
-export const parseLocalDateTimeToUTC = (
-  date: Date,
-  time: string | null | undefined,
-): { utcDate: Date; utcTime: string | null } => {
-  if (!time) return { utcDate: date, utcTime: null };
-  const combined = new Date(date);
-  const [hh, mm] = time.split(":").map(Number);
-  combined.setHours(hh, mm, 0, 0);
-  const utcHH = combined.getUTCHours().toString().padStart(2, "0");
-  const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
-  return {
-    utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
-    utcTime: `${utcHH}:${utcMM}`,
-  };
-};
-
 // Determine an age based on a DOB
 export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {
   let age = today.getFullYear() - dob.getFullYear();

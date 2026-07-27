@@ -1,7 +1,8 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
-import { bcUtmZoneNumbers, formatLatLongCoordinate, parseLocalDateTimeToUTC } from "@common/methods";
+import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
+import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
 import { ValidationTextArea } from "@common/validation-textarea";
 import Select from "react-select";
 import { ValidationMultiSelect } from "@common/validation-multiselect";

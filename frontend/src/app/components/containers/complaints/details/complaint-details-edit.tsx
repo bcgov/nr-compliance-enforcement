@@ -1,11 +1,7 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import {
-  bcUtmZoneNumbers,
-  getSelectedOfficer,
-  formatLatLongCoordinate,
-  parseLocalDateTimeToUTC,
-} from "@common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
+import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,

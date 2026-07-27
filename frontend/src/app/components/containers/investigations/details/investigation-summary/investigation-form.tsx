@@ -1,4 +1,5 @@
-import { bcUtmZoneNumbers, parseLocalDateTimeToUTC, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";

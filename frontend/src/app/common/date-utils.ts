@@ -61,4 +61,22 @@ export const formatDateObjectAsString = (
  * For TIMESTAMP columns use parseUTCTimestampToLocal(value).
  */
 export const parseUTCTimestampToLocal = (value: OptionalDateTimeInput): Date | null =>
-  parseUTCDateTimeToLocal(value, value);
+  parseUTCDateTimeToLocal(value, value); /**
+ * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
+ */
+
+export const parseLocalDateTimeToUTC = (
+  date: Date,
+  time: string | null | undefined,
+): { utcDate: Date; utcTime: string | null } => {
+  if (!time) return { utcDate: date, utcTime: null };
+  const combined = new Date(date);
+  const [hh, mm] = time.split(":").map(Number);
+  combined.setHours(hh, mm, 0, 0);
+  const utcHH = combined.getUTCHours().toString().padStart(2, "0");
+  const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
+  return {
+    utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
+    utcTime: `${utcHH}:${utcMM}`,
+  };
+};
