@@ -83,6 +83,7 @@ export const GET_PARTY = gql`
         additionalDescriptors
         comments
         boloIndicator
+        boloComment
       }
       business {
         name

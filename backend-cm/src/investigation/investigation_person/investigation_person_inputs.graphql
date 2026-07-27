@@ -26,6 +26,7 @@ input CreateInvestigationPersonInput {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
   personReference: String
 }
 
@@ -58,5 +59,6 @@ input UpdateInvestigationPersonInput {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
   personReference: String
 }

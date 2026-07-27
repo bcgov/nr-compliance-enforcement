@@ -142,6 +142,8 @@ model business {
   update_user_id       String?                @db.VarChar(32)
   update_utc_timestamp DateTime?              @db.Timestamp(6)
   party_guid           String?                @unique(map: "UQ_business_party_guid") @db.Uuid
+  bolo_ind             Boolean?
+  bolo_comment         String?
   party                party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
   business_identifier  business_identifier[]
   business_person_xref business_person_xref[]
@@ -814,6 +816,7 @@ model person {
   additional_descriptors                                                 String?
   comments                                                               String?
   bolo_ind                                                               Boolean?
+  bolo_comment                                                           String?
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?           @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")

@@ -109,6 +109,9 @@ export class person {
   @ApiPropertyOptional({ type: Boolean })
   bolo_ind?: boolean;
 
+  @ApiPropertyOptional({ type: String })
+  bolo_comment?: string;
+
   @ApiProperty({ isArray: true, type: () => business_person_xref })
   business_person_xref: business_person_xref[];
 

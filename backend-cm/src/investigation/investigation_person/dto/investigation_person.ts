@@ -39,6 +39,7 @@ export class InvestigationPerson implements PersonDto {
   additionalDescriptors?: string;
   comments?: string;
   boloIndicator?: boolean;
+  boloComment?: string;
 }
 
 @InputType()
@@ -126,6 +127,9 @@ export class CreateInvestigationPersonInput {
 
   @Field(() => Boolean, { nullable: true })
   boloIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  boloComment?: string;
 }
 
 @InputType()
@@ -269,6 +273,10 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.boloIndicator,
       mapFrom((src) => src.bolo_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.boloComment,
+      mapFrom((src) => src.bolo_comment ?? undefined),
     ),
   );
 };

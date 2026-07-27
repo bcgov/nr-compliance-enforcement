@@ -96,6 +96,9 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             {/* Investigation role — own section at top*/}
             <DetailSection title="Party details">
               <DetailField label="Investigation role">{roleText}</DetailField>
+              {person?.boloComment && (
+                <DetailField label="Safety concern reason">{person.boloComment}</DetailField>
+              )}
             </DetailSection>
 
             <PartyDetail

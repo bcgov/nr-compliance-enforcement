@@ -158,6 +158,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         additionalDescriptors: editParty.person?.additionalDescriptors || null,
         comments: editParty.person?.comments || null,
         boloIndicator: editParty.person?.boloIndicator || null,
+        boloComment: editParty.person?.boloComment || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers

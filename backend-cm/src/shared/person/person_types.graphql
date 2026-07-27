@@ -27,4 +27,5 @@ type Person {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
 }

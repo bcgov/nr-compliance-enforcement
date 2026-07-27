@@ -187,11 +187,46 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             onChange={(evt: any) => {
               const checked = evt.target.checked;
               field.handleChange(checked);
+              if (!checked) {
+                form.setFieldValue("boloComment", "");
+              }
             }}
             disabled={isDisabled}
           />
         )}
       />
+      <form.Subscribe selector={(state: any) => state.values.boloIndicator}>
+        {(boloIndicator: boolean | undefined) =>
+          boloIndicator ? (
+            <FormField
+              form={form}
+              name="boloComment"
+              label="Caution / BOLO comment"
+              required
+              validators={{
+                onChange: ({ value }: { value: string | null | undefined }) => {
+                  const isBoloChecked = !!form.getFieldValue("boloIndicator");
+                  const isEmpty = !value?.trim();
+                  return isBoloChecked && isEmpty ? { message: "Caution / BOLO comment is required" } : undefined;
+                },
+              }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="bolo-comment"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  value={field.state.value ?? ""}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter reason for Caution / BOLO"
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="firstName"

@@ -703,6 +703,7 @@ export type CreateInvestigationPersonInput = {
   additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;
@@ -1490,6 +1491,7 @@ export type InvestigationPerson = {
   additionalHairDescriptors?: Maybe<Scalars['String']['output']>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
   boloIndicator?: Maybe<Scalars['Boolean']['output']>;
+  boloComment?: Maybe<Scalars['String']['output']>;
   buildCode?: Maybe<Scalars['String']['output']>;
   comments?: Maybe<Scalars['String']['output']>;
   complexionCode?: Maybe<Scalars['String']['output']>;
@@ -2279,6 +2281,7 @@ export type Person = {
   additionalHairDescriptors?: Maybe<Scalars['String']['output']>;
   approximateAgeCode?: Maybe<Scalars['String']['output']>;
   boloIndicator?: Maybe<Scalars['Boolean']['output']>;
+  boloComment?: Maybe<Scalars['String']['output']>;
   buildCode?: Maybe<Scalars['String']['output']>;
   comments?: Maybe<Scalars['String']['output']>;
   complexionCode?: Maybe<Scalars['String']['output']>;
@@ -2326,6 +2329,7 @@ export type PersonInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;
@@ -2365,6 +2369,7 @@ export type PersonUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;
@@ -3225,6 +3230,7 @@ export type UpdateInvestigationPersonInput = {
   additionalHairDescriptors?: InputMaybe<Scalars['String']['input']>;
   approximateAgeCode?: InputMaybe<Scalars['String']['input']>;
   boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
   buildCode?: InputMaybe<Scalars['String']['input']>;
   comments?: InputMaybe<Scalars['String']['input']>;
   complexionCode?: InputMaybe<Scalars['String']['input']>;

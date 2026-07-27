@@ -483,6 +483,7 @@ export function buildPersonBase(value: any) {
     tattooDescription: value.tattooDescription || null,
     additionalDescriptors: value.additionalDescriptors || null,
     boloIndicator: value.boloIndicator || null,
+    boloComment: value.boloComment || null,
   };
 }
 
@@ -530,6 +531,7 @@ export const createEmptyPartyFormValues = () => ({
   facialHairStyleCodes: [] as PersonFacialHairStyleCode[],
   additionalHairDescriptors: "",
   boloIndicator: "",
+  boloComment: "",
   comments: "",
   tattooIndicator: "",
   tattooDescription: "",

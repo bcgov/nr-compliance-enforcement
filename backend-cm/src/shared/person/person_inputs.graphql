@@ -27,6 +27,7 @@ input PersonInput {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
 }
 
 input PersonUpdateInput {
@@ -59,6 +60,7 @@ input PersonUpdateInput {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
 }
 
 # Distinct input type as shared parties currently have mandatory fields.  Could combine in future.

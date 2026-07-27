@@ -106,6 +106,9 @@ export class investigation_person {
   @ApiPropertyOptional({ type: Boolean })
   bolo_ind?: boolean;
 
+  @ApiPropertyOptional({ type: String })
+  bolo_comment?: string;
+
   @ApiProperty({ isArray: true, type: () => investigation_business_person_xref })
   investigation_business_person_xref: investigation_business_person_xref[];
 

@@ -33,6 +33,7 @@ export class Person implements PersonDto {
   additionalDescriptors?: string;
   comments?: string;
   boloIndicator?: boolean;
+  boloComment?: string;
 }
 
 export const mapPrismaPersonToPerson = (mapper: Mapper) => {
@@ -157,6 +158,10 @@ export const mapPrismaPersonToPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.boloIndicator,
       mapFrom((src) => src.bolo_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.boloComment,
+      mapFrom((src) => src.bolo_comment ?? undefined),
     ),
   );
 };

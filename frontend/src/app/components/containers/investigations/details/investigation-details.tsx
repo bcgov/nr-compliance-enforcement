@@ -104,6 +104,7 @@ export const GET_INVESTIGATION = gql`
           additionalDescriptors
           comments
           boloIndicator
+          boloComment
         }
         business {
           __typename

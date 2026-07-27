@@ -233,6 +233,7 @@ export class InvestigationPartyService {
       additional_descriptors: input.additionalDescriptors,
       comments: input.comments,
       bolo_ind: input.boloIndicator,
+      bolo_comment: input.boloComment,
     };
   }
 
@@ -259,6 +260,7 @@ export class InvestigationPartyService {
         additional_descriptors: input.additionalDescriptors,
         comments: input.comments,
         bolo_ind: input.boloIndicator,
+        bolo_comment: input.boloComment,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
@@ -646,6 +648,7 @@ export class InvestigationPartyService {
         additional_descriptors: input.additionalDescriptors,
         comments: input.comments,
         bolo_ind: input.boloIndicator,
+        bolo_comment: input.boloComment,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
       },

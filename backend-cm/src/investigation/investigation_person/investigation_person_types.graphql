@@ -29,4 +29,5 @@ type InvestigationPerson {
   additionalDescriptors: String
   comments: String
   boloIndicator: Boolean
+  boloComment: String
 }

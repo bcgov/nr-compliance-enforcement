@@ -174,6 +174,7 @@ const PartyEdit: FC = () => {
         additionalDescriptors: person?.additionalDescriptors || null,
         comments: person?.comments || null,
         boloIndicator: person?.boloIndicator || null,
+        boloComment: person?.boloComment || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -214,6 +215,7 @@ const PartyEdit: FC = () => {
       facialHairStyleCodes: [],
       additionalHairDescriptors: "",
       boloIndicator: "",
+      boloComment: "",
       comments: "",
       tattooIndicator: "",
       tattooDescription: "",
