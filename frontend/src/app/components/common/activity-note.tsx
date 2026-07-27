@@ -175,18 +175,21 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
-    let actionedTime: Date | null = null;
-    let actionedDate: Date | undefined = selectedActionedDateTime;
-    console.log(selectedActionedDateTime);
-    console.log(selectedActionedTime);
+    let actionedDate: string | undefined;
+    let actionedTime: string | null = null;
+
     if (selectedActionedDateTime && selectedActionedTime) {
-      const { utcDate } = parseLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
+      // Timed: both fields from one UTC instant so they can't disagree across UTC midnight.
       const combined = new Date(selectedActionedDateTime);
       const [hh, mm] = selectedActionedTime.split(":").map(Number);
       combined.setHours(hh, mm, 0, 0);
-      actionedTime = combined;
-      actionedDate = utcDate;
+      actionedDate = combined.toISOString();
+      actionedTime = combined.toISOString();
+    } else if (selectedActionedDateTime) {
+      // Date-only: literal calendar date, no time.
+      actionedDate = formatDateObjectAsString(selectedActionedDateTime, { format: "date" });
     }
+
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
       contentJson: editor ? JSON.stringify(editor.getJSON()) : "",
