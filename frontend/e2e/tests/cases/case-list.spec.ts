@@ -27,7 +27,8 @@ test.describe("Case List View", () => {
     //await expect(tableHeaders.nth(4)).toContainText("Actions");
   });
 
-  test("it shows Create case button", async ({ page }) => {
+  test.skip("it shows Create case button", async ({ page }) => {
+    //skipped because the create case button is hidden for MVP
     const createButton = page.locator("button", { hasText: "Create case" });
     await expect(createButton).toBeVisible();
     await expect(createButton).toBeEnabled();
@@ -97,7 +98,8 @@ test.describe("Case List View", () => {
   });
   */
 
-  test("it navigates to create case form on button click", async ({ page }) => {
+  test.skip("it navigates to create case form on button click", async ({ page }) => {
+    //skipped because the create case button is hidden for MVP
     const createButton = page.locator("button", { hasText: "Create case" });
     await createButton.click();
     await waitForSpinner(page);

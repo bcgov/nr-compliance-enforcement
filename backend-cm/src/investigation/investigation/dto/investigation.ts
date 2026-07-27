@@ -30,6 +30,7 @@ export class Investigation {
   discoveryDate: Date;
   discoveryTime?: Date;
   community?: string;
+  investigationSourceCode?: string;
   parties: [InvestigationParty];
   contraventions: [Contravention];
   tasks: [Task];
@@ -141,6 +142,10 @@ export class CreateInvestigationInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   community?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  investigationSourceCode?: string;
 }
 
 @InputType()
@@ -190,6 +195,10 @@ export class UpdateInvestigationInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   community?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  investigationSourceCode?: string;
 }
 
 export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
@@ -266,6 +275,10 @@ export const mapPrismaInvestigationToInvestigation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.community,
       mapFrom((src) => src.geo_organization_unit_code_ref ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.investigationSourceCode,
+      mapFrom((src) => src.investigation_source ?? undefined),
     ),
     forMember(
       (dest) => dest.parties,

@@ -35,7 +35,7 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
     <>
       {addresses.length > 0 ? (
         <section className="comp-details-section">
-          <h2 className="mb-3">{isPerson ? "Address(es)" : "Contact information"}</h2>
+          <h3 className="mb-3">{isPerson ? "Address(es)" : "Contact information"}</h3>
           {addresses.map((addr) => {
             const provinceLabel = addr.province
               ? (countrySubdivisions?.find(
@@ -61,20 +61,22 @@ export const PartyAddressInformation: FC<PartyAddressInformationProps> = ({ part
                 className="mb-3"
                 border="default"
               >
-                <Card.Body>
-                  <h3 className="h6 mb-3">
-                    {addr.addressName}
-                    {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
-                  </h3>
-                  <dl>
-                    <DetailField label="Address">{addr.address}</DetailField>
-                    <DetailField label="City">{addr.city}</DetailField>
-                    <DetailField label="Province/state">{provinceLabel}</DetailField>
-                    <DetailField label="Postal code">{addr.postalCode}</DetailField>
-                    <DetailField label="Country">{countryLabel}</DetailField>
-                    {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
-                    {renderContactRows(emails, "email address", (value) => value)}
-                  </dl>
+                <Card.Body className="comp-details-form">
+                  <fieldset>
+                    <legend className="mb-3">
+                      {addr.addressName}
+                      {addr.isPrimary && <Badge className="ms-1 badge">Primary</Badge>}
+                    </legend>
+                    <dl>
+                      <DetailField label="Address">{addr.address}</DetailField>
+                      <DetailField label="City">{addr.city}</DetailField>
+                      <DetailField label="Province/state">{provinceLabel}</DetailField>
+                      <DetailField label="Postal code">{addr.postalCode}</DetailField>
+                      <DetailField label="Country">{countryLabel}</DetailField>
+                      {renderContactRows(phones, "phone", (value) => formatPhoneNumber(value) ?? value)}
+                      {renderContactRows(emails, "email address", (value) => value)}
+                    </dl>
+                  </fieldset>
                 </Card.Body>
               </Card>
             );

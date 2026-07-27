@@ -47,6 +47,7 @@ import { TaskStatusType } from "@/app/types/app/investigation/task-status";
 import { TaskCategoryType } from "@/app/types/app/investigation/task-category";
 import { TaskType } from "@/app/types/app/investigation/task-category-detail";
 import { LegislationType } from "../app/code-tables/legislation-type";
+import { InvestigationSourceCode } from "@/app/types/app/investigation/investigation-source-code";
 import { EnforcementActionType } from "@/app/types/app/code-tables/enforcement-action";
 import { TicketOutcomeType } from "@/app/types/app/code-tables/ticket-outcome";
 import { CountryType } from "@/app/types/app/code-tables/country";
@@ -110,6 +111,7 @@ export interface CodeTableState {
     | Array<TaskStatusType>
     | Array<TaskCategoryType>
     | Array<TaskType>
+    | Array<InvestigationSourceCode>
     | Array<LegislationType>
     | Array<EnforcementActionType>
     | Array<TicketOutcomeType>
@@ -171,6 +173,7 @@ export interface CodeTableState {
   "task-status-type": Array<TaskStatusType>;
   "task-category-type": Array<TaskCategoryType>;
   "task-type": Array<TaskType>;
+  "investigation-source-code": Array<InvestigationSourceCode>;
   "legislation-type": Array<LegislationType>;
   "enforcement-action-type": Array<EnforcementActionType>;
   "ticket-outcome-type": Array<TicketOutcomeType>;

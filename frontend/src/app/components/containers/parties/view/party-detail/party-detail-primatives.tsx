@@ -10,7 +10,7 @@ export const isInvestigationBusiness = (b: Business | InvestigationBusiness): b 
 
 export const DetailSection: FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
   <section className="comp-details-section">
-    <h2 className="mb-3">{title}</h2>
+    <h3 className="mb-3">{title}</h3>
     <Card
       className="mb-3"
       border="default"
