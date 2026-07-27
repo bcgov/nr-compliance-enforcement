@@ -21,8 +21,7 @@ import {
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 

@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { parseUTCDateTimeToLocal, truncateFilenameString } from "@common/methods";
+import { truncateFilenameString } from "@common/methods";
 import { generateApiParameters, get } from "@common/api";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
 import { Task } from "@/generated/graphql";
@@ -12,7 +12,7 @@ import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Attachment } from "./hooks/use-investigation-attachments";
 import { SORT_TYPES } from "@constants/sort-direction";
 import config from "@/config";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type AttachmentWithTask = Attachment & {
   task?: Task;

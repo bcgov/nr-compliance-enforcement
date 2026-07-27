@@ -6,10 +6,10 @@ import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { applyStatusClass, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { applyStatusClass } from "@/app/common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { TaskListExpandedContent } from "./task-list-item";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type Props = {
   tasks: Task[];

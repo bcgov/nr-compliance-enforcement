@@ -7,9 +7,8 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Paginator from "@/app/components/common/paginator";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { Button } from "react-bootstrap";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 const SEARCH_EVENTS = gql`
   query SearchEvents($page: Int, $pageSize: Int, $filters: EventFilters) {

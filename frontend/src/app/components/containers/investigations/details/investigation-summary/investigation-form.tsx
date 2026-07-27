@@ -1,5 +1,4 @@
-import { bcUtmZoneNumbers, parseUTCDateTimeToLocal } from "@/app/common/methods";
-import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
+import { bcUtmZoneNumbers } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -16,7 +15,7 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useState } from "react";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 interface InvestigationFormProps {
   form: any;

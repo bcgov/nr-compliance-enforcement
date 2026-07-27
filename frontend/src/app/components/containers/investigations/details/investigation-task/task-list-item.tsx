@@ -6,8 +6,8 @@ import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-not
 import { GET_DIARY_DATES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
-import { parseUTCDateTimeToLocal, truncateString } from "@/app/common/methods";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { truncateString } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   data: Task;

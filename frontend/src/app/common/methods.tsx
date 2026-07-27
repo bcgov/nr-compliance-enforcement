@@ -1,4 +1,3 @@
-import format from "date-fns/format";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintStatus } from "@apptypes/app/code-tables/complaint-status";
@@ -18,11 +17,8 @@ import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complai
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ToggleError } from "./toast";
 import utmObj from "utm-latlng";
-import { formatDistanceToNow } from "date-fns";
 
 type Coordinate = number[] | string[] | undefined;
-
-type OptionalDateTimeInput = string | Date | null | undefined;
 
 const THUMB_WIDTH = 578; // 2x the 289x200 carousel slide, for high DPI displays
 const THUMB_HEIGHT = 400;
@@ -506,28 +502,6 @@ export const displayBackendErrors = (message: string) => {
 export function getDropdownOption(matchValue: string | undefined | null, optionsList: Option[]): Option | undefined {
   return optionsList.find((item) => item.value === matchValue);
 }
-
-/**
- * Reconstructs a single Date from separate date/time ISO-string fields.
- *
- * For DATE columns use parseUTCDateTimeToLocal(value).
- * For split DATE/TIME columns use parseUTCDateTimeToLocal(dateColumn, timeColumn).
- * For TIMESTAMP columns use parseUTCTimestampToLocal(value).
- */
-export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time?: OptionalDateTimeInput): Date | null => {
-  if (!date) return null;
-  const dateStr =
-    date instanceof Date
-      ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-      : String(date).split("T")[0];
-  if (!time) {
-    const [y, m, d] = dateStr.split("-").map(Number);
-    return new Date(y, m - 1, d);
-  }
-  const raw = String(time);
-  const timeStr = raw.includes("T") ? raw.split("T")[1]?.replace("Z", "") || "00:00:00" : raw.replace("Z", "");
-  return new Date(`${dateStr}T${timeStr}Z`);
-};
 
 // Determine an age based on a DOB
 export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {

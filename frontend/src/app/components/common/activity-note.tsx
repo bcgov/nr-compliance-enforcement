@@ -11,11 +11,9 @@ import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { parseUTCDateTimeToLocal } from "@common/methods";
-import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
+import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 import { gql } from "graphql-request";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 interface ActivityNoteProps {
   index?: number;

@@ -31,8 +31,8 @@ import {
   getViolationByViolationCode,
   getGirTypeByGirTypeCode,
   getIssueDescription,
-  parseUTCDateTimeToLocal,
 } from "@common/methods";
+import { parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";

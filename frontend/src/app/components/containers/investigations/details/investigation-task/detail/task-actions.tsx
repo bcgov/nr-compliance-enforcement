@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { Button, Card, Table } from "react-bootstrap";
 import { ActivityNote } from "@/generated/graphql";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-note";
@@ -11,7 +10,7 @@ import { ADD_EDIT_TASK_ACTION } from "@/app/types/modal/modal-types";
 import { useModalDirtyWarning } from "@/app/hooks/use-unsaved-changes-warning";
 import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { EditButton } from "@components/common/comp-table-edit-column";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 interface TaskActionsProps {
   investigationGuid: string;

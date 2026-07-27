@@ -2,14 +2,14 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { parseUTCDateTimeToLocal, truncateString } from "@common/methods";
+import { truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type Props = {
   exhibits: Exhibit[];

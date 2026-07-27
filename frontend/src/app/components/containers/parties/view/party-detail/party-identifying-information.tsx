@@ -1,5 +1,5 @@
-import { formatDateObjectAsString } from "@/app/common/date-utils";
-import { calculateAgeYears, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { calculateAgeYears } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 import {
   DetailField,
   DetailSection,

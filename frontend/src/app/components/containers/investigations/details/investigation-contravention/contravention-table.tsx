@@ -3,13 +3,12 @@ import { Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { Contravention, EnforcementAction } from "@/generated/graphql";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { useLegislation } from "@/app/graphql/hooks/useLegislationSearchQuery";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { CODE_TABLE_TYPES } from "@/app/constants/code-table-types";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 interface ContraventionTableProps {
   contraventions: Contravention[];

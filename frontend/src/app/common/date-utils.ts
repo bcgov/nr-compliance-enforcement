@@ -1,6 +1,5 @@
 import format from "date-fns/format";
 import { formatDistanceToNow } from "date-fns";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 
 type DateFormatPreset = "date" | "time" | "dateTime";
 type OptionalDateTimeInput = string | Date | null | undefined;
@@ -61,10 +60,11 @@ export const formatDateObjectAsString = (
  * For TIMESTAMP columns use parseUTCTimestampToLocal(value).
  */
 export const parseUTCTimestampToLocal = (value: OptionalDateTimeInput): Date | null =>
-  parseUTCDateTimeToLocal(value, value); /**
+  parseUTCDateTimeToLocal(value, value);
+
+/**
  * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
  */
-
 export const parseLocalDateTimeToUTC = (
   date: Date,
   time: string | null | undefined,
@@ -79,4 +79,26 @@ export const parseLocalDateTimeToUTC = (
     utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
     utcTime: `${utcHH}:${utcMM}`,
   };
+};
+
+/**
+ * Reconstructs a single Date from separate date/time ISO-string fields.
+ *
+ * For DATE columns use parseUTCDateTimeToLocal(value).
+ * For split DATE/TIME columns use parseUTCDateTimeToLocal(dateColumn, timeColumn).
+ * For TIMESTAMP columns use parseUTCTimestampToLocal(value).
+ */
+export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time?: OptionalDateTimeInput): Date | null => {
+  if (!date) return null;
+  const dateStr =
+    date instanceof Date
+      ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+      : String(date).split("T")[0];
+  if (!time) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  const raw = String(time);
+  const timeStr = raw.includes("T") ? raw.split("T")[1]?.replace("Z", "") || "00:00:00" : raw.replace("Z", "");
+  return new Date(`${dateStr}T${timeStr}Z`);
 };

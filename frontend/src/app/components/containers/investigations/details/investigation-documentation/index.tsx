@@ -1,7 +1,7 @@
 import { FC, useState, useCallback } from "react";
 import { CloseButton, Collapse, Offcanvas } from "react-bootstrap";
 import { Task } from "@/generated/graphql";
-import { escapeCsvCell, parseUTCDateTimeToLocal } from "@common/methods";
+import { escapeCsvCell } from "@common/methods";
 import { getDisplayFilename } from "@common/attachment-utils";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useAppDispatch, useAppSelector } from "@/app/hooks/hooks";
@@ -14,7 +14,7 @@ import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type Props = {
   investigationGuid: string;

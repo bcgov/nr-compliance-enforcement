@@ -11,7 +11,7 @@ import { LegislationType } from "@/app/types/app/legislation";
 import { Contravention, InvestigationParty, Legislation } from "@/generated/graphql";
 import { format } from "date-fns";
 import { FC, useMemo } from "react";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
