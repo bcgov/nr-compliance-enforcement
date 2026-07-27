@@ -4,14 +4,13 @@ import { Button, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
 import { selectGenderDropdown } from "@/app/store/reducers/code-table";
 import { calculateAgeYears } from "@/app/common/methods";
-import { parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
 import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type PartyMatchCardProps = {
   party: Party;

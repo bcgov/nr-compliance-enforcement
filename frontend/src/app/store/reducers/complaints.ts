@@ -32,7 +32,6 @@ import {
   getGirTypeByGirTypeCode,
   getIssueDescription,
 } from "@common/methods";
-import { parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 import { Agency } from "@apptypes/app/code-tables/agency";
 import { ReportedBy } from "@apptypes/app/code-tables/reported-by";
 import { WebEOCComplaintUpdateDTO } from "@apptypes/app/complaints/webeoc-complaint-update";
@@ -50,7 +49,7 @@ import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { geocodeAddressIfNeeded } from "@/app/common/geocoder";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
