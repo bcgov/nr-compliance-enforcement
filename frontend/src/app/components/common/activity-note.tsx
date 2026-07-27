@@ -108,10 +108,18 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    const d = initialData?.actionedTime
-      ? parseUTCDateTimeToLocal(initialData.actionedDate, initialData.actionedTime)
-      : new Date();
-    return formatDateObjectAsString(d, { format: "time" });
+    if (!initialData) {
+      // New form: default to the current time.
+      return formatDateObjectAsString(new Date(), { format: "time" });
+    }
+    // Editing: No time present - keep no time present
+    if (!initialData.actionedTime) {
+      return null;
+    }
+    // Editing: Time present - keep stored time
+    return formatDateObjectAsString(parseUTCDateTimeToLocal(initialData.actionedDate, initialData.actionedTime), {
+      format: "time",
+    });
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
@@ -169,6 +177,8 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   const getInputValues = (): Partial<ActivityNoteInput> => {
     let actionedTime: Date | null = null;
     let actionedDate: Date | undefined = selectedActionedDateTime;
+    console.log(selectedActionedDateTime);
+    console.log(selectedActionedTime);
     if (selectedActionedDateTime && selectedActionedTime) {
       const { utcDate } = parseLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
       const combined = new Date(selectedActionedDateTime);

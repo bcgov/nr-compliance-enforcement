@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers, parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { bcUtmZoneNumbers, parseLocalDateTimeToUTC, parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -69,14 +69,17 @@ export const InvestigationForm = ({
   const handleDiscoveryDateTimeChange = (date: Date | null, time: string | null) => {
     setSelectedDiscoveryDate(date);
     setSelectedDiscoveryTime(time);
-    if (date) {
-      const discoveryDate = new Date(date);
-      if (time) {
-        const [hh, mm] = time.split(":").map(Number);
-        discoveryDate.setHours(hh, mm, 0, 0);
-      }
-      form.setFieldValue("discoveryDate", discoveryDate.toISOString());
-      form.setFieldValue("discoveryTime", time ? discoveryDate.toISOString() : null);
+    if (date && time) {
+      // Timed: both columns derived from one UTC instant so they can't disagree across UTC midnight.
+      const combined = new Date(date);
+      const [hh, mm] = time.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      form.setFieldValue("discoveryDate", combined.toISOString());
+      form.setFieldValue("discoveryTime", combined.toISOString());
+    } else if (date) {
+      // Date-only: store the literal calendar date, no time.
+      form.setFieldValue("discoveryDate", formatDateObjectAsString(date, { format: "date" }));
+      form.setFieldValue("discoveryTime", null);
     } else {
       form.setFieldValue("discoveryDate", "");
       form.setFieldValue("discoveryTime", null);
@@ -200,6 +203,7 @@ export const InvestigationForm = ({
             render={(field) => {
               // Flush state to rendered comp if it's available so no-edit saves work
               if (!field.state.value && selectedDiscoveryDate) {
+                console.log("fflush overwriting with:", selectedDiscoveryDate?.toISOString());
                 field.handleChange(selectedDiscoveryDate.toISOString());
               }
               return (
