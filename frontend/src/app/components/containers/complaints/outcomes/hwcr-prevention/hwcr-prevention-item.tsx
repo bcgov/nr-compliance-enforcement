@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { Prevention } from "@/app/types/outcomes/prevention";
 import { Badge, Button, Card } from "react-bootstrap";
-import { formatTimestampAsLocalDate } from "@common/methods";
 import { selectComplaintViewMode } from "@store/reducers/complaints";
 import { useAppSelector } from "@/app/hooks/hooks";
 import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   prevention: Prevention;
@@ -49,7 +49,11 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               </div>
               <div id="prev-educ-outcome-date-div">
                 <dt>Date</dt>
-                <dd>{formatTimestampAsLocalDate(`${new Date(prevention.date ?? new Date())}`)}</dd>
+                <dd>
+                  {formatDateObjectAsString(parseUTCTimestampToLocal(prevention.date ?? new Date()), {
+                    format: "date",
+                  })}
+                </dd>
               </div>
             </dl>
           </div>

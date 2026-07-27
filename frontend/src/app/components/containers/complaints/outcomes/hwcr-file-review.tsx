@@ -4,7 +4,6 @@ import { CompSelect } from "@components/common/comp-select";
 import DatePicker from "react-datepicker";
 import { useAppSelector, useAppDispatch } from "@hooks/hooks";
 import { openModal, profileDisplayName } from "@store/reducers/app";
-import { formatTimestampAsLocalDate } from "@common/methods";
 import { BsExclamationCircleFill } from "react-icons/bs";
 import { getComplaintStatusById, selectComplaint, selectComplaintViewMode } from "@store/reducers/complaints";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -12,6 +11,7 @@ import { createReview, updateReview } from "@/app/store/reducers/complaint-outco
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface HWCRFileReviewProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
@@ -342,7 +342,9 @@ export const HWCRFileReview: FC<HWCRFileReviewProps> = ({ onDirtyChange }) => {
                     <div id="complaint-file-review-date-div">
                       <dt>Date</dt>
                       <dd id="file-review-date">
-                        {formatTimestampAsLocalDate(new Date(reviewCompleteDate).toString())}
+                        {reviewCompleteDate instanceof Date
+                          ? formatDateObjectAsString(reviewCompleteDate, { format: "date" })
+                          : formatDateObjectAsString(parseUTCTimestampToLocal(reviewCompleteDate), { format: "date" })}
                       </dd>
                     </div>
                   </dl>

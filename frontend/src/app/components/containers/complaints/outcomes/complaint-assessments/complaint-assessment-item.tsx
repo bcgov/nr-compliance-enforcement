@@ -7,7 +7,6 @@ import {
   selectLinkedComplaints,
   selectComplaintViewMode,
 } from "@store/reducers/complaints";
-import { formatTimestampAsLocalDate } from "@common/methods";
 import { Assessment } from "@apptypes/outcomes/assessment";
 import { Badge, Button, Card } from "react-bootstrap";
 
@@ -16,6 +15,7 @@ import UserService from "@/app/service/user-service";
 import { selectOfficerByAuthUserGuid } from "@/app/store/reducers/officer";
 import { getComplaintType } from "@/app/common/methods";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   assessment: Assessment;
@@ -206,7 +206,11 @@ export const ComplaintAssessmentItem: FC<Props> = ({ assessment, handleEdit }) =
               </div>
               <div id="assessment-date-div">
                 <dt>Date</dt>
-                <dd>{formatTimestampAsLocalDate(`${assessment?.date ? new Date(assessment.date) : new Date()}`)}</dd>
+                <dd>
+                  {formatDateObjectAsString(assessment?.date ? new Date(assessment.date) : new Date(), {
+                    format: "date",
+                  })}
+                </dd>
               </div>
             </dl>
           </div>

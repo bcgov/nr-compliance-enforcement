@@ -6,7 +6,7 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { parseUTCDateTimeToLocal, formatTimestampAsLocalDate } from "@common/methods";
+import { parseUTCDateTimeToLocal } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -216,7 +216,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                 id="complaint-incident-date"
                                 style={{ marginRight: "8px" }}
                               ></i>
-                              {formatTimestampAsLocalDate(group.date.toString())}
+                              {formatDateObjectAsString(group.date, { format: "date" })}
                             </div>
                             <div>
                               {isOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
