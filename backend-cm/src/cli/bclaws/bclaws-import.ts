@@ -107,7 +107,7 @@ async function importSingleRegulation(
 
   try {
     logger.log(`  URL: ${reg.url}`);
-    const xmlString = await fetchXml(reg.url, "BC Laws API", false);
+    const xmlString = await fetchXml(reg.url, "BC Laws API");
     const parsedDocument = parseBcLawsXml(xmlString);
     const effectiveDate = parseEffectiveDate(parsedDocument.metadata.assentedTo);
 
@@ -161,7 +161,7 @@ async function importLegislationSourceDocument(
 
   try {
     // Fetch the XML document
-    const xmlString = await fetchXml(source.sourceUrl, "BC Laws API", false);
+    const xmlString = await fetchXml(source.sourceUrl, "BC Laws API");
     logger.log(`Received XML document (${xmlString.length} characters)`);
 
     // Parse the XML
