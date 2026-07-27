@@ -13,9 +13,9 @@ const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.en
 
 const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsAgent: httpsProxyAgent } : {};
 
-export const fetchXml = async (url: string, apiName: string): Promise<string> => {
+export const fetchXml = async (url: string, apiName: string, useProxy: boolean = true): Promise<string> => {
   try {
-    const response = await axios.get(url, proxyConfig);
+    const response = await axios.get(url, useProxy ? proxyConfig : {});
     return response.data;
   } catch (error: any) {
     const msg = error?.message || String(error);
@@ -61,7 +61,7 @@ const parseDocumentsFromXml = (xmlString: string): any[] => {
  * @returns Set of regulation documents with their URLs
  */
 export const getBcLawsRegulations = async (contentApiUrl: string): Promise<Regulation[]> => {
-  const xmlString = await fetchXml(contentApiUrl, "BC Laws API");
+  const xmlString = await fetchXml(contentApiUrl, "BC Laws API", false);
   const documents = parseDocumentsFromXml(xmlString);
 
   if (documents.length === 0) {
