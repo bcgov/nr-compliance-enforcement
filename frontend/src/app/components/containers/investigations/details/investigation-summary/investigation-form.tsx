@@ -230,7 +230,6 @@ export const InvestigationForm = ({
             render={(field) => {
               // Flush state to rendered comp if it's available so no-edit saves work
               if (!field.state.value && selectedDiscoveryDate) {
-                console.log("fflush overwriting with:", selectedDiscoveryDate?.toISOString());
                 field.handleChange(selectedDiscoveryDate.toISOString());
               }
               return (
