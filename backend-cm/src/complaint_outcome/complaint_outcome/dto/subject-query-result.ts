@@ -20,10 +20,7 @@ export interface SubjectQueryResult {
       short_description: string;
     };
     identifying_features: string;
-    sex_code_wildlife_sex_codeTosex_code: {
-      sex_code: string;
-      short_description: string;
-    };
+    sex_code_ref: string;
     age_code_wildlife_age_codeToage_code: {
       age_code: string;
       short_description: string;

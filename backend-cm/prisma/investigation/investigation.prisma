@@ -451,6 +451,7 @@ model investigation_person {
   drivers_license_number                          String?                                           @db.VarChar(64)
   approximate_age_code_ref                        String?                                           @db.VarChar(16)
   gender_code_ref                                 String?                                           @db.VarChar(16)
+  sex_code_ref                                    String?                                           @db.VarChar(16)
   drivers_license_class                           String?                                           @db.VarChar(128)
   drivers_license_country_code_ref                String?                                           @db.VarChar(4)
   drivers_license_country_subdivision_code_ref    String?                                           @db.VarChar(16)

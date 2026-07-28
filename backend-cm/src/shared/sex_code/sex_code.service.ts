@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ComplaintOutcomePrismaService } from "../../prisma/complaint_outcome/prisma.complaint_outcome.service";
+import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { SexCode } from "./entities/sex_code.entity";
 
 @Injectable()
 export class SexCodeService {
-  constructor(private readonly prisma: ComplaintOutcomePrismaService) {}
+  constructor(private readonly prisma: SharedPrismaService) {}
 
   async findAll() {
     const prismaSexCodes = await this.prisma.sex_code.findMany({

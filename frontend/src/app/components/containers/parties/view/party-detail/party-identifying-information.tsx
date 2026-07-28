@@ -10,7 +10,6 @@ import { selectCodeTable } from "@/app/store/reducers/code-table";
 import { ApproximateAgeType } from "@/app/types/app/code-tables/approximate-age-type";
 import { CountryType } from "@/app/types/app/code-tables/country";
 import { CountrySubdivisionType } from "@/app/types/app/code-tables/country-subdivision";
-import { GenderType } from "@/app/types/app/code-tables/gender";
 import { BusinessIdentifier, InvestigationParty, Party } from "@/generated/graphql";
 import { FC } from "react";
 
@@ -19,7 +18,6 @@ interface PartyIdentifyingInformationProps {
 }
 
 export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> = ({ party }) => {
-  const genderCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.GENDER));
   const approximateAgeCodes = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.APPROXIMATE_AGE));
   const countrySubdivisions = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY_SUBDIVISION));
   const countries = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.COUNTRY));
@@ -36,11 +34,6 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
 
   // Age only when we have a DOB.
   const ageDisplay = dob === null ? undefined : `${calculateAgeYears(dob)} years old`;
-
-  const gender = person?.genderCode
-    ? (genderCodes?.find((code: GenderType) => code.genderCode === person.genderCode)?.shortDescription ??
-      person.genderCode)
-    : undefined;
 
   // Approximate age only when we have no DOB but do have a code.
   const approximateAge =
@@ -68,7 +61,7 @@ export const PartyIdentifyingInformation: FC<PartyIdentifyingInformationProps> =
           <DetailField label="Middle name(s)">{person.middleNames}</DetailField>
           <DetailField label="Last name">{person.lastName}</DetailField>
           <DetailField label="Alias(es)">{aliases}</DetailField>
-          <DetailField label="Gender">{gender}</DetailField>
+          <DetailField label="Sex as per ID">{person?.sexCode}</DetailField>
           <DetailField label="Date of birth">{formatDateStr(person.dateOfBirth, "")}</DetailField>
           <DetailField label="Age">{ageDisplay}</DetailField>
           <DetailField label="Approximate age">{approximateAge}</DetailField>

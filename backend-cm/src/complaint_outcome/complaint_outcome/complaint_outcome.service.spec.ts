@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ComplaintOutcomeService } from "./complaint_outcome.service";
 import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 import { CaseFileActionService } from "../case_file_action/case_file_action.service";
+import { SexCodeService } from "../../shared/sex_code/sex_code.service";
 
 describe("ComplaintOutcomeService", () => {
   let service: ComplaintOutcomeService;
@@ -13,6 +14,10 @@ describe("ComplaintOutcomeService", () => {
         ComplaintOutcomeService,
         {
           provide: CaseFileActionService,
+          useValue: {},
+        },
+        {
+          provide: SexCodeService,
           useValue: {},
         },
       ],

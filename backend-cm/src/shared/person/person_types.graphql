@@ -10,6 +10,7 @@ type Person {
   driversLicenseCountryCode: String
   driversLicenseCountrySubdivisionCode: String
   genderCode: String
+  sexCode: String
   heightInCm: Float
   weightInKg: Float
   complexionCode: String

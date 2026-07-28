@@ -50,6 +50,9 @@ export class investigation_person {
   gender_code_ref?: string;
 
   @ApiPropertyOptional({ type: String })
+  sex_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
   drivers_license_class?: string;
 
   @ApiPropertyOptional({ type: String })
