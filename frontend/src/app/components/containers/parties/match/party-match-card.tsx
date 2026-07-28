@@ -28,9 +28,6 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
 
   const businessAddresses = (party.addresses ?? []).filter((a): a is Address => a != null).slice(0, 2);
 
-  // --- Person-specific derivations ---
-  const sexLabel = person?.sexCode ? `Sex as per ID: ${person.sexCode}` : "";
-
   const dateOfBirth = person?.dateOfBirth ? String(person.dateOfBirth).slice(0, 10) : "";
   const age = person?.dateOfBirth ? calculateAgeYears(new Date(person.dateOfBirth)) : "";
   const driversLicense = (person?.driversLicenseNumber ?? "").trim();
