@@ -55,7 +55,6 @@ import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { REMOVE_PARTY_FROM_INVESTIGATION_MUTATION } from "@/app/components/containers/investigations/details/investigation-parties";
 import { formatDateObjectAsString } from "@/app/common/date-utils";
 import { getPartyName } from "@/app/common/party-name";
 
