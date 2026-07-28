@@ -25,7 +25,7 @@ avoids inline styling.
 - Use Bootstrap's Utility API based classes for as much styling as possible
   (https://getbootstrap.com/docs/5.0/utilities/api/).
 - If custom styles are needed, create a \_styles.scss file and import it in your
-  component
+  component.
 - If shared custom styles are needed, place them in /scss/common
 
 ## TanStack Query and GraphQL
