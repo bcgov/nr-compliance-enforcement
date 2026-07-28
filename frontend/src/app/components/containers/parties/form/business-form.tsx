@@ -5,10 +5,11 @@ import { BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
 
 type BusinessFormFieldsProps = {
   form: any;
@@ -54,6 +55,57 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
 
   return (
     <>
+      <FormField
+        form={form}
+        name="businessBoloIndicator"
+        label="Caution/BOLO"
+        render={(field) => (
+          <Form.Check
+            type="checkbox"
+            id="business-bolo-indicator"
+            checked={!!field.state.value}
+            onChange={(e) => {
+              field.handleChange(e.target.checked ? true : null);
+              if (!e.target.checked) {
+                form.setFieldValue("businessBoloComment", "");
+              }
+            }}
+            disabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.businessBoloIndicator}>
+        {(businessBoloIndicator: boolean | undefined) =>
+          businessBoloIndicator ? (
+            <FormField
+              form={form}
+              name="businessBoloComment"
+              label="Caution/BOLO comment"
+              required
+              validators={{
+                onChange: ({ value }: { value: string | null | undefined }) => {
+                  const isBoloChecked = !!form.getFieldValue("businessBoloIndicator");
+                  const isEmpty = !value?.trim();
+                  return isBoloChecked && isEmpty ? { message: "Caution/BOLO comment is required" } : undefined;
+                },
+              }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="business-bolo-comment"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  value={field.state.value ?? ""}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter reason for caution / BOLO"
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="businessName"

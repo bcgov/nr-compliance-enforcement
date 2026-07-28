@@ -201,13 +201,13 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
             <FormField
               form={form}
               name="boloComment"
-              label="Caution / BOLO comment"
+              label="Caution/BOLO comment"
               required
               validators={{
                 onChange: ({ value }: { value: string | null | undefined }) => {
                   const isBoloChecked = !!form.getFieldValue("boloIndicator");
                   const isEmpty = !value?.trim();
-                  return isBoloChecked && isEmpty ? { message: "Caution / BOLO comment is required" } : undefined;
+                  return isBoloChecked && isEmpty ? { message: "Caution/BOLO comment is required" } : undefined;
                 },
               }}
               render={(field) => (
@@ -217,7 +217,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                   rows={4}
                   value={field.state.value ?? ""}
                   onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter reason for Caution / BOLO"
+                  placeholderText="Enter reason for caution / BOLO"
                   maxLength={4000}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}

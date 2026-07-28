@@ -286,6 +286,8 @@ export class InvestigationPartyService {
         business_guid_ref: input.businessReference,
         investigation_party_guid: investigationPartyGuid,
         name: input.name,
+        bolo_ind: input.boloIndicator,
+        bolo_comment: input.boloComment,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
@@ -665,6 +667,8 @@ export class InvestigationPartyService {
       where: { investigation_business_guid: existingBusiness.businessGuid },
       data: {
         name: input.name,
+        bolo_ind: input.boloIndicator,
+        bolo_comment: input.boloComment,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
       },

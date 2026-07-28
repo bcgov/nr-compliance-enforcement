@@ -54,6 +54,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { getPartyName } from "@/app/common/party-name";
 import { isYoungPerson } from "@/app/common/methods";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -175,6 +176,8 @@ const PartyEdit: FC = () => {
         comments: person?.comments || null,
         boloIndicator: person?.boloIndicator || null,
         boloComment: person?.boloComment || null,
+        businessBoloIndicator: partyData.party.business?.boloIndicator || null,
+        businessBoloComment: partyData.party.business?.boloComment || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -220,6 +223,8 @@ const PartyEdit: FC = () => {
       tattooIndicator: "",
       tattooDescription: "",
       additionalDescriptors: "",
+      businessBoloIndicator: "" as any,
+      businessBoloComment: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
@@ -411,14 +416,10 @@ const PartyEdit: FC = () => {
         partyName={partyData?.party ? getPartyName(partyData?.party) : ""}
         partyIdentifier={id}
         badges={
-          <>
-            {partyData?.party?.person?.boloIndicator && (
-              <div className="badge comp-status-badge-pending-review">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </div>
-            )}
-            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-          </>
+          <PartyBadges
+            isSafetyConcern={!!(partyData?.party?.person?.boloIndicator || partyData?.party?.business?.boloIndicator)}
+            isYoungPerson={personIsYoung}
+          />
         }
       />
 

@@ -209,6 +209,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         comments: editParty.person?.comments || null,
         boloIndicator: editParty.person?.boloIndicator || null,
         boloComment: editParty.person?.boloComment || null,
+        businessBoloIndicator: editParty.business?.boloIndicator || null,
+        businessBoloComment: editParty.business?.boloComment || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers
@@ -268,6 +270,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           input.business = {
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            boloIndicator: value.businessBoloIndicator || null,
+            boloComment: value.businessBoloComment || null,
           };
         }
 
@@ -296,6 +300,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           input.business = {
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+            boloIndicator: value.businessBoloIndicator || null,
+            boloComment: value.businessBoloComment || null,
           };
         }
         if (activityType === "investigation") {

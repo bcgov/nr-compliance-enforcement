@@ -4,4 +4,6 @@ type Business {
   aliases: [Alias]
   businessIdentifiers: [BusinessIdentifier]
   contactPeople: [BusinessPerson]
+  boloIndicator: Boolean
+  boloComment: String
 }

@@ -213,6 +213,8 @@ export type BuildCode = {
 export type Business = {
   __typename?: 'Business';
   aliases?: Maybe<Array<Maybe<Alias>>>;
+  boloComment?: Maybe<Scalars['String']['output']>;
+  boloIndicator?: Maybe<Scalars['Boolean']['output']>;
   businessGuid?: Maybe<Scalars['String']['output']>;
   businessIdentifiers?: Maybe<Array<Maybe<BusinessIdentifier>>>;
   contactPeople?: Maybe<Array<Maybe<BusinessPerson>>>;
@@ -255,6 +257,8 @@ export type BusinessIdentifierUpdateInput = {
 
 export type BusinessInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasInput>>>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonInput>>>;
   name: Scalars['String']['input'];
@@ -309,6 +313,8 @@ export type BusinessPersonUpdateInput = {
 
 export type BusinessUpdateInput = {
   aliases?: InputMaybe<Array<InputMaybe<AliasUpdateInput>>>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   businessGuid?: InputMaybe<Scalars['String']['input']>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<BusinessIdentifierUpdateInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<BusinessPersonUpdateInput>>>;
@@ -653,6 +659,8 @@ export type CreateInvestigationBusinessIdentifierInput = {
 export type CreateInvestigationBusinessInput = {
   addresses?: InputMaybe<Array<InputMaybe<CreateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<CreateInvestigationAliasInput>>>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<CreateInvestigationBusinessIdentifierInput>>>;
   businessReference?: InputMaybe<Scalars['String']['input']>;
   contactMethods?: InputMaybe<Array<InputMaybe<CreateInvestigationContactMethodInput>>>;
@@ -1410,6 +1418,8 @@ export type InvestigationBusiness = {
   __typename?: 'InvestigationBusiness';
   addresses?: Maybe<Array<Maybe<InvestigationAddress>>>;
   aliases?: Maybe<Array<Maybe<InvestigationAlias>>>;
+  boloComment?: Maybe<Scalars['String']['output']>;
+  boloIndicator?: Maybe<Scalars['Boolean']['output']>;
   businessGuid: Scalars['String']['output'];
   businessIdentifiers?: Maybe<Array<Maybe<InvestigationBusinessIdentifier>>>;
   businessReference?: Maybe<Scalars['String']['output']>;
@@ -3186,6 +3196,8 @@ export type UpdateInvestigationBusinessIdentifierInput = {
 export type UpdateInvestigationBusinessInput = {
   addresses?: InputMaybe<Array<InputMaybe<UpdateInvestigationAddressInput>>>;
   aliases?: InputMaybe<Array<InputMaybe<UpdateInvestigationAliasInput>>>;
+  boloComment?: InputMaybe<Scalars['String']['input']>;
+  boloIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   businessIdentifiers?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessIdentifierInput>>>;
   contactMethods?: InputMaybe<Array<InputMaybe<UpdateInvestigationContactMethodInput>>>;
   contactPeople?: InputMaybe<Array<InputMaybe<UpdateInvestigationBusinessContactInput>>>;

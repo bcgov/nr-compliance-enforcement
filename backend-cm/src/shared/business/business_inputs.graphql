@@ -3,6 +3,8 @@ input BusinessInput {
   aliases: [AliasInput]
   businessIdentifiers: [BusinessIdentifierInput]
   contactPeople: [BusinessPersonInput]
+  boloIndicator: Boolean
+  boloComment: String
 }
 
 input BusinessUpdateInput {
@@ -11,6 +13,8 @@ input BusinessUpdateInput {
   aliases: [AliasUpdateInput]
   businessIdentifiers: [BusinessIdentifierUpdateInput]
   contactPeople: [BusinessPersonUpdateInput]
+  boloIndicator: Boolean
+  boloComment: String
 }
 
 # Distinct input type as shared parties currently have mandatory fields.  Could combine in future.

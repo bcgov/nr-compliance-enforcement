@@ -257,6 +257,7 @@ export class PartyService {
             additional_descriptors: true,
             comments: true,
             bolo_ind: true,
+            bolo_comment: true,
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -437,6 +438,8 @@ export class PartyService {
       business: {
         create: {
           name: input.business?.name,
+          bolo_ind: input.business?.boloIndicator,
+          bolo_comment: input.business?.boloComment,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(input.business?.businessIdentifiers?.length
@@ -520,6 +523,8 @@ export class PartyService {
       business: {
         update: {
           name: input.business?.name,
+          bolo_ind: input.business?.boloIndicator,
+          bolo_comment: input.business?.boloComment,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
           ...(Object.keys(businessIdentifierOperations).length
@@ -1383,6 +1388,8 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
+    this._compareField("Caution / BOLO", oldBusiness.boloIndicator, newBusiness.boloIndicator, addEvent);
+    this._compareField("Caution / BOLO comment", oldBusiness.boloComment, newBusiness.boloComment, addEvent);
     this._diffBusinessIdentifiers(
       oldBusiness.businessIdentifiers ?? [],
       newBusiness.businessIdentifiers ?? [],

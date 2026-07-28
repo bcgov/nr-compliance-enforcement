@@ -110,6 +110,8 @@ export const GET_INVESTIGATION = gql`
           __typename
           businessGuid
           name
+          boloIndicator
+          boloComment
           contactPeople {
             businessPersonXrefGuid
             title

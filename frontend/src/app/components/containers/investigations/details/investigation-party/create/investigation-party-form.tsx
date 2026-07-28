@@ -57,6 +57,7 @@ import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
 import { REMOVE_PARTY_FROM_INVESTIGATION_MUTATION } from "@/app/components/containers/investigations/details/investigation-parties";
 import { getPartyName } from "@/app/common/party-name";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
   mutation AddPartyToInvestigation($investigationGuid: String!, $input: [CreateInvestigationPartyInput]!) {
@@ -159,6 +160,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         comments: editParty.person?.comments || null,
         boloIndicator: editParty.person?.boloIndicator || null,
         boloComment: editParty.person?.boloComment || null,
+        businessBoloIndicator: editParty.business?.boloIndicator || null,
+        businessBoloComment: editParty.business?.boloComment || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers
@@ -219,6 +222,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, true) ?? [],
+            boloIndicator: value.businessBoloIndicator || null,
+            boloComment: value.businessBoloComment || null,
           };
         }
 
@@ -256,6 +261,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, false),
+            boloIndicator: value.businessBoloIndicator || null,
+            boloComment: value.businessBoloComment || null,
           };
         }
 
@@ -447,19 +454,11 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           </>
         }
         badges={
-          <>
-            {editParty?.person?.boloIndicator && (
-              <div className="badge comp-status-badge-pending-review">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </div>
-            )}
-            {editParty?.partyReference && (
-              <div className="badge comp-status-badge-open">
-                <i className="bi bi-check-circle-fill"></i> Published
-              </div>
-            )}
-            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-          </>
+          <PartyBadges
+            isSafetyConcern={!!(editParty?.person?.boloIndicator || editParty?.business?.boloIndicator)}
+            isPublished={!!editParty?.partyReference}
+            isYoungPerson={personIsYoung}
+          />
         }
         isEditMode={true}
         identifier={editParty?.partyIdentifier}

@@ -11,6 +11,7 @@ import PartyDetail from "@/app/components/containers/parties/view/party-detail/p
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -88,6 +89,8 @@ export const GET_PARTY = gql`
       business {
         name
         businessGuid
+        boloIndicator
+        boloComment
         businessIdentifiers {
           businessIdentifierGuid
           identifierValue
@@ -172,14 +175,10 @@ export const PartyView: FC = () => {
           <PartyHeader
             title={getPartyName(partyData)}
             badges={
-              <>
-                {partyData?.person?.boloIndicator && (
-                  <div className="badge comp-status-badge-pending-review">
-                    <i className="bi bi-exclamation-circle"></i> Safety concern
-                  </div>
-                )}
-                {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-              </>
+              <PartyBadges
+                isSafetyConcern={!!(partyData?.person?.boloIndicator || partyData?.business?.boloIndicator)}
+                isYoungPerson={personIsYoung}
+              />
             }
             actions={
               <>

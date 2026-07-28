@@ -500,6 +500,8 @@ export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => 
   return {
     name: value.businessName?.trim(),
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
+    boloIndicator: value.businessBoloIndicator || null,
+    boloComment: value.businessBoloComment || null,
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
 };
@@ -537,6 +539,8 @@ export const createEmptyPartyFormValues = () => ({
   tattooDescription: "",
   additionalDescriptors: "",
   businessName: "",
+  businessBoloIndicator: "" as any,
+  businessBoloComment: "",
   businessNumber: {} as any,
   worksafeBCNumber: {} as any,
   aliases: [{ aliasGuid: undefined, name: "" }] as Array<{ aliasGuid?: string; name: string }>,
