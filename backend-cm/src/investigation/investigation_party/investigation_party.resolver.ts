@@ -105,4 +105,24 @@ export class InvestigationPartyResolver {
       });
     }
   }
+
+  @Mutation("replacePartyOnInvestigation")
+  @Roles(coreRoles)
+  async replace(
+    @Args("investigationGuid") investigationGuid: string,
+    @Args("partyIdentifier") partyIdentifier: string,
+    @Args("input") input: CreateInvestigationPartyInput,
+  ) {
+    try {
+      return await this.investigationPartyService.replace(investigationGuid, partyIdentifier, input);
+    } catch (error) {
+      this.logger.error("Replace investigation party error:", error);
+      throw new GraphQLError("Error replacing party on investigation", {
+        extensions: {
+          code: "INTERNAL_SERVER_ERROR",
+          originalError: error.message,
+        },
+      });
+    }
+  }
 }

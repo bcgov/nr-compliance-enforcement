@@ -431,36 +431,23 @@ export const InvestigationContraventions: FC<InvestigationContraventionProps> = 
 
 function groupContraventionsByParty(
   contraventions: Contravention[] | null | undefined,
-): { partyName: string; partyGuid: string | null; contraventions: Contravention[] }[] {
+): { partyGuid: string | null; contraventions: Contravention[] }[] {
   if (!contraventions?.length) return [];
 
-  const map = new Map<string, { partyGuid: string | null; contraventions: Contravention[] }>();
+  const map = new Map<string | null, Contravention[]>();
 
   for (const contravention of contraventions) {
     const parties = contravention.investigationParty as InvestigationParty[] | undefined;
 
     if (parties?.length) {
       for (const party of parties) {
-        const key = getPartyName(party);
-        const existing = map.get(key);
-        map.set(key, {
-          partyGuid: party.partyIdentifier ?? null,
-          contraventions: [...(existing?.contraventions ?? []), contravention],
-        });
+        const key = party.partyIdentifier ?? null;
+        map.set(key, [...(map.get(key) ?? []), contravention]);
       }
     } else {
-      const key = "Unknown Party";
-      const existing = map.get(key);
-      map.set(key, {
-        partyGuid: null,
-        contraventions: [...(existing?.contraventions ?? []), contravention],
-      });
+      map.set(null, [...(map.get(null) ?? []), contravention]);
     }
   }
 
-  return Array.from(map.entries()).map(([partyName, { partyGuid, contraventions }]) => ({
-    partyName,
-    partyGuid,
-    contraventions,
-  }));
+  return Array.from(map.entries()).map(([partyGuid, contraventions]) => ({ partyGuid, contraventions }));
 }
