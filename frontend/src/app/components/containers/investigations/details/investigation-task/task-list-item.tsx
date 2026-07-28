@@ -7,7 +7,7 @@ import { GET_DIARY_DATES_BY_TASK } from "@/app/components/containers/investigati
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { truncateString } from "@/app/common/methods";
-import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
+import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   data: Task;
@@ -56,7 +56,7 @@ export const TaskListExpandedContent: FC<Props> = ({ data, investigationGuid }) 
           diaryDates.map((dd) => (
             <dd
               key={dd.diaryDateGuid}
-            >{`${formatDateObjectAsString(parseUTCDateTimeToLocal(dd.dueDate), { format: "date" })} - ${dd.description}`}</dd>
+            >{`${formatDateObjectAsString(parseUTCDateToLocal(dd.dueDate), { format: "date" })} - ${dd.description}`}</dd>
           ))
         )}
       </div>

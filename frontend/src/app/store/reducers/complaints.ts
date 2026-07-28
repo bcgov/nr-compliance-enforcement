@@ -49,7 +49,7 @@ import { SectorComplaint } from "@/app/types/app/complaints/sector-complaint";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { geocodeAddressIfNeeded } from "@/app/common/geocoder";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type ComplaintDtoAlias = WildlifeComplaint | AllegationComplaint | GeneralIncidentComplaint | Complaint;
 
@@ -1102,7 +1102,7 @@ export const selectComplaintDetails = createSelector(
       } = complaint as Complaint;
 
       // Parse UTC date+time from backend into local Date, and extract local time string
-      const localDate = parseUTCDateTimeToLocal(incidentDate, incidentTime);
+      const localDate = parseUTCDateToLocal(incidentDate, incidentTime);
       const localIncidentTime =
         localDate && incidentTime ? formatDateObjectAsString(localDate, { format: "time" }) : incidentTime;
 

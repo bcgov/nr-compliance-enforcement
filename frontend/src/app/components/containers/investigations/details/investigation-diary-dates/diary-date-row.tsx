@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
-import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
@@ -49,7 +49,7 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
             <i className="bi bi-calendar me-2"></i>
             <strong>
               {diaryDate.dueDate
-                ? formatDateObjectAsString(parseUTCDateTimeToLocal(diaryDate.dueDate), { format: "date" })
+                ? formatDateObjectAsString(parseUTCDateToLocal(diaryDate.dueDate), { format: "date" })
                 : "N/A"}
             </strong>
           </span>

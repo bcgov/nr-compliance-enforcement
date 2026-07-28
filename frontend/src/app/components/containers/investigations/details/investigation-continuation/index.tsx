@@ -17,7 +17,7 @@ import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
-import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -123,7 +123,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
-      const actionedDateTime = parseUTCDateTimeToLocal(report.actionedDate, report.actionedTime) ?? new Date();
+      const actionedDateTime = parseUTCDateToLocal(report.actionedDate, report.actionedTime) ?? new Date();
       const dateKey = startOfDay(actionedDateTime).toISOString();
       if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
       acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
@@ -259,7 +259,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                         <div>
                                           <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
                                           {formatDateObjectAsString(
-                                            parseUTCDateTimeToLocal(report.actionedDate, report.actionedTime),
+                                            parseUTCDateToLocal(report.actionedDate, report.actionedTime),
                                             {
                                               format: "time",
                                             },

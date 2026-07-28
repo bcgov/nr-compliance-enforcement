@@ -21,7 +21,7 @@ import {
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -86,7 +86,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
   const collectedByInitialValue = initialOfficer?.app_user_guid ?? "";
 
   // Track intake time in component state
-  const initialIntakeDateTime = parseUTCDateTimeToLocal(exhibit?.intakeDate, exhibit?.intakeTime);
+  const initialIntakeDateTime = parseUTCDateToLocal(exhibit?.intakeDate, exhibit?.intakeTime);
 
   const [selectedIntakeTime, setSelectedIntakeTime] = useState<string | null>(() =>
     initialIntakeDateTime && exhibit?.intakeTime

@@ -8,7 +8,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import Paginator from "@/app/components/common/paginator";
 import { Button } from "react-bootstrap";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const SEARCH_EVENTS = gql`
   query SearchEvents($page: Int, $pageSize: Int, $filters: EventFilters) {
@@ -148,7 +148,7 @@ export const PartyHistoryTab: FC<PartyHistoryTabProps> = ({ partyIdentifier }) =
             >
               <h6 className="px-0 mb-3">
                 <i className="bi bi-calendar me-3 text-primary"></i>
-                {formatDateObjectAsString(parseUTCDateTimeToLocal(dateKey), { format: "date" })}
+                {formatDateObjectAsString(parseUTCDateToLocal(dateKey), { format: "date" })}
               </h6>
               <hr className="px-0 m-0" />
               <ul className="px-0">

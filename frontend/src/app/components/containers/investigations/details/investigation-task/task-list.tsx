@@ -9,7 +9,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { applyStatusClass } from "@/app/common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { TaskListExpandedContent } from "./task-list-item";
-import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type Props = {
   tasks: Task[];
@@ -99,7 +99,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: true,
       getValue: (task) => task.dueDate ?? "",
-      renderCell: (task) => formatDateObjectAsString(parseUTCDateTimeToLocal(task.dueDate), { format: "date" }) ?? "-",
+      renderCell: (task) => formatDateObjectAsString(parseUTCDateToLocal(task.dueDate), { format: "date" }) ?? "-",
     },
     {
       label: "Last updated",

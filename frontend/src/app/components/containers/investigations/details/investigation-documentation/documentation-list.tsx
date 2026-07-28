@@ -12,7 +12,7 @@ import { useDocumentationSearch } from "./hooks/use-documentation-search";
 import { Attachment } from "./hooks/use-investigation-attachments";
 import { SORT_TYPES } from "@constants/sort-direction";
 import config from "@/config";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type AttachmentWithTask = Attachment & {
   task?: Task;
@@ -142,7 +142,7 @@ export const DocumentationList: FC<Props> = ({
       isSortable: true,
       getValue: (attachment) => attachment.date ?? "",
       renderCell: (attachment) =>
-        attachment.date ? formatDateObjectAsString(parseUTCDateTimeToLocal(attachment.date), { format: "date" }) : "-",
+        attachment.date ? formatDateObjectAsString(parseUTCDateToLocal(attachment.date), { format: "date" }) : "-",
     },
     {
       label: "Taken by",

@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useState } from "react";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface InvestigationFormProps {
   form: any;
@@ -40,10 +40,10 @@ export const InvestigationForm = ({
 }: InvestigationFormProps) => {
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
   const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() =>
-    parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
+    parseUTCDateToLocal(discoveryDate, discoveryTime),
   );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
-    const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
+    const d = parseUTCDateToLocal(discoveryDate, discoveryTime);
     return d && discoveryTime ? formatDateObjectAsString(d, { format: "time" }) : null;
   });
 

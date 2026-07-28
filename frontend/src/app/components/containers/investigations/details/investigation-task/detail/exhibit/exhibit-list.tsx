@@ -8,7 +8,7 @@ import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
 import { truncateString } from "@/app/common/methods";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
@@ -79,9 +79,9 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: true,
-      getValue: (exhibit) => parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime)?.getTime() ?? 0,
+      getValue: (exhibit) => parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime)?.getTime() ?? 0,
       renderCell: (exhibit) => {
-        const localIntake = parseUTCDateTimeToLocal(exhibit.intakeDate, exhibit.intakeTime);
+        const localIntake = parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime);
         if (!localIntake) return "";
         const datePart = formatDateObjectAsString(localIntake, { format: "date" });
         return exhibit.intakeTime

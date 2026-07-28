@@ -14,7 +14,7 @@ import { bulkDownload } from "@/app/store/reducers/bulk-download";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
 import AttachmentEnum from "@constants/attachment-enum";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type Props = {
   investigationGuid: string;
@@ -79,7 +79,7 @@ export const InvestigationDocumentation: FC<Props> = ({ investigationGuid, inves
           a.sequenceNumber,
           a.description,
           a.title,
-          a.date ? formatDateObjectAsString(parseUTCDateTimeToLocal(a.date), { format: "date" }) : "",
+          a.date ? formatDateObjectAsString(parseUTCDateToLocal(a.date), { format: "date" }) : "",
           getOfficerName(a.takenBy ?? ""),
           a.location,
           task ? `Task ${task.taskNumber}` : "",

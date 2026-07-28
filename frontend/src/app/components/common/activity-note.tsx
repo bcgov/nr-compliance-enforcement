@@ -11,7 +11,7 @@ import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { parseUTCDateTimeToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
+import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 import { gql } from "graphql-request";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -104,7 +104,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
-    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
+    () => parseUTCDateToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
     if (!initialData) {
@@ -116,7 +116,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
       return null;
     }
     // Editing: Time present - keep stored time
-    return formatDateObjectAsString(parseUTCDateTimeToLocal(initialData.actionedDate, initialData.actionedTime), {
+    return formatDateObjectAsString(parseUTCDateToLocal(initialData.actionedDate, initialData.actionedTime), {
       format: "time",
     });
   });

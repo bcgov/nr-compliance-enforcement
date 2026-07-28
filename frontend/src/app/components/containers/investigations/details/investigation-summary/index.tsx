@@ -16,7 +16,7 @@ import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
 import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
-import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -43,7 +43,7 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   );
 
   const discoveryDate = investigationData?.discoveryDate
-    ? parseUTCDateTimeToLocal(investigationData.discoveryDate, investigationData.discoveryTime)
+    ? parseUTCDateToLocal(investigationData.discoveryDate, investigationData.discoveryTime)
     : undefined;
   const lastUpdated = parseUTCTimestampToLocal(investigationData?.updatedTimestamp);
 

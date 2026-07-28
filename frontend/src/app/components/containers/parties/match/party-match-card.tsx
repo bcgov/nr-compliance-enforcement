@@ -10,7 +10,7 @@ import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
-import { formatDateObjectAsString, parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type PartyMatchCardProps = {
   party: Party;
@@ -38,7 +38,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
     (opt: { value: string; label: string }) => opt.value === person?.genderCode,
   )?.label;
 
-  const dobDate = parseUTCDateTimeToLocal(person?.dateOfBirth);
+  const dobDate = parseUTCDateToLocal(person?.dateOfBirth);
   const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
   const age = dobDate ? calculateAgeYears(dobDate) : "";
 

@@ -11,7 +11,7 @@ import { LegislationType } from "@/app/types/app/legislation";
 import { Contravention, InvestigationParty, Legislation } from "@/generated/graphql";
 import { format } from "date-fns";
 import { FC, useMemo } from "react";
-import { parseUTCDateTimeToLocal } from "@/app/common/date-utils";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 function getPartyLabel(party: InvestigationParty): string {
   if (party.business) return party.business.name;
@@ -95,7 +95,7 @@ type ContraventionReadOnlyPanelProps = {
 const ContraventionReadOnlyPanel = ({ contravention }: ContraventionReadOnlyPanelProps) => {
   const userAgency = getUserAgency();
   const contraventionGuid = contravention.legislationIdentifierRef;
-  const contraventionDate = contravention.date ? parseUTCDateTimeToLocal(contravention.date) : null;
+  const contraventionDate = contravention.date ? parseUTCDateToLocal(contravention.date) : null;
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
 
   // Same as edit modal: useLegislation(includeAncestors: true) only to infer selected GUIDs.
