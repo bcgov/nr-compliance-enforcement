@@ -58,7 +58,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
       <FormField
         form={form}
         name="businessBoloIndicator"
-        label="Caution/BOLO"
+        label="Safety concern"
         render={(field) => (
           <Form.Check
             type="checkbox"
@@ -80,7 +80,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
             <FormField
               form={form}
               name="businessBoloComment"
-              label="Caution/BOLO comment"
+              label="Safety concern reason"
               required
               validators={{
                 onChange: ({ value }: { value: string | null | undefined }) => {
@@ -96,7 +96,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
                   rows={4}
                   value={field.state.value ?? ""}
                   onChange={(value: string) => field.handleChange(value)}
-                  placeholderText="Enter reason for caution / BOLO"
+                  placeholderText="Enter reason for safety concern"
                   maxLength={4000}
                   errMsg={field.state.meta.errors?.[0]?.message || ""}
                   disabled={isDisabled}

@@ -12,6 +12,10 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
 import { PartyBadges } from "@/app/components/containers/parties/party-badges";
+import {
+  DetailField,
+  DetailSection,
+} from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 
 export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -208,6 +212,16 @@ export const PartyView: FC = () => {
           ) : (
             <section className="comp-details-body comp-container party-details-section">
               <hr className="comp-details-body-spacer"></hr>
+              {(partyData?.person?.boloComment || partyData?.business?.boloComment) && (
+                <DetailSection title="">
+                  {partyData?.person?.boloComment && (
+                    <DetailField label="Safety concern reason">{partyData?.person?.boloComment}</DetailField>
+                  )}
+                  {partyData?.business?.boloComment && (
+                    <DetailField label="Safety concern reason">{partyData?.business?.boloComment}</DetailField>
+                  )}
+                </DetailSection>
+              )}
 
               <PartyDetail
                 party={partyData}
