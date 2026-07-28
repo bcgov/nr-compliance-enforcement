@@ -84,6 +84,7 @@ export const GET_INVESTIGATION = gql`
           driversLicenseCountryCode
           driversLicenseCountrySubdivisionCode
           genderCode
+          sexCode
           heightInCm
           weightInKg
           complexionCode

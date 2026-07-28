@@ -68,6 +68,7 @@ export const GET_PARTY = gql`
         driversLicenseCountryCode
         driversLicenseCountrySubdivisionCode
         genderCode
+        sexCode
         heightInCm
         weightInKg
         complexionCode

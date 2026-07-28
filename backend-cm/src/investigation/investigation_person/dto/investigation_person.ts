@@ -22,6 +22,7 @@ export class InvestigationPerson implements PersonDto {
   driversLicenseCountryCode?: string;
   driversLicenseCountrySubdivisionCode?: string;
   genderCode?: string;
+  sexCode?: string;
   heightInCm?: number;
   weightInKg?: number;
   complexionCode?: string;
@@ -76,6 +77,9 @@ export class CreateInvestigationPersonInput {
 
   @Field(() => String, { nullable: true })
   genderCode?: string;
+
+  @Field(() => String, { nullable: true })
+  sexCode?: string;
 
   @Field(() => String, { nullable: true })
   heightInCm?: string;
@@ -195,6 +199,10 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
     forMember(
       (dest) => dest.genderCode,
       mapFrom((src) => src.gender_code_ref ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.sexCode,
+      mapFrom((src) => src.sex_code_ref ?? undefined),
     ),
     forMember(
       (dest) => dest.approximateAgeCode,

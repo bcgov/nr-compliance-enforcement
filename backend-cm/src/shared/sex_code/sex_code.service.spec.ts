@@ -1,13 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SexCodeService } from "./sex_code.service";
-import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
+import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
 
 describe("SexCodeService", () => {
   let service: SexCodeService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [PrismaModuleComplaintOutcome],
+      imports: [PrismaModuleShared],
       providers: [SexCodeService],
     }).compile();
 

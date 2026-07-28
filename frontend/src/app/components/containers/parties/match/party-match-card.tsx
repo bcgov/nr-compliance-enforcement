@@ -1,8 +1,6 @@
 // party-match-card.tsx
 import { FC } from "react";
 import { Button, Card } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
-import { selectGenderDropdown } from "@/app/store/reducers/code-table";
 import { calculateAgeYears } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
@@ -18,8 +16,6 @@ type PartyMatchCardProps = {
 };
 
 export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabled = false }) => {
-  const genderOptions = useAppSelector(selectGenderDropdown);
-
   const { person, business } = party;
   const isBusiness = party.partyTypeCode === PartyTypeCodes.BUSINESS;
 
@@ -33,16 +29,14 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
   const businessAddresses = (party.addresses ?? []).filter((a): a is Address => a != null).slice(0, 2);
 
   // --- Person-specific derivations ---
-  const genderLabel = genderOptions?.find(
-    (opt: { value: string; label: string }) => opt.value === person?.genderCode,
-  )?.label;
+  const sexLabel = person?.sexCode ? `Sex as per ID: ${person.sexCode}` : "";
 
   const dateOfBirth = person?.dateOfBirth ? String(person.dateOfBirth).slice(0, 10) : "";
   const age = person?.dateOfBirth ? calculateAgeYears(new Date(person.dateOfBirth)) : "";
 
-  // Compose "Male, 24 (2002-02-23)", dropping whichever pieces are absent.
-  const genderAge = [genderLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
-  const descriptorLine = [genderAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
+  // Compose "Sex as per ID: F, 24 (2002-02-23)", dropping whichever pieces are absent.
+  const sexAge = [sexLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
+  const descriptorLine = [sexAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
 
   // --- Shared derivations ---
   const name = getPartyName(party);
