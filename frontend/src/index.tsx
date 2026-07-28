@@ -29,6 +29,8 @@ const queryClient = new QueryClient({
 const container = document.getElementById("root")!;
 const root = createRoot(container);
 
+console.log("Debug 1");
+
 const onAuthenticatedCallback = () =>
   root.render(
     <StrictMode>
