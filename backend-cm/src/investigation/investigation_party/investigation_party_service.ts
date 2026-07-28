@@ -498,6 +498,62 @@ export class InvestigationPartyService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  async replace(
+    investigationGuid: string,
+    partyIdentifier: string,
+    input: CreateInvestigationPartyInput,
+  ): Promise<InvestigationParty> {
+    if (!input.person && !input.business) {
+      throw new Error("Party input must include either a person or a business.");
+    }
+
+    if (input.business) {
+      this._validateBusinessInput(input.business);
+    }
+
+    const investigation = await this.investigationService.findOne(investigationGuid);
+    const existingParty = investigation.parties.some((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+
+    if (!existingParty) {
+      throw new Error("Party not found on this investigation.");
+    }
+
+    let newPartyGuid: string;
+
+    await withRlsTransaction(this.prisma, async (db) => {
+      try {
+        newPartyGuid = await this._createSingleParty(db, input, investigation, investigationGuid);
+
+        // update contraventions to the replacement party
+        await db.contravention_party_xref.updateMany({
+          where: { investigation_party_guid: partyIdentifier, active_ind: true },
+          data: {
+            investigation_party_guid: newPartyGuid,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+
+        await db.investigation_party.update({
+          where: { investigation_party_guid: partyIdentifier },
+          data: {
+            active_ind: false,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      } catch (error) {
+        this.logger.error("Error replacing investigation party:", error);
+        throw error;
+      }
+    });
+
+    await this.investigationService.updateInvestigationTimestamp(investigationGuid);
+
+    const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
+    return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
+  }
+
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
     if (!partyRefId || partyRefId.length === 0) {
       return [];
