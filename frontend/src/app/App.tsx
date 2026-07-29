@@ -78,6 +78,8 @@ const App: FC = () => {
   const hasCaseAccess = UserService.hasRole(Roles.CASE_ACCESS);
   const pilotGate = (element: ReactElement) => (hasCaseAccess ? element : <CaseManagementPilotRestricted />);
 
+  console.log("hash change");
+
   return (
     <GenericErrorBoundary>
       <AppUpdate />
