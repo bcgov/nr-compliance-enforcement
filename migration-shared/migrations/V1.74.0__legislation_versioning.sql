@@ -16,7 +16,6 @@ CREATE TABLE legislation_version (
     legislation_source_guid         UUID NOT NULL,
     parent_legislation_version_guid UUID,
     effective_date                  DATE NOT NULL,
-    expiry_date                     DATE,
     import_status                   VARCHAR(16) NOT NULL,
     source_url                      VARCHAR(512),
     source_effective_date           DATE,
@@ -44,12 +43,16 @@ CREATE INDEX idx_legislation_version_source
 CREATE INDEX idx_legislation_version_parent
     ON legislation_version (parent_legislation_version_guid);
 
+CREATE UNIQUE INDEX legislation_version_effective_date_unique
+    ON legislation_version (legislation_source_guid, effective_date)
+    WHERE import_status = 'SUCCESS';
+
 -- ---------------------
 -- Comments
 -- ---------------------
 
 COMMENT ON TABLE legislation_version IS
-    'Stores one imported version of a legislation source. Successful versions of a source form a non-overlapping timeline of effective date windows; the newest has no expiry date.';
+    'Stores one imported version of a legislation source. A successful version is in force from its effective date until the effective date of the next successful version for the same source.';
 
 COMMENT ON COLUMN legislation_version.legislation_version_guid IS
     'Primary key. Unique identifier for the legislation version.';
@@ -62,9 +65,6 @@ COMMENT ON COLUMN legislation_version.parent_legislation_version_guid IS
 
 COMMENT ON COLUMN legislation_version.effective_date IS
     'Date this version comes into force. Admin set on act versions, mirrored from the act version on regulation versions.';
-
-COMMENT ON COLUMN legislation_version.expiry_date IS
-    'Date this version is superseded by the next version, exclusive. Null when the version is the newest for its source.';
 
 COMMENT ON COLUMN legislation_version.import_status IS
     'Status of the import for this version: PENDING, SUCCESS, or FAILED. Only successful versions are visible to the application.';
