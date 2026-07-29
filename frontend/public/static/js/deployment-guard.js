@@ -16,9 +16,9 @@
     // Resource error events do not bubble, so this must run in the capture
     // phase. Scope strictly to stylesheet links: fonts, images, and map tiles
     // fail routinely for unrelated reasons and must not trigger a reload.
-    if (!target || target.tagName !== "LINK" || target.rel !== "stylesheet") {
-      return;
-    }
+    if (target?.tagName !== "LINK" || target?.rel !== "stylesheet") {
+       return;
+     }
 
     if (redirecting) {
       return;
