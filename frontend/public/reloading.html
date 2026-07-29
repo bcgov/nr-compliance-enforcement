@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Sends the user to the app root once the deploy has settled. No hashed
+       assets are referenced here, so this page renders correctly from any pod,
+       including pods still running the previous build. -->
+  <meta http-equiv="refresh" content="120; url=/" />
+  <title>Updating…</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f2f2f2;
+      color: #313132;
+    }
+    .panel {
+      max-width: 32rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    p { font-size: 1rem; line-height: 1.5; margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>A new version is being deployed</h1>
+    <p>This page will refresh automatically in about two minutes.</p>
+    <p>You don't need to do anything.</p>
+  </div>
+</body>
+</html>

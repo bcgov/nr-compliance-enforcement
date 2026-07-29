@@ -37,6 +37,13 @@ export default defineConfig({
             {
               tag: "script",
               attrs: {
+                src: "/skew-guard.js",
+              },
+              injectTo: "head-prepend",
+            },
+            {
+              tag: "script",
+              attrs: {
                 src: "/config.js",
               },
               injectTo: "head",

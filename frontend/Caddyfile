@@ -12,6 +12,10 @@
     }
     level {$LOG_LEVEL}
   }
+
+  root * /app/dist
+  encode zstd gzip
+
   handle /config.js {
     header {
       Content-Type text/javascript
@@ -27,28 +31,56 @@
              globalThis.VITE_ENVIRONMENT_NAME="{$ENVIRONMENT_NAME}"`
   }
 
-  root * /app/dist
-  encode zstd gzip
-  file_server
-  @spa_router {
-    not path /api/* /graphql* /config.js
-    file {
-        try_files {path} /index.html
+  # Shim to detect a missing asset during deployment
+  handle /assets/* {
+    @exists file
+    handle @exists {
+      file_server
+    }
+    handle {
+      @js path *.js
+      handle @js {
+        rewrite * /deployment-redirect.js
+        file_server
+      }
+      # Non-JS assets (CSS, fonts, images) can't self-redirect; return a clean
+      # 404 rather than HTML. The JS redirect above navigates away first.
+      handle {
+        respond 404
+      }
     }
   }
-  rewrite @spa_router {http.matchers.file.relative}
+
   # Proxy requests to API service
-  reverse_proxy /api/* {$BACKEND_URL} {
-    header_up Host {http.reverse_proxy.upstream.hostport}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
+  handle /api/* {
+    reverse_proxy {$BACKEND_URL} {
+      header_up Host {http.reverse_proxy.upstream.hostport}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+    }
   }
+
   # Proxy requests to GraphQL service
-  reverse_proxy /graphql* {$GRAPHQL_URL} {
-    header_up Host {http.reverse_proxy.upstream.hostport}
-    header_up X-Real-IP {remote_host}
-    header_up X-Forwarded-For {remote_host}
+  handle /graphql* {
+    reverse_proxy {$GRAPHQL_URL} {
+      header_up Host {http.reverse_proxy.upstream.hostport}
+      header_up X-Real-IP {remote_host}
+      header_up X-Forwarded-For {remote_host}
+    }
   }
+
+  # SPA routing fall back to index.html
+  handle {
+    @spa_router {
+      not path /api/* /graphql* /config.js
+      file {
+          try_files {path} /index.html
+      }
+    }
+    rewrite @spa_router {http.matchers.file.relative}
+    file_server
+  }
+
   header {
     -Server
     X-Frame-Options "SAMEORIGIN"
