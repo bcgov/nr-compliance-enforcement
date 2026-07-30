@@ -6,7 +6,6 @@ import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { Button, Accordion } from "react-bootstrap";
 import { ActivityNote, ActivityNoteInput, Investigation } from "@/generated/graphql";
 import { startOfDay } from "date-fns";
-import { parseUTCDateTimeToLocal, formatDate, formatDateTime, formatTime } from "@common/methods";
 import "@assets/sass/investigation-continuation.scss";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store/store";
@@ -18,6 +17,7 @@ import { RichTextRenderer } from "@/app/components/common/rich-text-renderer";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { ActivityNoteEditor, SAVE_ACTIVITY_NOTE } from "@/app/components/common/activity-note";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 const GET_REPORTS = gql`
   query GetActivityNotes($investigationGuid: String!, $activityNoteCode: String) {
@@ -123,7 +123,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
   let groups: any;
   if (reports) {
     const grouped = reports?.reduce((acc: any, report: any) => {
-      const actionedDateTime = parseUTCDateTimeToLocal(report.actionedDate, report.actionedTime) ?? new Date();
+      const actionedDateTime = parseUTCDateToLocal(report.actionedDate, report.actionedTime) ?? new Date();
       const dateKey = startOfDay(actionedDateTime).toISOString();
       if (!acc[dateKey]) acc[dateKey] = { date: actionedDateTime, reports: [] };
       acc[dateKey].reports.push({ ...report, _actionedDateTime: actionedDateTime });
@@ -215,7 +215,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                 id="complaint-incident-date"
                                 style={{ marginRight: "8px" }}
                               ></i>
-                              {formatDate(group.date.toString())}
+                              {formatDateObjectAsString(group.date, { format: "date" })}
                             </div>
                             <div>
                               {isOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
@@ -258,7 +258,12 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       {report.actionedTime && (
                                         <div>
                                           <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                                          {formatTime(report.actionedTime?.toString())}
+                                          {formatDateObjectAsString(
+                                            parseUTCDateToLocal(report.actionedDate, report.actionedTime),
+                                            {
+                                              format: "time",
+                                            },
+                                          )}
                                         </div>
                                       )}
                                     </div>
@@ -269,7 +274,7 @@ export const InvestigationContinuation: FC<InvestigationContinuationProps> = ({ 
                                       />
                                     </div>
                                     <div style={{ fontSize: "14px", color: "#7a7a7a" }}>
-                                      {`• Recorded on ${formatDateTime(report.reportedTimestamp)} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
+                                      {`• Recorded on ${formatDateObjectAsString(parseUTCTimestampToLocal(report.reportedTimestamp), { format: "dateTime" })} by ${reportedOfficer?.last_name}, ${reportedOfficer?.first_name} (${reportedOfficer?.agency_code_ref})`}
                                     </div>
                                   </div>
                                 );

@@ -47,7 +47,8 @@ export class ExhibitService {
         seized_from_last_name: true,
         seized_from_address: true,
         seized_from_phone_number: true,
-        collected_utc_timestamp: true,
+        collected_utc_date: true,
+        collected_utc_time: true,
         collected_by_app_user_guid_ref: true,
         location_of_intake_text: true,
         property_tag_number: true,
@@ -71,7 +72,7 @@ export class ExhibitService {
     propertyType: "property_type",
     description: "description_text",
     quantity: "quantity_amount",
-    dateCollected: "collected_utc_timestamp",
+    dateCollected: "collected_utc_date",
     location: "location_of_intake_text",
     propertyTag: "property_tag_number",
   };
@@ -114,7 +115,7 @@ export class ExhibitService {
         // Add exactly 24 h in ms to cover the full end date in the user's local timezone
         dateCondition.lt = new Date(end.getTime() + 24 * 60 * 60 * 1000);
       }
-      conditions.push({ collected_utc_timestamp: dateCondition });
+      conditions.push({ collected_utc_date: dateCondition });
     }
 
     return { AND: conditions };
@@ -173,7 +174,8 @@ export class ExhibitService {
         seized_from_last_name: true,
         seized_from_address: true,
         seized_from_phone_number: true,
-        collected_utc_timestamp: true,
+        collected_utc_date: true,
+        collected_utc_time: true,
         collected_by_app_user_guid_ref: true,
         location_of_intake_text: true,
         property_tag_number: true,
@@ -239,7 +241,8 @@ export class ExhibitService {
             seized_from_last_name: exhibitInput.seizedFromLastName,
             seized_from_address: exhibitInput.seizedFromAddress,
             seized_from_phone_number: exhibitInput.seizedFromPhoneNumber,
-            collected_utc_timestamp: exhibitInput.dateCollected ?? new Date(),
+            collected_utc_date: exhibitInput.intakeDate ?? new Date(),
+            collected_utc_time: exhibitInput.intakeTime,
             collected_by_app_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
             location_of_intake_text: exhibitInput.locationOfIntake,
             property_tag_number: exhibitInput.propertyTagNumber,
@@ -304,7 +307,8 @@ export class ExhibitService {
             seized_from_last_name: exhibitInput.seizedFromLastName,
             seized_from_address: exhibitInput.seizedFromAddress,
             seized_from_phone_number: exhibitInput.seizedFromPhoneNumber,
-            collected_utc_timestamp: exhibitInput.dateCollected ?? new Date(),
+            collected_utc_date: exhibitInput.intakeDate ?? new Date(),
+            collected_utc_time: exhibitInput.intakeTime,
             collected_by_app_user_guid_ref: exhibitInput.collectedAppUserGuidRef,
             location_of_intake_text: exhibitInput.locationOfIntake,
             property_tag_number: exhibitInput.propertyTagNumber,

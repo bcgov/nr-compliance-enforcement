@@ -31,7 +31,8 @@ export const GET_EXHIBITS_BY_TASK = gql`
       seizedFromLastName
       seizedFromAddress
       seizedFromPhoneNumber
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
       locationOfIntake
       propertyTagNumber
@@ -54,7 +55,8 @@ export const GET_EXHIBIT = gql`
       seizedFromLastName
       seizedFromAddress
       seizedFromPhoneNumber
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
       locationOfIntake
       propertyTagNumber
@@ -71,7 +73,8 @@ export const CREATE_EXHIBIT = gql`
       exhibitNumber
       exhibitDisplayNumber
       description
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
     }
   }
@@ -94,18 +97,14 @@ export const UPDATE_EXHIBIT = gql`
       exhibitNumber
       exhibitDisplayNumber
       description
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
     }
   }
 `;
 
-export const TaskExhibits: FC<TaskExhibitsProps> = ({
-  investigationGuid,
-  task,
-  taskAssignedUserGuid,
-  isReadOnly,
-}) => {
+export const TaskExhibits: FC<TaskExhibitsProps> = ({ investigationGuid, task, taskAssignedUserGuid, isReadOnly }) => {
   const dispatch = useAppDispatch();
   const { handleChildDirtyChange, hideCallback } = useModalDirtyWarning();
 
