@@ -187,7 +187,6 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
       }
 
       const rows = all.map((exhibit) => {
-        console.log(exhibit.intakeTime);
         return [
           exhibit.exhibitDisplayNumber ?? "-",
           getPropertyTypeLabel(exhibit.propertyType),

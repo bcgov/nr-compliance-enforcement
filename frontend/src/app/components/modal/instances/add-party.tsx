@@ -49,7 +49,7 @@ import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -176,7 +176,7 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateObjectAsString(editParty.person.dateOfBirth, { format: "date" })
+          ? formatDateObjectAsString(parseUTCDateToLocal(editParty.person.dateOfBirth), { format: "date" })
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,

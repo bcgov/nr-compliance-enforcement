@@ -12,14 +12,13 @@ import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
-  lastUpdatedDisplay?: string;
+  lastUpdatedDisplay?: Date;
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }) => {
   const caseId = caseData?.name || caseData?.caseIdentifier || "Unknown";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
   const dateLogged = caseData?.openedTimestamp ? parseUTCTimestampToLocal(caseData.openedTimestamp) : undefined;
-  const lastUpdated = parseUTCTimestampToLocal(lastUpdatedDisplay) ?? undefined;
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
@@ -114,19 +113,19 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                 <dl className="comp-details-date-assigned">
                   <dt>Last updated</dt>
                   <dd className="comp-date-time-value">
-                    {lastUpdated && (
+                    {lastUpdatedDisplay && (
                       <>
                         <div>
                           <i className="bi bi-calendar"></i>
-                          {formatDateObjectAsString(lastUpdated, { format: "date" })}
+                          {formatDateObjectAsString(lastUpdatedDisplay, { format: "date" })}
                         </div>
                         <div>
                           <i className="bi bi-clock"></i>
-                          {formatDateObjectAsString(lastUpdated, { format: "time" })}
+                          {formatDateObjectAsString(lastUpdatedDisplay, { format: "time" })}
                         </div>
                       </>
                     )}
-                    {!lastUpdated && <>N/A</>}
+                    {!lastUpdatedDisplay && <>N/A</>}
                   </dd>
                 </dl>
 

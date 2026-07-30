@@ -55,7 +55,7 @@ import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
-import { formatDateObjectAsString } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { getPartyName } from "@/app/common/party-name";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
@@ -142,7 +142,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateObjectAsString(editParty.person.dateOfBirth, { format: "date" })
+          ? formatDateObjectAsString(parseUTCDateToLocal(editParty.person.dateOfBirth), { format: "date" })
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
