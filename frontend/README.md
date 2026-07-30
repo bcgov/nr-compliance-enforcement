@@ -26,7 +26,7 @@ avoids inline styling.
   (https://getbootstrap.com/docs/5.0/utilities/api/).
 - If custom styles are needed, create a \_styles.scss file and import it in your
   component.
-- If shared custom styles are needed, place them in /scss/common.
+- If shared custom styles are needed, place them in /scss/common
 
 ## TanStack Query and GraphQL
 
