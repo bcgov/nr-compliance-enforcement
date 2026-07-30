@@ -305,8 +305,8 @@ model investigation_business {
   create_utc_timestamp               DateTime                             @default(now()) @db.Timestamp(6)
   update_user_id                     String?                              @db.VarChar(32)
   update_utc_timestamp               DateTime?                            @db.Timestamp(6)
-  bolo_ind                           Boolean?
-  bolo_comment                       String?
+  safety_concern_ind                 Boolean?
+  safety_concern_reason              String?
   investigation_party                investigation_party?                 @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
   investigation_business_identifier  investigation_business_identifier[]
   investigation_business_person_xref investigation_business_person_xref[]
@@ -453,7 +453,6 @@ model investigation_person {
   drivers_license_number                          String?                                           @db.VarChar(64)
   approximate_age_code_ref                        String?                                           @db.VarChar(16)
   gender_code_ref                                 String?                                           @db.VarChar(16)
-  sex_code_ref                                    String?                                           @db.VarChar(16)
   drivers_license_class                           String?                                           @db.VarChar(128)
   drivers_license_country_code_ref                String?                                           @db.VarChar(4)
   drivers_license_country_subdivision_code_ref    String?                                           @db.VarChar(16)
@@ -472,8 +471,9 @@ model investigation_person {
   tattoo_description                              String?                                           @db.VarChar(512)
   additional_descriptors                          String?
   comments                                        String?
-  bolo_ind                                        Boolean?
-  bolo_comment                                    String?
+  safety_concern_ind                              Boolean?
+  sex_code_ref                                    String?                                           @db.VarChar(16)
+  safety_concern_reason                           String?
   investigation_business_person_xref              investigation_business_person_xref[]
   investigation_party                             investigation_party?                              @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
   investigation_person_facial_hair_style_code_ref investigation_person_facial_hair_style_code_ref[]

@@ -32,10 +32,10 @@ export class investigation_business {
   update_utc_timestamp?: Date;
 
   @ApiPropertyOptional({ type: Boolean })
-  bolo_ind?: boolean;
+  safety_concern_ind?: boolean;
 
   @ApiPropertyOptional({ type: String })
-  bolo_comment?: string;
+  safety_concern_reason?: string;
 
   @ApiPropertyOptional({ type: () => investigation_party })
   investigation_party?: investigation_party;

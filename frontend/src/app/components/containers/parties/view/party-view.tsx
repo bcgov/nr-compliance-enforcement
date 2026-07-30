@@ -88,14 +88,14 @@ export const GET_PARTY = gql`
         tattooDescription
         additionalDescriptors
         comments
-        boloIndicator
-        boloComment
+        safetyConcernIndicator
+        safetyConcernReason
       }
       business {
         name
         businessGuid
-        boloIndicator
-        boloComment
+        safetyConcernIndicator
+        safetyConcernReason
         businessIdentifiers {
           businessIdentifierGuid
           identifierValue
@@ -181,7 +181,7 @@ export const PartyView: FC = () => {
             title={getPartyName(partyData)}
             badges={
               <PartyBadges
-                isSafetyConcern={!!(partyData?.person?.boloIndicator || partyData?.business?.boloIndicator)}
+                isSafetyConcern={!!(partyData?.person?.safetyConcernIndicator || partyData?.business?.safetyConcernIndicator)}
                 isYoungPerson={personIsYoung}
               />
             }
@@ -213,13 +213,13 @@ export const PartyView: FC = () => {
           ) : (
             <section className="comp-details-body comp-container party-details-section">
               <hr className="comp-details-body-spacer"></hr>
-              {(partyData?.person?.boloComment || partyData?.business?.boloComment) && (
+              {(partyData?.person?.safetyConcernReason || partyData?.business?.safetyConcernReason) && (
                 <DetailSection title="">
-                  {partyData?.person?.boloComment && (
-                    <DetailField label="Safety concern reason">{partyData?.person?.boloComment}</DetailField>
+                  {partyData?.person?.safetyConcernReason && (
+                    <DetailField label="Safety concern reason">{partyData?.person?.safetyConcernReason}</DetailField>
                   )}
-                  {partyData?.business?.boloComment && (
-                    <DetailField label="Safety concern reason">{partyData?.business?.boloComment}</DetailField>
+                  {partyData?.business?.safetyConcernReason && (
+                    <DetailField label="Safety concern reason">{partyData?.business?.safetyConcernReason}</DetailField>
                   )}
                 </DetailSection>
               )}

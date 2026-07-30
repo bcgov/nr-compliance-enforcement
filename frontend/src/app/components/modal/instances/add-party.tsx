@@ -208,10 +208,10 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         tattooDescription: editParty.person?.tattooDescription || null,
         additionalDescriptors: editParty.person?.additionalDescriptors || null,
         comments: editParty.person?.comments || null,
-        boloIndicator: editParty.person?.boloIndicator || null,
-        boloComment: editParty.person?.boloComment || null,
-        businessBoloIndicator: editParty.business?.boloIndicator || null,
-        businessBoloComment: editParty.business?.boloComment || null,
+        safetyConcernIndicator: editParty.person?.safetyConcernIndicator || null,
+        safetyConcernReason: editParty.person?.safetyConcernReason || null,
+        businessSafetyConcernIndicator: editParty.business?.safetyConcernIndicator || null,
+        businessSafetyConcernReason: editParty.business?.safetyConcernReason || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers
@@ -271,8 +271,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           input.business = {
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            boloIndicator: value.businessBoloIndicator || null,
-            boloComment: value.businessBoloComment || null,
+            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
+            safetyConcernReason: value.businessSafetyConcernReason || null,
           };
         }
 
@@ -301,8 +301,8 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
           input.business = {
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            boloIndicator: value.businessBoloIndicator || null,
-            boloComment: value.businessBoloComment || null,
+            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
+            safetyConcernReason: value.businessSafetyConcernReason || null,
           };
         }
         if (activityType === "investigation") {

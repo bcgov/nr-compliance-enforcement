@@ -32,7 +32,6 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
 }) => {
   // Code tables
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
-  console.log(party);
 
   const person = party.person;
   const business = party.business;
@@ -57,7 +56,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
         investigationLabel={investigationLabel}
         badges={
           <PartyBadges
-            isSafetyConcern={!!(person?.boloIndicator || business?.boloIndicator)}
+            isSafetyConcern={!!(person?.safetyConcernIndicator || business?.safetyConcernIndicator)}
             isPublished={isPublished}
             isYoungPerson={personIsYoung}
           />
@@ -91,8 +90,12 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             {/* Investigation role — own section at top*/}
             <DetailSection title="Party details">
               <DetailField label="Investigation role">{roleText}</DetailField>
-              {person?.boloComment && <DetailField label="Safety concern reason">{person.boloComment}</DetailField>}
-              {business?.boloComment && <DetailField label="Safety concern reason">{business.boloComment}</DetailField>}
+              {person?.safetyConcernReason && (
+                <DetailField label="Safety concern reason">{person.safetyConcernReason}</DetailField>
+              )}
+              {business?.safetyConcernReason && (
+                <DetailField label="Safety concern reason">{business.safetyConcernReason}</DetailField>
+              )}
             </DetailSection>
 
             <PartyDetail

@@ -21,8 +21,8 @@ export class InvestigationBusiness implements BusinessDto {
   businessReference?: string;
   businessIdentifiers?: InvestigationBusinessIdentifier[];
   contactPeople?: InvestigationBusinessPersonXref[];
-  boloIndicator?: boolean;
-  boloComment?: string;
+  safetyConcernIndicator?: boolean;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -40,10 +40,10 @@ export class CreateInvestigationBusinessInput {
   contactPeople?: CreateInvestigationBusinessContactInput[];
 
   @Field(() => Boolean, { nullable: true })
-  boloIndicator?: boolean;
+  safetyConcernIndicator?: boolean;
 
   @Field(() => String, { nullable: true })
-  boloComment?: string;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -58,10 +58,10 @@ export class UpdateInvestigationBusinessInput {
   contactPeople?: UpdateInvestigationBusinessContactInput[];
 
   @Field(() => Boolean, { nullable: true })
-  boloIndicator?: boolean;
+  safetyConcernIndicator?: boolean;
 
   @Field(() => String, { nullable: true })
-  boloComment?: string;
+  safetyConcernReason?: string;
 }
 
 export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
@@ -110,12 +110,12 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
       ),
     ),
     forMember(
-      (dest) => dest.boloIndicator,
-      mapFrom((src) => src.bolo_ind ?? undefined),
+      (dest) => dest.safetyConcernIndicator,
+      mapFrom((src) => src.safety_concern_ind ?? undefined),
     ),
     forMember(
-      (dest) => dest.boloComment,
-      mapFrom((src) => src.bolo_comment ?? undefined),
+      (dest) => dest.safetyConcernReason,
+      mapFrom((src) => src.safety_concern_reason ?? undefined),
     ),
   );
 };

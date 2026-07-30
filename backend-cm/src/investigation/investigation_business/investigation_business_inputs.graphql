@@ -6,8 +6,8 @@ input CreateInvestigationBusinessInput {
   aliases: [CreateInvestigationAliasInput]
   addresses: [CreateInvestigationAddressInput]
   contactPeople: [CreateInvestigationBusinessContactInput]
-  boloIndicator: Boolean
-  boloComment: String
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
 }
 
 input UpdateInvestigationBusinessInput {
@@ -17,6 +17,6 @@ input UpdateInvestigationBusinessInput {
   aliases: [UpdateInvestigationAliasInput]
   addresses: [UpdateInvestigationAddressInput]
   contactPeople: [UpdateInvestigationBusinessContactInput]
-  boloIndicator: Boolean
-  boloComment: String
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
 }

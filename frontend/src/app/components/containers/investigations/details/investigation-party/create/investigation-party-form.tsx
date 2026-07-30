@@ -174,10 +174,10 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         tattooDescription: editParty.person?.tattooDescription || null,
         additionalDescriptors: editParty.person?.additionalDescriptors || null,
         comments: editParty.person?.comments || null,
-        boloIndicator: editParty.person?.boloIndicator || null,
-        boloComment: editParty.person?.boloComment || null,
-        businessBoloIndicator: editParty.business?.boloIndicator || null,
-        businessBoloComment: editParty.business?.boloComment || null,
+        safetyConcernIndicator: editParty.person?.safetyConcernIndicator || null,
+        safetyConcernReason: editParty.person?.safetyConcernReason || null,
+        businessSafetyConcernIndicator: editParty.business?.safetyConcernIndicator || null,
+        businessSafetyConcernReason: editParty.business?.safetyConcernReason || null,
         businessName: editParty.business?.name || "",
         businessNumber: (() => {
           const found = editParty.business?.businessIdentifiers
@@ -238,8 +238,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, true) ?? [],
-            boloIndicator: value.businessBoloIndicator || null,
-            boloComment: value.businessBoloComment || null,
+            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
+            safetyConcernReason: value.businessSafetyConcernReason || null,
           };
         }
 
@@ -277,8 +277,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             name: value.businessName?.trim(),
             businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
             contactPeople: buildContactPeople(value.contacts, false),
-            boloIndicator: value.businessBoloIndicator || null,
-            boloComment: value.businessBoloComment || null,
+            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
+            safetyConcernReason: value.businessSafetyConcernReason || null,
           };
         }
 
@@ -460,7 +460,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         }
         badges={
           <PartyBadges
-            isSafetyConcern={!!(editParty?.person?.boloIndicator || editParty?.business?.boloIndicator)}
+            isSafetyConcern={!!(editParty?.person?.safetyConcernIndicator || editParty?.business?.safetyConcernIndicator)}
             isPublished={!!editParty?.partyReference}
             isYoungPerson={personIsYoung}
           />

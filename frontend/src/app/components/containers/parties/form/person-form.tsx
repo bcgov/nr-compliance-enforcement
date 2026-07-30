@@ -177,43 +177,43 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     <>
       <FormField
         form={form}
-        name="boloIndicator"
+        name="safetyConcernIndicator"
         label="Safety concern"
         render={(field) => (
           <Form.Check
             type="checkbox"
-            id="bolo-ind"
+            id="safety-concern-indicator"
             label="Safety concern"
             checked={field.state.value === true}
             onChange={(evt: any) => {
               const checked = evt.target.checked;
               field.handleChange(checked);
               if (!checked) {
-                form.setFieldValue("boloComment", "");
+                form.setFieldValue("safetyConcernReason", "");
               }
             }}
             disabled={isDisabled}
           />
         )}
       />
-      <form.Subscribe selector={(state: any) => state.values.boloIndicator}>
-        {(boloIndicator: boolean | undefined) =>
-          boloIndicator ? (
+      <form.Subscribe selector={(state: any) => state.values.safetyConcernIndicator}>
+        {(safetyConcernIndicator: boolean | undefined) =>
+          safetyConcernIndicator ? (
             <FormField
               form={form}
-              name="boloComment"
+              name="safetyConcernReason"
               label="Safety concern reason"
               required
               validators={{
                 onChange: ({ value }: { value: string | null | undefined }) => {
-                  const isBoloChecked = !!form.getFieldValue("boloIndicator");
+                  const isSafetyConcernChecked = !!form.getFieldValue("safetyConcernIndicator");
                   const isEmpty = !value?.trim();
-                  return isBoloChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
                 },
               }}
               render={(field) => (
                 <ValidationTextArea
-                  id="bolo-comment"
+                  id="safety-concern-reason"
                   className="comp-form-control comp-details-input"
                   rows={4}
                   value={field.state.value ?? ""}

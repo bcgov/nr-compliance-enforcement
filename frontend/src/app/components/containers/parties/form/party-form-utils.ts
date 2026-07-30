@@ -439,7 +439,7 @@ export const validatePersonForm = (value: any): string | null => {
     value.weightInKg != null ||
     !!value.facialHairIndicator ||
     !!value.tattooIndicator ||
-    !!value.boloIndicator ||
+    !!value.safetyConcernIndicator ||
     (value.facialHairStyleCodes ?? []).length > 0 ||
     (value.aliases ?? []).some((a: any) => hasValue(a?.name)) ||
     (value.phoneNumbers ?? []).some((p: any) => hasValue(p?.value)) ||
@@ -484,8 +484,8 @@ export function buildPersonBase(value: any) {
     tattooIndicator: value.tattooIndicator || null,
     tattooDescription: value.tattooDescription || null,
     additionalDescriptors: value.additionalDescriptors || null,
-    boloIndicator: value.boloIndicator || null,
-    boloComment: value.boloComment || null,
+    safetyConcernIndicator: value.safetyConcernIndicator || null,
+    safetyConcernReason: value.safetyConcernReason || null,
   };
 }
 
@@ -502,8 +502,8 @@ export const buildBusinessCreateUpdate = (value: any, contactPeople?: any[]) => 
   return {
     name: value.businessName?.trim(),
     businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-    boloIndicator: value.businessBoloIndicator || null,
-    boloComment: value.businessBoloComment || null,
+    safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
+    safetyConcernReason: value.businessSafetyConcernReason || null,
     ...(contactPeople === undefined ? {} : { contactPeople: contactPeople.length ? contactPeople : undefined }),
   };
 };
@@ -535,15 +535,15 @@ export const createEmptyPartyFormValues = () => ({
   facialHairIndicator: "",
   facialHairStyleCodes: [] as PersonFacialHairStyleCode[],
   additionalHairDescriptors: "",
-  boloIndicator: "",
-  boloComment: "",
+  safetyConcernIndicator: "",
+  safetyConcernReason: "",
   comments: "",
   tattooIndicator: "",
   tattooDescription: "",
   additionalDescriptors: "",
   businessName: "",
-  businessBoloIndicator: "" as any,
-  businessBoloComment: "",
+  businessSafetyConcernIndicator: "" as any,
+  businessSafetyConcernReason: "",
   businessNumber: {} as any,
   worksafeBCNumber: {} as any,
   aliases: [{ aliasGuid: undefined, name: "" }] as Array<{ aliasGuid?: string; name: string }>,

@@ -258,8 +258,8 @@ export class PartyService {
             tattoo_description: true,
             additional_descriptors: true,
             comments: true,
-            bolo_ind: true,
-            bolo_comment: true,
+            safety_concern_ind: true,
+            safety_concern_reason: true,
             approximate_age_code: true,
             height_cm: true,
             weight_kg: true,
@@ -401,8 +401,8 @@ export class PartyService {
       tattoo_description: person?.tattooDescription,
       additional_descriptors: person?.additionalDescriptors,
       comments: person?.comments,
-      bolo_ind: person?.boloIndicator,
-      bolo_comment: person?.boloComment,
+      safety_concern_ind: person?.safetyConcernIndicator,
+      safety_concern_reason: person?.safetyConcernReason,
     };
   }
 
@@ -441,8 +441,8 @@ export class PartyService {
       business: {
         create: {
           name: input.business?.name,
-          bolo_ind: input.business?.boloIndicator,
-          bolo_comment: input.business?.boloComment,
+          safety_concern_ind: input.business?.safetyConcernIndicator,
+          safety_concern_reason: input.business?.safetyConcernReason,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(input.business?.businessIdentifiers?.length
@@ -526,8 +526,8 @@ export class PartyService {
       business: {
         update: {
           name: input.business?.name,
-          bolo_ind: input.business?.boloIndicator,
-          bolo_comment: input.business?.boloComment,
+          safety_concern_ind: input.business?.safetyConcernIndicator,
+          safety_concern_reason: input.business?.safetyConcernReason,
           update_user_id: this.user.getIdirUsername(),
           update_utc_timestamp: new Date(),
           ...(Object.keys(businessIdentifierOperations).length
@@ -1319,8 +1319,8 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     if (!oldPerson || !newPerson) return;
-    this._compareField("Caution / BOLO", oldPerson.boloIndicator, newPerson.boloIndicator, addEvent);
-    this._compareField("Caution / BOLO comment", oldPerson.boloComment, newPerson.boloComment, addEvent);
+    this._compareField("Safety concern", oldPerson.safetyConcernIndicator, newPerson.safetyConcernIndicator, addEvent);
+    this._compareField("Safety concern reason", oldPerson.safetyConcernReason, newPerson.safetyConcernReason, addEvent);
     this._compareField("first name", oldPerson.firstName, newPerson.firstName, addEvent);
     this._compareField("middle name", oldPerson.middleNames, newPerson.middleNames, addEvent);
     this._compareField("last name", oldPerson.lastName, newPerson.lastName, addEvent);
@@ -1392,8 +1392,8 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._compareField("Caution / BOLO", oldBusiness.boloIndicator, newBusiness.boloIndicator, addEvent);
-    this._compareField("Caution / BOLO comment", oldBusiness.boloComment, newBusiness.boloComment, addEvent);
+    this._compareField("Safety concern", oldBusiness.safetyConcernIndicator, newBusiness.safetyConcernIndicator, addEvent);
+    this._compareField("Safety concern reason", oldBusiness.safetyConcernReason, newBusiness.safetyConcernReason, addEvent);
     this._diffBusinessIdentifiers(
       oldBusiness.businessIdentifiers ?? [],
       newBusiness.businessIdentifiers ?? [],

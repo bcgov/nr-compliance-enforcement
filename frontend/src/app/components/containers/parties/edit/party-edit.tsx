@@ -175,10 +175,10 @@ const PartyEdit: FC = () => {
         tattooDescription: person?.tattooDescription || null,
         additionalDescriptors: person?.additionalDescriptors || null,
         comments: person?.comments || null,
-        boloIndicator: person?.boloIndicator || null,
-        boloComment: person?.boloComment || null,
-        businessBoloIndicator: partyData.party.business?.boloIndicator || null,
-        businessBoloComment: partyData.party.business?.boloComment || null,
+        safetyConcernIndicator: person?.safetyConcernIndicator || null,
+        safetyConcernReason: person?.safetyConcernReason || null,
+        businessSafetyConcernIndicator: partyData.party.business?.safetyConcernIndicator || null,
+        businessSafetyConcernReason: partyData.party.business?.safetyConcernReason || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -219,14 +219,14 @@ const PartyEdit: FC = () => {
       facialHairIndicator: "",
       facialHairStyleCodes: [],
       additionalHairDescriptors: "",
-      boloIndicator: "",
-      boloComment: "",
+      safetyConcernIndicator: "",
+      safetyConcernReason: "",
       comments: "",
       tattooIndicator: "",
       tattooDescription: "",
       additionalDescriptors: "",
-      businessBoloIndicator: "" as any,
-      businessBoloComment: "",
+      businessSafetyConcernIndicator: "" as any,
+      businessSafetyConcernReason: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
@@ -419,7 +419,7 @@ const PartyEdit: FC = () => {
         partyIdentifier={id}
         badges={
           <PartyBadges
-            isSafetyConcern={!!(partyData?.party?.person?.boloIndicator || partyData?.party?.business?.boloIndicator)}
+            isSafetyConcern={!!(partyData?.party?.person?.safetyConcernIndicator || partyData?.party?.business?.safetyConcernIndicator)}
             isYoungPerson={personIsYoung}
           />
         }

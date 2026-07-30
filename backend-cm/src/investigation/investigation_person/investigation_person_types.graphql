@@ -29,6 +29,6 @@ type InvestigationPerson {
   tattooDescription: String
   additionalDescriptors: String
   comments: String
-  boloIndicator: Boolean
-  boloComment: String
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
 }

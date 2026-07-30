@@ -259,8 +259,8 @@ const PartiesList: React.FC<Props> = ({ companies, people, parties, onRemovePart
             >
               {getPartyName(party)}
             </Button>
-            {((party?.person as InvestigationPerson)?.boloIndicator ||
-              (party?.business as InvestigationBusiness)?.boloIndicator) && (
+            {((party?.person as InvestigationPerson)?.safetyConcernIndicator ||
+              (party?.business as InvestigationBusiness)?.safetyConcernIndicator) && (
               <div className="badge comp-status-badge-pending-review">
                 <i className="bi bi-exclamation-circle"></i> Safety concern
               </div>

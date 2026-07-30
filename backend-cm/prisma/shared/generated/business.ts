@@ -26,10 +26,10 @@ export class business {
   party_guid?: string;
 
   @ApiPropertyOptional({ type: Boolean })
-  bolo_ind?: boolean;
+  safety_concern_ind?: boolean;
 
   @ApiPropertyOptional({ type: String })
-  bolo_comment?: string;
+  safety_concern_reason?: string;
 
   @ApiPropertyOptional({ type: () => party })
   party?: party;

@@ -26,8 +26,8 @@ input CreateInvestigationPersonInput {
   tattooDescription: String
   additionalDescriptors: String
   comments: String
-  boloIndicator: Boolean
-  boloComment: String
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
   personReference: String
 }
 
@@ -60,7 +60,7 @@ input UpdateInvestigationPersonInput {
   tattooDescription: String
   additionalDescriptors: String
   comments: String
-  boloIndicator: Boolean
-  boloComment: String
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
   personReference: String
 }

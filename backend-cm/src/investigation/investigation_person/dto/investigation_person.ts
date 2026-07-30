@@ -39,8 +39,8 @@ export class InvestigationPerson implements PersonDto {
   tattooDescription?: string;
   additionalDescriptors?: string;
   comments?: string;
-  boloIndicator?: boolean;
-  boloComment?: string;
+  safetyConcernIndicator?: boolean;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -130,10 +130,10 @@ export class CreateInvestigationPersonInput {
   comments?: string;
 
   @Field(() => Boolean, { nullable: true })
-  boloIndicator?: boolean;
+  safetyConcernIndicator?: boolean;
 
   @Field(() => String, { nullable: true })
-  boloComment?: string;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -279,12 +279,12 @@ export const mapPrismaPersonToInvestigationPerson = (mapper: Mapper) => {
       mapFrom((src) => src.comments ?? undefined),
     ),
     forMember(
-      (dest) => dest.boloIndicator,
-      mapFrom((src) => src.bolo_ind ?? undefined),
+      (dest) => dest.safetyConcernIndicator,
+      mapFrom((src) => src.safety_concern_ind ?? undefined),
     ),
     forMember(
-      (dest) => dest.boloComment,
-      mapFrom((src) => src.bolo_comment ?? undefined),
+      (dest) => dest.safetyConcernReason,
+      mapFrom((src) => src.safety_concern_reason ?? undefined),
     ),
   );
 };
