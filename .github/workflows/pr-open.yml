@@ -172,11 +172,20 @@ jobs:
     needs: [builds, build-playwright, validate-flyway-migrations]
     runs-on: ubuntu-22.04
     steps:
+      - name: Get GitOps repo token
+        id: gitops-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: bcgov-c
+          repositories: tenant-gitops-f208ae
+
       - name: Checkout CD repo
         uses: actions/checkout@v4
         with:
           repository: ${{ env.GITOPS_REPO }}
-          token: ${{ secrets.GITOPS_REPO_TOKEN }}
+          token: ${{ steps.gitops-token.outputs.token }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
           fetch-depth: 0
 
