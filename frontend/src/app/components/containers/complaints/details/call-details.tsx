@@ -1,13 +1,13 @@
 import { FC } from "react";
 import { Badge, Card } from "react-bootstrap";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTime } from "@common/methods";
 import { ComplaintDetailsAttractant } from "@apptypes/complaints/details/complaint-attactant";
 import { selectComplaintDetails } from "@store/reducers/complaints";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompLocationInfo } from "@components/common/comp-location-info";
 import { usePark } from "@/app/hooks/usePark";
 import { AgencyType } from "@/app/types/app/agency-types";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 
 interface ComplaintHeaderProps {
   complaintOwner: string;
@@ -66,13 +66,13 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
                       className="bi bi-calendar comp-margin-right-xxs"
                       id="complaint-incident-date"
                     ></i>
-                    {formatDate(incidentDate?.toString())}
+                    {formatDateObjectAsString(incidentDate, { format: "date" })}
                   </>
                 )}
                 {incidentTime && (
                   <>
                     <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                    {incidentTime.substring(0, 5)}
+                    {incidentTime}
                   </>
                 )}
               </dd>
@@ -131,8 +131,8 @@ export const CallDetails: FC<ComplaintHeaderProps> = ({ complaintOwner, complain
               <dd id="comp-details-location-description">{locationDescription}</dd>
             </div>
             <CompLocationInfo
-              xCoordinate={coordinates?.[0] === 0 ? "" : coordinates?.[0].toString() ?? ""}
-              yCoordinate={coordinates?.[1] === 0 ? "" : coordinates?.[1].toString() ?? ""}
+              xCoordinate={coordinates?.[0] === 0 ? "" : (coordinates?.[0].toString() ?? "")}
+              yCoordinate={coordinates?.[1] === 0 ? "" : (coordinates?.[1].toString() ?? "")}
             />
             <br />
           </dl>

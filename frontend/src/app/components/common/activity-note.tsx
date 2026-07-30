@@ -11,7 +11,7 @@ import { selectOfficerAgency } from "@/app/store/reducers/app";
 import { selectOfficersByAgency, selectOfficers } from "@/app/store/reducers/officer";
 import { ActivityNote, ActivityNoteInput } from "@/generated/graphql";
 import { AppUser } from "@apptypes/app/app_user/app_user";
-import { parseUTCDateTimeToLocal, formatLocalTime, formatLocalDateTimeToUTC } from "@common/methods";
+import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 import { gql } from "graphql-request";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -104,11 +104,21 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
   // Form state
   const [selectedOfficer, setSelectedOfficer] = useState<Option | null>(initialOfficer);
   const [selectedActionedDateTime, setSelectedActionedDateTime] = useState<Date | undefined>(
-    () => parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
+    () => parseUTCDateToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date(),
   );
   const [selectedActionedTime, setSelectedActionedTime] = useState<string | null>(() => {
-    const d = parseUTCDateTimeToLocal(initialData?.actionedDate, initialData?.actionedTime) ?? new Date();
-    return formatLocalTime(d);
+    if (!initialData) {
+      // New form: default to the current time.
+      return formatDateObjectAsString(new Date(), { format: "time" });
+    }
+    // Editing: No time present - keep no time present
+    if (!initialData.actionedTime) {
+      return null;
+    }
+    // Editing: Time present - keep stored time
+    return formatDateObjectAsString(parseUTCDateToLocal(initialData.actionedDate, initialData.actionedTime), {
+      format: "time",
+    });
   });
   const [plainText, setPlainText] = useState<string>(initialData?.contentText ?? "");
 
@@ -164,16 +174,21 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
 
   // Helper function to get current input values
   const getInputValues = (): Partial<ActivityNoteInput> => {
-    let actionedTime: Date | undefined = undefined;
-    let actionedDate: Date | undefined = selectedActionedDateTime;
+    let actionedDate: string | undefined;
+    let actionedTime: string | null = null;
+
     if (selectedActionedDateTime && selectedActionedTime) {
-      const { utcDate } = formatLocalDateTimeToUTC(selectedActionedDateTime, selectedActionedTime);
+      // Timed: both fields from one UTC instant so they can't disagree across UTC midnight.
       const combined = new Date(selectedActionedDateTime);
       const [hh, mm] = selectedActionedTime.split(":").map(Number);
       combined.setHours(hh, mm, 0, 0);
-      actionedTime = combined;
-      actionedDate = utcDate;
+      actionedDate = combined.toISOString();
+      actionedTime = combined.toISOString();
+    } else if (selectedActionedDateTime) {
+      // Date-only: literal calendar date, no time.
+      actionedDate = formatDateObjectAsString(selectedActionedDateTime, { format: "date" });
     }
+
     return {
       activityNoteGuid: initialData?.activityNoteGuid,
       contentJson: editor ? JSON.stringify(editor.getJSON()) : "",

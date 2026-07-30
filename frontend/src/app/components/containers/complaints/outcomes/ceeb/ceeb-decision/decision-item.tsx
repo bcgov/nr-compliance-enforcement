@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { formatDate, getDropdownOption } from "@common/methods";
+import { getDropdownOption } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { selectLeadAgencyDropdown } from "@store/reducers/code-table";
 import {
@@ -11,6 +11,7 @@ import {
   selectIPMAuthCategoryDropdown,
 } from "@store/reducers/code-table-selectors";
 import { CASE_ACTION_CODE } from "@constants/case_actions";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type props = {
   schedule?: string;
@@ -93,7 +94,10 @@ export const DecisionItem: FC<props> = ({
       </div>
       <div>
         <dt>Date action taken</dt>
-        <dd id="decision-date">{actionTakenDate !== null && formatDate(new Date(actionTakenDate).toString())}</dd>
+        <dd id="decision-date">
+          {actionTakenDate !== null &&
+            formatDateObjectAsString(parseUTCTimestampToLocal(actionTakenDate), { format: "date" })}
+        </dd>
       </div>
     </dl>
   );

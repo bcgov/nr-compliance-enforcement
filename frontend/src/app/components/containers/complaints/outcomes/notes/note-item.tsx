@@ -1,6 +1,5 @@
 import { FC, useState, useEffect } from "react";
 import { useAppSelector } from "@hooks/hooks";
-import { formatDate, formatTime } from "@common/methods";
 
 import { CaseAction } from "@apptypes/outcomes/case-action";
 import { Badge, Button, Card, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -8,6 +7,7 @@ import { selectActiveComplaintCollaborators, selectComplaint } from "@/app/store
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { appUserGuid } from "@/app/store/reducers/app";
 import UserService from "@/app/service/user-service";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type props = {
   note: string;
@@ -56,9 +56,7 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
       {actions.slice(1).map((action) => (
         <div key={action.actor}>
           <span>{getActorDisplayName(action.actor, officers)}</span>
-          <span>
-            {` (${formatDate(new Date(action.date).toString())} ${formatTime(new Date(action.date).toString())})`}
-          </span>
+          <span>{` (${formatDateObjectAsString(parseUTCTimestampToLocal(action.date), { format: "dateTime" })})`}</span>
         </div>
       ))}
     </Tooltip>
@@ -101,9 +99,9 @@ export const NoteItem: FC<props> = ({ note, actions = [], handleEdit, handleDele
                     className="bi bi-calendar comp-margin-right-xxs"
                     id="complaint-incident-date"
                   ></i>
-                  {formatDate(new Date(actions[0]?.date).toString())}
+                  {formatDateObjectAsString(parseUTCTimestampToLocal(actions[0]?.date), { format: "date" })}
                   <i className="bi bi-clock comp-margin-left-xxs comp-margin-right-xxs"></i>
-                  {formatTime(new Date(actions[0]?.date).toString())}
+                  {formatDateObjectAsString(parseUTCTimestampToLocal(actions[0]?.date), { format: "time" })}
                   {actions.length > 1 && (
                     <OverlayTrigger
                       placement="right"

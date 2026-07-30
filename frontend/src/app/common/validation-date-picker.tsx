@@ -33,10 +33,12 @@ type TimeSegment = "hour" | "minute";
 
 const dateWithTime = (date: Date | string, time: string | null): Date => {
   if (!time) {
-    // Date-only: parse as local so UTC midnight doesn't roll back a day west of UTC
-    const dateStr = typeof date === "string" ? date.split("T")[0] : date.toISOString().split("T")[0];
-    const [y, m, d] = dateStr.split("-").map(Number);
-    return new Date(y, m - 1, d);
+    // Date-only: read the LOCAL date parts, not toISOString (which shifts west of UTC)
+    if (typeof date === "string") {
+      const [y, m, d] = date.split("T")[0].split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
   const result = new Date(date);
   const [hh, mm] = time.split(":").map(Number);

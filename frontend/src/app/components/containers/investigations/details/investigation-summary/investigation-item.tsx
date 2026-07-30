@@ -1,4 +1,3 @@
-import { formatDate, formatTime } from "@/app/common/methods";
 import { CompLocationInfo } from "@/app/components/common/comp-location-info";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { Investigation } from "@/generated/graphql";
@@ -7,6 +6,7 @@ import { Link } from "react-router-dom";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { selectCommunityCodeDropdown, selectInvestigationSourceCodeDropdown } from "@/app/store/reducers/code-table";
 import Option from "@apptypes/app/option";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface InvestigationItemProps {
   investigationData: Investigation;
@@ -52,9 +52,15 @@ export const InvestigationItem = ({ investigationData, caseGuid, caseName }: Inv
               <dd id="comp-details-date-logged">
                 {investigationData.openedTimestamp && (
                   <div>
-                    <i className="bi bi-calendar"></i>&nbsp;{formatDate(investigationData.openedTimestamp)}
+                    <i className="bi bi-calendar"></i>&nbsp;
+                    {formatDateObjectAsString(parseUTCTimestampToLocal(investigationData.openedTimestamp), {
+                      format: "date",
+                    })}
                     &nbsp;&nbsp;
-                    <i className="bi bi-clock"></i>&nbsp;{formatTime(investigationData.openedTimestamp)}
+                    <i className="bi bi-clock"></i>&nbsp;{" "}
+                    {formatDateObjectAsString(parseUTCTimestampToLocal(investigationData.openedTimestamp), {
+                      format: "time",
+                    })}
                   </div>
                 )}
               </dd>
