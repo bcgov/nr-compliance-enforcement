@@ -176,7 +176,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ env.GITOPS_REPO }}
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          token: ${{ secrets.GITOPS_REPO_TOKEN }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
           fetch-depth: 0
 

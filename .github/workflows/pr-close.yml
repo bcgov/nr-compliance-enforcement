@@ -21,16 +21,11 @@ jobs:
     name: Cleanup Ephemeral Emerald Developer Environments
     runs-on: ubuntu-22.04
     steps:
-      - name: Setup gitops repo access
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
-
       - name: Checkout CD repo
         uses: actions/checkout@v4
         with:
           repository: ${{ env.GITOPS_REPO }}
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          token: ${{ secrets.GITOPS_REPO_TOKEN }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
           fetch-depth: 0
 
