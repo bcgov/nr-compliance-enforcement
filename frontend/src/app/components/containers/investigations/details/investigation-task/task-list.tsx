@@ -6,9 +6,10 @@ import { Task } from "@/generated/graphql";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectTaskCategory, selectTaskSubCategory, selectTaskStatus } from "@/app/store/reducers/code-table-selectors";
 import { selectOfficers } from "@/app/store/reducers/officer";
-import { applyStatusClass, formatDate, formatDateTime } from "@/app/common/methods";
+import { applyStatusClass } from "@/app/common/methods";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { TaskListExpandedContent } from "./task-list-item";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type Props = {
   tasks: Task[];
@@ -98,7 +99,7 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: true,
       getValue: (task) => task.dueDate ?? "",
-      renderCell: (task) => formatDate(task.dueDate?.slice(0, 10)) ?? "-",
+      renderCell: (task) => formatDateObjectAsString(parseUTCDateToLocal(task.dueDate), { format: "date" }) ?? "-",
     },
     {
       label: "Last updated",
@@ -106,7 +107,10 @@ export const TaskList: FC<Props> = ({ tasks, investigationGuid, isLoading = fals
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160",
       isSortable: true,
       getValue: (task) => task.updatedDate ?? task.createdDate ?? "",
-      renderCell: (task) => formatDateTime(task.updatedDate ?? task.createdDate),
+      renderCell: (task) =>
+        formatDateObjectAsString(parseUTCTimestampToLocal(task.updatedDate ?? task.createdDate), {
+          format: "dateTime",
+        }),
     },
   ];
 

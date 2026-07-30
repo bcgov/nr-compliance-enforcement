@@ -6,8 +6,9 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { Exhibit } from "@/generated/graphql";
-import { formatDateTimeStr, truncateString } from "@/app/common/methods";
+import { truncateString } from "@/app/common/methods";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type TaskExhibitListProps = {
   exhibits: Exhibit[];
@@ -78,8 +79,15 @@ export const TaskExhibitList: FC<TaskExhibitListProps> = ({
       headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       isSortable: true,
-      getValue: (exhibit) => exhibit.dateCollected ?? "",
-      renderCell: (exhibit) => formatDateTimeStr(exhibit.dateCollected),
+      getValue: (exhibit) => parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime)?.getTime() ?? 0,
+      renderCell: (exhibit) => {
+        const localIntake = parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime);
+        if (!localIntake) return "";
+        const datePart = formatDateObjectAsString(localIntake, { format: "date" });
+        return exhibit.intakeTime
+          ? `${datePart} ${formatDateObjectAsString(localIntake, { format: "time" })}`
+          : datePart;
+      },
     },
     {
       label: "Location of intake",

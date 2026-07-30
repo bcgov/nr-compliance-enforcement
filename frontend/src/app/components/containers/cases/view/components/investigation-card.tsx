@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { applyStatusClass, formatDate, formatTime } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCodeTable } from "@store/reducers/code-table";
 import { selectOfficerByAppUserGuid } from "@store/reducers/officer";
@@ -11,6 +11,7 @@ import { CASE_ACTIVITY_TYPES } from "@constants/case-activity-types";
 import { Investigation } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { ActivityCardField } from "@/app/components/containers/cases/view/components/activity-card-field";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface InvestigationCardProps {
   item: Investigation;
@@ -35,13 +36,15 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
   };
 
   const investigationId = investigation.name ?? "";
-  const dateOpened = investigation.openedTimestamp ? formatDate(investigation.openedTimestamp.toString()) : "";
+  const dateOpened = formatDateObjectAsString(parseUTCTimestampToLocal(investigation.openedTimestamp), {
+    format: "date",
+  });
   const community = getCommunityName(investigation.community ?? "");
   const status = investigation.investigationStatus?.longDescription ?? "";
   const primaryInvestigatorName = formatOfficerName(primaryInvestigator ?? undefined);
   const fileCoordinatorName = formatOfficerName(fileCoordinator ?? undefined);
   const partyCount = investigation.parties?.length;
-  const lastUpdatedDate = investigation.updatedTimestamp;
+  const lastUpdatedDate = parseUTCTimestampToLocal(investigation.updatedTimestamp);
 
   return (
     <ActivityCard
@@ -55,7 +58,7 @@ export const InvestigationCard: FC<InvestigationCardProps> = ({ item: investigat
       <div className="row g-2 text-muted">
         <ActivityCardField label="Date opened">{dateOpened}</ActivityCardField>
         <ActivityCardField label="Last updated">
-          {formatDate(lastUpdatedDate)} {formatTime(lastUpdatedDate)}
+          {formatDateObjectAsString(lastUpdatedDate, { format: "dateTime" })}
         </ActivityCardField>
         <ActivityCardField label="Community">{community}</ActivityCardField>
         <ActivityCardField label="Parties">{partyCount}</ActivityCardField>
