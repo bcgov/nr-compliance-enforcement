@@ -37,7 +37,7 @@ export default defineConfig({
             {
               tag: "script",
               attrs: {
-                src: "/static/deployment-guard.js",
+                src: "/static/js/deployment-guard.js",
               },
               injectTo: "head-prepend",
             },

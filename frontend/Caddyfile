@@ -40,7 +40,7 @@
     handle {
       @js path *.js
       handle @js {
-        rewrite * /deployment-redirect.js
+        rewrite * /static/js/deployment-redirect.js
         file_server
       }
       # Non-JS assets (CSS, fonts, images) can't self-redirect; return a clean

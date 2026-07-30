@@ -25,7 +25,7 @@
     }
     redirecting = true;
 
-    window.location.href = "../reloading.html";
+    window.location.href = "/reloading.html";
   }
 
   document.addEventListener("error", handleResourceError, true);
