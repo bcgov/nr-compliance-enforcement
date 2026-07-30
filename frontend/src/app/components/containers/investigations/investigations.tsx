@@ -48,6 +48,8 @@ const Investigations: FC = () => {
     queryKey: [
       searchValues.search,
       searchValues.investigationStatus,
+      searchValues.region,
+      searchValues.zone,
       searchValues.community,
       searchValues.primaryInvestigator,
       searchValues.fileCoordinator,

@@ -26,6 +26,7 @@ import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
+import { CosGeoOrgUnitService } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.service";
 
 @Injectable()
 export class InvestigationService {
@@ -40,6 +41,7 @@ export class InvestigationService {
     private readonly caseFileService: CaseFileService,
     private readonly eventPublisher: EventPublisherService,
     private readonly caseActivityService: CaseActivityService,
+    private readonly cosGeoOrgUnitService: CosGeoOrgUnitService,
   ) {}
 
   async findOne(investigationGuid: string) {
@@ -312,7 +314,8 @@ export class InvestigationService {
                         include: {
                           ticket: true,
                           contravention_party_xref: true,
-                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                            true,
                         },
                         where: { active_ind: true },
                       },
@@ -624,7 +627,7 @@ export class InvestigationService {
     locationAddress: "location_address",
   };
 
-  private _buildInvestigationWhereClause(filters?: InvestigationFilters): any {
+  private async _buildInvestigationWhereClause(filters?: InvestigationFilters): Promise<any> {
     const where: any = {};
 
     if (filters?.search) {
@@ -639,7 +642,23 @@ export class InvestigationService {
       where.investigation_status = filters.investigationStatus;
     }
 
-    if (filters?.community) {
+    if (filters?.region || filters?.zone) {
+      const geoOrgUnits = await this.cosGeoOrgUnitService.findAll(filters.zone, filters.region);
+      let areaCodes = [...new Set(geoOrgUnits.map((unit) => unit.areaCode).filter((areaCode) => areaCode != null))];
+
+      if (filters?.community) {
+        areaCodes = areaCodes.filter((areaCode) => areaCode === filters.community);
+      }
+
+      if (areaCodes.length > 0) {
+        where.geo_organization_unit_code_ref = { in: areaCodes };
+      } else {
+        this.logger.error(
+          `No geo organization units found for filtering region: ${filters.region}, zone: ${filters.zone}, community: ${filters.community}`,
+        );
+        where.investigation_guid = { equals: null };
+      }
+    } else if (filters?.community) {
       where.geo_organization_unit_code_ref = filters.community;
     }
 
@@ -688,7 +707,7 @@ export class InvestigationService {
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
-    const where = this._buildInvestigationWhereClause(filters);
+    const where = await this._buildInvestigationWhereClause(filters);
     const orderBy = this._buildInvestigationOrderByClause(filters);
 
     const result = await this.paginationUtility.paginate<investigation, Investigation>(
@@ -717,7 +736,7 @@ export class InvestigationService {
   async searchMap(model: InvestigationSearchMapParameters): Promise<SearchMapResults> {
     try {
       const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
-      const where = this._buildInvestigationWhereClause(model.filters);
+      const where = await this._buildInvestigationWhereClause(model.filters);
 
       return await withRlsTransaction(this.prisma, async (db) => {
         const investigations = await db.investigation.findMany({

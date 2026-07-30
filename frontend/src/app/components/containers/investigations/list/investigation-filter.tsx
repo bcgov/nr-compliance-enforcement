@@ -3,16 +3,22 @@ import { CompSelect } from "@components/common/comp-select";
 import Option from "@apptypes/app/option";
 import { FilterDate } from "@components/common/filter-date";
 import { useAppSelector } from "@hooks/hooks";
-import { selectCommunityCodeDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import {
+  selectCascadedCommunity,
+  selectCascadedRegion,
+  selectCascadedZone,
+  selectComplaintStatusWithPendingCodeDropdown,
+} from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { getUserAgency } from "@service/user-service";
 import { useInvestigationSearch, InvestigationSearchParams } from "../hooks/use-investigation-search";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 export const InvestigationFilter: FC = () => {
   const { searchValues, setValues } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
-  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
   const userAgency = getUserAgency();
   const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
   const officerOptions: Option[] = useMemo(
@@ -21,6 +27,29 @@ export const InvestigationFilter: FC = () => {
         .map((o: AppUser) => ({ value: o.app_user_guid, label: `${o.last_name}, ${o.first_name}` }))
         .sort((a, b) => a.label.localeCompare(b.label)),
     [agencyOfficers],
+  );
+
+  const regionOptions = useAppSelector(
+    selectCascadedRegion(
+      searchValues.region ?? undefined,
+      searchValues.zone ?? undefined,
+      searchValues.community ?? undefined,
+    ),
+  );
+  const zoneOptions = useAppSelector(
+    selectCascadedZone(
+      searchValues.region ?? undefined,
+      searchValues.zone ?? undefined,
+      searchValues.community ?? undefined,
+    ),
+  );
+
+  const communityOptions = useAppSelector(
+    selectCascadedCommunity(
+      searchValues.region ?? undefined,
+      searchValues.zone ?? undefined,
+      searchValues.community ?? undefined,
+    ),
   );
 
   const handleFieldChange = (fieldName: keyof InvestigationSearchParams) => (option: Option | null) => {
@@ -82,6 +111,28 @@ export const InvestigationFilter: FC = () => {
         statusOptions.find((option) => option.value === searchValues.investigationStatus) || null,
         handleFieldChange("investigationStatus"),
       )}
+
+      <FeatureFlag feature={FEATURE_TYPES.REGION_FILTER}>
+        {renderSelectFilter(
+          "region",
+          "Region",
+          regionOptions,
+          "Select",
+          regionOptions.find((option) => option.value === searchValues.region) || null,
+          handleFieldChange("region"),
+        )}
+      </FeatureFlag>
+
+      <FeatureFlag feature={FEATURE_TYPES.ZONE_FILTER}>
+        {renderSelectFilter(
+          "zone",
+          "Zone",
+          zoneOptions,
+          "Select",
+          zoneOptions.find((option) => option.value === searchValues.zone) || null,
+          handleFieldChange("zone"),
+        )}
+      </FeatureFlag>
 
       {renderSelectFilter(
         "community",

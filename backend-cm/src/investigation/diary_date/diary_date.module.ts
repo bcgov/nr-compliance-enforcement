@@ -11,9 +11,10 @@ import { EventPublisherService } from "src/event_publisher/event_publisher.servi
 import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { PaginationUtility } from "src/common/pagination.utility";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
+import { CosGeoOrgUnitModule } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.module";
 
 @Module({
-  imports: [PrismaModuleInvestigation, PrismaModuleShared, AutomapperModule, UserModule],
+  imports: [PrismaModuleInvestigation, PrismaModuleShared, AutomapperModule, UserModule, CosGeoOrgUnitModule],
   providers: [
     DiaryDateResolver,
     DiaryDateService,
