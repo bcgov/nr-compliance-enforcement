@@ -50,7 +50,7 @@ export const HWCRPreventionItem: FC<Props> = ({ prevention, handleEdit, handleDe
               <div id="prev-educ-outcome-date-div">
                 <dt>Date</dt>
                 <dd>
-                  {formatDateObjectAsString(parseUTCTimestampToLocal(prevention.date ?? new Date()), {
+                  {formatDateObjectAsString(parseUTCTimestampToLocal(prevention.date), {
                     format: "date",
                   })}
                 </dd>
