@@ -35,6 +35,8 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
   const dobDate = parseUTCDateToLocal(person?.dateOfBirth);
   const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
   const age = dobDate ? calculateAgeYears(dobDate) : "";
+       
+  const driversLicense = (person?.driversLicenseNumber ?? "").trim();
 
   // Compose "Sex as per ID: F, 24 (2002-02-23)", dropping whichever pieces are absent.
   const sexAge = [sexLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
@@ -83,7 +85,11 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
         ) : (
           <>
             <div className="comp-party-match-card-name">{name}</div>
-            {descriptorLine && <div className="comp-party-match-card-body-line">{descriptorLine}</div>}
+            {dateOfBirth && <div className="comp-party-match-card-body-line">{`Date of birth: ${dateOfBirth}`}</div>}
+            {age && <div className="comp-party-match-card-body-line">{`Age: ${age}`}</div>}
+            {driversLicense && (
+              <div className="comp-party-match-card-body-line">{`Driver's licence: ${driversLicense}`}</div>
+            )}
             {primaryPhone?.value && (
               <div className="comp-party-match-card-body-line">{`Primary: ${formatPhoneNumber(primaryPhone.value)}`}</div>
             )}
@@ -99,7 +105,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
             disabled={isDisabled}
           >
             <i className="bi bi-plus-circle" />
-            <span>Add to investigation</span>
+            <span>Select profile</span>
           </Button>
         </div>
       </Card.Body>
