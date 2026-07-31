@@ -103,15 +103,6 @@ export const InvestigationFilter: FC = () => {
 
   return (
     <div className="comp-filter-container">
-      {renderSelectFilter(
-        "investigationStatus",
-        "Status",
-        statusOptions,
-        "Select",
-        statusOptions.find((option) => option.value === searchValues.investigationStatus) || null,
-        handleFieldChange("investigationStatus"),
-      )}
-
       <FeatureFlag feature={FEATURE_TYPES.REGION_FILTER}>
         {renderSelectFilter(
           "region",
@@ -177,6 +168,15 @@ export const InvestigationFilter: FC = () => {
         endDate={searchValues.endDate || undefined}
         handleDateChange={handleDateRangeChange}
       />
+
+      {renderSelectFilter(
+        "investigationStatus",
+        "Status",
+        statusOptions,
+        "Select",
+        statusOptions.find((option) => option.value === searchValues.investigationStatus) || null,
+        handleFieldChange("investigationStatus"),
+      )}
     </div>
   );
 };
