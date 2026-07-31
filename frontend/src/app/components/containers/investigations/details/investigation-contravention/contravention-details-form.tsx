@@ -20,7 +20,6 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
 import { parseUTCDateToLocal } from "@/app/common/date-utils";
