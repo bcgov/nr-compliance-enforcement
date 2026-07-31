@@ -538,22 +538,20 @@ model legislation {
   legislation_text                                                               String?
   alternate_text                                                                 String?
   display_order                                                                  Int
-  effective_date                                                                 DateTime?                   @db.Date
-  expiry_date                                                                    DateTime?                   @db.Date
   create_user_id                                                                 String                      @db.VarChar(32)
   create_utc_timestamp                                                           DateTime                    @default(now()) @db.Timestamp(6)
   update_user_id                                                                 String?                     @db.VarChar(32)
   update_utc_timestamp                                                           DateTime?                   @db.Timestamp(6)
-  legislation_source_guid                                                        String?                     @db.Uuid
-  legislation_source                                                             legislation_source?         @relation(fields: [legislation_source_guid], references: [legislation_source_guid], onUpdate: NoAction, map: "fk_legislation_source")
+  legislation_version_guid                                                       String                      @db.Uuid
+  legislation_version                                                            legislation_version         @relation(fields: [legislation_version_guid], references: [legislation_version_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_version")
   legislation_type_code_legislation_legislation_type_codeTolegislation_type_code legislation_type_code       @relation("legislation_legislation_type_codeTolegislation_type_code", fields: [legislation_type_code], references: [legislation_type_code], onDelete: NoAction, onUpdate: NoAction)
   legislation                                                                    legislation?                @relation("legislationTolegislation", fields: [parent_legislation_guid], references: [legislation_guid], onDelete: Cascade, onUpdate: NoAction)
   other_legislation                                                              legislation[]               @relation("legislationTolegislation")
   legislation_configuration                                                      legislation_configuration[]
 
-  @@index([effective_date], map: "idx_legislation_effective")
   @@index([parent_legislation_guid], map: "idx_legislation_parent")
   @@index([legislation_type_code], map: "idx_legislation_type")
+  @@index([legislation_version_guid], map: "idx_legislation_version")
   @@schema("shared")
 }
 
@@ -589,25 +587,26 @@ model legislation_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model legislation_source {
-  legislation_source_guid                                 String        @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  short_description                                       String        @db.VarChar(64)
-  long_description                                        String?       @db.VarChar(256)
-  source_url                                              String        @db.VarChar(512)
-  agency_code                                             String        @db.VarChar(10)
-  active_ind                                              Boolean       @default(true)
-  imported_ind                                            Boolean       @default(false)
-  last_import_timestamp                                   DateTime?     @db.Timestamp(6)
-  create_user_id                                          String        @db.VarChar(32)
-  create_utc_timestamp                                    DateTime      @default(now()) @db.Timestamp(6)
-  update_user_id                                          String?       @db.VarChar(32)
-  update_utc_timestamp                                    DateTime?     @db.Timestamp(6)
-  import_status                                           String?       @default("PENDING") @db.VarChar(16)
-  last_import_log                                         String?
-  regulations_source_url                                  String?       @db.VarChar(512)
-  source_type                                             String        @default("BCLAWS") @db.VarChar(16)
-  legislation                                             legislation[]
-  agency_code_legislation_source_agency_codeToagency_code agency_code   @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
+  legislation_source_guid                                 String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  short_description                                       String                @db.VarChar(256)
+  long_description                                        String?               @db.VarChar(256)
+  source_url                                              String?               @db.VarChar(512)
+  agency_code                                             String                @db.VarChar(10)
+  active_ind                                              Boolean               @default(true)
+  create_user_id                                          String                @db.VarChar(32)
+  create_utc_timestamp                                    DateTime              @default(now()) @db.Timestamp(6)
+  update_user_id                                          String?               @db.VarChar(32)
+  update_utc_timestamp                                    DateTime?             @db.Timestamp(6)
+  regulations_source_url                                  String?               @db.VarChar(512)
+  source_type                                             String                @default("BCLAWS") @db.VarChar(16)
+  parent_legislation_source_guid                          String?               @db.Uuid
+  external_key                                            String?               @db.VarChar(64)
+  agency_code_legislation_source_agency_codeToagency_code agency_code           @relation("legislation_source_agency_codeToagency_code", fields: [agency_code], references: [agency_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_agency")
+  legislation_source                                      legislation_source?   @relation("legislation_sourceTolegislation_source", fields: [parent_legislation_source_guid], references: [legislation_source_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_source_parent")
+  other_legislation_source                                legislation_source[]  @relation("legislation_sourceTolegislation_source")
+  legislation_version                                     legislation_version[]
 
+  @@index([parent_legislation_source_guid], map: "idx_legislation_source_parent")
   @@schema("shared")
 }
 
@@ -795,7 +794,6 @@ model person {
   drivers_license_number                                                 String?                         @db.VarChar(64)
   approximate_age_code                                                   String?                         @db.VarChar(16)
   gender_code                                                            String?                         @db.VarChar(16)
-  sex_code                                                               String?                         @db.VarChar(16)
   drivers_license_class                                                  String?                         @db.VarChar(128)
   drivers_license_country_code                                           String?                         @db.VarChar(4)
   drivers_license_country_subdivision_code                               String?                         @db.VarChar(16)
@@ -815,6 +813,7 @@ model person {
   additional_descriptors                                                 String?
   comments                                                               String?
   bolo_ind                                                               Boolean?
+  sex_code                                                               String?                         @db.VarChar(16)
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?           @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")
@@ -824,9 +823,9 @@ model person {
   country_subdivision_code                                               country_subdivision_code?       @relation(fields: [drivers_license_country_subdivision_code], references: [country_subdivision_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__drivers_license_country_subdivision_code")
   eye_colour_code_person_eye_colour_codeToeye_colour_code                eye_colour_code?                @relation("person_eye_colour_codeToeye_colour_code", fields: [eye_colour_code], references: [eye_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__eye_colour_code")
   gender_code_person_gender_codeTogender_code                            gender_code?                    @relation("person_gender_codeTogender_code", fields: [gender_code], references: [gender_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__gender_code")
-  sex_code_person_sex_codeTosex_code                                     sex_code?                       @relation("person_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__sex_code")
   hair_colour_code_person_hair_colour_codeTohair_colour_code             hair_colour_code?               @relation("person_hair_colour_codeTohair_colour_code", fields: [hair_colour_code], references: [hair_colour_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_colour_code")
   hair_length_code_person_hair_length_codeTohair_length_code             hair_length_code?               @relation("person_hair_length_codeTohair_length_code", fields: [hair_length_code], references: [hair_length_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__hair_length_code")
+  sex_code_person_sex_codeTosex_code                                     sex_code?                       @relation("person_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__sex_code")
   person_facial_hair_style_code                                          person_facial_hair_style_code[]
 
   @@schema("shared")
@@ -1163,6 +1162,68 @@ model business_person_address_xref_h {
   operation_user_id                   String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
   operation_executed_at               DateTime @default(now()) @db.Timestamp(6)
   data_after_executed_operation       Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_configuration_h {
+  h_legislation_configuration_guid String   @id(map: "PK_h_legislation_configuration") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                    String   @db.Uuid
+  operation_type                   String   @db.Char(1)
+  operation_user_id                String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at            DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation    Json?
+
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_source_h {
+  h_legislation_source_guid     String   @id(map: "PK_h_legislation_source") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
+
+  @@schema("shared")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_version {
+  legislation_version_guid        String                @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  legislation_source_guid         String                @db.Uuid
+  parent_legislation_version_guid String?               @db.Uuid
+  effective_date                  DateTime              @db.Date
+  import_status                   String                @db.VarChar(16)
+  source_url                      String?               @db.VarChar(512)
+  source_effective_date           DateTime?             @db.Date
+  last_import_timestamp           DateTime?             @db.Timestamp(6)
+  last_import_log                 String?
+  create_user_id                  String                @db.VarChar(32)
+  create_utc_timestamp            DateTime              @default(now()) @db.Timestamp(6)
+  update_user_id                  String?               @db.VarChar(32)
+  update_utc_timestamp            DateTime?             @db.Timestamp(6)
+  legislation                     legislation[]
+  legislation_version             legislation_version?  @relation("legislation_versionTolegislation_version", fields: [parent_legislation_version_guid], references: [legislation_version_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_version_parent")
+  other_legislation_version       legislation_version[] @relation("legislation_versionTolegislation_version")
+  legislation_source              legislation_source    @relation(fields: [legislation_source_guid], references: [legislation_source_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_legislation_version_source")
+
+  @@index([parent_legislation_version_guid], map: "idx_legislation_version_parent")
+  @@index([legislation_source_guid], map: "idx_legislation_version_source")
+  @@schema("shared")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model legislation_version_h {
+  h_legislation_version_guid    String   @id(map: "PK_h_legislation_version") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  target_row_id                 String   @db.Uuid
+  operation_type                String   @db.Char(1)
+  operation_user_id             String   @default(dbgenerated("CURRENT_USER")) @db.VarChar(32)
+  operation_executed_at         DateTime @default(now()) @db.Timestamp(6)
+  data_after_executed_operation Json?
 
   @@schema("shared")
 }

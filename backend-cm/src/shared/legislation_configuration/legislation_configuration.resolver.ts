@@ -3,6 +3,7 @@ import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
 import { Roles } from "src/auth/decorators/roles.decorator";
 import { JwtRoleGuard } from "src/auth/jwtrole.guard";
 import { adminRoles } from "src/enum/role.enum";
+import { UpdateLegislationConfigurationInput } from "src/shared/legislation_configuration/dto/legislation_configuration";
 import { LegislationConfigurationService } from "src/shared/legislation_configuration/legislation_configuration.service";
 
 @UseGuards(JwtRoleGuard)
@@ -14,12 +15,7 @@ export class LegislationConfigurationResolver {
   @Roles(adminRoles)
   async updateLegislationSource(
     @Args("input")
-    input: Array<{
-      legislationGuid: string;
-      agencyCode: string;
-      isEnabled?: boolean;
-      overrideText?: string;
-    }>,
+    input: UpdateLegislationConfigurationInput[],
     @Context() context: any,
   ) {
     const userId = context.req?.user?.idir_username || "system";

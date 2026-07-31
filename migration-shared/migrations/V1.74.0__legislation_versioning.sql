@@ -148,6 +148,10 @@ CREATE UNIQUE INDEX legislation_source_external_key_unique
 ALTER TABLE legislation_source
 ALTER COLUMN short_description TYPE VARCHAR(256);
 
+-- Regulation sources store no URL; fetch and view URLs derive from external_key
+ALTER TABLE legislation_source
+ALTER COLUMN source_url DROP NOT NULL;
+
 COMMENT ON COLUMN legislation_source.parent_legislation_source_guid IS
     'Self-referencing FK to the act source. Null for admin-created act sources; set on system-created regulation sources.';
 

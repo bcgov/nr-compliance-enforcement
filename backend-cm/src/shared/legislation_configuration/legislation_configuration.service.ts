@@ -1,13 +1,24 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { GraphQLError } from "graphql";
+import { InvestigationPrismaService } from "src/prisma/investigation/prisma.investigation.service";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { UpdateLegislationConfigurationInput } from "src/shared/legislation_configuration/dto/legislation_configuration";
 
 @Injectable()
 export class LegislationConfigurationService {
-  constructor(private readonly prisma: SharedPrismaService) {}
+  constructor(
+    private readonly prisma: SharedPrismaService,
+    private readonly investigationPrisma: InvestigationPrismaService,
+  ) {}
   private readonly logger = new Logger(LegislationConfigurationService.name);
 
   async update(input: UpdateLegislationConfigurationInput[], updateUserId: string): Promise<boolean> {
+    const itemsBeingDisabled = input.filter((item) => item.isEnabled === false).map((item) => item.legislationGuid);
+    const referenced = await this.countReferencingContraventions(itemsBeingDisabled);
+    if (referenced > 0) {
+      throw new GraphQLError("Sections referenced by recorded contraventions cannot be disabled.", {});
+    }
+
     try {
       const BATCH_SIZE = 500;
 
@@ -29,7 +40,7 @@ export class LegislationConfigurationService {
 
         await this.prisma.$executeRawUnsafe(`
         UPDATE legislation_configuration
-        SET 
+        SET
           enabled_ind = CASE ${enabledCases} ELSE enabled_ind END,
           update_user_id = '${updateUserId}',
           update_utc_timestamp = NOW()
@@ -42,5 +53,34 @@ export class LegislationConfigurationService {
       this.logger.error("Error updating legislation", error);
       return false;
     }
+  }
+
+  private async countReferencingContraventions(legislationGuids: string[]): Promise<number> {
+    if (legislationGuids.length === 0) {
+      return 0;
+    }
+
+    const descendants = await this.prisma.$queryRaw<{ legislation_guid: string }[]>`
+      WITH RECURSIVE descendants AS (
+        SELECT l.legislation_guid
+        FROM legislation l
+        WHERE l.legislation_guid = ANY(${legislationGuids}::uuid[])
+        UNION
+        SELECT c.legislation_guid
+        FROM legislation c
+        INNER JOIN descendants d ON c.parent_legislation_guid = d.legislation_guid
+      )
+      SELECT legislation_guid FROM descendants
+    `;
+    const descendantGuids = descendants.map((row) => row.legislation_guid);
+
+    // Soft-deleted contraventions still count as references
+    const [{ count }] = await this.investigationPrisma.$queryRaw<{ count: number }[]>`
+      SELECT count(*)::int AS count
+      FROM contravention
+      WHERE legislation_guid_ref = ANY(${descendantGuids}::uuid[])
+    `;
+
+    return count;
   }
 }

@@ -1,15 +1,19 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { GraphQLError } from "graphql";
+import { getCurrentDatePacific, toDate, toDateString } from "src/shared/legislation/utils/legislation-dates";
 import { UserService } from "src/common/user.service";
 import { CreateUpdateContraventionInput } from "src/investigation/contravention/dto/contravention";
 import { Investigation } from "src/investigation/investigation/dto/investigation";
 import { InvestigationService } from "src/investigation/investigation/investigation.service";
 import { InvestigationPrismaService } from "src/prisma/investigation/prisma.investigation.service";
+import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 
 @Injectable()
 export class ContraventionService {
   constructor(
     private readonly prisma: InvestigationPrismaService,
+    private readonly sharedPrisma: SharedPrismaService,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
   ) {}
@@ -17,6 +21,10 @@ export class ContraventionService {
   private readonly logger = new Logger(ContraventionService.name);
 
   async create(contraventionInput: CreateUpdateContraventionInput): Promise<Investigation> {
+    const contraventionDate = toDateString(contraventionInput.date);
+    this.validateContraventionDate(contraventionDate);
+    await this.validateLegislationReference(contraventionInput.legislationReference, contraventionDate);
+
     try {
       await withRlsTransaction(this.prisma, async (db) => {
         const contravention = await db.contravention.create({
@@ -128,6 +136,25 @@ export class ContraventionService {
   }
 
   async update(contraventionGuid: string, input: CreateUpdateContraventionInput): Promise<Investigation> {
+    const stored = await this.prisma.contravention.findUnique({
+      where: { contravention_guid: contraventionGuid },
+      select: { legislation_guid_ref: true, contravention_date: true },
+    });
+
+    if (!stored) throw new Error("Contravention not found");
+
+    const contraventionDate = toDateString(input.date);
+    const dateChanged = contraventionDate !== toDateString(stored.contravention_date);
+    const referenceChanged = input.legislationReference !== stored.legislation_guid_ref;
+
+    if (dateChanged) {
+      this.validateContraventionDate(contraventionDate);
+    }
+
+    if (referenceChanged || dateChanged) {
+      await this.validateLegislationReference(input.legislationReference, contraventionDate);
+    }
+
     try {
       await withRlsTransaction(this.prisma, async (db) => {
         const originalContravention = await db.contravention.findUnique({
@@ -206,5 +233,57 @@ export class ContraventionService {
     await this.investigationService.updateInvestigationTimestamp(input.investigationGuid);
 
     return await this.investigationService.findOne(input.investigationGuid);
+  }
+
+  private validateContraventionDate(contraventionDate: string | null): void {
+    if (contraventionDate && contraventionDate > getCurrentDatePacific()) {
+      throw new GraphQLError("The contravention date cannot be in the future.", {});
+    }
+  }
+
+  private async validateLegislationReference(legislationGuid: string, contraventionDate: string | null): Promise<void> {
+    if (!contraventionDate) {
+      return;
+    }
+
+    const node = await this.sharedPrisma.legislation.findUnique({
+      where: { legislation_guid: legislationGuid },
+      include: { legislation_version: true },
+    });
+
+    if (!node) {
+      throw new GraphQLError("The selected legislation could not be found.", {});
+    }
+
+    const version = node.legislation_version;
+
+    if (version.import_status !== "SUCCESS") {
+      throw new GraphQLError("The selected legislation belongs to a version that has not been imported.", {});
+    }
+
+    const effectiveDate = toDateString(version.effective_date);
+
+    if (!effectiveDate || effectiveDate > contraventionDate) {
+      throw new GraphQLError(
+        `The selected legislation was not in force on ${contraventionDate}. Select legislation from the version in force on the contravention date.`,
+        {},
+      );
+    }
+
+    const supersedingVersion = await this.sharedPrisma.legislation_version.findFirst({
+      where: {
+        legislation_source_guid: version.legislation_source_guid,
+        import_status: "SUCCESS",
+        effective_date: { gt: version.effective_date, lte: toDate(contraventionDate) },
+      },
+      orderBy: { effective_date: "desc" },
+    });
+
+    if (supersedingVersion) {
+      throw new GraphQLError(
+        `The selected legislation is from a version that was superseded on ${toDateString(supersedingVersion.effective_date)}. Select legislation from the version in force on the contravention date.`,
+        {},
+      );
+    }
   }
 }

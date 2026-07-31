@@ -70,6 +70,7 @@ import { ActivityNoteModule } from "./investigation/activity_note/activity_note.
 import { PartyAssociationRoleCodeModule } from "./shared/party_association_role_code/party_association_role_code.module";
 import { LegislationModule } from "./shared/legislation/legislation.module";
 import { LegislationSourceModule } from "./shared/legislation_source/legislation_source.module";
+import { LegislationVersionModule } from "./shared/legislation_version/legislation_version.module";
 import { ContraventionModule } from "./investigation/contravention/contravention.module";
 import { TaskStatusCodeModule } from "./investigation/task_status_code/task_status_code.module";
 import { TaskCategoryTypeCodeModule } from "./investigation/task_category_type_code/task_category_type_code.module";
@@ -161,6 +162,7 @@ import { InvestigationAttachmentReferenceModule } from "src/investigation/invest
     PartyAssociationRoleCodeModule,
     LegislationModule,
     LegislationSourceModule,
+    LegislationVersionModule,
     LegislationConfigurationModule,
     ContraventionModule,
     TaskStatusCodeModule,

@@ -1,4 +1,4 @@
-import { legislation_source } from "./legislation_source";
+import { legislation_version } from "./legislation_version";
 import { legislation_type_code } from "./legislation_type_code";
 import { legislation_configuration } from "./legislation_configuration";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
@@ -31,12 +31,6 @@ export class legislation {
   @ApiProperty({ type: Number })
   display_order: number;
 
-  @ApiPropertyOptional({ type: Date })
-  effective_date?: Date;
-
-  @ApiPropertyOptional({ type: Date })
-  expiry_date?: Date;
-
   @ApiProperty({ type: String })
   create_user_id: string;
 
@@ -49,11 +43,11 @@ export class legislation {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
-  @ApiPropertyOptional({ type: String })
-  legislation_source_guid?: string;
+  @ApiProperty({ type: String })
+  legislation_version_guid: string;
 
-  @ApiPropertyOptional({ type: () => legislation_source })
-  legislation_source?: legislation_source;
+  @ApiProperty({ type: () => legislation_version })
+  legislation_version: legislation_version;
 
   @ApiProperty({ type: () => legislation_type_code })
   legislation_type_code_legislation_legislation_type_codeTolegislation_type_code: legislation_type_code;
