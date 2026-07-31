@@ -169,9 +169,9 @@ export class ContraventionService {
                 active_ind: true,
               },
               data: {
-                active_ind: false,
                 update_user_id: this.user.getIdirUsername(),
                 update_utc_timestamp: new Date(),
+                investigation_party_guid: investigationPartyGuid,
               },
             });
           }
@@ -183,15 +183,6 @@ export class ContraventionService {
               geo_organization_unit_code_ref: input.community,
               update_user_id: this.user.getIdirUsername(),
               update_utc_timestamp: new Date(),
-            },
-          });
-
-          await db.contravention_party_xref.create({
-            data: {
-              contravention_guid: contraventionGuid,
-              investigation_party_guid: investigationPartyGuid,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
             },
           });
         }
