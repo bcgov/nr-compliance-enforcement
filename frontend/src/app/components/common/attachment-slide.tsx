@@ -3,11 +3,11 @@ import { Slide } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
 import { useAppDispatch } from "@hooks/hooks";
 import { generateApiParameters, get } from "@common/api";
-import { formatDateTime } from "@common/methods";
 import { COMSObject } from "@apptypes/coms/object";
 import config from "@/config";
 import AttachmentIcon from "./attachment-icon";
 import { Button } from "react-bootstrap";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   index: number;
@@ -86,7 +86,7 @@ export const AttachmentSlide: FC<Props> = ({ index, attachment, allowDelete, onF
               <div className="comp-attachment-slide-meta">
                 {attachment?.pendingUpload
                   ? "Save to upload attachment(s)"
-                  : formatDateTime(attachment.createdAt?.toString())}
+                  : formatDateObjectAsString(parseUTCTimestampToLocal(attachment.createdAt), { format: "dateTime" })}
               </div>
             )}
           </div>

@@ -5,7 +5,7 @@ export interface ComplaintDetails {
   details?: string;
   location?: string;
   locationDescription?: string;
-  incidentDate?: string | Date;
+  incidentDate?: Date;
   incidentTime?: string;
   coordinates?: number[] | string[];
   area?: string;

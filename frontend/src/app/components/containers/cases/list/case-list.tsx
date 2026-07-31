@@ -3,13 +3,13 @@ import { Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTime } from "@common/methods";
 import { useCaseSearch } from "../hooks/use-case-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { isFeatureActive } from "@/app/store/reducers/app";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { CaseFile } from "@/generated/graphql";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   cases: any[];
@@ -60,7 +60,10 @@ export const CaseList: FC<Props> = ({ cases, totalItems = 0, isLoading = false, 
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (caseFile) => caseFile.openedTimestamp ?? "",
-      renderCell: (caseFile) => formatDateTime(caseFile.openedTimestamp),
+      renderCell: (caseFile) =>
+        formatDateObjectAsString(parseUTCTimestampToLocal(caseFile.openedTimestamp), {
+          format: "dateTime",
+        }),
     },
     ...(showLegacyColumns
       ? [

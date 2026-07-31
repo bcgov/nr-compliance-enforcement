@@ -23,6 +23,7 @@ import { format } from "date-fns";
 import { parseUTCDateTimeToLocal } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
 import Option from "@apptypes/app/option";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -91,10 +92,7 @@ export const ContraventionDetailsForm = ({
   partyGuid,
   isEditMode,
 }: ContraventionDetailsFormProps) => {
-  const defaultDate = useMemo(
-    () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
-    [discoveryDate],
-  );
+  const defaultDate = useMemo(() => parseUTCDateToLocal(discoveryDate ?? null) ?? new Date(), [discoveryDate]);
   // Default the community when adding a new contravention
   const defaultCommunity = useMemo(
     () => (contravention ? "" : (investigationCommunity ?? "")),
@@ -262,7 +260,7 @@ export const ContraventionDetailsForm = ({
 
     // Populate date
     if (contravention.date) {
-      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date, null));
+      form.setFieldValue("contraventionDate", parseUTCDateToLocal(contravention.date));
       form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 

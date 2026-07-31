@@ -8,12 +8,13 @@ import { ExhibitsFilterBar } from "./exhibits-filter-bar";
 import { ExhibitsList } from "./exhibits-list";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { graphqlRequest } from "@/app/graphql/client";
-import { escapeCsvCell, formatDateTimeStr } from "@common/methods";
+import { escapeCsvCell } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 import { formatPhoneNumber } from "react-phone-number-input";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
   query SearchExhibitsByInvestigation($page: Int, $pageSize: Int, $filters: ExhibitFilters!) {
@@ -31,7 +32,8 @@ export const SEARCH_EXHIBITS_BY_INVESTIGATION = gql`
         seizedFromLastName
         seizedFromAddress
         seizedFromPhoneNumber
-        dateCollected
+        intakeDate
+        intakeTime
         collectedAppUserGuidRef
         locationOfIntake
         propertyTagNumber
@@ -141,7 +143,8 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
         "Item description",
         "Quantity",
         "Officer",
-        "Date/time of intake",
+        "Date of intake",
+        "Time of intake",
         "Location of intake",
         "Property tag number",
         "Seized from first name",
@@ -190,7 +193,10 @@ export const InvestigationExhibits: FC<Props> = ({ investigationGuid, investigat
           exhibit.description ?? "",
           exhibit.quantity == null ? "" : String(exhibit.quantity),
           getOfficerName(exhibit.collectedAppUserGuidRef ?? ""),
-          exhibit.dateCollected ? formatDateTimeStr(exhibit.dateCollected) : "",
+          formatDateObjectAsString(parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime), { format: "date" }) ??
+            "",
+          formatDateObjectAsString(parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime), { format: "time" }) ??
+            "",
           exhibit.locationOfIntake ?? "",
           exhibit.propertyTagNumber ?? "",
           exhibit.seizedFromFirstName ?? "",

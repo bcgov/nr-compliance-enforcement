@@ -1,4 +1,4 @@
-import { bcUtmZoneNumbers, parseUTCDateTimeToLocal, formatLocalTime } from "@/app/common/methods";
+import { bcUtmZoneNumbers } from "@/app/common/methods";
 import { ValidationTextArea } from "@/app/common/validation-textarea";
 import { CompCoordinateInput } from "@/app/components/common/comp-coordinate-input";
 import { CompSelect } from "@/app/components/common/comp-select";
@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import z from "zod";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useState } from "react";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface InvestigationFormProps {
   form: any;
@@ -39,11 +40,11 @@ export const InvestigationForm = ({
 }: InvestigationFormProps) => {
   const communityOptions = useAppSelector(selectCommunityCodeDropdown);
   const [selectedDiscoveryDate, setSelectedDiscoveryDate] = useState<Date | null>(() =>
-    parseUTCDateTimeToLocal(discoveryDate, discoveryTime),
+    parseUTCDateToLocal(discoveryDate, discoveryTime),
   );
   const [selectedDiscoveryTime, setSelectedDiscoveryTime] = useState<string | null>(() => {
-    const d = parseUTCDateTimeToLocal(discoveryDate, discoveryTime);
-    return d && discoveryTime ? formatLocalTime(d) : null;
+    const d = parseUTCDateToLocal(discoveryDate, discoveryTime);
+    return d && discoveryTime ? formatDateObjectAsString(d, { format: "time" }) : null;
   });
 
   const leadAgency = getUserAgency();
@@ -72,14 +73,17 @@ export const InvestigationForm = ({
   const handleDiscoveryDateTimeChange = (date: Date | null, time: string | null) => {
     setSelectedDiscoveryDate(date);
     setSelectedDiscoveryTime(time);
-    if (date) {
-      const discoveryDate = new Date(date);
-      if (time) {
-        const [hh, mm] = time.split(":").map(Number);
-        discoveryDate.setHours(hh, mm, 0, 0);
-      }
-      form.setFieldValue("discoveryDate", discoveryDate.toISOString());
-      form.setFieldValue("discoveryTime", time ? discoveryDate.toISOString() : null);
+    if (date && time) {
+      // Timed: both columns derived from one UTC instant so they can't disagree across UTC midnight.
+      const combined = new Date(date);
+      const [hh, mm] = time.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      form.setFieldValue("discoveryDate", combined.toISOString());
+      form.setFieldValue("discoveryTime", combined.toISOString());
+    } else if (date) {
+      // Date-only: store the literal calendar date, no time.
+      form.setFieldValue("discoveryDate", formatDateObjectAsString(date, { format: "date" }));
+      form.setFieldValue("discoveryTime", null);
     } else {
       form.setFieldValue("discoveryDate", "");
       form.setFieldValue("discoveryTime", null);
