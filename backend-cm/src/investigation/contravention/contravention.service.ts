@@ -175,17 +175,17 @@ export class ContraventionService {
               },
             });
           }
-          await db.contravention.update({
-            where: { contravention_guid: contraventionGuid },
-            data: {
-              legislation_guid_ref: input.legislationReference,
-              contravention_date: input.date,
-              geo_organization_unit_code_ref: input.community,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
         }
+        await db.contravention.update({
+          where: { contravention_guid: contraventionGuid },
+          data: {
+            legislation_guid_ref: input.legislationReference,
+            contravention_date: input.date,
+            geo_organization_unit_code_ref: input.community,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
     } catch (error) {
       this.logger.error("Error updating contravention:", error);
