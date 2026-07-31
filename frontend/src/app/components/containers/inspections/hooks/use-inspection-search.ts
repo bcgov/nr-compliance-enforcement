@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface InspectionSearchParams {
   search: string;
@@ -28,9 +29,10 @@ const DEFAULT_SEARCH_VALUES: InspectionSearchParams = {
   viewType: "list",
 };
 
-const serializeDate = (date: Date | null): string | undefined => (date ? date.toISOString().split("T")[0] : undefined);
+const serializeDate = (date: Date | null): string | undefined =>
+  date ? formatDateObjectAsString(date, { format: "date" }) : undefined;
 
-const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
+const deserializeDate = (dateString: string | null): Date | null => parseUTCDateToLocal(dateString, null);
 
 const serializeSearchValueToUrl = (key: keyof InspectionSearchParams, value: any): string | undefined => {
   if (value == null) {
