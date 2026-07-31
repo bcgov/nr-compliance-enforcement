@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import { SORT_TYPES } from "@constants/sort-direction";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface CaseSearchParams {
   search: string;
@@ -26,9 +27,15 @@ const DEFAULT_SEARCH_VALUES: CaseSearchParams = {
   viewType: "list",
 };
 
-const serializeDate = (date: Date | null): string | undefined => (date ? date.toISOString().split("T")[0] : undefined);
+const serializeDate = (date: Date | null): string | undefined => {
+  if (!date) return undefined;
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
-const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
+const deserializeDate = (dateString: string | null): Date | null => parseUTCDateToLocal(dateString, null);
 
 const serializeSearchValueToUrl = (key: keyof CaseSearchParams, value: any): string | undefined => {
   if (value == null) {
