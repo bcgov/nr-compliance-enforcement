@@ -1,7 +1,8 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { CompSelect } from "@components/common/comp-select";
-import { bcUtmZoneNumbers, formatLatLongCoordinate, formatLocalDateTimeToUTC } from "@common/methods";
+import { bcUtmZoneNumbers, formatLatLongCoordinate } from "@common/methods";
+import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
 import { ValidationTextArea } from "@common/validation-textarea";
 import Select from "react-select";
 import { ValidationMultiSelect } from "@common/validation-multiselect";
@@ -36,7 +37,7 @@ import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@c
 import { useNavigate } from "react-router-dom";
 import { Attachments } from "@components/common/attachments-carousel";
 import { COMSObject } from "@apptypes/coms/object";
-import { handleAddAttachments, handleDeleteAttachments, handlePersistAttachments } from "@common/attachment-utils";
+import { handleAddAttachments, handleDeleteAttachments } from "@common/attachment-utils";
 import { uploadAttachmentsWithProgress } from "@common/attachment-upload-helper";
 
 import { WildlifeComplaint } from "@apptypes/app/complaints/wildlife-complaint";
@@ -55,7 +56,6 @@ import { ParkSelect } from "@/app/components/common/park-select";
 import { isValidEmail } from "@/app/common/validate-email";
 import { AgencyType } from "@/app/types/app/agency-types";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
-import { Id } from "react-toastify";
 import { attachmentUploadComplete$ } from "@/app/types/events/attachment-events";
 import useUnsavedChangesWarning, { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 
@@ -588,7 +588,7 @@ export const CreateComplaint: FC = () => {
       } else {
         setIncidentDateTimeErrorMsg("");
       }
-      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const { utcDate, utcTime } = parseLocalDateTimeToUTC(date, time);
       const complaint = { ...complaintData, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
       applyComplaintData(complaint);
     } else {

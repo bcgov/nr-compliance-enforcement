@@ -10,7 +10,7 @@ import {
   selectComplaintViewMode,
   selectRelatedData,
 } from "@store/reducers/complaints";
-import { applyStatusClass, formatDate, formatTime, getAvatarInitials, joinWithAnd } from "@common/methods";
+import { applyStatusClass, getAvatarInitials, joinWithAnd } from "@common/methods";
 
 import { Badge, Button, Dropdown, OverlayTrigger, Tooltip } from "react-bootstrap";
 
@@ -37,6 +37,7 @@ import { ExportComplaintModal } from "@/app/components/modal/instances/export-co
 import { COMSObject } from "@/app/types/coms/object";
 import { DismissToast, TOAST_POSITION, ToggleError, ToggleInformation } from "@/app/common/toast";
 import { createDownloadProgressHandler } from "@/app/common/attachment-download-helper";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface ComplaintHeaderProps {
   id: string;
@@ -689,11 +690,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                 <dd className="comp-date-time-value">
                   <div id="complaint-date-logged">
                     <i className="bi bi-calendar"></i>
-                    {formatDate(loggedDate)}
+                    {formatDateObjectAsString(parseUTCTimestampToLocal(loggedDate), { format: "date" })}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTime(loggedDate)}
+                    {formatDateObjectAsString(parseUTCTimestampToLocal(loggedDate), { format: "time" })}
                   </div>
                 </dd>
               </dl>
@@ -705,11 +706,11 @@ export const ComplaintHeader: FC<ComplaintHeaderProps> = ({
                     <>
                       <div>
                         <i className="bi bi-calendar"></i>
-                        {formatDate(lastUpdated)}
+                        {formatDateObjectAsString(parseUTCTimestampToLocal(lastUpdated), { format: "date" })}
                       </div>
                       <div>
                         <i className="bi bi-clock"></i>
-                        {formatTime(lastUpdated)}
+                        {formatDateObjectAsString(parseUTCTimestampToLocal(lastUpdated), { format: "time" })}
                       </div>
                     </>
                   )}

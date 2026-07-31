@@ -20,7 +20,7 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -82,10 +82,7 @@ export const ContraventionDetailsForm = ({
   onRequestValidate,
   onRequestValues,
 }: ContraventionDetailsFormProps) => {
-  const defaultDate = useMemo(
-    () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
-    [discoveryDate],
-  );
+  const defaultDate = useMemo(() => parseUTCDateToLocal(discoveryDate ?? null) ?? new Date(), [discoveryDate]);
   // Default the community when adding a new contravention
   const defaultCommunity = useMemo(
     () => (contravention ? "" : (investigationCommunity ?? "")),
@@ -242,7 +239,7 @@ export const ContraventionDetailsForm = ({
 
     // Populate date
     if (contravention.date) {
-      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date, null));
+      form.setFieldValue("contraventionDate", parseUTCDateToLocal(contravention.date));
       form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 

@@ -3,7 +3,7 @@ import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { MapObjectLocation } from "@/app/components/mapping/map-object-location";
 import { useAppSelector } from "@/app/hooks/hooks";
-import { parseUTCDateTimeToLocal, formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { getAvatarInitials } from "@common/methods";
 import Option from "@apptypes/app/option";
 import { Button } from "react-bootstrap";
 import { MapObjectType } from "@/app/types/maps/map-element";
@@ -16,6 +16,7 @@ import { useGeocodedCenter } from "@/app/hooks/use-geocoded-center";
 import { getMapZoom } from "@/app/common/geocoder";
 import { CaseActivities } from "@/app/components/containers/cases/case-activities/case-activities";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface InvestigationSummaryProps {
   investigationData?: Investigation;
@@ -42,11 +43,9 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
   );
 
   const discoveryDate = investigationData?.discoveryDate
-    ? parseUTCDateTimeToLocal(investigationData.discoveryDate, investigationData.discoveryTime)?.toString()
+    ? parseUTCDateToLocal(investigationData.discoveryDate, investigationData.discoveryTime)
     : undefined;
-  const lastUpdated = investigationData?.updatedTimestamp
-    ? new Date(investigationData.updatedTimestamp).toString()
-    : undefined;
+  const lastUpdated = parseUTCTimestampToLocal(investigationData?.updatedTimestamp);
 
   const primaryInvestigatorObj = useAppSelector(selectOfficerByAppUserGuid(investigationData?.primaryInvestigatorGuid));
   const primaryInvestigator = primaryInvestigatorObj
@@ -92,12 +91,12 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                 <>
                   <div>
                     <i className="bi bi-calendar"></i>
-                    {formatDate(discoveryDate)}
+                    {formatDateObjectAsString(discoveryDate, { format: "date" })}
                   </div>
                   {investigationData?.discoveryTime && (
                     <div>
                       <i className="bi bi-clock"></i>
-                      {formatTime(discoveryDate)}
+                      {formatDateObjectAsString(discoveryDate, { format: "time" })}
                     </div>
                   )}
                 </>
@@ -113,11 +112,11 @@ export const InvestigationSummary: FC<InvestigationSummaryProps> = ({
                 <>
                   <div>
                     <i className="bi bi-calendar"></i>
-                    {formatDate(lastUpdated)}
+                    {formatDateObjectAsString(lastUpdated, { format: "date" })}
                   </div>
                   <div>
                     <i className="bi bi-clock"></i>
-                    {formatTime(lastUpdated)}
+                    {formatDateObjectAsString(lastUpdated, { format: "time" })}
                   </div>
                 </>
               )}

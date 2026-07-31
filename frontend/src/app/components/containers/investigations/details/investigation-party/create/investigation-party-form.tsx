@@ -44,7 +44,7 @@ import {
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { PartyTypeCodes } from "@/app/constants/party-types";
-import { formatDateOfBirth, isYoungPerson } from "@/app/common/methods";
+import { isYoungPerson } from "@/app/common/methods";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
 import useUnsavedChangesWarning from "@/app/hooks/use-unsaved-changes-warning";
@@ -55,6 +55,7 @@ import { usePartyMatchTrigger } from "@/app/components/containers/parties/hooks/
 import { PartyMatchCard } from "@/app/components/containers/parties/match/party-match-card";
 import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { useGraphQLQuery } from "@/app/graphql/hooks";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { getPartyName } from "@/app/common/party-name";
 
 const ADD_PARTY_TO_INVESTIGATION = gql`
@@ -141,7 +142,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         middleNames: editParty.person?.middleNames || "",
         lastName: editParty.person?.lastName || "",
         dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateOfBirth(String(editParty.person.dateOfBirth))
+          ? formatDateObjectAsString(parseUTCDateToLocal(editParty.person.dateOfBirth), { format: "date" })
           : undefined,
         approximateAgeCode: editParty.person?.approximateAgeCode || "",
         driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
@@ -512,7 +513,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               <div className="comp-details-section-header">
                 <h3>Identifying information</h3>
               </div>
-
+              <h5 className="pb-2">
+                Enter the information you know about the party. Matching profiles will be suggested as you type.
+              </h5>
               <FormField
                 form={form}
                 name="partyType"
