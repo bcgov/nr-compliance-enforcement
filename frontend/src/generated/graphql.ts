@@ -173,7 +173,6 @@ export type Assessment = {
   contactedComplainant?: Maybe<Scalars['Boolean']['output']>;
   id?: Maybe<Scalars['String']['output']>;
   locationType?: Maybe<KeyValuePair>;
-  note?: Maybe<Scalars['String']['output']>;
   outcomeAgencyCode?: Maybe<Scalars['String']['output']>;
 };
 
@@ -198,7 +197,6 @@ export type AssessmentInput = {
   contactedComplainant?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   locationType?: InputMaybe<KeyValuePairInput>;
-  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type BuildCode = {
@@ -724,6 +722,7 @@ export type CreateInvestigationPersonInput = {
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personReference?: InputMaybe<Scalars['String']['input']>;
+  sexCode?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;
@@ -771,9 +770,10 @@ export type CreateUpdateContraventionInput = {
 export type CreateUpdateExhibitInput = {
   appUserIdentifier?: InputMaybe<Scalars['String']['input']>;
   collectedAppUserGuidRef?: InputMaybe<Scalars['String']['input']>;
-  dateCollected?: InputMaybe<Scalars['DateTime']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   exhibitGuid?: InputMaybe<Scalars['String']['input']>;
+  intakeDate: Scalars['DateTime']['input'];
+  intakeTime?: InputMaybe<Scalars['DateTime']['input']>;
   investigationGuid?: InputMaybe<Scalars['String']['input']>;
   locationOfIntake?: InputMaybe<Scalars['String']['input']>;
   propertyTagNumber?: InputMaybe<Scalars['String']['input']>;
@@ -1131,11 +1131,12 @@ export type Exhibit = {
   activeIndicator: Scalars['Boolean']['output'];
   collectedAppUserGuidRef: Scalars['String']['output'];
   createdDate: Scalars['DateTime']['output'];
-  dateCollected: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   exhibitDisplayNumber: Scalars['String']['output'];
   exhibitGuid: Scalars['String']['output'];
   exhibitNumber: Scalars['String']['output'];
+  intakeDate: Scalars['DateTime']['output'];
+  intakeTime?: Maybe<Scalars['DateTime']['output']>;
   investigationGuid: Scalars['String']['output'];
   locationOfIntake?: Maybe<Scalars['String']['output']>;
   propertyTagNumber: Scalars['String']['output'];
@@ -1150,7 +1151,10 @@ export type Exhibit = {
 };
 
 export type ExhibitFilters = {
+  intakeEndDate?: InputMaybe<Scalars['String']['input']>;
+  intakeStartDate?: InputMaybe<Scalars['String']['input']>;
   investigationGuid: Scalars['String']['input'];
+  officerFilter?: InputMaybe<Scalars['String']['input']>;
   propertyTypeFilter?: InputMaybe<Scalars['String']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
@@ -1513,6 +1517,7 @@ export type InvestigationPerson = {
   partyGuid: Scalars['String']['output'];
   personGuid: Scalars['String']['output'];
   personReference?: Maybe<Scalars['String']['output']>;
+  sexCode?: Maybe<Scalars['String']['output']>;
   tattooDescription?: Maybe<Scalars['String']['output']>;
   tattooIndicator?: Maybe<Scalars['Boolean']['output']>;
   weightInKg?: Maybe<Scalars['Float']['output']>;
@@ -2300,6 +2305,7 @@ export type Person = {
   lastName?: Maybe<Scalars['String']['output']>;
   middleNames?: Maybe<Scalars['String']['output']>;
   personGuid?: Maybe<Scalars['String']['output']>;
+  sexCode?: Maybe<Scalars['String']['output']>;
   tattooDescription?: Maybe<Scalars['String']['output']>;
   tattooIndicator?: Maybe<Scalars['Boolean']['output']>;
   weightInKg?: Maybe<Scalars['Float']['output']>;
@@ -2346,6 +2352,7 @@ export type PersonInput = {
   heightInCm?: InputMaybe<Scalars['Float']['input']>;
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
+  sexCode?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;
@@ -2357,6 +2364,7 @@ export type PersonMatchInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   genderCode?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
+  sexCode?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PersonUpdateInput = {
@@ -2386,6 +2394,7 @@ export type PersonUpdateInput = {
   lastName: Scalars['String']['input'];
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personGuid: Scalars['String']['input'];
+  sexCode?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;
@@ -3247,6 +3256,7 @@ export type UpdateInvestigationPersonInput = {
   middleNames?: InputMaybe<Scalars['String']['input']>;
   personGuid?: InputMaybe<Scalars['String']['input']>;
   personReference?: InputMaybe<Scalars['String']['input']>;
+  sexCode?: InputMaybe<Scalars['String']['input']>;
   tattooDescription?: InputMaybe<Scalars['String']['input']>;
   tattooIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   weightInKg?: InputMaybe<Scalars['Float']['input']>;

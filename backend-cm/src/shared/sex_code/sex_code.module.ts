@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
 import { SexCodeService } from "./sex_code.service";
 import { SexCodeResolver } from "./sex_code.resolver";
-import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
+import { PrismaModuleShared } from "../../prisma/shared/prisma.shared.module";
 
 @Module({
-  imports: [PrismaModuleComplaintOutcome],
+  imports: [PrismaModuleShared],
   providers: [SexCodeResolver, SexCodeService],
+  exports: [SexCodeService],
 })
 export class SexCodeModule {}

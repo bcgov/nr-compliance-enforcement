@@ -66,6 +66,10 @@ const buildPersonMatchInput = (values: any): { input: PartyMatchInput; populated
     person.genderCode = values.genderCode;
     populatedCount += 1;
   }
+  if (hasText(values.sexCode)) {
+    person.sexCode = values.sexCode;
+    populatedCount += 1;
+  }
   if (hasText(values.driversLicenseNumber)) {
     person.driversLicenseNumber = values.driversLicenseNumber.trim();
     populatedCount += 1;

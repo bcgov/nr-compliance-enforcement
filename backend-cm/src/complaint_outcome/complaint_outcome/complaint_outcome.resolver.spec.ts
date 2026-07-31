@@ -3,6 +3,7 @@ import { ComplaintOutcomeResolver } from "./complaint_outcome.resolver";
 import { ComplaintOutcomeService } from "./complaint_outcome.service";
 import { PrismaModuleComplaintOutcome } from "../../prisma/complaint_outcome/prisma.complaint_outcome.module";
 import { CaseFileActionService } from "../case_file_action/case_file_action.service";
+import { SexCodeService } from "../../shared/sex_code/sex_code.service";
 
 describe("ComplaintOutcomeResolver", () => {
   let resolver: ComplaintOutcomeResolver;
@@ -15,6 +16,10 @@ describe("ComplaintOutcomeResolver", () => {
         ComplaintOutcomeService,
         {
           provide: CaseFileActionService,
+          useValue: {},
+        },
+        {
+          provide: SexCodeService,
           useValue: {},
         },
       ],

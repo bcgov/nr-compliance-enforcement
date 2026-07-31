@@ -38,6 +38,7 @@ const SEARCH_PARTIES = gql`
           middleNames
           dateOfBirth
           genderCode
+          sexCode
           approximateAgeCode
         }
         business {

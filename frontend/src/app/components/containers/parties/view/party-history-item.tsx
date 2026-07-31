@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { formatTime } from "@/app/common/methods";
 import { Event } from "@/generated/graphql";
 import { AppUser } from "@/app/types/app/app_user/app_user";
 import { formatPhoneNumber } from "react-phone-number-input/input";
@@ -17,6 +16,7 @@ import {
   selectHairLengths,
 } from "@/app/store/reducers/code-table-selectors";
 import { cmToFeetInches, kgToLb } from "@/app/components/containers/parties/form/party-form-utils";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface PartyHistoryItemProps {
   event: Event;
@@ -62,12 +62,14 @@ const useEventDescription = (event: Event): string => {
   }
 
   const field = content?.field ?? "information";
+  const fieldLabel = field === "sex" ? "Sex as per ID" : field;
   const oldValue = content?.oldValue;
   const newValue = content?.newValue;
 
   const formatValue = (value: string | null | undefined): string => {
     if (!value) return "";
     if (field === "gender") return genders.find((s) => s.value === value)?.label ?? value;
+    if (field === "sex") return value;
     if (field.includes("phone number")) return formatPhoneNumber(value) || value;
     if (field.includes("country")) return countries.find((c) => c.value === value)?.label ?? value;
     if (field.includes("province")) return countrySubdivisions.find((s) => s.value === value)?.label ?? value;
@@ -112,24 +114,23 @@ const useEventDescription = (event: Event): string => {
         const details = formatAddressDetails();
         return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
       }
-      return `added ${field}: ${formatValue(newValue)}`;
+      return `added ${fieldLabel}: ${formatValue(newValue)}`;
     }
     case "REMOVED": {
       if (field === "address") {
         const details = formatAddressDetails();
         return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
       }
-      return `removed ${field}: ${formatValue(oldValue)}`;
+      return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
     }
     case "EDITED": {
       if (oldValue === newValue) {
-        return `updated ${field} "${formatValue(oldValue)}"`;
-      } else {
-        return `updated ${field} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
+        return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
       }
+      return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
     }
     default:
-      return `performed ${verb.toLowerCase()} on ${field}`;
+      return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
   }
 };
 
@@ -150,7 +151,9 @@ export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers })
   return (
     <li className="list-group-item d-flex align-items-center py-2">
       <i className={`bi ${getIconByVerb(event.eventVerbTypeCode.eventVerbTypeCode)} me-3 text-primary`}></i>
-      <span className="me-3 text-muted">{formatTime(event.publishedTimestamp)}</span>
+      <span className="me-3 text-muted">
+        {formatDateObjectAsString(parseUTCTimestampToLocal(event.publishedTimestamp), { format: "dateTime" })}
+      </span>
       <span className="me-3 text-muted">{`•`}</span>
       <span className="fw-bold me-2">{getActorName()}</span>
       <span>{eventDescription}</span>

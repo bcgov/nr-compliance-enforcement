@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { formatDate, formatTime, getAvatarInitials } from "@common/methods";
+import { getAvatarInitials } from "@common/methods";
 import { CaseFile } from "@/generated/graphql";
 import { ActionMenu } from "@/app/components/common/action-menu";
 import { CaseTabs } from "./case-tabs";
@@ -8,17 +8,17 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { FeatureFlag } from "@/app/components/common/feature-flag";
 import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface CaseHeaderProps {
   caseData?: CaseFile;
-  lastUpdatedDisplay?: string;
+  lastUpdatedDisplay?: Date;
 }
 
 export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }) => {
   const caseId = caseData?.name || caseData?.caseIdentifier || "Unknown";
   const leadAgency = caseData?.leadAgency?.longDescription || "Unknown Agency";
-  const dateLogged = caseData?.openedTimestamp ? new Date(caseData.openedTimestamp).toString() : undefined;
-  const lastUpdated = lastUpdatedDisplay ?? undefined;
+  const dateLogged = caseData?.openedTimestamp ? parseUTCTimestampToLocal(caseData.openedTimestamp) : undefined;
   const officerAssigned = "Not Assigned";
 
   const createdByUser = useAppSelector(selectOfficerByAppUserGuid(caseData?.createdByAppUserGuid));
@@ -98,11 +98,11 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                       <>
                         <div id="case-date-logged">
                           <i className="bi bi-calendar"></i>
-                          {formatDate(dateLogged)}
+                          {formatDateObjectAsString(dateLogged, { format: "date" })}
                         </div>
                         <div>
                           <i className="bi bi-clock"></i>
-                          {formatTime(dateLogged)}
+                          {formatDateObjectAsString(dateLogged, { format: "time" })}
                         </div>
                       </>
                     )}
@@ -113,19 +113,19 @@ export const CaseHeader: FC<CaseHeaderProps> = ({ caseData, lastUpdatedDisplay }
                 <dl className="comp-details-date-assigned">
                   <dt>Last updated</dt>
                   <dd className="comp-date-time-value">
-                    {lastUpdated && (
+                    {lastUpdatedDisplay && (
                       <>
                         <div>
                           <i className="bi bi-calendar"></i>
-                          {formatDate(lastUpdated)}
+                          {formatDateObjectAsString(lastUpdatedDisplay, { format: "date" })}
                         </div>
                         <div>
                           <i className="bi bi-clock"></i>
-                          {formatTime(lastUpdated)}
+                          {formatDateObjectAsString(lastUpdatedDisplay, { format: "time" })}
                         </div>
                       </>
                     )}
-                    {!lastUpdated && <>N/A</>}
+                    {!lastUpdatedDisplay && <>N/A</>}
                   </dd>
                 </dl>
 

@@ -11,7 +11,8 @@ type Exhibit {
   seizedFromLastName: String
   seizedFromAddress: String
   seizedFromPhoneNumber: String
-  dateCollected: DateTime!
+  intakeDate: DateTime!
+  intakeTime: DateTime
   collectedAppUserGuidRef: String!
   locationOfIntake: String
   propertyTagNumber: String!
@@ -57,7 +58,8 @@ input CreateUpdateExhibitInput {
   seizedFromLastName: String
   seizedFromAddress: String
   seizedFromPhoneNumber: String
-  dateCollected: DateTime
+  intakeDate: DateTime!
+  intakeTime: DateTime
   collectedAppUserGuidRef: String
   appUserIdentifier: String
   locationOfIntake: String

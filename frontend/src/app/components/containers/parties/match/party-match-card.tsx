@@ -1,8 +1,6 @@
 // party-match-card.tsx
 import { FC } from "react";
 import { Button, Card } from "react-bootstrap";
-import { useAppSelector } from "@hooks/hooks";
-import { selectGenderDropdown } from "@/app/store/reducers/code-table";
 import { calculateAgeYears } from "@/app/common/methods";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { Address, Alias, BusinessIdentifier, ContactMethod, Party } from "@/generated/graphql";
@@ -10,6 +8,7 @@ import { formatPhoneNumber } from "react-phone-number-input";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { getPartyName } from "@/app/common/party-name";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type PartyMatchCardProps = {
   party: Party;
@@ -18,8 +17,6 @@ type PartyMatchCardProps = {
 };
 
 export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabled = false }) => {
-  const genderOptions = useAppSelector(selectGenderDropdown);
-
   const { person, business } = party;
   const isBusiness = party.partyTypeCode === PartyTypeCodes.BUSINESS;
 
@@ -33,16 +30,17 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
   const businessAddresses = (party.addresses ?? []).filter((a): a is Address => a != null).slice(0, 2);
 
   // --- Person-specific derivations ---
-  const genderLabel = genderOptions?.find(
-    (opt: { value: string; label: string }) => opt.value === person?.genderCode,
-  )?.label;
+  const sexLabel = person?.sexCode ? `Sex as per ID: ${person.sexCode}` : "";
 
-  const dateOfBirth = person?.dateOfBirth ? String(person.dateOfBirth).slice(0, 10) : "";
-  const age = person?.dateOfBirth ? calculateAgeYears(new Date(person.dateOfBirth)) : "";
+  const dobDate = parseUTCDateToLocal(person?.dateOfBirth);
+  const dateOfBirth = formatDateObjectAsString(dobDate, { format: "date" });
+  const age = dobDate ? calculateAgeYears(dobDate) : "";
+       
+  const driversLicense = (person?.driversLicenseNumber ?? "").trim();
 
-  // Compose "Male, 24 (2002-02-23)", dropping whichever pieces are absent.
-  const genderAge = [genderLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
-  const descriptorLine = [genderAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
+  // Compose "Sex as per ID: F, 24 (2002-02-23)", dropping whichever pieces are absent.
+  const sexAge = [sexLabel, age === null ? "" : String(age)].filter(Boolean).join(", ");
+  const descriptorLine = [sexAge, dateOfBirth ? `(${dateOfBirth})` : ""].filter(Boolean).join(" ");
 
   // --- Shared derivations ---
   const name = getPartyName(party);
@@ -87,7 +85,11 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
         ) : (
           <>
             <div className="comp-party-match-card-name">{name}</div>
-            {descriptorLine && <div className="comp-party-match-card-body-line">{descriptorLine}</div>}
+            {dateOfBirth && <div className="comp-party-match-card-body-line">{`Date of birth: ${dateOfBirth}`}</div>}
+            {age && <div className="comp-party-match-card-body-line">{`Age: ${age}`}</div>}
+            {driversLicense && (
+              <div className="comp-party-match-card-body-line">{`Driver's licence: ${driversLicense}`}</div>
+            )}
             {primaryPhone?.value && (
               <div className="comp-party-match-card-body-line">{`Primary: ${formatPhoneNumber(primaryPhone.value)}`}</div>
             )}
@@ -103,7 +105,7 @@ export const PartyMatchCard: FC<PartyMatchCardProps> = ({ party, onAdd, isDisabl
             disabled={isDisabled}
           >
             <i className="bi bi-plus-circle" />
-            <span>Add to investigation</span>
+            <span>Select profile</span>
           </Button>
         </div>
       </Card.Body>

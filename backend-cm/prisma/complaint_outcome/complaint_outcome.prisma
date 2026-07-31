@@ -734,22 +734,6 @@ model sector_code {
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model sex_code {
-  sex_code                             String     @id(map: "PK_sexcode") @db.VarChar(10)
-  short_description                    String     @db.VarChar(50)
-  long_description                     String?    @db.VarChar(250)
-  display_order                        Int
-  active_ind                           Boolean
-  create_user_id                       String     @db.VarChar(32)
-  create_utc_timestamp                 DateTime   @db.Timestamp(6)
-  update_user_id                       String     @db.VarChar(32)
-  update_utc_timestamp                 DateTime   @db.Timestamp(6)
-  wildlife_wildlife_sex_codeTosex_code wildlife[] @relation("wildlife_sex_codeTosex_code")
-
-  @@schema("complaint_outcome")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model site {
   site_guid              String            @id(map: "PK_site_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid String            @db.Uuid
@@ -799,7 +783,7 @@ model wildlife {
   wildlife_guid                                                                                       String                         @id(map: "PK_wildlife_guid") @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
   complaint_outcome_guid                                                                              String                         @db.Uuid
   threat_level_code                                                                                   String?                        @db.VarChar(10)
-  sex_code                                                                                            String?                        @db.VarChar(10)
+  sex_code_ref                                                                                        String?                        @db.VarChar(16)
   age_code                                                                                            String?                        @db.VarChar(10)
   hwcr_outcome_code                                                                                   String?                        @db.VarChar(10)
   species_code                                                                                        String                         @db.VarChar(10)
@@ -817,7 +801,6 @@ model wildlife {
   complaint_outcome                                                                                   complaint_outcome              @relation(fields: [complaint_outcome_guid], references: [complaint_outcome_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__case_file_guid")
   hwcr_outcome_actioned_by_code_wildlife_hwcr_outcome_actioned_by_codeTohwcr_outcome_actioned_by_code hwcr_outcome_actioned_by_code? @relation("wildlife_hwcr_outcome_actioned_by_codeTohwcr_outcome_actioned_by_code", fields: [hwcr_outcome_actioned_by_code], references: [hwcr_outcome_actioned_by_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__hwcr_outcome_actioned_by_code")
   hwcr_outcome_code_wildlife_hwcr_outcome_codeTohwcr_outcome_code                                     hwcr_outcome_code?             @relation("wildlife_hwcr_outcome_codeTohwcr_outcome_code", fields: [hwcr_outcome_code], references: [hwcr_outcome_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__hwcr_outcome_code")
-  sex_code_wildlife_sex_codeTosex_code                                                                sex_code?                      @relation("wildlife_sex_codeTosex_code", fields: [sex_code], references: [sex_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__sex_code")
   threat_level_code_wildlife_threat_level_codeTothreat_level_code                                     threat_level_code?             @relation("wildlife_threat_level_codeTothreat_level_code", fields: [threat_level_code], references: [threat_level_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_wildlife__threat_level_code")
 
   @@index([complaint_outcome_guid], map: "idx_wildlife_complaint_outcome_guid")
