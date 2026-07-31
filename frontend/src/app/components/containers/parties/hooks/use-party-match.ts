@@ -36,6 +36,7 @@ const MATCH_PARTY = gql`
         genderCode
         sexCode
         approximateAgeCode
+        driversLicenseNumber
       }
       business {
         businessGuid
