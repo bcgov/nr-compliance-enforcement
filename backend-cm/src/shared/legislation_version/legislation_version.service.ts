@@ -5,7 +5,7 @@ import { Mapper } from "@automapper/core";
 import { Prisma, legislation_source, legislation_version } from ".prisma/shared"; // NOSONAR
 import { SharedPrismaService } from "../../prisma/shared/prisma.shared.service";
 import { InvestigationPrismaService } from "../../prisma/investigation/prisma.investigation.service";
-import { isCalendarDate, toDate, toDateString } from "../legislation/utils/legislation-dates";
+import { toDate, toDateString } from "../../common/custom_scalars";
 import { LegislationService } from "../legislation/legislation.service";
 import { LegislationSource } from "../legislation_source/dto/legislation-source";
 import { ImportStatus, ImportableLegislationVersion, LegislationVersion } from "./dto/legislation-version";
@@ -81,8 +81,6 @@ export class LegislationVersionService {
     userId: string,
     tx?: Prisma.TransactionClient,
   ): Promise<LegislationVersion> {
-    this.validateCalendarDate(effectiveDate);
-
     const client = tx ?? this.prisma;
 
     const source = await client.legislation_source.findUnique({
@@ -129,8 +127,6 @@ export class LegislationVersionService {
     newDate: string,
     userId: string,
   ): Promise<LegislationVersion> {
-    this.validateCalendarDate(newDate);
-
     const version = await this.getById(legislationVersionGuid);
 
     if (!version) {
@@ -466,11 +462,5 @@ export class LegislationVersionService {
     `;
 
     return { count: totals.count, earliest: toDateString(totals.earliest), latest: toDateString(totals.latest) };
-  }
-
-  private validateCalendarDate(effectiveDate: string): void {
-    if (!isCalendarDate(effectiveDate)) {
-      throw new GraphQLError("The effective date must be a calendar date in yyyy-MM-dd format.", {});
-    }
   }
 }

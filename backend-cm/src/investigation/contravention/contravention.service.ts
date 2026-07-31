@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GraphQLError } from "graphql";
-import { getCurrentDatePacific, toDate, toDateString } from "src/shared/legislation/utils/legislation-dates";
+import { toDate, toDateString } from "src/common/custom_scalars";
 import { UserService } from "src/common/user.service";
 import { CreateUpdateContraventionInput } from "src/investigation/contravention/dto/contravention";
 import { Investigation } from "src/investigation/investigation/dto/investigation";
@@ -8,6 +8,9 @@ import { InvestigationService } from "src/investigation/investigation/investigat
 import { InvestigationPrismaService } from "src/prisma/investigation/prisma.investigation.service";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
+
+const getCurrentDatePacific = (): string =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver" }).format(new Date());
 
 @Injectable()
 export class ContraventionService {

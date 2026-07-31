@@ -5,7 +5,9 @@ import { Mapper } from "@automapper/core";
 import { Prisma } from ".prisma/shared"; // NOSONAR
 import { legislation } from "../../../prisma/shared/generated/legislation";
 import { Legislation } from "./dto/legislation";
-import { getCurrentDatePacific } from "./utils/legislation-dates";
+
+const getCurrentDatePacific = (): string =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Vancouver" }).format(new Date());
 
 export interface CreateLegislationInput {
   legislationTypeCode: string;

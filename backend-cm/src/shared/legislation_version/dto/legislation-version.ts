@@ -1,6 +1,6 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { legislation_version } from "../../../../prisma/shared/generated/legislation_version";
-import { toDateString } from "../../legislation/utils/legislation-dates";
+import { toDateString } from "../../../common/custom_scalars";
 import { LegislationSource } from "../../legislation_source/dto/legislation-source";
 
 export type ImportStatus = "PENDING" | "SUCCESS" | "FAILED";
