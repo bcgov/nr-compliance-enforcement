@@ -627,6 +627,37 @@ export class InvestigationService {
     locationAddress: "location_address",
   };
 
+  private _buildDateRangeWhereClause(filters: InvestigationFilters): any {
+    const dateRange: any = {};
+
+    if (filters?.startDate) {
+      dateRange.gte = filters.startDate;
+    }
+
+    if (filters?.endDate) {
+      const endOfDay = new Date(filters.endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      dateRange.lte = endOfDay;
+    }
+
+    return dateRange;
+  }
+
+  private _buildInvestigationOrderByClause(filters?: InvestigationFilters): any {
+    let orderBy: any = { investigation_opened_utc_timestamp: "desc" };
+
+    if (filters?.sortBy && filters?.sortOrder) {
+      const dbField = this.SORT_FIELD_MAP[filters.sortBy];
+      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
+
+      if (dbField) {
+        orderBy = { [dbField]: validSortOrder };
+      }
+    }
+
+    return orderBy;
+  }
+
   private async _buildInvestigationWhereClause(filters?: InvestigationFilters): Promise<any> {
     const where: any = {};
 
@@ -643,21 +674,7 @@ export class InvestigationService {
     }
 
     if (filters?.region || filters?.zone) {
-      const geoOrgUnits = await this.cosGeoOrgUnitService.findAll(filters.zone, filters.region);
-      let areaCodes = [...new Set(geoOrgUnits.map((unit) => unit.areaCode).filter((areaCode) => areaCode != null))];
-
-      if (filters?.community) {
-        areaCodes = areaCodes.filter((areaCode) => areaCode === filters.community);
-      }
-
-      if (areaCodes.length > 0) {
-        where.geo_organization_unit_code_ref = { in: areaCodes };
-      } else {
-        this.logger.error(
-          `No geo organization units found for filtering region: ${filters.region}, zone: ${filters.zone}, community: ${filters.community}`,
-        );
-        where.investigation_guid = { equals: null };
-      }
+      Object.assign(where, await this._buildGeoOrganizationUnitWhereClause(filters));
     } else if (filters?.community) {
       where.geo_organization_unit_code_ref = filters.community;
     }
@@ -675,35 +692,28 @@ export class InvestigationService {
     }
 
     if (filters?.startDate || filters?.endDate) {
-      where.investigation_opened_utc_timestamp = {};
-
-      if (filters?.startDate) {
-        where.investigation_opened_utc_timestamp.gte = filters.startDate;
-      }
-
-      if (filters?.endDate) {
-        const endOfDay = new Date(filters.endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        where.investigation_opened_utc_timestamp.lte = endOfDay;
-      }
+      where.investigation_opened_utc_timestamp = this._buildDateRangeWhereClause(filters);
     }
 
     return where;
   }
 
-  private _buildInvestigationOrderByClause(filters?: InvestigationFilters): any {
-    let orderBy: any = { investigation_opened_utc_timestamp: "desc" };
+  private async _buildGeoOrganizationUnitWhereClause(filters: InvestigationFilters): Promise<any> {
+    const geoOrgUnits = await this.cosGeoOrgUnitService.findAll(filters.zone, filters.region);
+    let areaCodes = [...new Set(geoOrgUnits.map((unit) => unit.areaCode).filter((areaCode) => areaCode != null))];
 
-    if (filters?.sortBy && filters?.sortOrder) {
-      const dbField = this.SORT_FIELD_MAP[filters.sortBy];
-      const validSortOrder = filters.sortOrder.toLowerCase() === "asc" ? "asc" : "desc";
-
-      if (dbField) {
-        orderBy = { [dbField]: validSortOrder };
-      }
+    if (filters?.community) {
+      areaCodes = areaCodes.filter((areaCode) => areaCode === filters.community);
     }
 
-    return orderBy;
+    if (areaCodes.length > 0) {
+      return { geo_organization_unit_code_ref: { in: areaCodes } };
+    }
+
+    this.logger.error(
+      `No geo organization units found for filtering region: ${filters.region}, zone: ${filters.zone}, community: ${filters.community}`,
+    );
+    return { investigation_guid: { equals: null } };
   }
 
   async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {

@@ -95,7 +95,6 @@ const Investigations: FC = () => {
         setValues({ investigationStatus: "OPEN", primaryInvestigator: appUserGuid });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const investigationGuids = useMemo(
