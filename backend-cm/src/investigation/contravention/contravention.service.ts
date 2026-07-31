@@ -174,6 +174,16 @@ export class ContraventionService {
                 investigation_party_guid: investigationPartyGuid,
               },
             });
+          } else {
+            await db.contravention_party_xref.create({
+              data: {
+                contravention_guid: contraventionGuid,
+                investigation_party_guid: investigationPartyGuid,
+                active_ind: true,
+                create_user_id: this.user.getIdirUsername(),
+                create_utc_timestamp: new Date(),
+              },
+            });
           }
         }
         await db.contravention.update({
