@@ -1,4 +1,3 @@
-import format from "date-fns/format";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import COMPLAINT_TYPES from "@apptypes/app/complaint-types";
 import { ComplaintStatus } from "@apptypes/app/code-tables/complaint-status";
@@ -18,11 +17,8 @@ import { AllegationComplaint } from "@apptypes/app/complaints/allegation-complai
 import { GeneralIncidentComplaint } from "@apptypes/app/complaints/general-complaint";
 import { ToggleError } from "./toast";
 import utmObj from "utm-latlng";
-import { formatDistanceToNow } from "date-fns";
 
 type Coordinate = number[] | string[] | undefined;
-
-type OptionalDateTimeInput = string | Date | null | undefined;
 
 const THUMB_WIDTH = 578; // 2x the 289x200 carousel slide, for high DPI displays
 const THUMB_HEIGHT = 400;
@@ -137,54 +133,6 @@ export const getFirstInitialAndLastName = (fullName: string): string => {
 
 export const getFileExtension = (filename: string) => {
   return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-};
-
-export const formatDate = (input: string | undefined, includeRelative: boolean = false): string => {
-  if (!input) {
-    return "";
-  }
-
-  try {
-    // Handle date-only strings eg (YYYY-MM-DD)
-    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
-      if (!includeRelative) return input;
-      return `${input} (${formatDistanceToNow(new Date(input + "T00:00:00Z"), { addSuffix: true })})`;
-    }
-
-    const date = new Date(input);
-
-    if (Number.isNaN(date.getTime())) {
-      throw new Error("Invalid date format");
-    }
-
-    const formattedDate = format(date, "yyyy-MM-dd");
-
-    if (includeRelative) {
-      const relative = formatDistanceToNow(date, { addSuffix: true });
-      return `${formattedDate} (${relative})`;
-    }
-
-    return formattedDate;
-  } catch (error) {
-    console.error("Error formatting date:", error);
-    return "";
-  }
-};
-
-export const formatTime = (input: string | undefined): string => {
-  if (!input) {
-    return "";
-  }
-
-  return format(Date.parse(input), "HH:mm");
-};
-
-export const formatDateTime = (input: string | undefined): string => {
-  if (!input) {
-    return "";
-  }
-
-  return format(Date.parse(input), "yyyy-MM-dd HH:mm:ss");
 };
 
 // Protect values with quotes, commas and new lines for CSV export
@@ -554,91 +502,6 @@ export const displayBackendErrors = (message: string) => {
 export function getDropdownOption(matchValue: string | undefined | null, optionsList: Option[]): Option | undefined {
   return optionsList.find((item) => item.value === matchValue);
 }
-
-/**
- * Reconstructs a single Date from separate date/time ISO-string fields.
- * When only a date is provided (no time), constructs a local-midnight Date
- * to avoid UTC-to-local day rollback (e.g. July 1 UTC becoming June 30 local).
- */
-export const parseUTCDateTimeToLocal = (date: OptionalDateTimeInput, time: OptionalDateTimeInput): Date | null => {
-  if (!date) return null;
-  const dateStr =
-    date instanceof Date
-      ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-      : String(date).split("T")[0];
-  if (!time) {
-    const [y, m, d] = dateStr.split("-").map(Number);
-    return new Date(y, m - 1, d);
-  }
-  const raw = String(time);
-  const timeStr = raw.includes("T") ? raw.split("T")[1]?.replace("Z", "") || "00:00:00" : raw.replace("Z", "");
-  return new Date(`${dateStr}T${timeStr}Z`);
-};
-
-// Formats a stored UTC datetime into a local "YYYY-MM-DD HH:mm" string. The date and time are both
-// derived from the same local Date so they never disagree across a timezone midnight boundary.
-export const formatDateTimeStr = (value?: string | null): string => {
-  const local = parseUTCDateTimeToLocal(value, value);
-  if (!local) return "-";
-  const year = local.getFullYear();
-  const month = String(local.getMonth() + 1).padStart(2, "0");
-  const day = String(local.getDate()).padStart(2, "0");
-  const hours = String(local.getHours()).padStart(2, "0");
-  const minutes = String(local.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-};
-
-/**
- * Formats a GraphQL DateTime (or date-like value) as yyyy-MM-dd using parseUTCDateTimeToLocal
- *
- * @param whenAbsent returned when the input is missing or cannot be parsed (e.g. "-" in tables, "" in CSV)
- */
-export const formatDateStr = (inputDate: OptionalDateTimeInput, whenAbsent: string = "-"): string => {
-  const d = parseUTCDateTimeToLocal(inputDate, null);
-  if (!d) return whenAbsent;
-  const s = d.toISOString?.() ?? d.toString();
-  return formatDate(s);
-};
-
-/**
- * Converts a local Date + "HH:MM" time string to UTC date and UTC time string for API storage.
- */
-export const formatLocalDateTimeToUTC = (
-  date: Date,
-  time: string | null | undefined,
-): { utcDate: Date; utcTime: string | null } => {
-  if (!time) return { utcDate: date, utcTime: null };
-  const combined = new Date(date);
-  const [hh, mm] = time.split(":").map(Number);
-  combined.setHours(hh, mm, 0, 0);
-  const utcHH = combined.getUTCHours().toString().padStart(2, "0");
-  const utcMM = combined.getUTCMinutes().toString().padStart(2, "0");
-  return {
-    utcDate: new Date(Date.UTC(combined.getUTCFullYear(), combined.getUTCMonth(), combined.getUTCDate())),
-    utcTime: `${utcHH}:${utcMM}`,
-  };
-};
-
-/**
- * Extracts local "HH:MM" from a Date object.
- */
-export const formatLocalTime = (date: Date): string => {
-  const hh = date.getHours().toString().padStart(2, "0");
-  const mm = date.getMinutes().toString().padStart(2, "0");
-  return `${hh}:${mm}`;
-};
-
-/**
- * Formats date of birth
- */
-export const formatDateOfBirth = (dateOfBirth: string | null | undefined, whenAbsent: string = ""): string => {
-  if (!dateOfBirth) {
-    return whenAbsent;
-  }
-  const dateOnly = String(dateOfBirth).slice(0, 10);
-  const formatted = /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? formatDate(dateOnly) : formatDate(dateOfBirth);
-  return formatted || whenAbsent;
-};
 
 // Determine an age based on a DOB
 export const calculateAgeYears = (dob: Date, today: Date = new Date()): number => {

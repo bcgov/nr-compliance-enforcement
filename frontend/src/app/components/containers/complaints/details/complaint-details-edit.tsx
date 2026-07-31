@@ -1,11 +1,7 @@
 import { FC, useEffect, useState, useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@hooks/hooks";
-import {
-  bcUtmZoneNumbers,
-  getSelectedOfficer,
-  formatLatLongCoordinate,
-  formatLocalDateTimeToUTC,
-} from "@common/methods";
+import { bcUtmZoneNumbers, getSelectedOfficer, formatLatLongCoordinate } from "@common/methods";
+import { parseLocalDateTimeToUTC } from "@/app/common/date-utils";
 import { Coordinates } from "@apptypes/app/coordinate-type";
 import {
   setComplaint,
@@ -311,7 +307,9 @@ export const ComplaintDetailsEdit: FC = () => {
 
   useEffect(() => {
     if (incidentDate) {
-      setSelectedIncidentDate(incidentDate instanceof Date ? incidentDate : new Date(incidentDate));
+      const parsed = incidentDate instanceof Date ? incidentDate : new Date(incidentDate);
+      // Drop the time components so the date picker doesn't get confused
+      setSelectedIncidentDate(new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()));
       if (incidentTime) {
         setSelectedIncidentTime(incidentTime);
       }
@@ -695,7 +693,7 @@ export const ComplaintDetailsEdit: FC = () => {
       } else {
         setIncidentDateTimeErrorMsg("");
       }
-      const { utcDate, utcTime } = formatLocalDateTimeToUTC(date, time);
+      const { utcDate, utcTime } = parseLocalDateTimeToUTC(date, time);
       const updatedComplaint = { ...complaintUpdate, incidentDate: utcDate, incidentTime: utcTime } as Complaint;
       applyComplaintUpdate(updatedComplaint);
     } else {

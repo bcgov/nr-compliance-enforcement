@@ -6,7 +6,8 @@ import { GET_ACTIVITY_NOTES_BY_TASK } from "@/app/components/common/activity-not
 import { GET_DIARY_DATES_BY_TASK } from "@/app/components/containers/investigations/details/investigation-diary-dates";
 import { getAttachments } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
-import { formatDate, truncateString } from "@/app/common/methods";
+import { truncateString } from "@/app/common/methods";
+import { parseUTCDateToLocal, formatDateObjectAsString } from "@/app/common/date-utils";
 
 type Props = {
   data: Task;
@@ -52,7 +53,11 @@ export const TaskListExpandedContent: FC<Props> = ({ data, investigationGuid }) 
         {diaryDates.length === 0 ? (
           <dd>-</dd>
         ) : (
-          diaryDates.map((dd) => <dd key={dd.diaryDateGuid}>{`${formatDate(dd.dueDate)} - ${dd.description}`}</dd>)
+          diaryDates.map((dd) => (
+            <dd
+              key={dd.diaryDateGuid}
+            >{`${formatDateObjectAsString(parseUTCDateToLocal(dd.dueDate), { format: "date" })} - ${dd.description}`}</dd>
+          ))
         )}
       </div>
       <div className="pb-3 flex-row">

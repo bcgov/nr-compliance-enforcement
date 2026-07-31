@@ -36,7 +36,8 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       seizedFromLastName
       seizedFromAddress
       seizedFromPhoneNumber
-      dateCollected
+      intakeDate
+      intakeTime
       collectedAppUserGuidRef
       locationOfIntake
       propertyTagNumber
@@ -113,6 +114,23 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     return match ? `${match[1]}${match[2] || ""}` : decoded;
   };
 
+  function _combineUtcDateAndTime(date: string, time: string): Date {
+    const d = new Date(date);
+    const t = new Date(time);
+
+    return new Date(
+      Date.UTC(
+        d.getUTCFullYear(),
+        d.getUTCMonth(),
+        d.getUTCDate(),
+        t.getUTCHours(),
+        t.getUTCMinutes(),
+        t.getUTCSeconds(),
+        t.getUTCMilliseconds(),
+      ),
+    );
+  }
+
   return {
     ...task,
     assignedUser: _resolveUser(task.assignedUserIdentifier),
@@ -123,15 +141,18 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     },
     exhibits: getExhibitsByTask
       .sort((a, b) => a.exhibitDisplayNumber.localeCompare(b.exhibitDisplayNumber))
-      .map((exhibit) => ({
-        ...exhibit,
-        seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
-        propertyType: _resolvePropertyTypeLabel(exhibit.propertyType),
-        isSeized: exhibit.propertyType === "S",
-        dateCollected: formatDate(exhibit.dateCollected),
-        intakeTime: exhibit.dateCollected ? formatTime(exhibit.dateCollected, tz) : "",
-        collectedBy: _resolveUser(exhibit.collectedAppUserGuidRef),
-      })),
+      .map((exhibit) => {
+        const intakeDateTime = _combineUtcDateAndTime(exhibit.intakeDate, exhibit.intakeTime);
+        return {
+          ...exhibit,
+          seizedFromPhoneNumber: formatPhonenumber(exhibit.seizedFromPhoneNumber),
+          propertyType: _resolvePropertyTypeLabel(exhibit.propertyType),
+          isSeized: exhibit.propertyType === "S",
+          dateCollected: formatDate(exhibit.intakeDate),
+          intakeTime: formatTime(intakeDateTime.toString(), tz),
+          collectedBy: _resolveUser(exhibit.collectedAppUserGuidRef),
+        };
+      }),
     activityNotes: getActivityNotesByTask.map((note) => ({
       ...note,
       actionedDate: formatDate(note.actionedDate),

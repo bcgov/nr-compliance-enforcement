@@ -21,6 +21,7 @@ import {
 } from "@/app/components/containers/investigations/details/investigation-task/detail/exhibit/task-exhibits";
 import { PROPERTY_TYPE_OPTIONS, PropertyTypeEnum } from "@/app/types/app/investigation/exhibits";
 import { ValidationPhoneInput } from "@/app/common/validation-phone-input";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type ExhibitValidatorApi = { form: { getFieldValue: (field: string) => unknown } };
 
@@ -41,27 +42,6 @@ const phoneRequiredWhenSeized =
     const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
     return national.length === 10 ? undefined : message;
   };
-
-// Derive the "HH:mm" time string the picker expects from a stored Date. Returns null when no date is set.
-const formatTimeForPicker = (date: Date | null): string | null => {
-  if (!date) return null;
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
-};
-
-// Combine a date with an "HH:mm" time string back into a single Date. Falls back to midnight when no time is set.
-const combineDateAndTime = (date: Date | null, time: string | null): Date | null => {
-  if (!date) return null;
-  const combined = new Date(date);
-  if (time) {
-    const [hours, minutes] = time.split(":").map(Number);
-    combined.setHours(hours, minutes, 0, 0);
-  } else {
-    combined.setHours(0, 0, 0, 0);
-  }
-  return combined;
-};
 
 type AddEditTaskExhibitModalProps = {
   close: () => void;
@@ -104,6 +84,15 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   const initialOfficer = existingOfficer ?? defaultAssignedOfficer;
   const collectedByInitialValue = initialOfficer?.app_user_guid ?? "";
+
+  // Track intake time in component state
+  const initialIntakeDateTime = parseUTCDateToLocal(exhibit?.intakeDate, exhibit?.intakeTime);
+
+  const [selectedIntakeTime, setSelectedIntakeTime] = useState<string | null>(() =>
+    initialIntakeDateTime && exhibit?.intakeTime
+      ? formatDateObjectAsString(initialIntakeDateTime, { format: "time" })
+      : null,
+  );
 
   // Include the initial officer in the dropdown list even if they're inactive or in a different agency
   const assignableOfficersExtended =
@@ -165,7 +154,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromPhoneNumber: exhibit?.seizedFromPhoneNumber ?? "",
       description: exhibit?.description ?? "",
       quantity: exhibit?.quantity ?? 1,
-      dateCollected: exhibit?.dateCollected ? new Date(exhibit.dateCollected) : new Date(),
+      dateCollected: initialIntakeDateTime ?? null,
       collectedAppUserGuidRef: collectedByInitialValue,
       locationOfIntake: exhibit?.locationOfIntake ?? "",
       propertyTagNumber: exhibit?.propertyTagNumber ?? "",
@@ -196,9 +185,27 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
     if (isFormDirty) markDirty();
   }, [isFormDirty, markDirty]);
 
+  const buildIntakeFields = (
+    dateCollected: Date | null,
+    time: string | null,
+  ): { intakeDate: string | null; intakeTime: string | null } => {
+    if (!dateCollected) {
+      return { intakeDate: null, intakeTime: null };
+    }
+    if (time) {
+      const combined = new Date(dateCollected);
+      const [hh, mm] = time.split(":").map(Number);
+      combined.setHours(hh, mm, 0, 0);
+      const iso = combined.toISOString();
+      return { intakeDate: iso, intakeTime: iso };
+    }
+    return { intakeDate: formatDateObjectAsString(dateCollected, { format: "date" }), intakeTime: null };
+  };
+
   // Handlers
   const handleCreate = async (value: FormValues) => {
     const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
+    const { intakeDate, intakeTime } = buildIntakeFields(value.dateCollected, selectedIntakeTime);
     const input: CreateUpdateExhibitInput = {
       taskGuid: taskIdentifier,
       investigationGuid: investigationIdentifier,
@@ -209,7 +216,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      dateCollected: value.dateCollected,
+      intakeDate: intakeDate,
+      intakeTime: intakeTime,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
@@ -221,6 +229,7 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   const handleUpdate = async (value: FormValues) => {
     const isSeized = value.propertyType === PropertyTypeEnum.SEIZED;
+    const { intakeDate, intakeTime } = buildIntakeFields(value.dateCollected, selectedIntakeTime);
     const input: CreateUpdateExhibitInput = {
       exhibitGuid: exhibit!.exhibitGuid,
       taskGuid: taskIdentifier,
@@ -232,7 +241,8 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
       seizedFromLastName: isSeized ? value.seizedFromLastName : null,
       seizedFromAddress: isSeized ? value.seizedFromAddress : null,
       seizedFromPhoneNumber: isSeized ? value.seizedFromPhoneNumber : null,
-      dateCollected: value.dateCollected,
+      intakeDate: intakeDate,
+      intakeTime: intakeTime,
       collectedAppUserGuidRef: value.collectedAppUserGuidRef,
       locationOfIntake: value.locationOfIntake?.trim() ? value.locationOfIntake : null,
       propertyTagNumber: value.propertyTagNumber,
@@ -248,6 +258,21 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
 
   const handleSubmit = async () => {
     await form.handleSubmit();
+  };
+
+  const handleIntakeDateTimeChange = (date: Date | null, time: string | null) => {
+    setSelectedIntakeTime(time);
+    if (date) {
+      const intakeDate = new Date(date);
+      if (time) {
+        const [hh, mm] = time.split(":").map(Number);
+        intakeDate.setHours(hh, mm, 0, 0);
+      }
+      form.setFieldValue("dateCollected", intakeDate);
+    } else {
+      form.setFieldValue("dateCollected", null);
+    }
+    form.setFieldMeta("dateCollected", (meta: any) => ({ ...meta, isDirty: false, isTouched: false }));
   };
 
   return (
@@ -467,13 +492,11 @@ export const AddEditTaskExhibitModal: FC<AddEditTaskExhibitModalProps> = ({ clos
                       classNamePrefix="comp-details-input"
                       className="comp-form-control comp-details-input"
                       selectedDate={field.state.value}
-                      selectedTime={formatTimeForPicker(field.state.value)}
+                      selectedTime={selectedIntakeTime}
                       maxDate={new Date()}
                       showTimePicker={true}
                       nullableTime={true}
-                      onChange={(date: Date | null, time: string | null) =>
-                        field.handleChange(combineDateAndTime(date, time))
-                      }
+                      onChange={(date: Date | null, time: string | null) => handleIntakeDateTimeChange(date, time)}
                       errMsg={field.state.meta.errors?.[0]?.message || ""}
                     />
                   )}

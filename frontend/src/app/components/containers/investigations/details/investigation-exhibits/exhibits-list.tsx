@@ -2,13 +2,14 @@ import { FC, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
-import { formatDateTimeStr, truncateString } from "@common/methods";
+import { truncateString } from "@common/methods";
 import { useAppSelector } from "@hooks/hooks";
 import { Exhibit, Task } from "@/generated/graphql";
 import { selectOfficers } from "@/app/store/reducers/officer";
 import { useExhibitsSearch } from "./hooks/use-exhibits-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type Props = {
   exhibits: Exhibit[];
@@ -106,8 +107,15 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
       sortKey: "dateCollected",
       isSortable: true,
-      getValue: (exhibit) => exhibit.dateCollected ?? "",
-      renderCell: (exhibit) => formatDateTimeStr(exhibit.dateCollected),
+      getValue: (exhibit) => parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime)?.getTime() ?? 0,
+      renderCell: (exhibit) => {
+        const localIntake = parseUTCDateToLocal(exhibit.intakeDate, exhibit.intakeTime);
+        if (!localIntake) return "";
+        const datePart = formatDateObjectAsString(localIntake, { format: "date" });
+        return exhibit.intakeTime
+          ? `${datePart} ${formatDateObjectAsString(localIntake, { format: "time" })}`
+          : datePart;
+      },
     },
     {
       label: "Location of intake",
