@@ -75,6 +75,33 @@ export class LegislationVersionService {
     return [actVersionGuid, ...children.map((child) => child.legislation_version_guid)];
   }
 
+  async getPreviousRegulationSources(actVersionGuid: string): Promise<LegislationSource[]> {
+    const version = await this.getById(actVersionGuid);
+
+    if (!version) {
+      throw new GraphQLError("Legislation version not found", {});
+    }
+
+    const previousVersion = await this.getPreviousValidVersion(version);
+
+    if (!previousVersion) {
+      return [];
+    }
+
+    const children = await this.prisma.legislation_version.findMany({
+      where: { parent_legislation_version_guid: previousVersion.legislationVersionGuid },
+      include: { legislation_source: true },
+    });
+
+    return children.map((child) =>
+      this.mapper.map<legislation_source, LegislationSource>(
+        child.legislation_source,
+        "legislation_source",
+        "LegislationSource",
+      ),
+    );
+  }
+
   async create(
     legislationSourceGuid: string,
     effectiveDate: string,
@@ -120,6 +147,63 @@ export class LegislationVersionService {
       "legislation_version",
       "LegislationVersion",
     );
+  }
+
+  // Today only the import of an act writes regulation versions. The parent link exists so regulations can later
+  // be versioned independently under an act, with their own effective dates inside the parents window
+  async upsertRegulationVersion(actVersionGuid: string, legislationSourceGuid: string): Promise<LegislationVersion> {
+    const actVersion = await this.getById(actVersionGuid);
+
+    if (!actVersion) {
+      throw new GraphQLError("Legislation version not found", {});
+    }
+
+    const existing = await this.prisma.legislation_version.findFirst({
+      where: { parent_legislation_version_guid: actVersionGuid, legislation_source_guid: legislationSourceGuid },
+    });
+
+    // An existing regulation is being imported again, so reset to PENDING
+    const version = existing
+      ? await this.prisma.legislation_version.update({
+          where: { legislation_version_guid: existing.legislation_version_guid },
+          data: {
+            import_status: "PENDING",
+            update_user_id: "system",
+            update_utc_timestamp: new Date(),
+          },
+        })
+      : await this.prisma.legislation_version.create({
+          data: {
+            legislation_source_guid: legislationSourceGuid,
+            parent_legislation_version_guid: actVersionGuid,
+            effective_date: toDate(actVersion.effectiveDate),
+            import_status: "PENDING",
+            create_user_id: "system",
+            create_utc_timestamp: new Date(),
+          },
+        });
+
+    return this.mapper.map<legislation_version, LegislationVersion>(
+      version,
+      "legislation_version",
+      "LegislationVersion",
+    );
+  }
+
+  async recordFetchedDocument(
+    legislationVersionGuid: string,
+    sourceUrl: string,
+    sourceEffectiveDate: Date | null,
+  ): Promise<void> {
+    await this.prisma.legislation_version.update({
+      where: { legislation_version_guid: legislationVersionGuid },
+      data: {
+        source_url: sourceUrl,
+        source_effective_date: sourceEffectiveDate,
+        update_user_id: "system",
+        update_utc_timestamp: new Date(),
+      },
+    });
   }
 
   async updateEffectiveDate(
@@ -230,7 +314,7 @@ export class LegislationVersionService {
     });
   }
 
-  async markImported(actVersionGuid: string): Promise<void> {
+  async markImported(actVersionGuid: string, log: string): Promise<void> {
     const version = await this.getById(actVersionGuid);
 
     if (!version) {
@@ -251,10 +335,10 @@ export class LegislationVersionService {
     try {
       await this.validateEffectiveDate(previousVersion, version.effectiveDate);
     } catch (error) {
-      const log = `${error.message}. Invalid effective date. Update the version's effective date and run the import again.`;
-      this.logger.warn(`Import of legislation version ${actVersionGuid} was invalid: ${log}`);
-      await this.markFailed(actVersionGuid, log);
-      throw new GraphQLError(log, {});
+      const errorLog = `${error.message}. Invalid effective date. Update the version's effective date and run the import again.`;
+      this.logger.warn(`Import of legislation version ${actVersionGuid} was invalid: ${errorLog}`);
+      await this.markFailed(actVersionGuid, errorLog);
+      throw new GraphQLError(errorLog, {});
     }
 
     const timestamp = new Date();
@@ -264,6 +348,7 @@ export class LegislationVersionService {
         where: { legislation_version_guid: actVersionGuid },
         data: {
           import_status: "SUCCESS",
+          last_import_log: log,
           last_import_timestamp: timestamp,
           update_user_id: "system",
           update_utc_timestamp: timestamp,
