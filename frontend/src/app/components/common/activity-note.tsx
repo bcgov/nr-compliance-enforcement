@@ -226,7 +226,7 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
         const combined = new Date(selectedActionedDateTime);
         const [hh, mm] = selectedActionedTime.split(":").map(Number);
         combined.setHours(hh, mm, 0, 0);
-        isFutureDateTime = combined.getTime() > new Date().getTime();
+        isFutureDateTime = combined.getTime() > Date.now();
       } else {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
