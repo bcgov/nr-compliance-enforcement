@@ -141,19 +141,14 @@ export class ContraventionService {
 
         if (!originalContravention) throw new Error("Contravention not found");
 
-        const otherParties = originalContravention.contravention_party_xref.filter(
-          (xref) => xref.investigation_party_guid !== input.selectedPartyGuid,
-        );
-        const isShared = otherParties.length > 0;
+        const investigationPartyGuid = input.investigationPartyGuids?.[0];
 
-        if (isShared) {
-          // Contravention is shared with other parties — split it:
-          //Deactivate selectedPartyGuid xref on the original contravention
+        if (investigationPartyGuid === null) {
           await db.contravention_party_xref.updateMany({
             where: {
               contravention_guid: contraventionGuid,
-              investigation_party_guid: input.selectedPartyGuid,
               active_ind: true,
+              investigation_party_guid: input.selectedPartyGuid,
             },
             data: {
               active_ind: false,
@@ -161,43 +156,46 @@ export class ContraventionService {
               update_utc_timestamp: new Date(),
             },
           });
+        } else {
+          const existingParty = originalContravention.contravention_party_xref.filter(
+            (xref) => xref.investigation_party_guid == input.selectedPartyGuid,
+          );
 
-          //Create a new contravention with the updated legislation for selectedPartyGuid only
-          const newContravention = await db.contravention.create({
-            data: {
-              investigation_guid: originalContravention.investigation_guid,
-              legislation_guid_ref: input.legislationReference,
-              contravention_date: input.date,
-              geo_organization_unit_code_ref: input.community,
-              create_user_id: this.user.getIdirUsername(),
-              create_utc_timestamp: new Date(),
-            },
-          });
-
-          //Link selectedPartyGuid to the new contravention
-          if (input.selectedPartyGuid) {
+          if (existingParty?.length > 0) {
+            await db.contravention_party_xref.updateMany({
+              where: {
+                contravention_guid: contraventionGuid,
+                investigation_party_guid: existingParty[0].investigation_party_guid,
+                active_ind: true,
+              },
+              data: {
+                update_user_id: this.user.getIdirUsername(),
+                update_utc_timestamp: new Date(),
+                investigation_party_guid: investigationPartyGuid,
+              },
+            });
+          } else {
             await db.contravention_party_xref.create({
               data: {
-                contravention_guid: newContravention.contravention_guid,
-                investigation_party_guid: input.selectedPartyGuid,
+                contravention_guid: contraventionGuid,
+                investigation_party_guid: investigationPartyGuid,
+                active_ind: true,
                 create_user_id: this.user.getIdirUsername(),
                 create_utc_timestamp: new Date(),
               },
             });
           }
-        } else {
-          // Contravention belongs to selectedPartyGuid only — update in place as before
-          await db.contravention.update({
-            where: { contravention_guid: contraventionGuid },
-            data: {
-              legislation_guid_ref: input.legislationReference,
-              contravention_date: input.date,
-              geo_organization_unit_code_ref: input.community,
-              update_user_id: this.user.getIdirUsername(),
-              update_utc_timestamp: new Date(),
-            },
-          });
         }
+        await db.contravention.update({
+          where: { contravention_guid: contraventionGuid },
+          data: {
+            legislation_guid_ref: input.legislationReference,
+            contravention_date: input.date,
+            geo_organization_unit_code_ref: input.community,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
       });
     } catch (error) {
       this.logger.error("Error updating contravention:", error);
