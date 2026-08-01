@@ -180,7 +180,7 @@
     "@graphql-codegen/typescript-graphql-request": "^7.0.0",
     "@graphql-codegen/typescript-operations": "^5.0.9",
     "@playwright/test": "^1.52.0",
-    "@tsconfig/node22": "^22.0.0",
+    "@tsconfig/node24": "^24.0.0",
     "@types/jest": "^29.5.1",
     "@types/node": "^24.0.10",
     "@types/react-test-renderer": "^18.0.0",
