@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "2.0.358",
+  "version": "2.0.359",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -76,7 +76,7 @@
     "lodash": "^4.17.21",
     "make-fetch-happen": "15.0.3",
     "mapbox-gl-leaflet": "^0.0.16",
-    "node": "^21.6.1",
+    "node": "^24.18",
     "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",

@@ -60,7 +60,7 @@ export const DiaryDateForm = ({
       });
     });
 
-    return () => subscription();
+    return () => subscription.unsubscribe();
   }, [form.store, index, onValidationChange, onValuesChange]);
 
   useEffect(() => {
