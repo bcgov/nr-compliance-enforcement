@@ -55,7 +55,7 @@ export const CaseView: FC = () => {
     }
 
     if (times.length === 0) return undefined;
-    return new Date(Math.max(...times)).toString();
+    return new Date(Math.max(...times));
   }, [caseData, linkedComplaints, investigations, inspections]);
 
   const renderTabContent = () => {

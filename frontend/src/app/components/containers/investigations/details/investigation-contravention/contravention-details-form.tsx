@@ -1,5 +1,5 @@
 import { getUserAgency } from "@/app/service/user-service";
-import { Contravention, LegislationSource } from "@/generated/graphql";
+import { Contravention, InspectionParty, InvestigationParty, LegislationSource } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -20,12 +20,15 @@ import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
-import { parseUTCDateTimeToLocal } from "@/app/common/methods";
+import { getPartyName } from "@/app/common/party-name";
+import Option from "@apptypes/app/option";
+import { parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
   communityCode: string;
   selectedSection: string;
+  selectedPartyGuid?: string | null;
 }
 
 interface ContraventionDetailsFormProps {
@@ -35,6 +38,9 @@ interface ContraventionDetailsFormProps {
   onDirtyChange?: (index: number, isDirty: boolean) => void;
   onRequestValidate?: (validateForm: () => Promise<boolean>) => void;
   onRequestValues?: (getValues: () => ContraventionDetailsFormValues) => void;
+  parties?: InvestigationParty[];
+  partyGuid?: string | null;
+  isEditMode?: boolean;
 }
 
 const getLegislationViewUrl = (source: LegislationSource | null, sourceUrl: string | null): URL | null => {
@@ -81,11 +87,11 @@ export const ContraventionDetailsForm = ({
   onDirtyChange,
   onRequestValidate,
   onRequestValues,
+  parties,
+  partyGuid,
+  isEditMode,
 }: ContraventionDetailsFormProps) => {
-  const defaultDate = useMemo(
-    () => parseUTCDateTimeToLocal(discoveryDate ?? null, null) ?? new Date(),
-    [discoveryDate],
-  );
+  const defaultDate = useMemo(() => parseUTCDateToLocal(discoveryDate ?? null) ?? new Date(), [discoveryDate]);
   // Default the community when adding a new contravention
   const defaultCommunity = useMemo(
     () => (contravention ? "" : (investigationCommunity ?? "")),
@@ -114,10 +120,20 @@ export const ContraventionDetailsForm = ({
   const [actSource, setActSource] = useState<LegislationSource | null>(null);
   const [regulationSource, setRegulationSource] = useState<LegislationSource | null>(null);
 
+  const [party, setParty] = useState(partyGuid ?? "");
+
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
 
   const { data: legislationSources } = useLegislationSources();
+
+  const partyOptions: Option[] =
+    parties
+      ?.filter((p: InspectionParty | InvestigationParty) => p.partyAssociationRole === "PTYOFINTRST")
+      .map((party: InspectionParty | InvestigationParty) => ({
+        label: getPartyName(party),
+        value: party.partyIdentifier,
+      })) ?? [];
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
@@ -222,8 +238,9 @@ export const ContraventionDetailsForm = ({
       contraventionDate: formattedContraventionDate ?? "",
       communityCode: form.getFieldValue("communityCode"),
       selectedSection: form.getFieldValue("subsection"),
+      selectedPartyGuid: party || null,
     }),
-    [formattedContraventionDate, form],
+    [formattedContraventionDate, form, party],
   );
 
   // Return validation results to parent
@@ -242,7 +259,7 @@ export const ContraventionDetailsForm = ({
 
     // Populate date
     if (contravention.date) {
-      form.setFieldValue("contraventionDate", parseUTCDateTimeToLocal(contravention.date, null));
+      form.setFieldValue("contraventionDate", parseUTCDateToLocal(contravention.date));
       form.setFieldMeta("contraventionDate", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
     }
 
@@ -582,6 +599,32 @@ export const ContraventionDetailsForm = ({
                   <div className="error-message mt-2">{field.state.meta.errors[0].message}</div>
                 )}
               </div>
+            )}
+          />
+        )}
+        {isEditMode && (
+          <FormField
+            form={form}
+            name="party"
+            label="Party"
+            render={(field) => (
+              <CompSelect
+                id="party-select"
+                classNamePrefix="comp-select"
+                className="comp-details-input mb-1"
+                options={partyOptions}
+                value={findOptionByValue(partyOptions, party)}
+                onChange={(option) => {
+                  markDirty();
+                  const value = option?.value || "";
+                  field.handleChange(value);
+                  setParty(value);
+                }}
+                placeholder="Select party"
+                isClearable={true}
+                showInactive={false}
+                enableValidation={false}
+              />
             )}
           />
         )}

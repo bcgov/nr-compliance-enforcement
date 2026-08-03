@@ -1,12 +1,12 @@
 import { FC } from "react";
 import { DiaryDate } from "@/generated/graphql";
-import { formatDate, formatDateTime } from "@common/methods";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficerByAppUserGuid } from "@/app/store/reducers/officer";
 import { useNavigate, useParams } from "react-router-dom";
 import { InvestigationParams } from "@/app/components/containers/investigations/details/investigation-details";
 import { EditButton } from "@components/common/comp-table-edit-column";
 import { useInvestigationReadOnly } from "../../hooks/use-investigation-read-only";
+import { formatDateObjectAsString, parseUTCTimestampToLocal, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 interface DiaryDateRowProps {
   diaryDate: DiaryDate;
@@ -34,9 +34,9 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
   const addedByName = addedByUser
     ? `${addedByUser.last_name}, ${addedByUser.first_name} (${addedByUser.agency_code?.shortDescription ?? addedByUser.agency_code_ref})`
     : "Unknown";
-  const addedTimestamp = diaryDate.addedTimestamp
-    ? formatDateTime(new Date(diaryDate.addedTimestamp).toISOString())
-    : "";
+  const addedTimestamp = formatDateObjectAsString(parseUTCTimestampToLocal(diaryDate.addedTimestamp), {
+    format: "dateTime",
+  });
   const handleEditClick = () => {
     onEdit(diaryDate);
   };
@@ -47,7 +47,11 @@ export const DiaryDateRow: FC<DiaryDateRowProps> = ({
         <div className="d-flex gap-4 ">
           <span className="d-flex text-nowrap">
             <i className="bi bi-calendar me-2"></i>
-            <strong>{diaryDate.dueDate ? formatDate(diaryDate.dueDate) : "N/A"}</strong>
+            <strong>
+              {diaryDate.dueDate
+                ? formatDateObjectAsString(parseUTCDateToLocal(diaryDate.dueDate), { format: "date" })
+                : "N/A"}
+            </strong>
           </span>
           <span>{diaryDate.description}</span>
           {showTaskBadge && taskNumber && diaryDate.taskGuid && (

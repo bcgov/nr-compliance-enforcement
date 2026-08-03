@@ -4,12 +4,13 @@ import { Link } from "react-router-dom";
 import { CompTable } from "@components/common/comp-table";
 import { CompColumn } from "@/app/types/app/comp-tables";
 import { CaseFile, Inspection } from "@/generated/graphql";
-import { applyStatusClass, formatDateTime } from "@common/methods";
+import { applyStatusClass } from "@common/methods";
 import { selectAgencyDropdown } from "@/app/store/reducers/code-table";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { useInspectionSearch } from "../hooks/use-inspection-search";
 import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
+import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 type Props = {
   inspections: Inspection[];
@@ -83,7 +84,8 @@ export const InspectionList: FC<Props> = ({
       cellClassName: "comp-cell-width-160 comp-cell-min-width-160 case-table-date-cell",
       isSortable: true,
       getValue: (inspection) => inspection.openedTimestamp ?? "",
-      renderCell: (inspection) => formatDateTime(inspection.openedTimestamp),
+      renderCell: (inspection) =>
+        formatDateObjectAsString(parseUTCTimestampToLocal(inspection.openedTimestamp), { format: "dateTime" }),
     },
     {
       label: "Status",
