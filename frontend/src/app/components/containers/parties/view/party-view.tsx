@@ -11,6 +11,11 @@ import PartyDetail from "@/app/components/containers/parties/view/party-detail/p
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { isYoungPerson } from "@/app/common/methods";
 import { getPartyName } from "@/app/common/party-name";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
+import {
+  DetailField,
+  DetailSection,
+} from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
 
 export const GET_PARTY = gql`
   query GetParty($partyIdentifier: String!) {
@@ -83,11 +88,14 @@ export const GET_PARTY = gql`
         tattooDescription
         additionalDescriptors
         comments
-        boloIndicator
+        safetyConcernIndicator
+        safetyConcernReason
       }
       business {
         name
         businessGuid
+        safetyConcernIndicator
+        safetyConcernReason
         businessIdentifiers {
           businessIdentifierGuid
           identifierValue
@@ -172,14 +180,10 @@ export const PartyView: FC = () => {
           <PartyHeader
             title={getPartyName(partyData)}
             badges={
-              <>
-                {partyData?.person?.boloIndicator && (
-                  <div className="badge comp-status-badge-pending-review">
-                    <i className="bi bi-exclamation-circle"></i> Safety concern
-                  </div>
-                )}
-                {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-              </>
+              <PartyBadges
+                isSafetyConcern={!!(partyData?.person?.safetyConcernIndicator || partyData?.business?.safetyConcernIndicator)}
+                isYoungPerson={personIsYoung}
+              />
             }
             actions={
               <>
@@ -209,6 +213,16 @@ export const PartyView: FC = () => {
           ) : (
             <section className="comp-details-body comp-container party-details-section">
               <hr className="comp-details-body-spacer"></hr>
+              {(partyData?.person?.safetyConcernReason || partyData?.business?.safetyConcernReason) && (
+                <DetailSection title="">
+                  {partyData?.person?.safetyConcernReason && (
+                    <DetailField label="Safety concern reason">{partyData?.person?.safetyConcernReason}</DetailField>
+                  )}
+                  {partyData?.business?.safetyConcernReason && (
+                    <DetailField label="Safety concern reason">{partyData?.business?.safetyConcernReason}</DetailField>
+                  )}
+                </DetailSection>
+              )}
 
               <PartyDetail
                 party={partyData}
