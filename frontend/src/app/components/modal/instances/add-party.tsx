@@ -10,10 +10,8 @@ import {
   ContactMethod,
   CreateInspectionPartyInput,
   CreateInvestigationPartyInput,
-  InvestigationBusinessIdentifier,
   InvestigationParty,
   Party,
-  InvestigationPersonFacialHairStyleCodeRef,
   PersonFacialHairStyleCode,
   InvestigationAttachmentReference,
 } from "@/generated/graphql";
@@ -23,8 +21,6 @@ import { ToggleSuccess } from "@/app/common/toast";
 import { CompSelect } from "../../common/comp-select";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
-import { ContactMethods } from "@/app/constants/contact-methods";
-import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { useForm, useStore } from "@tanstack/react-form";
 import { PartyTypeCodes } from "@/app/constants/party-types";
 import { FormField } from "@/app/components/common/form-field";
@@ -33,13 +29,11 @@ import { BusinessFormFields } from "@/app/components/containers/parties/form/bus
 import {
   buildAddresses,
   buildAliases,
+  buildBusinessCreateUpdate,
   buildContactMethods,
-  buildIdentifiers,
   buildPersonBase,
   createEmptyPartyFormValues,
-  mapAddressesFromPartyData,
-  mapAliasesFromPartyData,
-  mapContactMethodsFromPartyData,
+  mapInvestigationPartyToDefaultValues,
 } from "@/app/components/containers/parties/form/party-form-utils";
 import { handleBusinessPartyMutationError } from "@/app/components/containers/parties/form/party-form-errors";
 import { v4 as uuidv4 } from "uuid";
@@ -49,7 +43,6 @@ import { GET_PARTY } from "@/app/components/containers/parties/view/party-view";
 import { getAttachments, getLatestObjectVersion } from "@/app/store/reducers/attachments";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { PartyAttachments } from "@/app/components/containers/parties/attachments/party-attachments";
-import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 type ActivityType = "investigation" | "inspection";
 
@@ -169,77 +162,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
 
   const defaultValues = useMemo(() => {
     if (modalMode === "edit" && editParty) {
-      return {
-        partyType: editParty.partyTypeCode || "",
-        personGuid: editParty.person?.personGuid || "",
-        firstName: editParty.person?.firstName || "",
-        middleNames: editParty.person?.middleNames || "",
-        lastName: editParty.person?.lastName || "",
-        dateOfBirth: editParty.person?.dateOfBirth
-          ? formatDateObjectAsString(parseUTCDateToLocal(editParty.person.dateOfBirth), { format: "date" })
-          : undefined,
-        approximateAgeCode: editParty.person?.approximateAgeCode || "",
-        driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
-        driversLicenseClass: editParty.person?.driversLicenseClass || null,
-        driversLicenseCountryCode: editParty.person?.driversLicenseCountryCode || null,
-        driversLicenseCountrySubdivisionCode: editParty.person?.driversLicenseCountrySubdivisionCode || null,
-        genderCode: editParty.person?.genderCode || "",
-        sexCode: editParty.person?.sexCode || "",
-        heightInCm: editParty.person?.heightInCm || null,
-        weightInKg: editParty.person?.weightInKg || null,
-        complexionCode: editParty.person?.complexionCode || "",
-        buildCode: editParty.person?.buildCode || "",
-        hairColourCode: editParty.person?.hairColourCode || "",
-        hairLengthCode: editParty.person?.hairLengthCode || "",
-        hairColourOther: editParty.person?.hairColourOther || null,
-        eyeColourCode: editParty.person?.eyeColourCode || "",
-        eyeColourOther: editParty.person?.eyeColourOther || null,
-        facialHairIndicator: editParty.person?.facialHairIndicator || null,
-        facialHairStyleCodes:
-          editParty.person?.facialHairStyleCodes
-            ?.filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
-            .map((fhs) => ({
-              personFacialStyleHairCodeGuid: fhs?.personFacialStyleHairCodeGuid,
-              personGuid: fhs?.personGuid,
-              facialHairStyleCode: fhs?.facialHairStyleCode,
-            })) ?? [],
-        additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
-        tattooIndicator: editParty.person?.tattooIndicator || null,
-        tattooDescription: editParty.person?.tattooDescription || null,
-        additionalDescriptors: editParty.person?.additionalDescriptors || null,
-        comments: editParty.person?.comments || null,
-        safetyConcernIndicator: editParty.person?.safetyConcernIndicator || null,
-        safetyConcernReason: editParty.person?.safetyConcernReason || null,
-        businessSafetyConcernIndicator: editParty.business?.safetyConcernIndicator || null,
-        businessSafetyConcernReason: editParty.business?.safetyConcernReason || null,
-        businessName: editParty.business?.name || "",
-        businessNumber: (() => {
-          const found = editParty.business?.businessIdentifiers
-            ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
-            .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
-          return found
-            ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
-            : { identifierValue: "" };
-        })(),
-        worksafeBCNumber: (() => {
-          const found = editParty.business?.businessIdentifiers
-            ?.filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
-            .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
-          return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
-        })(),
-        aliases: mapAliasesFromPartyData(editParty.aliases),
-        phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
-        emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
-        addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
-        contacts: [] as any[],
-        partyAssociationRole: editParty.partyAssociationRole || "",
-      };
+      return mapInvestigationPartyToDefaultValues(editParty);
     }
-
-    return {
-      ...createEmptyPartyFormValues(),
-      partyAssociationRole: "",
-    };
+    return { ...createEmptyPartyFormValues(), partyAssociationRole: "" };
   }, [modalMode, editParty]);
 
   // TanStack form for "create new" and "edit" mode
@@ -257,23 +182,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
-          input.person = {
-            personGuid: value.personGuid,
-            ...buildPersonBase(value),
-            facialHairStyleCodes:
-              value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
-                personGuid: fhs.personGuid,
-                facialHairStyleCode: fhs.facialHairStyleCode,
-              })) || [],
-          };
+          input.person = { personGuid: value.personGuid, ...buildPersonBase(value) };
         } else {
-          input.business = {
-            name: value.businessName?.trim(),
-            businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
-            safetyConcernReason: value.businessSafetyConcernReason || null,
-          };
+          input.business = buildBusinessCreateUpdate(value);
         }
 
         updatePartyMutation.mutate({ investigationGuid: activityGuid, input });
@@ -288,22 +199,9 @@ export const AddEditPartyModal: FC<AddEditPartyModalProps> = ({ activityType, mo
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
-          input.person = {
-            ...buildPersonBase(value),
-            facialHairStyleCodes:
-              value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
-                personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
-                personGuid: fhs.personGuid,
-                facialHairStyleCode: fhs.facialHairStyleCode,
-              })) || [],
-          };
+          input.person = buildPersonBase(value);
         } else {
-          input.business = {
-            name: value.businessName?.trim(),
-            businessIdentifiers: buildIdentifiers(value.businessNumber, value.worksafeBCNumber),
-            safetyConcernIndicator: value.businessSafetyConcernIndicator || null,
-            safetyConcernReason: value.businessSafetyConcernReason || null,
-          };
+          input.business = buildBusinessCreateUpdate(value);
         }
         if (activityType === "investigation") {
           addPartyMutation.mutate({ investigationGuid: activityGuid, input });

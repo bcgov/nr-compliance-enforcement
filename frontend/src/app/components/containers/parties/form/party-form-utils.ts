@@ -5,11 +5,15 @@ import {
   BusinessPersonAddress,
   ContactMethod,
   FacialHairStyleCode,
+  InvestigationBusinessIdentifier,
+  InvestigationParty,
+  InvestigationPersonFacialHairStyleCodeRef,
   Party,
   PersonFacialHairStyleCode,
   PersonInput,
   PersonUpdateInput,
 } from "@/generated/graphql";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { ContactMethods } from "@/app/constants/contact-methods";
 import { BusinessIdentifiers } from "@/app/constants/business-identifiers";
 import { isValidEmail } from "@/app/common/validate-email";
@@ -551,6 +555,72 @@ export const createEmptyPartyFormValues = () => ({
   emailAddresses: [createEmptyContactMethod(true)] as ContactMethodFormValue[],
   addresses: [{ ...createEmptyAddress(), isPrimary: true }] as AddressFormValue[],
   contacts: [] as ContactPersonFormValue[],
+});
+
+export const mapInvestigationPartyToDefaultValues = (
+  editParty: InvestigationParty,
+  { mapContacts = false }: { mapContacts?: boolean } = {},
+) => ({
+  partyType: editParty.partyTypeCode || "",
+  personGuid: editParty.person?.personGuid || "",
+  firstName: editParty.person?.firstName || "",
+  middleNames: editParty.person?.middleNames || "",
+  lastName: editParty.person?.lastName || "",
+  dateOfBirth: editParty.person?.dateOfBirth
+    ? formatDateObjectAsString(parseUTCDateToLocal(editParty.person.dateOfBirth), { format: "date" })
+    : undefined,
+  approximateAgeCode: editParty.person?.approximateAgeCode || "",
+  driversLicenseNumber: editParty.person?.driversLicenseNumber || null,
+  driversLicenseClass: editParty.person?.driversLicenseClass || null,
+  driversLicenseCountryCode: editParty.person?.driversLicenseCountryCode || null,
+  driversLicenseCountrySubdivisionCode: editParty.person?.driversLicenseCountrySubdivisionCode || null,
+  genderCode: editParty.person?.genderCode || "",
+  sexCode: editParty.person?.sexCode || "",
+  heightInCm: editParty.person?.heightInCm || null,
+  weightInKg: editParty.person?.weightInKg || null,
+  complexionCode: editParty.person?.complexionCode || "",
+  buildCode: editParty.person?.buildCode || "",
+  hairColourCode: editParty.person?.hairColourCode || "",
+  hairLengthCode: editParty.person?.hairLengthCode || "",
+  hairColourOther: editParty.person?.hairColourOther || null,
+  eyeColourCode: editParty.person?.eyeColourCode || "",
+  eyeColourOther: editParty.person?.eyeColourOther || null,
+  facialHairIndicator: editParty.person?.facialHairIndicator || null,
+  facialHairStyleCodes: (editParty.person?.facialHairStyleCodes ?? [])
+    .filter((fhs): fhs is InvestigationPersonFacialHairStyleCodeRef => fhs != null)
+    .map((fhs) => ({
+      personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
+      personGuid: fhs.personGuid,
+      facialHairStyleCode: fhs.facialHairStyleCode,
+    })),
+  additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
+  tattooIndicator: editParty.person?.tattooIndicator || null,
+  tattooDescription: editParty.person?.tattooDescription || null,
+  additionalDescriptors: editParty.person?.additionalDescriptors || null,
+  comments: editParty.person?.comments || null,
+  safetyConcernIndicator: editParty.person?.safetyConcernIndicator || null,
+  safetyConcernReason: editParty.person?.safetyConcernReason || null,
+  businessSafetyConcernIndicator: editParty.business?.safetyConcernIndicator || null,
+  businessSafetyConcernReason: editParty.business?.safetyConcernReason || null,
+  businessName: editParty.business?.name || "",
+  businessNumber: (() => {
+    const found = (editParty.business?.businessIdentifiers ?? [])
+      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
+    return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : { identifierValue: "" };
+  })(),
+  worksafeBCNumber: (() => {
+    const found = (editParty.business?.businessIdentifiers ?? [])
+      .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
+      .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
+    return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+  })(),
+  aliases: mapAliasesFromPartyData(editParty.aliases),
+  phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),
+  emailAddresses: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.EMAIL),
+  addresses: mapAddressesFromPartyData(editParty.addresses as Address[]),
+  contacts: mapContacts ? mapContactPeopleFromPartyData(editParty.business?.contactPeople) : ([] as ContactPersonFormValue[]),
+  partyAssociationRole: editParty.partyAssociationRole || "",
 });
 
 /** Finds a business identifier value by code on the source party. */
