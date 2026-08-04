@@ -1,11 +1,12 @@
 import { FC, useCallback, ChangeEvent, KeyboardEvent, useState, useEffect, MouseEventHandler } from "react";
-import { Button, CloseButton, InputGroup } from "react-bootstrap";
+import { Button, CloseButton, InputGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FilterButton } from "@components/common/filter-button";
 import { useExhibitsSearch, ExhibitsSearchParams } from "./hooks/use-exhibits-search";
 import { Task } from "@/generated/graphql";
 import { getPropertyTypeLabel } from "@/app/types/app/investigation/exhibits";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectOfficers } from "@/app/store/reducers/officer";
+import { TooltipContent } from "@components/common/tooltip-content";
 
 type Props = {
   tasks?: Task[];
@@ -119,6 +120,27 @@ export const ExhibitsFilterBar: FC<Props> = ({
     </Button>
   );
 
+  const renderExhibitTooltip = (props: any) => (
+    <Tooltip
+      id="search-button-tooltip"
+      className="comp-tooltip"
+      {...props}
+    >
+      <TooltipContent
+        title="Exhibit searchable fields:"
+        items={[
+          "Address",
+          "Exhibit number",
+          "Item description",
+          "Location of intake",
+          "Name",
+          "Phone Number",
+          "Property tag number",
+        ]}
+      />
+    </Tooltip>
+  );
+
   return (
     <div className="comp-filter-bar">
       <div className="search-bar">
@@ -140,15 +162,21 @@ export const ExhibitsFilterBar: FC<Props> = ({
               tabIndex={0}
             />
           )}
-          <button
-            id="search-button"
-            className="btn text-white"
-            onClick={applySearch}
-            type="button"
-            aria-label="Search"
+          <OverlayTrigger
+            placement="bottom"
+            delay={{ show: 250, hide: 400 }}
+            overlay={renderExhibitTooltip}
           >
-            <i className="bi bi-search"></i>
-          </button>
+            <button
+              id="search-button"
+              className="btn text-white"
+              onClick={applySearch}
+              type="button"
+              aria-label="Search"
+            >
+              <i className="bi bi-search"></i>
+            </button>
+          </OverlayTrigger>
         </InputGroup>
       </div>
 

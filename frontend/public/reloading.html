@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NatSuite is updating</title>
+  <style>
+    @font-face {
+      font-family: "BC Sans";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url("/fonts/bc-sans-regular.woff") format("woff");
+    }
+    @font-face {
+      font-family: "BC Sans";
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url("/fonts/bc-sans-bold.woff") format("woff");
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: "BC Sans", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #313132;
+      background: #ffffff;
+    }
+    header {
+      background: #003366;
+      color: #ffffff;
+      padding: 0 1.5rem;
+      min-height: 65px;
+      display: flex;
+      align-items: center;
+    }
+    header .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: #ffffff;
+    }
+    header .logo {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+    header .wordmark {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    main {
+      flex: 1 0 auto;
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      max-width: 60rem;
+      margin: 0 auto;
+    }
+    /* Mirrors the app's .error-container .message: stacked on small screens,
+       icon-left row at >=768px, left-aligned. */
+    .message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .message {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        justify-content: center;
+      }
+    }
+    .icon {
+      color: #000000;
+      height: 175px;
+      width: 175px;
+      flex-shrink: 0;
+      vertical-align: middle;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .icon { animation: spin 2s linear infinite; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Bootstrap h1 defaults, matching the app's error heading. */
+    h1 {
+      font-size: calc(1.375rem + 1.5vw);
+      font-weight: 500;
+      line-height: 1.2;
+      margin: 0 0 0.5rem;
+      color: #313132;
+    }
+    p { font-size: 1rem; line-height: 1.5; margin: 0.5rem 0; }
+    a.link { color: #1a5a96; }
+    .actions { margin-top: 1.5rem; }
+    a.button {
+      display: inline-block;
+      background: #003366;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.625rem 1.5rem;
+      border-radius: 4px;
+    }
+    a.button:hover { background: #00294f; }
+    a.button:focus-visible { outline: 3px solid #fcba19; outline-offset: 2px; }
+    footer {
+      flex-shrink: 0;
+      margin-top: auto;
+      line-height: 0;
+    }
+    footer img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <img src="/images/BCgov-lg.png" alt="Government of British Columbia" class="logo" />
+      <span class="wordmark">NatSuite</span>
+    </a>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="message">
+        <!-- Inline SVG (no external/hashed asset). Bootstrap "arrow-clockwise". -->
+        <svg class="icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"
+             xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+          <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+        </svg>
+
+        <div class="message-details">
+          <h1>NatSuite is updating</h1>
+          <p>A new version is being deployed. This page will refresh on its own
+             after two minutes.</p>
+          <p>If you continue to see this page for more than 5 minutes, please
+             email the Compliance &amp; Enforcement Digital Services team at
+             <a class="link" href="mailto:CEDS@gov.bc.ca">CEDS@gov.bc.ca</a>.</p>
+          <div class="actions">
+            <a class="button" href="/">Try now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <img src="/images/ce-footer.svg" alt="" />
+  </footer>
+  <script src="/static/js/reloading-refresh.js"></script>
+</body>
+</html>

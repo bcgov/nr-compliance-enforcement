@@ -233,7 +233,8 @@ export class InvestigationPartyService {
       tattoo_description: input.tattooDescription,
       additional_descriptors: input.additionalDescriptors,
       comments: input.comments,
-      bolo_ind: input.boloIndicator,
+      safety_concern_ind: input.safetyConcernIndicator,
+      safety_concern_reason: input.safetyConcernReason,
     };
   }
 
@@ -259,7 +260,8 @@ export class InvestigationPartyService {
         tattoo_description: input.tattooDescription,
         additional_descriptors: input.additionalDescriptors,
         comments: input.comments,
-        bolo_ind: input.boloIndicator,
+        safety_concern_ind: input.safetyConcernIndicator,
+        safety_concern_reason: input.safetyConcernReason,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
@@ -285,6 +287,8 @@ export class InvestigationPartyService {
         business_guid_ref: input.businessReference,
         investigation_party_guid: investigationPartyGuid,
         name: input.name,
+        safety_concern_ind: input.safetyConcernIndicator,
+        safety_concern_reason: input.safetyConcernReason,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
@@ -702,7 +706,8 @@ export class InvestigationPartyService {
         tattoo_description: input.tattooDescription,
         additional_descriptors: input.additionalDescriptors,
         comments: input.comments,
-        bolo_ind: input.boloIndicator,
+        safety_concern_ind: input.safetyConcernIndicator,
+        safety_concern_reason: input.safetyConcernReason,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
       },
@@ -719,6 +724,8 @@ export class InvestigationPartyService {
       where: { investigation_business_guid: existingBusiness.businessGuid },
       data: {
         name: input.name,
+        safety_concern_ind: input.safetyConcernIndicator,
+        safety_concern_reason: input.safetyConcernReason,
         update_user_id: this.user.getIdirUsername(),
         update_utc_timestamp: new Date(),
       },

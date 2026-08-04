@@ -104,12 +104,15 @@ export const GET_INVESTIGATION = gql`
           tattooDescription
           additionalDescriptors
           comments
-          boloIndicator
+          safetyConcernIndicator
+          safetyConcernReason
         }
         business {
           __typename
           businessGuid
           name
+          safetyConcernIndicator
+          safetyConcernReason
           contactPeople {
             businessPersonXrefGuid
             title
