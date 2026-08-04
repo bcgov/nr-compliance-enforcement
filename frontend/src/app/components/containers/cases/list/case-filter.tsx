@@ -76,7 +76,7 @@ export const CaseFilter: FC = () => {
 
       <FilterDate
         id="case-date-range-filter"
-        label="Date Range"
+        label="Date opened"
         startDate={searchValues.startDate || undefined}
         endDate={searchValues.endDate || undefined}
         handleDateChange={handleDateRangeChange}

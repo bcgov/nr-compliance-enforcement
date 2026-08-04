@@ -4,6 +4,7 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { getUserAgency } from "@service/user-service";
 import { useAppSelector } from "@hooks/hooks";
 import { selectInvestigationListUrl } from "@store/reducers/investigation-list-url";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface InvestigationSearchParams {
   search: string;
@@ -37,9 +38,10 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   viewType: "list",
 };
 
-const serializeDate = (date: Date | null): string | undefined => (date ? date.toISOString().split("T")[0] : undefined);
+const serializeDate = (date: Date | null): string | undefined =>
+  date ? formatDateObjectAsString(date, { format: "date" }) : undefined;
 
-const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
+const deserializeDate = (dateString: string | null): Date | null => parseUTCDateToLocal(dateString, null);
 
 const serializeSearchValueToUrl = (key: keyof InvestigationSearchParams, value: any): string | undefined => {
   if (value == null) {
