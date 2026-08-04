@@ -5,10 +5,11 @@ import { BusinessPerson } from "@/generated/graphql";
 import { usePartyFormFields } from "@/app/components/containers/parties/hooks/use-party-form-fields";
 import { ContactPersonFields } from "@/app/components/containers/parties/edit/contact-person";
 import { z } from "zod";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { getFieldErrorMessage } from "@/app/components/containers/parties/form/party-form-errors";
 import { PartyContactFields } from "@/app/components/containers/parties/form/party-contact-fields";
 import { PartyAliasFields } from "@/app/components/containers/parties/form/party-alias-fields";
+import { ValidationTextArea } from "@/app/common/validation-textarea";
 
 type BusinessFormFieldsProps = {
   form: any;
@@ -54,6 +55,57 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
 
   return (
     <>
+      <FormField
+        form={form}
+        name="businessSafetyConcernIndicator"
+        label="Safety concern"
+        render={(field) => (
+          <Form.Check
+            type="checkbox"
+            id="business-safety-concern-indicator"
+            checked={!!field.state.value}
+            onChange={(e) => {
+              field.handleChange(e.target.checked ? true : null);
+              if (!e.target.checked) {
+                form.setFieldValue("businessSafetyConcernReason", "");
+              }
+            }}
+            disabled={isDisabled}
+          />
+        )}
+      />
+      <form.Subscribe selector={(state: any) => state.values.businessSafetyConcernIndicator}>
+        {(businessSafetyConcernIndicator: boolean | undefined) =>
+          businessSafetyConcernIndicator ? (
+            <FormField
+              form={form}
+              name="businessSafetyConcernReason"
+              label="Safety concern reason"
+              required
+              validators={{
+                onChange: ({ value }: { value: string | null | undefined }) => {
+                  const isSafetyConcernChecked = !!form.getFieldValue("businessSafetyConcernIndicator");
+                  const isEmpty = !value?.trim();
+                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                },
+              }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="business-safety-concern-reason"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  value={field.state.value ?? ""}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter reason for safety concern"
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="businessName"

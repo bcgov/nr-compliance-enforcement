@@ -11,6 +11,8 @@ export class Business implements BusinessDto {
   name: string;
   businessIdentifiers: BusinessIdentifier[];
   contactPeople: BusinessPersonXref[];
+  safetyConcernIndicator?: boolean;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -46,6 +48,14 @@ export const mapPrismaBusinessToBusiness = (mapper: Mapper) => {
       mapWithArguments((src) =>
         mapper.mapArray(src.business_person_xref ?? [], "business_person_xref", "BusinessPersonXref"),
       ),
+    ),
+    forMember(
+      (dest) => dest.safetyConcernIndicator,
+      mapFrom((src) => src.safety_concern_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.safetyConcernReason,
+      mapFrom((src) => src.safety_concern_reason ?? undefined),
     ),
   );
 };

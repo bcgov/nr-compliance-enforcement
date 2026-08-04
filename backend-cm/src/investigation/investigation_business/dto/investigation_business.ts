@@ -21,6 +21,8 @@ export class InvestigationBusiness implements BusinessDto {
   businessReference?: string;
   businessIdentifiers?: InvestigationBusinessIdentifier[];
   contactPeople?: InvestigationBusinessPersonXref[];
+  safetyConcernIndicator?: boolean;
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -36,6 +38,12 @@ export class CreateInvestigationBusinessInput {
 
   @Field(() => [CreateInvestigationBusinessContactInput], { nullable: true })
   contactPeople?: CreateInvestigationBusinessContactInput[];
+
+  @Field(() => Boolean, { nullable: true })
+  safetyConcernIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  safetyConcernReason?: string;
 }
 
 @InputType()
@@ -48,6 +56,12 @@ export class UpdateInvestigationBusinessInput {
 
   @Field(() => [UpdateInvestigationBusinessContactInput], { nullable: true })
   contactPeople?: UpdateInvestigationBusinessContactInput[];
+
+  @Field(() => Boolean, { nullable: true })
+  safetyConcernIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  safetyConcernReason?: string;
 }
 
 export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
@@ -94,6 +108,14 @@ export const mapPrismaBusinessToInvestigationBusiness = (mapper: Mapper) => {
           "InvestigationBusinessPersonXref",
         ),
       ),
+    ),
+    forMember(
+      (dest) => dest.safetyConcernIndicator,
+      mapFrom((src) => src.safety_concern_ind ?? undefined),
+    ),
+    forMember(
+      (dest) => dest.safetyConcernReason,
+      mapFrom((src) => src.safety_concern_reason ?? undefined),
     ),
   );
 };
