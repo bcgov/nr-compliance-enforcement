@@ -112,11 +112,20 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Get GitOps repo token
+        id: gitops-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.GITOPS_APP_ID }}
+          private-key: ${{ secrets.GITOPS_APP_PRIVATE_KEY }}
+          owner: bcgov-c
+          repositories: tenant-gitops-f208ae
+
       - name: Checkout CD repo
         uses: actions/checkout@v4
         with:
           repository: ${{ env.GITOPS_REPO }}
-          ssh-key: ${{ secrets.MANIFEST_REPO_DEPLOY_KEY }}
+          token: ${{ steps.gitops-token.outputs.token }}
           ref: ${{ env.GITOPS_REPO_BRANCH }}
       - name: Configure git
         # From https://github.com/orgs/community/discussions/26560#discussioncomment-3531273

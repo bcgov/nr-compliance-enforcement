@@ -54,6 +54,7 @@ import AttachmentEnum from "@/app/constants/attachment-enum";
 import { FormErrorBanner } from "@/app/components/common/form-error-banner";
 import { getPartyName } from "@/app/common/party-name";
 import { isYoungPerson } from "@/app/common/methods";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 const PARTY_PERSON_FRAGMENT = gql`
   fragment PartyPersonFields on Person {
@@ -174,7 +175,10 @@ const PartyEdit: FC = () => {
         tattooDescription: person?.tattooDescription || null,
         additionalDescriptors: person?.additionalDescriptors || null,
         comments: person?.comments || null,
-        boloIndicator: person?.boloIndicator || null,
+        safetyConcernIndicator: person?.safetyConcernIndicator || null,
+        safetyConcernReason: person?.safetyConcernReason || null,
+        businessSafetyConcernIndicator: partyData.party.business?.safetyConcernIndicator || null,
+        businessSafetyConcernReason: partyData.party.business?.safetyConcernReason || null,
         businessName: partyData.party.business?.name || "",
         businessNumber: partyData.party.business?.businessIdentifiers?.find(
           (i: BusinessIdentifier) => i.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER,
@@ -215,11 +219,14 @@ const PartyEdit: FC = () => {
       facialHairIndicator: "",
       facialHairStyleCodes: [],
       additionalHairDescriptors: "",
-      boloIndicator: "",
+      safetyConcernIndicator: "",
+      safetyConcernReason: "",
       comments: "",
       tattooIndicator: "",
       tattooDescription: "",
       additionalDescriptors: "",
+      businessSafetyConcernIndicator: "" as any,
+      businessSafetyConcernReason: "",
       businessName: "",
       businessNumber: {},
       worksafeBCNumber: {},
@@ -411,14 +418,10 @@ const PartyEdit: FC = () => {
         partyName={partyData?.party ? getPartyName(partyData?.party) : ""}
         partyIdentifier={id}
         badges={
-          <>
-            {partyData?.party?.person?.boloIndicator && (
-              <div className="badge comp-status-badge-pending-review">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </div>
-            )}
-            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-          </>
+          <PartyBadges
+            isSafetyConcern={!!(partyData?.party?.person?.safetyConcernIndicator || partyData?.party?.business?.safetyConcernIndicator)}
+            isYoungPerson={personIsYoung}
+          />
         }
       />
 

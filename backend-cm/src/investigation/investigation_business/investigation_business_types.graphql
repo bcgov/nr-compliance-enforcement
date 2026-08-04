@@ -8,4 +8,6 @@ type InvestigationBusiness {
   aliases: [InvestigationAlias]
   addresses: [InvestigationAddress]
   contactPeople: [InvestigationBusinessPerson]
+  safetyConcernIndicator: Boolean
+  safetyConcernReason: String
 }
