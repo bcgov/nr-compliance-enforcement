@@ -1,7 +1,8 @@
 import { getUserAgency } from "@/app/service/user-service";
-import { Contravention, LegislationSource } from "@/generated/graphql";
+import { Contravention, Legislation } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Alert } from "react-bootstrap";
 import {
   convertLegislationToHierarchicalOptions,
   convertLegislationToOption,
@@ -14,13 +15,14 @@ import { CompSelect } from "@/app/components/common/comp-select";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { LegislationTable } from "@/app/components/common/legislation-table";
 import z from "zod";
-import { useLegislationSources } from "@/app/graphql/hooks/useLegislationSourceQuery";
+import { LegislationVersion, useLegislationVersions } from "@/app/graphql/hooks/useLegislationVersionQuery";
 import { useFormDirtyState } from "@/app/hooks/use-unsaved-changes-warning";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
-import { parseUTCDateToLocal } from "@/app/common/date-utils";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
+import { ToggleWarning } from "@/app/common/toast";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -37,32 +39,25 @@ interface ContraventionDetailsFormProps {
   onRequestValues?: (getValues: () => ContraventionDetailsFormValues) => void;
 }
 
-const getLegislationViewUrl = (source: LegislationSource | null, sourceUrl: string | null): URL | null => {
+const getLegislationViewUrl = (sourceUrl: string | null): URL | null => {
   if (!sourceUrl) return null;
-  if (!source) return new URL(sourceUrl);
-  const { sourceType } = source;
-  if (sourceType === "BCLAWS" && sourceUrl.endsWith("/xml")) {
-    return new URL(sourceUrl.slice(0, -4));
+  const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9-]+)\.xml$/;
+  const match = regexPattern.exec(sourceUrl);
+  if (match) {
+    const code = match[1].toLowerCase();
+    return new URL(`https://laws-lois.justice.gc.ca/eng/acts/${code}/`);
   }
-  if (sourceType === "FEDERAL") {
-    const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9-]+)\.xml$/;
-    const match = regexPattern.exec(sourceUrl);
-    if (match) {
-      const code = match[1].toLowerCase();
-      return new URL(`https://laws-lois.justice.gc.ca/eng/acts/${code}/`);
-    }
-    return new URL(sourceUrl);
+  if (sourceUrl.endsWith("/xml")) {
+    return new URL(sourceUrl.slice(0, -4));
   }
   return new URL(sourceUrl);
 };
 
-const formatLegislationSourceUrl = (source: LegislationSource) => {
-  const sourceUrl = source.sourceUrl ?? null;
-  const url = getLegislationViewUrl(source, sourceUrl);
+const formatLegislationSourceUrl = (legislation: Legislation) => {
+  const url = getLegislationViewUrl(legislation.sourceUrl ?? null);
   if (!url) return null;
-  const { sourceType, shortDescription } = source;
-  const site = sourceType === "BCLAWS" ? "BC Laws" : "DoJ Canada";
-  const name = shortDescription?.trim() || "legislation";
+  const site = url.hostname === "laws-lois.justice.gc.ca" ? "DoJ Canada" : "BC Laws";
+  const name = (legislation.sectionTitle ?? legislation.legislationText)?.trim() || "legislation";
   return (
     <a
       href={url.href}
@@ -72,6 +67,27 @@ const formatLegislationSourceUrl = (source: LegislationSource) => {
       View <i>{name}</i> on {site}
     </a>
   );
+};
+
+// The date range the selected act/regulation's version was in force, or null when it is still the current version
+const getSupersededVersionDates = (
+  legislation: Legislation | null,
+  versions: LegislationVersion[] | undefined,
+): string | null => {
+  const versionStart = parseUTCDateToLocal(legislation?.versionEffectiveDate, null);
+  if (!versionStart || !versions?.length) return null;
+
+  const today = new Date();
+  const nextVersionStart = versions
+    .filter((version) => version.importStatus === "SUCCESS")
+    .map((version) => parseUTCDateToLocal(version.effectiveDate, null))
+    .filter((date): date is Date => !!date && date > versionStart && date <= today)
+    .toSorted((a, b) => a.getTime() - b.getTime())[0];
+  if (!nextVersionStart) return null;
+
+  const versionEnd = new Date(nextVersionStart);
+  versionEnd.setDate(versionEnd.getDate() - 1);
+  return `${formatDateObjectAsString(versionStart)} to ${formatDateObjectAsString(versionEnd)}`;
 };
 
 export const ContraventionDetailsForm = ({
@@ -108,13 +124,9 @@ export const ContraventionDetailsForm = ({
   const [act, setAct] = useState("");
   const [regulation, setRegulation] = useState("");
   const [section, setSection] = useState("");
-  const [actSource, setActSource] = useState<LegislationSource | null>(null);
-  const [regulationSource, setRegulationSource] = useState<LegislationSource | null>(null);
 
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
-
-  const { data: legislationSources } = useLegislationSources();
 
   const actsQuery = useLegislationSearchQuery({
     agencyCode: userAgency,
@@ -127,6 +139,7 @@ export const ContraventionDetailsForm = ({
     agencyCode: userAgency,
     legislationTypeCodes: [LegislationType.REGULATION],
     ancestorGuid: act || "",
+    offenseDate: formattedContraventionDate,
     enabled: !!act,
   });
 
@@ -140,6 +153,7 @@ export const ContraventionDetailsForm = ({
     ],
     ancestorGuid: regulation || act,
     excludeRegulations: !!act && !regulation,
+    offenseDate: formattedContraventionDate,
     enabled: !!regulation || !!act,
   });
 
@@ -159,6 +173,7 @@ export const ContraventionDetailsForm = ({
       LegislationType.TABLE,
     ],
     ancestorGuid: section,
+    offenseDate: formattedContraventionDate,
     enabled: !!section,
   });
 
@@ -167,6 +182,16 @@ export const ContraventionDetailsForm = ({
   const actOptions = convertLegislationToOption(actsQuery.data?.legislations);
   const regOptions = convertLegislationToOption(regulationsQuery.data?.legislations);
   const secOptions = convertLegislationToHierarchicalOptions(sectionsQuery.data?.legislations, regulation || act);
+
+  const selectedAct = actsQuery.data?.legislations?.find((item) => item?.legislationGuid === act) ?? null;
+  const selectedRegulation =
+    regulationsQuery.data?.legislations?.find((item) => item?.legislationGuid === regulation) ?? null;
+
+  const { data: actVersions } = useLegislationVersions(selectedAct?.legislationSourceGuid ?? undefined);
+  const { data: regulationVersions } = useLegislationVersions(selectedRegulation?.legislationSourceGuid ?? undefined);
+
+  const actSupersededDates = getSupersededVersionDates(selectedAct, actVersions);
+  const regulationSupersededDates = getSupersededVersionDates(selectedRegulation, regulationVersions);
 
   const findOptionByValue = (options: any[], value: string) =>
     value ? options.find((opt) => opt.value === value) : null;
@@ -178,32 +203,6 @@ export const ContraventionDetailsForm = ({
   const errorMessages = [actsQuery.error, regulationsQuery.error, sectionsQuery.error, legislationTextQuery.error]
     .filter(Boolean)
     .map((err) => (err as Error).message || String(err));
-
-  const handleActLinkChange = (actGuid: string | null) => {
-    if (!actGuid) {
-      setActSource(null);
-      return;
-    }
-    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === actGuid);
-    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setActSource(source ?? null);
-  };
-
-  const handleRegulationLinkChange = (regulationGuid: string | null) => {
-    if (!regulationGuid) {
-      setRegulationSource(null);
-      return;
-    }
-    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulationGuid);
-    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setRegulationSource(source ?? null);
-  };
 
   // Expose validate to modal
   const handleValidate = useCallback(async (): Promise<boolean> => {
@@ -283,34 +282,6 @@ export const ContraventionDetailsForm = ({
     form.setFieldMeta("subsection", (meta) => ({ ...meta, isDirty: false, isTouched: false }));
   }, [contravention, legislationQuery?.data]);
 
-  // Sync act source
-  useEffect(() => {
-    if (!act || !legislationSources || !actsQuery.data?.legislations) {
-      if (!act) setActSource(null);
-      return;
-    }
-    const actRecord = actsQuery.data?.legislations?.find((l) => l.legislationGuid === act);
-    const legislationSourceGuid = actRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setActSource(source ?? null);
-  }, [act, legislationSources, actsQuery.data?.legislations]);
-
-  // Sync regulation source
-  useEffect(() => {
-    if (!regulation || !legislationSources || !regulationsQuery.data?.legislations) {
-      if (!regulation) setRegulationSource(null);
-      return;
-    }
-    const regRecord = regulationsQuery.data?.legislations?.find((l) => l.legislationGuid === regulation);
-    const legislationSourceGuid = regRecord?.legislationSourceGuid ?? null;
-    const source = legislationSourceGuid
-      ? legislationSources?.find((s) => s.legislationSourceGuid === legislationSourceGuid)
-      : null;
-    setRegulationSource(source ?? null);
-  }, [regulation, legislationSources, regulationsQuery.data?.legislations]);
-
   return (
     <>
       <form
@@ -346,6 +317,13 @@ export const ContraventionDetailsForm = ({
                   onChange={(date: Date | undefined) => {
                     markDirty();
                     field.handleChange(date ?? null);
+                    if (act) {
+                      ToggleWarning("The legislation in force may have changed. Select the act and section again.");
+                      for (const name of ["act", "regulation", "section", "subsection"] as const) {
+                        form.setFieldValue(name, "");
+                        form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
+                      }
+                    }
                     setAct("");
                     setRegulation("");
                     setSection("");
@@ -404,10 +382,8 @@ export const ContraventionDetailsForm = ({
                     const value = option?.value || "";
                     field.handleChange(value);
                     setAct(value);
-                    handleActLinkChange(value);
                     setRegulation("");
                     setSection("");
-                    setRegulationSource(null);
                   }}
                   placeholder="Select act"
                   isClearable={true}
@@ -415,7 +391,20 @@ export const ContraventionDetailsForm = ({
                   enableValidation={true}
                   errorMessage={field.state.meta.errors?.[0]?.message || ""}
                 />
-                {actSource && <div className="mt-1">{formatLegislationSourceUrl(actSource)}</div>}
+                {selectedAct && <div className="mt-1">{formatLegislationSourceUrl(selectedAct)}</div>}
+                {actSupersededDates && (
+                  <Alert
+                    variant="warning"
+                    className="comp-complaint-details-alert mt-2"
+                  >
+                    <div className="d-flex align-items-start gap-2">
+                      <i className="bi bi-info-circle mt-2" />
+                      <span>
+                        This act was in force {actSupersededDates}. A newer version applies to later contraventions.
+                      </span>
+                    </div>
+                  </Alert>
+                )}
               </>
             )}
           />
@@ -440,7 +429,6 @@ export const ContraventionDetailsForm = ({
                       const value = option?.value || "";
                       field.handleChange(value);
                       setRegulation(value);
-                      handleRegulationLinkChange(value || null);
                       setSection("");
                     }}
                     placeholder="Select regulation"
@@ -449,7 +437,21 @@ export const ContraventionDetailsForm = ({
                     enableValidation={true}
                     errorMessage={field.state.meta.errors?.[0]?.message || ""}
                   />
-                  {regulationSource && <div className="mt-1">{formatLegislationSourceUrl(regulationSource)}</div>}
+                  {selectedRegulation && <div className="mt-1">{formatLegislationSourceUrl(selectedRegulation)}</div>}
+                  {regulationSupersededDates && (
+                    <Alert
+                      variant="warning"
+                      className="comp-complaint-details-alert mt-2"
+                    >
+                      <div className="d-flex align-items-start gap-2">
+                        <i className="bi bi-info-circle mt-2" />
+                        <span>
+                          This regulation was in force {regulationSupersededDates}. A newer version applies to later
+                          contraventions.
+                        </span>
+                      </div>
+                    </Alert>
+                  )}
                 </>
               )}
             />

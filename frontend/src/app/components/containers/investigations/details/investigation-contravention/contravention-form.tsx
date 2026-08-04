@@ -82,7 +82,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     onError: (error: any) => {
       onIsSavingChange?.(false);
       console.error("Error adding contravention:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to add contravention");
+      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to add contravention");
     },
   });
 
@@ -95,7 +95,7 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
     onError: (error: any) => {
       onIsSavingChange?.(false);
       console.error("Error updating contravention:", error);
-      ToggleError(error.response.errors[0].extensions.originalError ?? "Failed to update contravention");
+      ToggleError(error.response?.errors?.[0]?.extensions?.originalError ?? "Failed to update contravention");
     },
   });
 

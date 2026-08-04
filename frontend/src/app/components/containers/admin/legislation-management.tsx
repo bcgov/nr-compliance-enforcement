@@ -1,5 +1,6 @@
 import { FC, useState, useMemo, useEffect } from "react";
 import { useLegislationSearchQuery } from "@/app/graphql/hooks/useLegislationSearchQuery";
+import { useLegislationVersions, useReferencedLegislationGuids } from "@/app/graphql/hooks/useLegislationVersionQuery";
 import { getUserAgency } from "@/app/service/user-service";
 import { Legislation } from "@/generated/graphql";
 import { LegislationTable } from "@/app/components/common/legislation-table";
@@ -9,6 +10,9 @@ import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
 import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { Button } from "react-bootstrap";
+import { CompSelect } from "@components/common/comp-select";
+import Option from "@apptypes/app/option";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 import { LegislationText } from "@/app/components/common/legislation-text";
 import { toggleLoading } from "@/app/store/reducers/app";
 import { useAppDispatch } from "@/app/hooks/hooks";
@@ -27,13 +31,18 @@ export const LegislationManagement: FC = () => {
   const legislationAgency = searchParams.get("agencyCode") ?? "";
   const dispatch = useAppDispatch();
 
+  const [selectedVersionGuid, setSelectedVersionGuid] = useState<string>();
+
+  const { data: versions } = useLegislationVersions(legislationSourceGuid);
+
   const { data, isLoading } = useLegislationSearchQuery({
     agencyCode: legislationAgency,
     onlyActive: false,
     legislationTypeCodes: [], // Get all types now
     excludeRegulations: false,
     legislationSourceGuid: legislationSourceGuid,
-    enabled: !!legislationSourceGuid,
+    legislationVersionGuid: selectedVersionGuid,
+    enabled: !!legislationSourceGuid && !!selectedVersionGuid,
   });
 
   const updateLegislation = useGraphQLMutation(UPDATE_LEGISLATION, {
@@ -53,6 +62,40 @@ export const LegislationManagement: FC = () => {
 
   // Data
   const userAgency = getUserAgency();
+
+  const importedVersions = useMemo(
+    () =>
+      (versions ?? [])
+        .filter((version) => version.importStatus === "SUCCESS")
+        .toSorted((a, b) => b.effectiveDate.localeCompare(a.effectiveDate)),
+    [versions],
+  );
+
+  const today = new Date();
+  const versionInEffect = importedVersions.find(
+    (version) => parseUTCDateToLocal(version.effectiveDate, null)! <= today,
+  );
+
+  const versionOptions: Option[] = importedVersions.map((version) => {
+    const effectiveDate = formatDateObjectAsString(parseUTCDateToLocal(version.effectiveDate, null), {
+      format: "date",
+    });
+    return {
+      value: version.legislationVersionGuid,
+      label:
+        version.legislationVersionGuid === versionInEffect?.legislationVersionGuid
+          ? `${effectiveDate} (Current)`
+          : effectiveDate,
+    };
+  });
+
+  const legislationGuids = useMemo(
+    () => data?.legislations?.map((item) => item.legislationGuid).filter((guid): guid is string => !!guid) ?? [],
+    [data],
+  );
+
+  const { data: referencedGuids } = useReferencedLegislationGuids(legislationGuids);
+  const referencedNodes = useMemo(() => new Set(referencedGuids ?? []), [referencedGuids]);
 
   const rootNode = useMemo(() => {
     return data?.legislations?.find((item) => item.parentGuid === null);
@@ -186,6 +229,12 @@ export const LegislationManagement: FC = () => {
 
   // Use Effects
 
+  // Default to the version in force today, falling back to the newest if they are all future dated
+  useEffect(() => {
+    if (selectedVersionGuid || importedVersions.length === 0) return;
+    setSelectedVersionGuid((versionInEffect ?? importedVersions.at(-1))?.legislationVersionGuid);
+  }, [importedVersions, versionInEffect, selectedVersionGuid]);
+
   // Initialize tracking arrays
   useEffect(() => {
     if (data?.legislations) {
@@ -224,19 +273,13 @@ export const LegislationManagement: FC = () => {
       // Handle SECHEAD guids
       const actualGuid = getActualGuid(guid);
 
-      // Update the item
-      if (checked) {
-        targetSet.add(actualGuid);
-      } else {
-        targetSet.delete(actualGuid);
-      }
-
-      // Update descendants
-      getAllDescendants(actualGuid).forEach((descendantGuid) => {
+      // Update the item and its descendants
+      [actualGuid, ...getAllDescendants(actualGuid)].forEach((nodeGuid) => {
         if (checked) {
-          targetSet.add(descendantGuid);
-        } else {
-          targetSet.delete(descendantGuid);
+          targetSet.add(nodeGuid);
+        } else if (!referencedNodes.has(nodeGuid)) {
+          // Sections a contravention was recorded against stay enabled
+          targetSet.delete(nodeGuid);
         }
       });
     });
@@ -405,6 +448,8 @@ export const LegislationManagement: FC = () => {
     }
 
     const isChecked = contraventionNodes.has(checkGuid);
+    // A section a contravention was recorded against can be enabled, but not disabled again
+    const isDisableBlocked = isChecked && referencedNodes.has(checkGuid);
 
     // This helper wraps the row layout (checkbox + content)
     const baseWrapper = (content: React.ReactNode) => (
@@ -412,11 +457,19 @@ export const LegislationManagement: FC = () => {
         key={section.legislationGuid}
         className="d-flex align-items-start py-2 border-bottom"
       >
-        <div className="d-flex justify-content-center leg-admin-checkbox-column">
+        <div
+          className="d-flex justify-content-center leg-admin-checkbox-column"
+          title={
+            isDisableBlocked
+              ? "This section is referenced by a recorded contravention and cannot be disabled."
+              : undefined
+          }
+        >
           <input
             type="checkbox"
             className="form-check-input"
             checked={isChecked}
+            disabled={isDisableBlocked}
             onChange={(e) => handleToggleContravention(section.legislationGuid!, e.target.checked)}
           />
         </div>
@@ -546,6 +599,27 @@ export const LegislationManagement: FC = () => {
         </div>
 
         <div className="comp-container">
+          <div className="d-flex align-items-center gap-2 mb-4 comp-filter-input">
+            <label
+              htmlFor="legislation-version-select"
+              className="text-nowrap"
+            >
+              Version
+            </label>
+            <CompSelect
+              id="legislation-version-select"
+              className="flex-grow-1"
+              classNamePrefix="comp-select"
+              options={versionOptions}
+              value={versionOptions.find((option) => option.value === selectedVersionGuid) ?? null}
+              onChange={(option: Option | null) => setSelectedVersionGuid(option?.value)}
+              placeholder="Select a version..."
+              showInactive={false}
+              enableValidation={false}
+              isClearable={false}
+            />
+          </div>
+
           {isLoading ? (
             <div>Loading...</div>
           ) : (

@@ -10,6 +10,7 @@ type Legislation {
   displayOrder: Int
   ancestors: [Legislation]
   isEnabled: Boolean!
+  legislationSourceGuid: String
   versionEffectiveDate: String
   sourceUrl: String
 }

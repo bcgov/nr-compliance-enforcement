@@ -115,6 +115,7 @@ export class LegislationService {
         l.legislation_text,
         l.alternate_text,
         l.display_order,
+        lv.legislation_source_guid,
         lv.effective_date AS version_effective_date,
         lv.source_url,
         COALESCE(lc.enabled_ind, true) AS enabled_ind
@@ -147,7 +148,9 @@ export class LegislationService {
     if (!includeAncestors) {
       const prismaLegislation = await this.prisma.legislation.findFirst({
         where: { legislation_guid: legislationGuid, legislation_version: { import_status: "SUCCESS" } },
-        include: { legislation_version: { select: { effective_date: true, source_url: true } } },
+        include: {
+          legislation_version: { select: { legislation_source_guid: true, effective_date: true, source_url: true } },
+        },
       });
 
       if (!prismaLegislation) {
@@ -160,6 +163,7 @@ export class LegislationService {
         return this.mapper.map<legislation, Legislation>(
           {
             ...node,
+            legislation_source_guid: legislation_version.legislation_source_guid,
             version_effective_date: legislation_version.effective_date,
             source_url: legislation_version.source_url,
             // No agency context to resolve configuration; the SDL field is non-nullable
@@ -209,6 +213,7 @@ export class LegislationService {
       l.legislation_text,
       l.alternate_text,
       l.display_order,
+      lv.legislation_source_guid,
       lv.effective_date AS version_effective_date,
       lv.source_url,
       true AS enabled_ind,

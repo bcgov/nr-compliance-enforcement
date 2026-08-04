@@ -10,20 +10,8 @@ export interface LegislationSearchParams {
   ancestorGuid?: string;
   excludeRegulations?: boolean;
   legislationSourceGuid?: string;
+  legislationVersionGuid?: string;
   offenseDate?: string;
-  enabled: boolean;
-}
-
-export interface LegislationChildTypesParams {
-  agencyCode: string;
-  parentGuid?: string;
-  enabled: boolean;
-}
-
-export interface LegislationDirectChildrenParams {
-  agencyCode: string;
-  parentGuid: string;
-  legislationTypeCode?: string;
   enabled: boolean;
 }
 
@@ -35,6 +23,7 @@ const SEARCH_LEGISLATION = gql`
     $ancestorGuid: String
     $excludeRegulations: Boolean
     $legislationSourceGuid: String
+    $legislationVersionGuid: String
     $offenseDate: String
   ) {
     legislations(
@@ -44,10 +33,13 @@ const SEARCH_LEGISLATION = gql`
       ancestorGuid: $ancestorGuid
       excludeRegulations: $excludeRegulations
       legislationSourceGuid: $legislationSourceGuid
+      legislationVersionGuid: $legislationVersionGuid
       offenseDate: $offenseDate
     ) {
       legislationGuid
       legislationSourceGuid
+      versionEffectiveDate
+      sourceUrl
       legislationText
       sectionTitle
       alternateText
@@ -83,29 +75,6 @@ const GET_LEGISLATION = gql`
   }
 `;
 
-const GET_CHILD_TYPES = gql`
-  query LegislationChildTypes($agencyCode: String!, $parentGuid: String) {
-    legislationChildTypes(agencyCode: $agencyCode, parentGuid: $parentGuid)
-  }
-`;
-
-const GET_DIRECT_CHILDREN = gql`
-  query LegislationDirectChildren($agencyCode: String!, $parentGuid: String!, $legislationTypeCode: String) {
-    legislationDirectChildren(
-      agencyCode: $agencyCode
-      parentGuid: $parentGuid
-      legislationTypeCode: $legislationTypeCode
-    ) {
-      legislationGuid
-      legislationText
-      sectionTitle
-      alternateText
-      citation
-      legislationTypeCode
-    }
-  }
-`;
-
 export const useLegislation = (legislationGuid: string | undefined, includeAncestors: boolean) => {
   const { data, isLoading, error } = useGraphQLQuery<{ legislation: Legislation }>(GET_LEGISLATION, {
     queryKey: ["legislation", legislationGuid, includeAncestors],
@@ -129,6 +98,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       searchParams.ancestorGuid,
       searchParams.excludeRegulations,
       searchParams.legislationSourceGuid,
+      searchParams.legislationVersionGuid,
       searchParams.offenseDate,
     ],
     variables: {
@@ -138,41 +108,12 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
       ancestorGuid: searchParams.ancestorGuid,
       excludeRegulations: searchParams.excludeRegulations,
       legislationSourceGuid: searchParams.legislationSourceGuid,
+      legislationVersionGuid: searchParams.legislationVersionGuid,
       offenseDate: searchParams.offenseDate,
     },
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,
   });
-  return { data, isLoading, error };
-};
-
-export const useLegislationChildTypes = (params: LegislationChildTypesParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislationChildTypes: string[] }>(GET_CHILD_TYPES, {
-    queryKey: ["legislationChildTypes", params.agencyCode, params.parentGuid],
-    variables: {
-      agencyCode: params.agencyCode,
-      parentGuid: params.parentGuid,
-    },
-    enabled: params.enabled,
-    placeholderData: (previousData) => previousData,
-  });
-  return { data, isLoading, error };
-};
-
-export const useLegislationDirectChildren = (params: LegislationDirectChildrenParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislationDirectChildren: Legislation[] }>(
-    GET_DIRECT_CHILDREN,
-    {
-      queryKey: ["legislationDirectChildren", params.agencyCode, params.parentGuid, params.legislationTypeCode],
-      variables: {
-        agencyCode: params.agencyCode,
-        parentGuid: params.parentGuid,
-        legislationTypeCode: params.legislationTypeCode,
-      },
-      enabled: params.enabled,
-      placeholderData: (previousData) => previousData,
-    },
-  );
   return { data, isLoading, error };
 };
 

@@ -14,12 +14,14 @@ export class Legislation {
   displayOrder: number;
   ancestors: Legislation[];
   isEnabled: boolean;
+  legislationSourceGuid: string;
   versionEffectiveDate: string | null;
   sourceUrl: string | null;
 }
 
 type LegislationVersionAndConfiguration = {
   enabled_ind: boolean;
+  legislation_source_guid: string;
   version_effective_date: Date | null;
   source_url: string | null;
 };
@@ -68,6 +70,10 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isEnabled,
       mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).enabled_ind),
+    ),
+    forMember(
+      (dest) => dest.legislationSourceGuid,
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).legislation_source_guid),
     ),
     forMember(
       (dest) => dest.versionEffectiveDate,
