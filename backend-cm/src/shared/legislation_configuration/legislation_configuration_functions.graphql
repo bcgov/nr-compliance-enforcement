@@ -1,3 +1,7 @@
+type Query {
+  referencedLegislationGuids(legislationGuids: [String!]!): [String]!
+}
+
 type Mutation {
   updateLegislationConfiguration(input: [UpdateLegislationConfigurationInput!]!): Boolean!
 }

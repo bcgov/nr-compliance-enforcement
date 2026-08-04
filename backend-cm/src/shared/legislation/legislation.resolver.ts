@@ -18,6 +18,7 @@ export class LegislationResolver {
     @Args("ancestorGuid") ancestorGuid?: string,
     @Args("excludeRegulations") excludeRegulations?: boolean,
     @Args("legislationSourceGuid") legislationSourceGuid?: string,
+    @Args("legislationVersionGuid") legislationVersionGuid?: string,
     @Args("onlyActive") onlyActive?: boolean,
     @Args("offenseDate") offenseDate?: string,
   ) {
@@ -29,6 +30,7 @@ export class LegislationResolver {
       excludeRegulations,
       legislationSourceGuid,
       offenseDate,
+      legislationVersionGuid,
     );
   }
 

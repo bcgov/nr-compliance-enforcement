@@ -1,0 +1,12 @@
+type Query {
+  legislationVersions(legislationSourceGuid: String!): [LegislationVersion]!
+  regulationVersions(actVersionGuid: String!): [LegislationVersion]!
+  legislationVersionContraventionStats(legislationVersionGuid: String!): ContraventionStats!
+}
+
+type Mutation {
+  createLegislationVersion(legislationSourceGuid: String!, effectiveDate: String!): LegislationVersion!
+  updateLegislationVersion(legislationVersionGuid: String!, effectiveDate: String!): LegislationVersion!
+  resetLegislationVersion(legislationVersionGuid: String!): Boolean!
+  deleteLegislationVersion(legislationVersionGuid: String!): Boolean!
+}

@@ -8,15 +8,14 @@ import { InvestigationPrismaService } from "../../prisma/investigation/prisma.in
 import { toDate, toDateString } from "../../common/custom_scalars";
 import { LegislationService } from "../legislation/legislation.service";
 import { LegislationSource } from "../legislation_source/dto/legislation-source";
-import { ImportStatus, ImportableLegislationVersion, LegislationVersion } from "./dto/legislation-version";
+import {
+  ContraventionStats,
+  ImportStatus,
+  ImportableLegislationVersion,
+  LegislationVersion,
+} from "./dto/legislation-version";
 
 const NON_SUCCESS_STATUSES: ImportStatus[] = ["PENDING", "FAILED"];
-
-interface ContraventionStats {
-  count: number;
-  earliest: string | null;
-  latest: string | null;
-}
 
 @Injectable()
 export class LegislationVersionService {
@@ -64,6 +63,45 @@ export class LegislationVersionService {
     return version
       ? this.mapper.map<legislation_version, LegislationVersion>(version, "legislation_version", "LegislationVersion")
       : null;
+  }
+
+  async getRegulationVersions(actVersionGuid: string): Promise<LegislationVersion[]> {
+    const children = await this.prisma.legislation_version.findMany({
+      where: { parent_legislation_version_guid: actVersionGuid },
+      orderBy: { effective_date: "desc" },
+    });
+
+    return this.mapper.mapArray<legislation_version, LegislationVersion>(
+      children,
+      "legislation_version",
+      "LegislationVersion",
+    );
+  }
+
+  async getSourceAgencyCode(legislationSourceGuid: string): Promise<string> {
+    const source = await this.prisma.legislation_source.findUnique({
+      where: { legislation_source_guid: legislationSourceGuid },
+      select: { agency_code: true },
+    });
+
+    if (!source) {
+      throw new GraphQLError("Legislation source not found", {});
+    }
+
+    return source.agency_code;
+  }
+
+  async getVersionAgencyCode(legislationVersionGuid: string): Promise<string> {
+    const version = await this.prisma.legislation_version.findUnique({
+      where: { legislation_version_guid: legislationVersionGuid },
+      select: { legislation_source: { select: { agency_code: true } } },
+    });
+
+    if (!version) {
+      throw new GraphQLError("Legislation version not found", {});
+    }
+
+    return version.legislation_source.agency_code;
   }
 
   async getActAndRegulationVersionGuids(actVersionGuid: string): Promise<string[]> {
@@ -239,9 +277,7 @@ export class LegislationVersionService {
 
     await this.validateEffectiveDate(previousVersion, newDate);
 
-    const stats = await this.getContraventionCountByVersion(
-      await this.getActAndRegulationVersionGuids(legislationVersionGuid),
-    );
+    const stats = await this.getContraventionStats(legislationVersionGuid);
     if (stats.earliest && newDate > stats.earliest) {
       throw new GraphQLError(
         `The effective date must be on or before ${stats.earliest}, the earliest contravention recorded under this version.`,
@@ -516,8 +552,7 @@ export class LegislationVersionService {
       );
     }
 
-    const versionGuids = await this.getActAndRegulationVersionGuids(previousVersion.legislationVersionGuid);
-    const stats = await this.getContraventionCountByVersion(versionGuids);
+    const stats = await this.getContraventionStats(previousVersion.legislationVersionGuid);
 
     if (stats.latest && effectiveDate <= stats.latest) {
       throw new GraphQLError(
@@ -525,6 +560,10 @@ export class LegislationVersionService {
         {},
       );
     }
+  }
+
+  async getContraventionStats(legislationVersionGuid: string): Promise<ContraventionStats> {
+    return this.getContraventionCountByVersion(await this.getActAndRegulationVersionGuids(legislationVersionGuid));
   }
 
   async getContraventionCountByVersion(versionGuids: string[]): Promise<ContraventionStats> {

@@ -7,7 +7,7 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   MINES: "MINES",
 };
 
-const normalizeRoles = (clientRoles: string | string[] | undefined | null): string[] => {
+export const normalizeRoles = (clientRoles: string | string[] | undefined | null): string[] => {
   if (!clientRoles) return [];
   if (Array.isArray(clientRoles)) return clientRoles;
   return clientRoles
@@ -16,11 +16,16 @@ const normalizeRoles = (clientRoles: string | string[] | undefined | null): stri
     .filter(Boolean);
 };
 
-export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
+export const agenciesFromRoles = (clientRoles: string | string[] | undefined | null): string[] => {
   const roles = normalizeRoles(clientRoles);
-  const agencies = Object.entries(ROLE_TO_AGENCY)
+
+  return Object.entries(ROLE_TO_AGENCY)
     .filter(([role]) => roles.includes(role))
     .map(([, agency]) => agency);
+};
+
+export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
+  const agencies = agenciesFromRoles(clientRoles);
 
   if (agencies.length === 0) {
     throw new Error(`User agency is not configured correctly. No agency role found.`);

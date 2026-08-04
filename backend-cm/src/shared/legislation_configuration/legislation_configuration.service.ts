@@ -55,6 +55,37 @@ export class LegislationConfigurationService {
     }
   }
 
+  // These guids can't be disabled as they are referenced directly, by a contravention, or by a descendant
+  async findReferencedLegislationGuids(legislationGuids: string[]): Promise<string[]> {
+    if (legislationGuids.length === 0) {
+      return [];
+    }
+
+    const contraventions = await this.investigationPrisma.$queryRaw<{ legislation_guid_ref: string }[]>`
+      SELECT DISTINCT legislation_guid_ref
+      FROM contravention
+      WHERE legislation_guid_ref IS NOT NULL
+    `;
+    const referencedGuids = contraventions.map((row) => row.legislation_guid_ref);
+
+    const referenced = await this.prisma.$queryRaw<{ legislation_guid: string }[]>`
+      WITH RECURSIVE ancestors AS (
+        SELECT l.legislation_guid, l.parent_legislation_guid
+        FROM legislation l
+        WHERE l.legislation_guid = ANY(${referencedGuids}::uuid[])
+        UNION
+        SELECT p.legislation_guid, p.parent_legislation_guid
+        FROM legislation p
+        INNER JOIN ancestors a ON p.legislation_guid = a.parent_legislation_guid
+      )
+      SELECT DISTINCT legislation_guid
+      FROM ancestors
+      WHERE legislation_guid = ANY(${legislationGuids}::uuid[])
+    `;
+
+    return referenced.map((row) => row.legislation_guid);
+  }
+
   private async countReferencingContraventions(legislationGuids: string[]): Promise<number> {
     if (legislationGuids.length === 0) {
       return 0;

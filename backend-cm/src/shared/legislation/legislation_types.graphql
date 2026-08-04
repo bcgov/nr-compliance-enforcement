@@ -2,7 +2,6 @@ type Legislation {
   legislationGuid: String
   legislationTypeCode: String
   parentGuid: String
-  legislationSourceGuid: String
   citation: String
   fullCitation: String
   sectionTitle: String
@@ -11,6 +10,8 @@ type Legislation {
   displayOrder: Int
   ancestors: [Legislation]
   isEnabled: Boolean!
+  versionEffectiveDate: String
+  sourceUrl: String
 }
 
 type LegislationType {

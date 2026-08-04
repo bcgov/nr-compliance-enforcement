@@ -37,6 +37,19 @@ export class LegislationSourceService {
     return this.mapToDto(source);
   }
 
+  async getAgencyCode(legislationSourceGuid: string): Promise<string> {
+    const source = await this.prisma.legislation_source.findUnique({
+      where: { legislation_source_guid: legislationSourceGuid },
+      select: { agency_code: true },
+    });
+
+    if (!source) {
+      throw new GraphQLError("Legislation source not found", {});
+    }
+
+    return source.agency_code;
+  }
+
   async create(input: CreateLegislationSourceInput): Promise<LegislationSource> {
     const effectiveDate = input.effectiveDate ?? "1900-01-01";
 

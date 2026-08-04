@@ -5,6 +5,12 @@ import { LegislationSource } from "../../legislation_source/dto/legislation-sour
 
 export type ImportStatus = "PENDING" | "SUCCESS" | "FAILED";
 
+export interface ContraventionStats {
+  count: number;
+  earliest: string | null;
+  latest: string | null;
+}
+
 export interface LegislationVersion {
   legislationVersionGuid: string;
   legislationSourceGuid: string;

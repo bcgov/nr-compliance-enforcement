@@ -1,5 +1,6 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { legislation } from "../../../../prisma/shared/generated/legislation";
+import { toDateString } from "../../../common/custom_scalars";
 
 export class Legislation {
   legislationGuid: string;
@@ -13,7 +14,7 @@ export class Legislation {
   displayOrder: number;
   ancestors: Legislation[];
   isEnabled: boolean;
-  versionEffectiveDate: Date | null;
+  versionEffectiveDate: string | null;
   sourceUrl: string | null;
 }
 
@@ -70,7 +71,7 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.versionEffectiveDate,
-      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).version_effective_date),
+      mapFrom((src) => toDateString((src as legislation & LegislationVersionAndConfiguration).version_effective_date)),
     ),
     forMember(
       (dest) => dest.sourceUrl,
