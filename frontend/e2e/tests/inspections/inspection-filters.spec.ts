@@ -51,7 +51,7 @@ test.describe("Inspection Filters", () => {
     }
   });
 
-  test("it filters by date range", async ({ page }) => {
+  test("it filters by date opened", async ({ page }) => {
     await page.locator("#case-filter-btn").click();
     await expect(page.locator(".comp-data-filters")).toBeVisible();
 

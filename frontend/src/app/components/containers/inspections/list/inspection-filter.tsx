@@ -82,7 +82,7 @@ export const InspectionFilter: FC = () => {
 
       <FilterDate
         id="inspection-date-range-filter"
-        label="Date Range"
+        label="Date opened"
         startDate={searchValues.startDate || undefined}
         endDate={searchValues.endDate || undefined}
         handleDateChange={handleDateRangeChange}
