@@ -74,7 +74,6 @@ const Investigations: FC = () => {
   // or a restored URL) are left untouched.
   useEffect(() => {
     const isFreshSearch =
-      searchValues.investigationStatus === null &&
       searchValues.region === null &&
       searchValues.zone === null &&
       searchValues.community === null &&
