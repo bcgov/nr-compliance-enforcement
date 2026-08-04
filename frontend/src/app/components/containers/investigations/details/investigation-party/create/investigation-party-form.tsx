@@ -9,12 +9,7 @@ import { ToggleError, ToggleSuccess } from "@/app/common/toast";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
-import {
-  Address,
-  InvestigationAttachmentReference,
-  InvestigationParty,
-  Party,
-} from "@/generated/graphql";
+import { InvestigationAttachmentReference, InvestigationParty, Party } from "@/generated/graphql";
 import { CompSelect } from "@/app/components/common/comp-select";
 import { FormField } from "@/app/components/common/form-field";
 import { PersonForm } from "@/app/components/containers/parties/form/person-form";
@@ -361,7 +356,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
         }
         badges={
           <PartyBadges
-            isSafetyConcern={!!(editParty?.person?.safetyConcernIndicator || editParty?.business?.safetyConcernIndicator)}
+            isSafetyConcern={
+              !!(editParty?.person?.safetyConcernIndicator || editParty?.business?.safetyConcernIndicator)
+            }
             isPublished={!!editParty?.partyReference}
             isYoungPerson={personIsYoung}
           />
