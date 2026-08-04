@@ -96,6 +96,24 @@ export class ExhibitService {
         {
           exhibit_display_number: { contains: filters.search, mode: "insensitive" },
         },
+        {
+          seized_from_first_name: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          seized_from_last_name: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          seized_from_address: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          seized_from_phone_number: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          property_tag_number: { contains: filters.search, mode: "insensitive" },
+        },
+        {
+          location_of_intake_text: { contains: filters.search, mode: "insensitive" },
+        },
       ];
 
       conditions.push({ OR: searchConditions });

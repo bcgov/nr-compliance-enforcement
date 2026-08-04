@@ -13,6 +13,7 @@ import {
   DetailField,
   DetailSection,
 } from "@/app/components/containers/parties/view/party-detail/party-detail-primatives";
+import { PartyBadges } from "@/app/components/containers/parties/party-badges";
 
 interface PartyDetailProps {
   party: InvestigationParty;
@@ -33,6 +34,7 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
   const partyRoles = useAppSelector(selectCodeTable(CODE_TABLE_TYPES.PARTY_ASSOCIATION_ROLE));
 
   const person = party.person;
+  const business = party.business;
   const isPublished = !!party.partyReference;
 
   // Identifying Information data
@@ -53,19 +55,11 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
         investigationGuid={investigationGuid}
         investigationLabel={investigationLabel}
         badges={
-          <>
-            {person?.boloIndicator && (
-              <div className="badge comp-status-badge-pending-review">
-                <i className="bi bi-exclamation-circle"></i> Safety concern
-              </div>
-            )}
-            {isPublished && (
-              <div className="badge comp-status-badge-open">
-                <i className="bi bi-check-circle-fill"></i> Published
-              </div>
-            )}
-            {personIsYoung && <div className="badge comp-status-badge-closed">Young person</div>}
-          </>
+          <PartyBadges
+            isSafetyConcern={!!(person?.safetyConcernIndicator || business?.safetyConcernIndicator)}
+            isPublished={isPublished}
+            isYoungPerson={personIsYoung}
+          />
         }
         actions={
           <>
@@ -96,6 +90,12 @@ export const InvestigationPartyDetail: FC<PartyDetailProps> = ({
             {/* Investigation role — own section at top*/}
             <DetailSection title="Party details">
               <DetailField label="Investigation role">{roleText}</DetailField>
+              {person?.safetyConcernReason && (
+                <DetailField label="Safety concern reason">{person.safetyConcernReason}</DetailField>
+              )}
+              {business?.safetyConcernReason && (
+                <DetailField label="Safety concern reason">{business.safetyConcernReason}</DetailField>
+              )}
             </DetailSection>
 
             <PartyDetail

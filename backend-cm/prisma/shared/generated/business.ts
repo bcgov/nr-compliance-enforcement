@@ -25,6 +25,12 @@ export class business {
   @ApiPropertyOptional({ type: String })
   party_guid?: string;
 
+  @ApiPropertyOptional({ type: Boolean })
+  safety_concern_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  safety_concern_reason?: string;
+
   @ApiPropertyOptional({ type: () => party })
   party?: party;
 

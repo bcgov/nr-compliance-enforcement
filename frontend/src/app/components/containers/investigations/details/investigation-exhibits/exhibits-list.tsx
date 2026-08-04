@@ -59,9 +59,30 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
 
   const columns: CompColumn<Exhibit>[] = [
     {
+      label: "Task",
+      sortKey: "taskNumber",
+      headerClassName: "comp-cell-min-width-100",
+      cellClassName: "comp-cell-width-100 comp-cell-min-width-100 align-middle",
+      getValue: (exhibit) => getTaskNumber(exhibit.taskGuid ?? "") ?? 0,
+      renderCell: (exhibit) => {
+        const taskNumber = getTaskNumber(exhibit.taskGuid ?? "");
+        const taskLabel = taskNumber ? `Task ${taskNumber}` : "-";
+        return taskNumber && exhibit.taskGuid ? (
+          <Link
+            to={`/investigation/${investigationGuid}/task/${exhibit.taskGuid}`}
+            className="comp-cell-link"
+          >
+            {taskLabel}
+          </Link>
+        ) : (
+          <span>{taskLabel}</span>
+        );
+      },
+    },
+    {
       label: "Exhibit number",
-      headerClassName: "comp-cell-width-80 comp-cell-min-width-80",
-      cellClassName: "comp-cell-width-120 comp-cell-min-width-120 align-middle",
+      headerClassName: "comp-cell-width-120 comp-cell-min-width-120",
+      cellClassName: "comp-cell-width-150 comp-cell-min-width-150 align-middle",
       sortKey: "exhibitNumber",
       isSortable: true,
       getValue: (exhibit) => exhibit.exhibitDisplayNumber ?? "",
@@ -128,33 +149,12 @@ export const ExhibitsList: FC<Props> = ({ exhibits, tasks, totalItems, isLoading
     },
     {
       label: "Property tag number",
-      headerClassName: "comp-cell-width-160 comp-cell-min-width-160",
-      cellClassName: "comp-cell-width-160 comp-cell-min-width-160 align-middle",
+      headerClassName: "comp-cell-width-120 comp-cell-min-width-120",
+      cellClassName: "comp-cell-width-120 comp-cell-min-width-120",
       sortKey: "propertyTag",
       isSortable: true,
       getValue: (exhibit) => (exhibit.propertyTagNumber ?? "").toLowerCase(),
       renderCell: (exhibit) => exhibit.propertyTagNumber ?? "-",
-    },
-    {
-      label: "Task",
-      sortKey: "taskNumber",
-      headerClassName: "comp-cell-min-width-100",
-      cellClassName: "comp-cell-width-100 comp-cell-min-width-100",
-      getValue: (exhibit) => getTaskNumber(exhibit.taskGuid ?? "") ?? 0,
-      renderCell: (exhibit) => {
-        const taskNumber = getTaskNumber(exhibit.taskGuid ?? "");
-        const taskLabel = taskNumber ? `Task ${taskNumber}` : "-";
-        return taskNumber && exhibit.taskGuid ? (
-          <Link
-            to={`/investigation/${investigationGuid}/task/${exhibit.taskGuid}`}
-            className="comp-cell-link"
-          >
-            {taskLabel}
-          </Link>
-        ) : (
-          <span>{taskLabel}</span>
-        );
-      },
     },
   ];
 

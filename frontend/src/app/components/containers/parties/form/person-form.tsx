@@ -177,22 +177,57 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
     <>
       <FormField
         form={form}
-        name="boloIndicator"
-        label="Caution / BOLO"
+        name="safetyConcernIndicator"
+        label="Safety concern"
         render={(field) => (
           <Form.Check
             type="checkbox"
-            id="bolo-ind"
-            label="Caution / BOLO"
+            id="safety-concern-indicator"
+            label="Safety concern"
             checked={field.state.value === true}
             onChange={(evt: any) => {
               const checked = evt.target.checked;
               field.handleChange(checked);
+              if (!checked) {
+                form.setFieldValue("safetyConcernReason", "");
+              }
             }}
             disabled={isDisabled}
           />
         )}
       />
+      <form.Subscribe selector={(state: any) => state.values.safetyConcernIndicator}>
+        {(safetyConcernIndicator: boolean | undefined) =>
+          safetyConcernIndicator ? (
+            <FormField
+              form={form}
+              name="safetyConcernReason"
+              label="Safety concern reason"
+              required
+              validators={{
+                onChange: ({ value }: { value: string | null | undefined }) => {
+                  const isSafetyConcernChecked = !!form.getFieldValue("safetyConcernIndicator");
+                  const isEmpty = !value?.trim();
+                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                },
+              }}
+              render={(field) => (
+                <ValidationTextArea
+                  id="safety-concern-reason"
+                  className="comp-form-control comp-details-input"
+                  rows={4}
+                  value={field.state.value ?? ""}
+                  onChange={(value: string) => field.handleChange(value)}
+                  placeholderText="Enter reason for safety concern"
+                  maxLength={4000}
+                  errMsg={field.state.meta.errors?.[0]?.message || ""}
+                  disabled={isDisabled}
+                />
+              )}
+            />
+          ) : null
+        }
+      </form.Subscribe>
       <FormField
         form={form}
         name="firstName"
