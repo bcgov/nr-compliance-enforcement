@@ -46,13 +46,13 @@ test.describe("Case Filter Logic", () => {
   });
   */
 
-  test("it displays date range filter in panel", async ({ page }) => {
+  test("it displays date opened filter in panel", async ({ page }) => {
     await page.locator("#case-filter-btn").click();
 
     // Verify date range filter is present
     const dateFilter = page.locator("#case-date-range-filter");
     await expect(dateFilter).toBeVisible();
-    await expect(dateFilter.locator("label")).toContainText("Date Range");
+    await expect(dateFilter.locator("label")).toContainText("Date opened");
   });
 
   /** 
