@@ -1634,6 +1634,7 @@ export class PartyService {
         gender_code: true,
         sex_code: true,
         approximate_age_code: true,
+        drivers_license_number: true,
       },
     },
   };

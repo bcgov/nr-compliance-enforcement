@@ -513,7 +513,9 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
               <div className="comp-details-section-header">
                 <h3>Identifying information</h3>
               </div>
-
+              <h5 className="pb-2">
+                Enter the information you know about the party. Matching profiles will be suggested as you type.
+              </h5>
               <FormField
                 form={form}
                 name="partyType"
