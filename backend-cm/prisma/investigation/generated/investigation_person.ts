@@ -112,9 +112,6 @@ export class investigation_person {
   @ApiPropertyOptional({ type: String })
   safety_concern_reason?: string;
 
-  @ApiPropertyOptional({ type: String })
-  sex_code_ref?: string;
-
   @ApiProperty({ isArray: true, type: () => investigation_business_person_xref })
   investigation_business_person_xref: investigation_business_person_xref[];
 

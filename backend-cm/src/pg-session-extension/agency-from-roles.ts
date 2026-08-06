@@ -7,7 +7,9 @@ const ROLE_TO_AGENCY: Record<string, string> = {
   MINES: "MINES",
 };
 
-export const normalizeRoles = (clientRoles: string | string[] | undefined | null): string[] => {
+export type ClientRoles = string | string[] | undefined | null;
+
+export const normalizeRoles = (clientRoles: ClientRoles): string[] => {
   if (!clientRoles) return [];
   if (Array.isArray(clientRoles)) return clientRoles;
   return clientRoles
@@ -16,7 +18,7 @@ export const normalizeRoles = (clientRoles: string | string[] | undefined | null
     .filter(Boolean);
 };
 
-export const agenciesFromRoles = (clientRoles: string | string[] | undefined | null): string[] => {
+export const agenciesFromRoles = (clientRoles: ClientRoles): string[] => {
   const roles = normalizeRoles(clientRoles);
 
   return Object.entries(ROLE_TO_AGENCY)
@@ -24,7 +26,7 @@ export const agenciesFromRoles = (clientRoles: string | string[] | undefined | n
     .map(([, agency]) => agency);
 };
 
-export const agencyFromRoles = (clientRoles: string | string[] | undefined | null): string => {
+export const agencyFromRoles = (clientRoles: ClientRoles): string => {
   const agencies = agenciesFromRoles(clientRoles);
 
   if (agencies.length === 0) {

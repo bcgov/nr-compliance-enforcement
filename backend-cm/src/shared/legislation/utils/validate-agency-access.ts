@@ -1,9 +1,9 @@
 import { GraphQLError } from "graphql";
 import { Role } from "../../../enum/role.enum";
-import { agenciesFromRoles, normalizeRoles } from "../../../pg-session-extension/agency-from-roles";
+import { agenciesFromRoles, ClientRoles, normalizeRoles } from "../../../pg-session-extension/agency-from-roles";
 
 // Agency administrators may only manage legislation for their own agency
-export const validateAgencyAccess = (clientRoles: string | string[] | undefined | null, agencyCode: string): void => {
+export const validateAgencyAccess = (clientRoles: ClientRoles, agencyCode: string): void => {
   if (normalizeRoles(clientRoles).includes(Role.GLOBAL_ADMINISTRATOR)) {
     return;
   }

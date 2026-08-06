@@ -27,15 +27,19 @@ interface RegulationImportResult {
   removedRegs: string[];
 }
 
+type RegulationImportServices = {
+  legislationService: LegislationService;
+  legislationSourceService: LegislationSourceService;
+  legislationVersionService: LegislationVersionService;
+};
+
 // Imports regulations for a federal Act by looking up related regulations via the Justice Canada's github where
 // a lookup.xml file contains references to the related regulations, then fetches each regulation
 async function importRegulations(
   actVersion: ImportableLegislationVersion,
   actRootGuid: string,
   consolidatedNumber: string,
-  legislationService: LegislationService,
-  legislationSourceService: LegislationSourceService,
-  legislationVersionService: LegislationVersionService,
+  services: RegulationImportServices,
   logger: Logger,
   errors: string[],
 ): Promise<RegulationImportResult> {
@@ -57,16 +61,7 @@ async function importRegulations(
     logger.log(`Found ${regulations.length} regulation(s) to import`);
 
     for (const reg of regulations) {
-      const recordCount = await importSingleRegulation(
-        reg,
-        actRootGuid,
-        actVersion,
-        legislationService,
-        legislationSourceService,
-        legislationVersionService,
-        logger,
-        errors,
-      );
+      const recordCount = await importSingleRegulation(reg, actRootGuid, actVersion, services, logger, errors);
       if (recordCount > 0) {
         result.successfulRegs++;
         result.totalRecords += recordCount;
@@ -80,7 +75,7 @@ async function importRegulations(
     const comparison = await compareRegulationsToPreviousVersion(
       actVersion.legislationVersionGuid,
       regulations,
-      legislationVersionService,
+      services.legislationVersionService,
     );
     result.addedRegs = comparison.addedRegs;
     result.removedRegs = comparison.removedRegs;
@@ -107,12 +102,11 @@ async function importSingleRegulation(
   reg: Regulation,
   actRootGuid: string,
   actVersion: ImportableLegislationVersion,
-  legislationService: LegislationService,
-  legislationSourceService: LegislationSourceService,
-  legislationVersionService: LegislationVersionService,
+  services: RegulationImportServices,
   logger: Logger,
   errors: string[],
 ): Promise<number> {
+  const { legislationService, legislationSourceService, legislationVersionService } = services;
   logger.log(`  Importing: ${reg.title}`);
 
   try {
@@ -232,9 +226,7 @@ async function importLegislationVersion(
         version,
         context.rootLegislationGuid,
         parsedDocument.metadata.consolidatedNumber,
-        legislationService,
-        legislationSourceService,
-        legislationVersionService,
+        { legislationService, legislationSourceService, legislationVersionService },
         logger,
         context.errors,
       );

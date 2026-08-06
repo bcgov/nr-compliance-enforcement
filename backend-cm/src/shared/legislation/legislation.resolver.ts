@@ -13,25 +13,19 @@ export class LegislationResolver {
   @Query("legislations")
   @Roles(coreRoles)
   findMany(
-    @Args("agencyCode") agencyCode: string,
-    @Args("legislationTypeCodes") legislationTypeCodes?: string[],
-    @Args("ancestorGuid") ancestorGuid?: string,
-    @Args("excludeRegulations") excludeRegulations?: boolean,
-    @Args("legislationSourceGuid") legislationSourceGuid?: string,
-    @Args("legislationVersionGuid") legislationVersionGuid?: string,
-    @Args("onlyActive") onlyActive?: boolean,
-    @Args("offenseDate") offenseDate?: string,
+    @Args()
+    args: {
+      agencyCode: string;
+      legislationTypeCodes?: string[];
+      ancestorGuid?: string;
+      excludeRegulations?: boolean;
+      legislationSourceGuid?: string;
+      legislationVersionGuid?: string;
+      onlyActive?: boolean;
+      offenseDate?: string;
+    },
   ) {
-    return this.legislationService.findMany(
-      agencyCode,
-      onlyActive,
-      legislationTypeCodes,
-      ancestorGuid,
-      excludeRegulations,
-      legislationSourceGuid,
-      offenseDate,
-      legislationVersionGuid,
-    );
+    return this.legislationService.findMany(args);
   }
 
   @Query("legislation")

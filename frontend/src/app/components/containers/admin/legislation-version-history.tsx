@@ -39,7 +39,7 @@ const addDays = (date: string, days: number): string => {
 
 // The supplied dates in ascending order, ignoring the ones that are absent
 const sortDates = (...dates: (string | null | undefined)[]): string[] =>
-  dates.filter((date): date is string => !!date).sort();
+  dates.filter((date): date is string => !!date).sort((a, b) => a.localeCompare(b));
 
 const unwrapError = (error: any, fallback: string) => error?.response?.errors?.[0]?.message ?? fallback;
 

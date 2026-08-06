@@ -1,11 +1,5 @@
 import { getUserAgency } from "@/app/service/user-service";
-import {
-  Contravention,
-  Legislation,
-  InspectionParty,
-  InvestigationParty,
-  LegislationSource,
-} from "@/generated/graphql";
+import { Contravention, Legislation, InspectionParty, InvestigationParty } from "@/generated/graphql";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-bootstrap";
@@ -143,8 +137,6 @@ export const ContraventionDetailsForm = ({
 
   const contraventionDate = useStore(form.baseStore, (state) => state.values.contraventionDate);
   const formattedContraventionDate = contraventionDate ? format(contraventionDate, "yyyy-MM-dd") : undefined;
-
-  const { data: legislationSources } = useLegislationSources();
 
   const partyOptions: Option[] =
     parties

@@ -32,16 +32,26 @@ export class LegislationService {
 
   private readonly logger = new Logger(LegislationService.name);
 
-  async findMany(
-    agencyCode: string,
-    onlyActive: boolean = true,
-    legislationTypeCodes?: string[],
-    ancestorGuid?: string,
-    excludeRegulations?: boolean,
-    legislationSourceGuid?: string,
-    offenseDate?: string,
-    legislationVersionGuid?: string,
-  ) {
+  async findMany(args: {
+    agencyCode: string;
+    onlyActive?: boolean;
+    legislationTypeCodes?: string[];
+    ancestorGuid?: string;
+    excludeRegulations?: boolean;
+    legislationSourceGuid?: string;
+    offenseDate?: string;
+    legislationVersionGuid?: string;
+  }) {
+    const {
+      agencyCode,
+      onlyActive = true,
+      legislationTypeCodes,
+      ancestorGuid,
+      excludeRegulations,
+      legislationSourceGuid,
+      offenseDate,
+      legislationVersionGuid,
+    } = args;
     const filterDate = offenseDate ?? getCurrentDatePacific();
 
     const prismaLegislation = await this.prisma.$queryRaw<legislation[]>`
