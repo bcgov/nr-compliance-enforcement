@@ -400,7 +400,7 @@ export const LegislationManagement: FC = () => {
     [childrenByParent],
   );
 
-  // Helper function that enables/disables either a single node or the node + children (if it's a parent)
+  // Helper function that enables/disables either a single node or the node + children
   const updateContraventionSet = useCallback(
     (targetSet: Set<string>, guids: string[], checked: boolean) => {
       guids.forEach((guid) => {

@@ -176,7 +176,6 @@ export class LegislationService {
             legislation_source_guid: legislation_version.legislation_source_guid,
             version_effective_date: legislation_version.effective_date,
             source_url: legislation_version.source_url,
-            // No agency context to resolve configuration; the SDL field is non-nullable
             enabled_ind: true,
           } as unknown as legislation,
           "legislation",

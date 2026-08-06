@@ -365,7 +365,6 @@ export class LegislationVersionService {
       throw new GraphQLError("Regulation versions are imported with their act version.", {});
     }
 
-    // Re-running the check below would find an imported version as its own previous version and fail it
     if (version.importStatus === "SUCCESS") {
       return;
     }
@@ -382,7 +381,7 @@ export class LegislationVersionService {
     }
 
     const timestamp = new Date();
-    // Mark acts
+    // Mark acts as imported
     await this.prisma.$transaction(async (tx) => {
       await tx.legislation_version.update({
         where: { legislation_version_guid: actVersionGuid },
@@ -395,7 +394,7 @@ export class LegislationVersionService {
         },
       });
 
-      // Mark regulations under the act
+      // Mark regulations under the act as imported
       await tx.legislation_version.updateMany({
         where: { parent_legislation_version_guid: actVersionGuid, import_status: { not: "FAILED" } },
         data: {

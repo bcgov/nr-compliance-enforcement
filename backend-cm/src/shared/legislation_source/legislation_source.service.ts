@@ -184,7 +184,7 @@ export class LegislationSourceService {
     }
 
     await this.prisma.$transaction(async (tx) => {
-      // Trees go first; the node FK is ON DELETE SET NULL and would silently orphan them
+      // Don't orphan things, delete legislation and configurations first
       await this.legislationService.deleteByVersion(versionGuids, tx);
 
       await tx.legislation_version.deleteMany({
