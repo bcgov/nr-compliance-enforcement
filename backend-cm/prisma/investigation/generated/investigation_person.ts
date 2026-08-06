@@ -104,7 +104,13 @@ export class investigation_person {
   comments?: string;
 
   @ApiPropertyOptional({ type: Boolean })
-  bolo_ind?: boolean;
+  safety_concern_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  sex_code_ref?: string;
+
+  @ApiPropertyOptional({ type: String })
+  safety_concern_reason?: string;
 
   @ApiPropertyOptional({ type: String })
   sex_code_ref?: string;

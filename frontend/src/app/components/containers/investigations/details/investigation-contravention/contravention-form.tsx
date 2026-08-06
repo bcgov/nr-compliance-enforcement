@@ -128,7 +128,8 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
         community: step1Values.communityCode || null,
         ...(isEditMode
           ? {
-              selectedPartyGuid: partyGuid ?? null,
+              selectedPartyGuid: partyGuid,
+              investigationPartyGuids: [step1Values.selectedPartyGuid ?? null],
             }
           : {
               investigationPartyGuids: step2Values?.partyType === "unknown" ? [] : (step2Values?.selectedParties ?? []),
@@ -177,6 +178,9 @@ export const ContraventionForm: FC<ContraventionFormProps> = ({
           onDirtyChange={onDirtyChange}
           onRequestValidate={(fn) => registerStepValidate(0, fn)}
           onRequestValues={(fn) => registerStepValues<ContraventionDetailsFormValues>(0, fn)}
+          parties={parties}
+          partyGuid={partyGuid}
+          isEditMode={isEditMode}
         />
       </div>
       <div className={currentStep === 1 ? "" : "d-none"}>

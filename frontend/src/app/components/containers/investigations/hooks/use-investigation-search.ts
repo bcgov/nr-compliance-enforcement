@@ -4,10 +4,13 @@ import { SORT_TYPES } from "@constants/sort-direction";
 import { getUserAgency } from "@service/user-service";
 import { useAppSelector } from "@hooks/hooks";
 import { selectInvestigationListUrl } from "@store/reducers/investigation-list-url";
+import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
 
 export interface InvestigationSearchParams {
   search: string;
   investigationStatus: string | null;
+  region: string | null;
+  zone: string | null;
   community: string | null;
   primaryInvestigator: string | null;
   fileCoordinator: string | null;
@@ -24,6 +27,8 @@ export interface InvestigationSearchParams {
 const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   search: "",
   investigationStatus: null,
+  region: null,
+  zone: null,
   community: null,
   primaryInvestigator: null,
   fileCoordinator: null,
@@ -37,9 +42,10 @@ const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   viewType: "list",
 };
 
-const serializeDate = (date: Date | null): string | undefined => (date ? date.toISOString().split("T")[0] : undefined);
+const serializeDate = (date: Date | null): string | undefined =>
+  date ? formatDateObjectAsString(date, { format: "date" }) : undefined;
 
-const deserializeDate = (dateString: string | null): Date | null => (dateString ? new Date(dateString) : null);
+const deserializeDate = (dateString: string | null): Date | null => parseUTCDateToLocal(dateString, null);
 
 const serializeSearchValueToUrl = (key: keyof InvestigationSearchParams, value: any): string | undefined => {
   if (value == null) {
@@ -74,6 +80,8 @@ export const useInvestigationSearch = () => {
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       investigationStatus: searchParams.get("investigationStatus"),
+      region: searchParams.get("region"),
+      zone: searchParams.get("zone"),
       community: searchParams.get("community"),
       primaryInvestigator: searchParams.get("primaryInvestigator"),
       fileCoordinator: searchParams.get("fileCoordinator"),

@@ -135,16 +135,18 @@ model app_user_team_xref_h {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model business {
-  business_guid        String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
-  name                 String                 @db.VarChar(128)
-  create_user_id       String                 @db.VarChar(32)
-  create_utc_timestamp DateTime               @default(now()) @db.Timestamp(6)
-  update_user_id       String?                @db.VarChar(32)
-  update_utc_timestamp DateTime?              @db.Timestamp(6)
-  party_guid           String?                @unique(map: "UQ_business_party_guid") @db.Uuid
-  party                party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
-  business_identifier  business_identifier[]
-  business_person_xref business_person_xref[]
+  business_guid         String                 @id @default(dbgenerated("public.uuid_generate_v4()")) @db.Uuid
+  name                  String                 @db.VarChar(128)
+  create_user_id        String                 @db.VarChar(32)
+  create_utc_timestamp  DateTime               @default(now()) @db.Timestamp(6)
+  update_user_id        String?                @db.VarChar(32)
+  update_utc_timestamp  DateTime?              @db.Timestamp(6)
+  party_guid            String?                @unique(map: "UQ_business_party_guid") @db.Uuid
+  safety_concern_ind    Boolean?
+  safety_concern_reason String?
+  party                 party?                 @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_business_party")
+  business_identifier   business_identifier[]
+  business_person_xref  business_person_xref[]
 
   @@schema("shared")
 }
@@ -812,8 +814,9 @@ model person {
   tattoo_description                                                     String?                         @db.VarChar(512)
   additional_descriptors                                                 String?
   comments                                                               String?
-  bolo_ind                                                               Boolean?
+  safety_concern_ind                                                     Boolean?
   sex_code                                                               String?                         @db.VarChar(16)
+  safety_concern_reason                                                  String?
   business_person_xref                                                   business_person_xref[]
   party                                                                  party?                          @relation(fields: [party_guid], references: [party_guid], onDelete: NoAction, onUpdate: NoAction, map: "FK_person_party")
   approximate_age_code_person_approximate_age_codeToapproximate_age_code approximate_age_code?           @relation("person_approximate_age_codeToapproximate_age_code", fields: [approximate_age_code], references: [approximate_age_code], onDelete: NoAction, onUpdate: NoAction, map: "fk_person__approximate_age_code")

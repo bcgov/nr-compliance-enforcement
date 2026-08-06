@@ -1,7 +1,7 @@
 {
   "name": "nr-natsuite",
   "type": "module",
-  "version": "2.0.357",
+  "version": "2.0.364",
   "private": true,
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
@@ -76,7 +76,7 @@
     "lodash": "^4.17.21",
     "make-fetch-happen": "15.0.3",
     "mapbox-gl-leaflet": "^0.0.16",
-    "node": "^21.6.1",
+    "node": "^24.18",
     "nrs-ce-common-types": "^1.0.14",
     "omggif": "^1.0.10",
     "os-browserify": "^0.3.0",
@@ -180,7 +180,7 @@
     "@graphql-codegen/typescript-graphql-request": "^7.0.0",
     "@graphql-codegen/typescript-operations": "^5.0.9",
     "@playwright/test": "^1.52.0",
-    "@tsconfig/node22": "^22.0.0",
+    "@tsconfig/node24": "^24.0.0",
     "@types/jest": "^29.5.1",
     "@types/node": "^24.0.10",
     "@types/react-test-renderer": "^18.0.0",

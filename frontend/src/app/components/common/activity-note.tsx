@@ -218,12 +218,36 @@ export const ActivityNoteEditor: FC<ActivityNoteProps> = ({
     const hasDateTime = selectedActionedDateTime !== undefined;
     const hasOfficer = selectedOfficer?.value !== undefined && selectedOfficer?.value !== "";
 
-    const isValid = hasContent && hasDateTime && hasOfficer;
+    // Reject dates/times entered directly into the picker that fall after the current moment,
+    // since ValidationDatePicker's maxDate only constrains calendar selection, not typed input.
+    let isFutureDateTime = false;
+    if (selectedActionedDateTime) {
+      if (selectedActionedTime) {
+        const combined = new Date(selectedActionedDateTime);
+        const [hh, mm] = selectedActionedTime.split(":").map(Number);
+        combined.setHours(hh, mm, 0, 0);
+        isFutureDateTime = combined.getTime() > Date.now();
+      } else {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDateOnly = new Date(selectedActionedDateTime);
+        selectedDateOnly.setHours(0, 0, 0, 0);
+        isFutureDateTime = selectedDateOnly.getTime() > today.getTime();
+      }
+    }
+
+    const isValid = hasContent && hasDateTime && hasOfficer && !isFutureDateTime;
 
     // Only set error messages if parent says to show them
     if (showErrors) {
       setContentError(hasContent ? "" : "Content is required");
-      setDateTimeError(hasDateTime ? "" : "Date/time actioned is required");
+      let dateTimeErrorMessage = "";
+      if (!hasDateTime) {
+        dateTimeErrorMessage = "Date/time actioned is required";
+      } else if (isFutureDateTime) {
+        dateTimeErrorMessage = "Date/time actioned cannot be in the future";
+      }
+      setDateTimeError(dateTimeErrorMessage);
       setOfficerError(hasOfficer ? "" : "Officer is required");
     } else {
       setContentError("");

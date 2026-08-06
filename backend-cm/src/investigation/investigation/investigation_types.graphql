@@ -65,6 +65,8 @@ input InvestigationFilters {
   search: String
   leadAgency: String
   investigationStatus: String
+  region: String
+  zone: String
   community: String
   primaryInvestigator: String
   fileCoordinator: String
