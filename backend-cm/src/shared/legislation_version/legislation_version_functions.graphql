@@ -5,7 +5,7 @@ type Query {
 }
 
 type Mutation {
-  createLegislationVersion(legislationSourceGuid: String!, effectiveDate: String!): LegislationVersion!
+  createLegislationVersion(legislationSourceGuid: String!, effectiveDate: String): LegislationVersion!
   updateLegislationVersion(legislationVersionGuid: String!, effectiveDate: String!): LegislationVersion!
   resetLegislationVersion(legislationVersionGuid: String!): Boolean!
   deleteLegislationVersion(legislationVersionGuid: String!): Boolean!

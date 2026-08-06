@@ -22,7 +22,6 @@ import { useAppSelector } from "@/app/hooks/hooks";
 import { selectCommunityCodeDropdown } from "@/app/store/reducers/code-table";
 import { format } from "date-fns";
 import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date-utils";
-import { ToggleWarning } from "@/app/common/toast";
 
 export interface ContraventionDetailsFormValues {
   contraventionDate: string;
@@ -318,7 +317,6 @@ export const ContraventionDetailsForm = ({
                     markDirty();
                     field.handleChange(date ?? null);
                     if (act) {
-                      ToggleWarning("The legislation in force may have changed. Select the act and section again.");
                       for (const name of ["act", "regulation", "section", "subsection"] as const) {
                         form.setFieldValue(name, "");
                         form.setFieldMeta(name, (meta) => ({ ...meta, isTouched: true }));
@@ -400,7 +398,7 @@ export const ContraventionDetailsForm = ({
                     <div className="d-flex align-items-start gap-2">
                       <i className="bi bi-info-circle mt-2" />
                       <span>
-                        This act was in force {actSupersededDates}. A newer version applies to later contraventions.
+                        This version of the act was in force {actSupersededDates}. A newer version currently applies.
                       </span>
                     </div>
                   </Alert>

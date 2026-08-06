@@ -1,5 +1,5 @@
 type Query {
-  referencedLegislationGuids(legislationGuids: [String!]!): [String]!
+  referencedLegislationGuids(legislationVersionGuid: String!): [String]!
 }
 
 type Mutation {

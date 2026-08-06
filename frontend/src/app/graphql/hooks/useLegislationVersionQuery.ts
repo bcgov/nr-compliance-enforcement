@@ -52,13 +52,13 @@ const GET_LEGISLATION_VERSION_CONTRAVENTION_STATS = gql`
 `;
 
 const GET_REFERENCED_LEGISLATION_GUIDS = gql`
-  query ReferencedLegislationGuids($legislationGuids: [String!]!) {
-    referencedLegislationGuids(legislationGuids: $legislationGuids)
+  query ReferencedLegislationGuids($legislationVersionGuid: String!) {
+    referencedLegislationGuids(legislationVersionGuid: $legislationVersionGuid)
   }
 `;
 
 const CREATE_LEGISLATION_VERSION = gql`
-  mutation CreateLegislationVersion($legislationSourceGuid: String!, $effectiveDate: String!) {
+  mutation CreateLegislationVersion($legislationSourceGuid: String!, $effectiveDate: String) {
     createLegislationVersion(legislationSourceGuid: $legislationSourceGuid, effectiveDate: $effectiveDate) {
       legislationVersionGuid
       legislationSourceGuid
@@ -117,13 +117,14 @@ export const useLegislationVersionContraventionStats = (legislationVersionGuid: 
   return { data: data?.legislationVersionContraventionStats, isLoading, error };
 };
 
-export const useReferencedLegislationGuids = (legislationGuids: string[]) => {
+export const useReferencedLegislationGuids = (legislationVersionGuid?: string) => {
   const { data, isLoading, error } = useGraphQLQuery<{ referencedLegislationGuids: string[] }>(
     GET_REFERENCED_LEGISLATION_GUIDS,
     {
-      queryKey: ["referencedLegislationGuids", legislationGuids],
-      variables: { legislationGuids },
-      enabled: legislationGuids.length > 0,
+      queryKey: ["referencedLegislationGuids", legislationVersionGuid],
+      variables: { legislationVersionGuid },
+      enabled: !!legislationVersionGuid,
+      placeholderData: (previousData: any) => previousData,
     },
   );
   return { data: data?.referencedLegislationGuids, isLoading, error };
@@ -136,7 +137,7 @@ export const useCreateLegislationVersion = (options?: {
   return useGraphQLMutation<
     { createLegislationVersion: LegislationVersion },
     Error,
-    { legislationSourceGuid: string; effectiveDate: string }
+    { legislationSourceGuid: string; effectiveDate: string | null }
   >(CREATE_LEGISLATION_VERSION, {
     invalidateQueries: ["legislationVersions", "legislationSources"],
     ...options,

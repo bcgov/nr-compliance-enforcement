@@ -89,7 +89,7 @@ export const useLegislation = (legislationGuid: string | undefined, includeAnces
 };
 
 export const useLegislationSearchQuery = (searchParams: LegislationSearchParams) => {
-  const { data, isLoading, error } = useGraphQLQuery<{ legislations: Legislation[] }>(SEARCH_LEGISLATION, {
+  const { data, isLoading, isFetching, error } = useGraphQLQuery<{ legislations: Legislation[] }>(SEARCH_LEGISLATION, {
     queryKey: [
       "legislations",
       searchParams.agencyCode,
@@ -114,7 +114,7 @@ export const useLegislationSearchQuery = (searchParams: LegislationSearchParams)
     enabled: searchParams.enabled,
     placeholderData: (previousData) => previousData,
   });
-  return { data, isLoading, error };
+  return { data, isLoading, isFetching, error };
 };
 
 export const convertLegislationToOption = (legislation: Legislation[] | undefined): Option[] => {

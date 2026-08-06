@@ -1822,7 +1822,7 @@ export type MutationcreateLegislationSourceArgs = {
 
 
 export type MutationcreateLegislationVersionArgs = {
-  effectiveDate: Scalars['String']['input'];
+  effectiveDate?: InputMaybe<Scalars['String']['input']>;
   legislationSourceGuid: Scalars['String']['input'];
 };
 

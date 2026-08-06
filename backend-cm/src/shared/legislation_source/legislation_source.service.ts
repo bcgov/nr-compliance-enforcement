@@ -51,8 +51,6 @@ export class LegislationSourceService {
   }
 
   async create(input: CreateLegislationSourceInput): Promise<LegislationSource> {
-    const effectiveDate = input.effectiveDate ?? "1900-01-01";
-
     const source = await this.prisma.$transaction(async (tx) => {
       const created = await tx.legislation_source.create({
         data: {
@@ -70,7 +68,7 @@ export class LegislationSourceService {
 
       await this.legislationVersionService.create(
         created.legislation_source_guid,
-        effectiveDate,
+        input.effectiveDate,
         input.createUserId,
         tx,
       );

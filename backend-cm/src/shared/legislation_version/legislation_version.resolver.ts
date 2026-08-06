@@ -33,7 +33,7 @@ export class LegislationVersionResolver {
   @Roles(adminRoles)
   async createLegislationVersion(
     @Args("legislationSourceGuid") legislationSourceGuid: string,
-    @Args("effectiveDate") effectiveDate: string,
+    @Args("effectiveDate") effectiveDate: string | null,
     @Context() context: any,
   ) {
     const userId = context.req?.user?.idir_username || "system";

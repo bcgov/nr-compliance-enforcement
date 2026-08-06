@@ -22,7 +22,6 @@ import { useLegislationVersions } from "@/app/graphql/hooks/useLegislationVersio
 import { LegislationVersionHistory } from "@/app/components/containers/admin/legislation-version-history";
 import { ValidationDatePicker } from "@/app/common/validation-date-picker";
 import { formatDateObjectAsString } from "@/app/common/date-utils";
-import { Link } from "react-router-dom";
 import UserService from "@/app/service/user-service";
 import { Roles } from "@/app/types/app/roles";
 import { AgencyType } from "@/app/types/app/agency-types";
@@ -47,7 +46,7 @@ const emptySource: EditingSource = {
   agencyCode: "",
   sourceType: "BCLAWS",
   activeInd: true,
-  effectiveDate: new Date(1900, 0, 1),
+  effectiveDate: undefined,
 };
 
 const sourceTypeOptions: Option[] = [
@@ -84,19 +83,15 @@ const LegislationSourceActions: FC<SourceActionsProps> = ({ source, onEdit, onDe
         }}
       >
         <Dropdown.Item
-          onClick={() => onEdit(source)}
-          disabled={hasImportedVersion}
-          title={hasImportedVersion ? "Sources with imported legislation cannot be edited." : undefined}
+          onClick={() => {
+            if (hasImportedVersion) {
+              ToggleError("Sources with imported legislation cannot be edited.");
+              return;
+            }
+            onEdit(source);
+          }}
         >
           <i className="bi bi-pencil" /> Edit
-        </Dropdown.Item>
-        <Dropdown.Item
-          as={Link}
-          to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
-          disabled={!hasImportedVersion}
-          title={hasImportedVersion ? undefined : "Import a version before configuring the legislation."}
-        >
-          <i className="bi bi-gear" /> Configure
         </Dropdown.Item>
         <Dropdown.Item
           onClick={() => onDelete(source.legislationSourceGuid)}
@@ -378,22 +373,28 @@ export const LegislationSourceManagement: FC = () => {
           </Button>
         </div>
 
-        <CompTable
-          data={filteredSources}
-          tableIdentifier="legislation-source-list"
-          isFixedHeight={false}
-          columns={columns}
-          getRowKey={(source) => source.legislationSourceGuid}
-          renderExpandedContent={(source) => (
-            <LegislationVersionHistory legislationSourceGuid={source.legislationSourceGuid} />
-          )}
-          isLoading={isLoading}
-          defaultSort="Description"
-          defaultSortDirection={SORT_TYPES.ASC}
-          alwaysShowFooter={false}
-          itemLabel="sources"
-          emptyMessage={searchQuery ? "No matching sources found" : "No legislation sources configured"}
-        />
+        <div className="border">
+          <CompTable
+            data={filteredSources}
+            tableIdentifier="legislation-source-list"
+            isFixedHeight={false}
+            columns={columns}
+            getRowKey={(source) => source.legislationSourceGuid}
+            fullWidthExpandedRow={true}
+            renderExpandedContent={(source) => (
+              <LegislationVersionHistory
+                legislationSourceGuid={source.legislationSourceGuid}
+                agencyCode={source.agencyCode}
+              />
+            )}
+            isLoading={isLoading}
+            defaultSort="Description"
+            defaultSortDirection={SORT_TYPES.ASC}
+            alwaysShowFooter={false}
+            itemLabel="sources"
+            emptyMessage={searchQuery ? "No matching sources found" : "No legislation sources configured"}
+          />
+        </div>
       </div>
 
       <Modal

@@ -55,12 +55,8 @@ export class LegislationConfigurationService {
     }
   }
 
-  // These guids can't be disabled as they are referenced directly, by a contravention, or by a descendant
-  async findReferencedLegislationGuids(legislationGuids: string[]): Promise<string[]> {
-    if (legislationGuids.length === 0) {
-      return [];
-    }
-
+  // Find the version's nodes that can't be disabled as they are referenced directly, by a contravention, or by a descendant
+  async findReferencedLegislationGuids(legislationVersionGuid: string): Promise<string[]> {
     const contraventions = await this.investigationPrisma.$queryRaw<{ legislation_guid_ref: string }[]>`
       SELECT DISTINCT legislation_guid_ref
       FROM contravention
@@ -68,8 +64,22 @@ export class LegislationConfigurationService {
     `;
     const referencedGuids = contraventions.map((row) => row.legislation_guid_ref);
 
+    if (referencedGuids.length === 0) {
+      return [];
+    }
+
+    // don't filter by version as regulations are now versioned seperately, traverse the tree under the parent act instead
     const referenced = await this.prisma.$queryRaw<{ legislation_guid: string }[]>`
-      WITH RECURSIVE ancestors AS (
+      WITH RECURSIVE nodes AS (
+        SELECT l.legislation_guid
+        FROM legislation l
+        WHERE l.legislation_version_guid = ${legislationVersionGuid}::uuid AND l.parent_legislation_guid IS NULL
+        UNION
+        SELECT c.legislation_guid
+        FROM legislation c
+        INNER JOIN nodes n ON c.parent_legislation_guid = n.legislation_guid
+      ),
+      ancestors AS (
         SELECT l.legislation_guid, l.parent_legislation_guid
         FROM legislation l
         WHERE l.legislation_guid = ANY(${referencedGuids}::uuid[])
@@ -78,9 +88,9 @@ export class LegislationConfigurationService {
         FROM legislation p
         INNER JOIN ancestors a ON p.legislation_guid = a.parent_legislation_guid
       )
-      SELECT DISTINCT legislation_guid
-      FROM ancestors
-      WHERE legislation_guid = ANY(${legislationGuids}::uuid[])
+      SELECT DISTINCT a.legislation_guid
+      FROM ancestors a
+      INNER JOIN nodes n ON a.legislation_guid = n.legislation_guid
     `;
 
     return referenced.map((row) => row.legislation_guid);

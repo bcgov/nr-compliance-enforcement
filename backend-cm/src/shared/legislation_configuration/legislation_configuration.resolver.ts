@@ -14,8 +14,8 @@ export class LegislationConfigurationResolver {
 
   @Query("referencedLegislationGuids")
   @Roles(adminRoles)
-  async getReferencedLegislationGuids(@Args("legislationGuids") legislationGuids: string[]) {
-    return await this.legislatioConfigurationService.findReferencedLegislationGuids(legislationGuids);
+  async getReferencedLegislationGuids(@Args("legislationVersionGuid") legislationVersionGuid: string) {
+    return await this.legislatioConfigurationService.findReferencedLegislationGuids(legislationVersionGuid);
   }
 
   @Mutation("updateLegislationConfiguration")

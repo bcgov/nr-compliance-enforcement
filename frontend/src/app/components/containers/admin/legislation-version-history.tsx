@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
-import { Button, Modal, Table } from "react-bootstrap";
+import { Button, Dropdown, Modal, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useAppDispatch } from "@hooks/hooks";
 import { openModal } from "@store/reducers/app";
 import { DELETE_CONFIRM } from "@apptypes/modal/modal-types";
@@ -44,6 +45,7 @@ const unwrapError = (error: any, fallback: string) => error?.response?.errors?.[
 
 type RowProps = {
   version: LegislationVersion;
+  agencyCode: string;
   precedingVersion: LegislationVersion | null;
   nextVersion: LegislationVersion | null;
   effectiveUntil: string | null;
@@ -53,6 +55,7 @@ type RowProps = {
 
 const LegislationVersionRow: FC<RowProps> = ({
   version,
+  agencyCode,
   precedingVersion,
   nextVersion,
   effectiveUntil,
@@ -162,58 +165,84 @@ const LegislationVersionRow: FC<RowProps> = ({
           })}
         </td>
         <td>
-          {version.lastImportLog && (
-            <Button
-              variant="link"
+          <Dropdown
+            id={`version-action-button-${version.legislationVersionGuid}`}
+            drop="start"
+            className="comp-action-dropdown"
+          >
+            <Dropdown.Toggle
+              id={`version-action-toggle-${version.legislationVersionGuid}`}
               size="sm"
-              className="p-0 me-3"
-              onClick={() => setShowLog(true)}
+              variant="outline-primary"
             >
-              View log
-            </Button>
-          )}
-          <span title={dateBlockedReason}>
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0 me-3"
-              disabled={!!dateBlockedReason}
-              onClick={() => {
-                setEditedDate(toPickerDate(version.effectiveDate));
-                setIsEditingDate(true);
+              Actions
+            </Dropdown.Toggle>
+            <Dropdown.Menu
+              popperConfig={{
+                modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
               }}
             >
-              Edit date
-            </Button>
-          </span>
-          <span title={removeBlockedReason}>
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0 me-3"
-              disabled={!!removeBlockedReason}
-              onClick={confirmReset}
-            >
-              Reset
-            </Button>
-          </span>
-          <span title={removeBlockedReason}>
-            <Button
-              variant="link"
-              size="sm"
-              className="p-0 text-danger"
-              disabled={!!removeBlockedReason}
-              onClick={confirmDelete}
-            >
-              Delete
-            </Button>
-          </span>
+              {version.lastImportLog && (
+                <Dropdown.Item onClick={() => setShowLog(true)}>
+                  <i className="bi bi-file-text" /> View log
+                </Dropdown.Item>
+              )}
+              {isImported ? (
+                <Dropdown.Item
+                  as={Link}
+                  to={`/admin/law/${version.legislationSourceGuid}?agencyCode=${agencyCode}&versionGuid=${version.legislationVersionGuid}`}
+                >
+                  <i className="bi bi-gear" /> Configure
+                </Dropdown.Item>
+              ) : (
+                <Dropdown.Item onClick={() => ToggleError("Import this version before configuring its legislation.")}>
+                  <i className="bi bi-gear" /> Configure
+                </Dropdown.Item>
+              )}
+              <Dropdown.Item
+                onClick={() => {
+                  if (dateBlockedReason) {
+                    ToggleError(dateBlockedReason);
+                    return;
+                  }
+                  setEditedDate(toPickerDate(version.effectiveDate));
+                  setIsEditingDate(true);
+                }}
+              >
+                <i className="bi bi-pencil" /> Edit date
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => {
+                  if (removeBlockedReason) {
+                    ToggleError(removeBlockedReason);
+                    return;
+                  }
+                  confirmReset();
+                }}
+              >
+                <i className="bi bi-arrow-counterclockwise" /> Reset
+              </Dropdown.Item>
+              <Dropdown.Item
+                className="text-danger"
+                onClick={() => {
+                  if (removeBlockedReason) {
+                    ToggleError(removeBlockedReason);
+                    return;
+                  }
+                  confirmDelete();
+                }}
+              >
+                <i className="bi bi-trash" /> Delete
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
         </td>
       </tr>
 
       <Modal
         show={isEditingDate}
         onHide={() => setIsEditingDate(false)}
+        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Edit effective date</Modal.Title>
@@ -259,6 +288,7 @@ const LegislationVersionRow: FC<RowProps> = ({
         show={showLog}
         onHide={() => setShowLog(false)}
         size="lg"
+        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Import Log - {displayDate(version.effectiveDate)}</Modal.Title>
@@ -296,9 +326,10 @@ const LegislationVersionRow: FC<RowProps> = ({
 
 type Props = {
   legislationSourceGuid: string;
+  agencyCode: string;
 };
 
-export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid }) => {
+export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid, agencyCode }) => {
   const { data: versions, isLoading } = useLegislationVersions(legislationSourceGuid);
   const [newEffectiveDate, setNewEffectiveDate] = useState<Date | undefined>();
   const [isAddingVersion, setIsAddingVersion] = useState(false);
@@ -315,15 +346,16 @@ export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid }) 
   const importedVersions = orderedVersions.filter((version) => version.importStatus === "SUCCESS");
   const newestImportedVersion = importedVersions.at(-1);
   const today = new Date();
-  const versionInEffect = importedVersions
-    .filter((version) => parseUTCDateToLocal(version.effectiveDate, null)! <= today)
-    .at(-1);
+  const versionInEffect = importedVersions.findLast(
+    (version) => parseUTCDateToLocal(version.effectiveDate, null)! <= today,
+  );
 
   const { data: newestStats } = useLegislationVersionContraventionStats(newestImportedVersion?.legislationVersionGuid);
 
+  // With no imported version yet, any date is allowed and an unset date means the beginning of time
   const nextEffectiveDate = newestImportedVersion
     ? toPickerDate(addDays(sortDates(newestImportedVersion.effectiveDate, newestStats?.latest).at(-1)!, 1))
-    : today;
+    : undefined;
 
   const addBlockedReason = orderedVersions.every((version) => version.importStatus === "SUCCESS")
     ? undefined
@@ -335,65 +367,89 @@ export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid }) 
 
   return (
     <div className="pb-2">
-      <h4>Version history</h4>
-      <Table
-        bordered
+      <div className="comp-details-section">
+        <div>
+          <dt className="mb-2">Version history</dt>
+          <dd>
+            <Table
+              bordered
+              size="sm"
+              className="comp-table border-top border-bottom"
+            >
+              <thead>
+                <tr>
+                  <th>Effective date</th>
+                  <th>In effect until</th>
+                  <th className="comp-cell-width-100">Import status</th>
+                  <th className="comp-cell-width-160">Imported</th>
+                  <th className="comp-cell-width-100">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderedVersions.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="text-center p-4"
+                    >
+                      <div className="d-flex align-items-center justify-content-center">
+                        <i className="bi bi-info-circle-fill me-2" />
+                        <span>No versions found</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+                {orderedVersions.map((version) => {
+                  const isImported = version.importStatus === "SUCCESS";
+                  // A later version ends this one's dates even before it is imported
+                  const nextVersion = orderedVersions.find(
+                    (candidate) => candidate.effectiveDate > version.effectiveDate,
+                  );
+                  // An imported version follows the one before it. A version still to be imported follows the newest.
+                  const precedingVersion = isImported
+                    ? importedVersions.findLast((candidate) => candidate.effectiveDate < version.effectiveDate)
+                    : newestImportedVersion;
+
+                  return (
+                    <LegislationVersionRow
+                      key={version.legislationVersionGuid}
+                      version={version}
+                      agencyCode={agencyCode}
+                      precedingVersion={precedingVersion ?? null}
+                      nextVersion={nextVersion ?? null}
+                      effectiveUntil={isImported && nextVersion ? addDays(nextVersion.effectiveDate, -1) : null}
+                      isInEffect={version.legislationVersionGuid === versionInEffect?.legislationVersionGuid}
+                      isNewestImported={
+                        version.legislationVersionGuid === newestImportedVersion?.legislationVersionGuid
+                      }
+                    />
+                  );
+                })}
+              </tbody>
+            </Table>
+          </dd>
+        </div>
+      </div>
+
+      <Button
+        variant="outline-primary"
         size="sm"
+        onClick={() => {
+          if (addBlockedReason) {
+            ToggleError(addBlockedReason);
+            return;
+          }
+          setNewEffectiveDate(nextEffectiveDate);
+          setIsAddingVersion(true);
+        }}
       >
-        <thead>
-          <tr>
-            <th>Effective date</th>
-            <th>In effect until</th>
-            <th className="comp-cell-width-100">Import status</th>
-            <th className="comp-cell-width-160">Imported</th>
-            <th className="comp-cell-width-260">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orderedVersions.map((version) => {
-            const isImported = version.importStatus === "SUCCESS";
-            const nextImportedVersion = importedVersions.find(
-              (candidate) => candidate.effectiveDate > version.effectiveDate,
-            );
-            // An imported version follows the one before it. A version still to be imported follows the newest.
-            const precedingVersion = isImported
-              ? importedVersions.filter((candidate) => candidate.effectiveDate < version.effectiveDate).at(-1)
-              : newestImportedVersion;
-
-            return (
-              <LegislationVersionRow
-                key={version.legislationVersionGuid}
-                version={version}
-                precedingVersion={precedingVersion ?? null}
-                nextVersion={nextImportedVersion ?? null}
-                effectiveUntil={
-                  isImported && nextImportedVersion ? addDays(nextImportedVersion.effectiveDate, -1) : null
-                }
-                isInEffect={version.legislationVersionGuid === versionInEffect?.legislationVersionGuid}
-                isNewestImported={version.legislationVersionGuid === newestImportedVersion?.legislationVersionGuid}
-              />
-            );
-          })}
-        </tbody>
-      </Table>
-
-      <span title={addBlockedReason}>
-        <Button
-          variant="outline-primary"
-          size="sm"
-          disabled={!!addBlockedReason}
-          onClick={() => {
-            setNewEffectiveDate(nextEffectiveDate);
-            setIsAddingVersion(true);
-          }}
-        >
-          <i className="bi bi-plus-lg me-1" /> Add version
-        </Button>
-      </span>
+        <i className="bi bi-plus-lg me-1" /> Add version
+      </Button>
 
       <Modal
         show={isAddingVersion}
         onHide={() => setIsAddingVersion(false)}
+        centered
       >
         <Modal.Header closeButton>
           <Modal.Title>Add version</Modal.Title>
@@ -426,11 +482,11 @@ export const LegislationVersionHistory: FC<Props> = ({ legislationSourceGuid }) 
           </Button>
           <Button
             variant="primary"
-            disabled={!newEffectiveDate || createMutation.isPending}
+            disabled={(!!newestImportedVersion && !newEffectiveDate) || createMutation.isPending}
             onClick={() =>
               createMutation.mutate({
                 legislationSourceGuid,
-                effectiveDate: formatDateObjectAsString(newEffectiveDate, { format: "date" }),
+                effectiveDate: newEffectiveDate ? formatDateObjectAsString(newEffectiveDate, { format: "date" }) : null,
               })
             }
           >

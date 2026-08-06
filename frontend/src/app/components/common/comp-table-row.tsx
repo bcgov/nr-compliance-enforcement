@@ -7,6 +7,7 @@ export const CompTableRow = <T,>({
   isExpanded,
   onToggleExpand,
   renderExpandedContent,
+  fullWidthExpandedRow,
 }: CompTableRowProps<T>) => {
   const isExpandable = !!renderExpandedContent;
   const expandedClass = isExpanded ? "comp-cell-parent-expanded" : "";
@@ -21,7 +22,7 @@ export const CompTableRow = <T,>({
   return (
     <>
       <tr
-        className={expandedClass}
+        className={`${isExpandable ? "comp-row-expandable " : ""}${expandedClass}`}
         onClick={isExpandable ? handleRowClick : undefined}
       >
         {/* Chevron toggle cell - only rendered when table is expandable */}
@@ -51,14 +52,14 @@ export const CompTableRow = <T,>({
 
       {/* Expanded content row - only rendered when row is expanded */}
       {isExpandable && isExpanded && renderExpandedContent && (
-        <tr onClick={handleRowClick}>
+        <tr>
           {/* Spacer cell for chevron column */}
           <td className="comp-cell-width-30 comp-cell-child-expanded" />
           {/* Spacer cell for identifier column */}
-          <td className="comp-cell-child-expanded" />
+          {!fullWidthExpandedRow && <td className="comp-cell-child-expanded" />}
           {/* Expanded content spanning remaining visible columns */}
           <td
-            colSpan={visibleColumns.length - 1}
+            colSpan={fullWidthExpandedRow ? visibleColumns.length : visibleColumns.length - 1}
             className="comp-cell-child-expanded"
           >
             {renderExpandedContent(row)}

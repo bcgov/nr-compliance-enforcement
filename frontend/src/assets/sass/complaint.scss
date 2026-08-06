@@ -1848,6 +1848,10 @@ p {
   }
 }
 
+tr.comp-row-expandable {
+  cursor: pointer;
+}
+
 tr.comp-cell-parent-expanded,
 .comp-cell-parent-expanded {
   border-bottom: none !important;

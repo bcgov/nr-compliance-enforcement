@@ -603,7 +603,6 @@ model investigation_person {
   drivers_license_number                          String?                                           @db.VarChar(64)
   approximate_age_code_ref                        String?                                           @db.VarChar(16)
   gender_code_ref                                 String?                                           @db.VarChar(16)
-  sex_code_ref                                    String?                                           @db.VarChar(16)
   drivers_license_class                           String?                                           @db.VarChar(128)
   drivers_license_country_code_ref                String?                                           @db.VarChar(4)
   drivers_license_country_subdivision_code_ref    String?                                           @db.VarChar(16)
@@ -623,6 +622,7 @@ model investigation_person {
   additional_descriptors                          String?
   comments                                        String?
   bolo_ind                                        Boolean?
+  sex_code_ref                                    String?                                           @db.VarChar(16)
   investigation_business_person_xref              investigation_business_person_xref[]
   investigation_party                             investigation_party?                              @relation(fields: [investigation_party_guid], references: [investigation_party_guid], onDelete: NoAction, onUpdate: NoAction, map: "fk_investigation_party_guid")
   investigation_person_facial_hair_style_code_ref investigation_person_facial_hair_style_code_ref[]

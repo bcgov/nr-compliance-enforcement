@@ -142,11 +142,15 @@ export class LegislationVersionService {
 
   async create(
     legislationSourceGuid: string,
-    effectiveDate: string,
+    effectiveDate: string | null | undefined,
     userId: string,
     tx?: Prisma.TransactionClient,
   ): Promise<LegislationVersion> {
     const client = tx ?? this.prisma;
+    // An unset effective date means the version applies from the beginning of time. It's stored as
+    // 1900-01-01 instead of null because it's significantly easier to work with for date boundry
+    // tests and other comparison logic.
+    effectiveDate = effectiveDate ?? "1900-01-01";
 
     const source = await client.legislation_source.findUnique({
       where: { legislation_source_guid: legislationSourceGuid },

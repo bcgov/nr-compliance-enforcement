@@ -50,9 +50,6 @@ export class investigation_person {
   gender_code_ref?: string;
 
   @ApiPropertyOptional({ type: String })
-  sex_code_ref?: string;
-
-  @ApiPropertyOptional({ type: String })
   drivers_license_class?: string;
 
   @ApiPropertyOptional({ type: String })
@@ -108,6 +105,9 @@ export class investigation_person {
 
   @ApiPropertyOptional({ type: Boolean })
   bolo_ind?: boolean;
+
+  @ApiPropertyOptional({ type: String })
+  sex_code_ref?: string;
 
   @ApiProperty({ isArray: true, type: () => investigation_business_person_xref })
   investigation_business_person_xref: investigation_business_person_xref[];
