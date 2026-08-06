@@ -6,7 +6,6 @@ import { logger } from "./logger.config";
 // Midnight UTC of a calendar date
 export const toDate = (value: string): Date => new Date(`${value}T00:00:00.000Z`);
 
-// Verified against the database: Prisma persists the UTC calendar date of a @db.Date value
 export function toDateString(value: Date): string;
 export function toDateString(value: Date | string | null | undefined): string | null;
 export function toDateString(value: Date | string | null | undefined): string | null {
