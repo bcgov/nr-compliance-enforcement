@@ -10,6 +10,7 @@ import { CaseFileService } from "src/shared/case_file/case_file.service";
 import { UserModule } from "src/common/user.module";
 import { EventPublisherModule } from "src/event_publisher/event_publisher.module";
 import { CaseActivityModule } from "src/shared/case_activity/case_activity.module";
+import { CosGeoOrgUnitModule } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { CaseActivityModule } from "src/shared/case_activity/case_activity.modul
     UserModule,
     EventPublisherModule,
     CaseActivityModule,
+    CosGeoOrgUnitModule,
   ],
   providers: [InvestigationResolver, InvestigationService, CaseFileService],
   exports: [InvestigationService],

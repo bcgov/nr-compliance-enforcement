@@ -52,6 +52,14 @@ export class InvestigationFilters {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
+  region?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  zone?: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   community?: string;
 
   @Field(() => String, { nullable: true })

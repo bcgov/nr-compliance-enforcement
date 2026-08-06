@@ -4,11 +4,18 @@ import { FilterButton } from "@components/common/filter-button";
 import MapListToggle from "@components/common/map-list-toggle";
 import SearchInput from "@components/common/search-input";
 import { useAppSelector } from "@hooks/hooks";
-import { selectCommunityCodeDropdown, selectComplaintStatusWithPendingCodeDropdown } from "@store/reducers/code-table";
+import {
+  selectCascadedRegion,
+  selectCascadedZone,
+  selectCascadedCommunity,
+  selectComplaintStatusWithPendingCodeDropdown,
+} from "@store/reducers/code-table";
 import { selectOfficersByAgency } from "@store/reducers/officer";
 import { AppUser } from "@apptypes/app/app_user/app_user";
 import { getUserAgency } from "@service/user-service";
 import { useInvestigationSearch } from "../hooks/use-investigation-search";
+import { FeatureFlag } from "@/app/components/common/feature-flag";
+import { FEATURE_TYPES } from "@/app/constants/feature-flag-types";
 
 type Props = {
   toggleShowMobileFilters: MouseEventHandler;
@@ -18,7 +25,11 @@ type Props = {
 export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, toggleShowDesktopFilters }) => {
   const { searchValues, setValues, clearValues } = useInvestigationSearch();
   const statusOptions = useAppSelector(selectComplaintStatusWithPendingCodeDropdown);
-  const communityOptions = useAppSelector(selectCommunityCodeDropdown);
+  const regionOptions = useAppSelector(selectCascadedRegion(searchValues.region ?? undefined));
+  const zoneOptions = useAppSelector(selectCascadedZone(undefined, searchValues.zone ?? undefined));
+  const communityOptions = useAppSelector(
+    selectCascadedCommunity(undefined, undefined, searchValues.community ?? undefined),
+  );
   const userAgency = getUserAgency();
   const agencyOfficers = useAppSelector((state) => selectOfficersByAgency(state, userAgency));
   const officerLabelByGuid = useMemo(() => {
@@ -116,6 +127,28 @@ export const InvestigationFilterBar: FC<Props> = ({ toggleShowMobileFilters, tog
             clear={removeFilter}
           />
         )}
+
+        <FeatureFlag feature={FEATURE_TYPES.REGION_FILTER}>
+          {hasFilter("region") && (
+            <FilterButton
+              id="investigation-region-filter-pill"
+              label={regionOptions.find((option) => option.value === searchValues.region)?.label || "Region"}
+              name="region"
+              clear={removeFilter}
+            />
+          )}
+        </FeatureFlag>
+
+        <FeatureFlag feature={FEATURE_TYPES.ZONE_FILTER}>
+          {hasFilter("zone") && (
+            <FilterButton
+              id="investigation-zone-filter-pill"
+              label={zoneOptions.find((option) => option.value === searchValues.zone)?.label || "Zone"}
+              name="zone"
+              clear={removeFilter}
+            />
+          )}
+        </FeatureFlag>
 
         {hasFilter("community") && (
           <FilterButton

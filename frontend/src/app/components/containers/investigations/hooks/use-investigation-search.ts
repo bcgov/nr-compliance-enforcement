@@ -9,6 +9,8 @@ import { formatDateObjectAsString, parseUTCDateToLocal } from "@/app/common/date
 export interface InvestigationSearchParams {
   search: string;
   investigationStatus: string | null;
+  region: string | null;
+  zone: string | null;
   community: string | null;
   primaryInvestigator: string | null;
   fileCoordinator: string | null;
@@ -25,6 +27,8 @@ export interface InvestigationSearchParams {
 const DEFAULT_SEARCH_VALUES: InvestigationSearchParams = {
   search: "",
   investigationStatus: null,
+  region: null,
+  zone: null,
   community: null,
   primaryInvestigator: null,
   fileCoordinator: null,
@@ -76,6 +80,8 @@ export const useInvestigationSearch = () => {
     () => ({
       search: searchParams.get("search") || DEFAULT_SEARCH_VALUES.search,
       investigationStatus: searchParams.get("investigationStatus"),
+      region: searchParams.get("region"),
+      zone: searchParams.get("zone"),
       community: searchParams.get("community"),
       primaryInvestigator: searchParams.get("primaryInvestigator"),
       fileCoordinator: searchParams.get("fileCoordinator"),

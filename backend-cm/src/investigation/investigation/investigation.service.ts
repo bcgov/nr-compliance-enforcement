@@ -26,6 +26,7 @@ import { generateInvestigationIdentifier } from "src/common/sequence.utility";
 import { PARTY_TYPES } from "src/common/party";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { Prisma } from ".prisma/investigation";
+import { CosGeoOrgUnitService } from "src/shared/cos_geo_org_unit/cos_geo_org_unit.service";
 
 @Injectable()
 export class InvestigationService {
@@ -40,6 +41,7 @@ export class InvestigationService {
     private readonly caseFileService: CaseFileService,
     private readonly eventPublisher: EventPublisherService,
     private readonly caseActivityService: CaseActivityService,
+    private readonly cosGeoOrgUnitService: CosGeoOrgUnitService,
   ) {}
 
   async findOne(investigationGuid: string) {
@@ -312,7 +314,8 @@ export class InvestigationService {
                         include: {
                           ticket: true,
                           contravention_party_xref: true,
-                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code: true,
+                          enforcement_action_code_enforcement_action_enforcement_action_codeToenforcement_action_code:
+                            true,
                         },
                         where: { active_ind: true },
                       },
@@ -624,52 +627,20 @@ export class InvestigationService {
     locationAddress: "location_address",
   };
 
-  private _buildInvestigationWhereClause(filters?: InvestigationFilters): any {
-    const where: any = {};
+  private _buildDateRangeWhereClause(filters: InvestigationFilters): any {
+    const dateRange: any = {};
 
-    if (filters?.search) {
-      where.name = { contains: filters.search, mode: "insensitive" };
+    if (filters?.startDate) {
+      dateRange.gte = filters.startDate;
     }
 
-    if (filters?.leadAgency) {
-      where.owned_by_agency_ref = filters.leadAgency;
+    if (filters?.endDate) {
+      const endOfDay = new Date(filters.endDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      dateRange.lte = endOfDay;
     }
 
-    if (filters?.investigationStatus) {
-      where.investigation_status = filters.investigationStatus;
-    }
-
-    if (filters?.community) {
-      where.geo_organization_unit_code_ref = filters.community;
-    }
-
-    if (filters?.primaryInvestigator) {
-      where.primary_investigator_guid_ref = filters.primaryInvestigator;
-    }
-
-    if (filters?.fileCoordinator) {
-      where.file_coordinator_guid_ref = filters.fileCoordinator;
-    }
-
-    if (filters?.supervisor) {
-      where.supervisor_guid_ref = filters.supervisor;
-    }
-
-    if (filters?.startDate || filters?.endDate) {
-      where.investigation_opened_utc_timestamp = {};
-
-      if (filters?.startDate) {
-        where.investigation_opened_utc_timestamp.gte = filters.startDate;
-      }
-
-      if (filters?.endDate) {
-        const endOfDay = new Date(filters.endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        where.investigation_opened_utc_timestamp.lte = endOfDay;
-      }
-    }
-
-    return where;
+    return dateRange;
   }
 
   private _buildInvestigationOrderByClause(filters?: InvestigationFilters): any {
@@ -687,8 +658,66 @@ export class InvestigationService {
     return orderBy;
   }
 
+  private async _buildInvestigationWhereClause(filters?: InvestigationFilters): Promise<any> {
+    const where: any = {};
+
+    if (filters?.search) {
+      where.name = { contains: filters.search, mode: "insensitive" };
+    }
+
+    if (filters?.leadAgency) {
+      where.owned_by_agency_ref = filters.leadAgency;
+    }
+
+    if (filters?.investigationStatus) {
+      where.investigation_status = filters.investigationStatus;
+    }
+
+    if (filters?.region || filters?.zone) {
+      Object.assign(where, await this._buildGeoOrganizationUnitWhereClause(filters));
+    } else if (filters?.community) {
+      where.geo_organization_unit_code_ref = filters.community;
+    }
+
+    if (filters?.primaryInvestigator) {
+      where.primary_investigator_guid_ref = filters.primaryInvestigator;
+    }
+
+    if (filters?.fileCoordinator) {
+      where.file_coordinator_guid_ref = filters.fileCoordinator;
+    }
+
+    if (filters?.supervisor) {
+      where.supervisor_guid_ref = filters.supervisor;
+    }
+
+    if (filters?.startDate || filters?.endDate) {
+      where.investigation_opened_utc_timestamp = this._buildDateRangeWhereClause(filters);
+    }
+
+    return where;
+  }
+
+  private async _buildGeoOrganizationUnitWhereClause(filters: InvestigationFilters): Promise<any> {
+    const geoOrgUnits = await this.cosGeoOrgUnitService.findAll(filters.zone, filters.region);
+    let areaCodes = [...new Set(geoOrgUnits.map((unit) => unit.areaCode).filter((areaCode) => areaCode != null))];
+
+    if (filters?.community) {
+      areaCodes = areaCodes.filter((areaCode) => areaCode === filters.community);
+    }
+
+    if (areaCodes.length > 0) {
+      return { geo_organization_unit_code_ref: { in: areaCodes } };
+    }
+
+    this.logger.error(
+      `No geo organization units found for filtering region: ${filters.region}, zone: ${filters.zone}, community: ${filters.community}`,
+    );
+    return { investigation_guid: { equals: null } };
+  }
+
   async search(page: number = 1, pageSize: number = 25, filters?: InvestigationFilters): Promise<InvestigationResult> {
-    const where = this._buildInvestigationWhereClause(filters);
+    const where = await this._buildInvestigationWhereClause(filters);
     const orderBy = this._buildInvestigationOrderByClause(filters);
 
     const result = await this.paginationUtility.paginate<investigation, Investigation>(
@@ -717,7 +746,7 @@ export class InvestigationService {
   async searchMap(model: InvestigationSearchMapParameters): Promise<SearchMapResults> {
     try {
       const { bboxArray, isGlobalSearch } = MapSearchUtility.getBoundingBoxParameters(model.bbox);
-      const where = this._buildInvestigationWhereClause(model.filters);
+      const where = await this._buildInvestigationWhereClause(model.filters);
 
       return await withRlsTransaction(this.prisma, async (db) => {
         const investigations = await db.investigation.findMany({
