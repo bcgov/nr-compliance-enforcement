@@ -63,6 +63,7 @@ export const BusinessFormFields: FC<BusinessFormFieldsProps> = ({
           <Form.Check
             type="checkbox"
             id="business-safety-concern-indicator"
+            className="comp-checkbox"
             checked={!!field.state.value}
             onChange={(e) => {
               field.handleChange(e.target.checked ? true : null);
