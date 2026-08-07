@@ -1392,8 +1392,18 @@ export class PartyService {
   ): void {
     if (!oldBusiness || !newBusiness) return;
     this._compareField("business name", oldBusiness.name, newBusiness.name, addEvent);
-    this._compareField("Safety concern", oldBusiness.safetyConcernIndicator, newBusiness.safetyConcernIndicator, addEvent);
-    this._compareField("Safety concern reason", oldBusiness.safetyConcernReason, newBusiness.safetyConcernReason, addEvent);
+    this._compareField(
+      "Safety concern",
+      oldBusiness.safetyConcernIndicator,
+      newBusiness.safetyConcernIndicator,
+      addEvent,
+    );
+    this._compareField(
+      "Safety concern reason",
+      oldBusiness.safetyConcernReason,
+      newBusiness.safetyConcernReason,
+      addEvent,
+    );
     this._diffBusinessIdentifiers(
       oldBusiness.businessIdentifiers ?? [],
       newBusiness.businessIdentifiers ?? [],
@@ -1440,8 +1450,17 @@ export class PartyService {
     return events;
   }
 
-  async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
-    const existingParty: any = await this.prisma.party.findUnique({
+  // Accepts an optional transaction if it is called as part of an activity party update.
+  // When called as part of an activity party update it will return both the updated party and a list of change events
+  // that the caller should publish assuming everything in the outer transaction succeeds.
+  async update(
+    partyIdentifier: string,
+    input: PartyUpdateInput,
+    tx?: any,
+  ): Promise<Party | { party: Party; changeEvents: EventCreateInput[] }> {
+    const db = tx ?? this.prisma;
+
+    const existingParty: any = await db.party.findUnique({
       include: {
         address: {
           where: { active_ind: true },
@@ -1529,8 +1548,8 @@ export class PartyService {
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
 
-      const prismaParty: any = await this.prisma.$transaction(async (tx) => {
-        const updated: any = await tx.party.update({
+      const doUpdate = async (dbClient: any) => {
+        const updated: any = await dbClient.party.update({
           where: { party_guid: partyIdentifier },
           data: data,
           include: {
@@ -1541,10 +1560,10 @@ export class PartyService {
         });
 
         if (isBusiness && updated.business) {
-          await this._createPartyAddresses(tx, partyIdentifier, newAddresses);
+          await this._createPartyAddresses(dbClient, partyIdentifier, newAddresses);
 
           for (const contact of newContacts) {
-            await this._createBusinessContact(tx, updated.business.business_guid, contact);
+            await this._createBusinessContact(dbClient, updated.business.business_guid, contact);
           }
 
           for (const contact of (input.business?.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid)) {
@@ -1553,7 +1572,7 @@ export class PartyService {
               (x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid,
             );
             await this._mapOfficeLinks(
-              tx,
+              dbClient,
               contact.businessPersonXrefGuid!,
               contact.officeAddressGuids ?? [],
               (existingXref?.associatedAddresses as BusinessPersonAddressXref[] | undefined) ?? [],
@@ -1562,13 +1581,25 @@ export class PartyService {
         }
 
         return updated;
-      });
+      };
+
+      const prismaParty: any = tx
+        ? await doUpdate(tx)
+        : await this.prisma.$transaction(async (innerTx) => doUpdate(innerTx));
+
+      const updatedParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+
+      if (tx) {
+        // Caller owns the outer transaction and is responsible for publishing these
+        // events only after it commits successfully.
+        return { party: updatedParty, changeEvents };
+      }
 
       for (const event of changeEvents) {
         this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
       }
 
-      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
+      return updatedParty;
     } catch (error) {
       this.logger.error("Error updating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);
