@@ -36,6 +36,12 @@ export class PersonInput {
   @Field(() => String, { nullable: true })
   sexCode?: string;
 
+  @Field(() => Number, { nullable: true })
+  heightInCm?: number;
+
+  @Field(() => Number, { nullable: true })
+  weightInKg?: number;
+
   @Field(() => String, { nullable: true })
   complexionCode?: string;
 
@@ -59,6 +65,30 @@ export class PersonInput {
 
   @Field(() => [PersonFacialHairStyleCodeInput], { nullable: true })
   facialHairStyleCodes?: PersonFacialHairStyleCodeInput[];
+
+  @Field(() => Boolean, { nullable: true })
+  facialHairIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  additionalHairDescriptors?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  tattooIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  tattooDescription?: string;
+
+  @Field(() => String, { nullable: true })
+  additionalDescriptors?: string;
+
+  @Field(() => String, { nullable: true })
+  comments?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  safetyConcernIndicator?: boolean;
+
+  @Field(() => String, { nullable: true })
+  safetyConcernReason?: string;
 }
 
 @InputType()

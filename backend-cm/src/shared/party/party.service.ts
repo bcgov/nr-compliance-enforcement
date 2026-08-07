@@ -21,13 +21,16 @@ import { BusinessPersonAddressXref } from "src/shared/business_person_address_xr
 import { ContactMethod, ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
 import { Address, AddressInput } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
-import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
+import {
+  PersonFacialHairStyleCode,
+  PersonFacialHairStyleCodeInput,
+} from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
 import { AppUserService } from "src/shared/app_user/app_user.service";
 import { EventPublisherService } from "../../event_publisher/event_publisher.service";
 import { EventCreateInput } from "../event/dto/event";
 import { STREAM_TOPICS } from "../../common/nats_constants";
-import { Person } from "src/shared/person/dto/person";
 import { BusinessIdentifiers } from "src/enum/business-identifier.enum";
+import { PersonInput } from "src/shared/person/dto/person.input";
 
 type AddEventFn = (verb: string, field: string, oldValue: any, newValue: any, extra?: Record<string, any>) => void;
 
@@ -373,7 +376,7 @@ export class PartyService {
     };
   }
 
-  private _buildPersonFieldData(person?: Person): any {
+  private _buildPersonFieldData(person?: PersonInput): any {
     return {
       first_name: person?.firstName,
       middle_names: person?.middleNames,
@@ -714,7 +717,7 @@ export class PartyService {
   }
 
   private _buildFacialHairStyleOperations(
-    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCodeInput[],
     existingFacialHairStyles: PersonFacialHairStyleCode[],
   ): any {
     const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
@@ -1275,7 +1278,7 @@ export class PartyService {
 
   private _diffFacialHairTypes(
     existingFacialHairStyles: PersonFacialHairStyleCode[],
-    incomingFacialHairStyles: PersonFacialHairStyleCode[],
+    incomingFacialHairStyles: PersonFacialHairStyleCodeInput[],
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingFacialHairStyles) {

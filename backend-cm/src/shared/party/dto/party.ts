@@ -16,7 +16,7 @@ import {
   ContactMethodMatchInput,
 } from "src/shared/contact_method/dto/contact_method";
 import { Alias, AliasInput } from "src/shared/alias/dto/alias";
-import { PersonMatchInput } from "src/shared/person/dto/person.input";
+import { PersonInput, PersonMatchInput } from "src/shared/person/dto/person.input";
 
 export class Party implements PartyDto {
   partyIdentifier: string;
@@ -43,9 +43,9 @@ export class PartyCreateInput {
   @Field(() => String)
   partyTypeCode: string;
 
-  @Field(() => Person, { nullable: true })
+  @Field(() => PersonInput, { nullable: true })
   @IsOptional()
-  person?: Person;
+  person?: PersonInput;
 
   @Field(() => Business, { nullable: true })
   @IsOptional()
