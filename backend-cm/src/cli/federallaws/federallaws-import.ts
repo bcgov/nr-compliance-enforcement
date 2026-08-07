@@ -112,7 +112,7 @@ async function importSingleRegulation(
   try {
     const fetchUrl = getLegislationFetchUrl(actVersion.source.sourceType, reg.id);
     logger.log(`  URL: ${fetchUrl}`);
-    const xmlString = await fetchXml(fetchUrl, "Federal Laws API");
+    const xmlString = await fetchXml(fetchUrl, "Federal Laws API", true);
     const parsedDocument = parseFederalRegulationXml(xmlString);
 
     // Skip regulations whose XML has no body content
@@ -191,7 +191,7 @@ async function importLegislationVersion(
     );
 
     // Fetch the XML
-    const xmlString = await fetchXml(source.sourceUrl, "Federal Laws API");
+    const xmlString = await fetchXml(source.sourceUrl, "Federal Laws API", true);
     logger.log(`Received XML document (${xmlString.length} characters)`);
 
     // Parse the XML

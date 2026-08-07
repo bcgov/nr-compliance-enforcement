@@ -12,9 +12,9 @@ const httpsProxyAgent = process.env.HTTPS_PROXY ? new HttpsProxyAgent(process.en
 
 const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsAgent: httpsProxyAgent } : {};
 
-export const fetchXml = async (url: string, apiName: string): Promise<string> => {
+export const fetchXml = async (url: string, apiName: string, useProxy = false): Promise<string> => {
   try {
-    const response = await axios.get(url, proxyConfig);
+    const response = await axios.get(url, useProxy ? proxyConfig : {});
     return response.data;
   } catch (error: any) {
     const msg = error?.message || String(error);
@@ -113,7 +113,7 @@ let cachedLookup: FederalLookupData | null = null;
 const fetchFederalLookup = async (): Promise<FederalLookupData> => {
   if (cachedLookup) return cachedLookup;
 
-  const xmlString = await fetchXml(FEDERAL_LOOKUP_URL, "Federal Laws Lookup");
+  const xmlString = await fetchXml(FEDERAL_LOOKUP_URL, "Federal Laws Lookup", true);
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "@_",
