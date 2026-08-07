@@ -4,7 +4,6 @@ import {
   BusinessPerson,
   BusinessPersonAddress,
   ContactMethod,
-  FacialHairStyleCode,
   InvestigationBusinessIdentifier,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
@@ -500,10 +499,11 @@ export function buildPersonBase(value: any) {
     eyeColourOther: value.eyeColourOther || null,
     facialHairIndicator: value.facialHairIndicator || null,
     facialHairStyleCodes:
-      value.facialHairStyleCodes?.map((fhs: PersonFacialHairStyleCode) => ({
+      value.facialHairStyleCodes?.map((fhs: any) => ({
         personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
         personGuid: fhs.personGuid,
         facialHairStyleCode: fhs.facialHairStyleCode,
+        personFacialHairStyleCodeReference: fhs.personFacialHairStyleCodeReference,
       })) || [],
     additionalHairDescriptors: value.additionalHairDescriptors || null,
     comments: value.comments || null,
@@ -614,6 +614,7 @@ export const mapInvestigationPartyToDefaultValues = (
       personFacialStyleHairCodeGuid: fhs.personFacialStyleHairCodeGuid,
       personGuid: fhs.personGuid,
       facialHairStyleCode: fhs.facialHairStyleCode,
+      personFacialHairStyleCodeReference: fhs.personFacialHairStyleCodeReference,
     })),
   additionalHairDescriptors: editParty.person?.additionalHairDescriptors || null,
   tattooIndicator: editParty.person?.tattooIndicator || null,
@@ -693,9 +694,10 @@ const mapCopyContactPerson = (
 const buildPersonCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
   const personBase = buildPersonBase(party.person);
 
-  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: FacialHairStyleCode) => ({
+  const facialHairStyleCodes = personBase.facialHairStyleCodes.map((fhs: PersonFacialHairStyleCode) => ({
     ...fhs,
     personFacialStyleHairCodeGuid: undefined,
+    personFacialHairStyleCodeReference: fhs.personFacialStyleHairCodeGuid,
     personGuid: undefined,
   }));
 

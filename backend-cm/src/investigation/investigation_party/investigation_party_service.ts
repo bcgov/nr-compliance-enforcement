@@ -47,6 +47,14 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
+import { EventCreateInput } from "src/shared/event/dto/event";
+import { PartyUpdateInput } from "src/shared/party/dto/party";
+import { AddressInput } from "src/shared/address/dto/address";
+import { ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
+import { AliasInput } from "src/shared/alias/dto/alias";
+import { BusinessInput } from "src/shared/business/dto/business";
+import { PersonInput } from "src/shared/person/dto/person.input";
+import { PartyService } from "src/shared/party/party.service";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -59,6 +67,7 @@ export class InvestigationPartyService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
+    private readonly partyService: PartyService,
   ) {}
 
   private readonly logger = new Logger(InvestigationPartyService.name);
@@ -244,6 +253,7 @@ export class InvestigationPartyService {
               investigation_person_facial_hair_style_code_ref: {
                 create: input.facialHairStyleCodes.map((fhs) => ({
                   facial_hair_style_code_ref: fhs.facialHairStyleCode,
+                  person_facial_hair_style_code_guid_ref: fhs.personFacialHairStyleCodeReference,
                   create_user_id: this.user.getIdirUsername(),
                   create_utc_timestamp: new Date(),
                 })),
@@ -609,6 +619,144 @@ export class InvestigationPartyService {
     return await this.investigationService.findOne(investigationGuid);
   }
 
+  private _buildSharedPartyUpdateInput(
+    existingParty: InvestigationParty,
+    input: UpdateInvestigationPartyInput,
+  ): PartyUpdateInput {
+    const findAddressReference = (addressGuid?: string) =>
+      existingParty.addresses?.find((a) => a.addressGuid === addressGuid)?.addressReference;
+
+    const findContactMethodReference = (contactMethodGuid?: string) =>
+      existingParty.contactMethods?.find((c) => c.contactMethodGuid === contactMethodGuid)?.contactMethodReference;
+
+    const findAliasReference = (aliasGuid?: string) =>
+      existingParty.aliases?.find((a) => a.aliasGuid === aliasGuid)?.aliasReference;
+
+    const findBusinessIdentifierReference = (businessIdentifierGuid?: string) =>
+      existingParty.business?.businessIdentifiers?.find((i) => i.businessIdentifierGuid === businessIdentifierGuid)
+        ?.businessIdentifierReference;
+
+    const findBusinessPersonXrefReference = (businessPersonXrefGuid?: string) =>
+      existingParty.business?.contactPeople?.find((c) => c.businessPersonXrefGuid === businessPersonXrefGuid)
+        ?.businessPersonXrefReference;
+
+    const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
+      addressGuid: findAddressReference(a.addressGuid) ?? "",
+      partyGuid: existingParty.partyReference!,
+      addressName: a.addressName,
+      address: a.address,
+      city: a.city,
+      province: a.province,
+      postalCode: a.postalCode,
+      country: a.country,
+      isPrimary: a.isPrimary,
+      displayInInvestigation: a.displayInInvestigation,
+      contactMethods: (a.contactMethods ?? []).map((cm) => ({
+        contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+        typeCode: cm.typeCode,
+        value: cm.value,
+        isPrimary: cm.isPrimary,
+      })),
+    }));
+
+    const contactMethods: ContactMethodInput[] = (input.contactMethods ?? []).map((cm) => ({
+      contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+      typeCode: cm.typeCode,
+      value: cm.value ?? "",
+      isPrimary: cm.isPrimary ?? false,
+    }));
+
+    const aliases: AliasInput[] = (input.aliases ?? []).map((a) => ({
+      aliasGuid: findAliasReference(a.aliasGuid) ?? "",
+      name: a.name,
+    }));
+
+    const person: PersonInput | undefined = input.person
+      ? {
+          firstName: input.person.firstName,
+          middleNames: input.person.middleNames,
+          lastName: input.person.lastName,
+          dateOfBirth: input.person.dateOfBirth,
+          approximateAgeCode: input.person.approximateAgeCode,
+          driversLicenseNumber: input.person.driversLicenseNumber,
+          driversLicenseClass: input.person.driversLicenseClass,
+          driversLicenseCountryCode: input.person.driversLicenseCountryCode,
+          driversLicenseCountrySubdivisionCode: input.person.driversLicenseCountrySubdivisionCode,
+          genderCode: input.person.genderCode,
+          sexCode: input.person.sexCode,
+          heightInCm: input.person.heightInCm,
+          weightInKg: input.person.weightInKg,
+          complexionCode: input.person.complexionCode,
+          buildCode: input.person.buildCode,
+          hairColourCode: input.person.hairColourCode,
+          hairLengthCode: input.person.hairLengthCode,
+          hairColourOther: input.person.hairColourOther,
+          eyeColourCode: input.person.eyeColourCode,
+          eyeColourOther: input.person.eyeColourOther,
+          facialHairIndicator: input.person.facialHairIndicator,
+          facialHairStyleCodes: (input.person.facialHairStyleCodes ?? []).map((fhs) => ({
+            personFacialStyleHairCodeGuid: fhs.personFacialHairStyleCodeReference,
+            facialHairStyleCode: fhs.facialHairStyleCode,
+            activeIndicator: fhs.activeIndicator,
+          })),
+          additionalHairDescriptors: input.person.additionalHairDescriptors,
+          tattooIndicator: input.person.tattooIndicator,
+          tattooDescription: input.person.tattooDescription,
+          additionalDescriptors: input.person.additionalDescriptors,
+          comments: input.person.comments,
+          safetyConcernIndicator: input.person.safetyConcernIndicator,
+          safetyConcernReason: input.person.safetyConcernReason,
+        }
+      : undefined;
+
+    const business: BusinessInput | undefined = input.business
+      ? {
+          businessGuid: existingParty.business?.businessGuid ?? "",
+          partyGuid: existingParty.partyReference!,
+          name: input.business.name,
+          safetyConcernIndicator: input.business.safetyConcernIndicator,
+          safetyConcernReason: input.business.safetyConcernReason,
+          businessIdentifiers: (input.business.businessIdentifiers ?? []).map((bi) => ({
+            businessIdentifierGuid: findBusinessIdentifierReference(bi.businessIdentifierGuid) ?? "",
+            businessGuid: existingParty.business?.businessGuid ?? "",
+            identifierCode: bi.identifierCode,
+            identifierValue: bi.identifierValue,
+          })),
+          contactPeople: (input.business.contactPeople ?? []).map((c) => ({
+            businessPersonXrefGuid: findBusinessPersonXrefReference(c.businessPersonXrefGuid),
+            title: c.title,
+            displayInInvestigation: c.displayInInvestigation,
+            isPrimary: c.isPrimary,
+            person: {
+              firstName: c.person?.firstName ?? "",
+              middleNames: c.person?.middleNames,
+              lastName: c.person?.lastName ?? "",
+            },
+            contactMethods: (c.contactMethods ?? []).map((cm) => ({
+              contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+              typeCode: cm.typeCode,
+              value: cm.value ?? "",
+              isPrimary: cm.isPrimary,
+            })),
+            officeAddressGuids: (c.officeAddressGuids ?? [])
+              .map((guid) => findAddressReference(guid))
+              .filter((guid): guid is string => !!guid),
+          })),
+        }
+      : undefined;
+
+    return {
+      partyIdentifier: existingParty.partyReference,
+      partyTypeCode: existingParty.partyTypeCode,
+      person,
+      business,
+      addresses,
+      contactMethods,
+      aliases,
+      images: [],
+    };
+  }
+
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.find((p) => p.partyIdentifier === input.partyIdentifier && p.isActive);
@@ -621,7 +769,9 @@ export class InvestigationPartyService {
       this._validateBusinessInput(input.business);
     }
 
-    await this.prisma.$transaction(async (tx) => {
+    let sharedPartyChangeEvents: EventCreateInput[] = [];
+
+    await withRlsTransaction(this.prisma, async (tx) => {
       const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
 
       const incomingAddresses = input.addresses ?? [];
@@ -682,6 +832,14 @@ export class InvestigationPartyService {
 
         if (input.business && existingParty.business) {
           await this.updateBusiness(tx, existingParty.business, input.business, investigationGuid);
+        }
+
+        if (existingParty.partyReference) {
+          const partyUpdateInput = this._buildSharedPartyUpdateInput(existingParty, input);
+          // PartyService.update() manages its own separate transaction against the shared
+          // Prisma client. If it throws, this whole local transaction is rolled back too,
+          // since the error propagates out of the withRlsTransaction callback.
+          await this.partyService.update(existingParty.partyReference, partyUpdateInput);
         }
       } catch (error) {
         this.logger.error("Error updating investigation party:", error);

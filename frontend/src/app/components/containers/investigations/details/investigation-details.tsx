@@ -98,6 +98,7 @@ export const GET_INVESTIGATION = gql`
           facialHairStyleCodes {
             personFacialStyleHairCodeGuid
             facialHairStyleCode
+            personFacialHairStyleCodeReference
           }
           additionalHairDescriptors
           tattooIndicator

@@ -26,3 +26,10 @@ ALTER TABLE investigation_business_person_xref ADD COLUMN business_person_xref_g
 
 COMMENT ON COLUMN investigation.investigation_business_person_xref.business_person_xref_guid_ref IS
     'References shared.business_person_xref.business_person_xref_guid. Null indicates the business contact was added locally within the investigation and has no shared party counterpart.';
+
+ALTER TABLE investigation_person_facial_hair_style_code_ref
+    ADD COLUMN person_facial_hair_style_code_guid_ref UUID;
+ 
+COMMENT ON COLUMN investigation_person_facial_hair_style_code_ref.person_facial_hair_style_code_guid_ref IS
+    'References shared.person_facial_hair_style_code.person_facial_hair_style_code_guid. Null indicates the facial hair style code was added locally within the investigation and has no shared party counterpart.';
+ 

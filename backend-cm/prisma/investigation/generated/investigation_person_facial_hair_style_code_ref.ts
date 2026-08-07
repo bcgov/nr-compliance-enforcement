@@ -26,6 +26,9 @@ export class investigation_person_facial_hair_style_code_ref {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  person_facial_hair_style_code_guid_ref?: string;
+
   @ApiProperty({ type: () => investigation_person })
   investigation_person: investigation_person;
 }

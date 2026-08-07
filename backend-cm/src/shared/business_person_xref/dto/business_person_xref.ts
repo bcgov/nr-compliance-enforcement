@@ -1,9 +1,11 @@
 import { createMap, forMember, mapFrom, Mapper, mapWithArguments } from "@automapper/core";
+import { Field, InputType } from "@nestjs/graphql";
 import { business_person_xref } from "prisma/shared/generated/business_person_xref";
 import { Business } from "src/shared/business/dto/business";
 import { BusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
-import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { ContactMethod, ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
 import { Person } from "src/shared/person/dto/person";
+import { PersonInput } from "src/shared/person/dto/person.input";
 
 export class BusinessPersonXref {
   businessPersonXrefGuid: string;
@@ -14,6 +16,30 @@ export class BusinessPersonXref {
   person: Person;
   contactMethods?: [ContactMethod]; // These are at the party level for people so need to be passed in parallel
   associatedAddresses?: [BusinessPersonAddressXref];
+  officeAddressGuids?: string[];
+}
+
+@InputType()
+export class BusinessPersonXrefInput {
+  @Field(() => String, { nullable: true })
+  businessPersonXrefGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  title?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  displayInInvestigation?: boolean;
+
+  @Field(() => Boolean, { nullable: true })
+  isPrimary?: boolean;
+
+  @Field(() => PersonInput)
+  person: PersonInput;
+
+  @Field(() => [ContactMethodInput], { nullable: true })
+  contactMethods?: ContactMethodInput[];
+
+  @Field(() => [String], { nullable: true })
   officeAddressGuids?: string[];
 }
 

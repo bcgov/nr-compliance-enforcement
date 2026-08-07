@@ -16,7 +16,7 @@ import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
 import { Alias, AliasInput } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
-import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
+import { BusinessPersonXref, BusinessPersonXrefInput } from "src/shared/business_person_xref/dto/business_person_xref";
 import { BusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
 import { ContactMethod, ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
 import { Address, AddressInput } from "src/shared/address/dto/address";
@@ -861,7 +861,7 @@ export class PartyService {
     }
   }
 
-  private async _createBusinessContact(tx: any, businessGuid: string, contact: BusinessPersonXref): Promise<void> {
+  private async _createBusinessContact(tx: any, businessGuid: string, contact: BusinessPersonXrefInput): Promise<void> {
     const xref = await tx.business_person_xref.create({
       data: {
         business: { connect: { business_guid: businessGuid } },
@@ -954,7 +954,7 @@ export class PartyService {
   }
 
   private _buildBusinessPersonXrefOperations(
-    incomingXrefs: BusinessPersonXref[],
+    incomingXrefs: BusinessPersonXrefInput[],
     existingXrefs: BusinessPersonXref[],
   ): any {
     const xrefsToCreate = incomingXrefs.filter((bpx) => !bpx.businessPersonXrefGuid);
@@ -1215,7 +1215,7 @@ export class PartyService {
     }
   }
 
-  private _diffNewContact(incoming: BusinessPersonXref, addEvent: AddEventFn): void {
+  private _diffNewContact(incoming: BusinessPersonXrefInput, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
     addEvent("ADDED", "business contact", null, name);
     for (const cm of incoming.contactMethods ?? []) {
@@ -1230,7 +1230,7 @@ export class PartyService {
 
   private _diffExistingContact(
     existingXrefs: BusinessPersonXref[],
-    incoming: BusinessPersonXref,
+    incoming: BusinessPersonXrefInput,
     addEvent: AddEventFn,
   ): void {
     const existingXref = existingXrefs.find((x) => x.businessPersonXrefGuid === incoming.businessPersonXrefGuid);
@@ -1257,7 +1257,7 @@ export class PartyService {
 
   private _diffContactPeople(
     existingXrefs: BusinessPersonXref[],
-    incomingXrefs: BusinessPersonXref[],
+    incomingXrefs: BusinessPersonXrefInput[],
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingXrefs) {
@@ -1453,17 +1453,8 @@ export class PartyService {
     return events;
   }
 
-  // Accepts an optional transaction if it is called as part of an activity party update.
-  // When called as part of an activity party update it will return both the updated party and a list of change events
-  // that the caller should publish assuming everything in the outer transaction succeeds.
-  async update(
-    partyIdentifier: string,
-    input: PartyUpdateInput,
-    tx?: any,
-  ): Promise<Party | { party: Party; changeEvents: EventCreateInput[] }> {
-    const db = tx ?? this.prisma;
-
-    const existingParty: any = await db.party.findUnique({
+  async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
+    const existingParty: any = await this.prisma.party.findUnique({
       include: {
         address: {
           where: { active_ind: true },
@@ -1551,8 +1542,8 @@ export class PartyService {
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
 
-      const doUpdate = async (dbClient: any) => {
-        const updated: any = await dbClient.party.update({
+      const prismaParty: any = await this.prisma.$transaction(async (tx) => {
+        const updated: any = await tx.party.update({
           where: { party_guid: partyIdentifier },
           data: data,
           include: {
@@ -1563,10 +1554,10 @@ export class PartyService {
         });
 
         if (isBusiness && updated.business) {
-          await this._createPartyAddresses(dbClient, partyIdentifier, newAddresses);
+          await this._createPartyAddresses(tx, partyIdentifier, newAddresses);
 
           for (const contact of newContacts) {
-            await this._createBusinessContact(dbClient, updated.business.business_guid, contact);
+            await this._createBusinessContact(tx, updated.business.business_guid, contact);
           }
 
           for (const contact of (input.business?.contactPeople ?? []).filter((c) => c.businessPersonXrefGuid)) {
@@ -1575,7 +1566,7 @@ export class PartyService {
               (x) => x.businessPersonXrefGuid === contact.businessPersonXrefGuid,
             );
             await this._mapOfficeLinks(
-              dbClient,
+              tx,
               contact.businessPersonXrefGuid!,
               contact.officeAddressGuids ?? [],
               (existingXref?.associatedAddresses as BusinessPersonAddressXref[] | undefined) ?? [],
@@ -1584,25 +1575,13 @@ export class PartyService {
         }
 
         return updated;
-      };
-
-      const prismaParty: any = tx
-        ? await doUpdate(tx)
-        : await this.prisma.$transaction(async (innerTx) => doUpdate(innerTx));
-
-      const updatedParty = this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
-
-      if (tx) {
-        // Caller owns the outer transaction and is responsible for publishing these
-        // events only after it commits successfully.
-        return { party: updatedParty, changeEvents };
-      }
+      });
 
       for (const event of changeEvents) {
         this.eventPublisher.publishEvent(event, STREAM_TOPICS.PARTY_UPDATED);
       }
 
-      return updatedParty;
+      return this.mapper.map<party, Party>(prismaParty as party, "party", "Party");
     } catch (error) {
       this.logger.error("Error updating party:", (error as Error)?.message);
       this._rethrowIfBusinessNumberConflict(error);

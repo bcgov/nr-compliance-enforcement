@@ -3,7 +3,7 @@ import { party } from "../../../../prisma/shared/generated/party";
 import { person } from "../../../../prisma/shared/generated/person";
 import { business } from "../../../../prisma/shared/generated/business";
 import { Person } from "../../person/dto/person";
-import { Business, BusinessMatchInput } from "../../business/dto/business";
+import { Business, BusinessInput, BusinessMatchInput } from "../../business/dto/business";
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsOptional } from "class-validator";
 import { PaginatedResult } from "../../../common/pagination.utility";
@@ -47,9 +47,9 @@ export class PartyCreateInput {
   @IsOptional()
   person?: PersonInput;
 
-  @Field(() => Business, { nullable: true })
+  @Field(() => BusinessInput, { nullable: true })
   @IsOptional()
-  business?: Business;
+  business?: BusinessInput;
 
   @Field(() => [AddressInput], { nullable: true })
   @IsOptional()

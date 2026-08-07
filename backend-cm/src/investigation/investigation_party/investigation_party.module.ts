@@ -5,9 +5,10 @@ import { InvestigationPartyService } from "../investigation_party/investigation_
 import { InvestigationPartyResolver } from "../investigation_party/investigation_party.resolver";
 import { InvestigationModule } from "../investigation/investigation.module";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
+import { PartyModule } from "src/shared/party/party.module";
 
 @Module({
-  imports: [PrismaModuleInvestigation, UserModule, InvestigationModule],
+  imports: [PrismaModuleInvestigation, UserModule, InvestigationModule, PartyModule],
   providers: [InvestigationPartyResolver, InvestigationPartyService, SharedPrismaService],
 })
 export class InvestigationPartyModule {}

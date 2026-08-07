@@ -145,6 +145,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           personFacialStyleHairCodeGuid: existing?.personFacialStyleHairCodeGuid,
           personGuid: existing?.personGuid,
           facialHairStyleCode: o.value,
+          personFacialHairStyleCodeReference: (existing as any)?.personFacialHairStyleCodeReference,
         };
       });
 
@@ -208,7 +209,9 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                 onChange: ({ value }: { value: string | null | undefined }) => {
                   const isSafetyConcernChecked = !!form.getFieldValue("safetyConcernIndicator");
                   const isEmpty = !value?.trim();
-                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                  return isSafetyConcernChecked && isEmpty
+                    ? { message: "Safety concern reason is required" }
+                    : undefined;
                 },
               }}
               render={(field) => (

@@ -646,6 +646,7 @@ model investigation_person_facial_hair_style_code_ref {
   create_utc_timestamp                                 DateTime             @default(now()) @db.Timestamp(6)
   update_user_id                                       String?              @db.VarChar(32)
   update_utc_timestamp                                 DateTime?            @db.Timestamp(6)
+  person_facial_hair_style_code_guid_ref               String?              @db.Uuid
   investigation_person                                 investigation_person @relation(fields: [investigation_person_guid], references: [investigation_person_guid], onDelete: NoAction, onUpdate: NoAction, map: "investigation_person_facial_hair_style_code_ref_investigation_p")
 
   @@schema("investigation")
