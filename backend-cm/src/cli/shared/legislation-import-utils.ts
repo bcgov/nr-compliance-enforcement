@@ -1,15 +1,20 @@
 import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
+import { LegislationVersionService } from "../../shared/legislation_version/legislation_version.service";
 import { ParsedLegislationNode } from "../../shared/legislation/utils/bc-laws-xml-parser";
+import { Regulation } from "../../external_api/laws-service";
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+export interface RegulationComparison {
+  addedRegs: string[];
+  removedRegs: string[];
+}
 
 /**
  * Context for inserting legislation tree
  */
 export interface InsertLegislationContext {
   actTitle: string;
-  effectiveDate: Date | null;
+  legislationVersionGuid: string;
   legislationService: LegislationService;
   logger: Logger;
   errors: string[];
@@ -29,6 +34,32 @@ export function parseEffectiveDate(dateString: string | null): Date | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Compares the regulations found in this run against those imported under the previous version of the act
+ */
+export async function compareRegulationsToPreviousVersion(
+  actVersionGuid: string,
+  regulations: Regulation[],
+  legislationVersionService: LegislationVersionService,
+): Promise<RegulationComparison> {
+  const previousSources = await legislationVersionService.getPreviousRegulationSources(actVersionGuid);
+
+  // Nothing current imported so all regulations are new
+  if (previousSources.length === 0) {
+    return { addedRegs: [], removedRegs: [] };
+  }
+
+  const previousKeys = new Set(previousSources.map((previous) => previous.externalKey));
+  const currentKeys = new Set(regulations.map((reg) => reg.id));
+
+  return {
+    addedRegs: regulations.filter((reg) => !previousKeys.has(reg.id)).map((reg) => reg.title),
+    removedRegs: previousSources
+      .filter((previous) => !currentKeys.has(previous.externalKey ?? ""))
+      .map((previous) => previous.shortDescription),
+  };
 }
 
 /**
@@ -90,8 +121,7 @@ export function buildFullCitation(
 
 /**
  * Recursively inserts legislation nodes into the database
- * @param legislationSourceGuid - Only set on the root node to link back to the import source
- * @param actGuid - For regulation documents, the parent Act's legislation_guid
+ * @param isRegulationRoot - Stores the node as a REG regardless of the type the document is parsed as
  */
 export async function insertLegislationTree(
   node: ParsedLegislationNode,
@@ -99,35 +129,26 @@ export async function insertLegislationTree(
   agencyCode: string,
   parentGuid: string | null = null,
   parentFullCitation: string | null = null,
-  legislationSourceGuid: string | null = null,
-  actGuid: string | null = null,
+  isRegulationRoot: boolean = false,
 ): Promise<number> {
-  const { actTitle, effectiveDate, legislationService, logger } = context;
+  const { actTitle, legislationVersionGuid, legislationService, logger } = context;
   let count = 0;
 
   const fullCitation = buildFullCitation(actTitle, node, parentFullCitation);
-
-  // Only set legislationSourceGuid on root node (when parentGuid is null)
-  const sourceGuidForThisNode = parentGuid === null ? legislationSourceGuid : null;
-
-  // For regulation root nodes link to parent Act if provided
-  const parentLegislationGuid = parentGuid === null && node.typeCode === "REG" && actGuid ? actGuid : parentGuid;
+  const typeCode = isRegulationRoot ? "REG" : node.typeCode;
 
   try {
-    logger.log(`Importing: ${node.typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
-    await sleep(25); // Rate limiting
+    logger.log(`Importing: ${typeCode} - ${node.citation || node.sectionTitle || "(root)"}`);
 
-    // Upsert the legislation record
-    const created = await legislationService.upsert({
-      legislationTypeCode: node.typeCode,
-      parentLegislationGuid: parentLegislationGuid,
-      legislationSourceGuid: sourceGuidForThisNode,
+    const created = await legislationService.create({
+      legislationTypeCode: typeCode,
+      legislationVersionGuid: legislationVersionGuid,
+      parentLegislationGuid: parentGuid,
       citation: node.citation ?? null,
       fullCitation: fullCitation,
       sectionTitle: node.sectionTitle ?? null,
       legislationText: node.legislationText,
       displayOrder: node.displayOrder,
-      effectiveDate: effectiveDate,
       createUserId: "system",
       agencyCode: agencyCode,
     });
@@ -138,12 +159,11 @@ export async function insertLegislationTree(
       context.rootLegislationGuid = created.legislation_guid;
     }
 
-    // Recursively insert children (don't pass legislationSourceGuid - only for root)
     for (const child of node.children) {
-      count += await insertLegislationTree(child, context, agencyCode, created.legislation_guid, fullCitation, null);
+      count += await insertLegislationTree(child, context, agencyCode, created.legislation_guid, fullCitation);
     }
   } catch (error) {
-    const errorMsg = `${node.typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;
+    const errorMsg = `${typeCode} - ${node.citation}: ${error instanceof Error ? error.message : String(error)}`;
     logger.error(`Error inserting legislation: ${errorMsg}`);
     context.errors.push(errorMsg);
     // Continue with other nodes even if one fails

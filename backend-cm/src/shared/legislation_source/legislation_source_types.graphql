@@ -2,15 +2,13 @@ type LegislationSource {
   legislationSourceGuid: String!
   shortDescription: String!
   longDescription: String
-  sourceUrl: String!
+  sourceUrl: String
   regulationsSourceUrl: String
   agencyCode: String!
   sourceType: String!
   activeInd: Boolean!
-  importedInd: Boolean!
-  importStatus: String
-  lastImportTimestamp: String
-  lastImportLog: String
+  parentLegislationSourceGuid: String
+  externalKey: String
   createUserId: String
   createUtcTimestamp: String
 }
@@ -22,6 +20,7 @@ input CreateLegislationSourceInput {
   regulationsSourceUrl: String
   agencyCode: String!
   sourceType: String
+  effectiveDate: String
 }
 
 input UpdateLegislationSourceInput {
@@ -32,5 +31,4 @@ input UpdateLegislationSourceInput {
   regulationsSourceUrl: String
   agencyCode: String
   activeInd: Boolean
-  importedInd: Boolean
 }

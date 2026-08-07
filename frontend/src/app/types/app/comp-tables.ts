@@ -14,6 +14,7 @@ export type CompColumn<T> = {
 export type CompTableSharedProps<T> = {
   columns: CompColumn<T>[]; // Table definition
   renderExpandedContent?: (row: T) => ReactNode; // For expandable tables the component to display in the expanded area
+  fullWidthExpandedRow?: boolean; // Expanded content spans all columns
 };
 
 export type CompTableProps<T> = CompTableSharedProps<T> & {

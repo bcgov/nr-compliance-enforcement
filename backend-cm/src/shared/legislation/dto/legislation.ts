@@ -1,11 +1,11 @@
 import { createMap, forMember, mapFrom, Mapper } from "@automapper/core";
 import { legislation } from "../../../../prisma/shared/generated/legislation";
+import { toDateString } from "../../../common/custom_scalars";
 
 export class Legislation {
   legislationGuid: string;
   legislationTypeCode: string;
   parentGuid: string;
-  legislationSourceGuid: string | null;
   citation: string;
   fullCitation: string;
   sectionTitle: string;
@@ -14,7 +14,17 @@ export class Legislation {
   displayOrder: number;
   ancestors: Legislation[];
   isEnabled: boolean;
+  legislationSourceGuid: string;
+  versionEffectiveDate: string | null;
+  sourceUrl: string | null;
 }
+
+type LegislationVersionAndConfiguration = {
+  enabled_ind: boolean;
+  legislation_source_guid: string;
+  version_effective_date: Date | null;
+  source_url: string | null;
+};
 
 export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
   createMap<legislation, Legislation>(
@@ -32,10 +42,6 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     forMember(
       (dest) => dest.parentGuid,
       mapFrom((src) => src.parent_legislation_guid),
-    ),
-    forMember(
-      (dest) => dest.legislationSourceGuid,
-      mapFrom((src) => src.legislation_source_guid),
     ),
     forMember(
       (dest) => dest.citation,
@@ -63,7 +69,19 @@ export const mapPrismaLegislationToLegislation = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.isEnabled,
-      mapFrom((src) => (src as legislation & { enabled_ind: boolean }).enabled_ind),
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).enabled_ind),
+    ),
+    forMember(
+      (dest) => dest.legislationSourceGuid,
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).legislation_source_guid),
+    ),
+    forMember(
+      (dest) => dest.versionEffectiveDate,
+      mapFrom((src) => toDateString((src as legislation & LegislationVersionAndConfiguration).version_effective_date)),
+    ),
+    forMember(
+      (dest) => dest.sourceUrl,
+      mapFrom((src) => (src as legislation & LegislationVersionAndConfiguration).source_url),
     ),
   );
 };
