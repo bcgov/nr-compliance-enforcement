@@ -14,11 +14,11 @@ import {
 } from "./dto/party";
 import { PaginationUtility } from "../../common/pagination.utility";
 import { UserService } from "../../common/user.service";
-import { Alias } from "src/shared/alias/dto/alias";
+import { Alias, AliasInput } from "src/shared/alias/dto/alias";
 import { BusinessIdentifier } from "src/shared/business_identifier/dto/business_identifier";
 import { BusinessPersonXref } from "src/shared/business_person_xref/dto/business_person_xref";
 import { BusinessPersonAddressXref } from "src/shared/business_person_address_xref/dto/business_person_address_xref";
-import { ContactMethod } from "src/shared/contact_method/dto/contact_method";
+import { ContactMethod, ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
 import { Address, AddressInput } from "src/shared/address/dto/address";
 import { PARTY_TYPES } from "src/common/party";
 import { PersonFacialHairStyleCode } from "src/shared/person_facial_hair_style_code/dto/person_facial_hair_style_code";
@@ -541,7 +541,7 @@ export class PartyService {
     };
   }
 
-  private _buildAliasOperations(incomingAliases: Alias[], existingAliases: Alias[]): any {
+  private _buildAliasOperations(incomingAliases: AliasInput[], existingAliases: Alias[]): any {
     const existingAliasGuids = new Set(existingAliases.map((a) => a.aliasGuid));
     const aliasesToCreate = incomingAliases.filter((a) => !a.aliasGuid || !existingAliasGuids.has(a.aliasGuid));
     const aliasesToUpdate = incomingAliases.filter((a) => a.aliasGuid && existingAliasGuids.has(a.aliasGuid));
@@ -768,13 +768,13 @@ export class PartyService {
    * Sort contact methods so that the primary contact methods are last to preven updates
    * from violating the unique constraint in the database.
    */
-  private _sortContactMethodsPrimaryLast(contactMethods: ContactMethod[]): ContactMethod[] {
+  private _sortContactMethodsPrimaryLast(contactMethods: ContactMethodInput[]): ContactMethodInput[] {
     const nonPrimary = contactMethods.filter((m) => !m.isPrimary);
     const primary = contactMethods.filter((m) => m.isPrimary);
     return [...nonPrimary, ...primary];
   }
 
-  private _buildContactMethodOperations(incomingMethods: ContactMethod[], existingMethods: ContactMethod[]): any {
+  private _buildContactMethodOperations(incomingMethods: ContactMethodInput[], existingMethods: ContactMethod[]): any {
     const methodsToCreate = incomingMethods.filter((cm) => !cm.contactMethodGuid);
     const methodsToUpdate = this._sortContactMethodsPrimaryLast(incomingMethods.filter((cm) => cm.contactMethodGuid));
     const methodsToDelete = existingMethods.filter(
@@ -1077,7 +1077,7 @@ export class PartyService {
    */
   private _compareContactMethods(
     existingMethods: ContactMethod[],
-    incomingMethods: ContactMethod[],
+    incomingMethods: ContactMethodInput[],
     labelFn: (typeCode: string) => string,
     addEvent: AddEventFn,
   ): void {
@@ -1124,7 +1124,7 @@ export class PartyService {
     }
   }
 
-  private _diffAliases(existingAliases: Alias[], incomingAliases: Alias[], addEvent: AddEventFn): void {
+  private _diffAliases(existingAliases: Alias[], incomingAliases: AliasInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAliases) {
       if (incoming.aliasGuid) {
         const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);

@@ -10,8 +10,12 @@ import { PaginatedResult } from "../../../common/pagination.utility";
 import { PageInfo } from "../../case_file/dto/case_file";
 import { PartyDto } from "../../../common/party";
 import { Address, AddressInput, AddressMatchInput } from "../../address/dto/address";
-import { ContactMethod, ContactMethodMatchInput } from "src/shared/contact_method/dto/contact_method";
-import { Alias } from "src/shared/alias/dto/alias";
+import {
+  ContactMethod,
+  ContactMethodInput,
+  ContactMethodMatchInput,
+} from "src/shared/contact_method/dto/contact_method";
+import { Alias, AliasInput } from "src/shared/alias/dto/alias";
 import { PersonMatchInput } from "src/shared/person/dto/person.input";
 
 export class Party implements PartyDto {
@@ -51,13 +55,13 @@ export class PartyCreateInput {
   @IsOptional()
   addresses?: AddressInput[];
 
-  @Field(() => [ContactMethod], { nullable: true })
+  @Field(() => [ContactMethodInput], { nullable: true })
   @IsOptional()
-  contactMethods?: ContactMethod[];
+  contactMethods?: ContactMethodInput[];
 
-  @Field(() => [Alias], { nullable: true })
+  @Field(() => [AliasInput], { nullable: true })
   @IsOptional()
-  aliases?: Alias[];
+  aliases?: AliasInput[];
 }
 
 @InputType()
