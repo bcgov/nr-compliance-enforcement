@@ -44,13 +44,14 @@ interface ContraventionDetailsFormProps {
   isEditMode?: boolean;
 }
 
-const getLegislationViewUrl = (sourceUrl: string | null): URL | null => {
+const getLegislationViewUrl = (sourceUrl: string | null, isRegulation: boolean): URL | null => {
   if (!sourceUrl) return null;
-  const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([A-Za-z0-9-]+)\.xml$/;
+  const regexPattern = /^https:\/\/laws-lois\.justice\.gc\.ca\/eng\/XML\/([^/]+)\.xml$/;
   const match = regexPattern.exec(sourceUrl);
   if (match) {
-    const code = match[1].toLowerCase();
-    return new URL(`https://laws-lois.justice.gc.ca/eng/acts/${code}/`);
+    return isRegulation
+      ? new URL(`https://laws-lois.justice.gc.ca/eng/regulations/${match[1]}/`)
+      : new URL(`https://laws-lois.justice.gc.ca/eng/acts/${match[1].toLowerCase()}/`);
   }
   if (sourceUrl.endsWith("/xml")) {
     return new URL(sourceUrl.slice(0, -4));
@@ -59,7 +60,10 @@ const getLegislationViewUrl = (sourceUrl: string | null): URL | null => {
 };
 
 const formatLegislationSourceUrl = (legislation: Legislation) => {
-  const url = getLegislationViewUrl(legislation.sourceUrl ?? null);
+  const url = getLegislationViewUrl(
+    legislation.sourceUrl ?? null,
+    legislation.legislationTypeCode === LegislationType.REGULATION,
+  );
   if (!url) return null;
   const site = url.hostname === "laws-lois.justice.gc.ca" ? "DoJ Canada" : "BC Laws";
   const name = (legislation.sectionTitle ?? legislation.legislationText)?.trim() || "legislation";
