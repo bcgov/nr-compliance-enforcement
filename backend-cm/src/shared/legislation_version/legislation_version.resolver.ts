@@ -3,7 +3,7 @@ import { UseGuards } from "@nestjs/common";
 import { JwtRoleGuard } from "../../auth/jwtrole.guard";
 import { Roles } from "../../auth/decorators/roles.decorator";
 import { validateAgencyAccess } from "../legislation/utils/validate-agency-access";
-import { adminRoles } from "../../enum/role.enum";
+import { adminRoles, coreRoles } from "../../enum/role.enum";
 import { LegislationVersionService } from "./legislation_version.service";
 
 @UseGuards(JwtRoleGuard)
@@ -12,7 +12,7 @@ export class LegislationVersionResolver {
   constructor(private readonly legislationVersionService: LegislationVersionService) {}
 
   @Query("legislationVersions")
-  @Roles(adminRoles)
+  @Roles(coreRoles)
   async getLegislationVersions(@Args("legislationSourceGuid") legislationSourceGuid: string) {
     return await this.legislationVersionService.getBySource(legislationSourceGuid);
   }
