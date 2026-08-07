@@ -41,8 +41,10 @@ export type AddressFormValue = {
   displayInInvestigation?: boolean;
   phoneNumber?: string;
   phoneNumberGuid?: string;
+  phoneNumberReference?: string;
   emailAddress?: string;
   emailAddressGuid?: string;
+  emailAddressReference?: string;
   addressReference?: string;
 };
 
@@ -256,6 +258,7 @@ const buildAddressContactMethods = (address: AddressFormValue) => {
   if (hasValue(address.phoneNumber))
     methods.push({
       ...(address.phoneNumberGuid ? { contactMethodGuid: address.phoneNumberGuid } : {}),
+      contactMethodReference: address.phoneNumberReference,
       typeCode: ContactMethods.PHONE,
       value: address.phoneNumber!.trim(),
       isPrimary: true,
@@ -263,6 +266,7 @@ const buildAddressContactMethods = (address: AddressFormValue) => {
   if (hasValue(address.emailAddress))
     methods.push({
       ...(address.emailAddressGuid ? { contactMethodGuid: address.emailAddressGuid } : {}),
+      contactMethodReference: address.emailAddressReference,
       typeCode: ContactMethods.EMAIL,
       value: address.emailAddress!.trim(),
       isPrimary: true,
@@ -363,6 +367,7 @@ export const buildContactPeople = (
       .filter((cm) => hasValue(cm.value))
       .map((cm) => ({
         ...(isUpdate && cm.contactMethodGuid ? { contactMethodGuid: cm.contactMethodGuid } : {}),
+        ...(cm.contactMethodReference ? { contactMethodReference: cm.contactMethodReference } : {}),
         typeCode: cm.typeCode ?? ContactMethods.PHONE,
         value: cm.value ?? "",
         isPrimary: cm.isPrimary ?? false,
@@ -707,7 +712,9 @@ const buildPersonCopy = (party: Party, copiedAddresses: AddressFormValue[]) => {
         addressGuid: undefined,
         addressReference: a.addressGuid,
         phoneNumberGuid: undefined,
+        phoneNumberReference: a.phoneNumberGuid,
         emailAddressGuid: undefined,
+        emailAddressReference: a.emailAddressGuid,
       })),
     ),
   };
@@ -728,7 +735,9 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
       addressGuid: copiedAddressGuid,
       addressReference: a.addressGuid,
       phoneNumberGuid: undefined,
+      phoneNumberReference: a.phoneNumberGuid,
       emailAddressGuid: undefined,
+      emailAddressReference: a.emailAddressGuid,
     };
   });
 
