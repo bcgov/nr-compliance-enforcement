@@ -1,26 +1,30 @@
 import { FC, useState, useMemo } from "react";
-import { Table, Button, Modal, Dropdown } from "react-bootstrap";
+import { Button, Modal, Dropdown } from "react-bootstrap";
 import { ToggleError, ToggleSuccess } from "@common/toast";
 import { useAppSelector } from "@hooks/hooks";
 import { selectAgencySectorDropdown } from "@store/reducers/code-table";
 import { CompInput } from "@components/common/comp-input";
 import { CompSelect } from "@components/common/comp-select";
+import { CompTable } from "@components/common/comp-table";
+import { CompColumn } from "@apptypes/app/comp-tables";
+import { SORT_TYPES } from "@constants/sort-direction";
 import Option from "@apptypes/app/option";
 import {
   useLegislationSources,
   useCreateLegislationSource,
   useUpdateLegislationSource,
   useDeleteLegislationSource,
-  useResetLegislationSource,
   LegislationSource,
   CreateLegislationSourceInput,
   UpdateLegislationSourceInput,
 } from "@/app/graphql/hooks/useLegislationSourceQuery";
-import { Link } from "react-router-dom";
+import { useLegislationVersions } from "@/app/graphql/hooks/useLegislationVersionQuery";
+import { LegislationVersionHistory } from "@/app/components/containers/admin/legislation-version-history";
+import { ValidationDatePicker } from "@/app/common/validation-date-picker";
+import { formatDateObjectAsString } from "@/app/common/date-utils";
 import UserService from "@/app/service/user-service";
 import { Roles } from "@/app/types/app/roles";
 import { AgencyType } from "@/app/types/app/agency-types";
-import { formatDateObjectAsString, parseUTCTimestampToLocal } from "@/app/common/date-utils";
 
 interface EditingSource {
   legislationSourceGuid?: string;
@@ -31,7 +35,7 @@ interface EditingSource {
   agencyCode: string;
   sourceType: string;
   activeInd: boolean;
-  importedInd: boolean;
+  effectiveDate: Date | undefined;
 }
 
 const emptySource: EditingSource = {
@@ -42,13 +46,63 @@ const emptySource: EditingSource = {
   agencyCode: "",
   sourceType: "BCLAWS",
   activeInd: true,
-  importedInd: false,
+  effectiveDate: undefined,
 };
 
 const sourceTypeOptions: Option[] = [
   { value: "BCLAWS", label: "BC Laws" },
   { value: "FEDERAL", label: "Federal" },
 ];
+
+type SourceActionsProps = {
+  source: LegislationSource;
+  onEdit: (source: LegislationSource) => void;
+  onDelete: (legislationSourceGuid: string) => void;
+};
+
+const LegislationSourceActions: FC<SourceActionsProps> = ({ source, onEdit, onDelete }) => {
+  const { data: versions } = useLegislationVersions(source.legislationSourceGuid);
+  const hasImportedVersion = !!versions?.some((version) => version.importStatus === "SUCCESS");
+
+  return (
+    <Dropdown
+      id={`source-action-button-${source.legislationSourceGuid}`}
+      drop="start"
+      className="comp-action-dropdown"
+    >
+      <Dropdown.Toggle
+        id={`source-action-toggle-${source.legislationSourceGuid}`}
+        size="sm"
+        variant="outline-primary"
+      >
+        Actions
+      </Dropdown.Toggle>
+      <Dropdown.Menu
+        popperConfig={{
+          modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
+        }}
+      >
+        <Dropdown.Item
+          onClick={() => {
+            if (hasImportedVersion) {
+              ToggleError("Sources with imported legislation cannot be edited.");
+              return;
+            }
+            onEdit(source);
+          }}
+        >
+          <i className="bi bi-pencil" /> Edit
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => onDelete(source.legislationSourceGuid)}
+          className="text-danger"
+        >
+          <i className="bi bi-trash" /> Delete
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+};
 
 export const LegislationSourceManagement: FC = () => {
   const { data: sources, isLoading, refetch } = useLegislationSources();
@@ -59,8 +113,6 @@ export const LegislationSourceManagement: FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deleteConfirmGuid, setDeleteConfirmGuid] = useState<string | null>(null);
-  const [resetConfirmGuid, setResetConfirmGuid] = useState<string | null>(null);
-  const [viewLogSource, setViewLogSource] = useState<LegislationSource | null>(null);
 
   const createMutation = useCreateLegislationSource({
     onSuccess: () => {
@@ -98,28 +150,16 @@ export const LegislationSourceManagement: FC = () => {
     },
   });
 
-  const resetMutation = useResetLegislationSource({
-    onSuccess: () => {
-      ToggleSuccess("Legislation source reset successfully");
-      setResetConfirmGuid(null);
-      refetch();
-    },
-    onError: (error: any) => {
-      console.error("Error resetting legislation source:", error);
-      ToggleError(error?.response?.errors?.[0]?.message ?? "Failed to reset legislation source");
-    },
-  });
-
   const isGlobalAdmin = UserService.hasRole(Roles.GLOBAL_ADMINISTRATOR);
   const userAgency = UserService.getUserAgency();
-  const allowedAgencies = new Set([userAgency, AgencyType.SECTOR]);
+  const allowedAgencies = useMemo(() => new Set([userAgency, AgencyType.SECTOR]), [userAgency]);
   const agencyList = agencies?.filter((agency) => (isGlobalAdmin ? true : allowedAgencies.has(agency.value)));
 
-  // Only show Act sources (user-created); exclude regulation-only sources (system-created during import)
+  // Only show Act sources; the regulations imported under them carry a parent source
   const actSources = useMemo(() => {
     if (!sources) return [];
 
-    let result = sources.filter((source) => source.createUserId !== "system");
+    let result = sources.filter((source) => source.parentLegislationSourceGuid == null);
 
     // Restrict by agency if not global admin
     if (!isGlobalAdmin) {
@@ -127,7 +167,7 @@ export const LegislationSourceManagement: FC = () => {
     }
 
     return result;
-  }, [sources]);
+  }, [sources, isGlobalAdmin, allowedAgencies]);
 
   const filteredSources = useMemo(() => {
     if (!searchQuery) return actSources;
@@ -136,7 +176,7 @@ export const LegislationSourceManagement: FC = () => {
       (source) =>
         source.shortDescription.toLowerCase().includes(query) ||
         source.longDescription?.toLowerCase().includes(query) ||
-        source.sourceUrl.toLowerCase().includes(query) ||
+        source.sourceUrl?.toLowerCase().includes(query) ||
         source.agencyCode.toLowerCase().includes(query),
     );
   }, [actSources, searchQuery]);
@@ -152,12 +192,12 @@ export const LegislationSourceManagement: FC = () => {
       legislationSourceGuid: source.legislationSourceGuid,
       shortDescription: source.shortDescription,
       longDescription: source.longDescription ?? "",
-      sourceUrl: source.sourceUrl,
+      sourceUrl: source.sourceUrl ?? "",
       regulationsSourceUrl: source.regulationsSourceUrl ?? "",
       agencyCode: source.agencyCode,
       sourceType: source.sourceType ?? "BCLAWS",
       activeInd: source.activeInd,
-      importedInd: source.importedInd,
+      effectiveDate: undefined,
     });
     setIsEditing(true);
     setShowModal(true);
@@ -185,7 +225,6 @@ export const LegislationSourceManagement: FC = () => {
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         activeInd: editingSource.activeInd,
-        importedInd: editingSource.importedInd,
       };
       updateMutation.mutate({ input });
     } else {
@@ -197,6 +236,7 @@ export const LegislationSourceManagement: FC = () => {
           editingSource.sourceType === "FEDERAL" ? undefined : editingSource.regulationsSourceUrl || undefined,
         agencyCode: editingSource.agencyCode,
         sourceType: editingSource.sourceType,
+        effectiveDate: formatDateObjectAsString(editingSource.effectiveDate, { format: "date" }) || undefined,
       };
       createMutation.mutate({ input });
     }
@@ -206,10 +246,6 @@ export const LegislationSourceManagement: FC = () => {
     deleteMutation.mutate({ legislationSourceGuid: guid });
   };
 
-  const handleReset = (guid: string) => {
-    resetMutation.mutate({ legislationSourceGuid: guid });
-  };
-
   const getAgencyLabel = (code: string) => {
     const agency = agencies.find((a) => a.value === code);
     return agency?.label ?? code;
@@ -217,11 +253,7 @@ export const LegislationSourceManagement: FC = () => {
 
   const getStatusBadge = (source: LegislationSource) => {
     if (!source.activeInd) return <span className="badge comp-status-badge-closed">Inactive</span>;
-    if (source.importStatus === "FAILED") return <span className="badge bg-danger">Failed</span>;
-    if (source.importStatus === "SUCCESS" || source.importedInd) {
-      return <span className="badge comp-status-badge-open">Imported</span>;
-    }
-    return <span className="badge comp-status-badge-pending-review">Pending</span>;
+    return <span className="badge comp-status-badge-open">Active</span>;
   };
 
   const getSaveButtonText = () => {
@@ -229,64 +261,54 @@ export const LegislationSourceManagement: FC = () => {
     return isEditing ? "Save Changes" : "Add Source";
   };
 
-  const renderTableBody = () => {
-    if (isLoading) {
-      return (
-        <tr>
-          <td
-            colSpan={8}
-            className="text-center p-4"
-          >
-            <div className="d-flex align-items-center justify-content-center">
-              <div className="spinner-border spinner-border-sm me-2">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <span>Loading legislation sources...</span>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    if (filteredSources.length === 0) {
-      return (
-        <tr>
-          <td
-            colSpan={8}
-            className="text-center p-4"
-          >
-            <div className="d-flex align-items-center justify-content-center">
-              <i className="bi bi-info-circle-fill me-2" />
-              <span>{searchQuery ? "No matching sources found" : "No legislation sources configured"}</span>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    return filteredSources.map((source, i) => (
-      <tr key={source.legislationSourceGuid}>
-        <td className="text-center">{i + 1}</td>
-        <td>
+  const columns: CompColumn<LegislationSource>[] = [
+    {
+      label: "Description",
+      isSortable: true,
+      getValue: (source) => source.shortDescription.toLowerCase(),
+      renderCell: (source) => (
+        <>
           {source.shortDescription}
           {source.longDescription && <div className="text-muted">{source.longDescription}</div>}
-        </td>
-        <td>{sourceTypeOptions.find((o) => o.value === source.sourceType)?.label ?? source.sourceType}</td>
-        <td>{getAgencyLabel(source.agencyCode)}</td>
-        <td>
-          <div>
-            Act:
-            <br />
-            <a
-              href={source.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="comp-cell-link"
-              title={source.sourceUrl}
-            >
-              {source.sourceUrl}
-            </a>
-          </div>
+        </>
+      ),
+    },
+    {
+      label: "Type",
+      headerClassName: "comp-cell-width-100",
+      cellClassName: "comp-cell-width-100",
+      isSortable: true,
+      getValue: (source) => source.sourceType,
+      renderCell: (source) =>
+        sourceTypeOptions.find((option) => option.value === source.sourceType)?.label ?? source.sourceType,
+    },
+    {
+      label: "Agency",
+      headerClassName: "comp-cell-width-130",
+      cellClassName: "comp-cell-width-130",
+      isSortable: true,
+      getValue: (source) => getAgencyLabel(source.agencyCode),
+      renderCell: (source) => getAgencyLabel(source.agencyCode),
+    },
+    {
+      label: "Source URLs",
+      renderCell: (source) => (
+        <>
+          {source.sourceUrl && (
+            <div>
+              Act:
+              <br />
+              <a
+                href={source.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="comp-cell-link"
+                title={source.sourceUrl}
+              >
+                {source.sourceUrl}
+              </a>
+            </div>
+          )}
           {source.regulationsSourceUrl && (
             <div className="pt-3">
               Regulations:
@@ -302,65 +324,30 @@ export const LegislationSourceManagement: FC = () => {
               </a>
             </div>
           )}
-        </td>
-        <td className="text-center">{getStatusBadge(source)}</td>
-        <td>
-          {formatDateObjectAsString(parseUTCTimestampToLocal(source.lastImportTimestamp), { format: "dateTime" })}
-        </td>
-        <td className="text-center">
-          <Dropdown
-            id={`source-action-button-${source.legislationSourceGuid}`}
-            drop="start"
-            className="comp-action-dropdown"
-          >
-            <Dropdown.Toggle
-              id={`source-action-toggle-${source.legislationSourceGuid}`}
-              size="sm"
-              variant="outline-primary"
-            >
-              Actions
-            </Dropdown.Toggle>
-            <Dropdown.Menu
-              popperConfig={{
-                modifiers: [{ name: "offset", options: { offset: [0, 13], placement: "start" } }],
-              }}
-            >
-              <Dropdown.Item
-                onClick={() => handleOpenEdit(source)}
-                disabled={source.importedInd || source.importStatus === "SUCCESS"}
-              >
-                <i className="bi bi-pencil" /> Edit
-              </Dropdown.Item>
-              <Dropdown.Item
-                as={Link}
-                to={`/admin/law/${source.legislationSourceGuid}?agencyCode=${source.agencyCode}`}
-                disabled={!source.importedInd}
-              >
-                <i className="bi bi-gear" /> Configure
-              </Dropdown.Item>
-              {source.lastImportLog && (
-                <Dropdown.Item onClick={() => setViewLogSource(source)}>
-                  <i className="bi bi-file-text" /> View Log
-                </Dropdown.Item>
-              )}
-              <Dropdown.Item
-                onClick={() => setResetConfirmGuid(source.legislationSourceGuid)}
-                className="text-danger"
-              >
-                <i className="bi bi-arrow-counterclockwise" /> Reset Import
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => setDeleteConfirmGuid(source.legislationSourceGuid)}
-                className="text-danger"
-              >
-                <i className="bi bi-trash" /> Delete
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </td>
-      </tr>
-    ));
-  };
+        </>
+      ),
+    },
+    {
+      label: "Status",
+      headerClassName: "comp-cell-width-100 text-center",
+      cellClassName: "comp-cell-width-100 text-center",
+      isSortable: true,
+      getValue: (source) => String(source.activeInd),
+      renderCell: (source) => getStatusBadge(source),
+    },
+    {
+      label: "Actions",
+      headerClassName: "comp-cell-width-90 text-center",
+      cellClassName: "comp-cell-width-90 text-center",
+      renderCell: (source) => (
+        <LegislationSourceActions
+          source={source}
+          onEdit={handleOpenEdit}
+          onDelete={setDeleteConfirmGuid}
+        />
+      ),
+    },
+  ];
 
   return (
     <div className="comp-page-container">
@@ -386,25 +373,27 @@ export const LegislationSourceManagement: FC = () => {
           </Button>
         </div>
 
-        <div className="comp-table">
-          <Table
-            bordered
-            hover
-          >
-            <thead>
-              <tr>
-                <th className="comp-cell-width-50">#</th>
-                <th>Description</th>
-                <th className="comp-cell-width-100">Type</th>
-                <th className="comp-cell-width-130">Agency</th>
-                <th>Source URLs</th>
-                <th className="comp-cell-width-100 text-center">Status</th>
-                <th className="comp-cell-width-160">Last Import</th>
-                <th className="comp-cell-width-90 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>{renderTableBody()}</tbody>
-          </Table>
+        <div className="border">
+          <CompTable
+            data={filteredSources}
+            tableIdentifier="legislation-source-list"
+            isFixedHeight={false}
+            columns={columns}
+            getRowKey={(source) => source.legislationSourceGuid}
+            fullWidthExpandedRow={true}
+            renderExpandedContent={(source) => (
+              <LegislationVersionHistory
+                legislationSourceGuid={source.legislationSourceGuid}
+                agencyCode={source.agencyCode}
+              />
+            )}
+            isLoading={isLoading}
+            defaultSort="Description"
+            defaultSortDirection={SORT_TYPES.ASC}
+            alwaysShowFooter={false}
+            itemLabel="sources"
+            emptyMessage={searchQuery ? "No matching sources found" : "No legislation sources configured"}
+          />
         </div>
       </div>
 
@@ -429,7 +418,7 @@ export const LegislationSourceManagement: FC = () => {
                   type="input"
                   inputClass="comp-form-control"
                   placeholder="e.g., Environmental Management Act"
-                  maxLength={64}
+                  maxLength={256}
                   value={editingSource.shortDescription}
                   onChange={(e: any) => setEditingSource({ ...editingSource, shortDescription: e.target.value })}
                 />
@@ -530,6 +519,23 @@ export const LegislationSourceManagement: FC = () => {
               </div>
             </div>
 
+            {!isEditing && (
+              <div className="comp-details-form-row">
+                <label htmlFor="effective-date-input-date">Effective date</label>
+                <div className="comp-details-edit-input">
+                  <ValidationDatePicker
+                    id="effective-date-input"
+                    classNamePrefix="comp-details-input"
+                    className="comp-form-control comp-details-input"
+                    errMsg=""
+                    selectedDate={editingSource.effectiveDate}
+                    showYearDropdown={true}
+                    onChange={(date: Date | undefined) => setEditingSource({ ...editingSource, effectiveDate: date })}
+                  />
+                </div>
+              </div>
+            )}
+
             {isEditing && (
               <div className="comp-details-form-row">
                 <label htmlFor="active-checkbox">Status</label>
@@ -596,70 +602,6 @@ export const LegislationSourceManagement: FC = () => {
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? "Deleting..." : "Delete"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal
-        show={!!resetConfirmGuid}
-        onHide={() => setResetConfirmGuid(null)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Reset Import</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to reset this legislation source? This will delete all legislation records that were
-          imported from this source and mark the source as inactive. This action cannot be undone.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="outline-primary"
-            onClick={() => setResetConfirmGuid(null)}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
-            onClick={() => resetConfirmGuid && handleReset(resetConfirmGuid)}
-            disabled={resetMutation.isPending}
-          >
-            {resetMutation.isPending ? "Resetting..." : "Reset Import"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal
-        show={!!viewLogSource}
-        onHide={() => setViewLogSource(null)}
-        size="lg"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Import Log - {viewLogSource?.shortDescription}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="mb-3">
-            <strong>Status:</strong> {viewLogSource && getStatusBadge(viewLogSource)}
-          </div>
-          <div className="mb-3">
-            <strong>Last Import:</strong>{" "}
-            {formatDateObjectAsString(parseUTCTimestampToLocal(viewLogSource?.lastImportTimestamp), {
-              format: "dateTime",
-              whenAbsent: "Never",
-            })}
-          </div>
-          <div>
-            <strong>Log:</strong>
-            <pre className="mt-2 p-3 bg-light border rounded overflow-auto text-break comp-log-viewer">
-              {viewLogSource?.lastImportLog || "No log available"}
-            </pre>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="outline-primary"
-            onClick={() => setViewLogSource(null)}
-          >
-            Close
           </Button>
         </Modal.Footer>
       </Modal>
