@@ -6,12 +6,16 @@ export class InvestigationAlias {
   aliasGuid: string;
   name: string;
   isActive: boolean;
+  aliasReference?: string;
 }
 
 @InputType()
 export class CreateInvestigationAliasInput {
   @Field(() => String)
   name: string;
+
+  @Field(() => String, { nullable: true })
+  aliasReference?: string;
 }
 
 @InputType()
@@ -39,6 +43,10 @@ export const mapPrismaAliasToInvestigationAlias = (mapper: Mapper) => {
     forMember(
       (dest) => dest.isActive,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.aliasReference,
+      mapFrom((src) => src.alias_guid_ref),
     ),
   );
 };

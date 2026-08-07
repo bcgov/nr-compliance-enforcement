@@ -5,6 +5,7 @@ input CreateInvestigationBusinessContactInput {
   isPrimary: Boolean
   contactMethods: [CreateInvestigationContactMethodInput]
   officeAddressGuids: [String]
+  businessPersonXrefReference: String
 }
 
 input UpdateInvestigationBusinessContactInput {

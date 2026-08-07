@@ -36,6 +36,9 @@ export class investigation_contact_method {
   @ApiPropertyOptional({ type: String })
   investigation_address_guid?: string;
 
+  @ApiPropertyOptional({ type: String })
+  contact_method_guid_ref?: string;
+
   @ApiPropertyOptional({ type: () => investigation_address })
   investigation_address?: investigation_address;
 

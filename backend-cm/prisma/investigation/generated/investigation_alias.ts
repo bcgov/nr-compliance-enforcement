@@ -26,6 +26,9 @@ export class investigation_alias {
   @ApiPropertyOptional({ type: Date })
   update_utc_timestamp?: Date;
 
+  @ApiPropertyOptional({ type: String })
+  alias_guid_ref?: string;
+
   @ApiProperty({ type: () => investigation_party })
   investigation_party: investigation_party;
 }

@@ -2,6 +2,7 @@ input CreateInvestigationBusinessIdentifierInput {
   businessGuid: String
   identifierValue: String!
   identifierCode: String!
+  businessIdentifierReference: String
 }
 
 input UpdateInvestigationBusinessIdentifierInput {

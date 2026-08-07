@@ -8,6 +8,7 @@ export class InvestigationBusinessIdentifier {
   identifierCode: string;
   identifierValue: string;
   isActive: boolean;
+  businessIdentifierReference?: string;
 }
 
 @InputType()
@@ -17,6 +18,9 @@ export class CreateInvestigationBusinessIdentifierInput {
 
   @Field(() => String)
   identifierValue: string;
+
+  @Field(() => String, { nullable: true })
+  businessIdentifierReference?: string;
 }
 
 @InputType()
@@ -55,6 +59,10 @@ export const mapPrismaBusinessIdentifierToInvestigationBusinessIdentifier = (map
     forMember(
       (dest) => dest.isActive,
       mapFrom((src) => src.active_ind),
+    ),
+    forMember(
+      (dest) => dest.businessIdentifierReference,
+      mapFrom((src) => src.business_identifier_guid_ref),
     ),
   );
 };

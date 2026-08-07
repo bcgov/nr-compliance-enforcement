@@ -3,6 +3,7 @@ input CreateInvestigationContactMethodInput {
   typeCode: String!
   value: String!
   isPrimary: Boolean!
+  contactMethodReference: String
 }
 
 input UpdateInvestigationContactMethodInput {

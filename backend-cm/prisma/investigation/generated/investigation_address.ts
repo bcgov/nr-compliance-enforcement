@@ -49,6 +49,9 @@ export class investigation_address {
   @ApiProperty({ type: Boolean })
   display_in_investigation_ind: boolean = true;
 
+  @ApiPropertyOptional({ type: String })
+  address_guid_ref?: string;
+
   @ApiProperty({ type: () => investigation_party })
   investigation_party: investigation_party;
 

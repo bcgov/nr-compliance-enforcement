@@ -138,13 +138,7 @@ export class InvestigationPartyService {
           ...(input.contactMethods?.length
             ? {
                 investigation_contact_method: {
-                  create: input.contactMethods.map((c) => ({
-                    contact_method_type_code_ref: c.typeCode,
-                    contact_value: c.value,
-                    is_primary: c.isPrimary,
-                    create_user_id: this.user.getIdirUsername(),
-                    create_utc_timestamp: new Date(),
-                  })),
+                  create: input.contactMethods.map((c) => this._contactMethodCreateData(c)),
                 },
               }
             : {}),
@@ -153,6 +147,7 @@ export class InvestigationPartyService {
                 investigation_alias: {
                   create: input.aliases.map((a) => ({
                     name: a.name,
+                    alias_guid_ref: a.aliasReference ?? null,
                     create_user_id: this.user.getIdirUsername(),
                     create_utc_timestamp: new Date(),
                   })),
@@ -300,6 +295,7 @@ export class InvestigationPartyService {
           investigation_business_guid: investigationBusiness.investigation_business_guid,
           business_identifier_code_ref: bi.identifierCode,
           identifier_value: bi.identifierValue,
+          business_identifier_guid_ref: bi.businessIdentifierReference ?? null,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
         })),
@@ -316,12 +312,18 @@ export class InvestigationPartyService {
     }
   }
 
-  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+  private _contactMethodCreateData(cm: {
+    typeCode: string;
+    value: string;
+    isPrimary?: boolean;
+    contactMethodReference?: string;
+  }) {
     return {
       contact_method_type_code_ref: cm.typeCode,
       contact_value: cm.value,
       is_primary: cm.isPrimary ?? false,
       active_ind: true,
+      contact_method_guid_ref: cm.contactMethodReference ?? null,
       create_user_id: this.user.getIdirUsername(),
       create_utc_timestamp: new Date(),
     };
@@ -345,6 +347,7 @@ export class InvestigationPartyService {
           country_code_ref: a.country?.trim() || null,
           is_primary: a.isPrimary ?? false,
           display_in_investigation_ind: a.displayInInvestigation ?? true,
+          address_guid_ref: a.addressReference ?? null,
           create_user_id: this.user.getIdirUsername(),
           create_utc_timestamp: new Date(),
           ...(a.contactMethods?.length
@@ -391,6 +394,7 @@ export class InvestigationPartyService {
         display_in_investigation_ind: contact.displayInInvestigation ?? true,
         title_role: contact.title ?? null,
         is_primary: contact.isPrimary ?? false,
+        business_person_xref_guid_ref: contact.businessPersonXrefReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       },
