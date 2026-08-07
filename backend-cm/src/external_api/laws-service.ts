@@ -14,7 +14,8 @@ const proxyConfig: AxiosRequestConfig = httpsProxyAgent ? { proxy: false, httpsA
 
 export const fetchXml = async (url: string, apiName: string, useProxy = false): Promise<string> => {
   try {
-    const response = await axios.get(url, useProxy ? proxyConfig : {});
+    // setting ProxyConfig proxy: false also stops axios from auto-proxying via the HTTPS_PROXY env var
+    const response = await axios.get(url, useProxy ? proxyConfig : { proxy: false });
     return response.data;
   } catch (error: any) {
     const msg = error?.message || String(error);
