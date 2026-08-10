@@ -55,6 +55,7 @@ const useEventDescription = (event: Event): string => {
     province?: string;
     postalCode?: string;
     country?: string;
+    investigationContext?: string;
   } | null;
 
   if (verb === "CREATED") {
@@ -108,30 +109,35 @@ const useEventDescription = (event: Event): string => {
       .join(", ");
   };
 
-  switch (verb) {
-    case "ADDED": {
-      if (field === "address") {
-        const details = formatAddressDetails();
-        return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
+  const describeChange = (): string => {
+    switch (verb) {
+      case "ADDED": {
+        if (field === "address") {
+          const details = formatAddressDetails();
+          return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
+        }
+        return `added ${fieldLabel}: ${formatValue(newValue)}`;
       }
-      return `added ${fieldLabel}: ${formatValue(newValue)}`;
-    }
-    case "REMOVED": {
-      if (field === "address") {
-        const details = formatAddressDetails();
-        return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
+      case "REMOVED": {
+        if (field === "address") {
+          const details = formatAddressDetails();
+          return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
+        }
+        return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
       }
-      return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
-    }
-    case "EDITED": {
-      if (oldValue === newValue) {
-        return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
+      case "EDITED": {
+        if (oldValue === newValue) {
+          return `updated ${fieldLabel} "${formatValue(oldValue)}"`;
+        }
+        return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
       }
-      return `updated ${fieldLabel} from "${formatValue(oldValue)}" to "${formatValue(newValue)}"`;
+      default:
+        return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
     }
-    default:
-      return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
-  }
+  };
+
+  const description = describeChange();
+  return content?.investigationContext ? `${description} ${content.investigationContext}` : description;
 };
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {

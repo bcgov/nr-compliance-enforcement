@@ -1419,7 +1419,12 @@ export class PartyService {
    * Builds the list of party history events describing what changed between the existing party
    * state and the incoming update input.
    */
-  private _partyChangeEvents(partyIdentifier: string, oldParty: Party, input: PartyUpdateInput): EventCreateInput[] {
+  private _partyChangeEvents(
+    partyIdentifier: string,
+    oldParty: Party,
+    input: PartyUpdateInput,
+    investigationContext?: string,
+  ): EventCreateInput[] {
     const events: EventCreateInput[] = [];
     const actorId = this.user.getUserGuid();
 
@@ -1432,7 +1437,13 @@ export class PartyService {
         actorEntityTypeCode: "USER",
         targetId: partyIdentifier,
         targetEntityTypeCode: "PARTY",
-        content: { field, oldValue: oldValue ?? null, newValue: newValue ?? null, ...extraContent },
+        content: {
+          field,
+          oldValue: oldValue ?? null,
+          newValue: newValue ?? null,
+          ...extraContent,
+          ...(investigationContext ? { investigationContext } : {}),
+        },
       });
     };
 
@@ -1453,7 +1464,7 @@ export class PartyService {
     return events;
   }
 
-  async update(partyIdentifier: string, input: PartyUpdateInput): Promise<Party> {
+  async update(partyIdentifier: string, input: PartyUpdateInput, investigationContext?: string): Promise<Party> {
     const existingParty: any = await this.prisma.party.findUnique({
       include: {
         address: {
@@ -1540,7 +1551,7 @@ export class PartyService {
       data = this._buildBusinessUpdateData(builderInput, existingPartyDto);
     }
     try {
-      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input);
+      const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input, investigationContext);
 
       const prismaParty: any = await this.prisma.$transaction(async (tx) => {
         const updated: any = await tx.party.update({

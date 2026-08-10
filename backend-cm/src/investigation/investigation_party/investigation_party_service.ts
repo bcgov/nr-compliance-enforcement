@@ -839,7 +839,11 @@ export class InvestigationPartyService {
           // PartyService.update() manages its own separate transaction against the shared
           // Prisma client. If it throws, this whole local transaction is rolled back too,
           // since the error propagates out of the withRlsTransaction callback.
-          await this.partyService.update(existingParty.partyReference, partyUpdateInput);
+          await this.partyService.update(
+            existingParty.partyReference,
+            partyUpdateInput,
+            `on investigation ${investigation.name}`,
+          );
         }
       } catch (error) {
         this.logger.error("Error updating investigation party:", error);
