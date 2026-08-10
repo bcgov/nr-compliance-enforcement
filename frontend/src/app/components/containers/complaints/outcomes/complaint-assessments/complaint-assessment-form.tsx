@@ -26,6 +26,9 @@ import {
 } from "@store/reducers/code-table";
 import { CompSelect } from "@components/common/comp-select";
 import { ValidationCheckboxGroup } from "@common/validation-checkbox-group";
+import { ValidationTextArea } from "@common/validation-textarea";
+import { FeatureFlag } from "@components/common/feature-flag";
+import { FEATURE_TYPES } from "@constants/feature-flag-types";
 import { setIsInEdit } from "@/app/store/reducers/complaint-outcomes";
 import { openModal } from "@store/reducers/app";
 import { CANCEL_CONFIRM } from "@apptypes/modal/modal-types";
@@ -102,6 +105,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
   const [selectedConflictHistory, setSelectedConflictHistory] = useState<Option | null>(null);
   const [selectedCategoryLevel, setSelectedCategoryLevel] = useState<Option | null>(null);
   const [selectedAssessmentCat1Types, setSelectedAssessmentCat1Types] = useState<Option[]>([]);
+  const [selectedComments, setSelectedComments] = useState<string>("");
 
   const [officerErrorMessage, setOfficerErrorMessage] = useState<string>("");
   const [assessmentDateErrorMessage, setAssessmentDateErrorMessage] = useState<string>("");
@@ -279,6 +283,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
     setSelectedConflictHistory(selectedConflictHistory);
     setSelectedCategoryLevel(selectedCategoryLevel);
     setSelectedAssessmentCat1Types(selectedAssessmentCat1Types);
+    setSelectedComments(assessmentState.comments ?? "");
 
     resetValidationErrors();
 
@@ -358,6 +363,7 @@ export const ComplaintAssessmentForm: FC<Props> = ({
       selectedActionRequired?.label === OptionLabels.OPTION_NO || !isLargeCarnivore
         ? []
         : mapOptions(selectedAssessmentCat1Types),
+    comments: selectedComments || null,
     agency: UserService.getUserAgency(),
   });
 
@@ -890,6 +896,32 @@ export const ComplaintAssessmentForm: FC<Props> = ({
                 />
               </div>
             </div>
+
+            {/* Comments */}
+            <FeatureFlag feature={FEATURE_TYPES.ASSESSMENT_COMMENTS}>
+              <div
+                className="comp-details-form-row"
+                id="assessment-comments-div"
+              >
+                <label htmlFor="assessment-comments">Comments</label>
+                <div className="comp-details-input full-width">
+                  <ValidationTextArea
+                    className="comp-form-control"
+                    id="assessment-comments"
+                    value={selectedComments}
+                    rows={2}
+                    errMsg={""}
+                    maxLength={4000}
+                    onChange={(value: string) => {
+                      setSelectedComments(value);
+                      markDirty();
+                    }}
+                    disabled={isReadOnly}
+                  />
+                </div>
+              </div>
+            </FeatureFlag>
+
             <div className="comp-details-form-buttons">
               <Button
                 variant="outline-primary"

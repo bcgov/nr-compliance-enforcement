@@ -1,0 +1,19 @@
+type LegislationVersion {
+  legislationVersionGuid: String!
+  legislationSourceGuid: String!
+  parentLegislationVersionGuid: String
+  effectiveDate: String!
+  importStatus: String!
+  sourceUrl: String
+  sourceEffectiveDate: String
+  lastImportTimestamp: String
+  lastImportLog: String
+  createUserId: String
+  createUtcTimestamp: String
+}
+
+type ContraventionStats {
+  count: Int!
+  earliest: String
+  latest: String
+}

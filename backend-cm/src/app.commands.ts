@@ -4,6 +4,7 @@ import { ParkService } from "./shared/park/park.service";
 import { ParkAreaMappingService } from "./shared/park/parkAreaMapping.service";
 import { LegislationService } from "./shared/legislation/legislation.service";
 import { LegislationSourceService } from "./shared/legislation_source/legislation_source.service";
+import { LegislationVersionService } from "./shared/legislation_version/legislation_version.service";
 import { runParksImport } from "./cli/parks/parks-import";
 import { runBcLawsImport } from "./cli/bclaws/bclaws-import";
 import { runFederalLawsImport } from "./cli/federallaws/federallaws-import";
@@ -19,6 +20,7 @@ export class ImportCommand extends CommandRunner {
     @Inject(ParkAreaMappingService) private readonly _parkAreaMappingService: ParkAreaMappingService,
     @Inject(LegislationService) private readonly _legislationService: LegislationService,
     @Inject(LegislationSourceService) private readonly _legislationSourceService: LegislationSourceService,
+    @Inject(LegislationVersionService) private readonly _legislationVersionService: LegislationVersionService,
   ) {
     super();
   }
@@ -79,10 +81,20 @@ export class ImportCommand extends CommandRunner {
         await runParksImport(this._parkService, this._parkAreaMappingService, this.logger);
         break;
       case "bclaws":
-        await runBcLawsImport(this._legislationService, this._legislationSourceService, this.logger);
+        await runBcLawsImport(
+          this._legislationService,
+          this._legislationSourceService,
+          this._legislationVersionService,
+          this.logger,
+        );
         break;
       case "federallaws":
-        await runFederalLawsImport(this._legislationService, this._legislationSourceService, this.logger);
+        await runFederalLawsImport(
+          this._legislationService,
+          this._legislationSourceService,
+          this._legislationVersionService,
+          this.logger,
+        );
         break;
       default:
         throw new Error(`Unknown job: ${job}. Valid jobs: parks, bclaws, federallaws`);

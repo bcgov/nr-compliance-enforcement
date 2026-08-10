@@ -35,6 +35,8 @@ import { mapPrismaPartyToInspectionParty } from "../inspection/inspection_party/
 import { mapPrismaActivityNoteToActivityNote } from "../investigation/activity_note/dto/activity_note";
 import { mapPrismaPartyAssociationRoleCodeToPartyAssociationRoleCode } from "../shared/party_association_role_code/dto/party_association_role_code";
 import { mapPrismaLegislationToLegislation } from "../shared/legislation/dto/legislation";
+import { mapPrismaLegislationSourceToLegislationSource } from "../shared/legislation_source/dto/legislation-source";
+import { mapPrismaLegislationVersionToLegislationVersion } from "../shared/legislation_version/dto/legislation-version";
 import { mapPrismaContreventionToContravention } from "../investigation/contravention/dto/contravention";
 import { mapPrismaTaskStatusCodeToTaskStatusCode } from "../investigation/task_status_code/dto/task_status_code";
 import { mapPrismaTaskToTask } from "../investigation/task/dto/task";
@@ -98,6 +100,8 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaBusinessIdentifierToIdentifier(mapper);
   mapPrismaBusinessPersonXrefToBusinessPersonXref(mapper);
   mapPrismaLegislationToLegislation(mapper);
+  mapPrismaLegislationSourceToLegislationSource(mapper);
+  mapPrismaLegislationVersionToLegislationVersion(mapper);
   mapPrismaOfficeToOffice(mapper);
   mapPrismaTeamCodeToTeamCode(mapper);
   mapPrismaTeamToTeam(mapper);

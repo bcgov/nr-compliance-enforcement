@@ -184,7 +184,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           <Form.Check
             type="checkbox"
             id="safety-concern-indicator"
-            label="Safety concern"
+            className="comp-checkbox"
             checked={field.state.value === true}
             onChange={(evt: any) => {
               const checked = evt.target.checked;

@@ -73,6 +73,8 @@ model contravention {
   investigation                  investigation?             @relation(fields: [investigation_guid], references: [investigation_guid], onDelete: NoAction, onUpdate: NoAction)
   contravention_party_xref       contravention_party_xref[]
 
+  @@index([contravention_date], map: "idx_contravention_contravention_date")
+  @@index([legislation_guid_ref], map: "idx_contravention_legislation_guid_ref")
   @@schema("investigation")
 }
 
