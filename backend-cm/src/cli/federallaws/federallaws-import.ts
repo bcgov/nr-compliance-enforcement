@@ -1,19 +1,17 @@
 import { Logger } from "@nestjs/common";
 import { LegislationService } from "../../shared/legislation/legislation.service";
 import { LegislationSourceService } from "../../shared/legislation_source/legislation_source.service";
-import { LegislationSource } from "../../shared/legislation_source/dto/legislation-source";
-import {
-  fetchXml,
-  getFederalRegulations,
-  getFederalRegulationXmlUrl,
-  Regulation,
-} from "../../external_api/laws-service";
+import { LegislationVersionService } from "../../shared/legislation_version/legislation_version.service";
+import { ImportableLegislationVersion } from "../../shared/legislation_version/dto/legislation-version";
+import { fetchXml, getFederalRegulations, Regulation } from "../../external_api/laws-service";
 import {
   parseFederalLawsXml,
   parseFederalRegulationXml,
   ParsedFederalLawsDocument,
 } from "../../shared/legislation/utils/federal-laws-xml-parser";
+import { getLegislationFetchUrl } from "../../shared/legislation/utils/legislation-url-builder";
 import {
+  compareRegulationsToPreviousVersion,
   InsertLegislationContext,
   insertLegislationTree,
   parseEffectiveDate,
@@ -25,16 +23,23 @@ interface RegulationImportResult {
   successfulRegs: number;
   failedRegs: number;
   skippedRegs: number;
+  addedRegs: string[];
+  removedRegs: string[];
 }
+
+type RegulationImportServices = {
+  legislationService: LegislationService;
+  legislationSourceService: LegislationSourceService;
+  legislationVersionService: LegislationVersionService;
+};
 
 // Imports regulations for a federal Act by looking up related regulations via the Justice Canada's github where
 // a lookup.xml file contains references to the related regulations, then fetches each regulation
 async function importRegulations(
-  source: LegislationSource,
+  actVersion: ImportableLegislationVersion,
   actRootGuid: string,
   consolidatedNumber: string,
-  legislationService: LegislationService,
-  legislationSourceService: LegislationSourceService,
+  services: RegulationImportServices,
   logger: Logger,
   errors: string[],
 ): Promise<RegulationImportResult> {
@@ -44,6 +49,8 @@ async function importRegulations(
     successfulRegs: 0,
     failedRegs: 0,
     skippedRegs: 0,
+    addedRegs: [],
+    removedRegs: [],
   };
 
   logger.log(`\nFetching regulations for ${consolidatedNumber}...`);
@@ -54,15 +61,7 @@ async function importRegulations(
     logger.log(`Found ${regulations.length} regulation(s) to import`);
 
     for (const reg of regulations) {
-      const recordCount = await importSingleRegulation(
-        reg,
-        actRootGuid,
-        source,
-        legislationService,
-        legislationSourceService,
-        logger,
-        errors,
-      );
+      const recordCount = await importSingleRegulation(reg, actRootGuid, actVersion, services, logger, errors);
       if (recordCount > 0) {
         result.successfulRegs++;
         result.totalRecords += recordCount;
@@ -72,6 +71,14 @@ async function importRegulations(
         result.failedRegs++;
       }
     }
+
+    const comparison = await compareRegulationsToPreviousVersion(
+      actVersion.legislationVersionGuid,
+      regulations,
+      services.legislationVersionService,
+    );
+    result.addedRegs = comparison.addedRegs;
+    result.removedRegs = comparison.removedRegs;
 
     if (regulations.length > 0) {
       logger.log(`\nRegulations summary: ${result.successfulRegs} of ${regulations.length} imported successfully`);
@@ -94,18 +101,18 @@ async function importRegulations(
 async function importSingleRegulation(
   reg: Regulation,
   actRootGuid: string,
-  actSource: LegislationSource,
-  legislationService: LegislationService,
-  legislationSourceService: LegislationSourceService,
+  actVersion: ImportableLegislationVersion,
+  services: RegulationImportServices,
   logger: Logger,
   errors: string[],
 ): Promise<number> {
+  const { legislationService, legislationSourceService, legislationVersionService } = services;
   logger.log(`  Importing: ${reg.title}`);
 
   try {
-    const xmlUrl = getFederalRegulationXmlUrl(reg.id);
-    logger.log(`  URL: ${xmlUrl}`);
-    const xmlString = await fetchXml(xmlUrl, "Federal Laws API");
+    const fetchUrl = getLegislationFetchUrl(actVersion.source.sourceType, reg.id);
+    logger.log(`  URL: ${fetchUrl}`);
+    const xmlString = await fetchXml(fetchUrl, "Federal Laws API", true);
     const parsedDocument = parseFederalRegulationXml(xmlString);
 
     // Skip regulations whose XML has no body content
@@ -114,18 +121,27 @@ async function importSingleRegulation(
       return -1;
     }
 
-    const effectiveDate = parseEffectiveDate(parsedDocument.metadata.inForceStartDate);
-
-    const regSource = await legislationSourceService.createRegulationSource(
-      actSource.agencyCode,
+    const regSource = await legislationSourceService.upsertRegulationSource(
+      actVersion.source.legislationSourceGuid,
+      reg.id,
       parsedDocument.metadata.title,
-      reg.url,
-      "FEDERAL",
+      actVersion.source.sourceType,
+    );
+
+    const regVersion = await legislationVersionService.upsertRegulationVersion(
+      actVersion.legislationVersionGuid,
+      regSource.legislationSourceGuid,
+    );
+
+    await legislationVersionService.recordFetchedDocument(
+      regVersion.legislationVersionGuid,
+      fetchUrl,
+      parseEffectiveDate(parsedDocument.metadata.inForceStartDate),
     );
 
     const context: InsertLegislationContext = {
       actTitle: parsedDocument.metadata.title,
-      effectiveDate,
+      legislationVersionGuid: regVersion.legislationVersionGuid,
       legislationService,
       logger,
       errors: [],
@@ -134,11 +150,10 @@ async function importSingleRegulation(
     const count = await insertLegislationTree(
       parsedDocument.root,
       context,
-      actSource.agencyCode,
-      null,
-      null,
-      regSource.legislationSourceGuid,
-      actRootGuid,
+      actVersion.source.agencyCode,
+      actRootGuid, // Link regulation to parent Act
+      null, // parentFullCitation
+      true, // isRegulationRoot
     );
 
     errors.push(...context.errors);
@@ -153,21 +168,30 @@ async function importSingleRegulation(
 }
 
 /**
- * Imports a Federal Laws XML document
+ * Imports a Federal Laws XML document for a legislation version
  */
-async function importLegislationSourceDocument(
-  source: LegislationSource,
+async function importLegislationVersion(
+  version: ImportableLegislationVersion,
   legislationService: LegislationService,
   legislationSourceService: LegislationSourceService,
+  legislationVersionService: LegislationVersionService,
   logger: Logger,
 ): Promise<number> {
+  const source = version.source;
+
   logger.log(`\n--- Importing: ${source.shortDescription} ---`);
   logger.log(`URL: ${source.sourceUrl}`);
   logger.log(`Agency: ${source.agencyCode}`);
+  logger.log(`Effective date: ${version.effectiveDate}`);
 
   try {
+    // Clear anything an earlier run of this version imported
+    await legislationService.deleteByVersion(
+      await legislationVersionService.getActAndRegulationVersionGuids(version.legislationVersionGuid),
+    );
+
     // Fetch the XML
-    const xmlString = await fetchXml(source.sourceUrl, "Federal Laws API");
+    const xmlString = await fetchXml(source.sourceUrl, "Federal Laws API", true);
     logger.log(`Received XML document (${xmlString.length} characters)`);
 
     // Parse the XML
@@ -176,7 +200,11 @@ async function importLegislationSourceDocument(
     logger.log(`Document type: ${parsedDocument.metadata.documentType}`);
     logger.log(`Consolidated number: ${parsedDocument.metadata.consolidatedNumber}`);
 
-    const effectiveDate = parseEffectiveDate(parsedDocument.metadata.inForceStartDate);
+    await legislationVersionService.recordFetchedDocument(
+      version.legislationVersionGuid,
+      source.sourceUrl,
+      parseEffectiveDate(parsedDocument.metadata.inForceStartDate),
+    );
 
     // Build full citation prefix
     const actTitle = parsedDocument.metadata.title;
@@ -184,29 +212,21 @@ async function importLegislationSourceDocument(
     // Insert the legislation tree recursively
     const context: InsertLegislationContext = {
       actTitle,
-      effectiveDate,
+      legislationVersionGuid: version.legislationVersionGuid,
       legislationService,
       logger,
       errors: [],
     };
-    let insertedCount = await insertLegislationTree(
-      parsedDocument.root,
-      context,
-      source.agencyCode,
-      null,
-      null,
-      source.legislationSourceGuid,
-    );
+    let insertedCount = await insertLegislationTree(parsedDocument.root, context, source.agencyCode);
 
     // Import regulations
     let regResult: RegulationImportResult | null = null;
     if (parsedDocument.metadata.consolidatedNumber && context.rootLegislationGuid) {
       regResult = await importRegulations(
-        source,
+        version,
         context.rootLegislationGuid,
         parsedDocument.metadata.consolidatedNumber,
-        legislationService,
-        legislationSourceService,
+        { legislationService, legislationSourceService, legislationVersionService },
         logger,
         context.errors,
       );
@@ -215,7 +235,10 @@ async function importLegislationSourceDocument(
 
     const buildLogMessage = () => {
       let msg = `Imported ${insertedCount} records from ${parsedDocument.metadata.title}`;
-      if (regResult && regResult.totalRegulations > 0) {
+      if (!regResult) {
+        return msg;
+      }
+      if (regResult.totalRegulations > 0) {
         msg += `\nRegulations: ${regResult.successfulRegs} of ${regResult.totalRegulations} imported successfully`;
         if (regResult.skippedRegs > 0) {
           msg += `, ${regResult.skippedRegs} skipped (no content)`;
@@ -224,20 +247,25 @@ async function importLegislationSourceDocument(
           msg += `, ${regResult.failedRegs} failed`;
         }
       }
+      if (regResult.addedRegs.length > 0) {
+        msg += `\nNew regulation(s) since the previous version: ${regResult.addedRegs.join(", ")}`;
+      }
+      if (regResult.removedRegs.length > 0) {
+        msg += `\nRegulation(s) from the previous version not found in this import: ${regResult.removedRegs.join(", ")}`;
+      }
       return msg;
     };
 
     if (context.errors.length > 0) {
       const errorLog = `Import completed with ${context.errors.length} error(s):\n${buildLogMessage()}\n\nErrors:\n${context.errors.join("\n")}`;
-      await legislationSourceService.markFailed(source.legislationSourceGuid, errorLog);
+      await legislationVersionService.markFailed(version.legislationVersionGuid, errorLog);
       logger.warn(
         `Completed with errors: ${source.shortDescription} - ${insertedCount} records, ${context.errors.length} errors`,
       );
       return insertedCount;
     }
 
-    const successLog = buildLogMessage();
-    await legislationSourceService.markImported(source.legislationSourceGuid, successLog);
+    await legislationVersionService.markImported(version.legislationVersionGuid, buildLogMessage());
 
     logger.log(`Completed: ${source.shortDescription} - ${insertedCount} records imported/updated`);
     return insertedCount;
@@ -248,7 +276,7 @@ async function importLegislationSourceDocument(
     const errorLog = "Import failed: " + errorMessage + stackTrace;
 
     try {
-      await legislationSourceService.markFailed(source.legislationSourceGuid, errorLog);
+      await legislationVersionService.markFailed(version.legislationVersionGuid, errorLog);
     } catch (markError) {
       logger.error(`Failed to update import status for ${source.shortDescription}:`, markError);
     }
@@ -259,42 +287,46 @@ async function importLegislationSourceDocument(
 }
 
 /**
- * Imports pending Federal Laws documents from the legislation_source table
- * Sources that have already been imported (imported_ind = true) are skipped
+ * Imports Federal Laws documents for the legislation versions waiting to be imported
+ * Versions that have already been imported are skipped
  */
 export async function runFederalLawsImport(
   legislationService: LegislationService,
   legislationSourceService: LegislationSourceService,
+  legislationVersionService: LegislationVersionService,
   logger: Logger,
 ): Promise<void> {
   logger.log("Starting Federal Laws import...");
-  logger.log("Fetching pending legislation sources from database...");
+  logger.log("Fetching legislation versions to import from database...");
 
   try {
-    // Get pending federal legislation sources
-    const sources = await legislationSourceService.getPendingBySourceType("FEDERAL");
+    // Get the pending and failed federal versions of active sources
+    const versions = await legislationVersionService.getImportableVersions("FEDERAL");
 
-    if (sources.length === 0) {
-      logger.log("No pending legislation sources to import. All sources have already been imported.");
-      logger.log("To re-import a source, set imported_ind = false in the legislation_source table.");
+    if (versions.length === 0) {
+      logger.log("No legislation versions to import. All versions have already been imported.");
+      logger.log("To re-import a version, set its import_status to PENDING in the legislation_version table.");
       return;
     }
 
-    logger.log(`Found ${sources.length} pending federal legislation source(s) to import:`);
-    sources.forEach((source, idx) => {
-      logger.log(`  ${idx + 1}. ${source.shortDescription} (${source.agencyCode})`);
+    logger.log(`Found ${versions.length} federal legislation version(s) to import:`);
+    versions.forEach((version, idx) => {
+      logger.log(
+        `  ${idx + 1}. ${version.source.shortDescription} (${version.source.agencyCode}) effective ${version.effectiveDate}`,
+      );
     });
 
     let totalCount = 0;
     let successCount = 0;
     let failCount = 0;
 
-    for (const source of sources) {
+    for (const version of versions) {
       try {
-        const count = await importLegislationSourceDocument(
-          source,
+        const count = await importLegislationVersion(
+          version,
           legislationService,
           legislationSourceService,
+          legislationVersionService,
           logger,
         );
         totalCount += count;

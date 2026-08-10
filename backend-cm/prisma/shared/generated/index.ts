@@ -65,6 +65,10 @@ import { person_facial_hair_style_code as _person_facial_hair_style_code } from 
 import { person_facial_hair_style_code_h as _person_facial_hair_style_code_h } from "./person_facial_hair_style_code_h";
 import { business_person_address_xref as _business_person_address_xref } from "./business_person_address_xref";
 import { business_person_address_xref_h as _business_person_address_xref_h } from "./business_person_address_xref_h";
+import { legislation_configuration_h as _legislation_configuration_h } from "./legislation_configuration_h";
+import { legislation_source_h as _legislation_source_h } from "./legislation_source_h";
+import { legislation_version as _legislation_version } from "./legislation_version";
+import { legislation_version_h as _legislation_version_h } from "./legislation_version_h";
 
 export namespace PrismaModel {
   export class agency_code extends _agency_code {}
@@ -134,6 +138,10 @@ export namespace PrismaModel {
   export class person_facial_hair_style_code_h extends _person_facial_hair_style_code_h {}
   export class business_person_address_xref extends _business_person_address_xref {}
   export class business_person_address_xref_h extends _business_person_address_xref_h {}
+  export class legislation_configuration_h extends _legislation_configuration_h {}
+  export class legislation_source_h extends _legislation_source_h {}
+  export class legislation_version extends _legislation_version {}
+  export class legislation_version_h extends _legislation_version_h {}
 
   export const extraModels = [
     agency_code,
@@ -203,5 +211,9 @@ export namespace PrismaModel {
     person_facial_hair_style_code_h,
     business_person_address_xref,
     business_person_address_xref_h,
+    legislation_configuration_h,
+    legislation_source_h,
+    legislation_version,
+    legislation_version_h,
   ];
 }
