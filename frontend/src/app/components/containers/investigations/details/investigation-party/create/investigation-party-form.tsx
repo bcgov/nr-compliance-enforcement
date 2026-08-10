@@ -212,7 +212,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
   });
 
   const updatePartyMutation = useGraphQLMutation(UPDATE_INVESTIGATION_PARTY, {
-    invalidateQueries: [["getInvestigation", investigationGuid]],
+    invalidateQueries: [
+      ["getInvestigation", investigationGuid],
+      ["party", editParty?.partyReference],
+      ["searchPartyEvents", editParty?.partyReference],
+      ["searchParties"],
+    ],
     onSuccess: () => {
       flushAttachmentsThenNavigate();
     },
