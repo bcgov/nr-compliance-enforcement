@@ -183,7 +183,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
           <Form.Check
             type="checkbox"
             id="safety-concern-indicator"
-            label="Safety concern"
+            className="comp-checkbox"
             checked={field.state.value === true}
             onChange={(evt: any) => {
               const checked = evt.target.checked;
@@ -208,7 +208,9 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
                 onChange: ({ value }: { value: string | null | undefined }) => {
                   const isSafetyConcernChecked = !!form.getFieldValue("safetyConcernIndicator");
                   const isEmpty = !value?.trim();
-                  return isSafetyConcernChecked && isEmpty ? { message: "Safety concern reason is required" } : undefined;
+                  return isSafetyConcernChecked && isEmpty
+                    ? { message: "Safety concern reason is required" }
+                    : undefined;
                 },
               }}
               render={(field) => (
