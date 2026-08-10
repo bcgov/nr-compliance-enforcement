@@ -159,6 +159,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: model.assessment.actionNotRequired,
             complainant_contacted_ind: model.assessment.contactedComplainant,
             attended_ind: model.assessment.attended,
+            comments: model.assessment.comments,
             case_location_code_assessment_case_location_codeTocase_location_code: model.assessment.locationType
               ? {
                   connect: {
@@ -298,6 +299,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: true,
             complainant_contacted_ind: true,
             attended_ind: true,
+            comments: true,
             case_location_code_assessment_case_location_codeTocase_location_code: {
               select: {
                 case_location_code: true,
@@ -566,6 +568,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: actionNotRequired,
             complainant_contacted_ind: contactedComplainant,
             attended_ind: attended,
+            comments,
             case_location_code_assessment_case_location_codeTocase_location_code: locationType,
             conflict_history_code: conflictHistory,
             threat_level_code: categoryLevel,
@@ -593,6 +596,7 @@ export class ComplaintOutcomeService {
             cat1Actions,
             contactedComplainant,
             attended,
+            comments,
             conflictHistory: {
               key: conflictHistory?.short_description ?? "",
               value: conflictHistory?.conflict_history_code ?? "",
@@ -826,6 +830,7 @@ export class ComplaintOutcomeService {
             action_not_required_ind: model.assessment.actionNotRequired,
             complainant_contacted_ind: model.assessment.contactedComplainant,
             attended_ind: model.assessment.attended,
+            comments: model.assessment.comments,
             case_location_code_assessment_case_location_codeTocase_location_code: model.assessment.locationType
               ? {
                   connect: {
