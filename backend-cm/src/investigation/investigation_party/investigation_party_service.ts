@@ -55,6 +55,7 @@ import { AliasInput } from "src/shared/alias/dto/alias";
 import { BusinessInput } from "src/shared/business/dto/business";
 import { PersonInput } from "src/shared/person/dto/person.input";
 import { PartyService } from "src/shared/party/party.service";
+import { randomUUID } from "node:crypto";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -624,13 +625,10 @@ export class InvestigationPartyService {
     input: UpdateInvestigationPartyInput,
   ): PartyUpdateInput {
     const findAddressReference = (addressGuid?: string) =>
-      existingParty.addresses?.find((a) => a.addressGuid === addressGuid)?.addressReference;
+      (input.addresses ?? []).find((a) => a.addressGuid === addressGuid)?.addressReference;
 
     const findContactMethodReference = (contactMethodGuid?: string) =>
       existingParty.contactMethods?.find((c) => c.contactMethodGuid === contactMethodGuid)?.contactMethodReference;
-
-    const findAliasReference = (aliasGuid?: string) =>
-      existingParty.aliases?.find((a) => a.aliasGuid === aliasGuid)?.aliasReference;
 
     const findBusinessIdentifierReference = (businessIdentifierGuid?: string) =>
       existingParty.business?.businessIdentifiers?.find((i) => i.businessIdentifierGuid === businessIdentifierGuid)
@@ -642,7 +640,6 @@ export class InvestigationPartyService {
 
     const addresses: AddressInput[] = (input.addresses ?? []).map((a) => ({
       addressGuid: findAddressReference(a.addressGuid) ?? "",
-      partyGuid: existingParty.partyReference!,
       addressName: a.addressName,
       address: a.address,
       city: a.city,
@@ -652,7 +649,7 @@ export class InvestigationPartyService {
       isPrimary: a.isPrimary,
       displayInInvestigation: a.displayInInvestigation,
       contactMethods: (a.contactMethods ?? []).map((cm) => ({
-        contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+        contactMethodGuid: cm.contactMethodReference,
         typeCode: cm.typeCode,
         value: cm.value,
         isPrimary: cm.isPrimary,
@@ -660,14 +657,14 @@ export class InvestigationPartyService {
     }));
 
     const contactMethods: ContactMethodInput[] = (input.contactMethods ?? []).map((cm) => ({
-      contactMethodGuid: findContactMethodReference(cm.contactMethodGuid),
+      contactMethodGuid: cm.contactMethodReference,
       typeCode: cm.typeCode,
       value: cm.value ?? "",
       isPrimary: cm.isPrimary ?? false,
     }));
 
     const aliases: AliasInput[] = (input.aliases ?? []).map((a) => ({
-      aliasGuid: findAliasReference(a.aliasGuid) ?? "",
+      aliasGuid: a.aliasReference ?? "",
       name: a.name,
     }));
 
@@ -757,6 +754,52 @@ export class InvestigationPartyService {
     };
   }
 
+  // Ensures every incoming sub-record carries the guid of its shared-party counterpart.
+  // Records already linked keep their existing reference; unlinked records get a freshly
+  // generated guid, which is written to both the local *_guid_ref column and the shared
+  // row's primary key so the two stay linked for future updates.
+  private _resolveSharedReferences(existingParty: InvestigationParty, input: UpdateInvestigationPartyInput): void {
+    for (const address of input.addresses ?? []) {
+      const existing = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
+      address.addressReference = existing?.addressReference ?? address.addressReference ?? randomUUID();
+    }
+
+    for (const alias of input.aliases ?? []) {
+      const existing = (existingParty.aliases ?? []).find((a) => a.aliasGuid === alias.aliasGuid);
+      alias.aliasReference = existing?.aliasReference ?? alias.aliasReference ?? randomUUID();
+    }
+
+    for (const contactMethod of input.contactMethods ?? []) {
+      const existing = (existingParty.contactMethods ?? []).find(
+        (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
+      );
+      contactMethod.contactMethodReference =
+        existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+    }
+
+    for (const address of input.addresses ?? []) {
+      const existingAddress = (existingParty.addresses ?? []).find((a) => a.addressGuid === address.addressGuid);
+      const existingAddressContactMethods: InvestigationContactMethod[] = existingAddress?.contactMethods ?? [];
+      for (const contactMethod of address.contactMethods ?? []) {
+        const existing = existingAddressContactMethods.find(
+          (c) => c.contactMethodGuid === contactMethod.contactMethodGuid,
+        );
+        contactMethod.contactMethodReference =
+          existing?.contactMethodReference ?? contactMethod.contactMethodReference ?? randomUUID();
+      }
+    }
+
+    const existingFacialHairStyleCodes: InvestigationPersonFacialHairStyleCodeRef[] =
+      existingParty.person?.facialHairStyleCodes ?? [];
+    for (const fhs of input.person?.facialHairStyleCodes ?? []) {
+      const existing = existingFacialHairStyleCodes.find(
+        (f) => f.personFacialStyleHairCodeGuid === fhs.personFacialStyleHairCodeGuid,
+      );
+      fhs.personFacialHairStyleCodeReference =
+        existing?.personFacialHairStyleCodeReference ?? fhs.personFacialHairStyleCodeReference ?? randomUUID();
+    }
+  }
+
   async update(investigationGuid: string, input: UpdateInvestigationPartyInput): Promise<Investigation> {
     const investigation = await this.investigationService.findOne(investigationGuid);
     const existingParty = investigation.parties.find((p) => p.partyIdentifier === input.partyIdentifier && p.isActive);
@@ -770,6 +813,8 @@ export class InvestigationPartyService {
     }
 
     let sharedPartyChangeEvents: EventCreateInput[] = [];
+
+    this._resolveSharedReferences(existingParty, input);
 
     await withRlsTransaction(this.prisma, async (tx) => {
       const aliasOperations = this._buildInvestigationAliasOperations(input.aliases ?? [], existingParty.aliases ?? []);
@@ -1075,6 +1120,7 @@ export class InvestigationPartyService {
         contact_value: cm.value,
         is_primary: cm.isPrimary,
         active_ind: true,
+        contact_method_guid_ref: cm.contactMethodReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       }));
@@ -1177,6 +1223,7 @@ export class InvestigationPartyService {
     if (toCreate.length) {
       operations.create = toCreate.map((a) => ({
         name: a.name,
+        alias_guid_ref: a.aliasReference ?? null,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
@@ -1282,6 +1329,7 @@ export class InvestigationPartyService {
         facial_hair_style_code_ref: fhs.facialHairStyleCode,
         investigation_person_guid: fhs.personGuid,
         active_ind: true,
+        person_facial_hair_style_code_guid_ref: fhs.personFacialHairStyleCodeReference ?? null,
         create_user_id: this.user.getIdirUsername(),
         create_utc_timestamp: new Date(),
       }));

@@ -1554,6 +1554,7 @@ export type InvestigationPersonFacialHairStyleCodeRef = {
 export type InvestigationPersonFacialHairStyleCodeRefInput = {
   activeIndicator?: InputMaybe<Scalars['Boolean']['input']>;
   facialHairStyleCode?: InputMaybe<Scalars['String']['input']>;
+  personFacialHairStyleCodeReference?: InputMaybe<Scalars['String']['input']>;
   personFacialStyleHairCodeGuid?: InputMaybe<Scalars['String']['input']>;
   personGuid?: InputMaybe<Scalars['String']['input']>;
 };

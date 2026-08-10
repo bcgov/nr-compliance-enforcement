@@ -8,7 +8,7 @@ export class InvestigationContactMethod {
   value: string;
   isPrimary: boolean;
   isActive: boolean;
-  contactMethodReference: string;
+  contactMethodReference?: string;
 }
 
 @InputType()
@@ -33,6 +33,9 @@ export class CreateInvestigationContactMethodInput {
 export class UpdateInvestigationContactMethodInput {
   @Field(() => String, { nullable: true })
   contactMethodGuid?: string;
+
+  @Field(() => String, { nullable: true })
+  contactMethodReference?: string;
 
   @Field(() => String)
   typeCode: string;

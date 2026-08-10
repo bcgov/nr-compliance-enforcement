@@ -23,6 +23,9 @@ export class UpdateInvestigationAliasInput {
   @Field(() => String, { nullable: true })
   aliasGuid?: string;
 
+  @Field(() => String, { nullable: true })
+  aliasReference?: string;
+
   @Field(() => String)
   name: string;
 }

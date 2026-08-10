@@ -554,6 +554,7 @@ export class PartyService {
 
     if (aliasesToCreate.length) {
       operations.create = aliasesToCreate.map((a) => ({
+        ...(a.aliasGuid ? { alias_guid: a.aliasGuid } : {}),
         name: a.name,
         active_ind: true,
         create_user_id: this.user.getIdirUsername(),
@@ -720,8 +721,13 @@ export class PartyService {
     incomingFacialHairStyles: PersonFacialHairStyleCodeInput[],
     existingFacialHairStyles: PersonFacialHairStyleCode[],
   ): any {
-    const fhsToCreate = incomingFacialHairStyles.filter((fhs) => !fhs.personFacialStyleHairCodeGuid);
-    const fhsToUpdate = incomingFacialHairStyles.filter((fhs) => fhs.personFacialStyleHairCodeGuid);
+    const existingGuids = new Set(existingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
+    const fhsToCreate = incomingFacialHairStyles.filter(
+      (fhs) => !fhs.personFacialStyleHairCodeGuid || !existingGuids.has(fhs.personFacialStyleHairCodeGuid),
+    );
+    const fhsToUpdate = incomingFacialHairStyles.filter(
+      (fhs) => fhs.personFacialStyleHairCodeGuid && existingGuids.has(fhs.personFacialStyleHairCodeGuid),
+    );
     const fhsToDelete = existingFacialHairStyles.filter(
       (fhs) =>
         !new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid)).has(
@@ -733,6 +739,9 @@ export class PartyService {
 
     if (fhsToCreate.length) {
       operations.create = fhsToCreate.map((fhs) => ({
+        ...(fhs.personFacialStyleHairCodeGuid
+          ? { person_facial_hair_style_code_guid: fhs.personFacialStyleHairCodeGuid }
+          : {}),
         facial_hair_style_code: fhs.facialHairStyleCode,
         person_guid: fhs.personGuid,
         active_ind: true,
@@ -778,8 +787,13 @@ export class PartyService {
   }
 
   private _buildContactMethodOperations(incomingMethods: ContactMethodInput[], existingMethods: ContactMethod[]): any {
-    const methodsToCreate = incomingMethods.filter((cm) => !cm.contactMethodGuid);
-    const methodsToUpdate = this._sortContactMethodsPrimaryLast(incomingMethods.filter((cm) => cm.contactMethodGuid));
+    const existingGuids = new Set(existingMethods.map((cm) => cm.contactMethodGuid));
+    const methodsToCreate = incomingMethods.filter(
+      (cm) => !cm.contactMethodGuid || !existingGuids.has(cm.contactMethodGuid),
+    );
+    const methodsToUpdate = this._sortContactMethodsPrimaryLast(
+      incomingMethods.filter((cm) => cm.contactMethodGuid && existingGuids.has(cm.contactMethodGuid)),
+    );
     const methodsToDelete = existingMethods.filter(
       (cm) => !new Set(incomingMethods.map((im) => im.contactMethodGuid)).has(cm.contactMethodGuid),
     );
@@ -787,6 +801,7 @@ export class PartyService {
 
     if (methodsToCreate.length) {
       operations.create = this._sortContactMethodsPrimaryLast(methodsToCreate).map((cm) => ({
+        ...(cm.contactMethodGuid ? { contact_method_guid: cm.contactMethodGuid } : {}),
         contact_method_type_code: {
           connect: {
             contact_method_type_code: cm.typeCode,
@@ -1086,13 +1101,15 @@ export class PartyService {
   ): void {
     // Detect added and edited contact methods
     for (const incoming of incomingMethods) {
-      if (incoming.contactMethodGuid) {
-        const existing = existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid);
-        if (existing && existing.value !== incoming.value) {
-          addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
+      const existing = incoming.contactMethodGuid
+        ? existingMethods.find((m) => m.contactMethodGuid === incoming.contactMethodGuid)
+        : undefined;
+      if (!existing) {
+        if (incoming.value) {
+          addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
         }
-      } else if (incoming.value) {
-        addEvent("ADDED", labelFn(incoming.typeCode), null, incoming.value);
+      } else if (existing.value !== incoming.value) {
+        addEvent("EDITED", labelFn(incoming.typeCode), existing.value, incoming.value);
       }
     }
 
@@ -1129,13 +1146,11 @@ export class PartyService {
 
   private _diffAliases(existingAliases: Alias[], incomingAliases: AliasInput[], addEvent: AddEventFn): void {
     for (const incoming of incomingAliases) {
-      if (incoming.aliasGuid) {
-        const existing = existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid);
-        if (existing && existing.name !== incoming.name) {
-          addEvent("EDITED", "alias", existing.name, incoming.name);
-        }
-      } else {
+      const existing = incoming.aliasGuid ? existingAliases.find((a) => a.aliasGuid === incoming.aliasGuid) : undefined;
+      if (!existing) {
         addEvent("ADDED", "alias", null, incoming.name);
+      } else if (existing.name !== incoming.name) {
+        addEvent("EDITED", "alias", existing.name, incoming.name);
       }
     }
     const incomingGuids = new Set(incomingAliases.map((a) => a.aliasGuid));
@@ -1282,15 +1297,15 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingFacialHairStyles) {
-      if (incoming.personFacialStyleHairCodeGuid) {
-        const existing = existingFacialHairStyles.find(
-          (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
-        );
-        if (existing && existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
-          addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
-        }
-      } else {
+      const existing = incoming.personFacialStyleHairCodeGuid
+        ? existingFacialHairStyles.find(
+            (fhs) => fhs.personFacialStyleHairCodeGuid === incoming.personFacialStyleHairCodeGuid,
+          )
+        : undefined;
+      if (!existing) {
         addEvent("ADDED", "facial hair style", null, incoming.facialHairStyleCode);
+      } else if (existing.facialHairStyleCode !== incoming.facialHairStyleCode) {
+        addEvent("EDITED", "facial hair style", existing.facialHairStyleCode, incoming.facialHairStyleCode);
       }
     }
     const incomingGuids = new Set(incomingFacialHairStyles.map((fhs) => fhs.personFacialStyleHairCodeGuid));
@@ -1550,6 +1565,7 @@ export class PartyService {
     } else {
       data = this._buildBusinessUpdateData(builderInput, existingPartyDto);
     }
+
     try {
       const changeEvents = this._partyChangeEvents(partyIdentifier, existingPartyDto, input, investigationContext);
 

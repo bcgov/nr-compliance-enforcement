@@ -109,7 +109,7 @@ export const mapPrismaAddressToInvestigationAddress = (mapper: Mapper) => {
     ),
     forMember(
       (dest) => dest.addressReference,
-      mapFrom((src) => src.address_guid_ref ?? false),
+      mapFrom((src) => src.address_guid_ref ?? undefined),
     ),
   );
 };

@@ -23,7 +23,7 @@ export class AddressInput {
   addressGuid?: string;
 
   @Field(() => String)
-  partyGuid: string;
+  partyGuid?: string;
 
   @Field(() => String)
   addressName: string;
