@@ -125,9 +125,7 @@ const useEventDescription = (event: Event): string => {
     }
     if (field === "business contact") {
       const details = contactDetails().filter(Boolean).join(", ");
-      return details
-        ? `${verbLabel} business contact ${value}: ${details}`
-        : `${verbLabel} business contact: ${value}`;
+      return details ? `${verbLabel} business contact ${value}: ${details}` : `${verbLabel} business contact: ${value}`;
     }
     return undefined;
   };
@@ -148,6 +146,10 @@ const useEventDescription = (event: Event): string => {
         return `performed ${verb.toLowerCase()} on ${fieldLabel}`;
     }
   };
+
+  const description = describeChange();
+  return content?.investigationContext ? `${description} ${content.investigationContext}` : description;
+};
 
 export const PartyHistoryItem: FC<PartyHistoryItemProps> = ({ event, appUsers }) => {
   const eventDescription = useEventDescription(event);
