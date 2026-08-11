@@ -154,76 +154,126 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
     }
   }
 
+  // Deactivating a pinned reference also removes the shared party's COMS object, since the
+  // reference points directly at it.
+  const persistReferenceDeactivations = async (references: COMSObject[]) => {
+    await Promise.all(
+      references.map((reference) =>
+        deactivateReferenceMutation.mutateAsync({
+          input: { investigationPartyGuid: partyId, objectId: reference.id },
+        }),
+      ),
+    );
+
+    if (sharedPartyId) {
+      await handlePersistAttachments({
+        dispatch,
+        attachmentsToAdd: null,
+        attachmentsToDelete: references,
+        identifier: sharedPartyId,
+        subIdentifier: undefined,
+        setAttachmentsToAdd: () => {},
+        setAttachmentsToDelete: () => {},
+        attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+        isSynchronous: false,
+      });
+    }
+
+    setReferencesToDeactivate(null);
+  };
+
+  // The shared party holds its own COMS copies, so the matching objects are removed there too.
+  // Names are the only join between the two, since each upload produced independent objects.
+  const deleteSharedCopies = async (deleted: COMSObject[]) => {
+    if (!sharedPartyId) return;
+
+    const deletedNames = new Set(deleted.map((obj) => getDisplayFilename(obj.name)));
+    const sharedAttachments = await dispatch(
+      getAttachments(sharedPartyId, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
+    );
+    const sharedToDelete = sharedAttachments.filter((obj: COMSObject) =>
+      deletedNames.has(getDisplayFilename(obj.name)),
+    );
+
+    if (!sharedToDelete.length) return;
+
+    await handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd: null,
+      attachmentsToDelete: sharedToDelete,
+      identifier: sharedPartyId,
+      subIdentifier: undefined,
+      setAttachmentsToAdd: () => {},
+      setAttachmentsToDelete: () => {},
+      attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+      isSynchronous: false,
+    });
+  };
+
+  const persistDeletions = async (deleted: COMSObject[]) => {
+    await handlePersistAttachments({
+      dispatch,
+      attachmentsToAdd: null,
+      attachmentsToDelete: deleted,
+      identifier: partyId,
+      subIdentifier: undefined,
+      setAttachmentsToAdd,
+      setAttachmentsToDelete,
+      attachmentType: attachmentType,
+      isSynchronous: false,
+    });
+
+    await deleteSharedCopies(deleted);
+  };
+
+  // Attachments live only in COMS, so a copy is uploaded against the shared party as well. This
+  // sits outside the party save — a failure here leaves the investigation attachment intact and
+  // is reported separately.
+  const uploadToSharedParty = async (files: File[], toastId: Id) => {
+    if (!sharedPartyId) return;
+
+    const failedSharedFiles = await uploadAttachmentsWithProgress({
+      dispatch,
+      files,
+      identifier: sharedPartyId,
+      subIdentifier: undefined,
+      attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+      toastId,
+    });
+
+    if (failedSharedFiles.length > 0) {
+      ToggleError(
+        `Saved to the investigation, but could not sync to the shared party: ${failedSharedFiles.join(", ")}`,
+      );
+    }
+  };
+
+  const persistUploads = async (files: File[], toastId: Id) => {
+    await uploadAttachmentsWithProgress({
+      dispatch,
+      files,
+      identifier: identifier,
+      subIdentifier: subidentifier,
+      attachmentType: attachmentType,
+      toastId,
+    });
+
+    await uploadToSharedParty(files, toastId);
+
+    setAttachmentsToAdd(null);
+    setAttachmentsToEdit(null);
+  };
+
   const saveButtonClick = async () => {
     markClean();
     let toastId: Id | undefined;
 
     if (referencesToDeactivate?.length) {
-      await Promise.all(
-        referencesToDeactivate.map((reference) =>
-          deactivateReferenceMutation.mutateAsync({
-            input: { investigationPartyGuid: partyId, objectId: reference.id },
-          }),
-        ),
-      );
-
-      // The pinned reference points directly at the shared party's COMS object, so removing it
-      // from the investigation removes it from the shared party too.
-      if (sharedPartyId) {
-        await handlePersistAttachments({
-          dispatch,
-          attachmentsToAdd: null,
-          attachmentsToDelete: referencesToDeactivate,
-          identifier: sharedPartyId,
-          subIdentifier: undefined,
-          setAttachmentsToAdd: () => {},
-          setAttachmentsToDelete: () => {},
-          attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
-          isSynchronous: false,
-        });
-      }
-
-      setReferencesToDeactivate(null);
+      await persistReferenceDeactivations(referencesToDeactivate);
     }
 
     if (attachmentsToDelete?.length) {
-      await handlePersistAttachments({
-        dispatch,
-        attachmentsToAdd: null,
-        attachmentsToDelete,
-        identifier: partyId,
-        subIdentifier: undefined,
-        setAttachmentsToAdd,
-        setAttachmentsToDelete,
-        attachmentType: attachmentType,
-        isSynchronous: false,
-      });
-
-      // The shared party holds its own COMS copies, so the matching objects are removed there too.
-      // Names are the only join between the two, since each upload produced independent objects.
-      if (sharedPartyId) {
-        const deletedNames = new Set(attachmentsToDelete.map((obj) => getDisplayFilename(obj.name)));
-        const sharedAttachments = await dispatch(
-          getAttachments(sharedPartyId, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
-        );
-        const sharedToDelete = sharedAttachments.filter((obj: COMSObject) =>
-          deletedNames.has(getDisplayFilename(obj.name)),
-        );
-
-        if (sharedToDelete.length) {
-          await handlePersistAttachments({
-            dispatch,
-            attachmentsToAdd: null,
-            attachmentsToDelete: sharedToDelete,
-            identifier: sharedPartyId,
-            subIdentifier: undefined,
-            setAttachmentsToAdd: () => {},
-            setAttachmentsToDelete: () => {},
-            attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
-            isSynchronous: false,
-          });
-        }
-      }
+      await persistDeletions(attachmentsToDelete);
     }
 
     if (attachmentsToAdd?.length) {
@@ -234,38 +284,9 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         closeButton: false,
         draggable: false,
       });
-      await uploadAttachmentsWithProgress({
-        dispatch,
-        files: attachmentsToAdd,
-        identifier: identifier,
-        subIdentifier: subidentifier,
-        attachmentType: attachmentType,
-        toastId,
-      });
-
-      // Attachments live only in COMS, so a copy is uploaded against the shared party as well.
-      // This sits outside the party save — a failure here leaves the investigation attachment
-      // intact and is reported separately.
-      if (sharedPartyId) {
-        const failedSharedFiles = await uploadAttachmentsWithProgress({
-          dispatch,
-          files: attachmentsToAdd,
-          identifier: sharedPartyId,
-          subIdentifier: undefined,
-          attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
-          toastId,
-        });
-
-        if (failedSharedFiles.length > 0) {
-          ToggleError(
-            `Saved to the investigation, but could not sync to the shared party: ${failedSharedFiles.join(", ")}`,
-          );
-        }
-      }
-
-      setAttachmentsToAdd(null);
-      setAttachmentsToEdit(null);
+      await persistUploads(attachmentsToAdd, toastId);
     }
+
     if (toastId) DismissToast(toastId);
     setAttachmentRefreshKey((k) => k + 1);
     onSaved?.();

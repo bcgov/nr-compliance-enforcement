@@ -36,7 +36,6 @@ import {
   ToggleDeactivateModal,
   ReferComplaintModal,
   ManageCollaboratorsModal,
-  RemovePartyModal,
 } from "./instances";
 import { CancelConfirmModal } from "./instances/cancel-confirm-modal";
 import { MapModal } from "@/app/components/modal/instances/map-modal";
