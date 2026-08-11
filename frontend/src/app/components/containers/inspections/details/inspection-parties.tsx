@@ -1,7 +1,7 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { ADD_PARTY, REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { ADD_PARTY, SAVE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Inspection, InspectionParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { Button } from "react-bootstrap";
@@ -75,10 +75,12 @@ export const InspectionSummary: FC<InspectionPartiesProps> = ({ inspectionGuid, 
       dispatch(
         openModal({
           modalSize: "md",
-          modalType: REMOVE_PARTY,
+          modalType: SAVE_CONFIRM,
           data: {
             title: "Remove Party",
             description: `Are you sure you want to remove ${partyName} from this inspection? This action cannot be undone.`,
+            cancelText: "No, go back",
+            saveText: "Yes, remove party",
           },
           callback: () => {
             removePartyMutation.mutate({

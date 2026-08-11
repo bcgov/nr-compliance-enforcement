@@ -11,7 +11,7 @@ type SaveConfirmProps = {
 export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
   const modalData = useAppSelector(selectModalData);
 
-  const { title, description } = modalData;
+  const { title, description, cancelText, saveText } = modalData;
 
   const handleConfirm = () => {
     submit();
@@ -33,13 +33,13 @@ export const SaveConfirmModal: FC<SaveConfirmProps> = ({ close, submit }) => {
           variant="outline-primary"
           onClick={close}
         >
-          Cancel
+          {cancelText}
         </Button>
         <Button
           variant="primary"
           onClick={handleConfirm}
         >
-          Save and close
+          {saveText}
         </Button>
       </Modal.Footer>
     </>

@@ -1,7 +1,7 @@
 import PartiesList from "@/app/components/common/parties-list";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { openModal } from "@/app/store/reducers/app";
-import { REMOVE_PARTY } from "@/app/types/modal/modal-types";
+import { SAVE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Investigation, InvestigationParty } from "@/generated/graphql";
 import { FC, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -61,10 +61,12 @@ export const InvestigationParties: FC<InvestigationPartiesProps> = ({ investigat
       dispatch(
         openModal({
           modalSize: "md",
-          modalType: REMOVE_PARTY,
+          modalType: SAVE_CONFIRM,
           data: {
             title: "Remove Party",
             description: `Are you sure you want to remove ${partyName} from this investigation? This action cannot be undone.`,
+            cancelText: "No, go back",
+            saveText: "Yes, remove party",
           },
           callback: () => {
             removePartyMutation.mutate({

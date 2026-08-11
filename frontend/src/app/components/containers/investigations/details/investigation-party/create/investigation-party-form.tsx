@@ -288,6 +288,8 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
             title: "Save party",
             description:
               "Saving this party will update its details for all NatSuite users and will be available for use in future investigations.",
+            cancelText: "Cancel",
+            saveText: "Save and close",
           },
           callback: () => {
             form.handleSubmit();

@@ -56,6 +56,8 @@ export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({
         data: {
           title: "Remove complaint from case",
           description: `This action will remove complaint #${activityId} from case file ${caseDisplay}`,
+          cancelText: "Cancel",
+          saveText: "Save and close",
         },
         callback: () => {
           removeActivityFromCaseMutation.mutate({
