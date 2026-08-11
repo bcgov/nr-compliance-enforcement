@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useStore } from "@tanstack/react-form";
 import { z } from "zod";
@@ -11,6 +11,7 @@ import { CANCEL_CONFIRM, SAVE_CONFIRM } from "@apptypes/modal/modal-types";
 import { selectPartyAssociationRoleDropdown, selectPartyTypeDropdown } from "@/app/store/reducers/code-table-selectors";
 import {
   CreateAttachmentReferenceInput,
+  ImageUpdateInput,
   InvestigationAttachmentReference,
   InvestigationParty,
   Party,
@@ -133,6 +134,12 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
     return { ...createEmptyPartyFormValues(), partyAssociationRole: "" };
   }, [isEditMode, editParty]);
 
+  const pendingImagesRef = useRef<ImageUpdateInput[]>([]);
+
+  const handlePendingImagesChange = useCallback((images: ImageUpdateInput[]) => {
+    pendingImagesRef.current = images;
+  }, []);
+
   const form = useForm({
     defaultValues,
     // fires only when a submission attempt is blocked by validation
@@ -145,6 +152,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
           aliases: buildAliases(value.aliases, true),
           addresses: buildAddresses(value.addresses),
           contactMethods: buildContactMethods(value.phoneNumbers, value.emailAddresses, true),
+          images: pendingImagesRef.current,
         };
 
         if (value.partyType === PartyTypeCodes.PERSON) {
@@ -554,6 +562,7 @@ export const InvestigationPartyForm: FC<InvestigationPartyFormProps> = ({
                   activityId={investigationGuid}
                   attachmentReferences={editParty?.attachmentReferences as InvestigationAttachmentReference[]}
                   attachmentType={AttachmentEnum.INVESTIGATION_PARTY_ATTACHMENT}
+                  onPendingImagesChange={handlePendingImagesChange}
                   allowUpload
                   allowDelete
                   triggerSave={triggerSaveAttachments}

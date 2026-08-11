@@ -739,7 +739,7 @@ export class InvestigationPartyService {
       addresses,
       contactMethods,
       aliases,
-      images: [],
+      images: input.images ?? [],
     };
   }
 

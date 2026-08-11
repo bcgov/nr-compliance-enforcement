@@ -18,4 +18,5 @@ input UpdateInvestigationPartyInput {
   addresses: [UpdateInvestigationAddressInput]
   contactMethods: [UpdateInvestigationContactMethodInput]
   aliases: [UpdateInvestigationAliasInput]
+  images: [ImageUpdateInput]
 }

@@ -16,6 +16,7 @@ import { InvestigationAttachmentReference } from "@/generated/graphql";
 import AttachmentEnum from "@/app/constants/attachment-enum";
 import { gql } from "graphql-request";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
+import { getAttachments } from "@/app/store/reducers/attachments";
 
 const DEACTIVATE_INVESTIGATION_ATTACHMENT_REFERENCE_MUTATION = gql`
   mutation DeactivateInvestigationAttachmentReference($input: DeactivateInvestigationAttachmentReferenceInput!) {
@@ -109,12 +110,12 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
       fileName: getDisplayFilename(file.name),
       verb: "EDITED",
     }));
-    const removed = (attachmentsToDelete ?? []).map((obj) => ({
+    const removed = [...(attachmentsToDelete ?? []), ...(referencesToDeactivate ?? [])].map((obj) => ({
       fileName: getDisplayFilename(obj.name),
       verb: "REMOVED",
     }));
     onPendingImagesChange?.([...added, ...edited, ...removed]);
-  }, [attachmentsToAdd, attachmentsToDelete, attachmentsToEdit, onPendingImagesChange]);
+  }, [attachmentsToAdd, attachmentsToDelete, attachmentsToEdit, referencesToDeactivate, onPendingImagesChange]);
 
   useEffect(() => {
     const noPendingAdditions = !attachmentsToAdd || attachmentsToAdd.length === 0;
@@ -165,6 +166,23 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
           }),
         ),
       );
+
+      // The pinned reference points directly at the shared party's COMS object, so removing it
+      // from the investigation removes it from the shared party too.
+      if (sharedPartyId) {
+        await handlePersistAttachments({
+          dispatch,
+          attachmentsToAdd: null,
+          attachmentsToDelete: referencesToDeactivate,
+          identifier: sharedPartyId,
+          subIdentifier: undefined,
+          setAttachmentsToAdd: () => {},
+          setAttachmentsToDelete: () => {},
+          attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+          isSynchronous: false,
+        });
+      }
+
       setReferencesToDeactivate(null);
     }
 
@@ -180,7 +198,34 @@ export const PartyAttachments: FC<PartyAttachmentsProps> = ({
         attachmentType: attachmentType,
         isSynchronous: false,
       });
+
+      // The shared party holds its own COMS copies, so the matching objects are removed there too.
+      // Names are the only join between the two, since each upload produced independent objects.
+      if (sharedPartyId) {
+        const deletedNames = new Set(attachmentsToDelete.map((obj) => getDisplayFilename(obj.name)));
+        const sharedAttachments = await dispatch(
+          getAttachments(sharedPartyId, undefined, AttachmentEnum.PARTY_ATTACHMENT, true),
+        );
+        const sharedToDelete = sharedAttachments.filter((obj: COMSObject) =>
+          deletedNames.has(getDisplayFilename(obj.name)),
+        );
+
+        if (sharedToDelete.length) {
+          await handlePersistAttachments({
+            dispatch,
+            attachmentsToAdd: null,
+            attachmentsToDelete: sharedToDelete,
+            identifier: sharedPartyId,
+            subIdentifier: undefined,
+            setAttachmentsToAdd: () => {},
+            setAttachmentsToDelete: () => {},
+            attachmentType: AttachmentEnum.PARTY_ATTACHMENT,
+            isSynchronous: false,
+          });
+        }
+      }
     }
+
     if (attachmentsToAdd?.length) {
       toastId = ToggleInformation("Upload in progress, do not close the application.", {
         position: "top-right",
