@@ -500,6 +500,7 @@ export const PersonForm: FC<PersonFormProps> = ({ form, isDisabled }) => {
         emailAddresses={emailAddresses}
         onAddEmail={handleAddEmail}
         onRemoveEmail={handleRemoveEmail}
+        showContactMethods={true}
         onSetPrimaryEmail={handleSetPrimaryEmail}
       />
       <div className="comp-details-section-header pt-5">

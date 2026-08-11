@@ -1256,15 +1256,11 @@ export class PartyService {
 
   private _diffNewContact(incoming: BusinessPersonXrefInput, addEvent: AddEventFn): void {
     const name = [incoming.person?.firstName, incoming.person?.lastName].filter(Boolean).join(" ");
-    addEvent("ADDED", "business contact", null, name);
-    for (const cm of incoming.contactMethods ?? []) {
-      if (cm?.value) {
-        const contactLabel = name
-          ? `${this._contactMethodLabel(cm.typeCode)} in business contact ${name}`
-          : `contact ${this._contactMethodLabel(cm.typeCode)}`;
-        addEvent("ADDED", contactLabel, null, cm.value);
-      }
-    }
+    const methods = incoming.contactMethods ?? [];
+    addEvent("ADDED", "business contact", null, name, {
+      phoneNumber: methods.find((cm) => cm?.typeCode === "PHONE")?.value ?? null,
+      emailAddress: methods.find((cm) => cm?.typeCode === "EMAILADDR")?.value ?? null,
+    });
   }
 
   private _diffExistingContact(
@@ -1314,7 +1310,11 @@ export class PartyService {
       .filter((x) => !incomingGuids.has(x.businessPersonXrefGuid))
       .forEach((x) => {
         const name = [x.person?.firstName, x.person?.lastName].filter(Boolean).join(" ");
-        addEvent("REMOVED", "business contact", name, null);
+        const methods = (x.contactMethods as ContactMethod[] | undefined) ?? [];
+        addEvent("REMOVED", "business contact", name, null, {
+          phoneNumber: methods.find((cm) => cm?.typeCode === "PHONE")?.value ?? null,
+          emailAddress: methods.find((cm) => cm?.typeCode === "EMAILADDR")?.value ?? null,
+        });
       });
   }
 

@@ -106,18 +106,14 @@ const useEventDescription = (event: Event): string => {
     const countryName = content?.country
       ? (countries.find((c) => c.value === content.country)?.label ?? content.country)
       : null;
-    const phone = content?.phoneNumber ? formatPhoneNumber(content.phoneNumber) || content.phoneNumber : null;
-    return [
-      content?.streetAddress,
-      content?.city,
-      provinceName,
-      content?.postalCode,
-      countryName,
-      phone,
-      content?.emailAddress,
-    ]
+    return [content?.streetAddress, content?.city, provinceName, content?.postalCode, countryName, ...contactDetails()]
       .filter(Boolean)
       .join(", ");
+  };
+
+  const contactDetails = (): (string | null | undefined)[] => {
+    const phone = content?.phoneNumber ? formatPhoneNumber(content.phoneNumber) || content.phoneNumber : null;
+    return [phone, content?.emailAddress];
   };
 
   const describeChange = (): string => {
@@ -127,12 +123,20 @@ const useEventDescription = (event: Event): string => {
           const details = formatAddressDetails();
           return details ? `added address ${newValue}: ${details}` : `added address: ${newValue}`;
         }
+        if (field === "business contact") {
+          const details = contactDetails().filter(Boolean).join(", ");
+          return details ? `added business contact ${newValue}: ${details}` : `added business contact: ${newValue}`;
+        }
         return `added ${fieldLabel}: ${formatValue(newValue)}`;
       }
       case "REMOVED": {
         if (field === "address") {
           const details = formatAddressDetails();
           return details ? `removed address ${oldValue}: ${details}` : `removed address: ${oldValue}`;
+        }
+        if (field === "business contact") {
+          const details = contactDetails().filter(Boolean).join(", ");
+          return details ? `removed business contact ${oldValue}: ${details}` : `removed business contact: ${oldValue}`;
         }
         return `removed ${fieldLabel}: ${formatValue(oldValue)}`;
       }
