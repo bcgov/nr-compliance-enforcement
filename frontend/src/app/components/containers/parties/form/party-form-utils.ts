@@ -4,6 +4,7 @@ import {
   BusinessPerson,
   BusinessPersonAddress,
   ContactMethod,
+  CreateAttachmentReferenceInput,
   InvestigationBusinessIdentifier,
   InvestigationParty,
   InvestigationPersonFacialHairStyleCodeRef,
@@ -777,7 +778,12 @@ const buildBusinessCopy = (party: Party, copiedAddresses: AddressFormValue[]) =>
  * rules: fresh child rows (no source GUIDs carried over) and party/person/business level references
  * linking the copy back to the published profile.
  */
-export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociationRole: string) => {
+export const mapPartyToInvestigationPartyInput = (
+  party: Party,
+  partyAssociationRole: string,
+  attachmentReferences?: CreateAttachmentReferenceInput[],
+) => {
+  console.log(party);
   const aliases = mapAliasesFromPartyData(party.aliases)
     .filter((a) => a.name.trim().length > 0)
     .map((a) => ({ name: a.name, aliasReference: a.aliasGuid }));
@@ -797,6 +803,7 @@ export const mapPartyToInvestigationPartyInput = (party: Party, partyAssociation
   const common = {
     partyReference: party.partyIdentifier,
     partyAssociationRole,
+    attachmentReferences,
     aliases: buildAliases(aliases, false),
     contactMethods: buildContactMethods(phoneNumbers, emailAddresses, false),
   };
