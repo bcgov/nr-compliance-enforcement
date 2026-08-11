@@ -55,6 +55,8 @@ const useEventDescription = (event: Event): string => {
     province?: string;
     postalCode?: string;
     country?: string;
+    phoneNumber?: string;
+    emailAddress?: string;
     investigationContext?: string;
   } | null;
 
@@ -104,7 +106,16 @@ const useEventDescription = (event: Event): string => {
     const countryName = content?.country
       ? (countries.find((c) => c.value === content.country)?.label ?? content.country)
       : null;
-    return [content?.streetAddress, content?.city, provinceName, content?.postalCode, countryName]
+    const phone = content?.phoneNumber ? formatPhoneNumber(content.phoneNumber) || content.phoneNumber : null;
+    return [
+      content?.streetAddress,
+      content?.city,
+      provinceName,
+      content?.postalCode,
+      countryName,
+      phone,
+      content?.emailAddress,
+    ]
       .filter(Boolean)
       .join(", ");
   };

@@ -630,10 +630,6 @@ export class InvestigationPartyService {
     const findContactMethodReference = (contactMethodGuid?: string) =>
       existingParty.contactMethods?.find((c) => c.contactMethodGuid === contactMethodGuid)?.contactMethodReference;
 
-    const findBusinessIdentifierReference = (businessIdentifierGuid?: string) =>
-      existingParty.business?.businessIdentifiers?.find((i) => i.businessIdentifierGuid === businessIdentifierGuid)
-        ?.businessIdentifierReference;
-
     const findBusinessPersonXrefReference = (businessPersonXrefGuid?: string) =>
       existingParty.business?.contactPeople?.find((c) => c.businessPersonXrefGuid === businessPersonXrefGuid)
         ?.businessPersonXrefReference;
@@ -714,7 +710,7 @@ export class InvestigationPartyService {
           safetyConcernIndicator: input.business.safetyConcernIndicator,
           safetyConcernReason: input.business.safetyConcernReason,
           businessIdentifiers: (input.business.businessIdentifiers ?? []).map((bi) => ({
-            businessIdentifierGuid: findBusinessIdentifierReference(bi.businessIdentifierGuid) ?? "",
+            businessIdentifierGuid: bi.businessIdentifierReference ?? "",
             businessGuid: existingParty.business?.businessGuid ?? "",
             identifierCode: bi.identifierCode,
             identifierValue: bi.identifierValue,
@@ -797,6 +793,14 @@ export class InvestigationPartyService {
       );
       fhs.personFacialHairStyleCodeReference =
         existing?.personFacialHairStyleCodeReference ?? fhs.personFacialHairStyleCodeReference ?? randomUUID();
+    }
+
+    for (const identifier of input.business?.businessIdentifiers ?? []) {
+      const existing = (existingParty.business?.businessIdentifiers ?? []).find(
+        (i) => i.businessIdentifierGuid === identifier.businessIdentifierGuid,
+      );
+      identifier.businessIdentifierReference =
+        existing?.businessIdentifierReference ?? identifier.businessIdentifierReference ?? randomUUID();
     }
   }
 
@@ -1172,6 +1176,7 @@ export class InvestigationPartyService {
             investigation_business_guid: investigationBusinessGuid,
             business_identifier_code_ref: bi.identifierCode,
             identifier_value: bi.identifierValue,
+            business_identifier_guid_ref: bi.businessIdentifierReference ?? null,
             create_user_id: this.user.getIdirUsername(),
             create_utc_timestamp: new Date(),
           },

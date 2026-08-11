@@ -631,14 +631,16 @@ export const mapInvestigationPartyToDefaultValues = (
       .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.BUSINESS_NUMBER);
     return found
-      ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+      ? { businessIdentifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
       : { identifierValue: "" };
   })(),
   worksafeBCNumber: (() => {
     const found = (editParty.business?.businessIdentifiers ?? [])
       .filter((bi): bi is InvestigationBusinessIdentifier => bi != null)
       .find((bi) => bi.identifierCode === BusinessIdentifiers.WSBC_NUMBER);
-    return found ? { identifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue } : {};
+    return found
+      ? { businessIdentifierGuid: found.businessIdentifierGuid, identifierValue: found.identifierValue }
+      : {};
   })(),
   aliases: mapAliasesFromPartyData(editParty.aliases),
   phoneNumbers: mapContactMethodsFromPartyData(editParty.contactMethods, ContactMethods.PHONE),

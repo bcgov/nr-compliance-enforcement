@@ -591,8 +591,13 @@ export class PartyService {
     incomingIdentifiers: BusinessIdentifier[],
     existingIdentifiers: BusinessIdentifier[],
   ): any {
-    const identifiersToCreate = incomingIdentifiers.filter((i) => !i.businessIdentifierGuid);
-    const identifiersToUpdate = incomingIdentifiers.filter((i) => i.businessIdentifierGuid);
+    const existingGuids = new Set(existingIdentifiers.map((i) => i.businessIdentifierGuid));
+    const identifiersToCreate = incomingIdentifiers.filter(
+      (i) => !i.businessIdentifierGuid || !existingGuids.has(i.businessIdentifierGuid),
+    );
+    const identifiersToUpdate = incomingIdentifiers.filter(
+      (i) => i.businessIdentifierGuid && existingGuids.has(i.businessIdentifierGuid),
+    );
     const identifiersToDelete = existingIdentifiers.filter(
       (i) => !new Set(incomingIdentifiers.map((ei) => ei.businessIdentifierGuid)).has(i.businessIdentifierGuid),
     );
@@ -601,6 +606,7 @@ export class PartyService {
 
     if (identifiersToCreate.length) {
       operations.create = identifiersToCreate.map((i) => ({
+        ...(i.businessIdentifierGuid ? { business_identifier_guid: i.businessIdentifierGuid } : {}),
         business_identifier_code: i.identifierCode,
         identifier_value: this._normalizeIdentifierValue(i.identifierValue),
         active_ind: true,
@@ -841,8 +847,14 @@ export class PartyService {
     return operations;
   }
 
-  private _contactMethodCreateData(cm: { typeCode: string; value: string; isPrimary?: boolean }) {
+  private _contactMethodCreateData(cm: {
+    typeCode: string;
+    value: string;
+    isPrimary?: boolean;
+    contactMethodGuid?: string;
+  }) {
     return {
+      ...(cm.contactMethodGuid ? { contact_method_guid: cm.contactMethodGuid } : {}),
       contact_method_type: cm.typeCode,
       contact_value: cm.value,
       is_primary: cm.isPrimary ?? false,
@@ -1165,18 +1177,18 @@ export class PartyService {
     addEvent: AddEventFn,
   ): void {
     for (const incoming of incomingIdentifiers) {
-      if (incoming.businessIdentifierGuid) {
-        const existing = existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid);
-        if (existing && existing.identifierValue !== incoming.identifierValue) {
-          addEvent(
-            "EDITED",
-            `identifier (${incoming.identifierCode})`,
-            existing.identifierValue,
-            incoming.identifierValue,
-          );
-        }
-      } else {
+      const existing = incoming.businessIdentifierGuid
+        ? existingIdentifiers.find((i) => i.businessIdentifierGuid === incoming.businessIdentifierGuid)
+        : undefined;
+      if (!existing) {
         addEvent("ADDED", `identifier (${incoming.identifierCode})`, null, incoming.identifierValue);
+      } else if (existing.identifierValue !== incoming.identifierValue) {
+        addEvent(
+          "EDITED",
+          `identifier (${incoming.identifierCode})`,
+          existing.identifierValue,
+          incoming.identifierValue,
+        );
       }
     }
     const incomingGuids = new Set(incomingIdentifiers.map((i) => i.businessIdentifierGuid));
@@ -1200,6 +1212,12 @@ export class PartyService {
         this._compareField(`province in address "${label}"`, existing.province, incoming.province, addEvent);
         this._compareField(`postal code in address "${label}"`, existing.postalCode, incoming.postalCode, addEvent);
         this._compareField(`country in address "${label}"`, existing.country, incoming.country, addEvent);
+        this._compareContactMethods(
+          (existing.contactMethods as ContactMethod[] | undefined) ?? [],
+          (incoming.contactMethods as ContactMethodInput[] | undefined) ?? [],
+          (tc) => `${this._contactMethodLabel(tc)} in address "${label}"`,
+          addEvent,
+        );
       } else if (incoming.addressName) {
         addEvent("ADDED", "address", null, incoming.addressName, {
           streetAddress: incoming.address ?? null,
@@ -1207,21 +1225,29 @@ export class PartyService {
           province: incoming.province ?? null,
           postalCode: incoming.postalCode ?? null,
           country: incoming.country ?? null,
+          phoneNumber: incoming.contactMethods.find((m) => m.typeCode === "PHONE")?.value ?? null,
+          emailAddress: incoming.contactMethods.find((m) => m.typeCode === "EMAILADDR")?.value ?? null,
         });
       }
     }
     const incomingGuids = new Set(incomingAddresses.map((a) => a.addressGuid));
     existingAddresses
       .filter((a) => !incomingGuids.has(a.addressGuid))
-      .forEach((a) =>
+      .forEach((a) => {
         addEvent("REMOVED", "address", a.addressName, null, {
           streetAddress: a.address ?? null,
           city: a.city ?? null,
           province: a.province ?? null,
           postalCode: a.postalCode ?? null,
           country: a.country ?? null,
-        }),
-      );
+        });
+        this._compareContactMethods(
+          (a.contactMethods as ContactMethod[] | undefined) ?? [],
+          [],
+          (tc) => `${this._contactMethodLabel(tc)} in address "${a.addressName}"`,
+          addEvent,
+        );
+      });
     // Detect when the primary address switches from one address to another
     const oldPrimary = existingAddresses.find((a) => a.isPrimary);
     const newPrimary = incomingAddresses.find((a) => a.isPrimary);

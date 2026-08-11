@@ -28,6 +28,9 @@ export class UpdateInvestigationBusinessIdentifierInput {
   @Field(() => String, { nullable: true })
   businessIdentifierGuid?: string;
 
+  @Field(() => String, { nullable: true })
+  businessIdentifierReference?: string;
+
   @Field(() => String)
   identifierCode: string;
 

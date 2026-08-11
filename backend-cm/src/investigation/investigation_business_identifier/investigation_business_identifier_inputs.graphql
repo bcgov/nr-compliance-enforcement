@@ -9,4 +9,5 @@ input UpdateInvestigationBusinessIdentifierInput {
   businessIdentifierGuid: String
   identifierCode: String!
   identifierValue: String!
+  businessIdentifierReference: String
 }
