@@ -1,5 +1,5 @@
 import { openModal } from "@/app/store/reducers/app";
-import { REMOVE_ACTIVITY_FROM_CASE } from "@/app/types/modal/modal-types";
+import { SAVE_CONFIRM } from "@/app/types/modal/modal-types";
 import { Dropdown } from "react-bootstrap";
 import { useAppDispatch } from "@/app/hooks/hooks";
 import { useGraphQLMutation } from "@/app/graphql/hooks/useGraphQLMutation";
@@ -52,7 +52,7 @@ export const ActivityActionMenu: FC<ActivityActionMenuProps> = ({
     dispatch(
       openModal({
         modalSize: "md",
-        modalType: REMOVE_ACTIVITY_FROM_CASE,
+        modalType: SAVE_CONFIRM,
         data: {
           title: "Remove complaint from case",
           description: `This action will remove complaint #${activityId} from case file ${caseDisplay}`,
