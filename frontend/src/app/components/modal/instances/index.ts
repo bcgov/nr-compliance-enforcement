@@ -22,5 +22,4 @@ export {
   LinkComplaintModal,
 };
 
-export { RemovePartyModal } from "./remove-party";
 export { ComplaintChangeStatusModal } from "./complaint-change-status-modal";
