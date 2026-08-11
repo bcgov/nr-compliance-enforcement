@@ -165,7 +165,6 @@ import { InvestigationAttachmentReferenceModule } from "src/investigation/invest
     LegislationConfigurationModule,
     ContraventionModule,
     TaskStatusCodeModule,
-    TaskTypeCodeModule,
     TaskCategoryTypeCodeModule,
     InvestigationSourceCodeModule,
     TaskModule,

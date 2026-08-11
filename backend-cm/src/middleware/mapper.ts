@@ -131,7 +131,6 @@ export const initializeMappings = (mapper: Mapper) => {
   mapPrismaPartyToInvestigationParty(mapper);
   mapPrismaContreventionToContravention(mapper);
   mapPrismaTaskStatusCodeToTaskStatusCode(mapper);
-  mapPrismaTaskTypeCodeToTaskTypeCode(mapper);
   mapPrismaTaskCategoryTypeCodeToTaskCategoryTypeCode(mapper);
   mapPrismaInvestigationSourceCodeToInvestigationSourceCode(mapper);
   mapPrismaTaskToTask(mapper);
