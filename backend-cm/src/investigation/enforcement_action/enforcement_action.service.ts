@@ -10,6 +10,7 @@ import {
 } from "src/investigation/enforcement_action/dto/enforcement_action";
 import { withRlsTransaction } from "../../pg-session-extension/with-rls-transaction";
 import { InvestigationService } from "../investigation/investigation.service";
+import { InvestigationPartyService } from "../investigation_party/investigation_party_service";
 
 @Injectable()
 export class EnforcementActionService {
@@ -18,6 +19,7 @@ export class EnforcementActionService {
     private readonly user: UserService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly investigationService: InvestigationService,
+    private readonly investigationPartyService: InvestigationPartyService,
   ) {}
 
   private readonly logger = new Logger(EnforcementActionService.name);
@@ -97,6 +99,9 @@ export class EnforcementActionService {
           `No contravention party xref found for contravention ${input.contraventionIdentifier} and party ${input.partyIdentifier}`,
         );
       }
+
+      // Publish local party to the shared party
+      await this.investigationPartyService.publishToSharedParty(input.partyIdentifier);
 
       const enforcementAction = await this.prisma.enforcement_action.create({
         data: {

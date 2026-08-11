@@ -1,5 +1,6 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useStore } from "@tanstack/react-form";
+import { Alert } from "react-bootstrap";
 import { z } from "zod";
 import {
   Contravention,
@@ -133,6 +134,9 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 }) => {
   const isEdit = !!enforcementAction;
   const attachmentsRef = useRef<EnforcementActionAttachmentSectionHandle>(null);
+
+  //Check if party is local or global (i.e. if it has a partyReference, it is global)
+  const willPublishParty = !isEdit && !!party && !party.partyReference;
 
   const currentUserGuid = useAppSelector(selectAppUserGuid);
   const agency = useAppSelector(selectOfficerAgency);
@@ -282,7 +286,13 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
           console.error("Enforcement action saved, but a post-save update failed", sideEffectError);
         }
 
-        ToggleSuccess(isEdit ? "Enforcement action updated successfully" : "Enforcement action saved successfully");
+        if (isEdit) {
+          ToggleSuccess("Enforcement action updated successfully");
+        } else if (willPublishParty) {
+          ToggleSuccess("Enforcement action and party details saved successfully");
+        } else {
+          ToggleSuccess("Enforcement action saved successfully");
+        }
         onDirtyChange?.(0, false);
         onClose();
       } catch {
@@ -318,6 +328,17 @@ export const EnforcementActionForm: FC<EnforcementActionFormProps> = ({
 
   return (
     <form onSubmit={(e) => e.preventDefault()}>
+      {willPublishParty && (
+        <Alert
+          variant="warning"
+          id="enforcement-action-publish-party-notice"
+        >
+          <i className="bi bi-info-circle-fill pe-2"></i>
+          Saving this enforcement action will also save the details of the party involved for use in future
+          investigations.
+        </Alert>
+      )}
+
       <div className="row mb-3">
         <div className="col-6">
           <FormField

@@ -47,6 +47,8 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
+import { PartyService } from "../../shared/party/party.service";
+import { mapInvestigationPartyToPartyCreateInput } from "./investigation-party-to-party.mapper";
 
 const BUSINESS_PERSON_XREF_CONTACT_CODE = "CONT";
 const INVESTIGATION_CASE_ACTIVITY_TYPE = "INVSTGTN";
@@ -59,6 +61,7 @@ export class InvestigationPartyService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly user: UserService,
     private readonly investigationService: InvestigationService,
+    private readonly partyService: PartyService,
   ) {}
 
   private readonly logger = new Logger(InvestigationPartyService.name);
@@ -553,6 +556,72 @@ export class InvestigationPartyService {
 
     const refreshedInvestigation = await this.investigationService.findOne(investigationGuid);
     return refreshedInvestigation.parties.find((party) => party.partyIdentifier === newPartyGuid);
+  }
+
+  /**
+   * Publishes a local (investigation-only) party into the shared party registry,
+   * then links the investigation rows back to the new shared records.
+   * Parties that already carry a shared reference are copies of an existing party and are left alone.
+   * Returns the shared party guid when one was created, otherwise null.
+   */
+  async publishToSharedParty(partyIdentifier: string): Promise<string | null> {
+    const investigationParty = await this.prisma.investigation_party.findUnique({
+      where: { investigation_party_guid: partyIdentifier },
+    });
+
+    if (!investigationParty) {
+      throw new Error("Party not found.");
+    }
+
+    if (investigationParty.party_guid_ref) {
+      return null;
+    }
+
+    const investigation = await this.investigationService.findOne(investigationParty.investigation_guid);
+    const party = investigation.parties.find((p) => p.partyIdentifier === partyIdentifier && p.isActive);
+
+    if (!party) {
+      throw new Error("Party not found on this investigation.");
+    }
+
+    // Create the shared party record from the investigation party data
+    const sharedParty = await this.partyService.create(mapInvestigationPartyToPartyCreateInput(party));
+
+    // Update the investigation party ref
+    await withRlsTransaction(this.prisma, async (db) => {
+      await db.investigation_party.update({
+        where: { investigation_party_guid: partyIdentifier },
+        data: {
+          party_guid_ref: sharedParty.partyIdentifier,
+          update_user_id: this.user.getIdirUsername(),
+          update_utc_timestamp: new Date(),
+        },
+      });
+
+      if (sharedParty.person) {
+        await db.investigation_person.updateMany({
+          where: { investigation_party_guid: partyIdentifier, active_ind: true },
+          data: {
+            person_guid_ref: sharedParty.person.personGuid,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+
+      if (sharedParty.business) {
+        await db.investigation_business.updateMany({
+          where: { investigation_party_guid: partyIdentifier, active_ind: true },
+          data: {
+            business_guid_ref: sharedParty.business.businessGuid,
+            update_user_id: this.user.getIdirUsername(),
+            update_utc_timestamp: new Date(),
+          },
+        });
+      }
+    });
+
+    return sharedParty.partyIdentifier;
   }
 
   async findManyByRef(partyRefId: string): Promise<InvestigationParty[]> {
