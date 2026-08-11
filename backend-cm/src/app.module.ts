@@ -76,7 +76,6 @@ import { TaskStatusCodeModule } from "./investigation/task_status_code/task_stat
 import { TaskCategoryTypeCodeModule } from "./investigation/task_category_type_code/task_category_type_code.module";
 import { InvestigationSourceCodeModule } from "./investigation/investigation_source_code/investigation_source_code.module";
 import { TaskModule } from "./investigation/task/task.module";
-import { TaskTypeCodeModule } from "./investigation/task_type_code/task_type_code.module";
 import { DiaryDateModule } from "./investigation/diary_date/diary_date.module";
 import { LegislationConfigurationModule } from "./shared/legislation_configuration/legislation_configuration.module";
 import { ExhibitModule } from "./investigation/exhibit/exhibit.module";

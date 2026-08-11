@@ -14,7 +14,6 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
   const query = `{
     task(taskId: "${taskId}") {
       investigationLabel
-      taskTypeCode
       assignedUserIdentifier
       taskNumber
       description
@@ -57,10 +56,6 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
       taskCategoryTypeCode 
       longDescription
     }
-    taskTypeCodes { 
-      taskTypeCode 
-      longDescription
-    }
   }`;
 
   const { data, errors } = await get(token, { query });
@@ -69,15 +64,7 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     throw new Error(`GraphQL errors occurred while fetching task: ${JSON.stringify(errors)}`);
   }
 
-  const {
-    task,
-    diaryDatesByTask,
-    getExhibitsByTask,
-    getActivityNotesByTask,
-    appUsers,
-    taskCategoryTypeCodes,
-    taskTypeCodes,
-  } = data;
+  const { task, diaryDatesByTask, getExhibitsByTask, getActivityNotesByTask, appUsers, taskCategoryTypeCodes } = data;
 
   // Convert data into report readable format
 
@@ -90,10 +77,6 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     taskCategoryTypeCodes.map((tc) => [tc.taskCategoryTypeCode, { longDescription: tc.longDescription }]),
   );
   const _resolveTaskCategory = (categoryCode: string) => categoryMap.get(categoryCode) ?? { longDescription: "" };
-
-  // Task types
-  const typeMap = new Map(taskTypeCodes.map((tt) => [tt.taskTypeCode, { longDescription: tt.longDescription }]));
-  const _resolveTaskType = (typeCode: string) => typeMap.get(typeCode) ?? { longDescription: "" };
 
   // Property types
   const _resolvePropertyTypeLabel = (code: string): string => {
@@ -135,10 +118,6 @@ export const getTask = async (token: string, taskId: string, tz: string, attachm
     ...task,
     assignedUser: _resolveUser(task.assignedUserIdentifier),
     dueDate: formatDate(task.dueDate),
-    taskType: {
-      category: _resolveTaskCategory(task.taskCategoryTypeCode),
-      type: _resolveTaskType(task.taskTypeCode),
-    },
     exhibits: getExhibitsByTask
       .sort((a, b) => a.exhibitDisplayNumber.localeCompare(b.exhibitDisplayNumber))
       .map((exhibit) => {
