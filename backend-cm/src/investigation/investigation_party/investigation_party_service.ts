@@ -47,7 +47,6 @@ import {
 import { InvestigationBusinessPersonAddressXref } from "../investigation_business_person_address_xref/dto/investigation_business_person_address_xref";
 import { SharedPrismaService } from "src/prisma/shared/prisma.shared.service";
 import { PARTY_TYPES } from "src/common/party";
-import { EventCreateInput } from "src/shared/event/dto/event";
 import { PartyUpdateInput } from "src/shared/party/dto/party";
 import { AddressInput } from "src/shared/address/dto/address";
 import { ContactMethodInput } from "src/shared/contact_method/dto/contact_method";
